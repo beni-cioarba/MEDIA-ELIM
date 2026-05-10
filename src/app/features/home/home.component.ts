@@ -104,14 +104,11 @@ export class HomeComponent implements OnInit {
   }
 
   /**
-   * Resuelve la URL a codificar en el QR. Preferimos la del navegador en
-   * runtime (incluyendo path) — así el QR funciona automáticamente en
-   * cualquier entorno (local, staging, producción) sin reconfigurar.
+   * Resuelve la URL a codificar en el QR.
+   * Ahora está forzado a usar la URL public din `church.config.ts` pentru a
+   * garanta mereu redirecționarea la producție, chiar dacă e rulat pe localhost.
    */
   private resolveQrUrl(): string {
-    if (typeof window !== 'undefined' && window.location?.href) {
-      return window.location.href;
-    }
     return this.config.publicUrl;
   }
 }
