@@ -434,28 +434,74 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   // Auto-fit: el contenido ocupa exactamente el viewport, sin scroll.
   .content {
     min-height: 0;
+    height: 100%;
     align-content: center;
-    gap: clamp(1rem, 2vw, 2.5rem);
+    align-items: center;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 5vw, 4.5rem);
   }
 
   .socials {
-    gap: clamp(0.4rem, 0.8vh, 0.85rem);
+    height: 100%;
+    justify-content: center;
+    gap: clamp(0.6rem, 1.2vh, 1.25rem);
+  }
+
+  .socials__title {
+    font-size: clamp(1.2rem, 1.6vw, 1.7rem);
   }
 
   .socials__list {
-    gap: clamp(0.4rem, 0.8vh, 0.85rem);
+    gap: clamp(0.6rem, 1.2vh, 1.25rem);
   }
 
   .card__link {
-    padding: clamp(0.55rem, 1.2vh, 1rem) clamp(1rem, 2vw, 1.75rem);
+    padding: clamp(0.9rem, 2vh, 1.6rem) clamp(1.25rem, 2.5vw, 2.25rem);
+    gap: clamp(1.25rem, 2.5vw, 2.25rem);
+  }
+
+  .card__icon {
+    width: clamp(64px, 6vw, 96px);
+    height: clamp(64px, 6vw, 96px);
+  }
+
+  .card__name {
+    font-size: clamp(1.4rem, 2vw, 2rem);
+  }
+
+  .card__username {
+    font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+  }
+
+  .card__handle {
+    font-size: clamp(1rem, 1.3vw, 1.35rem);
   }
 
   .brand__logo {
-    // Mantiene el tamaño proporcional grande en pantalla completa
-    width: clamp(160px, 22vw, 360px);
+    width: clamp(220px, 28vw, 460px);
   }
+
+  .qr {
+    height: 100%;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vh, 2.5rem);
+  }
+
+  .qr__frame {
+    padding: clamp(16px, 2.5vh, 32px);
+    border-radius: $radius-lg;
+  }
+
   .qr__frame ::ng-deep svg {
-    width: clamp(280px, 30vh, 480px) !important;
-    height: clamp(280px, 30vh, 480px) !important;
+    width: clamp(380px, 65vh, 800px) !important;
+    height: clamp(380px, 65vh, 800px) !important;
+  }
+
+  .qr__caption {
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+  }
+
+  .bar__verse {
+    font-size: clamp(1.1rem, 1.5vw, 1.5rem);
   }
 }
