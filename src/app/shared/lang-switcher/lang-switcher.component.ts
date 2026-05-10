@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal, HostListener, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, HostListener, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AppLanguage, LanguageService } from '../../core/services/language.service';
 
 interface LangOption {
   readonly code: AppLanguage;
   readonly label: string;
-  readonly svgFlag: string;
+  readonly svgFlagRaw: string;
+  svgFlag?: SafeHtml;
 }
 
 @Component({
@@ -144,26 +146,33 @@ interface LangOption {
     `,
   ],
 })
-export class LangSwitcherComponent {
+export class LangSwitcherComponent implements OnInit {
   protected readonly lang = inject(LanguageService);
   private readonly elementRef = inject(ElementRef);
+  private readonly sanitizer = inject(DomSanitizer);
   
   protected readonly isOpen = signal(false);
 
-  protected readonly options: readonly LangOption[] = [
+  protected readonly options: LangOption[] = [
     {
       code: 'ro',
       label: 'Română',
-      svgFlag:
+      svgFlagRaw:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="3" height="2" fill="#002B7F"/><rect width="2" height="2" x="1" fill="#FCD116"/><rect width="1" height="2" x="2" fill="#CE1126"/></svg>',
     },
     {
       code: 'es',
       label: 'Español',
-      svgFlag:
+      svgFlagRaw:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="3" height="2" fill="#c60b1e"/><rect width="3" height="1" y="0.5" fill="#ffc400"/></svg>',
     },
   ];
+
+  ngOnInit() {
+    this.options.forEach(opt => {
+      opt.svgFlag = this.sanitizer.bypassSecurityTrustHtml(opt.svgFlagRaw);
+    });
+  }
 
   protected activeOption() {
     return this.options.find((o) => o.code === this.lang.current()) || this.options[0];
