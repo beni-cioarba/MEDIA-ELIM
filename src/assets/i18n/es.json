@@ -1,0 +1,60 @@
+{
+  "app": {
+    "title": "Iglesia Elim · Arganda del Rey",
+    "description": "Conecta con la iglesia: Instagram, Facebook, YouTube y código QR de acceso rápido."
+  },
+  "brand": {
+    "name": "Iglesia Elim",
+    "location": "Arganda del Rey",
+    "tagline": "Bienvenidos a la casa de Dios"
+  },
+  "verse": {
+    "text": "Porque donde están dos o tres congregados en mi nombre, allí estoy yo en medio de ellos.",
+    "reference": "Mateo 18:20"
+  },
+  "socials": {
+    "section_title": "Síguenos en nuestras redes",
+    "open_aria": "Abrir {{name}} en una nueva pestaña",
+    "items": {
+      "instagram_main": {
+        "name": "Instagram",
+        "subtitle": "Cuenta principal de la iglesia"
+      },
+      "instagram_youth": {
+        "name": "Instagram · Jóvenes",
+        "subtitle": "Departamento de jóvenes"
+      },
+      "facebook_main": {
+        "name": "Facebook",
+        "subtitle": "Página oficial de la iglesia"
+      },
+      "youtube_main": {
+        "name": "YouTube",
+        "subtitle": "Canal oficial · transmisiones y predicaciones"
+      }
+    }
+  },
+  "qr": {
+    "caption": "Escanea para visitar nuestras redes",
+    "aria": "Código QR para acceder a esta página"
+  },
+  "streams": {
+    "title": "Últimas transmisiones",
+    "subtitle": "Revive los últimos cultos en directo de nuestro canal de YouTube.",
+    "watch_all": "Ver todas las transmisiones",
+    "watch_video": "Ver el vídeo en YouTube",
+    "live_now": "EN DIRECTO",
+    "empty": "Pronto añadiremos nuevas transmisiones."
+  },
+  "presentation": {
+    "enter": "Presentar",
+    "exit": "Salir",
+    "tooltip_enter": "Pantalla completa (F)",
+    "tooltip_exit": "Salir de pantalla completa (F)"
+  },
+  "lang": {
+    "label": "Idioma",
+    "es": "Español",
+    "ro": "Rumano"
+  }
+}

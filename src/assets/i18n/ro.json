@@ -1,0 +1,60 @@
+{
+  "app": {
+    "title": "Biserica Elim · Arganda del Rey",
+    "description": "Conectează-te cu biserica: Instagram, Facebook, YouTube și cod QR pentru acces rapid."
+  },
+  "brand": {
+    "name": "Biserica Elim",
+    "location": "Arganda del Rey",
+    "tagline": "Bine ați venit în casa Domnului"
+  },
+  "verse": {
+    "text": "Căci acolo unde sunt doi sau trei adunați în Numele Meu, sunt și Eu în mijlocul lor.",
+    "reference": "Matei 18:20"
+  },
+  "socials": {
+    "section_title": "Urmărește-ne pe rețelele sociale",
+    "open_aria": "Deschide {{name}} într-o filă nouă",
+    "items": {
+      "instagram_main": {
+        "name": "Instagram",
+        "subtitle": "Contul principal al bisericii"
+      },
+      "instagram_youth": {
+        "name": "Instagram · Tineret",
+        "subtitle": "Departamentul de tineret"
+      },
+      "facebook_main": {
+        "name": "Facebook",
+        "subtitle": "Pagina oficială a bisericii"
+      },
+      "youtube_main": {
+        "name": "YouTube",
+        "subtitle": "Canalul oficial · transmisiuni și predici"
+      }
+    }
+  },
+  "qr": {
+    "caption": "Scanează pentru a vizita rețelele noastre",
+    "aria": "Cod QR pentru a accesa această pagină"
+  },
+  "streams": {
+    "title": "Ultimele transmisiuni",
+    "subtitle": "Revezi ultimele servicii în direct de pe canalul nostru YouTube.",
+    "watch_all": "Vezi toate transmisiunile",
+    "watch_video": "Vezi videoclipul pe YouTube",
+    "live_now": "ÎN DIRECT",
+    "empty": "Vom adăuga curând noi transmisiuni."
+  },
+  "presentation": {
+    "enter": "Prezintă",
+    "exit": "Ieși",
+    "tooltip_enter": "Ecran complet (F)",
+    "tooltip_exit": "Ieși din ecran complet (F)"
+  },
+  "lang": {
+    "label": "Limbă",
+    "es": "Spaniolă",
+    "ro": "Română"
+  }
+}

@@ -1,0 +1,427 @@
+@use 'sass:color';
+
+// =====================================================================
+// Tokens de diseño — concentrados aquí para mantener consistencia
+// =====================================================================
+$color-bg-1: #060914;
+$color-bg-2: #0b1226;
+$color-surface: rgba(255, 255, 255, 0.06);
+$color-surface-strong: rgba(255, 255, 255, 0.1);
+$color-border: rgba(255, 255, 255, 0.12);
+$color-text: #f4f1ea;
+$color-muted: rgba(244, 241, 234, 0.7);
+$color-gold: #e6b35a;
+$color-gold-soft: #f6d28a;
+$color-blue-soft: #6aa9ff;
+
+$radius-xl: 32px;
+$radius-lg: 24px;
+$radius-md: 16px;
+
+$shadow-card: 0 16px 48px rgba(0, 0, 0, 0.55);
+$shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
+
+// =====================================================================
+// Layout principal
+// =====================================================================
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: $color-text;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  min-height: 100vh;
+  padding: clamp(1.5rem, 4vw, 4rem) clamp(1.5rem, 5vw, 5rem);
+  gap: clamp(1.5rem, 4vh, 3.5rem);
+  overflow: hidden;
+  background: radial-gradient(
+      ellipse at top right,
+      color.adjust($color-bg-2, $lightness: 6%) 0%,
+      $color-bg-1 65%
+    );
+
+  &.is-fullscreen {
+    padding: clamp(2rem, 5vh, 5rem) clamp(2.5rem, 7vw, 7rem);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Fondo decorativo
+// ---------------------------------------------------------------------
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.halo {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.55;
+  will-change: transform;
+
+  &--gold {
+    width: 60vmax;
+    height: 60vmax;
+    top: -25vmax;
+    left: -20vmax;
+    background: radial-gradient(circle, $color-gold 0%, transparent 70%);
+    animation: drift 22s ease-in-out infinite alternate;
+  }
+
+  &--blue {
+    width: 55vmax;
+    height: 55vmax;
+    bottom: -25vmax;
+    right: -20vmax;
+    background: radial-gradient(circle, $color-blue-soft 0%, transparent 70%);
+    opacity: 0.35;
+    animation: drift 28s ease-in-out infinite alternate-reverse;
+  }
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: overlay;
+  opacity: 0.25;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(4vmax, 3vmax, 0) scale(1.15); }
+}
+
+// =====================================================================
+// Header / marca
+// =====================================================================
+.brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1rem, 2vw, 2rem);
+
+  &__logo-link {
+    display: inline-flex;
+    border-radius: 8px;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-origin: left top;
+    
+    &:hover { transform: scale(1.03); }
+    &:focus-visible { outline: 2px solid $color-gold; outline-offset: 8px; }
+  }
+
+  &__logo {
+    // Increased size fundamentally
+    width: clamp(160px, 25vw, 340px);
+    height: auto;
+    filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.65));
+    will-change: width;
+    transition: width 0.4s ease;
+  }
+
+  &__spacer { flex: 1; }
+}
+
+// =====================================================================
+// Contenido principal: dos columnas (redes | QR)
+// =====================================================================
+.content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: clamp(2rem, 4vw, 5rem);
+  align-items: center;
+  align-content: center;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Tarjetas de redes sociales
+// ---------------------------------------------------------------------
+.socials {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.25rem);
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-muted;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(0.7rem, 1.2vh, 1rem);
+  }
+}
+
+.card {
+  --card-gradient: linear-gradient(135deg, #444, #222);
+  position: relative;
+  border-radius: $radius-lg;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: $shadow-soft;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.5s ease,
+              border-color 0.5s ease,
+              background 0.5s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-gradient);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+
+  &:hover,
+  &--highlight {
+    transform: translateX(8px) scale(1.01);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: $shadow-card;
+
+    &::before { opacity: 0.15; }
+  }
+
+  &__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(1.25rem, 2vw, 1.75rem);
+    padding: clamp(1rem, 1.8vh, 1.4rem) clamp(1.25rem, 2.5vw, 2rem);
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 4px;
+      border-radius: $radius-lg;
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(54px, 5vw, 68px);
+    height: clamp(54px, 5vw, 68px);
+    border-radius: $radius-md;
+    background: var(--card-gradient);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    padding: 14px;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &:hover &__icon,
+  &--highlight &__icon {
+    transform: scale(1.08) rotate(-4deg);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.15rem;
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    flex-wrap: wrap;
+  }
+
+  &__username {
+    font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+    color: #ffdca8;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    opacity: 0.95;
+  }
+
+  &__handle {
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Bloque QR
+// ---------------------------------------------------------------------
+.qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  border-radius: $radius-xl;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2), $shadow-card;
+
+  @media (max-width: 1024px) {
+    padding: 2.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  &__frame {
+    background: white;
+    padding: 18px;
+    border-radius: $radius-md;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+    &:hover {
+      transform: scale(1.05) translateY(-5px);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    ::ng-deep svg {
+      display: block;
+      width: clamp(200px, 20vw, 320px) !important;
+      height: clamp(200px, 20vw, 320px) !important;
+      max-width: 100%;
+    }
+  }
+
+  &__caption {
+    margin: 0;
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.03em;
+    text-align: center;
+  }
+
+  &__url {
+    margin: 0.5rem 0 0;
+    color: $color-gold-soft;
+    font-family: inherit;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    opacity: 0.9;
+    word-break: break-all;
+    text-align: center;
+    max-width: 100%;
+  }
+}
+
+// =====================================================================
+// Footer / barra de control
+// =====================================================================
+.bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-top: clamp(0.75rem, 1.5vh, 1.25rem);
+  border-top: 1px solid $color-border;
+  flex-wrap: wrap;
+
+  &__verse {
+    flex: 1 1 100%;
+    min-width: 0;
+    margin: 0;
+    max-width: 100%;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    line-height: 1.5;
+    color: $color-muted;
+    padding-bottom: 0.1rem;
+
+    @media (min-width: 768px) {
+      flex: 1;
+      max-width: 80ch;
+    }
+  }
+
+  &__verse-ref {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+    color: $color-gold-soft;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  &__fs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    border: 1px solid $color-border;
+    background: $color-surface;
+    color: $color-text;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+
+    svg { width: 18px; height: 18px; }
+
+    &:hover {
+      background: $color-surface-strong;
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 3px;
+    }
+  }
+}
+
+// =====================================================================
+// Ajustes a pantalla completa: maximizar la "diapositiva"
+// =====================================================================
+.stage.is-fullscreen {
+  .brand__logo {
+    // Mantiene el tamaño proporcional grande en pantalla completa
+    width: clamp(200px, 32vw, 450px);
+  }
+  .qr__frame ::ng-deep svg {
+    width: clamp(280px, 26vw, 420px) !important;
+  }
+}

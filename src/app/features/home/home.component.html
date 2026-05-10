@@ -1,0 +1,95 @@
+<main class="stage" [class.is-fullscreen]="fullscreen()">
+  <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="halo halo--gold"></div>
+    <div class="halo halo--blue"></div>
+    <div class="grain"></div>
+  </div>
+
+  <header class="brand">
+    <a class="brand__logo-link" [href]="config.youtubeChannelUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'brand.name' | translate">
+      <img
+        class="brand__logo"
+        [src]="config.logo"
+        [alt]="('brand.name' | translate) + ' — logo'"
+      />
+    </a>
+
+    <div class="brand__spacer"></div>
+    <app-lang-switcher />
+  </header>
+
+  <section class="content">
+    <div class="socials" aria-labelledby="socials-title">
+      <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
+      <ul class="socials__list">
+        <li
+          *ngFor="let link of config.socials; let i = index; trackBy: trackBySocial"
+          class="card"
+          [class.card--highlight]="highlightedIndex() === i"
+          [style.--card-gradient]="gradient(link)"
+        >
+          <a
+            class="card__link"
+            [href]="link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="socialAria()[link.id]"
+          >
+            <span class="card__icon" aria-hidden="true">
+              <app-social-icon [name]="link.icon" />
+            </span>
+            <span class="card__body">
+              <span class="card__name">
+                {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
+                <span class="card__username">{{ link.handle }}</span>
+              </span>
+              <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
+            </span>
+            <span class="card__cta" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <aside class="qr" [attr.aria-label]="'qr.aria' | translate">
+      <div class="qr__frame">
+        <qrcode
+          [qrdata]="qrData()"
+          [width]="320"
+          [margin]="2"
+          [errorCorrectionLevel]="'H'"
+          [colorDark]="'#0b1020'"
+          [colorLight]="'#ffffff'"
+          [elementType]="'svg'"
+        ></qrcode>
+      </div>
+      <p class="qr__caption">{{ 'qr.caption' | translate }}</p>
+    </aside>
+  </section>
+
+  <footer class="bar">
+    <p class="bar__verse">
+      <span class="bar__verse-text">«{{ 'verse.text' | translate }}»</span>
+      <span class="bar__verse-ref">— {{ 'verse.reference' | translate }}</span>
+    </p>
+
+    <button
+      type="button"
+      class="bar__fs"
+      (click)="toggleFullscreen()"
+      [attr.aria-pressed]="fullscreen()"
+      [title]="(fullscreen() ? 'presentation.tooltip_exit' : 'presentation.tooltip_enter') | translate"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" *ngIf="!fullscreen(); else exitFs">
+        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <ng-template #exitFs>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </ng-template>
+      <span>{{ (fullscreen() ? 'presentation.exit' : 'presentation.enter') | translate }}</span>
+    </button>
+  </footer>
+</main>
