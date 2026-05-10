@@ -74,7 +74,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     height: 60vmax;
     top: -25vmax;
     left: -20vmax;
-    background: radial-gradient(circle, $color-gold 0%, transparent 70%);
+    background: radial-gradient(circle, #0e2a52 0%, transparent 70%);
     animation: drift 22s ease-in-out infinite alternate;
   }
 
@@ -410,6 +410,10 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
       outline: 2px solid $color-gold;
       outline-offset: 3px;
     }
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 }
 
@@ -417,6 +421,11 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 // Ajustes a pantalla completa: maximizar la "diapositiva"
 // =====================================================================
 .stage.is-fullscreen {
+  app-lang-switcher,
+  .bar__fs {
+    display: none !important;
+  }
+
   .brand__logo {
     // Mantiene el tamaño proporcional grande en pantalla completa
     width: clamp(200px, 32vw, 450px);
