@@ -82,6 +82,11 @@ export class HomeComponent implements OnInit {
    */
   @HostListener('window:keydown', ['$event'])
   handleKey(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.presentation.isSimulated()) {
+      event.preventDefault();
+      this.presentation.exitSimulatedIfActive();
+      return;
+    }
     if (event.key === 'f' || event.key === 'F') {
       // Evita interceptar combinaciones del navegador (Ctrl+F, etc.).
       if (event.ctrlKey || event.metaKey || event.altKey) return;
