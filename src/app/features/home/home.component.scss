@@ -47,7 +47,12 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     );
 
   &.is-fullscreen {
-    padding: clamp(2rem, 5vh, 5rem) clamp(2.5rem, 7vw, 7rem);
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: clamp(1rem, 3vh, 2.5rem) clamp(1.5rem, 4vw, 4rem);
+    gap: clamp(0.75rem, 2vh, 1.75rem);
+    overflow: hidden;
   }
 }
 
@@ -288,24 +293,24 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: clamp(2rem, 4vw, 3.5rem);
-  border-radius: $radius-xl;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2), $shadow-card;
+  gap: 0.85rem;
+  padding: clamp(0.75rem, 1.2vw, 1.25rem);
+  border-radius: $radius-lg;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 
   @media (max-width: 1024px) {
-    padding: 2.5rem;
+    padding: 1rem;
     max-width: 480px;
     margin: 0 auto;
   }
 
   &__frame {
     background: white;
-    padding: 18px;
+    padding: 14px;
     border-radius: $radius-md;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -317,18 +322,18 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 
     ::ng-deep svg {
       display: block;
-      width: clamp(200px, 20vw, 320px) !important;
-      height: clamp(200px, 20vw, 320px) !important;
+      width: clamp(260px, 28vw, 440px) !important;
+      height: clamp(260px, 28vw, 440px) !important;
       max-width: 100%;
     }
   }
 
   &__caption {
     margin: 0;
-    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    font-size: clamp(0.95rem, 1.1vw, 1.15rem);
     font-weight: 500;
-    color: #fff;
-    letter-spacing: 0.03em;
+    color: $color-muted;
+    letter-spacing: 0.02em;
     text-align: center;
   }
 
@@ -426,11 +431,31 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     display: none !important;
   }
 
+  // Auto-fit: el contenido ocupa exactamente el viewport, sin scroll.
+  .content {
+    min-height: 0;
+    align-content: center;
+    gap: clamp(1rem, 2vw, 2.5rem);
+  }
+
+  .socials {
+    gap: clamp(0.4rem, 0.8vh, 0.85rem);
+  }
+
+  .socials__list {
+    gap: clamp(0.4rem, 0.8vh, 0.85rem);
+  }
+
+  .card__link {
+    padding: clamp(0.55rem, 1.2vh, 1rem) clamp(1rem, 2vw, 1.75rem);
+  }
+
   .brand__logo {
     // Mantiene el tamaño proporcional grande en pantalla completa
-    width: clamp(200px, 32vw, 450px);
+    width: clamp(160px, 22vw, 360px);
   }
   .qr__frame ::ng-deep svg {
-    width: clamp(280px, 26vw, 420px) !important;
+    width: clamp(280px, 30vh, 480px) !important;
+    height: clamp(280px, 30vh, 480px) !important;
   }
 }
