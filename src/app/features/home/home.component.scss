@@ -433,35 +433,52 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   --card-gradient: linear-gradient(135deg, #444, #222);
   position: relative;
   border-radius: $radius-lg;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: $shadow-soft;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 0.5s ease,
-              border-color 0.5s ease,
-              background 0.5s ease;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.4s ease,
+              border-color 0.4s ease,
+              background 0.4s ease;
 
   &::before {
+    // Fondo de color suave que cubre la tarjeta
     content: '';
     position: absolute;
     inset: 0;
     background: var(--card-gradient);
+    opacity: 0.03;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  &::after {
+    // Resplandor de borde (inset shadow) con el color de la red
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--card-gradient);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
     opacity: 0;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.4s ease;
     pointer-events: none;
   }
 
   &:hover,
   &--highlight {
-    transform: translateX(8px) scale(1.01);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: $shadow-card;
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 
-    &::before { opacity: 0.15; }
+    &::before { opacity: 0.12; }
+    &::after { opacity: 0.8; }
   }
 
   &__link {
@@ -490,14 +507,19 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     border-radius: $radius-md;
     background: var(--card-gradient);
     color: #fff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    // Efecto de joya flotante: sombra general + borde interior brillante
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+                0 8px 24px rgba(0, 0, 0, 0.4);
     padding: 14px;
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.4s ease;
   }
 
   &:hover &__icon,
   &--highlight &__icon {
     transform: scale(1.08) rotate(-4deg);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+                0 14px 32px rgba(0, 0, 0, 0.5);
   }
 
   &__body {
@@ -515,19 +537,43 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     font-weight: 600;
     letter-spacing: 0.01em;
     flex-wrap: wrap;
+    color: #fff;
   }
 
   &__username {
     font-size: clamp(0.95rem, 1.3vw, 1.15rem);
-    color: #ffdca8;
+    color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    opacity: 0.95;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    margin-left: 0.25rem;
+    backdrop-filter: blur(10px);
   }
 
   &__handle {
-    color: $color-muted;
+    color: rgba(255, 255, 255, 0.6);
     font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.3);
+    transition: transform 0.4s ease, color 0.4s ease;
+
+    svg {
+      width: clamp(20px, 2vw, 24px);
+      height: clamp(20px, 2vw, 24px);
+    }
+  }
+
+  &:hover &__cta,
+  &--highlight &__cta {
+    color: #fff;
+    transform: translateX(6px);
   }
 
   &__live {
@@ -1186,6 +1232,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     min-height: 0;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start; // Prevenir centrado si desborda
   }
 
   .socials {
@@ -1193,9 +1240,8 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     min-height: 0;
     display: flex;
     flex-direction: column;
-    // Sin justify-content: center — con flex-start + flex:1 en la lista
-    // los hijos se reparten desde arriba y nada se desborda.
-    gap: clamp(0.5rem, 1.2vh, 1rem);
+    justify-content: flex-start;
+    gap: clamp(0.4rem, 1vh, 0.8rem);
   }
 
   // La lista de cards crece y reparte EXACTAMENTE el alto disponible en
@@ -1208,7 +1254,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     min-height: 0;
     display: grid;
     grid-auto-rows: minmax(0, 1fr);
-    gap: clamp(0.4rem, 1vh, 0.85rem);
+    gap: clamp(0.35rem, 0.8vh, 0.75rem);
     overflow: hidden;
   }
 
@@ -1217,6 +1263,10 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     height: 100%;
     display: flex;
     overflow: hidden;
+    // Evitar salto al hacer hover en presentación para no recortarse arriba
+    &:hover {
+      transform: translateY(-2px);
+    }
   }
 
   .socials__list > .card .card__link {
@@ -1224,8 +1274,26 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     width: 100%;
     height: 100%;
     min-height: 0;
-    padding: clamp(0.4rem, 1vh, 0.9rem) clamp(1rem, 2vw, 1.75rem);
+    padding: clamp(0.25rem, 0.8vh, 0.75rem) clamp(0.75rem, 1.5vw, 1.5rem);
     align-items: center;
+  }
+
+  .socials__list > .card .card__icon {
+    width: clamp(38px, 4.5vh, 48px);
+    height: clamp(38px, 4.5vh, 48px);
+    padding: clamp(6px, 1vh, 10px);
+  }
+
+  .socials__list > .card .card__name {
+    font-size: clamp(0.95rem, 1.8vh, 1.35rem);
+  }
+
+  .socials__list > .card .card__handle {
+    font-size: clamp(0.8rem, 1.4vh, 1.1rem);
+  }
+
+  .socials__list > .card .card__cta {
+    transform: scale(0.85); // Icono de flecha ligeramente más pequeño
   }
 
   .socials__title,
