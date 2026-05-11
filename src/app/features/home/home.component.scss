@@ -1225,14 +1225,12 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     align-self: stretch;
   }
 
-  // El slide es un flex column con min-height:0 que permite que sus
-  // hijos (lista de cards / lista de streams) ocupen exactamente el
-  // espacio disponible sin desbordar.
+  // El slide es un flex column con min-height:0
   .slide {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; // Prevenir centrado si desborda
+    justify-content: center; // Volvemos a centrar con flex
   }
 
   .socials {
@@ -1240,29 +1238,29 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    gap: clamp(0.4rem, 1vh, 0.8rem);
+    justify-content: center; // Alinear bloque de redes al centro
+    gap: clamp(1.2rem, 3.5vh, 2.5rem); // Aumentado para dar un respiro ultra premium al titulo
   }
 
-  // La lista de cards crece y reparte EXACTAMENTE el alto disponible en
-  // 4 filas iguales — grid con minmax(0,1fr) ignora el min-content de
-  // las cards. Clave: flex-basis 0 + min-height 0 para que la altura
-  // del grid container venga del contenedor, NO del contenido.
+  // Ahora evitamos estirar las tarjetas para que no se vean inmensas.
+  // Usamos flex en lugar de grid para mantener su tamaño natural elegante.
   .socials__list {
-    flex: 1 1 0;
-    height: 0;
-    min-height: 0;
-    display: grid;
-    grid-auto-rows: minmax(0, 1fr);
-    gap: clamp(0.35rem, 0.8vh, 0.75rem);
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.75rem, 1.5vh, 1.15rem);
+    // Cambiamos "overflow: hidden" por "visible" y agregamos
+    // padding de seguridad para que la sombra (glow) de las cajas resplandezca 
+    // sin que se mutile/recorte la parte superior de la primera card.
+    overflow: visible;
+    padding: 10px 4px;
+    margin: -10px -4px;
   }
 
   .socials__list > .card {
-    min-height: 0;
-    height: 100%;
     display: flex;
     overflow: hidden;
+    flex-shrink: 0; // Evita que se encojan de más
     // Evitar salto al hacer hover en presentación para no recortarse arriba
     &:hover {
       transform: translateY(-2px);
@@ -1272,24 +1270,22 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   .socials__list > .card .card__link {
     flex: 1;
     width: 100%;
-    height: 100%;
-    min-height: 0;
-    padding: clamp(0.25rem, 0.8vh, 0.75rem) clamp(0.75rem, 1.5vw, 1.5rem);
+    padding: clamp(0.7rem, 2vh, 1.1rem) clamp(1rem, 2.5vw, 2rem);
     align-items: center;
   }
 
   .socials__list > .card .card__icon {
-    width: clamp(38px, 4.5vh, 48px);
-    height: clamp(38px, 4.5vh, 48px);
-    padding: clamp(6px, 1vh, 10px);
+    width: clamp(42px, 5.5vh, 56px);
+    height: clamp(42px, 5.5vh, 56px);
+    padding: clamp(8px, 1.2vh, 12px);
   }
 
   .socials__list > .card .card__name {
-    font-size: clamp(0.95rem, 1.8vh, 1.35rem);
+    font-size: clamp(1.05rem, 2vh, 1.45rem);
   }
 
   .socials__list > .card .card__handle {
-    font-size: clamp(0.8rem, 1.4vh, 1.1rem);
+    font-size: clamp(0.85rem, 1.6vh, 1.15rem);
   }
 
   .socials__list > .card .card__cta {
