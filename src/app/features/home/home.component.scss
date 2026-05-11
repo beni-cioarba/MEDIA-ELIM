@@ -821,8 +821,14 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 .gallery {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.75rem, 1.5vh, 1.25rem);
+  gap: clamp(1rem, 2vh, 1.5rem);
   min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
 
   &__title {
     margin: 0;
@@ -841,30 +847,30 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     max-width: 60ch;
   }
 
-  // ---- Card destacada ----
-  &__featured {
+  // ---- HERO destacado (imagen full-bleed con overlay) ----
+  &__hero {
     --card-gradient: linear-gradient(135deg, #444, #222);
     position: relative;
-    display: grid;
-    grid-template-columns: clamp(80px, 12vw, 140px) 1fr;
-    gap: clamp(1rem, 2vw, 1.75rem);
-    align-items: center;
-    padding: clamp(1rem, 2vh, 1.5rem) clamp(1.25rem, 2vw, 1.75rem);
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
     border-radius: $radius-lg;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: $shadow-card;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
+    box-shadow: $shadow-card;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     isolation: isolate;
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-                box-shadow 0.4s ease, border-color 0.4s ease;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.5s ease, border-color 0.5s ease;
 
     &:hover {
       transform: translateY(-4px);
-      border-color: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.65);
+
+      .gallery__hero-image { transform: scale(1.05); }
+      .gallery__hero-arrow { transform: translateX(6px); }
     }
 
     &:focus-visible {
@@ -873,55 +879,58 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     }
   }
 
-  &__featured-bg {
+  &__hero-image {
     position: absolute;
     inset: 0;
-    background: var(--card-gradient);
-    opacity: 0.35;
-    z-index: -1;
-    transition: opacity 0.6s ease, transform 0.8s ease;
-    transform: scale(1.05);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  &__featured:hover .gallery__featured-bg {
-    opacity: 0.5;
-    transform: scale(1);
+  &__hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.5) 40%,
+        rgba(0, 0, 0, 0.1) 70%,
+        transparent 100%
+      ),
+      linear-gradient(135deg, rgba(0, 0, 0, 0.25) 0%, transparent 60%);
   }
 
-  &__featured-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: clamp(80px, 12vw, 140px);
-    height: clamp(80px, 12vw, 140px);
-    border-radius: $radius-md;
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
-    padding: clamp(16px, 2vw, 28px);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-                0 8px 22px rgba(0, 0, 0, 0.45);
-  }
-
-  &__featured-body {
+  &__hero-content {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    min-width: 0;
+    gap: 0.35rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
   }
 
-  &__featured-eyebrow {
+  &__hero-eyebrow {
     color: $color-gold-soft;
-    font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+    font-size: clamp(0.7rem, 0.85vw, 0.9rem);
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.18em;
     font-weight: 600;
   }
 
-  &__featured-name {
+  &__hero-name {
     color: #fff;
-    font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.15;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -929,85 +938,115 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     overflow: hidden;
   }
 
-  &__featured-date {
-    color: $color-muted;
+  &__hero-date {
+    color: rgba(255, 255, 255, 0.78);
     font-size: clamp(0.85rem, 1.05vw, 1rem);
+    font-weight: 500;
   }
 
-  &__featured-cta {
+  &__hero-cta {
     margin-top: 0.4rem;
     color: $color-gold-soft;
     font-weight: 600;
     font-size: clamp(0.9rem, 1.1vw, 1.1rem);
-  }
-
-  // ---- Marquee de chips ----
-  &__strip {
-    overflow: hidden;
-    mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 8%,
-      #000 92%,
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 8%,
-      #000 92%,
-      transparent 100%
-    );
-    padding: 0.4rem 0;
-  }
-
-  &__strip-track {
-    display: flex;
-    gap: 0.6rem;
-    width: max-content;
-    animation: gallery-marquee 36s linear infinite;
-  }
-
-  &__strip:hover &__strip-track {
-    animation-play-state: paused;
-  }
-
-  &__chip {
-    --card-gradient: linear-gradient(135deg, #444, #222);
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.85rem 0.45rem 0.5rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: $color-muted;
+    gap: 0.4rem;
+  }
+
+  &__hero-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  // ---- Mosaico de miniaturas ----
+  &__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: clamp(0.5rem, 1vw, 0.85rem);
+  }
+
+  &__tile-wrapper { min-width: 0; }
+
+  &__tile {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: $radius-md;
+    overflow: hidden;
     text-decoration: none;
-    font-size: clamp(0.78rem, 0.95vw, 0.95rem);
-    font-weight: 500;
-    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease,
-                border-color 0.3s ease;
-    white-space: nowrap;
-    flex: 0 0 auto;
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    isolation: isolate;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.4s ease, border-color 0.4s ease;
 
-    &-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--card-gradient);
-      color: #fff;
-      padding: 4px;
+    &:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
+
+      .gallery__tile-image { transform: scale(1.08); }
     }
 
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 3px;
+    }
+
+    // Marco resaltado en el tile que coincide con el hero rotativo
     &.is-featured {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.28);
-      color: #fff;
-      transform: translateY(-1px);
+      border-color: rgba(230, 179, 90, 0.65);
+      box-shadow: 0 0 0 2px rgba(230, 179, 90, 0.3),
+                  0 14px 30px rgba(0, 0, 0, 0.5);
     }
+  }
+
+  &__tile-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &__tile-shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.35) 50%,
+      transparent 80%
+    );
+  }
+
+  &__tile-name {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.65rem 0.85rem;
+    color: #fff;
+    font-size: clamp(0.8rem, 1vw, 0.95rem);
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   // ---- CTA Drive ----
@@ -1318,39 +1357,44 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 
-  // Galería: ocupa toda la altura, featured-card crece, marquee y CTA
-  // se quedan abajo con tamaños proporcionales.
+  // Galería: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
   .gallery {
     height: 100%;
     min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: clamp(0.6rem, 1.5vh, 1.25rem);
+    gap: clamp(0.75rem, 1.5vh, 1.25rem);
   }
 
   .gallery__title { font-size: clamp(1.2rem, 1.6vw, 1.7rem); }
   .gallery__subtitle { font-size: clamp(0.95rem, 1.4vh, 1.2rem); }
 
-  .gallery__featured {
+  // El hero crece para llenar el espacio disponible
+  .gallery__hero {
     flex: 1 1 auto;
     min-height: 0;
-    grid-template-columns: clamp(100px, 16vh, 200px) 1fr;
-    gap: clamp(1.25rem, 2.5vw, 2.25rem);
+    aspect-ratio: auto;
   }
 
-  .gallery__featured-icon {
-    width: clamp(100px, 16vh, 200px);
-    height: clamp(100px, 16vh, 200px);
-    padding: clamp(20px, 3vh, 40px);
+  .gallery__hero-name { font-size: clamp(1.5rem, 3vh, 2.4rem); }
+  .gallery__hero-eyebrow { font-size: clamp(0.85rem, 1.2vh, 1.1rem); }
+  .gallery__hero-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
+  .gallery__hero-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
+
+  // Mosaico de miniaturas ocupa una franja fija inferior
+  .gallery__grid {
+    flex: 0 0 auto;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: clamp(0.4rem, 0.8vh, 0.7rem);
   }
 
-  .gallery__featured-name { font-size: clamp(1.4rem, 3vh, 2.4rem); }
-  .gallery__featured-eyebrow { font-size: clamp(0.85rem, 1.2vh, 1.1rem); }
-  .gallery__featured-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
-  .gallery__featured-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
+  .gallery__tile {
+    aspect-ratio: 4 / 3;
+  }
 
-  .gallery__chip { font-size: clamp(0.85rem, 1.2vh, 1rem); }
+  .gallery__tile-name { font-size: clamp(0.75rem, 1vh, 0.95rem); }
+
   .gallery__cta { font-size: clamp(1rem, 1.4vh, 1.2rem); padding: 0.85rem 1.5rem; }
 
   .live-now {

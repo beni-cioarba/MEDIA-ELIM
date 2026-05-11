@@ -155,63 +155,73 @@
         [attr.aria-hidden]="fullscreen() && currentSlide() !== 2"
       >
         <div class="gallery" aria-labelledby="gallery-title">
-          <h2 id="gallery-title" class="gallery__title">
-            {{ 'gallery.title' | translate }}
-          </h2>
-          <p class="gallery__subtitle">{{ 'gallery.subtitle' | translate }}</p>
+          <header class="gallery__header">
+            <h2 id="gallery-title" class="gallery__title">
+              {{ 'gallery.title' | translate }}
+            </h2>
+            <p class="gallery__subtitle">{{ 'gallery.subtitle' | translate }}</p>
+          </header>
 
-          <!-- Card destacada con auto-rotación entre eventos -->
+          <!-- Hero destacado: imagen completa del evento que rota automáticamente -->
           <a
             *ngIf="config.mediaEvents[featuredEventIndex()] as featured"
-            class="gallery__featured"
+            class="gallery__hero"
             [href]="featured.driveUrl"
             target="_blank"
             rel="noopener noreferrer"
             [style.--card-gradient]="eventGradient(featured)"
             [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + featured.i18nKey + '.name' | translate)"
           >
-            <span class="gallery__featured-bg" aria-hidden="true"></span>
-            <span class="gallery__featured-icon" aria-hidden="true">
-              <app-media-icon [name]="featured.icon" />
-            </span>
-            <span class="gallery__featured-body">
-              <span class="gallery__featured-eyebrow">
+            <img
+              class="gallery__hero-image"
+              [src]="featured.image"
+              [alt]="'gallery.events.' + featured.i18nKey + '.name' | translate"
+            />
+            <div class="gallery__hero-overlay" aria-hidden="true"></div>
+            <div class="gallery__hero-content">
+              <span class="gallery__hero-eyebrow">
                 {{ 'gallery.featured_event' | translate }}
               </span>
-              <span class="gallery__featured-name">
+              <span class="gallery__hero-name">
                 {{ 'gallery.events.' + featured.i18nKey + '.name' | translate }}
               </span>
-              <span class="gallery__featured-date">
+              <span class="gallery__hero-date">
                 {{ 'gallery.events.' + featured.i18nKey + '.date' | translate }}
               </span>
-              <span class="gallery__featured-cta">
-                {{ 'gallery.view_photos' | translate }} →
+              <span class="gallery__hero-cta">
+                {{ 'gallery.view_photos' | translate }}
+                <span class="gallery__hero-arrow" aria-hidden="true">→</span>
               </span>
-            </span>
+            </div>
           </a>
 
-          <!-- Tira de eventos: marquee horizontal infinito -->
-          <div class="gallery__strip" aria-hidden="true">
-            <div class="gallery__strip-track">
+          <!-- Mosaico de miniaturas (todos los eventos como cards visuales) -->
+          <ul class="gallery__grid" role="list">
+            <li
+              *ngFor="let ev of config.mediaEvents; trackBy: trackByEvent; let i = index"
+              class="gallery__tile-wrapper"
+            >
               <a
-                *ngFor="let ev of config.mediaEvents.concat(config.mediaEvents); trackBy: trackByEvent; let i = index"
-                class="gallery__chip"
-                [class.is-featured]="i % config.mediaEvents.length === featuredEventIndex()"
+                class="gallery__tile"
+                [class.is-featured]="i === featuredEventIndex()"
                 [href]="ev.driveUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                tabindex="-1"
-                [style.--card-gradient]="eventGradient(ev)"
+                [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + ev.i18nKey + '.name' | translate)"
               >
-                <span class="gallery__chip-icon" aria-hidden="true">
-                  <app-media-icon [name]="ev.icon" />
-                </span>
-                <span class="gallery__chip-name">
+                <img
+                  class="gallery__tile-image"
+                  [src]="ev.image"
+                  [alt]="'gallery.events.' + ev.i18nKey + '.name' | translate"
+                  loading="lazy"
+                />
+                <div class="gallery__tile-shade" aria-hidden="true"></div>
+                <span class="gallery__tile-name">
                   {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
                 </span>
               </a>
-            </div>
-          </div>
+            </li>
+          </ul>
 
           <!-- CTA principal a la carpeta de Drive -->
           <a

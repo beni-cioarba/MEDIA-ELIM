@@ -18,7 +18,6 @@ import { SocialLink } from '../../core/social-link.model';
 import { YouTubeService } from '../../core/youtube.service';
 import { SocialIconComponent } from '../../shared/social-icon/social-icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
-import { MediaIconComponent } from '../../shared/media-icon/media-icon.component';
 
 /**
  * Pantalla principal de la web — pensada como una "diapositiva" estática
@@ -39,7 +38,6 @@ import { MediaIconComponent } from '../../shared/media-icon/media-icon.component
     TranslateModule,
     SocialIconComponent,
     LangSwitcherComponent,
-    MediaIconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',

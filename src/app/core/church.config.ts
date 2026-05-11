@@ -10,9 +10,9 @@ export interface MediaEvent {
   readonly id: string;
   /** Sub-clave dentro de `gallery.events.*` (name, date) en los JSON i18n. */
   readonly i18nKey: string;
-  /** Icono representativo (mapea a iconos en `MediaIconComponent`). */
-  readonly icon: 'baptism' | 'concert' | 'evangelism' | 'celebration' | 'youth' | 'gift' | 'star';
-  /** Gradient de fondo de la card [from, to]. */
+  /** Imagen representativa (ruta dentro de `assets/drive-media/`). */
+  readonly image: string;
+  /** Gradient de fondo de la card como tinte de color de marca [from, to]. */
   readonly gradient: readonly [string, string];
   /** URL pública directa a la subcarpeta de Drive. */
   readonly driveUrl: string;
@@ -88,13 +88,16 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   mediaGalleryUrl:
     'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
   // Eventos destacados ordenados aproximadamente por relevancia litúrgica.
-  // Editables sin tocar UI: añadir/quitar entradas se refleja en el carrusel
-  // de la galería automáticamente.
+  // Para añadir un nuevo evento manualmente:
+  //  1. Sube la imagen JPG/WebP a `src/assets/drive-media/`.
+  //  2. Añade aquí una entrada con `image` apuntando a la nueva ruta.
+  //  3. Añade los textos en `assets/i18n/ro.json` y `assets/i18n/es.json`
+  //     bajo `gallery.events.<i18nKey>` (campos `name` y `date`).
   mediaEvents: [
     {
       id: 'botez_2025_11_30',
       i18nKey: 'botez_2025_11_30',
-      icon: 'baptism',
+      image: 'assets/drive-media/botez_2025.jpg',
       gradient: ['#1e3a8a', '#3b82f6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -102,7 +105,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'concert_colinde_copii',
       i18nKey: 'concert_colinde_copii',
-      icon: 'youth',
+      image: 'assets/drive-media/concert_copii_2025.jpg',
       gradient: ['#7c3aed', '#ec4899'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -110,39 +113,23 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'concert_colinde_elim',
       i18nKey: 'concert_colinde_elim',
-      icon: 'concert',
+      image: 'assets/drive-media/concert_colinde_2025.jpg',
       gradient: ['#b45309', '#f59e0b'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
-    },
-    {
-      id: 'evanghelizare',
-      i18nKey: 'evanghelizare',
-      icon: 'evangelism',
-      gradient: ['#065f46', '#10b981'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
     },
     {
       id: 'seara_revelion',
       i18nKey: 'seara_revelion',
-      icon: 'celebration',
+      image: 'assets/drive-media/revelion_2025.jpg',
       gradient: ['#831843', '#f43f5e'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
-    },
-    {
-      id: 'talantul_in_negot_2026',
-      i18nKey: 'talantul_in_negot_2026',
-      icon: 'star',
-      gradient: ['#1e40af', '#06b6d4'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
     },
     {
       id: 'zambetul_din_cutie',
       i18nKey: 'zambetul_din_cutie',
-      icon: 'gift',
+      image: 'assets/drive-media/zambetul_cutie_2025.jpg',
       gradient: ['#9d174d', '#f472b6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
