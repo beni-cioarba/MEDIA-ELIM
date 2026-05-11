@@ -15,7 +15,15 @@ const OUTPUT_FILE = path.join(__dirname, '../src/assets/data/youtube.json');
 // Helper para hacer peticiones HTTPS
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
+    // Al añadir tu URL del frontend en el cabecero "Referer", 
+    // burlamos la restricción de Google Cloud. (Reemplaza con tu URL real si es distinta)
+    const options = {
+      headers: {
+        'Referer': 'https://beni-cioarba.github.io/MEDIA-ELIM/'
+      }
+    };
+    
+    https.get(url, options, (res) => {
       let data = '';
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
