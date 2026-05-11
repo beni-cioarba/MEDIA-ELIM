@@ -31,7 +31,7 @@
         >
           <a
             class="card__link"
-            [href]="link.url"
+            [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
             target="_blank"
             rel="noopener noreferrer"
             [attr.aria-label]="socialAria()[link.id]"
@@ -43,6 +43,14 @@
               <span class="card__name">
                 {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
                 <span class="card__username">{{ link.handle }}</span>
+                <span
+                  *ngIf="link.icon === 'youtube' && youtube.liveStream()"
+                  class="card__live"
+                  [attr.aria-label]="'streams.live_now' | translate"
+                >
+                  <span class="card__live-dot" aria-hidden="true"></span>
+                  {{ 'streams.live_now' | translate }}
+                </span>
               </span>
               <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
             </span>
@@ -50,6 +58,32 @@
           </a>
         </li>
       </ul>
+
+      <div
+        class="streams"
+        *ngIf="youtube.recentStreams().length > 0"
+        aria-labelledby="streams-title"
+      >
+        <h3 id="streams-title" class="streams__title">{{ 'streams.title' | translate }}</h3>
+        <ul class="streams__list">
+          <li
+            *ngFor="let v of youtube.recentStreams(); trackBy: trackByVideo"
+            class="streams__item"
+          >
+            <a
+              class="streams__link"
+              [href]="v.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="('streams.watch_video' | translate) + ': ' + v.title"
+              [title]="v.title"
+            >
+              <img class="streams__thumb" [src]="v.thumbnail" [alt]="v.title" loading="lazy" />
+              <span class="streams__caption">{{ v.title }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <aside class="qr" [attr.aria-label]="'qr.aria' | translate">

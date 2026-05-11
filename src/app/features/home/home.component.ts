@@ -14,6 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { PresentationService } from '../../core/presentation.service';
 import { SocialLink } from '../../core/social-link.model';
+import { YouTubeService } from '../../core/youtube.service';
 import { SocialIconComponent } from '../../shared/social-icon/social-icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
 
@@ -44,6 +45,7 @@ import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.
 export class HomeComponent implements OnInit {
   protected readonly config = inject(CHURCH_CONFIG);
   protected readonly presentation = inject(PresentationService);
+  protected readonly youtube = inject(YouTubeService);
   private readonly translate = inject(TranslateService);
 
   /** Reacciona ante cambios de idioma para recomputar etiquetas i18n. */
@@ -69,6 +71,7 @@ export class HomeComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.youtube.start();
     setInterval(() => {
       const total = this.config.socials.length;
       this.highlightedIndex.update((i) => (i + 1) % total);
@@ -100,6 +103,10 @@ export class HomeComponent implements OnInit {
   }
 
   protected trackBySocial(_: number, item: SocialLink): string {
+    return item.id;
+  }
+
+  protected trackByVideo(_: number, item: { id: string }): string {
     return item.id;
   }
 

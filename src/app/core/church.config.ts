@@ -12,6 +12,10 @@ export interface ChurchConfig {
   readonly logo: string;
   readonly youtubeChannelUrl: string;
   readonly youtubeStreamsUrl: string;
+  /** YouTube channel ID (UC...). Necesario para llamadas a YouTube Data API. */
+  readonly youtubeChannelId: string;
+  /** API Key restringida por HTTP referrer; segura para uso en cliente. */
+  readonly youtubeApiKey: string;
   /** URL pública canónica — fallback para el QR si no hay `window`. */
   readonly publicUrl: string;
   readonly socials: readonly SocialLink[];
@@ -23,6 +27,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   logo: 'assets/logo-elim.png',
   youtubeChannelUrl: 'https://www.youtube.com/@ElimArganda',
   youtubeStreamsUrl: 'https://www.youtube.com/@ElimArganda/streams',
+  youtubeChannelId: 'UCJqLlk6CS6uNtJWS5r-7P9g',
+  youtubeApiKey: 'AIzaSyCliQqAiyf0qZuKoOi76MbU-NOrQrDcCoA',
   publicUrl: 'https://beni-cioarba.github.io/MEDIA-ELIM/',
   socials: [
     {
