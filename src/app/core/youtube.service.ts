@@ -49,7 +49,9 @@ export class YouTubeService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(CHURCH_CONFIG);
 
-  private readonly jsonEndpoint = '/assets/data/youtube.json';
+  // Leemos desde la rama especial "youtube-data" alojada en publico por github de manera gratuita y cacheada por su CDN superrápida. 
+  // Esto desconecta un 100% tu base de código principal del script de youtube!
+  private readonly jsonEndpoint = 'https://raw.githubusercontent.com/beni-cioarba/MEDIA-ELIM/youtube-data/youtube.json';
   private readonly searchEndpoint = 'https://www.googleapis.com/youtube/v3/search';
   private readonly playlistEndpoint = 'https://www.googleapis.com/youtube/v3/playlistItems';
 

@@ -36,20 +36,21 @@ jobs:
           YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
         run: node scripts/fetch-youtube.js
 
-      - name: Comprobar cambios
-        id: check_changes
+      - name: Deploy silencioso a rama de datos independiente (Sin afectar a main)
         run: |
-          if [[ -n "$(git status --porcelain src/assets/data/youtube.json)" ]]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+          if [ -f "src/assets/data/youtube.json" ]; then
+            mkdir data_deploy
+            cp src/assets/data/youtube.json data_deploy/youtube.json
+            cd data_deploy
+            git init
+            git checkout -b youtube-data
+            git config user.name "Elim YouTube Bot"
+            git config user.email "bot@elim.ro"
+            git add youtube.json
+            git commit -m "Automated youtube data refresh"
+            # Guardamos el JSON en una rama paralela aislada para no ensuciar la principal
+            git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git youtube-data
           else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "❌ No se ha generado el archivo JSON"
+            exit 1
           fi
-
-      - name: Commit y push del archivo JSON generado
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config --global user.name "GitHub Action Bot"
-          git config --global user.email "action@github.com"
-          git add src/assets/data/youtube.json
-          git commit -m "chore(youtube): actualización automática del feed temporal [skip ci]"
-          git push origin HEAD
