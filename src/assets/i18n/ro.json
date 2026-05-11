@@ -39,11 +39,14 @@
     "aria": "Cod QR pentru a accesa această pagină"
   },
   "streams": {
-    "title": "Ultimele transmisiuni",
+    "title": "Transmisiuni",
+    "recent_title": "Ultimele transmisiuni",
     "subtitle": "Revezi ultimele servicii în direct de pe canalul nostru YouTube.",
     "watch_all": "Vezi toate transmisiunile",
     "watch_video": "Vezi videoclipul pe YouTube",
+    "watch_now": "Vezi acum",
     "live_now": "ÎN DIRECT",
+    "live_label": "Transmitem în direct acum",
     "empty": "Vom adăuga curând noi transmisiuni."
   },
   "presentation": {
@@ -51,6 +54,51 @@
     "exit": "Ieși",
     "tooltip_enter": "Ecran complet (F)",
     "tooltip_exit": "Ieși din ecran complet (F)"
+  },
+  "carousel": {
+    "label": "Carusel de conținut",
+    "prev": "Anterior (←)",
+    "next": "Următor (→)",
+    "pause": "Pauză (Spațiu)",
+    "play": "Reia (Spațiu)"
+  },
+  "gallery": {
+    "title": "Galerie Departamentul Media",
+    "subtitle": "Reveziti cele mai speciale momente ale bisericii: botezuri, concerte, evanghelizări și evenimente.",
+    "featured_event": "Eveniment recomandat",
+    "view_photos": "Vezi fotografii și clipuri",
+    "open_drive": "Deschide directorul public de fotografii",
+    "open_event": "Deschide evenimentul",
+    "events": {
+      "botez_2025_11_30": {
+        "name": "Botez",
+        "date": "30 noiembrie 2025"
+      },
+      "concert_colinde_copii": {
+        "name": "Concert de Colinde · Copii",
+        "date": "Decembrie 2025"
+      },
+      "concert_colinde_elim": {
+        "name": "Concert de Colinde · Elim",
+        "date": "Decembrie 2025"
+      },
+      "evanghelizare": {
+        "name": "Evanghelizare",
+        "date": "Evenimente speciale"
+      },
+      "seara_revelion": {
+        "name": "Seara de Revelion",
+        "date": "31 decembrie 2025"
+      },
+      "talantul_in_negot_2026": {
+        "name": "Talantul în Negoț 2026",
+        "date": "2026"
+      },
+      "zambetul_din_cutie": {
+        "name": "Zâmbetul din Cutie",
+        "date": "Campanie de caritate"
+      }
+    }
   },
   "lang": {
     "label": "Limbă",

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   HostListener,
   OnInit,
   computed,
@@ -17,6 +18,7 @@ import { SocialLink } from '../../core/social-link.model';
 import { YouTubeService } from '../../core/youtube.service';
 import { SocialIconComponent } from '../../shared/social-icon/social-icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
+import { MediaIconComponent } from '../../shared/media-icon/media-icon.component';
 
 /**
  * Pantalla principal de la web — pensada como una "diapositiva" estática
@@ -37,6 +39,7 @@ import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.
     TranslateModule,
     SocialIconComponent,
     LangSwitcherComponent,
+    MediaIconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
@@ -47,12 +50,45 @@ export class HomeComponent implements OnInit {
   protected readonly presentation = inject(PresentationService);
   protected readonly youtube = inject(YouTubeService);
   private readonly translate = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Reacciona ante cambios de idioma para recomputar etiquetas i18n. */
   private readonly langChange = toSignal(this.translate.onLangChange, { initialValue: null });
 
   /** Índice de la tarjeta resaltada actualmente (rota cada 4s). */
   protected readonly highlightedIndex = signal<number>(0);
+
+  /**
+   * Slide activo del carrusel lateral en modo presentación.
+   *  - 0 → bloque "Redes sociales"
+   *  - 1 → bloque "Transmisiones / EN DIRECTO"
+   *  - 2 → bloque "Galería del departamento de media"
+   * Se auto-rota cada `slideDurationMs` ms, salvo que el usuario lo
+   * pause manualmente con el botón de pausa o pulse `Espacio`.
+   */
+  protected readonly currentSlide = signal<0 | 1 | 2>(0);
+  protected readonly slidesCount = 3;
+  protected readonly slideDurationMs = 12_000;
+
+  /** Estado de pausa del carrusel (controlable manualmente). */
+  protected readonly isPaused = signal<boolean>(false);
+
+  /** Progreso (0-100) del slide actual hacia el siguiente. */
+  protected readonly slideProgress = signal<number>(0);
+
+  /** Etiquetas estáticas (i18n) para cada slide del carrusel. */
+  protected readonly slideTitles = [
+    'socials.section_title',
+    'streams.title',
+    'gallery.title',
+  ] as const;
+
+  /**
+   * Índice del evento destacado dentro del slide de galería. Rota
+   * automáticamente cada 3.5 s para dar dinamismo, sin afectar al
+   * carrusel principal.
+   */
+  protected readonly featuredEventIndex = signal<number>(0);
 
   /** URL final que se codifica en el QR. */
   protected readonly qrData = computed<string>(() => this.resolveQrUrl());
@@ -72,16 +108,89 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.youtube.start();
-    setInterval(() => {
+    const highlightTimer = setInterval(() => {
       const total = this.config.socials.length;
       this.highlightedIndex.update((i) => (i + 1) % total);
     }, 4_000);
+
+    // Sub-carrusel del slide de galería: rota el evento destacado.
+    const galleryTimer = setInterval(() => {
+      const total = this.config.mediaEvents.length;
+      if (total === 0) return;
+      this.featuredEventIndex.update((i) => (i + 1) % total);
+    }, 3_500);
+
+    // Auto-rotación del carrusel basada en `requestAnimationFrame` para que
+    // la barra de progreso sea fluida y se reinicie limpiamente al hacer
+    // pausa, navegación manual o cambio de slide.
+    let rafId = 0;
+    let lastTimestamp: number | null = null;
+    let elapsed = 0;
+    let lastObservedSlide = this.currentSlide();
+
+    const tick = (timestamp: number) => {
+      if (lastTimestamp == null) lastTimestamp = timestamp;
+      const delta = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+
+      // Reset si el slide cambió externamente (botones, dots, teclado).
+      const slide = this.currentSlide();
+      if (slide !== lastObservedSlide) {
+        lastObservedSlide = slide;
+        elapsed = 0;
+        this.slideProgress.set(0);
+      }
+
+      if (this.fullscreen() && !this.isPaused()) {
+        elapsed += delta;
+        const pct = Math.min(100, (elapsed / this.slideDurationMs) * 100);
+        this.slideProgress.set(pct);
+        if (elapsed >= this.slideDurationMs) {
+          elapsed = 0;
+          this.slideProgress.set(0);
+          this.next();
+        }
+      } else {
+        if (this.slideProgress() !== 0) this.slideProgress.set(0);
+        elapsed = 0;
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    this.destroyRef.onDestroy(() => {
+      clearInterval(highlightTimer);
+      clearInterval(galleryTimer);
+      cancelAnimationFrame(rafId);
+    });
+  }
+
+  protected setSlide(index: number): void {
+    if (index < 0 || index >= this.slidesCount) return;
+    this.currentSlide.set(index as 0 | 1 | 2);
+  }
+
+  protected next(): void {
+    this.currentSlide.update((i) => ((i + 1) % this.slidesCount) as 0 | 1 | 2);
+  }
+
+  protected prev(): void {
+    this.currentSlide.update(
+      (i) => ((i - 1 + this.slidesCount) % this.slidesCount) as 0 | 1 | 2
+    );
+  }
+
+  protected togglePause(): void {
+    this.isPaused.update((p) => !p);
   }
 
   /**
    * Atajos de teclado pensados para el portátil que controla la presentación:
-   *  - F: alterna pantalla completa.
-   *  - Esc: el navegador la cierra automáticamente.
+   *  - F           → alterna pantalla completa.
+   *  - Esc         → sale del modo simulado.
+   *  - ←  /  →     → navega entre slides del carrusel.
+   *  - Espacio     → pausa / reanuda el auto-avance.
+   *  - 1 / 2       → salta directamente al slide indicado.
    */
   @HostListener('window:keydown', ['$event'])
   handleKey(event: KeyboardEvent): void {
@@ -91,10 +200,42 @@ export class HomeComponent implements OnInit {
       return;
     }
     if (event.key === 'f' || event.key === 'F') {
-      // Evita interceptar combinaciones del navegador (Ctrl+F, etc.).
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       event.preventDefault();
       void this.presentation.toggle();
+      return;
+    }
+    // Controles del carrusel (sólo activos en modo presentación para no
+    // entorpecer la navegación normal del visitante en la web pública).
+    if (!this.fullscreen()) return;
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'PageDown':
+        event.preventDefault();
+        this.next();
+        break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        event.preventDefault();
+        this.prev();
+        break;
+      case ' ': // Espacio
+      case 'Spacebar':
+        event.preventDefault();
+        this.togglePause();
+        break;
+      case '1':
+        event.preventDefault();
+        this.setSlide(0);
+        break;
+      case '2':
+        event.preventDefault();
+        this.setSlide(1);
+        break;
+      case '3':
+        event.preventDefault();
+        this.setSlide(2);
+        break;
     }
   }
 
@@ -113,6 +254,15 @@ export class HomeComponent implements OnInit {
   protected gradient(link: SocialLink): string {
     const [from, to] = link.gradient;
     return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
+  }
+
+  protected eventGradient(event: { gradient: readonly [string, string] }): string {
+    const [from, to] = event.gradient;
+    return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
+  }
+
+  protected trackByEvent(_: number, item: { id: string }): string {
+    return item.id;
   }
 
   /**

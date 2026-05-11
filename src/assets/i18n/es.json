@@ -39,11 +39,14 @@
     "aria": "Código QR para acceder a esta página"
   },
   "streams": {
-    "title": "Últimas transmisiones",
+    "title": "Transmisiones",
+    "recent_title": "Últimas transmisiones",
     "subtitle": "Revive los últimos cultos en directo de nuestro canal de YouTube.",
     "watch_all": "Ver todas las transmisiones",
     "watch_video": "Ver el vídeo en YouTube",
+    "watch_now": "Ver ahora",
     "live_now": "EN DIRECTO",
+    "live_label": "Estamos transmitiendo en directo",
     "empty": "Pronto añadiremos nuevas transmisiones."
   },
   "presentation": {
@@ -51,6 +54,51 @@
     "exit": "Salir",
     "tooltip_enter": "Pantalla completa (F)",
     "tooltip_exit": "Salir de pantalla completa (F)"
+  },
+  "carousel": {
+    "label": "Carrusel de contenido",
+    "prev": "Anterior (←)",
+    "next": "Siguiente (→)",
+    "pause": "Pausar (Espacio)",
+    "play": "Reanudar (Espacio)"
+  },
+  "gallery": {
+    "title": "Galería Departamento Media",
+    "subtitle": "Revive los momentos más especiales de la iglesia: bautismos, conciertos, evangelizaciones y eventos.",
+    "featured_event": "Evento destacado",
+    "view_photos": "Ver fotos y vídeos",
+    "open_drive": "Abrir directorio público de fotos",
+    "open_event": "Abrir evento",
+    "events": {
+      "botez_2025_11_30": {
+        "name": "Bautismo",
+        "date": "30 noviembre 2025"
+      },
+      "concert_colinde_copii": {
+        "name": "Concierto de Villancicos · Niños",
+        "date": "Diciembre 2025"
+      },
+      "concert_colinde_elim": {
+        "name": "Concierto de Villancicos · Elim",
+        "date": "Diciembre 2025"
+      },
+      "evanghelizare": {
+        "name": "Evangelización",
+        "date": "Eventos especiales"
+      },
+      "seara_revelion": {
+        "name": "Velada de Fin de Año",
+        "date": "31 diciembre 2025"
+      },
+      "talantul_in_negot_2026": {
+        "name": "El Talento en el Negocio 2026",
+        "date": "2026"
+      },
+      "zambetul_din_cutie": {
+        "name": "La Sonrisa de la Caja",
+        "date": "Campaña solidaria"
+      }
+    }
   },
   "lang": {
     "label": "Idioma",

@@ -19,70 +19,210 @@
     <app-lang-switcher />
   </header>
 
-  <section class="content">
-    <div class="socials" aria-labelledby="socials-title">
-      <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
-      <ul class="socials__list">
-        <li
-          *ngFor="let link of config.socials; let i = index; trackBy: trackBySocial"
-          class="card"
-          [class.card--highlight]="highlightedIndex() === i"
-          [style.--card-gradient]="gradient(link)"
-        >
+  <section class="content" [class.content--carousel]="fullscreen()">
+    <div class="carousel" [attr.data-slide]="currentSlide()">
+      <!-- ============ Slide 1: Redes sociales ============ -->
+      <div
+        class="slide slide--socials"
+        [class.slide--active]="!fullscreen() || currentSlide() === 0"
+        [attr.aria-hidden]="fullscreen() && currentSlide() !== 0"
+      >
+        <div class="socials" aria-labelledby="socials-title">
+          <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
+          <ul class="socials__list">
+            <li
+              *ngFor="let link of config.socials; let i = index; trackBy: trackBySocial"
+              class="card"
+              [class.card--highlight]="highlightedIndex() === i"
+              [style.--card-gradient]="gradient(link)"
+            >
+              <a
+                class="card__link"
+                [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                [attr.aria-label]="socialAria()[link.id]"
+              >
+                <span class="card__icon" aria-hidden="true">
+                  <app-social-icon [name]="link.icon" />
+                </span>
+                <span class="card__body">
+                  <span class="card__name">
+                    {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
+                    <span class="card__username">{{ link.handle }}</span>
+                    <span
+                      *ngIf="link.icon === 'youtube' && youtube.liveStream()"
+                      class="card__live"
+                      [attr.aria-label]="'streams.live_now' | translate"
+                    >
+                      <span class="card__live-dot" aria-hidden="true"></span>
+                      {{ 'streams.live_now' | translate }}
+                    </span>
+                  </span>
+                  <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
+                </span>
+                <span class="card__cta" aria-hidden="true">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ============ Slide 2: Transmisiones + EN DIRECTO ============ -->
+      <div
+        class="slide slide--streams"
+        [class.slide--active]="!fullscreen() || currentSlide() === 1"
+        [attr.aria-hidden]="fullscreen() && currentSlide() !== 1"
+      >
+        <div class="broadcasts" aria-labelledby="broadcasts-title">
+          <h2 id="broadcasts-title" class="broadcasts__title">
+            {{ 'streams.title' | translate }}
+          </h2>
+
+          <!-- Tarjeta destacada cuando hay transmisión EN DIRECTO -->
           <a
-            class="card__link"
-            [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
+            *ngIf="youtube.liveStream() as live"
+            class="live-now"
+            [href]="live.url"
             target="_blank"
             rel="noopener noreferrer"
-            [attr.aria-label]="socialAria()[link.id]"
+            [attr.aria-label]="('streams.live_now' | translate) + ': ' + live.title"
           >
-            <span class="card__icon" aria-hidden="true">
-              <app-social-icon [name]="link.icon" />
+            <span class="live-now__badge">
+              <span class="live-now__dot" aria-hidden="true"></span>
+              {{ 'streams.live_now' | translate }}
             </span>
-            <span class="card__body">
-              <span class="card__name">
-                {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
-                <span class="card__username">{{ link.handle }}</span>
-                <span
-                  *ngIf="link.icon === 'youtube' && youtube.liveStream()"
-                  class="card__live"
-                  [attr.aria-label]="'streams.live_now' | translate"
-                >
-                  <span class="card__live-dot" aria-hidden="true"></span>
-                  {{ 'streams.live_now' | translate }}
-                </span>
-              </span>
-              <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
+            <img
+              class="live-now__thumb"
+              [src]="live.thumbnail"
+              [alt]="live.title"
+              loading="lazy"
+            />
+            <span class="live-now__body">
+              <span class="live-now__label">{{ 'streams.live_label' | translate }}</span>
+              <span class="live-now__title">{{ live.title }}</span>
+              <span class="live-now__cta">{{ 'streams.watch_now' | translate }} →</span>
             </span>
-            <span class="card__cta" aria-hidden="true">→</span>
           </a>
-        </li>
-      </ul>
 
-      <div
-        class="streams"
-        *ngIf="youtube.recentStreams().length > 0"
-        aria-labelledby="streams-title"
-      >
-        <h3 id="streams-title" class="streams__title">{{ 'streams.title' | translate }}</h3>
-        <ul class="streams__list">
-          <li
-            *ngFor="let v of youtube.recentStreams(); trackBy: trackByVideo"
-            class="streams__item"
+          <!-- Mensaje cuando no hay live ni vídeos -->
+          <p
+            *ngIf="!youtube.liveStream() && youtube.recentStreams().length === 0"
+            class="broadcasts__empty"
           >
-            <a
-              class="streams__link"
-              [href]="v.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              [attr.aria-label]="('streams.watch_video' | translate) + ': ' + v.title"
-              [title]="v.title"
-            >
-              <img class="streams__thumb" [src]="v.thumbnail" [alt]="v.title" loading="lazy" />
-              <span class="streams__caption">{{ v.title }}</span>
-            </a>
-          </li>
-        </ul>
+            {{ 'streams.empty' | translate }}
+          </p>
+
+          <!-- Últimas transmisiones (siempre visibles si existen) -->
+          <div
+            class="streams"
+            *ngIf="youtube.recentStreams().length > 0"
+            aria-labelledby="streams-title"
+          >
+            <h3 id="streams-title" class="streams__title">
+              {{ 'streams.recent_title' | translate }}
+            </h3>
+            <ul class="streams__list">
+              <li
+                *ngFor="let v of youtube.recentStreams(); trackBy: trackByVideo"
+                class="streams__item"
+              >
+                <a
+                  class="streams__link"
+                  [href]="v.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [attr.aria-label]="('streams.watch_video' | translate) + ': ' + v.title"
+                  [title]="v.title"
+                >
+                  <img class="streams__thumb" [src]="v.thumbnail" [alt]="v.title" loading="lazy" />
+                  <span class="streams__caption">{{ v.title }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ Slide 3: Galería del departamento de media ============ -->
+      <div
+        class="slide slide--gallery"
+        [class.slide--active]="!fullscreen() || currentSlide() === 2"
+        [attr.aria-hidden]="fullscreen() && currentSlide() !== 2"
+      >
+        <div class="gallery" aria-labelledby="gallery-title">
+          <h2 id="gallery-title" class="gallery__title">
+            {{ 'gallery.title' | translate }}
+          </h2>
+          <p class="gallery__subtitle">{{ 'gallery.subtitle' | translate }}</p>
+
+          <!-- Card destacada con auto-rotación entre eventos -->
+          <a
+            *ngIf="config.mediaEvents[featuredEventIndex()] as featured"
+            class="gallery__featured"
+            [href]="featured.driveUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            [style.--card-gradient]="eventGradient(featured)"
+            [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + featured.i18nKey + '.name' | translate)"
+          >
+            <span class="gallery__featured-bg" aria-hidden="true"></span>
+            <span class="gallery__featured-icon" aria-hidden="true">
+              <app-media-icon [name]="featured.icon" />
+            </span>
+            <span class="gallery__featured-body">
+              <span class="gallery__featured-eyebrow">
+                {{ 'gallery.featured_event' | translate }}
+              </span>
+              <span class="gallery__featured-name">
+                {{ 'gallery.events.' + featured.i18nKey + '.name' | translate }}
+              </span>
+              <span class="gallery__featured-date">
+                {{ 'gallery.events.' + featured.i18nKey + '.date' | translate }}
+              </span>
+              <span class="gallery__featured-cta">
+                {{ 'gallery.view_photos' | translate }} →
+              </span>
+            </span>
+          </a>
+
+          <!-- Tira de eventos: marquee horizontal infinito -->
+          <div class="gallery__strip" aria-hidden="true">
+            <div class="gallery__strip-track">
+              <a
+                *ngFor="let ev of config.mediaEvents.concat(config.mediaEvents); trackBy: trackByEvent; let i = index"
+                class="gallery__chip"
+                [class.is-featured]="i % config.mediaEvents.length === featuredEventIndex()"
+                [href]="ev.driveUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                tabindex="-1"
+                [style.--card-gradient]="eventGradient(ev)"
+              >
+                <span class="gallery__chip-icon" aria-hidden="true">
+                  <app-media-icon [name]="ev.icon" />
+                </span>
+                <span class="gallery__chip-name">
+                  {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <!-- CTA principal a la carpeta de Drive -->
+          <a
+            class="gallery__cta"
+            [href]="config.mediaGalleryUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 4a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ 'gallery.open_drive' | translate }}</span>
+            <span class="gallery__cta-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -101,6 +241,76 @@
       <p class="qr__caption">{{ 'qr.caption' | translate }}</p>
     </aside>
   </section>
+
+  <!-- Zona caliente invisible: SOLO esta franja inferior (a lo ancho de
+       toda la stage) dispara la aparición de los controles. Así nunca
+       interfieren con las tarjetas ni con el QR. -->
+  <div class="stage__hover-zone" *ngIf="fullscreen()" aria-hidden="true"></div>
+
+  <!-- Controles del carrusel — anclados a la stage para centrarse en
+       toda la pantalla, no en la columna izquierda. -->
+  <div class="stage__controls" *ngIf="fullscreen()" role="group" aria-label="Carrusel">
+    <button
+      type="button"
+      class="carousel__nav carousel__nav--prev"
+      (click)="prev()"
+      [attr.aria-label]="'carousel.prev' | translate"
+      [title]="'carousel.prev' | translate"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <div class="carousel__dots" role="tablist" [attr.aria-label]="'carousel.label' | translate">
+      <button
+        *ngFor="let _ of [0, 1, 2]; let i = index"
+        type="button"
+        class="carousel__dot"
+        [class.is-active]="currentSlide() === i"
+        [attr.aria-selected]="currentSlide() === i"
+        [attr.aria-label]="(slideTitles[i] | translate) + ' (' + (i + 1) + '/' + slidesCount + ')'"
+        role="tab"
+        (click)="setSlide(i)"
+      >
+        <span class="carousel__dot-bar" aria-hidden="true">
+          <span
+            class="carousel__dot-progress"
+            [style.width.%]="currentSlide() === i ? slideProgress() : 0"
+          ></span>
+        </span>
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="carousel__pause"
+      (click)="togglePause()"
+      [attr.aria-pressed]="isPaused()"
+      [attr.aria-label]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+      [title]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+    >
+      <svg *ngIf="!isPaused()" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
+        <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
+      </svg>
+      <svg *ngIf="isPaused()" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 5l12 7-12 7V5z" fill="currentColor" />
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      class="carousel__nav carousel__nav--next"
+      (click)="next()"
+      [attr.aria-label]="'carousel.next' | translate"
+      [title]="'carousel.next' | translate"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
 
   <footer class="bar">
     <p class="bar__verse">

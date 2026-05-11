@@ -37,6 +37,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   grid-template-rows: auto 1fr auto;
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: clamp(1.5rem, 4vw, 4rem) clamp(1.5rem, 5vw, 5rem);
   gap: clamp(1.5rem, 4vh, 3.5rem);
   overflow: hidden;
@@ -48,8 +49,11 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 
   &.is-fullscreen {
     height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
+    min-height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
     padding: clamp(1rem, 3vh, 2.5rem) clamp(1.5rem, 4vw, 4rem);
     gap: clamp(0.75rem, 2vh, 1.75rem);
     overflow: hidden;
@@ -151,10 +155,251 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   gap: clamp(2rem, 4vw, 5rem);
   align-items: center;
   align-content: center;
+  min-height: 0;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     align-content: start;
+  }
+}
+
+// En modo presentación, .content es un BLOQUE RESTRICTIVO: su altura
+// la dicta el grid track 1fr del .stage y NINGÚN hijo puede sobresalir.
+// El overflow: hidden actua de barrera definitiva por si el contenido
+// intrínseco intentara crecer (cards con muchas líneas, fuentes
+// grandes en rumano, etc.).
+.content--carousel {
+  align-items: stretch;
+  align-content: stretch;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+
+  // Cada columna (.carousel y .qr) también se confina a su celda.
+  > * {
+    min-height: 0;
+    min-width: 0;
+    max-height: 100%;
+    overflow: hidden;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Carrusel de la columna izquierda
+//   · Fuera de presentación: las slides se apilan verticalmente para que
+//     se vea todo el contenido en la web normal.
+//   · En presentación (.content--carousel): cada slide ocupa el mismo
+//     espacio (apiladas en el mismo "cell" via grid), y se alterna la
+//     visibilidad mediante opacidad + transform.
+// ---------------------------------------------------------------------
+.carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+  min-width: 0;
+}
+
+.slide {
+  min-width: 0;
+}
+
+.content--carousel .carousel {
+  // Apilamos slides en la misma celda usando grid 1x1.
+  display: grid;
+  grid-template-areas: 'stack';
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  // Importante: si por algun motivo el contenido del slide intenta
+  // crecer más de lo permitido, lo recortamos en vez de empujar la
+  // barra inferior. Así la "diapositiva" siempre respeta su contenedor.
+  overflow: hidden;
+
+  > .slide {
+    grid-area: stack;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease, visibility 0s linear 0.6s;
+    pointer-events: none;
+    align-self: stretch;
+    justify-self: stretch;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &.slide--active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+      transition: opacity 0.6s ease, transform 0.6s ease, visibility 0s linear 0s;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Zona caliente invisible para revelar los controles del carrusel.
+//   · Hijo directo de .stage → cubre todo el ancho de la pantalla.
+//   · Sólo la franja inferior (≈70-120px), no interfiere con tarjetas
+//     ni con el QR.
+// ---------------------------------------------------------------------
+.stage__hover-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(70px, 10vh, 120px);
+  z-index: 4;
+  pointer-events: auto;
+  background: transparent;
+}
+
+// ---------------------------------------------------------------------
+// Controles del carrusel — anclados a .stage, centrados respecto a TODA
+// la pantalla (no a la columna izquierda). PowerPoint-style: invisibles
+// hasta que el ratón entra en la franja inferior, algún control recibe
+// foco con teclado, o el carrusel está pausado.
+// ---------------------------------------------------------------------
+.stage__controls {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.5rem, 1.2vh, 1rem);
+  transform: translate(-50%, 8px);
+  z-index: 5;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.35rem, 0.8vw, 0.75rem);
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(11, 16, 32, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+
+  // Aparece SOLO al entrar en la franja inferior, en los propios
+  // controles, o al recibir foco con teclado.
+  .stage__hover-zone:hover ~ &,
+  &:hover,
+  &:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+
+  // Si el carrusel está pausado, los dejamos visibles como pista visual.
+  &:has(.carousel__pause[aria-pressed='true']) {
+    opacity: 0.85;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+}
+
+.carousel__nav,
+.carousel__pause {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(28px, 2.6vw, 36px);
+  height: clamp(28px, 2.6vw, 36px);
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(244, 241, 234, 0.85);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  svg {
+    width: 60%;
+    height: 60%;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    transform: scale(1.08);
+  }
+
+  &:active { transform: scale(0.94); }
+
+  &:focus-visible {
+    outline: 2px solid $color-gold;
+    outline-offset: 2px;
+  }
+}
+
+.carousel__pause[aria-pressed='true'] {
+  color: $color-gold-soft;
+}
+
+.carousel__dots {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 0.8vw, 0.75rem);
+}
+
+.carousel__dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  min-width: clamp(18px, 2.5vw, 32px);
+  padding: 0 0.25rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover { transform: translateY(-1px); }
+
+  &:focus-visible {
+    outline: 2px solid $color-gold;
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  &-bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    position: relative;
+    transition: height 0.25s ease, background 0.25s ease;
+  }
+
+  &-progress {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
+    border-radius: inherit;
+    transition: width 0.12s linear;
+  }
+
+  &.is-active {
+    .carousel__dot-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.32);
+      box-shadow: 0 0 14px rgba(230, 179, 90, 0.35);
+    }
   }
 }
 
@@ -322,7 +567,6 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 // Últimas transmisiones de YouTube (lista horizontal de miniaturas).
 // ---------------------------------------------------------------------
 .streams {
-  margin-top: clamp(0.85rem, 1.6vh, 1.5rem);
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -382,6 +626,387 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+}
+
+// ---------------------------------------------------------------------
+// Bloque "Transmisiones" (slide 2 del carrusel)
+// ---------------------------------------------------------------------
+.broadcasts {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.4rem);
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-muted;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: clamp(1rem, 2vh, 1.4rem) clamp(1.25rem, 2vw, 1.75rem);
+    border-radius: $radius-lg;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    color: $color-muted;
+    font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+    text-align: center;
+  }
+}
+
+// Tarjeta destacada cuando hay transmisión EN DIRECTO ahora mismo.
+.live-now {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(140px, 38%) 1fr;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: center;
+  padding: clamp(0.85rem, 1.5vh, 1.25rem);
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, rgba(255, 0, 51, 0.18), rgba(11, 18, 38, 0.45));
+  border: 1px solid rgba(255, 0, 51, 0.45);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 18px 48px rgba(255, 0, 51, 0.25), $shadow-card;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(255, 0, 51, 0.35), transparent 60%);
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  &:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 24px 60px rgba(255, 0, 51, 0.4), $shadow-card;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-gold;
+    outline-offset: 4px;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff0033, #b3001b);
+    color: #fff;
+    font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px rgba(255, 0, 51, 0.55);
+  }
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #fff;
+    animation: live-pulse 1.4s ease-out infinite;
+  }
+
+  &__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: $radius-md;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__label {
+    color: #ffd2dc;
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+  }
+
+  &__title {
+    color: #fff;
+    font-size: clamp(1.1rem, 1.6vw, 1.55rem);
+    font-weight: 600;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__cta {
+    margin-top: 0.25rem;
+    color: $color-gold-soft;
+    font-weight: 600;
+    font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Galería del Departamento de Media (slide 3 del carrusel)
+//   · Card destacada con auto-rotación entre eventos.
+//   · Marquee horizontal infinito de chips de eventos.
+//   · CTA principal hacia la carpeta pública de Drive.
+// ---------------------------------------------------------------------
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.5vh, 1.25rem);
+  min-height: 0;
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-muted;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  // ---- Card destacada ----
+  &__featured {
+    --card-gradient: linear-gradient(135deg, #444, #222);
+    position: relative;
+    display: grid;
+    grid-template-columns: clamp(80px, 12vw, 140px) 1fr;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    align-items: center;
+    padding: clamp(1rem, 2vh, 1.5rem) clamp(1.25rem, 2vw, 1.75rem);
+    border-radius: $radius-lg;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: $shadow-card;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.4s ease, border-color 0.4s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 4px;
+    }
+  }
+
+  &__featured-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--card-gradient);
+    opacity: 0.35;
+    z-index: -1;
+    transition: opacity 0.6s ease, transform 0.8s ease;
+    transform: scale(1.05);
+  }
+
+  &__featured:hover .gallery__featured-bg {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  &__featured-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(80px, 12vw, 140px);
+    height: clamp(80px, 12vw, 140px);
+    border-radius: $radius-md;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    padding: clamp(16px, 2vw, 28px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+                0 8px 22px rgba(0, 0, 0, 0.45);
+  }
+
+  &__featured-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+
+  &__featured-eyebrow {
+    color: $color-gold-soft;
+    font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+  }
+
+  &__featured-name {
+    color: #fff;
+    font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+    font-weight: 600;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__featured-date {
+    color: $color-muted;
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+  }
+
+  &__featured-cta {
+    margin-top: 0.4rem;
+    color: $color-gold-soft;
+    font-weight: 600;
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+  }
+
+  // ---- Marquee de chips ----
+  &__strip {
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    padding: 0.4rem 0;
+  }
+
+  &__strip-track {
+    display: flex;
+    gap: 0.6rem;
+    width: max-content;
+    animation: gallery-marquee 36s linear infinite;
+  }
+
+  &__strip:hover &__strip-track {
+    animation-play-state: paused;
+  }
+
+  &__chip {
+    --card-gradient: linear-gradient(135deg, #444, #222);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: $color-muted;
+    text-decoration: none;
+    font-size: clamp(0.78rem, 0.95vw, 0.95rem);
+    font-weight: 500;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease,
+                border-color 0.3s ease;
+    white-space: nowrap;
+    flex: 0 0 auto;
+
+    &-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--card-gradient);
+      color: #fff;
+      padding: 4px;
+    }
+
+    &.is-featured {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+  }
+
+  // ---- CTA Drive ----
+  &__cta {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, $color-gold, $color-gold-soft);
+    color: $color-bg-1;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 30px rgba(230, 179, 90, 0.35);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.3s ease;
+
+    svg { width: 20px; height: 20px; }
+
+    &:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 18px 38px rgba(230, 179, 90, 0.5);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 4px;
+    }
+
+    &-arrow {
+      transition: transform 0.3s ease;
+    }
+
+    &:hover &-arrow {
+      transform: translateX(4px);
+    }
+  }
+}
+
+@keyframes gallery-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 // ---------------------------------------------------------------------
@@ -529,54 +1154,212 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     display: none !important;
   }
 
-  // Auto-fit: el contenido ocupa exactamente el viewport, sin scroll.
+  // Layout vertical: header (auto) + contenido (1fr) + footer (auto).
+  // El minmax(0, 1fr) garantiza que el .content NO pueda crecer más
+  // allá del espacio sobrante — nunca empuja el footer hacia abajo.
+  grid-template-rows: auto minmax(0, 1fr) auto;
+
+  // Auto-fit estricto: el contenido ocupa exactamente el viewport y
+  // jamás puede salir de su celda (overflow:hidden). Sus hijos deben
+  // adaptarse a estas dimensiones, no al revés.
   .content {
     min-height: 0;
     height: 100%;
-    align-content: center;
-    align-items: center;
+    max-height: 100%;
+    overflow: hidden;
+    align-content: stretch;
+    align-items: stretch;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     gap: clamp(1.5rem, 5vw, 4.5rem);
   }
 
-  .socials {
+  .carousel {
     height: 100%;
-    justify-content: center;
-    gap: clamp(0.6rem, 1.2vh, 1.25rem);
+    min-height: 0;
+    align-self: stretch;
   }
 
-  .socials__title {
+  // El slide es un flex column con min-height:0 que permite que sus
+  // hijos (lista de cards / lista de streams) ocupen exactamente el
+  // espacio disponible sin desbordar.
+  .slide {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .socials {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    // Sin justify-content: center — con flex-start + flex:1 en la lista
+    // los hijos se reparten desde arriba y nada se desborda.
+    gap: clamp(0.5rem, 1.2vh, 1rem);
+  }
+
+  // La lista de cards crece y reparte EXACTAMENTE el alto disponible en
+  // 4 filas iguales — grid con minmax(0,1fr) ignora el min-content de
+  // las cards. Clave: flex-basis 0 + min-height 0 para que la altura
+  // del grid container venga del contenedor, NO del contenido.
+  .socials__list {
+    flex: 1 1 0;
+    height: 0;
+    min-height: 0;
+    display: grid;
+    grid-auto-rows: minmax(0, 1fr);
+    gap: clamp(0.4rem, 1vh, 0.85rem);
+    overflow: hidden;
+  }
+
+  .socials__list > .card {
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .socials__list > .card .card__link {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: clamp(0.4rem, 1vh, 0.9rem) clamp(1rem, 2vw, 1.75rem);
+    align-items: center;
+  }
+
+  .socials__title,
+  .broadcasts__title {
     font-size: clamp(1.2rem, 1.6vw, 1.7rem);
   }
 
-  .socials__list {
-    gap: clamp(0.6rem, 1.2vh, 1.25rem);
+  .broadcasts {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.6rem, 1.5vh, 1.25rem);
   }
 
-  .card__link {
-    padding: clamp(0.9rem, 2vh, 1.6rem) clamp(1.25rem, 2.5vw, 2.25rem);
+  // En el slide de transmisiones, la lista de v\u00eddeos recientes se
+  // ajusta tambi\u00e9n al espacio disponible sin desbordar.
+  .broadcasts .streams {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .broadcasts .streams__list {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  // Galería: ocupa toda la altura, featured-card crece, marquee y CTA
+  // se quedan abajo con tamaños proporcionales.
+  .gallery {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.6rem, 1.5vh, 1.25rem);
+  }
+
+  .gallery__title { font-size: clamp(1.2rem, 1.6vw, 1.7rem); }
+  .gallery__subtitle { font-size: clamp(0.95rem, 1.4vh, 1.2rem); }
+
+  .gallery__featured {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-columns: clamp(100px, 16vh, 200px) 1fr;
     gap: clamp(1.25rem, 2.5vw, 2.25rem);
   }
 
+  .gallery__featured-icon {
+    width: clamp(100px, 16vh, 200px);
+    height: clamp(100px, 16vh, 200px);
+    padding: clamp(20px, 3vh, 40px);
+  }
+
+  .gallery__featured-name { font-size: clamp(1.4rem, 3vh, 2.4rem); }
+  .gallery__featured-eyebrow { font-size: clamp(0.85rem, 1.2vh, 1.1rem); }
+  .gallery__featured-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
+  .gallery__featured-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
+
+  .gallery__chip { font-size: clamp(0.85rem, 1.2vh, 1rem); }
+  .gallery__cta { font-size: clamp(1rem, 1.4vh, 1.2rem); padding: 0.85rem 1.5rem; }
+
+  .live-now {
+    padding: clamp(1rem, 2vh, 1.5rem);
+    grid-template-columns: minmax(180px, 42%) 1fr;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .live-now__title {
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    -webkit-line-clamp: 2;
+  }
+
+  .live-now__label {
+    font-size: clamp(1rem, 1.2vw, 1.25rem);
+  }
+
+  .live-now__cta {
+    font-size: clamp(1.1rem, 1.4vw, 1.4rem);
+  }
+
+  .streams__title {
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
+  }
+
+  .streams__caption {
+    font-size: clamp(0.85rem, 1vw, 1.05rem);
+    -webkit-line-clamp: 2;
+  }
+
+  .socials__list {
+    gap: clamp(0.5rem, 1.2vh, 1rem);
+  }
+
+  .card__link {
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
   .card__icon {
-    width: clamp(64px, 6vw, 96px);
-    height: clamp(64px, 6vw, 96px);
+    width: clamp(36px, 4vh, 64px);
+    height: clamp(36px, 4vh, 64px);
+    padding: clamp(6px, 0.9vh, 12px);
+    flex-shrink: 0;
+  }
+
+  .card__body {
+    min-width: 0;
+    overflow: hidden;
   }
 
   .card__name {
-    font-size: clamp(1.4rem, 2vw, 2rem);
+    font-size: clamp(0.95rem, 1.9vh, 1.5rem);
+    line-height: 1.1;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .card__username {
-    font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+    font-size: clamp(0.8rem, 1.4vh, 1.15rem);
   }
 
   .card__handle {
-    font-size: clamp(1rem, 1.3vw, 1.35rem);
+    font-size: clamp(0.75rem, 1.2vh, 1rem);
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .brand__logo {
-    width: clamp(220px, 28vw, 460px);
+    width: clamp(140px, 18vh, 280px);
   }
 
   .qr {
@@ -591,15 +1374,209 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 
   .qr__frame ::ng-deep svg {
-    width: clamp(380px, 65vh, 800px) !important;
-    height: clamp(380px, 65vh, 800px) !important;
+    width: min(60vh, 92%) !important;
+    height: min(60vh, 92%) !important;
   }
 
   .qr__caption {
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    font-size: clamp(1rem, 2vh, 1.6rem);
   }
 
   .bar__verse {
-    font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+    font-size: clamp(0.95rem, 1.6vh, 1.35rem);
+  }
+
+  // Los controles del carrusel "flotan" sobre el contenido sin reservar
+  // espacio inferior, ya que est\u00e1n posicionados absolutos y son
+  // invisibles hasta que el usuario interact\u00fa con la zona.
+  .carousel { padding-bottom: 0; }
+}
+
+// =====================================================================
+// Responsive — escalado profundo para todos los tamaños de pantalla
+//   · ≥ 1600px : pantallas de proyector grandes / TV 4K
+//   · 1024 -> 1599 : escritorio estándar (layout 2 columnas)
+//   · 768 -> 1023  : tablet horizontal — el QR baja debajo
+//   · 480 -> 767   : móvil grande — todo a una columna, fuentes reducidas
+//   · ≤ 479px      : móvil pequeño — densidad máxima
+// =====================================================================
+
+// --- Pantallas muy grandes (proyectores/TV 4K) ------------------------
+@media (min-width: 1600px) {
+  .stage.is-fullscreen {
+    .live-now__title { font-size: clamp(2rem, 2.4vw, 2.6rem); }
+    .card__name      { font-size: clamp(1.8rem, 2.2vw, 2.4rem); }
+    .qr__frame ::ng-deep svg {
+      width: clamp(500px, 70vh, 900px) !important;
+      height: clamp(500px, 70vh, 900px) !important;
+    }
+  }
+}
+
+// --- Tablet/desktop pequeño (layout aún a 2 columnas con ajustes) -----
+@media (max-width: 1280px) and (min-width: 1025px) {
+  .stage.is-fullscreen .content {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+  .stage.is-fullscreen .qr__frame ::ng-deep svg {
+    width: clamp(300px, 55vh, 560px) !important;
+    height: clamp(300px, 55vh, 560px) !important;
+  }
+}
+
+// --- Tablet horizontal y dispositivos medianos -----------------------
+@media (max-width: 1024px) {
+  .stage {
+    padding: clamp(1rem, 3vw, 2rem);
+    gap: clamp(1rem, 3vh, 2rem);
+  }
+
+  .live-now {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .live-now__badge { position: relative; top: 0; left: 0; align-self: start; }
+
+  .streams__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // En tablet la barra inferior se vuelve compacta.
+  .stage.is-fullscreen {
+    .content {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto;
+    }
+    .qr { display: none; }
+    .carousel { padding-bottom: clamp(3rem, 6vh, 4rem); }
+  }
+}
+
+// --- Móvil grande -----------------------------------------------------
+@media (max-width: 768px) {
+  .stage {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .content {
+    gap: 1.5rem;
+  }
+
+  .card__link {
+    padding: 0.85rem 1rem;
+    gap: 0.85rem;
+  }
+
+  .card__icon {
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+  }
+
+  .card__name {
+    font-size: 1.05rem;
+    flex-wrap: wrap;
+  }
+
+  .card__cta { display: none; }
+
+  .live-now__title { font-size: 1.05rem; -webkit-line-clamp: 3; }
+  .live-now__label { font-size: 0.8rem; letter-spacing: 0.1em; }
+
+  .streams__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  // Fuera de presentación, el QR se hace más compacto.
+  .qr__frame ::ng-deep svg {
+    width: clamp(220px, 60vw, 320px) !important;
+    height: clamp(220px, 60vw, 320px) !important;
+  }
+
+  // Controles del carrusel: ocultamos los nav arrows si el viewport es
+  // muy pequeño y dejamos sólo los dots + pausa para no saturar.
+  .carousel__nav {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel__pause {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+// --- Móvil pequeño ----------------------------------------------------
+@media (max-width: 480px) {
+  .brand__logo {
+    width: clamp(120px, 40vw, 180px);
+  }
+
+  .socials__title,
+  .broadcasts__title {
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+  }
+
+  .streams__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .streams__caption { font-size: 0.7rem; }
+
+  .carousel__controls { gap: 0.4rem; }
+
+  .carousel__nav,
+  .carousel__pause {
+    width: 34px;
+    height: 34px;
+  }
+
+  .carousel__dot {
+    min-width: 24px;
+    padding: 0 0.3rem;
+  }
+}
+
+// --- Orientación landscape en pantallas bajas (proyectores/laptops) ---
+// Cuando la altura es muy reducida, comprimimos verticalmente para
+// garantizar que TODO el contenido entra sin scroll en presentación.
+@media (orientation: landscape) and (max-height: 720px) {
+  .stage.is-fullscreen {
+    padding: 0.75rem 1.5rem;
+    gap: 0.75rem;
+
+    .brand__logo { width: clamp(140px, 18vw, 240px); }
+    .socials__list { gap: 0.55rem; }
+    .card__link { padding: 0.75rem 1.2rem; }
+    .card__icon { width: 52px; height: 52px; padding: 10px; }
+    .card__name { font-size: 1.15rem; }
+    .card__handle { font-size: 0.9rem; }
+    .live-now__title { font-size: 1.2rem; }
+    .qr__frame ::ng-deep svg {
+      width: clamp(260px, 55vh, 460px) !important;
+      height: clamp(260px, 55vh, 460px) !important;
+    }
+    .carousel { padding-bottom: 3rem; }
+  }
+}
+
+// --- Soporte para usuarios que prefieren menos animación --------------
+@media (prefers-reduced-motion: reduce) {
+  .content--carousel .carousel > .slide,
+  .carousel__dot-progress,
+  .carousel__nav,
+  .carousel__pause,
+  .carousel__dot,
+  .card,
+  .card__icon,
+  .live-now,
+  .halo {
+    transition: none !important;
+    animation: none !important;
   }
 }
