@@ -61,8 +61,11 @@ export class YouTubeService {
   private readonly data$: Observable<YtStaticData | null>;
 
   constructor() {
-    // Polling del archivo JSON estático cada 60s
-    this.data$ = timer(0, 60_000).pipe(
+    // Polling del archivo JSON estático cada 5 minutos.
+    // El JSON es regenerado por GitHub Actions cada hora (los domingos cada 10 min)
+    // y se sirve a través del CDN de raw.githubusercontent.com con caché ~5 min,
+    // por lo que un polling agresivo no aporta nada y solo malgasta ancho de banda.
+    this.data$ = timer(0, 5 * 60_000).pipe(
       switchMap(() => this.fetchLocalData()),
       tap((data) => {
         if (data) {
@@ -80,10 +83,11 @@ export class YouTubeService {
   }
 
   private fetchLocalData(): Observable<YtStaticData | null> {
-    const cacheBuster = `?t=${new Date().getTime()}`;
-    return this.http.get<YtStaticData>(`${this.jsonEndpoint}${cacheBuster}`).pipe(
+    // Sin cache-buster: dejamos que el CDN de GitHub sirva la versión cacheada
+    // (TTL ~5 min). Esto reduce a la mitad el tiempo de carga inicial.
+    return this.http.get<YtStaticData>(this.jsonEndpoint).pipe(
       catchError((err) => {
-        console.warn('⚠️ Falló la Solución 3 (JSON estático). Aplicando PARCHE TÉCNICO de rescate con API directa.', err.message);
+        console.warn('⚠️ Falló el JSON estático de YouTube. Aplicando fallback con API directa.', err.message);
         return this.triggerApiFallback();
       })
     );

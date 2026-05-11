@@ -1,0 +1,40 @@
+{
+  "name": "Biserica ELIM Arganda",
+  "short_name": "ELIM Arganda",
+  "description": "Conectează-te cu Biserica ELIM Arganda: rețele sociale, transmisiuni live YouTube și galeria foto a Departamentului Media.",
+  "theme_color": "#060914",
+  "background_color": "#060914",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "lang": "ro",
+  "dir": "ltr",
+  "orientation": "any",
+  "categories": ["lifestyle", "social", "music"],
+  "icons": [
+    {
+      "src": "assets/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/pwa/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

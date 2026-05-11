@@ -104,5 +104,10 @@
     "label": "Limbă",
     "es": "Spaniolă",
     "ro": "Română"
+  },
+  "footer": {
+    "church": "Biserica ELIM Arganda",
+    "department": "Departamentul Media",
+    "rights": "Toate drepturile rezervate."
   }
 }

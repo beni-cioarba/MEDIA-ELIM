@@ -10,8 +10,10 @@ export interface MediaEvent {
   readonly id: string;
   /** Sub-clave dentro de `gallery.events.*` (name, date) en los JSON i18n. */
   readonly i18nKey: string;
-  /** Imagen representativa (ruta dentro de `assets/drive-media/`). */
+  /** Imagen representativa principal (1600px webp). */
   readonly image: string;
+  /** Variante miniatura (480px webp) para el grid del mosaico. */
+  readonly thumb: string;
   /** Gradient de fondo de la card como tinte de color de marca [from, to]. */
   readonly gradient: readonly [string, string];
   /** URL pública directa a la subcarpeta de Drive. */
@@ -97,7 +99,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'botez_2025_11_30',
       i18nKey: 'botez_2025_11_30',
-      image: 'assets/drive-media/botez_2025.jpg',
+      image: 'assets/drive-media/botez_2025.webp',
+      thumb: 'assets/drive-media/botez_2025-thumb.webp',
       gradient: ['#1e3a8a', '#3b82f6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -105,7 +108,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'concert_colinde_copii',
       i18nKey: 'concert_colinde_copii',
-      image: 'assets/drive-media/concert_copii_2025.jpg',
+      image: 'assets/drive-media/concert_copii_2025.webp',
+      thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
       gradient: ['#7c3aed', '#ec4899'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -113,7 +117,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'concert_colinde_elim',
       i18nKey: 'concert_colinde_elim',
-      image: 'assets/drive-media/concert_colinde_2025.jpg',
+      image: 'assets/drive-media/concert_colinde_2025.webp',
+      thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
       gradient: ['#b45309', '#f59e0b'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -121,7 +126,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'seara_revelion',
       i18nKey: 'seara_revelion',
-      image: 'assets/drive-media/revelion_2025.jpg',
+      image: 'assets/drive-media/revelion_2025.webp',
+      thumb: 'assets/drive-media/revelion_2025-thumb.webp',
       gradient: ['#831843', '#f43f5e'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -129,7 +135,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     {
       id: 'zambetul_din_cutie',
       i18nKey: 'zambetul_din_cutie',
-      image: 'assets/drive-media/zambetul_cutie_2025.jpg',
+      image: 'assets/drive-media/zambetul_cutie_2025.webp',
+      thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
       gradient: ['#9d174d', '#f472b6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',

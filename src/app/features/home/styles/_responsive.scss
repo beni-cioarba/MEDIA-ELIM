@@ -1,0 +1,170 @@
+// =====================================================================
+// Responsive — escalado profundo para todos los tamaños de pantalla
+//   · ≥ 1600px : pantallas de proyector grandes / TV 4K
+//   · 1024 -> 1599 : escritorio estándar (layout 2 columnas)
+//   · 768 -> 1023  : tablet horizontal — el QR baja debajo
+//   · 480 -> 767   : móvil grande — todo a una columna, fuentes reducidas
+//   · ≤ 479px      : móvil pequeño — densidad máxima
+// =====================================================================
+
+// --- Pantallas muy grandes (proyectores/TV 4K) ------------------------
+@media (min-width: 1600px) {
+  .stage.is-fullscreen {
+    .live-now__title { font-size: clamp(2rem, 2.4vw, 2.6rem); }
+    .card__name      { font-size: clamp(1.8rem, 2.2vw, 2.4rem); }
+  }
+}
+
+// --- Tablet/desktop pequeño (layout aún a 2 columnas con ajustes) -----
+@media (max-width: 1280px) and (min-width: 1025px) {
+  .stage.is-fullscreen .content {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+}
+
+// --- Tablet horizontal y dispositivos medianos -----------------------
+@media (max-width: 1024px) {
+  .stage {
+    padding: clamp(1rem, 3vw, 2rem);
+    gap: clamp(1rem, 3vh, 2rem);
+  }
+
+  .live-now {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .live-now__badge { position: relative; top: 0; left: 0; align-self: start; }
+
+  .streams__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // En tablet la barra inferior se vuelve compacta.
+  .stage.is-fullscreen {
+    .content {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto;
+    }
+    .qr { display: none; }
+    .carousel { padding-bottom: clamp(3rem, 6vh, 4rem); }
+  }
+}
+
+// --- Móvil grande -----------------------------------------------------
+@media (max-width: 768px) {
+  .stage {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .content {
+    gap: 1.5rem;
+  }
+
+  .card__link {
+    padding: 0.85rem 1rem;
+    gap: 0.85rem;
+  }
+
+  .card__icon {
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+  }
+
+  .card__name {
+    font-size: 1.05rem;
+    flex-wrap: wrap;
+  }
+
+  .card__cta { display: none; }
+
+  .live-now__title { font-size: 1.05rem; -webkit-line-clamp: 3; }
+  .live-now__label { font-size: 0.8rem; letter-spacing: 0.1em; }
+
+  .streams__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  // Controles del carrusel: ocultamos los nav arrows si el viewport es
+  // muy pequeño y dejamos sólo los dots + pausa para no saturar.
+  .carousel__nav {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel__pause {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+// --- Móvil pequeño ----------------------------------------------------
+@media (max-width: 480px) {
+  .brand__logo {
+    width: clamp(120px, 40vw, 180px);
+  }
+
+  .socials__title,
+  .broadcasts__title {
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+  }
+
+  .streams__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .streams__caption { font-size: 0.7rem; }
+
+  .carousel__controls { gap: 0.4rem; }
+
+  .carousel__nav,
+  .carousel__pause {
+    width: 34px;
+    height: 34px;
+  }
+
+  .carousel__dot {
+    min-width: 24px;
+    padding: 0 0.3rem;
+  }
+}
+
+// --- Orientación landscape en pantallas bajas (proyectores/laptops) ---
+// Cuando la altura es muy reducida, comprimimos verticalmente para
+// garantizar que TODO el contenido entra sin scroll en presentación.
+@media (orientation: landscape) and (max-height: 720px) {
+  .stage.is-fullscreen {
+    padding: 0.75rem 1.5rem;
+    gap: 0.75rem;
+
+    .brand__logo { width: clamp(140px, 18vw, 240px); }
+    .socials__list { gap: 0.55rem; }
+    .card__link { padding: 0.75rem 1.2rem; }
+    .card__icon { width: 52px; height: 52px; padding: 10px; }
+    .card__name { font-size: 1.15rem; }
+    .card__handle { font-size: 0.9rem; }
+    .live-now__title { font-size: 1.2rem; }
+    .carousel { padding-bottom: 3rem; }
+  }
+}
+
+// --- Soporte para usuarios que prefieren menos animación --------------
+@media (prefers-reduced-motion: reduce) {
+  .content--carousel .carousel > .slide,
+  .carousel__dot-progress,
+  .carousel__nav,
+  .carousel__pause,
+  .carousel__dot,
+  .card,
+  .card__icon,
+  .live-now,
+  .halo {
+    transition: none !important;
+    animation: none !important;
+  }
+}

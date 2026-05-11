@@ -8,8 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { QRCodeModule } from 'angularx-qrcode';
+import { NgOptimizedImage } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CHURCH_CONFIG } from '../../core/church.config';
@@ -18,6 +17,8 @@ import { SocialLink } from '../../core/social-link.model';
 import { YouTubeService } from '../../core/youtube.service';
 import { SocialIconComponent } from '../../shared/social-icon/social-icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
+import { QrPanelComponent } from '../../shared/qr-panel/qr-panel.component';
+import { FooterComponent } from '../../shared/footer/footer.component';
 
 /**
  * Pantalla principal de la web — pensada como una "diapositiva" estática
@@ -33,11 +34,12 @@ import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.
   selector: 'app-home',
   standalone: true,
   imports: [
-    CommonModule,
-    QRCodeModule,
+    NgOptimizedImage,
     TranslateModule,
     SocialIconComponent,
     LangSwitcherComponent,
+    QrPanelComponent,
+    FooterComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
@@ -106,21 +108,31 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.youtube.start();
+
+    // Resaltado rotatorio entre redes sociales: cambia cada 4s para que la
+    // pantalla "viva". Se pausa si la pestaña está oculta para no gastar CPU.
     const highlightTimer = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       const total = this.config.socials.length;
+      if (total === 0) return;
       this.highlightedIndex.update((i) => (i + 1) % total);
     }, 4_000);
 
     // Sub-carrusel del slide de galería: rota el evento destacado.
+    // Sólo se activa en modo presentación (donde el slide es visible) para
+    // evitar trabajo innecesario en la web pública estática.
     const galleryTimer = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      if (!this.fullscreen() || this.currentSlide() !== 2) return;
       const total = this.config.mediaEvents.length;
       if (total === 0) return;
       this.featuredEventIndex.update((i) => (i + 1) % total);
-    }, 3_500);
+    }, 4_000);
 
-    // Auto-rotación del carrusel basada en `requestAnimationFrame` para que
-    // la barra de progreso sea fluida y se reinicie limpiamente al hacer
-    // pausa, navegación manual o cambio de slide.
+    // Auto-rotación del carrusel basada en `requestAnimationFrame`.
+    // El loop se *detiene por completo* cuando no estamos en fullscreen o
+    // la pestaña está oculta — evita el lag observado al entrar en modo
+    // presentación (antes corría siempre, en paralelo a la transición CSS).
     let rafId = 0;
     let lastTimestamp: number | null = null;
     let elapsed = 0;
@@ -131,7 +143,6 @@ export class HomeComponent implements OnInit {
       const delta = timestamp - lastTimestamp;
       lastTimestamp = timestamp;
 
-      // Reset si el slide cambió externamente (botones, dots, teclado).
       const slide = this.currentSlide();
       if (slide !== lastObservedSlide) {
         lastObservedSlide = slide;
@@ -139,7 +150,12 @@ export class HomeComponent implements OnInit {
         this.slideProgress.set(0);
       }
 
-      if (this.fullscreen() && !this.isPaused()) {
+      const active =
+        this.fullscreen() &&
+        !this.isPaused() &&
+        !(typeof document !== 'undefined' && document.hidden);
+
+      if (active) {
         elapsed += delta;
         const pct = Math.min(100, (elapsed / this.slideDurationMs) * 100);
         this.slideProgress.set(pct);
@@ -148,18 +164,32 @@ export class HomeComponent implements OnInit {
           this.slideProgress.set(0);
           this.next();
         }
+        rafId = requestAnimationFrame(tick);
       } else {
         if (this.slideProgress() !== 0) this.slideProgress.set(0);
         elapsed = 0;
+        lastTimestamp = null;
+        rafId = 0;
       }
-      rafId = requestAnimationFrame(tick);
     };
-    rafId = requestAnimationFrame(tick);
+
+    // Arranca/para el rAF según cambia el modo presentación o la pausa.
+    const stateInterval = setInterval(() => {
+      const shouldRun =
+        this.fullscreen() &&
+        !this.isPaused() &&
+        !(typeof document !== 'undefined' && document.hidden);
+      if (shouldRun && rafId === 0) {
+        lastTimestamp = null;
+        rafId = requestAnimationFrame(tick);
+      }
+    }, 250);
 
     this.destroyRef.onDestroy(() => {
       clearInterval(highlightTimer);
       clearInterval(galleryTimer);
-      cancelAnimationFrame(rafId);
+      clearInterval(stateInterval);
+      if (rafId) cancelAnimationFrame(rafId);
     });
   }
 
@@ -241,14 +271,6 @@ export class HomeComponent implements OnInit {
     void this.presentation.toggle();
   }
 
-  protected trackBySocial(_: number, item: SocialLink): string {
-    return item.id;
-  }
-
-  protected trackByVideo(_: number, item: { id: string }): string {
-    return item.id;
-  }
-
   protected gradient(link: SocialLink): string {
     const [from, to] = link.gradient;
     return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
@@ -257,10 +279,6 @@ export class HomeComponent implements OnInit {
   protected eventGradient(event: { gradient: readonly [string, string] }): string {
     const [from, to] = event.gradient;
     return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
-  }
-
-  protected trackByEvent(_: number, item: { id: string }): string {
-    return item.id;
   }
 
   /**

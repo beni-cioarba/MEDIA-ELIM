@@ -104,5 +104,10 @@
     "label": "Idioma",
     "es": "Español",
     "ro": "Rumano"
+  },
+  "footer": {
+    "church": "Iglesia ELIM Arganda",
+    "department": "Departamento de Medios",
+    "rights": "Todos los derechos reservados."
   }
 }

@@ -1,25 +1,6 @@
-@use 'sass:color';
-
-// =====================================================================
-// Tokens de diseño — concentrados aquí para mantener consistencia
-// =====================================================================
-$color-bg-1: #060914;
-$color-bg-2: #0b1226;
-$color-surface: rgba(255, 255, 255, 0.06);
-$color-surface-strong: rgba(255, 255, 255, 0.1);
-$color-border: rgba(255, 255, 255, 0.12);
-$color-text: #f4f1ea;
-$color-muted: rgba(244, 241, 234, 0.7);
-$color-gold: #e6b35a;
-$color-gold-soft: #f6d28a;
-$color-blue-soft: #6aa9ff;
-
-$radius-xl: 32px;
-$radius-lg: 24px;
-$radius-md: 16px;
-
-$shadow-card: 0 16px 48px rgba(0, 0, 0, 0.55);
-$shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
+﻿@use 'sass:color';
+@use 'styles/tokens' as *;
+@use 'styles/responsive';
 
 // =====================================================================
 // Layout principal
@@ -153,8 +134,8 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
   gap: clamp(2rem, 4vw, 5rem);
-  align-items: center;
-  align-content: center;
+  align-items: start;
+  align-content: start;
   min-height: 0;
 
   @media (max-width: 1024px) {
@@ -163,10 +144,10 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 }
 
-// En modo presentación, .content es un BLOQUE RESTRICTIVO: su altura
-// la dicta el grid track 1fr del .stage y NINGÚN hijo puede sobresalir.
+// En modo presentaciÃ³n, .content es un BLOQUE RESTRICTIVO: su altura
+// la dicta el grid track 1fr del .stage y NINGÃšN hijo puede sobresalir.
 // El overflow: hidden actua de barrera definitiva por si el contenido
-// intrínseco intentara crecer (cards con muchas líneas, fuentes
+// intrÃ­nseco intentara crecer (cards con muchas lÃ­neas, fuentes
 // grandes en rumano, etc.).
 .content--carousel {
   align-items: stretch;
@@ -176,7 +157,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   min-height: 0;
   overflow: hidden;
 
-  // Cada columna (.carousel y .qr) también se confina a su celda.
+  // Cada columna (.carousel y .qr) tambiÃ©n se confina a su celda.
   > * {
     min-height: 0;
     min-width: 0;
@@ -187,9 +168,9 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 
 // ---------------------------------------------------------------------
 // Carrusel de la columna izquierda
-//   · Fuera de presentación: las slides se apilan verticalmente para que
+//   Â· Fuera de presentaciÃ³n: las slides se apilan verticalmente para que
 //     se vea todo el contenido en la web normal.
-//   · En presentación (.content--carousel): cada slide ocupa el mismo
+//   Â· En presentaciÃ³n (.content--carousel): cada slide ocupa el mismo
 //     espacio (apiladas en el mismo "cell" via grid), y se alterna la
 //     visibilidad mediante opacidad + transform.
 // ---------------------------------------------------------------------
@@ -215,8 +196,8 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   height: 100%;
   min-height: 0;
   // Importante: si por algun motivo el contenido del slide intenta
-  // crecer más de lo permitido, lo recortamos en vez de empujar la
-  // barra inferior. Así la "diapositiva" siempre respeta su contenedor.
+  // crecer mÃ¡s de lo permitido, lo recortamos en vez de empujar la
+  // barra inferior. AsÃ­ la "diapositiva" siempre respeta su contenedor.
   overflow: hidden;
 
   > .slide {
@@ -249,8 +230,8 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 
 // ---------------------------------------------------------------------
 // Zona caliente invisible para revelar los controles del carrusel.
-//   · Hijo directo de .stage → cubre todo el ancho de la pantalla.
-//   · Sólo la franja inferior (≈70-120px), no interfiere con tarjetas
+//   Â· Hijo directo de .stage â†’ cubre todo el ancho de la pantalla.
+//   Â· SÃ³lo la franja inferior (â‰ˆ70-120px), no interfiere con tarjetas
 //     ni con el QR.
 // ---------------------------------------------------------------------
 .stage__hover-zone {
@@ -265,10 +246,10 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 }
 
 // ---------------------------------------------------------------------
-// Controles del carrusel — anclados a .stage, centrados respecto a TODA
+// Controles del carrusel â€” anclados a .stage, centrados respecto a TODA
 // la pantalla (no a la columna izquierda). PowerPoint-style: invisibles
-// hasta que el ratón entra en la franja inferior, algún control recibe
-// foco con teclado, o el carrusel está pausado.
+// hasta que el ratÃ³n entra en la franja inferior, algÃºn control recibe
+// foco con teclado, o el carrusel estÃ¡ pausado.
 // ---------------------------------------------------------------------
 .stage__controls {
   position: absolute;
@@ -301,7 +282,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     transform: translate(-50%, 0);
   }
 
-  // Si el carrusel está pausado, los dejamos visibles como pista visual.
+  // Si el carrusel estÃ¡ pausado, los dejamos visibles como pista visual.
   &:has(.carousel__pause[aria-pressed='true']) {
     opacity: 0.85;
     pointer-events: auto;
@@ -433,14 +414,11 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   --card-gradient: linear-gradient(135deg, #444, #222);
   position: relative;
   border-radius: $radius-lg;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 0.4s ease,
+  transition: box-shadow 0.4s ease,
               border-color 0.4s ease,
               background 0.4s ease;
 
@@ -449,6 +427,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     content: '';
     position: absolute;
     inset: 0;
+    border-radius: inherit;
     background: var(--card-gradient);
     opacity: 0.03;
     transition: opacity 0.5s ease;
@@ -473,9 +452,9 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 
   &:hover,
   &--highlight {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
 
     &::before { opacity: 0.12; }
     &::after { opacity: 0.8; }
@@ -526,35 +505,49 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     min-width: 0;
-    gap: 0.15rem;
+    flex: 1 1 auto;
+    gap: 0.2rem;
+    overflow: hidden;
   }
 
   &__name {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
     font-weight: 600;
     letter-spacing: 0.01em;
-    flex-wrap: wrap;
     color: #fff;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   &__username {
-    font-size: clamp(0.95rem, 1.3vw, 1.15rem);
-    color: rgba(255, 255, 255, 0.8);
+    font-size: clamp(0.85rem, 1vw, 1rem);
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 500;
     font-family: 'Inter', system-ui, sans-serif;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.1rem 0.5rem;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.15rem 0.5rem;
     border-radius: 6px;
-    margin-left: 0.25rem;
-    backdrop-filter: blur(10px);
+    margin-left: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex-shrink: 1;
+    display: inline-block;
   }
 
   &__handle {
     color: rgba(255, 255, 255, 0.6);
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    font-size: clamp(0.85rem, 1vw, 0.95rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    width: 100%;
   }
 
   &__cta {
@@ -610,7 +603,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 }
 
 // ---------------------------------------------------------------------
-// Últimas transmisiones de YouTube (lista horizontal de miniaturas).
+// Ãšltimas transmisiones de YouTube (lista horizontal de miniaturas).
 // ---------------------------------------------------------------------
 .streams {
   display: flex;
@@ -703,7 +696,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 }
 
-// Tarjeta destacada cuando hay transmisión EN DIRECTO ahora mismo.
+// Tarjeta destacada cuando hay transmisiÃ³n EN DIRECTO ahora mismo.
 .live-now {
   position: relative;
   display: grid;
@@ -813,10 +806,10 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 }
 
 // ---------------------------------------------------------------------
-// Galería del Departamento de Media (slide 3 del carrusel)
-//   · Card destacada con auto-rotación entre eventos.
-//   · Marquee horizontal infinito de chips de eventos.
-//   · CTA principal hacia la carpeta pública de Drive.
+// GalerÃ­a del Departamento de Media (slide 3 del carrusel)
+//   Â· Card destacada con auto-rotaciÃ³n entre eventos.
+//   Â· Marquee horizontal infinito de chips de eventos.
+//   Â· CTA principal hacia la carpeta pÃºblica de Drive.
 // ---------------------------------------------------------------------
 .gallery {
   display: flex;
@@ -1030,54 +1023,13 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     bottom: 0;
     padding: 0.65rem 0.85rem;
     color: #fff;
-    font-size: clamp(0.8rem, 1vw, 0.95rem);
+    font-size: clamp(0.75rem, 0.95vw, 0.9rem);
     font-weight: 600;
     line-height: 1.25;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  // ---- CTA Drive ----
-  &__cta {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.65rem;
-    padding: 0.7rem 1.2rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, $color-gold, $color-gold-soft);
-    color: $color-bg-1;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
-    letter-spacing: 0.02em;
-    box-shadow: 0 12px 30px rgba(230, 179, 90, 0.35);
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-                box-shadow 0.3s ease;
-
-    svg { width: 20px; height: 20px; }
-
-    &:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 18px 38px rgba(230, 179, 90, 0.5);
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-gold;
-      outline-offset: 4px;
-    }
-
-    &-arrow {
-      transition: transform 0.3s ease;
-    }
-
-    &:hover &-arrow {
-      transform: translateX(4px);
-    }
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
@@ -1101,51 +1053,40 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
+  // Sticky: el QR queda anclado a la parte alta del viewport mientras
+  // el usuario hace scroll por el contenido principal.
+  position: sticky;
+  top: clamp(1rem, 3vh, 2.5rem);
+  align-self: start;
+  // Damos al aside una altura que ocupe el viewport (menos un margen)
+  // para que `aspect-ratio: 1 / 1` del frame interno calcule el cuadrado
+  // mÃ¡s grande posible. Usamos dvh para prevenir recÃ¡lculos al hacer scroll.
+  height: calc(100dvh - clamp(2rem, 6vh, 5rem));
+  max-height: calc(100dvh - clamp(2rem, 6vh, 5rem));
 
   @media (max-width: 1024px) {
+    // Una sola columna: ya no tiene sentido sticky.
+    position: static;
     padding: 1rem;
     max-width: 480px;
     margin: 0 auto;
+    height: auto;
+    max-height: none;
+    min-height: clamp(280px, 60vw, 420px);
   }
 
-  &__frame {
-    background: white;
-    padding: 14px;
+  &__placeholder {
+    width: clamp(220px, 28vw, 360px);
+    aspect-ratio: 1;
     border-radius: $radius-md;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-
-    &:hover {
-      transform: scale(1.05) translateY(-5px);
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
-    }
-
-    ::ng-deep svg {
-      display: block;
-      width: clamp(260px, 28vw, 440px) !important;
-      height: clamp(260px, 28vw, 440px) !important;
-      max-width: 100%;
-    }
+    background: linear-gradient(110deg, #ececec 30%, #f6f6f6 50%, #ececec 70%);
+    background-size: 200% 100%;
+    animation: qr-shimmer 1.4s linear infinite;
   }
 
-  &__caption {
-    margin: 0;
-    font-size: clamp(0.95rem, 1.1vw, 1.15rem);
-    font-weight: 500;
-    color: $color-muted;
-    letter-spacing: 0.02em;
-    text-align: center;
-  }
-
-  &__url {
-    margin: 0.5rem 0 0;
-    color: $color-gold-soft;
-    font-family: inherit;
-    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-    opacity: 0.9;
-    word-break: break-all;
-    text-align: center;
-    max-width: 100%;
+  @keyframes qr-shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
   }
 }
 
@@ -1232,13 +1173,13 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 
   // Layout vertical: header (auto) + contenido (1fr) + footer (auto).
-  // El minmax(0, 1fr) garantiza que el .content NO pueda crecer más
-  // allá del espacio sobrante — nunca empuja el footer hacia abajo.
+  // El minmax(0, 1fr) garantiza que el .content NO pueda crecer mÃ¡s
+  // allÃ¡ del espacio sobrante â€” nunca empuja el footer hacia abajo.
   grid-template-rows: auto minmax(0, 1fr) auto;
 
   // Auto-fit estricto: el contenido ocupa exactamente el viewport y
-  // jamás puede salir de su celda (overflow:hidden). Sus hijos deben
-  // adaptarse a estas dimensiones, no al revés.
+  // jamÃ¡s puede salir de su celda (overflow:hidden). Sus hijos deben
+  // adaptarse a estas dimensiones, no al revÃ©s.
   .content {
     min-height: 0;
     height: 100%;
@@ -1274,7 +1215,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 
   // Ahora evitamos estirar las tarjetas para que no se vean inmensas.
-  // Usamos flex en lugar de grid para mantener su tamaño natural elegante.
+  // Usamos flex en lugar de grid para mantener su tamaÃ±o natural elegante.
   .socials__list {
     display: flex;
     flex-direction: column;
@@ -1290,12 +1231,8 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
 
   .socials__list > .card {
     display: flex;
-    overflow: hidden;
-    flex-shrink: 0; // Evita que se encojan de más
-    // Evitar salto al hacer hover en presentación para no recortarse arriba
-    &:hover {
-      transform: translateY(-2px);
-    }
+    overflow: visible; // Soluciona el problema de que el text se oculte y cause glitch a los 5s
+    flex-shrink: 0; // Evita que se encojan de mÃ¡s
   }
 
   .socials__list > .card .card__link {
@@ -1320,7 +1257,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 
   .socials__list > .card .card__cta {
-    transform: scale(0.85); // Icono de flecha ligeramente más pequeño
+    transform: scale(0.85); // Icono de flecha ligeramente mÃ¡s pequeÃ±o
   }
 
   .socials__title,
@@ -1349,7 +1286,7 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 
-  // Galería: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
+  // GalerÃ­a: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
   .gallery {
     height: 100%;
     min-height: 0;
@@ -1385,8 +1322,6 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 
   .gallery__tile-name { font-size: clamp(0.75rem, 1vh, 0.95rem); }
-
-  .gallery__cta { font-size: clamp(1rem, 1.4vh, 1.2rem); padding: 0.85rem 1.5rem; }
 
   .live-now {
     padding: clamp(1rem, 2vh, 1.5rem);
@@ -1467,20 +1402,6 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     gap: clamp(1.5rem, 3vh, 2.5rem);
   }
 
-  .qr__frame {
-    padding: clamp(16px, 2.5vh, 32px);
-    border-radius: $radius-lg;
-  }
-
-  .qr__frame ::ng-deep svg {
-    width: min(60vh, 92%) !important;
-    height: min(60vh, 92%) !important;
-  }
-
-  .qr__caption {
-    font-size: clamp(1rem, 2vh, 1.6rem);
-  }
-
   .bar__verse {
     font-size: clamp(0.95rem, 1.6vh, 1.35rem);
   }
@@ -1491,191 +1412,3 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   .carousel { padding-bottom: 0; }
 }
 
-// =====================================================================
-// Responsive — escalado profundo para todos los tamaños de pantalla
-//   · ≥ 1600px : pantallas de proyector grandes / TV 4K
-//   · 1024 -> 1599 : escritorio estándar (layout 2 columnas)
-//   · 768 -> 1023  : tablet horizontal — el QR baja debajo
-//   · 480 -> 767   : móvil grande — todo a una columna, fuentes reducidas
-//   · ≤ 479px      : móvil pequeño — densidad máxima
-// =====================================================================
-
-// --- Pantallas muy grandes (proyectores/TV 4K) ------------------------
-@media (min-width: 1600px) {
-  .stage.is-fullscreen {
-    .live-now__title { font-size: clamp(2rem, 2.4vw, 2.6rem); }
-    .card__name      { font-size: clamp(1.8rem, 2.2vw, 2.4rem); }
-    .qr__frame ::ng-deep svg {
-      width: clamp(500px, 70vh, 900px) !important;
-      height: clamp(500px, 70vh, 900px) !important;
-    }
-  }
-}
-
-// --- Tablet/desktop pequeño (layout aún a 2 columnas con ajustes) -----
-@media (max-width: 1280px) and (min-width: 1025px) {
-  .stage.is-fullscreen .content {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
-    gap: clamp(1rem, 3vw, 2.5rem);
-  }
-  .stage.is-fullscreen .qr__frame ::ng-deep svg {
-    width: clamp(300px, 55vh, 560px) !important;
-    height: clamp(300px, 55vh, 560px) !important;
-  }
-}
-
-// --- Tablet horizontal y dispositivos medianos -----------------------
-@media (max-width: 1024px) {
-  .stage {
-    padding: clamp(1rem, 3vw, 2rem);
-    gap: clamp(1rem, 3vh, 2rem);
-  }
-
-  .live-now {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .live-now__badge { position: relative; top: 0; left: 0; align-self: start; }
-
-  .streams__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  // En tablet la barra inferior se vuelve compacta.
-  .stage.is-fullscreen {
-    .content {
-      grid-template-columns: 1fr;
-      grid-template-rows: 1fr auto;
-    }
-    .qr { display: none; }
-    .carousel { padding-bottom: clamp(3rem, 6vh, 4rem); }
-  }
-}
-
-// --- Móvil grande -----------------------------------------------------
-@media (max-width: 768px) {
-  .stage {
-    padding: 1rem;
-    gap: 1rem;
-  }
-
-  .content {
-    gap: 1.5rem;
-  }
-
-  .card__link {
-    padding: 0.85rem 1rem;
-    gap: 0.85rem;
-  }
-
-  .card__icon {
-    width: 48px;
-    height: 48px;
-    padding: 10px;
-  }
-
-  .card__name {
-    font-size: 1.05rem;
-    flex-wrap: wrap;
-  }
-
-  .card__cta { display: none; }
-
-  .live-now__title { font-size: 1.05rem; -webkit-line-clamp: 3; }
-  .live-now__label { font-size: 0.8rem; letter-spacing: 0.1em; }
-
-  .streams__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  // Fuera de presentación, el QR se hace más compacto.
-  .qr__frame ::ng-deep svg {
-    width: clamp(220px, 60vw, 320px) !important;
-    height: clamp(220px, 60vw, 320px) !important;
-  }
-
-  // Controles del carrusel: ocultamos los nav arrows si el viewport es
-  // muy pequeño y dejamos sólo los dots + pausa para no saturar.
-  .carousel__nav {
-    width: 36px;
-    height: 36px;
-  }
-
-  .carousel__pause {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-// --- Móvil pequeño ----------------------------------------------------
-@media (max-width: 480px) {
-  .brand__logo {
-    width: clamp(120px, 40vw, 180px);
-  }
-
-  .socials__title,
-  .broadcasts__title {
-    font-size: 0.95rem;
-    letter-spacing: 0.14em;
-  }
-
-  .streams__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.45rem;
-  }
-
-  .streams__caption { font-size: 0.7rem; }
-
-  .carousel__controls { gap: 0.4rem; }
-
-  .carousel__nav,
-  .carousel__pause {
-    width: 34px;
-    height: 34px;
-  }
-
-  .carousel__dot {
-    min-width: 24px;
-    padding: 0 0.3rem;
-  }
-}
-
-// --- Orientación landscape en pantallas bajas (proyectores/laptops) ---
-// Cuando la altura es muy reducida, comprimimos verticalmente para
-// garantizar que TODO el contenido entra sin scroll en presentación.
-@media (orientation: landscape) and (max-height: 720px) {
-  .stage.is-fullscreen {
-    padding: 0.75rem 1.5rem;
-    gap: 0.75rem;
-
-    .brand__logo { width: clamp(140px, 18vw, 240px); }
-    .socials__list { gap: 0.55rem; }
-    .card__link { padding: 0.75rem 1.2rem; }
-    .card__icon { width: 52px; height: 52px; padding: 10px; }
-    .card__name { font-size: 1.15rem; }
-    .card__handle { font-size: 0.9rem; }
-    .live-now__title { font-size: 1.2rem; }
-    .qr__frame ::ng-deep svg {
-      width: clamp(260px, 55vh, 460px) !important;
-      height: clamp(260px, 55vh, 460px) !important;
-    }
-    .carousel { padding-bottom: 3rem; }
-  }
-}
-
-// --- Soporte para usuarios que prefieren menos animación --------------
-@media (prefers-reduced-motion: reduce) {
-  .content--carousel .carousel > .slide,
-  .carousel__dot-progress,
-  .carousel__nav,
-  .carousel__pause,
-  .carousel__dot,
-  .card,
-  .card__icon,
-  .live-now,
-  .halo {
-    transition: none !important;
-    animation: none !important;
-  }
-}
