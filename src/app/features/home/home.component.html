@@ -179,16 +179,13 @@
             />
             <div class="gallery__hero-overlay" aria-hidden="true"></div>
             <div class="gallery__hero-content">
-              <span class="gallery__hero-eyebrow">
-                {{ 'gallery.featured_event' | translate }}
-              </span>
               <span class="gallery__hero-name">
                 {{ 'gallery.events.' + featured.i18nKey + '.name' | translate }}
               </span>
               <span class="gallery__hero-date">
                 {{ 'gallery.events.' + featured.i18nKey + '.date' | translate }}
               </span>
-              <span class="gallery__hero-cta">
+              <span class="gallery__hero-cta" *ngIf="!fullscreen()">
                 {{ 'gallery.view_photos' | translate }}
                 <span class="gallery__hero-arrow" aria-hidden="true">→</span>
               </span>
@@ -223,8 +220,9 @@
             </li>
           </ul>
 
-          <!-- CTA principal a la carpeta de Drive -->
+          <!-- CTA principal a la carpeta de Drive (oculto en modo presentación) -->
           <a
+            *ngIf="!fullscreen()"
             class="gallery__cta"
             [href]="config.mediaGalleryUrl"
             target="_blank"

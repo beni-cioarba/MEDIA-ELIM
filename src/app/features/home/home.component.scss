@@ -917,14 +917,6 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
     padding: clamp(1.25rem, 2.5vw, 2rem);
   }
 
-  &__hero-eyebrow {
-    color: $color-gold-soft;
-    font-size: clamp(0.7rem, 0.85vw, 0.9rem);
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-weight: 600;
-  }
-
   &__hero-name {
     color: #fff;
     font-size: clamp(1.4rem, 2.2vw, 2rem);
@@ -1378,7 +1370,6 @@ $shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
   }
 
   .gallery__hero-name { font-size: clamp(1.5rem, 3vh, 2.4rem); }
-  .gallery__hero-eyebrow { font-size: clamp(0.85rem, 1.2vh, 1.1rem); }
   .gallery__hero-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
   .gallery__hero-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
 
