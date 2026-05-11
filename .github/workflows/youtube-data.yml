@@ -1,0 +1,55 @@
+name: YouTube Auto-Fetcher
+
+on:
+  schedule:
+    # --- DOMINGOS (0): Intensivo en los 2 tramos horarios de culto ---
+    # Rango 1: 08:00 a 12:59 UTC (Engloba las 10:00 a 14:00 hora de España) -> Cada 10 minutos
+    - cron: '*/10 8-12 * * 0'
+    # Rango 2: 16:00 a 19:59 UTC (Engloba las 18:00 a 21:00 hora de España) -> Cada 10 minutos
+    - cron: '*/10 16-19 * * 0'
+    
+    # --- RESTO DEL TIEMPO (Lunes a Sábado, y madrugadas de domingo) ---
+    # Refresca 1 sola vez a la hora para ahorrar muchísima cuota.
+    - cron: '0 * * * 1-6'
+    - cron: '0 0-7,13-15,20-23 * * 0'
+
+  # Permite ejecutarlo manualmente desde GitHub Actions
+  workflow_dispatch:
+
+jobs:
+  fetch-youtube-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar script de YouTube (Consumiendo la cuota estrictamente)
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+        run: node scripts/fetch-youtube.js
+
+      - name: Comprobar cambios
+        id: check_changes
+        run: |
+          if [[ -n "$(git status --porcelain src/assets/data/youtube.json)" ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit y push del archivo JSON generado
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add src/assets/data/youtube.json
+          git commit -m "chore(youtube): actualización automática del feed temporal [skip ci]"
+          git push origin HEAD

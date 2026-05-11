@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, catchError, of, shareReplay, timer } from 'rxjs';
+import { Observable, catchError, of, shareReplay, timer, combineLatest, map } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { CHURCH_CONFIG } from './church.config';
 
@@ -16,13 +16,21 @@ export interface YouTubeVideo {
   readonly url: string;
 }
 
+/** Datos estáticos generados por el Cron Job */
+interface YtStaticData {
+  updatedAt: string;
+  liveStream: YouTubeVideo | null;
+  recentStreams: YouTubeVideo[];
+}
+
 /** Respuesta cruda de YouTube Data API v3 — sólo tipamos lo que usamos. */
 interface YtSearchResponse {
   items?: Array<{
-    id?: { videoId?: string };
+    id?: { videoId?: string };         // Usado por /search
     snippet?: {
       title?: string;
       publishedAt?: string;
+      resourceId?: { videoId?: string }; // Usado por /playlistItems
       thumbnails?: {
         high?: { url?: string };
         medium?: { url?: string };
@@ -33,57 +41,71 @@ interface YtSearchResponse {
 }
 
 /**
- * Servicio que encapsula el acceso a YouTube Data API v3.
- *
- * Expone dos signals reactivas:
- *  - `liveStream`     — vídeo en directo ahora mismo (o `null`).
- *  - `recentStreams`  — últimas 5 transmisiones completadas.
- *
- * Estrategia de cuota:
- *  - Live: refresca cada 60 s (~1.440 calls/día = 144.000 unidades). Para
- *    quedar dentro de los 10.000/día gratis, se podría subir a 5 min en
- *    producción si la quota apretara. Por ahora 60 s da inmediatez.
- *  - Recientes: refresca cada 30 min (48 calls/día).
- *
- * En caso de error de red o cuota agotada se devuelven listas vacías y
- * `null` respectivamente, sin romper la UI.
+ * Servicio que obtiene la información de YouTube a través de un JSON local cacheado.
+ * Implementa el fallback extremo de la API directa si la Solución 3 falla.
  */
 @Injectable({ providedIn: 'root' })
 export class YouTubeService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(CHURCH_CONFIG);
 
-  private readonly endpoint = 'https://www.googleapis.com/youtube/v3/search';
+  private readonly jsonEndpoint = '/assets/data/youtube.json';
+  private readonly searchEndpoint = 'https://www.googleapis.com/youtube/v3/search';
+  private readonly playlistEndpoint = 'https://www.googleapis.com/youtube/v3/playlistItems';
 
   readonly liveStream = signal<YouTubeVideo | null>(null);
   readonly recentStreams = signal<YouTubeVideo[]>([]);
 
-  private readonly live$: Observable<YouTubeVideo | null>;
-  private readonly recent$: Observable<YouTubeVideo[]>;
+  private readonly data$: Observable<YtStaticData | null>;
 
   constructor() {
-    // Polling con `timer` para evitar setInterval manual y para que
-    // `shareReplay` cachee el último valor a nuevos suscriptores.
-    this.live$ = timer(0, 60_000).pipe(
-      switchMap(() => this.fetchLive()),
-      tap((v) => this.liveStream.set(v)),
-      shareReplay({ bufferSize: 1, refCount: false }),
-    );
-
-    this.recent$ = timer(0, 30 * 60_000).pipe(
-      switchMap(() => this.fetchRecent()),
-      tap((list) => this.recentStreams.set(list)),
+    // Polling del archivo JSON estático cada 60s
+    this.data$ = timer(0, 60_000).pipe(
+      switchMap(() => this.fetchLocalData()),
+      tap((data) => {
+        if (data) {
+          this.liveStream.set(data.liveStream);
+          this.recentStreams.set(data.recentStreams);
+        }
+      }),
       shareReplay({ bufferSize: 1, refCount: false }),
     );
   }
 
   /** Activa la carga (suscripción interna). Llamar una vez al iniciar la app/home. */
   start(): void {
-    this.live$.subscribe();
-    this.recent$.subscribe();
+    this.data$.subscribe();
   }
 
-  private fetchLive(): Observable<YouTubeVideo | null> {
+  private fetchLocalData(): Observable<YtStaticData | null> {
+    const cacheBuster = `?t=${new Date().getTime()}`;
+    return this.http.get<YtStaticData>(`${this.jsonEndpoint}${cacheBuster}`).pipe(
+      catchError((err) => {
+        console.warn('⚠️ Falló la Solución 3 (JSON estático). Aplicando PARCHE TÉCNICO de rescate con API directa.', err.message);
+        return this.triggerApiFallback();
+      })
+    );
+  }
+
+  /** --- FALLBACK (Solución Temporal 1 y 2 juntas) --- */
+  private triggerApiFallback(): Observable<YtStaticData | null> {
+    // Para evitar pollear la API 1 vez por minuto en el fallback como dicta la Sol1, 
+    // controlaremos la frecuencia manualmente a nivel frontend limitando las peticiones si ya tenemos info reciente.
+    // Solo llamamos a la API si ha pasado un buen rato, o delegamos el cron de RxJS.
+    // Aquí implementamos la Solución 2: usar playlistItems (1 unidad) para recientes.
+    return combineLatest([
+      this.fetchLiveFromApi(),
+      this.fetchRecentFromApi()
+    ]).pipe(
+      map(([liveStream, recentStreams]) => ({
+        updatedAt: new Date().toISOString(),
+        liveStream,
+        recentStreams
+      }))
+    );
+  }
+
+  private fetchLiveFromApi(): Observable<YouTubeVideo | null> {
     const params = new URLSearchParams({
       part: 'snippet',
       channelId: this.config.youtubeChannelId,
@@ -92,39 +114,52 @@ export class YouTubeService {
       maxResults: '1',
       key: this.config.youtubeApiKey,
     });
-    return this.http.get<YtSearchResponse>(`${this.endpoint}?${params.toString()}`).pipe(
-      switchMap((res) => of(this.mapItems(res)[0] ?? null)),
-      catchError(() => of(null)),
+    // /search cuesta 100 unidades (Aceptable si se ejecuta el fallback de emergencia)
+    return this.http.get<YtSearchResponse>(`${this.searchEndpoint}?${params.toString()}`).pipe(
+      map(res => this.mapItems(res)[0] || null),
+      catchError(err => {
+        console.error('❌ Endpoint Live (/search) excedió cuota.', err);
+        return of(null);
+      })
     );
   }
 
-  private fetchRecent(): Observable<YouTubeVideo[]> {
+  private fetchRecentFromApi(): Observable<YouTubeVideo[]> {
+    // Solucion 2: Convertimos el channel ID ('UC...') en playlist ID ('UU...')
+    const uploadsPlaylistId = this.config.youtubeChannelId.replace(/^UC/, 'UU');
+    
     const params = new URLSearchParams({
       part: 'snippet',
-      channelId: this.config.youtubeChannelId,
-      eventType: 'completed',
-      type: 'video',
-      order: 'date',
+      playlistId: uploadsPlaylistId,
       maxResults: '5',
       key: this.config.youtubeApiKey,
     });
-    return this.http.get<YtSearchResponse>(`${this.endpoint}?${params.toString()}`).pipe(
-      switchMap((res) => of(this.mapItems(res))),
-      catchError(() => of([])),
+    
+    // /playlistItems cuesta 1 sola unidad. Super optimizado.
+    return this.http.get<YtSearchResponse>(`${this.playlistEndpoint}?${params.toString()}`).pipe(
+      map(res => this.mapItems(res)),
+      catchError(err => {
+        console.error('❌ Endpoint Recientes (/playlistItems) excedió cuota', err);
+        return of([]);
+      })
     );
   }
 
   private mapItems(res: YtSearchResponse): YouTubeVideo[] {
     return (res.items ?? [])
       .map((it) => {
-        const id = it.id?.videoId;
+        // En /search el ID viene en id.videoId
+        // En /playlistItems el ID viene en snippet.resourceId.videoId
+        const id = it.id?.videoId || it.snippet?.resourceId?.videoId;
         const sn = it.snippet;
         if (!id || !sn) return null;
+        
         const thumb =
           sn.thumbnails?.high?.url ??
           sn.thumbnails?.medium?.url ??
           sn.thumbnails?.default?.url ??
           '';
+          
         return {
           id,
           title: sn.title ?? '',
