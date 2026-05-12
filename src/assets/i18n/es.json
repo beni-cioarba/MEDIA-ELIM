@@ -105,6 +105,17 @@
     "es": "Español",
     "ro": "Rumano"
   },
+  "share": {
+    "button_label": "Compartir",
+    "button_aria": "Compartir esta página",
+    "button_title": "Compartir esta página",
+    "modal_title": "Comparte la página de la iglesia",
+    "message": "¡Conoce a la Iglesia Elim de Arganda del Rey!",
+    "close": "Cerrar",
+    "email": "Correo",
+    "copy": "Copiar enlace",
+    "copied": "¡Copiado!"
+  },
   "footer": {
     "church": "Iglesia ELIM Arganda",
     "department": "Departamento de Medios",

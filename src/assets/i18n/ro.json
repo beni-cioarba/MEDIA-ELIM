@@ -105,6 +105,17 @@
     "es": "Spaniolă",
     "ro": "Română"
   },
+  "share": {
+    "button_label": "Distribuie",
+    "button_aria": "Distribuie această pagină",
+    "button_title": "Distribuie această pagină",
+    "modal_title": "Distribuie pagina bisericii",
+    "message": "Descoperă Biserica Elim din Arganda del Rey!",
+    "close": "Închide",
+    "email": "E-mail",
+    "copy": "Copiază linkul",
+    "copied": "Copiat!"
+  },
   "footer": {
     "church": "Biserica ELIM Arganda",
     "department": "Departamentul Media",
