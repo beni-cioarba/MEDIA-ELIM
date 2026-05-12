@@ -314,9 +314,10 @@
             <p class="upcoming__empty">{{ 'upcoming.empty' | translate }}</p>
           } @else {
             <ul class="upcoming__list" role="list">
-              @for (ev of upcomingEventsView(); track ev.id; let first = $first) {
+              @for (ev of upcomingEventsView(); track ev.id; let first = $first; let i = $index) {
                 <li
                   class="upcoming__item"
+                  [style.--item-idx]="i"
                   [class.is-today]="ev.isToday"
                   [class.is-next]="first && !ev.isToday"
                 >

@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostListener,
   Input,
   computed,
   inject,
@@ -10,29 +9,17 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CalendarService } from '../../core/services/calendar.service';
 import { UpcomingEvent } from '../../core/church.config';
 
 /**
- * `CalendarSyncButtonComponent` — botón con menú emergente que permite:
- *   1. **Descargar `.ics`** — añade el evento (o todos) puntualmente.
- *   2. **Suscribirse webcal://** — el calendario del usuario se mantiene
- *      sincronizado automáticamente cuando se añadan nuevos eventos.
- *   3. **Añadir directo a Google Calendar** — disponible cuando se pasa
- *      un único evento (URL `calendar.google.com/render?...`).
- *
- * Antes de ejecutar la acción, muestra una **vista previa** (resumen)
- * con los eventos exactos que se sincronizarán: fecha, hora y título.
- *
- * Uso:
- *   <app-calendar-sync-button [event]="ev" />            ← evento individual
- *   <app-calendar-sync-button [events]="all" />          ← lote de eventos
- *   <app-calendar-sync-button [event]="ev" [iconOnly]="true" />
+ * `CalendarSyncButtonComponent` — botón con menú emergente usando Angular CDK.
  */
 @Component({
   selector: 'app-calendar-sync-button',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, OverlayModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="cal-sync" [class.cal-sync--icon-only]="iconOnly">
@@ -40,6 +27,8 @@ import { UpcomingEvent } from '../../core/church.config';
         type="button"
         class="cal-sync__btn"
         (click)="toggle($event)"
+        cdkOverlayOrigin
+        #trigger="cdkOverlayOrigin"
         [attr.aria-expanded]="open()"
         [attr.aria-haspopup]="'menu'"
         [attr.aria-label]="'calendar.add_to_calendar' | translate"
@@ -58,7 +47,15 @@ import { UpcomingEvent } from '../../core/church.config';
         }
       </button>
 
-      @if (open()) {
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="trigger"
+        [cdkConnectedOverlayOpen]="open()"
+        [cdkConnectedOverlayHasBackdrop]="true"
+        [cdkConnectedOverlayBackdropClass]="'cdk-overlay-transparent-backdrop'"
+        (backdropClick)="close()"
+        (detach)="close()"
+      >
         <div class="cal-sync__panel" role="menu" (click)="$event.stopPropagation()">
           <header class="cal-sync__panel-header">
             <span class="cal-sync__panel-title">{{ 'calendar.sync_title' | translate }}</span>
@@ -186,7 +183,7 @@ import { UpcomingEvent } from '../../core/church.config';
             <span>{{ 'calendar.webcal_note' | translate }}</span>
           </p>
         </div>
-      }
+      </ng-template>
     </div>
   `,
   styleUrl: './calendar-sync-button.component.scss',
@@ -219,13 +216,15 @@ export class CalendarSyncButtonComponent {
   }
 
   toggle(e: MouseEvent): void {
-    e.stopPropagation();
     this.open.update((v) => !v);
     this.toast.set(null);
   }
 
   close(): void {
-    this.open.set(false);
+    if (this.open()) {
+      this.toast.set(null);
+      this.open.set(false);
+    }
   }
 
   protected downloadAction(): void {
@@ -253,21 +252,6 @@ export class CalendarSyncButtonComponent {
     } catch {
       /* noop */
     }
-  }
-
-  /** Cierra el menú al hacer click fuera. */
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(e: MouseEvent): void {
-    if (!this.open()) return;
-    const target = e.target as Node | null;
-    if (target && this.host.nativeElement.contains(target)) return;
-    this.close();
-  }
-
-  /** Cierra el menú al pulsar Escape. */
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.open()) this.close();
   }
 
   protected formatShortDate(iso: string): string {
