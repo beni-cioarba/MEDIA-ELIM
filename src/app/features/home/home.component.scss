@@ -1147,11 +1147,12 @@
   &__list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 4px 4px 0;
     display: flex;
     flex-direction: column;
     gap: clamp(0.5rem, 0.9vh, 0.85rem);
     overflow-y: auto;
+    overflow-x: hidden;
     min-height: 0;
   }
 
@@ -1292,11 +1293,12 @@
   &__list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 4px 4px 12px 4px;
     display: flex;
     flex-direction: column;
     gap: clamp(0.75rem, 1.4vh, 1.2rem);
     overflow-y: auto;
+    overflow-x: hidden;
     min-height: 0;
   }
 
