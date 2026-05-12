@@ -19,8 +19,10 @@
     </a>
 
     <div class="brand__spacer"></div>
-    <app-share-button />
-    <app-lang-switcher />
+    @if (!fullscreen()) {
+      <app-share-button />
+      <app-lang-switcher />
+    }
   </header>
 
   <section class="content" [class.content--carousel]="fullscreen()">
