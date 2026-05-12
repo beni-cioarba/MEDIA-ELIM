@@ -232,7 +232,7 @@
       </div>
     </div>
 
-    <aside class="qr" [attr.aria-label]="'qr.aria' | translate">
+    <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
       @defer (on idle) {
         <app-qr-panel [data]="qrData()" />
       } @placeholder {
@@ -345,5 +345,6 @@
 
 <!-- Footer institucional (oculto en modo presentación a pantalla completa) -->
 @if (!fullscreen()) {
+  <app-floating-actions />
   <app-footer />
 }

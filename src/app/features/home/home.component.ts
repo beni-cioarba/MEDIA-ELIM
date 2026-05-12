@@ -20,6 +20,7 @@ import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.
 import { QrPanelComponent } from '../../shared/qr-panel/qr-panel.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
+import { FloatingActionsComponent } from '../../shared/floating-actions/floating-actions.component';
 
 /**
  * Pantalla principal de la web — pensada como una "diapositiva" estática
@@ -42,6 +43,7 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
     QrPanelComponent,
     FooterComponent,
     ShareButtonComponent,
+    FloatingActionsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
