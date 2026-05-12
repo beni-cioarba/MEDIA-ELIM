@@ -93,30 +93,37 @@
 
           <!-- Tarjeta destacada cuando hay transmisión EN DIRECTO -->
           @if (youtube.liveStream(); as live) {
-          <a
-            class="live-now"
-            [href]="live.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            [attr.aria-label]="('streams.live_now' | translate) + ': ' + live.title"
-          >
-            <span class="live-now__badge">
-              <span class="live-now__dot" aria-hidden="true"></span>
-              {{ 'streams.live_now' | translate }}
-            </span>
-            <img
-              class="live-now__thumb"
-              [src]="live.thumbnail"
-              [alt]="live.title"
-              loading="lazy"
-              decoding="async"
+          <div class="live-now-wrap">
+            <a
+              class="live-now"
+              [href]="live.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="('streams.live_now' | translate) + ': ' + live.title"
+            >
+              <span class="live-now__badge">
+                <span class="live-now__dot" aria-hidden="true"></span>
+                {{ 'streams.live_now' | translate }}
+              </span>
+              <img
+                class="live-now__thumb"
+                [src]="live.thumbnail"
+                [alt]="live.title"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="live-now__body">
+                <span class="live-now__label">{{ 'streams.live_label' | translate }}</span>
+                <span class="live-now__title">{{ live.title }}</span>
+                <span class="live-now__cta">{{ 'streams.watch_now' | translate }} →</span>
+              </span>
+            </a>
+            <app-share-button
+              class="live-now__share"
+              [url]="live.url"
+              [title]="live.title"
             />
-            <span class="live-now__body">
-              <span class="live-now__label">{{ 'streams.live_label' | translate }}</span>
-              <span class="live-now__title">{{ live.title }}</span>
-              <span class="live-now__cta">{{ 'streams.watch_now' | translate }} →</span>
-            </span>
-          </a>
+          </div>
           }
 
           <!-- Mensaje cuando no hay live ni vídeos -->
@@ -146,6 +153,11 @@
                   <img class="streams__thumb" [src]="v.thumbnail" [alt]="v.title" loading="lazy" decoding="async" />
                   <span class="streams__caption">{{ v.title }}</span>
                 </a>
+                <app-share-button
+                  class="streams__share"
+                  [url]="v.url"
+                  [title]="v.title"
+                />
               </li>
               }
             </ul>

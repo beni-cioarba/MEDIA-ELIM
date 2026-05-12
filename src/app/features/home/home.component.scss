@@ -628,7 +628,44 @@
     gap: 0.6rem;
   }
 
-  &__item { min-width: 0; }
+  &__item { min-width: 0; position: relative; }
+
+  &__share {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    ::ng-deep .share-btn {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 50%;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.65);
+      border-color: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    ::ng-deep .share-btn__icon {
+      width: 14px;
+      height: 14px;
+    }
+    ::ng-deep .share-btn__label {
+      display: none;
+    }
+
+    @media (hover: none) {
+      opacity: 1;
+    }
+  }
+
+  &__item:hover &__share,
+  &__item:focus-within &__share {
+    opacity: 1;
+  }
 
   &__link {
     display: flex;
@@ -697,6 +734,36 @@
 }
 
 // Tarjeta destacada cuando hay transmisiÃ³n EN DIRECTO ahora mismo.
+.live-now-wrap {
+  position: relative;
+}
+
+.live-now__share {
+  position: absolute;
+  top: clamp(0.5rem, 1vh, 0.85rem);
+  right: clamp(0.5rem, 1vw, 0.85rem);
+  z-index: 2;
+
+  ::ng-deep .share-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  ::ng-deep .share-btn__icon {
+    width: 16px;
+    height: 16px;
+  }
+  ::ng-deep .share-btn__label {
+    display: none;
+  }
+}
+
 .live-now {
   position: relative;
   display: grid;
