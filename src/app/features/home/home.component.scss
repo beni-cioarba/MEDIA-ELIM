@@ -1032,6 +1032,11 @@
     overflow: hidden;
     text-decoration: none;
     color: inherit;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+    margin: 0;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
     isolation: isolate;

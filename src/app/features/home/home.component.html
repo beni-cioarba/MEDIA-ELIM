@@ -215,17 +215,18 @@
           </a>
           }
 
-          <!-- Mosaico de miniaturas (todos los eventos como cards visuales) -->
-          <ul class="gallery__grid" role="list">
+          <!-- Mosaico de miniaturas (para seleccionar evento destacado y actuar de carrusel) -->
+          <ul class="gallery__grid" role="list" aria-label="Carrusel de eventos">
             @for (ev of config.mediaEvents; track ev.id; let i = $index) {
             <li class="gallery__tile-wrapper">
-              <a
+              <button
+                type="button"
                 class="gallery__tile"
                 [class.is-featured]="i === featuredEventIndex()"
-                [href]="ev.driveUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + ev.i18nKey + '.name' | translate)"
+                (click)="selectFeaturedEvent(i)"
+                [attr.aria-selected]="i === featuredEventIndex()"
+                role="tab"
+                [attr.aria-label]="'gallery.events.' + ev.i18nKey + '.name' | translate"
               >
                 <img
                   class="gallery__tile-image"
@@ -238,7 +239,7 @@
                 <span class="gallery__tile-name">
                   {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
                 </span>
-              </a>
+              </button>
             </li>
             }
           </ul>

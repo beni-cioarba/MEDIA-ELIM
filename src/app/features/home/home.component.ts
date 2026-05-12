@@ -110,6 +110,13 @@ export class HomeComponent implements OnInit {
     return out;
   });
 
+  /**
+   * Cambia el evento destacado actal de la galería.
+   */
+  selectFeaturedEvent(index: number) {
+    this.featuredEventIndex.set(index);
+  }
+
   ngOnInit(): void {
     this.youtube.start();
 
@@ -122,16 +129,17 @@ export class HomeComponent implements OnInit {
       this.highlightedIndex.update((i) => (i + 1) % total);
     }, 4_000);
 
-    // Sub-carrusel del slide de galería: rota el evento destacado.
-    // Sólo se activa en modo presentación (donde el slide es visible) para
-    // evitar trabajo innecesario en la web pública estática.
+    // Sub-carrusel del slide de galería: rota el evento destacado cada 4.5s.
+    // Si estamos en modo presentación, solo rota si el slide de galería (2) está activo.
+    // Si NO estamos en modo presentación, rota siempre (ya que todo está visible).
     const galleryTimer = setInterval(() => {
       if (typeof document !== 'undefined' && document.hidden) return;
-      if (!this.fullscreen() || this.currentSlide() !== 2) return;
+      if (this.fullscreen() && this.currentSlide() !== 2) return;
+      
       const total = this.config.mediaEvents.length;
       if (total === 0) return;
       this.featuredEventIndex.update((i) => (i + 1) % total);
-    }, 4_000);
+    }, 4_500);
 
     // Auto-rotación del carrusel basada en `requestAnimationFrame`.
     // El loop se *detiene por completo* cuando no estamos en fullscreen o
