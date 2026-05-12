@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  HostListener,
   Input,
   computed,
   inject,
@@ -221,10 +222,7 @@ export class CalendarSyncButtonComponent {
   }
 
   close(): void {
-    if (this.open()) {
-      this.toast.set(null);
-      this.open.set(false);
-    }
+    this.open.set(false);
   }
 
   protected downloadAction(): void {
@@ -252,6 +250,21 @@ export class CalendarSyncButtonComponent {
     } catch {
       /* noop */
     }
+  }
+
+  /** Cierra el menú al hacer click fuera. */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(e: MouseEvent): void {
+    if (!this.open()) return;
+    const target = e.target as Node | null;
+    if (target && this.host.nativeElement.contains(target)) return;
+    this.close();
+  }
+
+  /** Cierra el menú al pulsar Escape. */
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.open()) this.close();
   }
 
   protected formatShortDate(iso: string): string {
