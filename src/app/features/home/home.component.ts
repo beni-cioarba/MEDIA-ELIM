@@ -21,6 +21,7 @@ import { QrPanelComponent } from '../../shared/qr-panel/qr-panel.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
 import { FloatingActionsComponent } from '../../shared/floating-actions/floating-actions.component';
+import { CalendarSyncButtonComponent } from '../../shared/calendar-sync-button/calendar-sync-button.component';
 
 /**
  * Pantalla principal de la web — pensada como una "diapositiva" estática
@@ -44,6 +45,7 @@ import { FloatingActionsComponent } from '../../shared/floating-actions/floating
     FooterComponent,
     ShareButtonComponent,
     FloatingActionsComponent,
+    CalendarSyncButtonComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',

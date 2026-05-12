@@ -298,8 +298,16 @@
       >
         <section class="upcoming" aria-labelledby="upcoming-title">
           <header class="upcoming__header">
-            <h2 id="upcoming-title" class="upcoming__title">{{ 'upcoming.title' | translate }}</h2>
-            <p class="upcoming__subtitle">{{ 'upcoming.subtitle' | translate }}</p>
+            <div class="upcoming__heading">
+              <h2 id="upcoming-title" class="upcoming__title">{{ 'upcoming.title' | translate }}</h2>
+              <p class="upcoming__subtitle">{{ 'upcoming.subtitle' | translate }}</p>
+            </div>
+            @if (!fullscreen() && upcomingEventsView().length > 0) {
+              <app-calendar-sync-button
+                class="upcoming__sync-all"
+                [events]="upcomingEventsView()"
+              />
+            }
           </header>
 
           @if (upcomingEventsView().length === 0) {
@@ -366,6 +374,12 @@
                           </div>
                         }
                       </dl>
+                    }
+
+                    @if (!fullscreen()) {
+                      <div class="upcoming__actions">
+                        <app-calendar-sync-button [event]="ev" />
+                      </div>
                     }
                   </div>
                 </li>

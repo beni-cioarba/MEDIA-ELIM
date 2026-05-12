@@ -1259,8 +1259,23 @@
 
   &__header {
     display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__heading {
+    display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__sync-all {
+    flex-shrink: 0;
   }
 
   &__title {
@@ -1278,6 +1293,13 @@
     font-size: clamp(0.9rem, 1.1vw, 1.05rem);
     line-height: 1.45;
     max-width: 60ch;
+  }
+
+  &__actions {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   &__empty {

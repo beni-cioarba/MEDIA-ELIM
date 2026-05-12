@@ -100,6 +100,29 @@
       }
     }
   },
+  "calendar": {
+    "add_to_calendar": "Añadir al calendario",
+    "add_to_calendar_short": "Calendario",
+    "sync_title": "Sincroniza con tu calendario",
+    "sync_intro": "Añade los eventos a Google Calendar, Apple Calendar o Outlook — una sola vez o con actualizaciones automáticas.",
+    "close": "Cerrar",
+    "preview_title": "Lo que se añadirá",
+    "preview_empty": "No hay eventos disponibles.",
+    "preview_more": "+ {{n}} eventos más",
+    "option_google_title": "Añadir a Google Calendar",
+    "option_google_desc": "Abre Google con los datos rellenados — solo tienes que confirmar.",
+    "option_download_title": "Descargar archivo .ics",
+    "option_download_desc": "Funciona en Apple, Outlook y Google. Ábrelo y confirma la importación.",
+    "option_subscribe_title": "Suscribirse (actualizaciones automáticas)",
+    "option_subscribe_desc": "Tu calendario se actualiza solo cuando añadimos nuevos eventos.",
+    "toast_downloaded": "Archivo descargado ✨",
+    "toast_copied": "Enlace copiado — abre tu calendario y añádelo desde URL.",
+    "toast_copy_failed": "No se pudo copiar. Usa el botón de descarga.",
+    "webcal_note": "La suscripción webcal:// se actualiza automáticamente. Funciona en Apple Calendar (iOS, macOS) y Outlook. En Google Calendar: 'Otros calendarios' → 'Desde URL'.",
+    "calendar_name": "Iglesia Elim Arganda · Eventos",
+    "calendar_description": "Programa y eventos de la Iglesia Elim Arganda",
+    "location_default": "Iglesia Elim Arganda del Rey"
+  },
   "weekly": {
     "title": "Programa semanal",
     "subtitle": "Servicios fijos de la iglesia. ¡Te esperamos cada día!",

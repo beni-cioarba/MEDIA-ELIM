@@ -100,6 +100,29 @@
       }
     }
   },
+  "calendar": {
+    "add_to_calendar": "Adaugă în calendar",
+    "add_to_calendar_short": "Calendar",
+    "sync_title": "Sincronizează cu calendarul tău",
+    "sync_intro": "Adaugă evenimentele în Google Calendar, Apple Calendar sau Outlook — fie o singură dată, fie cu actualizări automate.",
+    "close": "Închide",
+    "preview_title": "Ce se va adăuga",
+    "preview_empty": "Nu sunt evenimente disponibile.",
+    "preview_more": "+ încă {{n}} evenimente",
+    "option_google_title": "Adaugă în Google Calendar",
+    "option_google_desc": "Deschide în Google cu detaliile completate — doar confirmi.",
+    "option_download_title": "Descarcă fișier .ics",
+    "option_download_desc": "Funcionează în Apple, Outlook și Google. Deschide-l și confirmă importul.",
+    "option_subscribe_title": "Abonează-te (actualizări automate)",
+    "option_subscribe_desc": "Calendarul tău se actualizează singur când adăugăm evenimente noi.",
+    "toast_downloaded": "Fișier descarcat ✨",
+    "toast_copied": "Link copiat — deschide calendarul și adaugă-l prin URL.",
+    "toast_copy_failed": "Nu s-a putut copia. Folosește butonul de descarcare.",
+    "webcal_note": "Suscrierea webcal:// se actualizează automat. Funcionează cu Apple Calendar (iOS, macOS) și Outlook. În Google Calendar: 'Alte calendare' → 'De la URL'.",
+    "calendar_name": "Biserica Elim Arganda · Evenimente",
+    "calendar_description": "Programare și evenimente Biserica Elim Arganda",
+    "location_default": "Biserica Elim Arganda del Rey"
+  },
   "weekly": {
     "title": "Programare săptămânală",
     "subtitle": "Serviciile fixe ale bisericii. Vă așteptăm în fiecare zi!",
