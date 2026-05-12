@@ -27,6 +27,53 @@ export interface MediaEvent {
  * permite a un no-desarrollador actualizar el contenido sin tocar plantillas.
  * Los textos visibles viven en `assets/i18n/*.json`.
  */
+/**
+ * Día de la semana (formato compatible con `Date.getDay()`):
+ * 0=Duminică, 1=Luni, 2=Marți, 3=Miercuri, 4=Joi, 5=Vineri, 6=Sâmbătă.
+ *
+ * Centralizar la representación en numérico permite calcular fácilmente
+ * "es hoy" sin depender del idioma activo.
+ */
+export type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+/**
+ * Slot de la programación semanal recurrente de la iglesia.
+ * Los textos visibles se mantienen en `church.config.ts` (no traducibles
+ * porque cada cuvant/predica es propia del servicio); las etiquetas UI
+ * (cabecera, badges) sí van por i18n.
+ */
+export interface WeeklyProgram {
+  readonly id: string;
+  readonly day: WeekDay;
+  /** Etiqueta del día tal como aparece (ej: "Luni", "Duminică"). */
+  readonly dayLabel: string;
+  /** Hora en formato libre (ej: "20:30" sau "10:00 & 18:00"). */
+  readonly time: string;
+  readonly title: string;
+  readonly description: string;
+}
+
+/**
+ * Evento puntual programat în viitor (botez, evanghelizare, conferință…).
+ * `date` se almacena como `YYYY-MM-DD` para permitir cálculos confiabili
+ * de "días restantes" sin parsing de zonas horarias.
+ */
+export interface UpcomingEvent {
+  readonly id: string;
+  /** ISO date `YYYY-MM-DD`. Se compara contra hoy para mostrar contador. */
+  readonly date: string;
+  /** Hora libre (ej: "10:00", "18:00"). */
+  readonly time: string;
+  readonly title: string;
+  readonly description: string;
+  /** Versículo bíblico representativ (opțional). */
+  readonly verse?: string;
+  /** Nombre del predicador / predica. */
+  readonly preacher?: string;
+  /** Nombre del responsabil de cantare/închinare. */
+  readonly worshipLead?: string;
+}
+
 export interface ChurchConfig {
   readonly logo: string;
   readonly youtubeChannelUrl: string;
@@ -42,6 +89,10 @@ export interface ChurchConfig {
   readonly mediaGalleryUrl: string;
   /** Eventos destacados del departamento de media. */
   readonly mediaEvents: readonly MediaEvent[];
+  /** Programación semanal recurrente (servicii religioase fixe). */
+  readonly weeklyProgram: readonly WeeklyProgram[];
+  /** Evenimente viitoare puntuale (botezuri, conferințe, etc.). */
+  readonly upcomingEvents: readonly UpcomingEvent[];
 }
 
 export const CHURCH_CONFIG = new InjectionToken<ChurchConfig>('CHURCH_CONFIG');
@@ -140,6 +191,91 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       gradient: ['#9d174d', '#f472b6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
+    },
+  ],
+  // ---------------------------------------------------------------------
+  // Programare săptămânală a serviciilor religioase fixe.
+  // El campo `day` sigue `Date.getDay()` (0=Duminică ... 6=Sâmbătă) para
+  // poder calcular "es hoy" sin parseo de strings.
+  // ---------------------------------------------------------------------
+  weeklyProgram: [
+    {
+      id: 'luni',
+      day: 1,
+      dayLabel: 'Luni',
+      time: '20:30',
+      title: 'Rugăciune și stăruință după Duhul Sfânt',
+      description: '',
+    },
+    {
+      id: 'marti',
+      day: 2,
+      dayLabel: 'Marți',
+      time: '20:30',
+      title: 'Învățătură · Studiu biblic',
+      description: '',
+    },
+    {
+      id: 'miercuri',
+      day: 3,
+      dayLabel: 'Miercuri',
+      time: '20:30',
+      title: 'Învățătură · Studiu biblic',
+      description: '',
+    },
+    {
+      id: 'joi',
+      day: 4,
+      dayLabel: 'Joi',
+      time: '20:30',
+      title: 'Rugăciune și învățătură',
+      description: '',
+    },
+    {
+      id: 'vineri',
+      day: 5,
+      dayLabel: 'Vineri',
+      time: '20:30',
+      title: 'Seară de tineret',
+      description: '',
+    },
+    {
+      id: 'duminica',
+      day: 0,
+      dayLabel: 'Duminică',
+      time: '10:00 & 18:00',
+      title: 'Închinare și învățătură',
+      description: '',
+    },
+  ],
+  // ---------------------------------------------------------------------
+  // Evenimente puntuale viitoare. Se muestran ordenados por proximidad
+  // y con un contador "faltan X días". El cálculo se hace en el componente
+  // (no aquí) para reaccionar a la fecha actual sin recargar la app.
+  // Formato `date`: ISO YYYY-MM-DD (sin hora, sin zona horaria).
+  // ---------------------------------------------------------------------
+  upcomingEvents: [
+    {
+      id: 'botez_2026_05_31',
+      date: '2026-05-31',
+      time: '10:00',
+      title: 'Botez Nou Testamental',
+      description: 'Luptele creștinilor în timpurile de azi',
+      verse:
+        'Faptele Apostolilor 2:38: „Pocăiți-vă, le-a zis Petru, și fiecare din voi să fie botezat în Numele lui Isus Hristos, spre iertarea păcatelor voastre; apoi veți primi darul Sfântului Duh.”',
+      preacher: 'Ioan Szaz',
+      worshipLead: 'Beni Cioarba',
+    },
+    {
+      id: 'evanghelizare_2026_06_07',
+      date: '2026-06-07',
+      time: '18:00',
+      title: 'Evanghelizare',
+      description:
+        'Cine ești tu omule — Prin botezul în moartea Lui, am fost îngropați împreună cu El, pentru ca, după cum Hristos a înviat din morți, prin slava Tatălui, tot așa și noi să trăim o viață nouă.',
+      verse: '',
+      preacher: 'Beni Cioarba',
+      worshipLead: 'Beni Cioarba',
     },
   ],
 };

@@ -64,14 +64,16 @@ export class HomeComponent implements OnInit {
 
   /**
    * Slide activo del carrusel lateral en modo presentación.
-   *  - 0 → bloque "Redes sociales"
-   *  - 1 → bloque "Transmisiones / EN DIRECTO"
-   *  - 2 → bloque "Galería del departamento de media"
+   *  - 0 → "Redes sociales"
+   *  - 1 → "Transmisiones / EN DIRECTO"
+   *  - 2 → "Galería del departamento de media"
+   *  - 3 → "Programare săptămânală"
+   *  - 4 → "Evenimente viitoare"
    * Se auto-rota cada `slideDurationMs` ms, salvo que el usuario lo
    * pause manualmente con el botón de pausa o pulse `Espacio`.
    */
-  protected readonly currentSlide = signal<0 | 1 | 2>(0);
-  protected readonly slidesCount = 3;
+  protected readonly currentSlide = signal<number>(0);
+  protected readonly slidesCount = 5;
   protected readonly slideDurationMs = 12_000;
 
   /** Estado de pausa del carrusel (controlable manualmente). */
@@ -85,7 +87,92 @@ export class HomeComponent implements OnInit {
     'socials.section_title',
     'streams.title',
     'gallery.title',
+    'weekly.title',
+    'upcoming.title',
   ] as const;
+
+  /** Indices del carrusel iterables în template (evita hardcode `[0,1,2]`). */
+  protected readonly slideIndexes = Array.from({ length: this.slidesCount }, (_, i) => i);
+
+  /**
+   * Reloj reactivo que se actualiza la 1 minut. Folosit pentru:
+   *   - calcular ziua curentă (highlight în programul săptămânal)
+   *   - recalcula "faltan X días" pentru evenimente viitoare
+   * Un singur signal evită multiple `setInterval` distribuite.
+   */
+  private readonly now = signal<number>(Date.now());
+
+  /** Ziua săptămânii curentă (0=Duminică ... 6=Sâmbătă). */
+  protected readonly currentWeekDay = computed<number>(() => {
+    return new Date(this.now()).getDay();
+  });
+
+  /**
+   * Programul săptămânal mutat astfel încât prima zi este astăzi.
+   * Acest reorder face ca slide-ul de prezentare să arate mereu "azi" primul,
+   * urmat de mâine etc. — mult mai relevant pentru audiența din biserică.
+   */
+  protected readonly weeklyProgramSorted = computed(() => {
+    const today = this.currentWeekDay();
+    const items = [...this.config.weeklyProgram];
+    // Sort: distance forward in week from today (0..6).
+    return items.sort((a, b) => {
+      const da = (a.day - today + 7) % 7;
+      const db = (b.day - today + 7) % 7;
+      return da - db;
+    });
+  });
+
+  /**
+   * Evenimente viitoare cu metadate calculate (zile rămase, este astăzi).
+   * Filtrează evenimentele trecute și le sortează cronologic.
+   */
+  protected readonly upcomingEventsView = computed(() => {
+    const today = this.startOfDay(new Date(this.now()));
+    return this.config.upcomingEvents
+      .map((ev) => {
+        const evDate = this.startOfDay(this.parseIsoDate(ev.date));
+        const diffMs = evDate.getTime() - today.getTime();
+        const daysLeft = Math.round(diffMs / 86_400_000);
+        return { ...ev, daysLeft, isToday: daysLeft === 0, isPast: daysLeft < 0 };
+      })
+      .filter((ev) => !ev.isPast)
+      .sort((a, b) => a.daysLeft - b.daysLeft);
+  });
+
+  /** Programul de astăzi (dacă există) — folosit pentru highlight "AZI". */
+  protected readonly todayProgram = computed(() => {
+    const today = this.currentWeekDay();
+    return this.config.weeklyProgram.find((p) => p.day === today) ?? null;
+  });
+
+  private startOfDay(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  private parseIsoDate(iso: string): Date {
+    // Format așteptat: YYYY-MM-DD. Construim local pentru a evita decalaje TZ.
+    const [y, m, d] = iso.split('-').map((n) => parseInt(n, 10));
+    return new Date(y, (m || 1) - 1, d || 1);
+  }
+
+  /**
+   * Returnează data formatată local (ex: "31 mai 2026") respectând limba activă.
+   */
+  protected formatEventDate(iso: string): string {
+    const date = this.parseIsoDate(iso);
+    const lang = this.translate.currentLang || this.translate.defaultLang || 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(date);
+    } catch {
+      return iso;
+    }
+  }
 
   /**
    * Índice del evento destacado dentro del slide de galería. Rota
@@ -197,26 +284,35 @@ export class HomeComponent implements OnInit {
       }
     }, 250);
 
+    // Reloj reactivo: actualiza `now()` cada minuto pentru ca "AZI" și
+    // contoarele "faltan X zile" să fie corecte chiar dacă pagina rămâne
+    // deschisă ore întregi (sau peste miezul nopții).
+    const clockTimer = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      this.now.set(Date.now());
+    }, 60_000);
+
     this.destroyRef.onDestroy(() => {
       clearInterval(highlightTimer);
       clearInterval(galleryTimer);
       clearInterval(stateInterval);
+      clearInterval(clockTimer);
       if (rafId) cancelAnimationFrame(rafId);
     });
   }
 
   protected setSlide(index: number): void {
     if (index < 0 || index >= this.slidesCount) return;
-    this.currentSlide.set(index as 0 | 1 | 2);
+    this.currentSlide.set(index);
   }
 
   protected next(): void {
-    this.currentSlide.update((i) => ((i + 1) % this.slidesCount) as 0 | 1 | 2);
+    this.currentSlide.update((i) => (i + 1) % this.slidesCount);
   }
 
   protected prev(): void {
     this.currentSlide.update(
-      (i) => ((i - 1 + this.slidesCount) % this.slidesCount) as 0 | 1 | 2
+      (i) => (i - 1 + this.slidesCount) % this.slidesCount
     );
   }
 
@@ -275,6 +371,14 @@ export class HomeComponent implements OnInit {
       case '3':
         event.preventDefault();
         this.setSlide(2);
+        break;
+      case '4':
+        event.preventDefault();
+        this.setSlide(3);
+        break;
+      case '5':
+        event.preventDefault();
+        this.setSlide(4);
         break;
     }
   }

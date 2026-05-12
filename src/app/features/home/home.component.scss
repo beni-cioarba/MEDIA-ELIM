@@ -1111,6 +1111,430 @@
 }
 
 // ---------------------------------------------------------------------
+// Programare săptămânală (slide 4)
+//   · Lista verticală cu zilele săptămânii.
+//   · Ziua curentă primește highlight (badge "AZI" + ramă aurie).
+// ---------------------------------------------------------------------
+.weekly {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.25rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-muted;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 0.9vh, 0.85rem);
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: minmax(110px, 22%) 1fr;
+    align-items: stretch;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    padding: clamp(0.75rem, 1.4vh, 1.1rem) clamp(0.9rem, 1.6vw, 1.25rem);
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+
+    &:hover {
+      transform: translateX(2px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    &.is-today {
+      background: linear-gradient(135deg,
+        rgba(230, 179, 90, 0.18),
+        rgba(230, 179, 90, 0.05));
+      border-color: rgba(230, 179, 90, 0.55);
+      box-shadow: 0 0 0 1px rgba(230, 179, 90, 0.25),
+                  0 14px 30px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  &__day {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding-right: clamp(0.5rem, 1vw, 1rem);
+  }
+
+  &__day-name {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 600;
+    color: $color-text;
+    letter-spacing: 0.02em;
+  }
+
+  &__today-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
+    color: #1a1300;
+    box-shadow: 0 4px 14px rgba(230, 179, 90, 0.4);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  &__time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: $color-gold-soft;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  &__item-title {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.3;
+    color: $color-text;
+  }
+
+  &__item-desc {
+    margin: 0;
+    color: $color-muted;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Evenimente viitoare (slide 5)
+//   · Card-uri cu contoare prominente "X zile".
+//   · Primul = "URMĂTORUL" (badge), iar dacă este azi → highlight live.
+// ---------------------------------------------------------------------
+.upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.25rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-muted;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: clamp(1.5rem, 3vh, 2.5rem);
+    text-align: center;
+    color: $color-muted;
+    font-style: italic;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: $radius-md;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.4vh, 1.2rem);
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: clamp(110px, 18%, 160px) 1fr;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    padding: clamp(1rem, 1.8vh, 1.4rem) clamp(1.1rem, 2vw, 1.6rem);
+    border-radius: $radius-lg;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &.is-next {
+      border-color: rgba(230, 179, 90, 0.45);
+      background: linear-gradient(135deg,
+        rgba(230, 179, 90, 0.12),
+        rgba(230, 179, 90, 0.02));
+    }
+
+    &.is-today {
+      border-color: rgba(255, 80, 80, 0.7);
+      background: linear-gradient(135deg,
+        rgba(255, 80, 80, 0.18),
+        rgba(255, 80, 80, 0.03));
+      box-shadow: 0 0 0 2px rgba(255, 80, 80, 0.25),
+                  0 18px 40px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  &__countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    border-radius: $radius-md;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    .is-next & {
+      background: linear-gradient(135deg, rgba(230, 179, 90, 0.25), rgba(230, 179, 90, 0.08));
+      border-color: rgba(230, 179, 90, 0.45);
+    }
+
+    .is-today & {
+      background: linear-gradient(135deg, rgba(255, 80, 80, 0.3), rgba(255, 80, 80, 0.08));
+      border-color: rgba(255, 80, 80, 0.55);
+    }
+  }
+
+  &__count-num {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: $color-text;
+    letter-spacing: -0.02em;
+
+    .is-today & {
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ffd6d6;
+    }
+  }
+
+  &__count-label {
+    margin-top: 0.3rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: $color-muted;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: $color-gold-soft;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__date {
+    text-transform: capitalize;
+    font-weight: 500;
+  }
+
+  &__time { color: $color-muted; }
+
+  &__next-badge {
+    display: inline-flex;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
+    color: #1a1300;
+  }
+
+  &__today-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: rgba(255, 80, 80, 0.85);
+    color: white;
+  }
+
+  &__live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    animation: upcoming-pulse 1.6s infinite;
+  }
+
+  &__item-title {
+    margin: 0;
+    font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+    font-weight: 500;
+    line-height: 1.25;
+    color: $color-text;
+  }
+
+  &__item-desc {
+    margin: 0;
+    color: $color-muted;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  &__verse {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid $color-gold;
+    background: rgba(230, 179, 90, 0.06);
+    border-radius: 0 $radius-md $radius-md 0;
+    color: $color-text;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-style: italic;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  &__verse-icon {
+    color: $color-gold;
+    font-size: 1rem;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+
+  &__credits {
+    margin: 0.25rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  &__credit {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    dt {
+      margin: 0;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: $color-muted;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.95rem;
+      color: $color-text;
+      font-weight: 500;
+    }
+  }
+}
+
+@keyframes upcoming-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+// Responsive: pe ecrane înguste, item-urile devin verticale
+@media (max-width: 720px) {
+  .weekly__item,
+  .upcoming__item {
+    grid-template-columns: 1fr;
+  }
+
+  .weekly__day {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-right: 0;
+    padding-bottom: 0.5rem;
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+
+  .upcoming__countdown {
+    flex-direction: row;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+// ---------------------------------------------------------------------
 // Bloque QR
 // ---------------------------------------------------------------------
 .qr {

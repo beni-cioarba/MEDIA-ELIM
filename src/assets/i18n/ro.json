@@ -100,6 +100,22 @@
       }
     }
   },
+  "weekly": {
+    "title": "Programare săptămânală",
+    "subtitle": "Serviciile fixe ale bisericii. Vă așteptăm în fiecare zi!",
+    "today": "AZI"
+  },
+  "upcoming": {
+    "title": "Evenimente viitoare",
+    "subtitle": "Botezuri, evanghelizări, conferințe și alte momente speciale.",
+    "empty": "Nu sunt evenimente programate în momentul de față.",
+    "next": "URMĂTORUL",
+    "today": "ESTE AZI",
+    "day_left": "zi rămasă",
+    "days_left": "zile rămase",
+    "preacher": "Cuvânt",
+    "worship": "Închinare"
+  },
   "lang": {
     "label": "Limbă",
     "es": "Spaniolă",

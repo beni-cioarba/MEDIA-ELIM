@@ -100,6 +100,22 @@
       }
     }
   },
+  "weekly": {
+    "title": "Programa semanal",
+    "subtitle": "Servicios fijos de la iglesia. ¡Te esperamos cada día!",
+    "today": "HOY"
+  },
+  "upcoming": {
+    "title": "Próximos eventos",
+    "subtitle": "Bautismos, evangelizaciones, conferencias y otros momentos especiales.",
+    "empty": "No hay eventos programados por el momento.",
+    "next": "PRÓXIMO",
+    "today": "ES HOY",
+    "day_left": "día restante",
+    "days_left": "días restantes",
+    "preacher": "Predica",
+    "worship": "Alabanza"
+  },
   "lang": {
     "label": "Idioma",
     "es": "Español",

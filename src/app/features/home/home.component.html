@@ -245,6 +245,135 @@
           </ul>
         </div>
       </div>
+
+      <!-- ============ Slide 4: Programare săptămânală ============ -->
+      <div
+        class="slide slide--weekly"
+        [class.slide--active]="!fullscreen() || currentSlide() === 3"
+        [attr.aria-hidden]="fullscreen() && currentSlide() !== 3"
+      >
+        <section class="weekly" aria-labelledby="weekly-title">
+          <header class="weekly__header">
+            <h2 id="weekly-title" class="weekly__title">{{ 'weekly.title' | translate }}</h2>
+            <p class="weekly__subtitle">{{ 'weekly.subtitle' | translate }}</p>
+          </header>
+
+          <ul class="weekly__list" role="list">
+            @for (item of weeklyProgramSorted(); track item.id) {
+              <li
+                class="weekly__item"
+                [class.is-today]="item.day === currentWeekDay()"
+                [attr.aria-current]="item.day === currentWeekDay() ? 'date' : null"
+              >
+                <div class="weekly__day">
+                  <span class="weekly__day-name">{{ item.dayLabel }}</span>
+                  @if (item.day === currentWeekDay()) {
+                    <span class="weekly__today-badge">{{ 'weekly.today' | translate }}</span>
+                  }
+                </div>
+                <div class="weekly__body">
+                  <span class="weekly__time" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="14" height="14">
+                      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+                      <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    {{ item.time }}
+                  </span>
+                  <h3 class="weekly__item-title">{{ item.title }}</h3>
+                  @if (item.description) {
+                    <p class="weekly__item-desc">{{ item.description }}</p>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+      </div>
+
+      <!-- ============ Slide 5: Evenimente viitoare ============ -->
+      <div
+        class="slide slide--upcoming"
+        [class.slide--active]="!fullscreen() || currentSlide() === 4"
+        [attr.aria-hidden]="fullscreen() && currentSlide() !== 4"
+      >
+        <section class="upcoming" aria-labelledby="upcoming-title">
+          <header class="upcoming__header">
+            <h2 id="upcoming-title" class="upcoming__title">{{ 'upcoming.title' | translate }}</h2>
+            <p class="upcoming__subtitle">{{ 'upcoming.subtitle' | translate }}</p>
+          </header>
+
+          @if (upcomingEventsView().length === 0) {
+            <p class="upcoming__empty">{{ 'upcoming.empty' | translate }}</p>
+          } @else {
+            <ul class="upcoming__list" role="list">
+              @for (ev of upcomingEventsView(); track ev.id; let first = $first) {
+                <li
+                  class="upcoming__item"
+                  [class.is-today]="ev.isToday"
+                  [class.is-next]="first && !ev.isToday"
+                >
+                  <div class="upcoming__countdown" aria-hidden="true">
+                    @if (ev.isToday) {
+                      <span class="upcoming__count-num">{{ 'upcoming.today' | translate }}</span>
+                    } @else {
+                      <span class="upcoming__count-num">{{ ev.daysLeft }}</span>
+                      <span class="upcoming__count-label">
+                        {{ (ev.daysLeft === 1 ? 'upcoming.day_left' : 'upcoming.days_left') | translate }}
+                      </span>
+                    }
+                  </div>
+
+                  <div class="upcoming__body">
+                    <div class="upcoming__meta">
+                      <span class="upcoming__date">{{ formatEventDate(ev.date) }}</span>
+                      <span class="upcoming__time">· {{ ev.time }}</span>
+                      @if (first && !ev.isToday) {
+                        <span class="upcoming__next-badge">{{ 'upcoming.next' | translate }}</span>
+                      }
+                      @if (ev.isToday) {
+                        <span class="upcoming__today-badge">
+                          <span class="upcoming__live-dot" aria-hidden="true"></span>
+                          {{ 'upcoming.today' | translate }}
+                        </span>
+                      }
+                    </div>
+
+                    <h3 class="upcoming__item-title">{{ ev.title }}</h3>
+
+                    @if (ev.description) {
+                      <p class="upcoming__item-desc">{{ ev.description }}</p>
+                    }
+
+                    @if (ev.verse) {
+                      <blockquote class="upcoming__verse">
+                        <span class="upcoming__verse-icon" aria-hidden="true">✠</span>
+                        {{ ev.verse }}
+                      </blockquote>
+                    }
+
+                    @if (ev.preacher || ev.worshipLead) {
+                      <dl class="upcoming__credits">
+                        @if (ev.preacher) {
+                          <div class="upcoming__credit">
+                            <dt>{{ 'upcoming.preacher' | translate }}</dt>
+                            <dd>{{ ev.preacher }}</dd>
+                          </div>
+                        }
+                        @if (ev.worshipLead) {
+                          <div class="upcoming__credit">
+                            <dt>{{ 'upcoming.worship' | translate }}</dt>
+                            <dd>{{ ev.worshipLead }}</dd>
+                          </div>
+                        }
+                      </dl>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      </div>
     </div>
 
     <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
@@ -277,7 +406,7 @@
     </button>
 
     <div class="carousel__dots" role="tablist" [attr.aria-label]="'carousel.label' | translate">
-      @for (i of [0, 1, 2]; track i) {
+      @for (i of slideIndexes; track i) {
       <button
         type="button"
         class="carousel__dot"
