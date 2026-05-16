@@ -87,9 +87,9 @@
         [attr.aria-hidden]="fullscreen() && currentSlide() !== 1"
       >
         <div class="broadcasts" aria-labelledby="broadcasts-title">
-          <h2 id="broadcasts-title" class="broadcasts__title">
+          <!-- <h2 id="broadcasts-title" class="broadcasts__title">
             {{ 'streams.title' | translate }}
-          </h2>
+          </h2> -->
 
           <!-- Tarjeta destacada cuando hay transmisión EN DIRECTO -->
           @if (youtube.liveStream(); as live) {
@@ -177,7 +177,7 @@
             <h2 id="gallery-title" class="gallery__title">
               {{ 'gallery.title' | translate }}
             </h2>
-            <p class="gallery__subtitle">{{ 'gallery.subtitle' | translate }}</p>
+            <!-- <p class="gallery__subtitle">{{ 'gallery.subtitle' | translate }}</p> -->
           </header>
 
           <!-- Hero destacado: imagen completa del evento que rota automáticamente -->
@@ -255,7 +255,7 @@
         <section class="weekly" aria-labelledby="weekly-title">
           <header class="weekly__header">
             <h2 id="weekly-title" class="weekly__title">{{ 'weekly.title' | translate }}</h2>
-            <p class="weekly__subtitle">{{ 'weekly.subtitle' | translate }}</p>
+            <!-- <p class="weekly__subtitle">{{ 'weekly.subtitle' | translate }}</p> -->
           </header>
 
           <ul class="weekly__list" role="list">
@@ -300,7 +300,7 @@
           <header class="upcoming__header">
             <div class="upcoming__heading">
               <h2 id="upcoming-title" class="upcoming__title">{{ 'upcoming.title' | translate }}</h2>
-              <p class="upcoming__subtitle">{{ 'upcoming.subtitle' | translate }}</p>
+              <!-- <p class="upcoming__subtitle">{{ 'upcoming.subtitle' | translate }}</p> -->
             </div>
             @if (!fullscreen() && upcomingEventsView().length > 0) {
               <app-calendar-sync-button

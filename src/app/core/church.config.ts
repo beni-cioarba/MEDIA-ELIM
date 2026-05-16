@@ -260,6 +260,18 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       date: '2026-05-31',
       time: '10:00',
       title: 'Botez Nou Testamental',
+      description: '',
+      verse:
+        'Romani 6:4: „Noi deci, prin botezul în moartea Lui, am fost îngropaţi împreună cu El, pentru ca, după cum Hristos a înviat din morţi, prin slava Tatălui, tot aşa şi noi să trăim o viaţă nouă.”',
+      preacher: '',
+      worshipLead: '',
+    },
+    /* 
+    {
+      id: 'botez_2026_05_31',
+      date: '2026-05-31',
+      time: '10:00',
+      title: 'Botez Nou Testamental',
       description: 'Luptele creștinilor în timpurile de azi',
       verse:
         'Faptele Apostolilor 2:38: „Pocăiți-vă, le-a zis Petru, și fiecare din voi să fie botezat în Numele lui Isus Hristos, spre iertarea păcatelor voastre; apoi veți primi darul Sfântului Duh.”',
@@ -276,6 +288,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       verse: '',
       preacher: 'Beni Cioarba',
       worshipLead: 'Beni Cioarba',
-    },
+    }, 
+    */
   ],
 };
