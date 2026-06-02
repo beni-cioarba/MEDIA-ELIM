@@ -28,8 +28,8 @@ export class LanguageService {
     this.translate.addLangs([...SUPPORTED]);
     this.translate.setDefaultLang(DEFAULT_LANG);
 
-    // Default to romanian initially
-    const initial = this.readFromStorage() || DEFAULT_LANG;
+    // Default to romanian initially, checking browser if no saved preference
+    const initial = this.readFromStorage() || this.detectFromBrowser() || DEFAULT_LANG;
     this.use(initial);
   }
 

@@ -78,6 +78,15 @@
             }
           </ul>
         </div>
+        
+        <!-- Scroll indicator (visible solo en móviles en la web normal) -->
+        @if (!fullscreen()) {
+          <div class="scroll-indicator" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+        }
       </div>
 
       <!-- ============ Slide 2: Transmisiones + EN DIRECTO ============ -->
