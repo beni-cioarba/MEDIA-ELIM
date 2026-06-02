@@ -227,9 +227,9 @@ import { CHURCH_CONFIG } from '../../core/church.config';
         gap: 0.5rem;
         padding: 0.5rem 0.85rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        color: rgba(255, 255, 255, 0.92);
+        background: rgba(212, 175, 55, 0.12);
+        border: 1px solid rgba(26, 54, 93, 0.14);
+        color: var(--c-text);
         cursor: pointer;
         font: inherit;
         font-size: 0.92rem;
@@ -238,15 +238,15 @@ import { CHURCH_CONFIG } from '../../core/church.config';
         transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.14);
-          border-color: rgba(255, 255, 255, 0.25);
+          background: rgba(212, 175, 55, 0.2);
+          border-color: rgba(26, 54, 93, 0.26);
           transform: translateY(-1px);
         }
         &:active {
           transform: translateY(0);
         }
         &:focus-visible {
-          outline: 2px solid #e6b35a;
+          outline: 2px solid var(--c-gold-deep);
           outline-offset: 3px;
         }
 
@@ -270,7 +270,7 @@ import { CHURCH_CONFIG } from '../../core/church.config';
         display: grid;
         place-items: center;
         padding: clamp(1rem, 3vw, 2rem);
-        background: rgba(4, 8, 18, 0.72);
+        background: rgba(18, 40, 68, 0.5);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         animation: fade-in 0.2s ease both;
@@ -278,12 +278,12 @@ import { CHURCH_CONFIG } from '../../core/church.config';
         &__panel {
           width: 100%;
           max-width: 480px;
-          background: linear-gradient(160deg, #141a2c 0%, #0b1020 100%);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: linear-gradient(160deg, #ffffff 0%, #f6f8fb 100%);
+          border: 1px solid rgba(26, 54, 93, 0.14);
           border-radius: 18px;
           padding: clamp(1.25rem, 2.5vw, 1.75rem);
-          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-          color: #f4f1ea;
+          box-shadow: 0 24px 60px rgba(26, 54, 93, 0.28);
+          color: var(--c-text);
           animation: pop-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
         }
 
@@ -309,9 +309,9 @@ import { CHURCH_CONFIG } from '../../core/church.config';
           width: 32px;
           height: 32px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.06);
+          background: rgba(212, 175, 55, 0.12);
           border: none;
-          color: #f4f1ea;
+          color: var(--c-text);
           cursor: pointer;
           transition: background 0.2s ease;
 
@@ -321,10 +321,10 @@ import { CHURCH_CONFIG } from '../../core/church.config';
           }
 
           &:hover {
-            background: rgba(255, 255, 255, 0.14);
+            background: rgba(212, 175, 55, 0.22);
           }
           &:focus-visible {
-            outline: 2px solid #e6b35a;
+            outline: 2px solid var(--c-gold-deep);
             outline-offset: 2px;
           }
         }
@@ -332,12 +332,12 @@ import { CHURCH_CONFIG } from '../../core/church.config';
         &__url {
           margin: 0 0 1rem;
           padding: 0.6rem 0.85rem;
-          background: rgba(0, 0, 0, 0.35);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(26, 54, 93, 0.05);
+          border: 1px solid rgba(26, 54, 93, 0.12);
           border-radius: 10px;
           font-family: 'Inter', system-ui, sans-serif;
           font-size: 0.85rem;
-          color: rgba(255, 255, 255, 0.78);
+          color: var(--c-muted);
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -363,9 +363,9 @@ import { CHURCH_CONFIG } from '../../core/church.config';
           gap: 0.5rem;
           padding: 0.9rem 0.5rem;
           border-radius: 14px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #f4f1ea;
+          background: rgba(26, 54, 93, 0.05);
+          border: 1px solid rgba(26, 54, 93, 0.12);
+          color: var(--c-text);
           text-decoration: none;
           font: inherit;
           font-size: 0.82rem;
@@ -375,33 +375,33 @@ import { CHURCH_CONFIG } from '../../core/church.config';
           width: 100%;
 
           &:hover {
-            background: rgba(255, 255, 255, 0.09);
-            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(212, 175, 55, 0.16);
+            border-color: rgba(26, 54, 93, 0.22);
             transform: translateY(-2px);
           }
 
           &:focus-visible {
-            outline: 2px solid #e6b35a;
+            outline: 2px solid var(--c-gold-deep);
             outline-offset: 2px;
           }
 
           &--whatsapp:hover {
-            color: #25d366;
+            color: #1da851;
           }
           &--telegram:hover {
-            color: #29b6f6;
+            color: #1c93d0;
           }
           &--facebook:hover {
             color: #1877f2;
           }
           &--x:hover {
-            color: #ffffff;
+            color: #1d1d1f;
           }
           &--email:hover {
-            color: #f4b942;
+            color: #c98a1e;
           }
           &--copy:hover {
-            color: #e6b35a;
+            color: var(--c-gold-deep);
           }
         }
 

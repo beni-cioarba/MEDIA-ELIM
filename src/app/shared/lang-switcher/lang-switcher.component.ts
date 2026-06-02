@@ -62,9 +62,9 @@ interface LangOption {
         gap: 0.5rem;
         padding: 0.5rem 0.8rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #f4f1ea;
+        background: rgba(212, 175, 55, 0.12);
+        border: 1px solid rgba(26, 54, 93, 0.14);
+        color: var(--c-text);
         cursor: pointer;
         font-size: 0.85rem;
         font-weight: 600;
@@ -74,8 +74,8 @@ interface LangOption {
         transition: all 0.2s ease;
       }
       .lang-dropdown__toggle:hover, .lang-dropdown.is-open .lang-dropdown__toggle {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(212, 175, 55, 0.2);
+        border-color: rgba(26, 54, 93, 0.26);
       }
       .lang-chevron {
         transition: transform 0.2s ease;
@@ -89,14 +89,14 @@ interface LangOption {
         top: calc(100% + 0.5rem);
         right: 0;
         min-width: 140px;
-        background: rgba(10, 15, 30, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.97);
+        border: 1px solid rgba(26, 54, 93, 0.14);
         border-radius: 12px;
         padding: 0.4rem;
         display: flex;
         flex-direction: column;
         gap: 0.2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         z-index: 50;
@@ -115,7 +115,7 @@ interface LangOption {
         border-radius: 8px;
         background: transparent;
         border: none;
-        color: rgba(244, 241, 234, 0.8);
+        color: rgba(45, 55, 72, 0.8);
         cursor: pointer;
         text-align: left;
         font-size: 0.9rem;
@@ -124,12 +124,12 @@ interface LangOption {
         width: 100%;
       }
       .lang-dropdown__item:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #f4f1ea;
+        background: rgba(212, 175, 55, 0.12);
+        color: var(--c-text);
       }
       .lang-dropdown__item--active {
-        background: rgba(230, 179, 90, 0.15);
-        color: #e6b35a;
+        background: rgba(212, 175, 55, 0.18);
+        color: var(--c-gold-deep);
         font-weight: 600;
       }
       .lang-flag {
@@ -138,7 +138,7 @@ interface LangOption {
         height: 14px;
         border-radius: 2px;
         overflow: hidden;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 0 1px rgba(26, 54, 93, 0.18);
         flex-shrink: 0;
       }
       .lang-flag :global(svg),

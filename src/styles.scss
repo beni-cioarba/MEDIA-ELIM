@@ -1,11 +1,65 @@
 /* =====================================================================
- * Estilos globales — reset ligero + tipografías para la presentación.
+ * Estilos globales — reset ligero + tipografías + paleta.
  * Las fuentes se cargan desde Google Fonts; si no hay conexión durante
  * la presentación, se usan los fallbacks del sistema.
+ *
+ * Tema "Luz y Paz": azul marino profundo (reverencia y profundidad) con
+ * acentos en oro metálico (luz y divinidad) sobre un fondo alabastro
+ * cálido y limpio. Serif elegante (Playfair Display) para títulos y
+ * sans-serif legible (Inter) para el cuerpo.
  * ===================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap');
 @import '@angular/cdk/overlay-prebuilt.css';
+
+/* ---------------------------------------------------------------------
+ * Paleta "Luz y Paz" expuesta como CSS custom properties para que todos
+ * los componentes (incluidos los de estilos inline) compartan la misma
+ * fuente de verdad y el tema sea consistente y fácil de mantener.
+ * ------------------------------------------------------------------- */
+:root {
+  /* Marca / primario (navy) */
+  --c-primary: #1a365d;
+  --c-primary-soft: #2c5282;
+  --c-primary-deep: #122844;
+  --c-on-primary: #f7fafc;
+
+  /* Acento (oro metálico) */
+  --c-gold: #d4af37;
+  --c-gold-soft: #e3c766;
+  --c-gold-deep: #9c7a1e;
+
+  /* Fondos y superficies */
+  --c-bg: #faf9f6;        /* alabastro */
+  --c-bg-2: #ffffff;      /* extremo luminoso del degradado */
+  --c-bg-cool: #eef1f6;   /* velo frío sutil */
+  --c-surface: #ffffff;   /* tarjetas */
+  --c-surface-2: #f6f8fb; /* tarjeta alterna */
+
+  /* Texto */
+  --c-text: #2d3748;                  /* gris carbón */
+  --c-muted: rgba(45, 55, 72, 0.66);  /* secundario */
+  --c-faint: rgba(45, 55, 72, 0.46);  /* terciario / etiquetas */
+
+  /* Líneas / bordes */
+  --c-border: #e2e8f0;                 /* slate claro */
+  --c-hairline: rgba(26, 54, 93, 0.10);
+  --c-hairline-strong: rgba(26, 54, 93, 0.22);
+
+  /* Velos sutiles para fondos de botón/superficie */
+  --c-veil: rgba(26, 54, 93, 0.05);
+  --c-veil-strong: rgba(26, 54, 93, 0.11);
+  --c-gold-tint: rgba(212, 175, 55, 0.14);
+
+  /* Sombras (azuladas, nunca negras puras) */
+  --shadow-card: 0 18px 44px rgba(26, 54, 93, 0.14);
+  --shadow-soft: 0 8px 22px rgba(26, 54, 93, 0.10);
+  --shadow-sm: 0 4px 14px rgba(26, 54, 93, 0.08);
+
+  /* Tipografía */
+  --font-serif: 'Playfair Display', 'Georgia', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
 
 *,
 *::before,
@@ -19,9 +73,9 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100%;
-  background: #060914;
-  color: #f4f1ea;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -44,6 +98,12 @@ app-root {
 a { color: inherit; }
 button { font-family: inherit; }
 
+/* Selección de texto con tinte dorado suave. */
+::selection {
+  background: rgba(212, 175, 55, 0.26);
+  color: var(--c-primary);
+}
+
 /* ---------------------------------------------------------------------
  * Modo "fullscreen simulado": fallback CSS cuando el navegador no
  * permite la Fullscreen API (móviles, iframes, permiso denegado…).
@@ -60,7 +120,7 @@ body.is-simulated-fullscreen {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: #060914;
+    background: var(--c-bg);
   }
 }
 

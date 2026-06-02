@@ -1,4 +1,4 @@
-﻿@use 'sass:color';
+@use 'sass:color';
 @use 'styles/tokens' as *;
 @use 'styles/responsive';
 
@@ -21,12 +21,14 @@
   min-height: 100dvh;
   padding: clamp(1.5rem, 4vw, 4rem) clamp(1.5rem, 5vw, 5rem);
   gap: clamp(1.5rem, 4vh, 3.5rem);
-  overflow-x: clip; 
-  background: radial-gradient(
+  overflow-x: clip;
+  background:
+    radial-gradient(
       ellipse at top right,
-      color.adjust($color-bg-2, $lightness: 6%) 0%,
-      $color-bg-1 65%
-    );
+      color.adjust($color-bg-2, $lightness: 2%) 0%,
+      $color-bg-1 70%
+    ),
+    linear-gradient(180deg, $color-bg-2 0%, $color-bg-1 100%);
 
   &.is-fullscreen {
     height: 100vh;
@@ -42,7 +44,8 @@
 }
 
 // ---------------------------------------------------------------------
-// Fondo decorativo
+// Fondo decorativo — halos difusos que aportan profundidad sin peso
+// visual. Oro suave y azul sereno sobre el lienzo alabastro.
 // ---------------------------------------------------------------------
 .backdrop {
   position: absolute;
@@ -56,7 +59,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.55;
+  opacity: 0.5;
   will-change: transform;
 
   &--gold {
@@ -64,7 +67,7 @@
     height: 60vmax;
     top: -25vmax;
     left: -20vmax;
-    background: radial-gradient(circle, #0e2a52 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.42) 0%, transparent 70%);
     animation: drift 22s ease-in-out infinite alternate;
   }
 
@@ -74,7 +77,7 @@
     bottom: -25vmax;
     right: -20vmax;
     background: radial-gradient(circle, $color-blue-soft 0%, transparent 70%);
-    opacity: 0.35;
+    opacity: 0.4;
     animation: drift 28s ease-in-out infinite alternate-reverse;
   }
 }
@@ -82,10 +85,10 @@
 .grain {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(26, 54, 93, 0.05) 1px, transparent 1px);
   background-size: 3px 3px;
-  mix-blend-mode: overlay;
-  opacity: 0.25;
+  mix-blend-mode: multiply;
+  opacity: 0.4;
 }
 
 @keyframes drift {
@@ -102,22 +105,26 @@
   display: flex;
   align-items: flex-start;
   gap: clamp(1rem, 2vw, 2rem);
+  // Alineado con la columna de contenido (mismo ancho y centrado) para
+  // que el logo y los controles compartan el margen del contenido.
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
 
   &__logo-link {
     display: inline-flex;
     border-radius: 8px;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-origin: left top;
-    
+
     &:hover { transform: scale(1.03); }
     &:focus-visible { outline: 2px solid $color-gold; outline-offset: 8px; }
   }
 
   &__logo {
-    // Increased size fundamentally
     width: clamp(160px, 25vw, 340px);
     height: auto;
-    filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.65));
+    filter: drop-shadow(0 8px 22px rgba(26, 54, 93, 0.22));
     will-change: width;
     transition: width 0.4s ease;
   }
@@ -132,7 +139,13 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  // En la web normal el QR no se muestra (solo en presentación), por lo que
+  // el contenido ocupa una sola columna centrada y con un ancho cómodo de
+  // lectura. En presentación se pasa a dos columnas (carrusel + QR).
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1180px;
+  margin-inline: auto;
+  width: 100%;
   gap: clamp(2rem, 4vw, 5rem);
   align-items: start;
   align-content: start;
@@ -144,10 +157,10 @@
   }
 }
 
-// En modo presentaciÃ³n, .content es un BLOQUE RESTRICTIVO: su altura
-// la dicta el grid track 1fr del .stage y NINGÃšN hijo puede sobresalir.
+// En modo presentación, .content es un BLOQUE RESTRICTIVO: su altura
+// la dicta el grid track 1fr del .stage y NINGÚN hijo puede sobresalir.
 // El overflow: hidden actua de barrera definitiva por si el contenido
-// intrÃ­nseco intentara crecer (cards con muchas lÃ­neas, fuentes
+// intrínseco intentara crecer (cards con muchas líneas, fuentes
 // grandes en rumano, etc.).
 .content--carousel {
   align-items: stretch;
@@ -157,7 +170,7 @@
   min-height: 0;
   overflow: hidden;
 
-  // Cada columna (.carousel y .qr) tambiÃ©n se confina a su celda.
+  // Cada columna (.carousel y .qr) también se confina a su celda.
   > * {
     min-height: 0;
     min-width: 0;
@@ -168,9 +181,9 @@
 
 // ---------------------------------------------------------------------
 // Carrusel de la columna izquierda
-//   Â· Fuera de presentaciÃ³n: las slides se apilan verticalmente para que
+//   · Fuera de presentación: las slides se apilan verticalmente para que
 //     se vea todo el contenido en la web normal.
-//   Â· En presentaciÃ³n (.content--carousel): cada slide ocupa el mismo
+//   · En presentación (.content--carousel): cada slide ocupa el mismo
 //     espacio (apiladas en el mismo "cell" via grid), y se alterna la
 //     visibilidad mediante opacidad + transform.
 // ---------------------------------------------------------------------
@@ -195,9 +208,6 @@
   gap: 0;
   height: 100%;
   min-height: 0;
-  // Importante: si por algun motivo el contenido del slide intenta
-  // crecer mÃ¡s de lo permitido, lo recortamos en vez de empujar la
-  // barra inferior. AsÃ­ la "diapositiva" siempre respeta su contenedor.
   overflow: hidden;
 
   > .slide {
@@ -230,9 +240,6 @@
 
 // ---------------------------------------------------------------------
 // Zona caliente invisible para revelar los controles del carrusel.
-//   Â· Hijo directo de .stage â†’ cubre todo el ancho de la pantalla.
-//   Â· SÃ³lo la franja inferior (â‰ˆ70-120px), no interfiere con tarjetas
-//     ni con el QR.
 // ---------------------------------------------------------------------
 .stage__hover-zone {
   position: absolute;
@@ -246,10 +253,9 @@
 }
 
 // ---------------------------------------------------------------------
-// Controles del carrusel â€” anclados a .stage, centrados respecto a TODA
-// la pantalla (no a la columna izquierda). PowerPoint-style: invisibles
-// hasta que el ratÃ³n entra en la franja inferior, algÃºn control recibe
-// foco con teclado, o el carrusel estÃ¡ pausado.
+// Controles del carrusel — anclados a .stage, centrados respecto a TODA
+// la pantalla. PowerPoint-style: invisibles hasta que el ratón entra en
+// la franja inferior, algún control recibe foco o el carrusel está pausado.
 // ---------------------------------------------------------------------
 .stage__controls {
   position: absolute;
@@ -263,17 +269,15 @@
   gap: clamp(0.35rem, 0.8vw, 0.75rem);
   padding: 0.35rem 0.6rem;
   border-radius: 999px;
-  background: rgba(11, 16, 32, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid $color-hairline-strong;
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: $shadow-soft;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease, transform 0.35s ease;
 
-  // Aparece SOLO al entrar en la franja inferior, en los propios
-  // controles, o al recibir foco con teclado.
   .stage__hover-zone:hover ~ &,
   &:hover,
   &:focus-within {
@@ -282,9 +286,8 @@
     transform: translate(-50%, 0);
   }
 
-  // Si el carrusel estÃ¡ pausado, los dejamos visibles como pista visual.
   &:has(.carousel__pause[aria-pressed='true']) {
-    opacity: 0.85;
+    opacity: 0.9;
     pointer-events: auto;
     transform: translate(-50%, 0);
   }
@@ -300,7 +303,7 @@
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: rgba(244, 241, 234, 0.85);
+  color: $color-muted;
   cursor: pointer;
   padding: 0;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
@@ -311,8 +314,8 @@
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: $color-gold-tint;
+    color: $color-gold-deep;
     transform: scale(1.08);
   }
 
@@ -325,7 +328,7 @@
 }
 
 .carousel__pause[aria-pressed='true'] {
-  color: $color-gold-soft;
+  color: $color-gold;
 }
 
 .carousel__dots {
@@ -360,7 +363,7 @@
     width: 100%;
     height: 3px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(26, 54, 93, 0.16);
     overflow: hidden;
     position: relative;
     transition: height 0.25s ease, background 0.25s ease;
@@ -378,8 +381,8 @@
   &.is-active {
     .carousel__dot-bar {
       height: 4px;
-      background: rgba(255, 255, 255, 0.32);
-      box-shadow: 0 0 14px rgba(230, 179, 90, 0.35);
+      background: rgba(26, 54, 93, 0.28);
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.5);
     }
   }
 }
@@ -395,10 +398,10 @@
   &__title {
     margin: 0;
     font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: $color-muted;
+    color: $color-gold-deep;
   }
 
   &__list {
@@ -414,22 +417,23 @@
   --card-gradient: linear-gradient(135deg, #444, #222);
   position: relative;
   border-radius: $radius-lg;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  background: $color-card;
+  border: 1px solid $color-hairline;
+  box-shadow: $shadow-sm;
   overflow: hidden;
   transition: box-shadow 0.4s ease,
               border-color 0.4s ease,
+              transform 0.4s ease,
               background 0.4s ease;
 
   &::before {
-    // Fondo de color suave que cubre la tarjeta
+    // Tinte de color de marca muy suave que cubre la tarjeta
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
     background: var(--card-gradient);
-    opacity: 0.03;
+    opacity: 0.05;
     transition: opacity 0.5s ease;
     pointer-events: none;
   }
@@ -440,7 +444,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 1px;
+    padding: 1.5px;
     background: var(--card-gradient);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -452,12 +456,13 @@
 
   &:hover,
   &--highlight {
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: $color-card;
+    box-shadow: $shadow-card;
+    border-color: transparent;
+    transform: translateY(-2px);
 
-    &::before { opacity: 0.12; }
-    &::after { opacity: 0.8; }
+    &::before { opacity: 0.14; }
+    &::after { opacity: 0.85; }
   }
 
   &__link {
@@ -486,9 +491,9 @@
     border-radius: $radius-md;
     background: var(--card-gradient);
     color: #fff;
-    // Efecto de joya flotante: sombra general + borde interior brillante
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2),
-                0 8px 24px rgba(0, 0, 0, 0.4);
+    // Efecto de joya flotante: sombra de color + borde interior brillante
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+                0 8px 20px rgba(26, 54, 93, 0.25);
     padding: 14px;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
                 box-shadow 0.4s ease;
@@ -497,8 +502,8 @@
   &:hover &__icon,
   &--highlight &__icon {
     transform: scale(1.08) rotate(-4deg);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-                0 14px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+                0 14px 30px rgba(26, 54, 93, 0.35);
   }
 
   &__body {
@@ -517,7 +522,7 @@
     font-size: clamp(1rem, 1.4vw, 1.3rem);
     font-weight: 600;
     letter-spacing: 0.01em;
-    color: #fff;
+    color: $color-text;
     min-width: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -525,10 +530,10 @@
 
   &__username {
     font-size: clamp(0.85rem, 1vw, 1rem);
-    color: rgba(255, 255, 255, 0.85);
-    font-weight: 500;
+    color: $color-gold-deep;
+    font-weight: 600;
     font-family: 'Inter', system-ui, sans-serif;
-    background: rgba(255, 255, 255, 0.12);
+    background: $color-gold-tint;
     padding: 0.15rem 0.5rem;
     border-radius: 6px;
     margin-left: 0.1rem;
@@ -541,7 +546,7 @@
   }
 
   &__handle {
-    color: rgba(255, 255, 255, 0.6);
+    color: $color-muted;
     font-size: clamp(0.85rem, 1vw, 0.95rem);
     white-space: nowrap;
     overflow: hidden;
@@ -554,7 +559,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.3);
+    color: $color-faint;
     transition: transform 0.4s ease, color 0.4s ease;
 
     svg {
@@ -565,7 +570,7 @@
 
   &:hover &__cta,
   &--highlight &__cta {
-    color: #fff;
+    color: $color-gold-deep;
     transform: translateX(6px);
   }
 
@@ -576,12 +581,12 @@
     margin-left: 0.4rem;
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ff0033, #b3001b);
+    background: linear-gradient(135deg, #ff3344, #d11f33);
     color: #fff;
     font-size: clamp(0.7rem, 0.85vw, 0.85rem);
     font-weight: 700;
     letter-spacing: 0.08em;
-    box-shadow: 0 4px 14px rgba(255, 0, 51, 0.45);
+    box-shadow: 0 4px 14px rgba(209, 31, 51, 0.4);
     text-transform: uppercase;
     font-family: 'Inter', system-ui, sans-serif;
   }
@@ -603,7 +608,7 @@
 }
 
 // ---------------------------------------------------------------------
-// Ãšltimas transmisiones de YouTube (lista horizontal de miniaturas).
+// Últimas transmisiones de YouTube (lista horizontal de miniaturas).
 // ---------------------------------------------------------------------
 .streams {
   display: flex;
@@ -613,10 +618,10 @@
   &__title {
     margin: 0;
     font-size: clamp(0.9rem, 1.1vw, 1.05rem);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.16em;
-    color: $color-muted;
+    color: $color-gold-deep;
   }
 
   &__list {
@@ -644,8 +649,9 @@
       padding: 0;
       border-radius: 50%;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.65);
-      border-color: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.85);
+      border-color: $color-hairline-strong;
+      color: $color-text;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
@@ -689,8 +695,8 @@
     aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: $radius-md;
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    background: $color-card-2;
+    box-shadow: 0 4px 14px rgba(26, 54, 93, 0.18);
   }
 
   &__caption {
@@ -715,25 +721,25 @@
   &__title {
     margin: 0;
     font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: $color-muted;
+    color: $color-gold-deep;
   }
 
   &__empty {
     margin: 0;
     padding: clamp(1rem, 2vh, 1.4rem) clamp(1.25rem, 2vw, 1.75rem);
     border-radius: $radius-lg;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px dashed rgba(255, 255, 255, 0.15);
+    background: $color-card;
+    border: 1px dashed $color-hairline-strong;
     color: $color-muted;
     font-size: clamp(0.95rem, 1.1vw, 1.1rem);
     text-align: center;
   }
 }
 
-// Tarjeta destacada cuando hay transmisiÃ³n EN DIRECTO ahora mismo.
+// Tarjeta destacada cuando hay transmisión EN DIRECTO ahora mismo.
 .live-now-wrap {
   position: relative;
 }
@@ -750,8 +756,9 @@
     padding: 0;
     border-radius: 50%;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.55);
-    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.9);
+    border-color: $color-hairline-strong;
+    color: $color-text;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -772,11 +779,11 @@
   align-items: center;
   padding: clamp(0.85rem, 1.5vh, 1.25rem);
   border-radius: $radius-lg;
-  background: linear-gradient(135deg, rgba(255, 0, 51, 0.18), rgba(11, 18, 38, 0.45));
-  border: 1px solid rgba(255, 0, 51, 0.45);
+  background: linear-gradient(135deg, rgba(255, 244, 240, 0.95), $color-card);
+  border: 1px solid rgba(209, 31, 51, 0.4);
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 18px 48px rgba(255, 0, 51, 0.25), $shadow-card;
+  box-shadow: 0 18px 44px rgba(209, 31, 51, 0.14), $shadow-card;
   overflow: hidden;
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
 
@@ -784,14 +791,14 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at top right, rgba(255, 0, 51, 0.35), transparent 60%);
+    background: radial-gradient(circle at top right, rgba(255, 51, 68, 0.16), transparent 60%);
     pointer-events: none;
-    opacity: 0.8;
+    opacity: 0.9;
   }
 
   &:hover {
     transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 24px 60px rgba(255, 0, 51, 0.4), $shadow-card;
+    box-shadow: 0 24px 56px rgba(209, 31, 51, 0.22), $shadow-card;
   }
 
   &:focus-visible {
@@ -809,13 +816,13 @@
     gap: 0.45rem;
     padding: 0.3rem 0.7rem;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ff0033, #b3001b);
+    background: linear-gradient(135deg, #ff3344, #d11f33);
     color: #fff;
     font-size: clamp(0.75rem, 0.9vw, 0.95rem);
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    box-shadow: 0 6px 18px rgba(255, 0, 51, 0.55);
+    box-shadow: 0 6px 18px rgba(209, 31, 51, 0.45);
   }
 
   &__dot {
@@ -831,7 +838,7 @@
     aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: $radius-md;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 20px rgba(26, 54, 93, 0.25);
     position: relative;
     z-index: 1;
   }
@@ -846,15 +853,15 @@
   }
 
   &__label {
-    color: #ffd2dc;
+    color: #d11f33;
     font-size: clamp(0.85rem, 1.05vw, 1rem);
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   &__title {
-    color: #fff;
+    color: $color-text;
     font-size: clamp(1.1rem, 1.6vw, 1.55rem);
     font-weight: 600;
     line-height: 1.25;
@@ -866,17 +873,17 @@
 
   &__cta {
     margin-top: 0.25rem;
-    color: $color-gold-soft;
-    font-weight: 600;
+    color: $color-gold-deep;
+    font-weight: 700;
     font-size: clamp(0.95rem, 1.15vw, 1.15rem);
   }
 }
 
 // ---------------------------------------------------------------------
-// GalerÃ­a del Departamento de Media (slide 3 del carrusel)
-//   Â· Card destacada con auto-rotaciÃ³n entre eventos.
-//   Â· Marquee horizontal infinito de chips de eventos.
-//   Â· CTA principal hacia la carpeta pÃºblica de Drive.
+// Galería del Departamento de Media (slide 3 del carrusel)
+//   · Card destacada con auto-rotación entre eventos.
+//   · Mosaico de miniaturas que actúa de carrusel.
+//   · CTA principal hacia la carpeta pública de Drive.
 // ---------------------------------------------------------------------
 .gallery {
   display: flex;
@@ -893,10 +900,10 @@
   &__title {
     margin: 0;
     font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: $color-muted;
+    color: $color-gold-deep;
   }
 
   &__subtitle {
@@ -919,15 +926,15 @@
     text-decoration: none;
     color: inherit;
     box-shadow: $shadow-card;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid $color-hairline;
     isolation: isolate;
     transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
                 box-shadow 0.5s ease, border-color 0.5s ease;
 
     &:hover {
       transform: translateY(-4px);
-      border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.65);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 26px 56px rgba(26, 54, 93, 0.28);
 
       .gallery__hero-image { transform: scale(1.05); }
       .gallery__hero-arrow { transform: translateX(6px); }
@@ -957,12 +964,12 @@
     background:
       linear-gradient(
         to top,
-        rgba(0, 0, 0, 0.85) 0%,
-        rgba(0, 0, 0, 0.5) 40%,
-        rgba(0, 0, 0, 0.1) 70%,
+        rgba(18, 40, 68, 0.85) 0%,
+        rgba(18, 40, 68, 0.5) 40%,
+        rgba(18, 40, 68, 0.1) 70%,
         transparent 100%
       ),
-      linear-gradient(135deg, rgba(0, 0, 0, 0.25) 0%, transparent 60%);
+      linear-gradient(135deg, rgba(18, 40, 68, 0.24) 0%, transparent 60%);
   }
 
   &__hero-content {
@@ -982,7 +989,7 @@
     font-size: clamp(1.4rem, 2.2vw, 2rem);
     font-weight: 600;
     line-height: 1.15;
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -991,7 +998,7 @@
   }
 
   &__hero-date {
-    color: rgba(255, 255, 255, 0.78);
+    color: rgba(255, 255, 255, 0.82);
     font-size: clamp(0.85rem, 1.05vw, 1rem);
     font-weight: 500;
   }
@@ -999,7 +1006,7 @@
   &__hero-cta {
     margin-top: 0.4rem;
     color: $color-gold-soft;
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(0.9rem, 1.1vw, 1.1rem);
     display: inline-flex;
     align-items: center;
@@ -1037,16 +1044,16 @@
     text-align: left;
     padding: 0;
     margin: 0;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    border: 1px solid $color-hairline;
+    box-shadow: $shadow-sm;
     isolation: isolate;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
                 box-shadow 0.4s ease, border-color 0.4s ease;
 
     &:hover {
       transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 18px 32px rgba(26, 54, 93, 0.25);
 
       .gallery__tile-image { transform: scale(1.08); }
     }
@@ -1058,9 +1065,9 @@
 
     // Marco resaltado en el tile que coincide con el hero rotativo
     &.is-featured {
-      border-color: rgba(230, 179, 90, 0.65);
-      box-shadow: 0 0 0 2px rgba(230, 179, 90, 0.3),
-                  0 14px 30px rgba(0, 0, 0, 0.5);
+      border-color: rgba(212, 175, 55, 0.75);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35),
+                  0 14px 28px rgba(26, 54, 93, 0.25);
     }
   }
 
@@ -1081,8 +1088,8 @@
     z-index: 1;
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.8) 0%,
-      rgba(0, 0, 0, 0.35) 50%,
+      rgba(18, 40, 68, 0.78) 0%,
+      rgba(18, 40, 68, 0.34) 50%,
       transparent 80%
     );
   }
@@ -1098,7 +1105,7 @@
     font-size: clamp(0.75rem, 0.95vw, 0.9rem);
     font-weight: 600;
     line-height: 1.25;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
     white-space: normal;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -1130,10 +1137,10 @@
   &__title {
     margin: 0;
     font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: $color-muted;
+    color: $color-gold-deep;
   }
 
   &__subtitle {
@@ -1163,22 +1170,24 @@
     gap: clamp(0.75rem, 1.5vw, 1.25rem);
     padding: clamp(0.75rem, 1.4vh, 1.1rem) clamp(0.9rem, 1.6vw, 1.25rem);
     border-radius: $radius-md;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    background: $color-card;
+    border: 1px solid $color-hairline;
+    box-shadow: $shadow-sm;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
       transform: translateX(2px);
-      border-color: rgba(255, 255, 255, 0.18);
+      border-color: rgba(212, 175, 55, 0.35);
+      box-shadow: $shadow-soft;
     }
 
     &.is-today {
       background: linear-gradient(135deg,
-        rgba(230, 179, 90, 0.18),
-        rgba(230, 179, 90, 0.05));
-      border-color: rgba(230, 179, 90, 0.55);
-      box-shadow: 0 0 0 1px rgba(230, 179, 90, 0.25),
-                  0 14px 30px rgba(0, 0, 0, 0.4);
+        rgba(212, 175, 55, 0.16),
+        rgba(255, 255, 255, 1));
+      border-color: rgba(212, 175, 55, 0.55);
+      box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.22),
+                  $shadow-soft;
     }
   }
 
@@ -1188,13 +1197,13 @@
     gap: 0.35rem;
     align-items: flex-start;
     justify-content: center;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid $color-hairline;
     padding-right: clamp(0.5rem, 1vw, 1rem);
   }
 
   &__day-name {
     font-size: clamp(1rem, 1.4vw, 1.25rem);
-    font-weight: 600;
+    font-weight: 700;
     color: $color-text;
     letter-spacing: 0.02em;
   }
@@ -1209,8 +1218,8 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     background: linear-gradient(90deg, $color-gold, $color-gold-soft);
-    color: #1a1300;
-    box-shadow: 0 4px 14px rgba(230, 179, 90, 0.4);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
   }
 
   &__body {
@@ -1225,15 +1234,15 @@
     align-items: center;
     gap: 0.4rem;
     font-size: 0.85rem;
-    color: $color-gold-soft;
+    color: $color-gold-deep;
     font-variant-numeric: tabular-nums;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   &__item-title {
     margin: 0;
     font-size: clamp(0.95rem, 1.2vw, 1.15rem);
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.3;
     color: $color-text;
   }
@@ -1281,10 +1290,10 @@
   &__title {
     margin: 0;
     font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: $color-muted;
+    color: $color-gold-deep;
   }
 
   &__subtitle {
@@ -1315,7 +1324,7 @@
     text-align: center;
     color: $color-muted;
     font-style: italic;
-    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border: 1px dashed $color-hairline-strong;
     border-radius: $radius-md;
   }
 
@@ -1337,11 +1346,11 @@
     gap: clamp(1rem, 2vw, 1.75rem);
     padding: clamp(1rem, 1.8vh, 1.4rem) clamp(1.1rem, 2vw, 1.6rem);
     border-radius: $radius-lg;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    
+    background: $color-card;
+    border: 1px solid $color-hairline;
+    box-shadow: $shadow-sm;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
     /* Dinamizamos el z-index de arriba abajo (el 1er evento cubre al 2do, etc)
        para que los menús desplegables nunca queden bajo otras tarjetas */
     position: relative;
@@ -1350,23 +1359,24 @@
     &:hover,
     &:focus-within {
       transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(212, 175, 55, 0.4);
+      box-shadow: $shadow-soft;
     }
 
     &.is-next {
-      border-color: rgba(230, 179, 90, 0.45);
+      border-color: rgba(212, 175, 55, 0.45);
       background: linear-gradient(135deg,
-        rgba(230, 179, 90, 0.12),
-        rgba(230, 179, 90, 0.02));
+        rgba(212, 175, 55, 0.1),
+        rgba(255, 255, 255, 1));
     }
 
     &.is-today {
-      border-color: rgba(255, 80, 80, 0.7);
+      border-color: rgba(209, 31, 51, 0.55);
       background: linear-gradient(135deg,
-        rgba(255, 80, 80, 0.18),
-        rgba(255, 80, 80, 0.03));
-      box-shadow: 0 0 0 2px rgba(255, 80, 80, 0.25),
-                  0 18px 40px rgba(0, 0, 0, 0.5);
+        rgba(255, 51, 68, 0.1),
+        rgba(255, 255, 255, 1));
+      box-shadow: 0 0 0 2px rgba(209, 31, 51, 0.18),
+                  $shadow-soft;
     }
   }
 
@@ -1378,17 +1388,17 @@
     text-align: center;
     padding: 0.75rem 0.5rem;
     border-radius: $radius-md;
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: $color-gold-tint;
+    border: 1px solid $color-hairline;
 
     .is-next & {
-      background: linear-gradient(135deg, rgba(230, 179, 90, 0.25), rgba(230, 179, 90, 0.08));
-      border-color: rgba(230, 179, 90, 0.45);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08));
+      border-color: rgba(212, 175, 55, 0.45);
     }
 
     .is-today & {
-      background: linear-gradient(135deg, rgba(255, 80, 80, 0.3), rgba(255, 80, 80, 0.08));
-      border-color: rgba(255, 80, 80, 0.55);
+      background: linear-gradient(135deg, rgba(255, 51, 68, 0.18), rgba(255, 51, 68, 0.06));
+      border-color: rgba(209, 31, 51, 0.5);
     }
   }
 
@@ -1397,14 +1407,14 @@
     font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    color: $color-text;
+    color: $color-gold-deep;
     letter-spacing: -0.02em;
 
     .is-today & {
       font-size: clamp(1.4rem, 2.5vw, 1.8rem);
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #ffd6d6;
+      color: #d11f33;
     }
   }
 
@@ -1429,13 +1439,13 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
-    color: $color-gold-soft;
+    color: $color-gold-deep;
     font-variant-numeric: tabular-nums;
   }
 
   &__date {
     text-transform: capitalize;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   &__time { color: $color-muted; }
@@ -1449,7 +1459,7 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     background: linear-gradient(90deg, $color-gold, $color-gold-soft);
-    color: #1a1300;
+    color: #fff;
   }
 
   &__today-badge {
@@ -1462,7 +1472,7 @@
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    background: rgba(255, 80, 80, 0.85);
+    background: #d11f33;
     color: white;
   }
 
@@ -1478,7 +1488,7 @@
   &__item-title {
     margin: 0;
     font-size: clamp(1.05rem, 1.5vw, 1.4rem);
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.25;
     color: $color-text;
   }
@@ -1494,7 +1504,7 @@
     margin: 0;
     padding: 0.75rem 1rem;
     border-left: 3px solid $color-gold;
-    background: rgba(230, 179, 90, 0.06);
+    background: rgba(212, 175, 55, 0.1);
     border-radius: 0 $radius-md $radius-md 0;
     color: $color-text;
     font-size: 0.9rem;
@@ -1537,7 +1547,7 @@
       margin: 0;
       font-size: 0.95rem;
       color: $color-text;
-      font-weight: 500;
+      font-weight: 600;
     }
   }
 }
@@ -1557,7 +1567,7 @@
 
   .weekly__day {
     border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid $color-hairline;
     padding-right: 0;
     padding-bottom: 0.5rem;
     flex-direction: row;
@@ -1591,14 +1601,10 @@
   position: sticky;
   top: clamp(1rem, 3vh, 2.5rem);
   align-self: start;
-  // Damos al aside una altura que ocupe el viewport (menos un margen)
-  // para que `aspect-ratio: 1 / 1` del frame interno calcule el cuadrado
-  // mÃ¡s grande posible. Usamos dvh para prevenir recÃ¡lculos al hacer scroll.
   height: calc(100dvh - clamp(2rem, 6vh, 5rem));
   max-height: calc(100dvh - clamp(2rem, 6vh, 5rem));
 
   @media (max-width: 1024px) {
-    // Una sola columna: ya no tiene sentido sticky.
     position: static;
     padding: 1rem;
     max-width: 480px;
@@ -1612,7 +1618,7 @@
     width: clamp(220px, 28vw, 360px);
     aspect-ratio: 1;
     border-radius: $radius-md;
-    background: linear-gradient(110deg, #ececec 30%, #f6f6f6 50%, #ececec 70%);
+    background: linear-gradient(110deg, #e8edf4 30%, #f6f8fb 50%, #e8edf4 70%);
     background-size: 200% 100%;
     animation: qr-shimmer 1.4s linear infinite;
   }
@@ -1636,13 +1642,17 @@
   padding-top: clamp(0.75rem, 1.5vh, 1.25rem);
   border-top: 1px solid $color-border;
   flex-wrap: wrap;
+  // Alineado con la columna de contenido, igual que el header.
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
 
   &__verse {
     flex: 1 1 100%;
     min-width: 0;
     margin: 0;
     max-width: 100%;
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-family: var(--font-serif);
     font-style: italic;
     font-size: clamp(1rem, 1.4vw, 1.25rem);
     line-height: 1.5;
@@ -1659,40 +1669,83 @@
     display: block;
     margin-left: 0;
     margin-top: 0.25rem;
-    color: $color-gold-soft;
+    color: $color-gold-deep;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 600;
+  }
+}
+
+// =====================================================================
+// Titulares de sección en azul marino (color de marca) — jerarquía
+// serena y editorial. El oro queda como acento (subrayados, metadatos).
+// =====================================================================
+.socials__title,
+.broadcasts__title,
+.gallery__title,
+.weekly__title,
+.upcoming__title,
+.live-now__title,
+.streams__title,
+.location__title {
+  color: $color-primary;
+}
+
+// =====================================================================
+// Slide "Ubicación / Cómo llegar" — mapa con el punto de la iglesia,
+// dirección y acciones (indicaciones, abrir en Maps, compartir).
+// =====================================================================
+.location {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.8vh, 1.4rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
   }
 
-  &__fs {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    border-radius: 999px;
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  &__layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__map {
+    position: relative;
+    border-radius: $radius-lg;
+    overflow: hidden;
     border: 1px solid $color-border;
-    background: $color-surface;
-    color: $color-text;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    box-shadow: $shadow-card;
+    background: $color-card-2;
+    min-height: clamp(300px, 45vh, 500px);
+  }
 
-    svg { width: 18px; height: 18px; }
-
-    &:hover {
-      background: $color-surface-strong;
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-gold;
-      outline-offset: 3px;
-    }
-
-    @media (max-width: 768px) {
-      display: none;
-    }
+  &__map-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    filter: saturate(1.02);
   }
 }
 
@@ -1700,23 +1753,27 @@
 // Ajustes a pantalla completa: maximizar la "diapositiva"
 // =====================================================================
 .stage.is-fullscreen {
-  app-lang-switcher,
-  .bar__fs {
+  app-lang-switcher {
     display: none !important;
   }
 
+  // En presentación el header y la barra ocupan todo el ancho disponible
+  // (no se limitan a la columna de lectura).
+  .brand,
+  .bar {
+    max-width: none;
+    margin-inline: 0;
+  }
+
   // Layout vertical: header (auto) + contenido (1fr) + footer (auto).
-  // El minmax(0, 1fr) garantiza que el .content NO pueda crecer mÃ¡s
-  // allÃ¡ del espacio sobrante â€” nunca empuja el footer hacia abajo.
   grid-template-rows: auto minmax(0, 1fr) auto;
 
-  // Auto-fit estricto: el contenido ocupa exactamente el viewport y
-  // jamÃ¡s puede salir de su celda (overflow:hidden). Sus hijos deben
-  // adaptarse a estas dimensiones, no al revÃ©s.
   .content {
     min-height: 0;
     height: 100%;
     max-height: 100%;
+    max-width: none;
+    margin-inline: 0;
     overflow: hidden;
     align-content: stretch;
     align-items: stretch;
@@ -1730,12 +1787,11 @@
     align-self: stretch;
   }
 
-  // El slide es un flex column con min-height:0
   .slide {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center; // Volvemos a centrar con flex
+    justify-content: center;
   }
 
   .socials {
@@ -1743,20 +1799,15 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center; // Alinear bloque de redes al centro
-    gap: clamp(1.2rem, 3.5vh, 2.5rem); // Aumentado para dar un respiro ultra premium al titulo
+    justify-content: center;
+    gap: clamp(1.2rem, 3.5vh, 2.5rem);
   }
 
-  // Ahora evitamos estirar las tarjetas para que no se vean inmensas.
-  // Usamos flex en lugar de grid para mantener su tamaÃ±o natural elegante.
   .socials__list {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: clamp(0.75rem, 1.5vh, 1.15rem);
-    // Cambiamos "overflow: hidden" por "visible" y agregamos
-    // padding de seguridad para que la sombra (glow) de las cajas resplandezca 
-    // sin que se mutile/recorte la parte superior de la primera card.
     overflow: visible;
     padding: 10px 4px;
     margin: -10px -4px;
@@ -1764,8 +1815,8 @@
 
   .socials__list > .card {
     display: flex;
-    overflow: visible; // Soluciona el problema de que el text se oculte y cause glitch a los 5s
-    flex-shrink: 0; // Evita que se encojan de mÃ¡s
+    overflow: visible;
+    flex-shrink: 0;
   }
 
   .socials__list > .card .card__link {
@@ -1790,7 +1841,7 @@
   }
 
   .socials__list > .card .card__cta {
-    transform: scale(0.85); // Icono de flecha ligeramente mÃ¡s pequeÃ±o
+    transform: scale(0.85);
   }
 
   .socials__title,
@@ -1807,8 +1858,6 @@
     gap: clamp(0.6rem, 1.5vh, 1.25rem);
   }
 
-  // En el slide de transmisiones, la lista de v\u00eddeos recientes se
-  // ajusta tambi\u00e9n al espacio disponible sin desbordar.
   .broadcasts .streams {
     flex: 1 1 auto;
     min-height: 0;
@@ -1819,7 +1868,7 @@
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 
-  // GalerÃ­a: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
+  // Galería: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
   .gallery {
     height: 100%;
     min-height: 0;
@@ -1832,7 +1881,6 @@
   .gallery__title { font-size: clamp(1.2rem, 1.6vw, 1.7rem); }
   .gallery__subtitle { font-size: clamp(0.95rem, 1.4vh, 1.2rem); }
 
-  // El hero crece para llenar el espacio disponible
   .gallery__hero {
     flex: 1 1 auto;
     min-height: 0;
@@ -1843,7 +1891,6 @@
   .gallery__hero-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
   .gallery__hero-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
 
-  // Mosaico de miniaturas ocupa una franja fija inferior
   .gallery__grid {
     flex: 0 0 auto;
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -1939,9 +1986,60 @@
     font-size: clamp(0.95rem, 1.6vh, 1.35rem);
   }
 
-  // Los controles del carrusel "flotan" sobre el contenido sin reservar
-  // espacio inferior, ya que est\u00e1n posicionados absolutos y son
-  // invisibles hasta que el usuario interact\u00fa con la zona.
+  // -------------------------------------------------------------------
+  // Legibilidad a distancia (proyección en la iglesia)
+  // En el monitor de cerca el texto fino se ve bien, pero proyectado y
+  // visto desde lejos las fuentes delgadas y los grises tenues no se
+  // distinguen. Reforzamos pesos y contraste solo en modo presentación.
+  // -------------------------------------------------------------------
+  // Títulos de sección: más peso para que destaquen de lejos.
+  .socials__title,
+  .broadcasts__title,
+  .gallery__title,
+  .weekly__title,
+  .upcoming__title {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  // Nombres / handles de redes.
+  .card__name { font-weight: 800; }
+  .card__username,
+  .card__handle {
+    font-weight: 600;
+    color: rgba(45, 55, 72, 0.86);
+  }
+
+  // Programa semanal y próximos eventos: el texto principal en negrita
+  // y los datos secundarios (hora, fecha, descripción) más marcados.
+  .weekly__item-title,
+  .upcoming__item-title {
+    font-weight: 800;
+  }
+
+  .weekly__day-name,
+  .weekly__time,
+  .upcoming__time,
+  .upcoming__date,
+  .upcoming__meta {
+    font-weight: 700;
+  }
+
+  .weekly__item-desc,
+  .upcoming__item-desc,
+  .streams__caption,
+  .gallery__subtitle {
+    font-weight: 600;
+    color: rgba(45, 55, 72, 0.82);
+  }
+
+  .streams__title { font-weight: 800; }
+
+  // Versículo del pie: en presentación que no sea tan fino ni tan tenue.
+  .bar__verse {
+    font-weight: 600;
+    color: rgba(45, 55, 72, 0.85);
+  }
+
   .carousel { padding-bottom: 0; }
 }
-

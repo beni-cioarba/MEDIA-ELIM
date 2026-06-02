@@ -9,7 +9,6 @@ const https = require('https');
 const API_KEY = process.env.YOUTUBE_API_KEY || 'TU_API_KEY_AQUI';
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'TU_CHANNEL_ID_AQUI';
 
-const ENDPOINT = 'https://www.googleapis.com/youtube/v3/search';
 const OUTPUT_FILE = path.join(__dirname, '../src/assets/data/youtube.json');
 
 // Helper para hacer peticiones HTTPS
@@ -68,16 +67,41 @@ async function updateYouTubeData() {
   console.log('Obteniendo datos de YouTube API...');
 
   try {
-    // 1. Obtener Live (solo 1 resultado - Cuesta 100 unidades)
-    const liveUrl = `${ENDPOINT}?part=snippet&channelId=${CHANNEL_ID}&eventType=live&type=video&maxResults=1&key=${API_KEY}`;
-    const liveResponse = await fetchJSON(liveUrl);
-    const liveStream = mapItems(liveResponse)[0] || null;
-
-    // 2. Obtener Recientes (últimos 5 - Usamos /playlistItems para rebajar coste de 100 a 1 unidad)
     const uploadsPlaylistId = CHANNEL_ID.replace(/^UC/, 'UU');
-    const recentUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=5&key=${API_KEY}`;
+
+    // 1. Vídeos recientes (últimos 6) vía /playlistItems → 1 unidad de cuota.
+    //    Reutilizamos sus IDs tanto para "recientes" como para detectar el directo.
+    const recentUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${uploadsPlaylistId}&maxResults=6&key=${API_KEY}`;
     const recentResponse = await fetchJSON(recentUrl);
-    const recentStreams = mapItems(recentResponse);
+    const recentStreams = mapItems(recentResponse).slice(0, 5);
+
+    // 2. Detección FIABLE del directo. En vez de search?eventType=live (que
+    //    tiene mucha latencia de indexado y fallaba al iniciar la emisión),
+    //    consultamos /videos con liveStreamingDetails sobre los IDs recientes
+    //    y comprobamos liveBroadcastContent === 'live'. → 1 unidad de cuota.
+    const ids = (recentResponse.items || [])
+      .map(it => it.contentDetails?.videoId || it.snippet?.resourceId?.videoId)
+      .filter(Boolean);
+
+    let liveStream = null;
+    if (ids.length) {
+      const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${ids.join(',')}&maxResults=${ids.length}&key=${API_KEY}`;
+      const videosResponse = await fetchJSON(videosUrl);
+      const liveItem = (videosResponse.items || []).find(
+        it => it.snippet?.liveBroadcastContent === 'live' && !it.liveStreamingDetails?.actualEndTime,
+      );
+      if (liveItem && liveItem.id && liveItem.snippet) {
+        const sn = liveItem.snippet;
+        const thumb = sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
+        liveStream = {
+          id: liveItem.id,
+          title: sn.title || '',
+          publishedAt: liveItem.liveStreamingDetails?.actualStartTime || sn.publishedAt || '',
+          thumbnail: thumb,
+          url: `https://www.youtube.com/watch?v=${liveItem.id}`,
+        };
+      }
+    }
 
     // 3. Crear el JSON combinado
     const currentData = {

@@ -139,6 +139,10 @@
     "preacher": "Cuvânt",
     "worship": "Închinare"
   },
+  "location": {
+    "title": "Cum ajungi la noi",
+    "map_title": "Harta cu locația bisericii"
+  },
   "lang": {
     "label": "Limbă",
     "es": "Spaniolă",

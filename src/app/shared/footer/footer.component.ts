@@ -3,10 +3,10 @@ import { TranslateModule } from '@ngx-translate/core';
 
 /**
  * Footer global con los logos institucionales (ELIM + INEB) y un texto
- * de copyright. Sigue la temática oscura+dorada del resto de la app:
- * fondo `#060914 → #0b1226` con borde superior dorado fino y un sutil
- * resplandor radial. Inspirado en el footer del proyecto
- * `INEB_ELIM_Administrativ` pero adaptado al lenguaje visual de esta web.
+ * de copyright. Sigue la temática "Luz y Paz": fondo azul marino
+ * (`#1A365D`) con una fina línea dorada superior y texto claro. Inspirado
+ * en el footer del proyecto `INEB_ELIM_Administrativ` pero adaptado al
+ * lenguaje visual de esta web.
  */
 @Component({
   selector: 'app-footer',
@@ -80,12 +80,12 @@ import { TranslateModule } from '@ngx-translate/core';
         background:
           radial-gradient(
             ellipse at top,
-            rgba(230, 179, 90, 0.05) 0%,
+            rgba(212, 175, 55, 0.1) 0%,
             transparent 60%
           ),
-          linear-gradient(180deg, #0b1226 0%, #060914 100%);
-        border-top: 1px solid rgba(230, 179, 90, 0.12);
-        color: rgba(244, 241, 234, 0.78);
+          linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
+        border-top: 1px solid rgba(212, 175, 55, 0.22);
+        color: rgba(247, 250, 252, 0.7);
         overflow: hidden;
       }
 
@@ -101,10 +101,10 @@ import { TranslateModule } from '@ngx-translate/core';
         background: linear-gradient(
           90deg,
           transparent,
-          #e6b35a 50%,
+          var(--c-gold) 50%,
           transparent
         );
-        opacity: 0.5;
+        opacity: 0.7;
       }
 
       .site-footer__inner {
@@ -125,10 +125,10 @@ import { TranslateModule } from '@ngx-translate/core';
 
         &:hover {
           transform: translateY(-1px);
-          filter: brightness(1.1);
+          filter: brightness(1.05);
         }
         &:focus-visible {
-          outline: 2px solid #e6b35a;
+          outline: 2px solid var(--c-gold);
           outline-offset: 3px;
           border-radius: 4px;
         }
@@ -138,7 +138,7 @@ import { TranslateModule } from '@ngx-translate/core';
         height: clamp(28px, 4vh, 36px);
         width: auto;
         display: block;
-        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
       }
 
       .site-footer__text {
@@ -149,9 +149,9 @@ import { TranslateModule } from '@ngx-translate/core';
 
       .site-footer__line {
         margin: 0;
-        font-family: 'Cormorant Garamond', 'Georgia', serif;
+        font-family: var(--font-serif);
         font-size: clamp(0.85rem, 1vw, 1rem);
-        color: rgba(244, 241, 234, 0.92);
+        color: rgba(247, 250, 252, 0.95);
         letter-spacing: 0.01em;
       }
 
@@ -161,19 +161,19 @@ import { TranslateModule } from '@ngx-translate/core';
 
       .site-footer__sep {
         margin: 0 0.4rem;
-        color: rgba(230, 179, 90, 0.5);
+        color: rgba(212, 175, 55, 0.75);
       }
 
       .site-footer__year {
-        color: #f6d28a;
-        font-weight: 500;
+        color: var(--c-gold-soft);
+        font-weight: 600;
       }
 
       .site-footer__sub {
         margin: 2px 0 0;
         font-size: clamp(0.65rem, 0.8vw, 0.75rem);
         font-weight: 400;
-        color: rgba(244, 241, 234, 0.55);
+        color: rgba(247, 250, 252, 0.55);
         letter-spacing: 0.04em;
         text-transform: uppercase;
       }

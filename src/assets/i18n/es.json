@@ -139,6 +139,10 @@
     "preacher": "Predica",
     "worship": "Alabanza"
   },
+  "location": {
+    "title": "Cómo llegar",
+    "map_title": "Mapa de la ubicación de la iglesia"
+  },
   "lang": {
     "label": "Idioma",
     "es": "Español",

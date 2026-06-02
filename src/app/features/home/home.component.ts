@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CHURCH_CONFIG } from '../../core/church.config';
@@ -57,6 +58,16 @@ export class HomeComponent implements OnInit {
   protected readonly youtube = inject(YouTubeService);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly sanitizer = inject(DomSanitizer);
+
+  /** URL del mapa incrustado (Google Maps embed con marcador en la query). */
+  protected readonly mapEmbedUrl: SafeResourceUrl =
+    this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.google.com/maps?q=${encodeURIComponent(
+        this.config.location.mapsQuery,
+      )}&hl=es&z=16&output=embed`,
+    );
+
 
   /** Reacciona ante cambios de idioma para recomputar etiquetas i18n. */
   private readonly langChange = toSignal(this.translate.onLangChange, { initialValue: null });
@@ -139,7 +150,12 @@ export class HomeComponent implements OnInit {
         return { ...ev, daysLeft, isToday: daysLeft === 0, isPast: daysLeft < 0 };
       })
       .filter((ev) => !ev.isPast)
-      .sort((a, b) => a.daysLeft - b.daysLeft);
+      // Orden cronológico real: primero por días restantes y, dentro del
+      // mismo día, por hora de inicio (ej: 10:00 antes que 18:00).
+      .sort((a, b) => {
+        if (a.daysLeft !== b.daysLeft) return a.daysLeft - b.daysLeft;
+        return this.parseTimeToMinutes(a.time) - this.parseTimeToMinutes(b.time);
+      });
   });
 
   /** Programul de astăzi (dacă există) — folosit pentru highlight "AZI". */
@@ -156,6 +172,21 @@ export class HomeComponent implements OnInit {
     // Format așteptat: YYYY-MM-DD. Construim local pentru a evita decalaje TZ.
     const [y, m, d] = iso.split('-').map((n) => parseInt(n, 10));
     return new Date(y, (m || 1) - 1, d || 1);
+  }
+
+  /**
+   * Convierte una hora libre ("10:00", "18:30", "9:45 am") en minutos desde
+   * medianoche para poder ordenar dos eventos del mismo día por hora.
+   * Si no se puede interpretar, devuelve un valor alto para situarlo al final.
+   */
+  private parseTimeToMinutes(time: string | undefined): number {
+    if (!time) return 24 * 60;
+    const match = time.match(/(\d{1,2}):(\d{2})/);
+    if (!match) return 24 * 60;
+    const hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) return 24 * 60;
+    return hours * 60 + minutes;
   }
 
   /**

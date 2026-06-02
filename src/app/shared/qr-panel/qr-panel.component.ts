@@ -24,7 +24,7 @@ import { TranslateModule } from '@ngx-translate/core';
         [width]="1024"
         [margin]="2"
         [errorCorrectionLevel]="'H'"
-        [colorDark]="'#0b1020'"
+        [colorDark]="'#1a365d'"
         [colorLight]="'#ffffff'"
         [elementType]="'svg'"
       ></qrcode>
@@ -49,7 +49,8 @@ import { TranslateModule } from '@ngx-translate/core';
         background: #fff;
         padding: clamp(8px, 1.2vh, 18px);
         border-radius: 16px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 14px 36px rgba(26, 54, 93, 0.22),
+                    0 0 0 1px rgba(26, 54, 93, 0.08);
         aspect-ratio: 1 / 1;
         width: auto;
         max-width: 100%;
@@ -77,7 +78,7 @@ import { TranslateModule } from '@ngx-translate/core';
       .qr-panel__caption {
         text-align: center;
         font-size: clamp(0.9rem, 1.4vh, 1.3rem);
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(45, 55, 72, 0.78);
         margin: 0;
         flex: 0 0 auto;
       }

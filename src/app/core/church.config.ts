@@ -74,6 +74,21 @@ export interface UpcomingEvent {
   readonly worshipLead?: string;
 }
 
+/**
+ * Ubicación física de la iglesia. Centraliza la dirección y los enlaces
+ * de mapa para mostrar el punto, compartir y abrir indicaciones.
+ */
+export interface ChurchLocation {
+  /** Dirección legible completa (una sola línea). */
+  readonly address: string;
+  /** Localidad / referencia secundaria opcional. */
+  readonly city: string;
+  /** Enlace corto para compartir (maps.app.goo.gl). */
+  readonly mapsShareUrl: string;
+  /** Consulta usada para el mapa incrustado y las indicaciones. */
+  readonly mapsQuery: string;
+}
+
 export interface ChurchConfig {
   readonly logo: string;
   readonly youtubeChannelUrl: string;
@@ -93,6 +108,8 @@ export interface ChurchConfig {
   readonly weeklyProgram: readonly WeeklyProgram[];
   /** Evenimente viitoare puntuale (botezuri, conferințe, etc.). */
   readonly upcomingEvents: readonly UpcomingEvent[];
+  /** Ubicación física de la iglesia (mapa + dirección). */
+  readonly location: ChurchLocation;
 }
 
 export const CHURCH_CONFIG = new InjectionToken<ChurchConfig>('CHURCH_CONFIG');
@@ -256,6 +273,26 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   // ---------------------------------------------------------------------
   upcomingEvents: [
     {
+      id: 'seara_tineret_2026_06_07',
+      date: '2026-06-07',
+      time: '18:00',
+      title: 'Seară de tineret',
+      description: '',
+      verse: '',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
+      id: 'cina_domnului_2026_06_07',
+      date: '2026-06-07',
+      time: '10:00',
+      title: 'Cina Domnului',
+      description: '',
+      verse: '',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
       id: 'botez_2026_05_31',
       date: '2026-05-31',
       time: '10:00',
@@ -291,4 +328,15 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     }, 
     */
   ],
+  // ---------------------------------------------------------------------
+  // Ubicación de la iglesia. `mapsQuery` se usa tanto para el mapa
+  // incrustado (iframe) como para construir el enlace de indicaciones.
+  // `mapsShareUrl` es el enlace corto oficial para compartir.
+  // ---------------------------------------------------------------------
+  location: {
+    address: 'Av. de Madrid, 30, 28500 Arganda del Rey',
+    city: 'Madrid',
+    mapsShareUrl: 'https://maps.app.goo.gl/TAhrCAV6qvN3Abdv5',
+    mapsQuery: 'Av. de Madrid, 30, 28500 Arganda del Rey, Madrid',
+  },
 };

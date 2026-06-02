@@ -1,22 +1,57 @@
 // =====================================================================
 // Tokens de diseño globales para el módulo Home
 // Importado por home.component.scss y reutilizable en parciales.
+//
+// PALETA — "Luz y Paz": azul marino profundo (#1A365D) para la marca,
+// títulos e iconos importantes; oro metálico suave (#D4AF37) como acento
+// de luz y llamadas a la acción; fondo alabastro (#FAF9F6) cálido y
+// limpio; superficies en blanco puro; texto en gris carbón (#2D3748).
+// Sombras azuladas (nunca negras puras) para mantener la elegancia.
 // =====================================================================
 
-$color-bg-1: #060914;
-$color-bg-2: #0b1226;
-$color-surface: rgba(255, 255, 255, 0.06);
-$color-surface-strong: rgba(255, 255, 255, 0.1);
-$color-border: rgba(255, 255, 255, 0.12);
-$color-text: #f4f1ea;
-$color-muted: rgba(244, 241, 234, 0.7);
-$color-gold: #e6b35a;
-$color-gold-soft: #f6d28a;
-$color-blue-soft: #6aa9ff;
+// ---- Marca / primario (navy) -----------------------------------------
+$color-primary: #1a365d;       // azul marino profundo
+$color-primary-soft: #2c5282;  // navy más claro (degradados / hover)
+$color-primary-deep: #122844;  // navy oscuro
+$color-on-primary: #f7fafc;    // texto sobre navy
 
+// ---- Fondos / lienzo --------------------------------------------------
+$color-bg-1: #eef1f6;   // velo frío sutil (extremo más profundo del degradado)
+$color-bg-2: #ffffff;   // blanco luminoso (extremo más claro)
+$color-paper: #faf9f6;  // alabastro base
+
+// ---- Texto ------------------------------------------------------------
+$color-text: #2d3748;                       // gris carbón
+$color-muted: rgba(45, 55, 72, 0.66);       // texto secundario
+$color-faint: rgba(45, 55, 72, 0.46);       // texto terciario / etiquetas
+
+// ---- Superficies de tarjeta ------------------------------------------
+$color-card: #ffffff;   // tarjeta principal (blanco puro)
+$color-card-2: #f6f8fb; // tarjeta alterna (frío muy claro)
+
+// ---- Velos / rellenos sutiles ----------------------------------------
+$color-surface: rgba(26, 54, 93, 0.05);
+$color-surface-strong: rgba(26, 54, 93, 0.11);
+$color-gold-tint: rgba(212, 175, 55, 0.14);
+
+// ---- Bordes / líneas finas -------------------------------------------
+$color-border: #e2e8f0;                       // slate claro
+$color-hairline: rgba(26, 54, 93, 0.10);
+$color-hairline-strong: rgba(26, 54, 93, 0.24);
+
+// ---- Acentos ----------------------------------------------------------
+$color-gold: #d4af37;       // oro metálico suave — acento / CTA
+$color-gold-soft: #e3c766;  // oro claro (acentos sobre velos oscuros)
+$color-gold-deep: #9c7a1e;  // oro oscuro para texto sobre claro
+$color-rose: #2c5282;       // secundario: navy más claro
+$color-blue-soft: #b9cbe6;  // azul suave (halo decorativo del fondo)
+
+// ---- Radios -----------------------------------------------------------
 $radius-xl: 32px;
 $radius-lg: 24px;
 $radius-md: 16px;
 
-$shadow-card: 0 16px 48px rgba(0, 0, 0, 0.55);
-$shadow-soft: 0 6px 22px rgba(0, 0, 0, 0.4);
+// ---- Sombras (azuladas, nunca negras puras) --------------------------
+$shadow-card: 0 18px 44px rgba(26, 54, 93, 0.14);
+$shadow-soft: 0 8px 22px rgba(26, 54, 93, 0.10);
+$shadow-sm: 0 4px 14px rgba(26, 54, 93, 0.08);

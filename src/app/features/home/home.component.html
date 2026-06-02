@@ -389,15 +389,45 @@
           }
         </section>
       </div>
+
+      <!-- ============ Ubicación / Cómo llegar ============ -->
+      @if (!fullscreen()) {
+        <div class="slide slide--location">
+          <section class="location" aria-labelledby="location-title">
+            <header class="location__header">
+              <h2 id="location-title" class="location__title">{{ 'location.title' | translate }}</h2>
+            </header>
+
+            <div class="location__layout">
+              <!-- Mapa incrustado con el punto de la iglesia -->
+              <div class="location__map">
+                <iframe
+                  class="location__map-frame"
+                  [src]="mapEmbedUrl"
+                  [title]="'location.map_title' | translate"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+          </section>
+        </div>
+      }
     </div>
 
-    <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
-      @defer (on idle) {
-        <app-qr-panel [data]="qrData()" />
-      } @placeholder {
-        <div class="qr__placeholder" aria-hidden="true"></div>
-      }
-    </aside>
+    <!-- El QR solo tiene sentido proyectado en la pantalla de la iglesia
+         para que la gente lo escanee; en la web normal de visionado no se
+         muestra (la página ya está abierta en su dispositivo). -->
+    @if (fullscreen()) {
+      <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
+        @defer (on idle) {
+          <app-qr-panel [data]="qrData()" />
+        } @placeholder {
+          <div class="qr__placeholder" aria-hidden="true"></div>
+        }
+      </aside>
+    }
   </section>
 
   <!-- Zona caliente invisible -->
@@ -480,30 +510,14 @@
       <span class="bar__verse-text">«{{ 'verse.text' | translate }}»</span>
       <span class="bar__verse-ref">— {{ 'verse.reference' | translate }}</span>
     </p>
-
-    <button
-      type="button"
-      class="bar__fs"
-      (click)="toggleFullscreen()"
-      [attr.aria-pressed]="fullscreen()"
-      [title]="(fullscreen() ? 'presentation.tooltip_exit' : 'presentation.tooltip_enter') | translate"
-    >
-      @if (!fullscreen()) {
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
-      } @else {
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
-      }
-      <span>{{ (fullscreen() ? 'presentation.exit' : 'presentation.enter') | translate }}</span>
-    </button>
   </footer>
 </main>
 
+<!-- Dock de controles (presentar / compartir), siempre disponible en la
+     esquina inferior derecha, tanto en la web normal como en presentación. -->
+<app-floating-actions />
+
 <!-- Footer institucional (oculto en modo presentación a pantalla completa) -->
 @if (!fullscreen()) {
-  <app-floating-actions />
   <app-footer />
 }

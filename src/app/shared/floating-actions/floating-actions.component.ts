@@ -4,26 +4,28 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
-  HostListener,
   inject,
   signal,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { ShareButtonComponent } from '../share-button/share-button.component';
+import { PresentationService } from '../../core/presentation.service';
 
 /**
- * Dock flotante en la esquina inferior derecha que aparece cuando el
- * usuario hace scroll por debajo del fold inicial. Contiene:
+ * Dock flotante fijo en la esquina inferior derecha con los controles de
+ * acción rápida, siempre accesibles:
  *
- *  - Acceso rápido al QR (smooth-scroll a la sección del aside QR).
+ *  - Botón de modo presentación (entrar / salir de pantalla completa).
  *  - Botón de compartir (reutiliza `ShareButtonComponent`).
  *
- * Se oculta automáticamente cuando el footer entra en el viewport,
- * para no taparlo (uso de IntersectionObserver sobre `app-footer`).
+ * Pensado tanto para el portátil que controla la proyección en la iglesia
+ * (acceso inmediato a "Presentar" / "Salir") como para el visitante en la
+ * web pública (compartir la página por WhatsApp / redes).
  *
- * Pensado para uso público en móvil: el visitante siempre tiene a mano
- * el QR (para enseñárselo a alguien al lado) y la opción de compartir
- * la página por WhatsApp / redes.
+ * En modo presentación el dock se atenúa y se revela al pasar el ratón,
+ * para no distraer en la proyección pero seguir estando a mano. Fuera de
+ * presentación se oculta si el footer institucional entra en el viewport,
+ * para no taparlo (IntersectionObserver sobre `app-footer`).
  */
 @Component({
   selector: 'app-floating-actions',
@@ -33,24 +35,50 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
   template: `
     <div
       class="dock"
-      [class.dock--visible]="isVisible()"
-      [class.dock--hidden-by-footer]="footerVisible()"
+      [class.dock--visible]="isVisible() && !footerVisible()"
+      [class.dock--present]="presentation.isFullscreen()"
       role="complementary"
-      [attr.aria-hidden]="!isVisible() || footerVisible()"
+      [attr.aria-hidden]="footerVisible()"
     >
       <button
         type="button"
-        class="dock__btn dock__btn--qr"
-        (click)="scrollToQr()"
-        [attr.aria-label]="'qr.aria' | translate"
-        [title]="'qr.caption' | translate"
+        class="dock__btn dock__btn--present"
+        (click)="togglePresentation()"
+        [attr.aria-pressed]="presentation.isFullscreen()"
+        [attr.aria-label]="
+          (presentation.isFullscreen()
+            ? 'presentation.tooltip_exit'
+            : 'presentation.tooltip_enter'
+          ) | translate
+        "
+        [title]="
+          (presentation.isFullscreen()
+            ? 'presentation.tooltip_exit'
+            : 'presentation.tooltip_enter'
+          ) | translate
+        "
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M3 3h8v8H3V3Zm2 2v4h4V5H5Zm8-2h8v8h-8V3Zm2 2v4h4V5h-4ZM3 13h8v8H3v-8Zm2 2v4h4v-4H5Zm8 0h2v2h-2v-2Zm4 0h2v2h-2v-2Zm-4 4h2v2h-2v-2Zm2-2h2v2h-2v-2Zm2 2h2v2h-2v-2Zm2-4h2v2h-2v-2Zm0 4h2v2h-2v-2Z"
-          />
-        </svg>
+        @if (!presentation.isFullscreen()) {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        }
       </button>
 
       <app-share-button class="dock__share" />
@@ -72,12 +100,12 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
         align-items: center;
         gap: 0.55rem;
         padding: 0.4rem;
-        background: rgba(11, 16, 32, 0.72);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(26, 54, 93, 0.14);
         border-radius: 999px;
         backdrop-filter: blur(14px) saturate(140%);
         -webkit-backdrop-filter: blur(14px) saturate(140%);
-        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 14px 36px rgba(26, 54, 93, 0.18);
         opacity: 0;
         transform: translateY(16px) scale(0.95);
         pointer-events: none;
@@ -89,6 +117,18 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
           opacity: 1;
           transform: translateY(0) scale(1);
           pointer-events: auto;
+        }
+
+        // En presentación el dock se mantiene a mano pero discreto: atenuado
+        // mientras no se usa y totalmente visible al pasar el ratón o enfocar,
+        // para poder salir de la presentación con facilidad sin distraer.
+        &--present.dock--visible {
+          opacity: 0.4;
+
+          &:hover,
+          &:focus-within {
+            opacity: 1;
+          }
         }
 
         &--hidden-by-footer {
@@ -117,9 +157,9 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
         width: 42px;
         height: 42px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        color: #f4f1ea;
+        background: rgba(212, 175, 55, 0.12);
+        border: 1px solid rgba(26, 54, 93, 0.14);
+        color: var(--c-text);
         cursor: pointer;
         padding: 0;
         transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
@@ -130,15 +170,15 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
         }
 
         &:hover {
-          background: rgba(255, 255, 255, 0.16);
-          color: #fff;
+          background: rgba(212, 175, 55, 0.2);
+          color: var(--c-gold-deep);
           transform: scale(1.06);
         }
         &:active {
           transform: scale(0.95);
         }
         &:focus-visible {
-          outline: 2px solid #e6b35a;
+          outline: 2px solid var(--c-gold-deep);
           outline-offset: 3px;
         }
       }
@@ -151,8 +191,9 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
         padding: 0;
         border-radius: 50%;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(212, 175, 55, 0.12);
+        border-color: rgba(26, 54, 93, 0.14);
+        color: var(--c-text);
       }
       .dock__share ::ng-deep .share-btn__icon {
         width: 20px;
@@ -167,12 +208,11 @@ import { ShareButtonComponent } from '../share-button/share-button.component';
 export class FloatingActionsComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  protected readonly presentation = inject(PresentationService);
 
-  protected readonly isVisible = signal(false);
+  /** El dock está siempre disponible; solo se oculta si tapa el footer. */
+  protected readonly isVisible = signal(true);
   protected readonly footerVisible = signal(false);
-
-  /** Umbral de scroll (px) a partir del cual aparece el dock. */
-  private readonly scrollThreshold = 220;
 
   ngAfterViewInit(): void {
     if (typeof IntersectionObserver === 'undefined') return;
@@ -202,29 +242,9 @@ export class FloatingActionsComponent implements AfterViewInit {
       const id = window.setTimeout(() => tryAttach(), 800);
       this.destroyRef.onDestroy(() => window.clearTimeout(id));
     }
-
-    // Estado inicial.
-    this.updateScroll();
   }
 
-  @HostListener('window:scroll')
-  protected onScroll(): void {
-    this.updateScroll();
-  }
-
-  private updateScroll(): void {
-    const y = window.scrollY ?? window.pageYOffset ?? 0;
-    const next = y > this.scrollThreshold;
-    if (next !== this.isVisible()) {
-      this.isVisible.set(next);
-      this.cdr.markForCheck();
-    }
-  }
-
-  protected scrollToQr(): void {
-    const el =
-      document.getElementById('qr-section') ?? document.querySelector('.qr');
-    if (!el) return;
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  protected togglePresentation(): void {
+    void this.presentation.toggle();
   }
 }
