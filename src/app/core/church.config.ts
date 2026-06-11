@@ -273,18 +273,28 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   // ---------------------------------------------------------------------
   upcomingEvents: [
     {
-      id: 'seara_tineret_2026_06_07',
-      date: '2026-06-07',
-      time: '18:00',
-      title: 'Seară de tineret',
+      id: '2',
+      date: '2026-06-21',
+      time: '10:00',
+      title: 'Laudă şi închinare',
       description: '',
       verse: '',
       preacher: '',
-      worshipLead: '',
+      worshipLead: 'Andrei şi Andreea Mois',
     },
     {
-      id: 'cina_domnului_2026_06_07',
-      date: '2026-06-07',
+      id: '1',
+      date: '2026-06-29',
+      time: '18:00',
+      title: 'Laudă şi închinare',
+      description: '',
+      verse: '',
+      preacher: '',
+      worshipLead: 'Adi Kovaci',
+    },
+    {
+      id: 'cina_domnului_2026_07_05',
+      date: '2026-07-05',
       time: '10:00',
       title: 'Cina Domnului',
       description: '',
@@ -292,7 +302,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       preacher: '',
       worshipLead: '',
     },
-    {
+    /* {
       id: 'botez_2026_05_31',
       date: '2026-05-31',
       time: '10:00',
@@ -302,7 +312,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
         'Romani 6:4: „Noi deci, prin botezul în moartea Lui, am fost îngropaţi împreună cu El, pentru ca, după cum Hristos a înviat din morţi, prin slava Tatălui, tot aşa şi noi să trăim o viaţă nouă.”',
       preacher: '',
       worshipLead: '',
-    },
+    }, */
     /* 
     {
       id: 'botez_2026_05_31',
