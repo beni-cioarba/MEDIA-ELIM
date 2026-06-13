@@ -284,7 +284,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: '1',
-      date: '2026-06-29',
+      date: '2026-06-28', 
       time: '18:00',
       title: 'Laudă şi închinare',
       description: '',
