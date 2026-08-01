@@ -317,6 +317,23 @@
   margin: 0;
 }
 
+// Dato técnico, no editorial: se marca como tal con una píldora tenue para
+// que esté disponible al reportar incidencias sin robar atención al aviso
+// legal.
+.footer__version {
+  display: inline-block;
+  margin-inline-start: var(--sp-2);
+  padding: 0.1em 0.5em;
+  border: 1px solid rgba(247, 250, 252, 0.16);
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: rgba(247, 250, 252, 0.45);
+  white-space: nowrap;
+  cursor: help;
+}
+
 .footer__partner {
   display: inline-flex;
   align-items: center;

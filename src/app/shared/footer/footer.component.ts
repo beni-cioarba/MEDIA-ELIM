@@ -5,6 +5,7 @@ import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
+import { environment } from '../../../environments/version';
 import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
 import { IconComponent } from '../icon/icon.component';
 import { SocialIconComponent } from '../social-icon/social-icon.component';
@@ -77,4 +78,10 @@ export class FooterComponent {
 
   protected readonly mailto = `mailto:${this.config.contact.email}`;
   protected readonly tel = `tel:${this.config.contact.phone}`;
+
+  /**
+   * Versión publicada. Sirve de referencia al reportar una incidencia y para
+   * confirmar de un vistazo que el service worker ya sirve el build nuevo.
+   */
+  protected readonly version = environment.version;
 }

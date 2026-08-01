@@ -98,6 +98,12 @@
       <p class="footer__copy">
         © {{ year }} {{ 'footer.church' | translate }} ·
         {{ 'footer.rights' | translate }}
+        <span
+          class="footer__version"
+          [title]="'footer.version' | translate"
+          [attr.aria-label]="'footer.version' | translate"
+          >v{{ version }}</span
+        >
       </p>
 
       <a
