@@ -1,0 +1,317 @@
+// =====================================================================
+// Barra de navegación principal.
+// Estilos encapsulados (por defecto): esta cabecera es un componente
+// cerrado, no un "layout" abierto como el escenario.
+// Excepción: los paneles de `mat-menu` se renderizan en el <body> y se
+// estilan en `styles/_material-overrides.scss` (clase `.elim-menu`).
+// =====================================================================
+
+@use 'ds' as *;
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+}
+
+.nav {
+  --nav-bg: rgba(250, 249, 246, 0.72);
+  @include glass(var(--nav-bg));
+
+  border-bottom: 1px solid transparent;
+  transition:
+    background var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard),
+    box-shadow var(--mo-base) var(--ea-standard);
+}
+
+.nav--scrolled {
+  --nav-bg: rgba(250, 249, 246, 0.94);
+  border-bottom-color: var(--c-hairline);
+  box-shadow: var(--e-1);
+}
+
+.nav__inner {
+  @include container(var(--w-wide));
+
+  // Tres zonas: marca | navegación | acciones.
+  // La lista va **pegada a la marca**, no centrada: centrarla obliga a que la
+  // zona de acciones y la marca midan lo mismo (no lo hacen) y el desequilibrio
+  // crece cada vez que se añade un módulo al menú. Alineada a la izquierda el
+  // recorrido de lectura es siempre el mismo y admite entradas nuevas.
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: var(--nav-height);
+}
+
+// ---- Marca -----------------------------------------------------------
+// La marca vive en `shared/brand-logo` y se comparte con el pie y con la
+// proyección. Aquí sólo se la coloca: todo lo tipográfico es del componente,
+// que es lo que garantiza que las tres se vean igual.
+.nav__brand {
+  justify-self: start;
+  padding-inline-end: var(--sp-2);
+}
+
+// ---- Lista de escritorio --------------------------------------------
+.nav__desktop {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+  padding-inline-start: clamp(0.25rem, 1vw, 1rem);
+}
+
+.nav__list {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav__item {
+  flex: 0 0 auto;
+}
+
+.nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  // Espaciado fluido en vez de un corte por breakpoint: entre 1024 y ~1400
+  // px la barra apenas tiene holgura y la lista invadía la zona de
+  // acciones. Con `clamp` se comprime sola y recupera el aire en pantallas
+  // grandes, sin saltos visibles al redimensionar. El techo es deliberadamente
+  // corto (0.8rem) porque a partir de `xl` reaparece el rótulo del donativo.
+  padding-block: var(--sp-2);
+  padding-inline: clamp(0.4rem, 0.85vw, 0.8rem);
+  min-height: 40px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+    color: var(--c-primary);
+  }
+
+  &.is-active {
+    color: var(--c-primary-deep);
+    font-weight: 600;
+  }
+}
+
+// Indicador «estás aquí»: filete dorado bajo el rótulo. Se prefiere a un
+// fondo relleno porque no compite con el CTA de directo ni con el hover.
+.nav__label {
+  position: relative;
+  padding-block-end: 2px;
+}
+
+.nav__label::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--c-gold), var(--c-gold-deep));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--mo-base) var(--ea-standard);
+}
+
+.nav__link.is-active .nav__label::after {
+  transform: scaleX(1);
+}
+
+.nav__caret {
+  font-size: 1rem;
+  color: var(--c-faint);
+  transition: transform var(--mo-fast) var(--ea-standard);
+}
+
+// `mat-menu` marca su disparador con esta clase mientras el panel está abierto.
+.nav__link--group[aria-expanded='true'] {
+  background: var(--c-veil);
+
+  .nav__caret {
+    transform: rotate(180deg);
+  }
+}
+
+// ---- CTA de donativos ------------------------------------------------
+// Píldora perfilada, no rellena: es la acción *secundaria*. Si compitiera en
+// peso con «En directo» el usuario tendría dos focos a la vez y ninguno
+// destacaría. El icono ayuda a identificarla sin leer, que es lo que hace la
+// gente que ya sabe a qué viene.
+.nav__donate {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 2.375rem;
+  padding-inline: var(--sp-3);
+  border: 1px solid var(--c-gold);
+  border-radius: var(--r-pill);
+  color: var(--c-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--c-gold-tint);
+    border-color: var(--c-gold-deep);
+    color: var(--c-primary-deep);
+  }
+
+  &.is-active {
+    background: var(--c-gold-tint);
+    border-color: var(--c-gold-deep);
+  }
+}
+
+.nav__donate-icon {
+  font-size: 1.05rem;
+  color: var(--c-gold-deep);
+}
+
+// Entre `lg` (donde aparece el menú horizontal) y `xl` la barra va justa:
+// cinco enlaces, dos CTA y el selector de idioma. El rótulo del donativo se
+// repliega al icono porque es la acción *secundaria* y porque así el ajuste no
+// depende de la longitud de la traducción — «Donativos» ocupa bastante más que
+// «Doneață» y con el rótulo visible la lista invadía la zona de acciones en
+// castellano. El nombre completo sigue en `aria-label` y en `title`.
+@include until('xl') {
+  .nav__donate {
+    gap: 0;
+    padding-inline: var(--sp-2);
+  }
+
+  .nav__donate-label {
+    display: none;
+  }
+}
+
+// ---- CTA de directo --------------------------------------------------
+// Se diseña a mano en vez de usar `mat-flat-button`: así el punto pulsante y
+// el rótulo comparten la misma caja flex y quedan alineados a la perfección
+// (el botón de Material añade su propio relleno y line-height y descuadraba).
+.nav__live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 2.375rem;
+  padding-inline: var(--sp-4);
+  border-radius: var(--r-pill);
+  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+  box-shadow: var(--e-1);
+  color: var(--c-primary-deep);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    box-shadow var(--mo-fast) var(--ea-standard),
+    transform var(--mo-fast) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: var(--e-2);
+    transform: translateY(-1px);
+  }
+
+  &.is-active {
+    box-shadow:
+      var(--e-1),
+      0 0 0 2px var(--c-primary-deep);
+  }
+}
+
+// Punto pulsante: es el símbolo universal de «emitiendo» y se lee mejor de un
+// vistazo que un triángulo de reproducción.
+.nav__live-dot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--c-primary-deep);
+}
+
+.nav__live-dot::after {
+  content: '';
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-primary-deep);
+  opacity: 0;
+  animation: nav-live-pulse 2s var(--ea-standard) infinite;
+}
+
+@keyframes nav-live-pulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.6);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+@include until('sm') {
+  .nav__live {
+    height: 2.125rem;
+    padding-inline: var(--sp-3);
+    font-size: 0.8rem;
+  }
+}
+
+// ---- Acciones --------------------------------------------------------
+.nav__actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: var(--sp-2);
+}
+
+.nav__burger app-icon {
+  font-size: 1.5rem;
+  color: var(--c-primary);
+}
+
+@include motion-reduce {
+  .nav,
+  .nav__link,
+  .nav__caret,
+  .nav__label::after,
+  .nav__donate,
+  .nav__live {
+    transition: none;
+  }
+
+  .nav__live-dot::after {
+    animation: none;
+  }
+}

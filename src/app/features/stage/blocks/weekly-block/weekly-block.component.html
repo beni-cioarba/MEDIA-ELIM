@@ -1,0 +1,35 @@
+<section class="weekly" aria-labelledby="weekly-title">
+  <header class="weekly__header">
+    <h2 id="weekly-title" class="weekly__title">{{ 'weekly.title' | translate }}</h2>
+  </header>
+
+  <ul class="weekly__list" role="list">
+    @for (item of schedule.weeklyProgram(); track item.id) {
+      <li
+        class="weekly__item"
+        [class.is-today]="item.day === schedule.currentWeekDay()"
+        [attr.aria-current]="item.day === schedule.currentWeekDay() ? 'date' : null"
+      >
+        <div class="weekly__day">
+          <span class="weekly__day-name">{{ item.dayLabel }}</span>
+          @if (item.day === schedule.currentWeekDay()) {
+            <span class="weekly__today-badge">{{ 'weekly.today' | translate }}</span>
+          }
+        </div>
+        <div class="weekly__body">
+          <span class="weekly__time" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {{ item.time }}
+          </span>
+          <h3 class="weekly__item-title">{{ item.title }}</h3>
+          @if (item.description) {
+            <p class="weekly__item-desc">{{ item.description }}</p>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</section>

@@ -1,0 +1,167 @@
+// =====================================================================
+// AJUSTES DE MARCA SOBRE ANGULAR MATERIAL
+//
+// Regla de oro: **nunca** pisar clases internas `.mat-mdc-*` con
+// `!important` ni con selectores frágiles. Se usan, por este orden:
+//   1. El tema (`_theme.scss`) → color, tipografía, densidad.
+//   2. Los tokens CSS que Material 17 expone (`--mdc-*`, `--mat-*`).
+//   3. Sólo si no queda otra, una clase propia aplicada con
+//      `panelClass` / `class` sobre el componente.
+//
+// Todo lo de aquí es global a propósito: los overlays de Material
+// (menús, tooltips, snack-bars) se renderizan en el `<body>`, fuera del
+// alcance de los estilos encapsulados de cualquier componente.
+// =====================================================================
+
+@use 'tokens' as *;
+@use 'mixins' as *;
+
+// ---------------------------------------------------------------------
+// Iconos — nuestros SVG son de trazo y viven en `--elim-icon-stroke`.
+// ---------------------------------------------------------------------
+.mat-icon {
+  // `mat-icon` fuerza 24px; lo hacemos relativo para poder escalarlo con
+  // `font-size` desde el componente padre, que es como se comporta el
+  // resto de la tipografía del sistema.
+  width: 1em;
+  height: 1em;
+  font-size: 1.5rem;
+  line-height: 1;
+  overflow: visible;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+/** Icono dibujado con trazo (los nuestros): grosor uniforme y escalable. */
+.mat-icon.elim-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--elim-icon-stroke, 1.8);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/**
+ * Google Material Symbols (fuente variable). Se cargan de forma no
+ * bloqueante; hasta que llega la fuente, el ligature se oculta para
+ * evitar ver el texto crudo ("home", "search"…) — el clásico FOUT feo.
+ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: inherit;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    'FILL' var(--symbol-fill, 0),
+    'wght' var(--symbol-weight, 400),
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+html:not(.fonts-symbols-ready) .material-symbols-outlined {
+  visibility: hidden;
+}
+
+// ---------------------------------------------------------------------
+// Botones — recuperamos el área táctil que quita `density: -1` y
+// alineamos el radio con el sistema (Material usa 4px por defecto).
+// ---------------------------------------------------------------------
+.mat-mdc-button-base {
+  --mdc-text-button-container-shape: var(--r-pill);
+  --mdc-filled-button-container-shape: var(--r-pill);
+  --mdc-outlined-button-container-shape: var(--r-pill);
+  --mdc-protected-button-container-shape: var(--r-pill);
+  letter-spacing: 0.02em;
+}
+
+.mat-mdc-icon-button {
+  --mdc-icon-button-state-layer-size: 44px;
+  width: var(--mdc-icon-button-state-layer-size);
+  height: var(--mdc-icon-button-state-layer-size);
+  padding: 0;
+}
+
+// ---------------------------------------------------------------------
+// Menús — el menú de navegación principal debe parecer una tarjeta de la
+// marca, no un menú genérico de Material.
+// ---------------------------------------------------------------------
+.mat-mdc-menu-panel {
+  --mat-menu-container-shape: var(--r-md);
+  border: 1px solid var(--c-hairline);
+  box-shadow: var(--e-3) !important;
+  background: var(--c-surface);
+  min-width: 15rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+}
+
+.mat-mdc-menu-item {
+  --mat-menu-item-label-text-color: var(--c-text);
+  min-height: 44px;
+
+  .mat-icon {
+    color: var(--c-primary-soft);
+    margin-right: var(--sp-3);
+  }
+
+  &:hover:not([disabled]) {
+    background: var(--c-veil);
+  }
+}
+
+/** Variante "navegación": dos líneas (título + descripción). */
+.elim-menu .mat-mdc-menu-item {
+  height: auto;
+  padding-block: var(--sp-2);
+  line-height: 1.35;
+}
+
+.elim-menu__label {
+  display: block;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.elim-menu__desc {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+/** Entrada activa del desplegable: filete dorado + fondo tenue. */
+.elim-menu .mat-mdc-menu-item.is-active {
+  background: var(--c-gold-tint);
+  box-shadow: inset 3px 0 0 var(--c-gold-deep);
+
+  .elim-menu__label {
+    color: var(--c-primary-deep);
+  }
+}
+
+// ---------------------------------------------------------------------
+// El overlay del CDK debe quedar por debajo del modo proyección.
+// ---------------------------------------------------------------------
+.cdk-overlay-container {
+  z-index: var(--z-overlay);
+}
+
+// Sin animaciones cuando el usuario las ha desactivado.
+@include motion-reduce {
+  .mat-mdc-menu-panel,
+  .mat-expansion-panel {
+    transition: none !important;
+  }
+}

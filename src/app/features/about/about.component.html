@@ -1,0 +1,110 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'about.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'about.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'about.lead' | translate }}</p>
+  </div>
+</header>
+
+<!-- Historia -->
+<app-page-section titleKey="about.story.title" subtitleKey="about.story.subtitle">
+  <div class="story">
+    <div class="story__text">
+      <p>{{ 'about.story.body_1' | translate }}</p>
+      <p>{{ 'about.story.body_2' | translate }}</p>
+      <p>{{ 'about.story.body_3' | translate }}</p>
+    </div>
+    <figure class="story__figure">
+      <img
+        [src]="config.heroSlides[0].image"
+        [alt]="'about.story.image_alt' | translate"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>{{ 'about.story.image_alt' | translate }}</figcaption>
+    </figure>
+  </div>
+</app-page-section>
+
+<!-- Identidad -->
+<app-page-section
+  tinted
+  eyebrowKey="about.pillars.eyebrow"
+  titleKey="about.pillars.title"
+  subtitleKey="about.pillars.subtitle"
+>
+  <ul class="pillars">
+    @for (pillar of pillars; track pillar.id) {
+      <li class="pillar">
+        <app-icon class="pillar__icon" [name]="pillar.icon" />
+        <h3 class="pillar__title">
+          {{ 'about.pillars.items.' + pillar.id + '.title' | translate }}
+        </h3>
+        <p class="pillar__body">
+          {{ 'about.pillars.items.' + pillar.id + '.body' | translate }}
+        </p>
+      </li>
+    }
+  </ul>
+</app-page-section>
+
+<!-- Confesión de fe (avance; el documento completo está en /credo) -->
+<app-page-section
+  eyebrowKey="about.credo.eyebrow"
+  titleKey="about.credo.title"
+  subtitleKey="about.credo.subtitle"
+>
+  <ul class="credo-parts">
+    @for (part of credoParts; track part.id) {
+      <li class="credo-part">
+        <a class="credo-part__link" [routerLink]="links.credo" [fragment]="part.id">
+          <span class="credo-part__numeral" aria-hidden="true">{{ part.numeral }}</span>
+          <app-icon class="credo-part__icon" [name]="part.icon" />
+          <h3 class="credo-part__name">
+            {{ 'credo.parts.' + part.id + '.name' | translate }}
+          </h3>
+          <p class="credo-part__desc">
+            {{ 'credo.parts.' + part.id + '.description' | translate }}
+          </p>
+          <p class="credo-part__count">
+            {{ 'credo.articles_count' | translate: { count: part.articles.length } }}
+          </p>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <p class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.credo">
+      {{ 'about.credo.cta' | translate: { count: credoTotal } }}
+    </a>
+  </p>
+</app-page-section>
+
+<!-- Primera visita -->
+<app-page-section
+  tinted
+  titleKey="about.visit.title"
+  subtitleKey="about.visit.subtitle"
+>
+  <ul class="expectations">
+    @for (item of expectations; track item.id) {
+      <li class="expectation">
+        <app-icon class="expectation__icon" [name]="item.icon" />
+        <div>
+          <h3>{{ 'about.visit.items.' + item.id + '.title' | translate }}</h3>
+          <p>{{ 'about.visit.items.' + item.id + '.body' | translate }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+
+  <p class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.weekly">
+      {{ 'about.visit.cta_program' | translate }}
+    </a>
+    <a class="btn btn--ghost-dark" [routerLink]="links.leadership">
+      {{ 'about.visit.cta_leadership' | translate }}
+    </a>
+  </p>
+</app-page-section>

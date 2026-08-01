@@ -5,6 +5,7 @@
   },
   "brand": {
     "name": "Biserica Elim",
+    "short": "Elim",
     "location": "Arganda del Rey",
     "tagline": "Bine ați venit în casa Domnului"
   },
@@ -61,6 +62,20 @@
     "next": "Următor (→)",
     "pause": "Pauză (Spațiu)",
     "play": "Reia (Spațiu)"
+  },
+  "blocks": {
+    "tooltip": "Blocuri de prezentat",
+    "title": "Blocurile prezentării",
+    "subtitle": "Alege ce secțiuni intră în rotație când apeși Play.",
+    "auto": "Auto",
+    "manual": "Manual",
+    "auto_on": "Se afișează: există conținut.",
+    "auto_off": "Ascuns: nu există conținut.",
+    "forced_on": "Forțat vizibil.",
+    "forced_off": "Ascuns manual.",
+    "reset": "Revino la automat",
+    "reset_one": "Revino la modul automat",
+    "min_one": "Trebuie să rămână cel puțin un bloc activ."
   },
   "gallery": {
     "title": "Galerie Departamentul Media",
@@ -161,7 +176,435 @@
   },
   "footer": {
     "church": "Biserica ELIM Arganda",
-    "department": "Departamentul Media",
-    "rights": "Toate drepturile rezervate."
+    "rights": "Toate drepturile rezervate.",
+    "mission": "O comunitate creștină evanghelică din Arganda del Rey. Ne adunăm săptămânal ca să ne închinăm lui Dumnezeu, să-I studiem Cuvântul și să slujim cartierului nostru. Vino așa cum ești: aici este loc și pentru tine.",
+    "follow": "Urmărește-ne",
+    "visit": "Vizitează-ne",
+    "schedule": "Program și cum ajungi",
+    "partner": "Institutul Național Evanghelic Betel"
+  },
+  "common": {
+    "copy": "Copiază",
+    "copied": "Copiat",
+    "back_to_top": "Înapoi sus"
+  },
+  "contact": {
+    "eyebrow": "Suntem aici pentru tine",
+    "title": "Contact",
+    "lead": "Scrie-ne, sună-ne sau vino duminică. Orice întrebare, cerere de rugăciune sau dorință de a ne cunoaște are un răspuns.",
+    "form": {
+      "title": "Trimite-ne un mesaj",
+      "subtitle": "Îți răspundem cât putem de repede.",
+      "name": "Nume și prenume",
+      "name_ph": "Cum te numești?",
+      "email": "E-mail",
+      "email_ph": "numele@exemplu.com",
+      "subject": "Subiect",
+      "subject_ph": "Despre ce este vorba?",
+      "optional": "(opțional)",
+      "message": "Mesaj",
+      "message_ph": "Scrie aici mesajul tău…",
+      "submit": "Trimite mesajul",
+      "note": "Site-ul nu stochează nimic: butonul deschide aplicația ta de e-mail cu mesajul deja scris, ca să rămâi cu o copie a ceea ce trimiți.",
+      "sent": "Ți-am deschis aplicația de e-mail. Dacă nu s-a deschis, scrie-ne direct la adresa de mai jos.",
+      "error_name": "Spune-ne cum te numești.",
+      "error_email": "Verifică adresa de e-mail.",
+      "error_message": "Scrie cel puțin câteva cuvinte."
+    },
+    "channels": {
+      "address": "Adresă",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "whatsapp": "Scrie-ne pe WhatsApp"
+    },
+    "schedule": {
+      "title": "Când ne întâlnim",
+      "all": "Vezi programul complet"
+    },
+    "map": {
+      "title": "Harta cu locația bisericii"
+    },
+    "cta": {
+      "title": "Vrei să mergi mai departe?",
+      "subtitle": "Poți susține lucrarea bisericii sau poți afla mai întâi cine suntem.",
+      "donate": "Susține biserica",
+      "about": "Cine suntem"
+    }
+  },
+  "donate": {
+    "eyebrow": "Dărnicie",
+    "title": "Donează",
+    "lead": "Tot ce facem — slujbele, ajutorul social, transmisiunile — există pentru că oameni ca tine aleg să dea.",
+    "verse": {
+      "text": "„Fiecare să dea după cum a hotărât în inima lui: nu cu părere de rău sau de silă, căci pe cine dă cu bucurie îl iubește Dumnezeu.”",
+      "ref": "2 Corinteni 9:7"
+    },
+    "purposes": {
+      "eyebrow": "Transparență",
+      "title": "Unde ajung darurile tale",
+      "subtitle": "Fiecare donație susține una dintre aceste patru direcții.",
+      "items": {
+        "mission": {
+          "title": "Lucrarea bisericii",
+          "body": "Slujbele săptămânale, materialele pentru studiu biblic și pregătirea celor care slujesc."
+        },
+        "building": {
+          "title": "Clădirea",
+          "body": "Chiria, utilitățile și întreținerea locului unde ne adunăm în fiecare săptămână."
+        },
+        "outreach": {
+          "title": "Ajutor social",
+          "body": "Sprijin concret pentru familiile din comunitate care trec prin greutăți."
+        },
+        "media": {
+          "title": "Media",
+          "body": "Transmisiunile în direct și echipamentul care duce slujba la cei care nu pot veni."
+        }
+      }
+    },
+    "demo": {
+      "title": "Date provizorii",
+      "body": "Conturile de mai jos sunt un exemplu de demonstrație, nu sunt reale. Nu face nicio transferare până când nu sunt înlocuite cu datele bancare oficiale ale bisericii."
+    },
+    "bank": {
+      "eyebrow": "Cum donezi",
+      "title": "Transfer bancar",
+      "subtitle": "Copiază IBAN-ul cu un clic și fă transferul din aplicația băncii tale.",
+      "holder": "Titular",
+      "entity": "Bancă",
+      "bic": "Cod SWIFT / BIC",
+      "account": "Cont",
+      "bizum": "Bizum la numărul",
+      "note": "La rubrica „detalii” poți scrie destinația darului (de exemplu: ajutor social). Dacă ai nevoie de o dovadă a donației, scrie-ne și ți-o trimitem."
+    },
+    "thanks": {
+      "title": "Mulțumim",
+      "subtitle": "Fiecare dar, oricât de mic, ține lucrarea în picioare.",
+      "contact": "Ai o întrebare?",
+      "about": "Cine suntem"
+    }
+  },
+  "nav": {
+    "primary": "Navigare principală",
+    "breadcrumb": "Unde te afli",
+    "skip_to_content": "Sari la conținut",
+    "open_menu": "Deschide meniul",
+    "close_menu": "Închide meniul",
+    "home": "Acasă",
+    "about": "Biserica",
+    "about_us": "Cine suntem",
+    "about_us_desc": "Istoria, viziunea și valorile noastre",
+    "credo": "Mărturisirea de credință",
+    "credo_desc": "Cele 30 de articole ale crezului nostru",
+    "leadership": "Conducere",
+    "leadership_desc": "Structura și departamentele bisericii",
+    "program": "Program",
+    "weekly": "Program săptămânal",
+    "weekly_desc": "Serviciile fiecărei zile",
+    "upcoming": "Evenimente",
+    "upcoming_desc": "Următoarele întâlniri speciale",
+    "media": "Media",
+    "media_stage": "Panou complet",
+    "media_stage_desc": "Toate blocurile într-o singură pagină",
+    "gallery": "Galerie",
+    "gallery_desc": "Fotografii din viața bisericii",
+    "socials": "Rețele sociale",
+    "socials_desc": "Instagram, Facebook, YouTube",
+    "contact": "Contact",
+    "donate": "Donează",
+    "live": "În direct"
+  },
+  "seo": {
+    "home": {
+      "title": "Acasă",
+      "description": "Biserica Elim din Arganda del Rey: program, evenimente, transmisiuni în direct și rețele sociale."
+    },
+    "about": {
+      "title": "Cine suntem",
+      "description": "Istoria, viziunea, valorile și crezul Bisericii Elim din Arganda del Rey."
+    },
+    "credo": {
+      "title": "Mărturisirea de credință",
+      "description": "Mărturisirea de credință a Cultului Creștin Penticostal, în 30 de articole: doctrină, practici spirituale, familie și morală creștină."
+    },
+    "leadership": {
+      "title": "Conducere",
+      "description": "Structura pastorală, presbiteriul, diaconii și departamentele Bisericii Elim."
+    },
+    "media": {
+      "title": "Media",
+      "description": "Transmisiuni, galerie foto, program săptămânal, evenimente și locația bisericii."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Adresa, telefonul, e-mailul și programul Bisericii Elim din Arganda del Rey. Scrie-ne sau vino să ne cunoști."
+    },
+    "donate": {
+      "title": "Donează",
+      "description": "Susține lucrarea Bisericii Elim: transfer bancar, unde ajung darurile și cum ceri o dovadă a donației."
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Bine ai venit acasă",
+      "subtitle": "O familie care se închină, slujește și crește împreună.",
+      "aria": "Imagini din viața bisericii",
+      "cta_about": "Cunoaște-ne",
+      "cta_live": "Vezi în direct",
+      "slides": {
+        "worship": "Seară de colinde",
+        "baptism": "Botez",
+        "children": "Concertul copiilor",
+        "community": "Revelion în familie",
+        "outreach": "Proiect social"
+      }
+    },
+    "welcome": {
+      "eyebrow": "Bine ai venit",
+      "title": "O casă deschisă pentru fiecare",
+      "body": "Suntem o biserică evanghelică din Arganda del Rey. Ne adunăm ca să ne închinăm lui Dumnezeu, să studiem Cuvântul Său și să ne sprijinim unii pe alții ca o familie.",
+      "body_2": "Nu contează de unde vii sau în ce punct al drumului te afli: aici ai un loc. Vino așa cum ești.",
+      "cta": "Află mai multe despre noi"
+    },
+    "today": {
+      "eyebrow": "Chiar acum",
+      "title": "Ce urmează",
+      "subtitle": "Programul de azi și următorul eveniment special.",
+      "service": "Serviciul de azi",
+      "no_service": "Astăzi nu avem serviciu programat. Te așteptăm la următoarea întâlnire.",
+      "next_event": "Următorul eveniment",
+      "see_program": "Vezi programul complet",
+      "see_events": "Vezi toate evenimentele"
+    },
+    "quick": {
+      "title": "Acces rapid",
+      "subtitle": "Tot ce ai nevoie, la un click distanță.",
+      "items": {
+        "weekly": {
+          "title": "Program săptămânal",
+          "desc": "Orarul serviciilor din fiecare zi"
+        },
+        "upcoming": {
+          "title": "Evenimente",
+          "desc": "Întâlniri și activități speciale"
+        },
+        "streams": {
+          "title": "Transmisiuni",
+          "desc": "Urmărește-ne live pe YouTube"
+        },
+        "gallery": {
+          "title": "Galerie",
+          "desc": "Momente din viața bisericii"
+        },
+        "socials": {
+          "title": "Rețele sociale",
+          "desc": "Rămâi conectat zi de zi"
+        },
+        "location": {
+          "title": "Cum ajungi",
+          "desc": "Adresa și indicații pe hartă"
+        }
+      }
+    },
+    "ministries": {
+      "eyebrow": "Departamente",
+      "title": "Slujire pentru fiecare vârstă",
+      "subtitle": "Fiecare departament este o ușă deschisă ca să te implici.",
+      "cta": "Vezi toată structura"
+    },
+    "visit": {
+      "title": "Vino să ne vizitezi",
+      "subtitle": "Te așteptăm cu drag la oricare dintre serviciile noastre.",
+      "cta_map": "Deschide în Google Maps",
+      "cta_details": "Vezi detaliile locației"
+    }
+  },
+  "about": {
+    "eyebrow": "Cine suntem",
+    "title": "O familie de credință în Arganda del Rey",
+    "lead": "Ne unește credința în Isus Hristos și dorința de a sluji orașului nostru.",
+    "stats": {
+      "years": "Ani de slujire",
+      "services": "Servicii pe săptămână",
+      "departments": "Departamente active"
+    },
+    "story": {
+      "title": "Povestea noastră",
+      "subtitle": "De la un grup mic de familii la o comunitate vie.",
+      "body_1": "Biserica Elim din Arganda del Rey s-a născut din dorința câtorva familii de a avea un loc unde să se închine în limba lor și să crească împreună în credință.",
+      "body_2": "De-a lungul anilor, comunitatea a crescut și s-a diversificat: astăzi suntem o biserică multiculturală, cu servicii în română și spaniolă, și cu departamente pentru toate vârstele.",
+      "body_3": "Continuăm cu aceeași chemare de la început: să facem cunoscută dragostea lui Dumnezeu în orașul nostru, cu fapte concrete și cu ușile mereu deschise.",
+      "image_alt": "Momente din viața comunității"
+    },
+    "pillars": {
+      "eyebrow": "Ce ne definește",
+      "title": "Pilonii noștri",
+      "subtitle": "Patru convingeri care ne ghidează în tot ce facem.",
+      "items": {
+        "mission": {
+          "title": "Misiune",
+          "body": "Să ducem Evanghelia lui Isus Hristos în Arganda del Rey și dincolo de ea, cu vorba și cu fapta."
+        },
+        "vision": {
+          "title": "Viziune",
+          "body": "O biserică sănătoasă, unde fiecare persoană își descoperă chemarea și crește în relația cu Dumnezeu."
+        },
+        "community": {
+          "title": "Comunitate",
+          "body": "Nimeni nu este singur: ne purtăm poverile unii altora și ne bucurăm împreună."
+        },
+        "service": {
+          "title": "Slujire",
+          "body": "Credința se vede în fapte: sprijinim familiile din jur și proiectele sociale ale orașului."
+        }
+      }
+    },
+    "credo": {
+      "eyebrow": "Mărturisirea de credință",
+      "title": "În ce credem",
+      "subtitle": "Împărtășim Mărturisirea de credință a Cultului Creștin Penticostal: 30 de articole grupate în patru capitole.",
+      "cta": "Citește mărturisirea completă ({{count}} articole)"
+    },
+    "visit": {
+      "title": "Prima ta vizită",
+      "subtitle": "Ce poți să te aștepți când vii pentru prima dată.",
+      "items": {
+        "welcome": {
+          "title": "O primire caldă",
+          "body": "Cineva te va întâmpina la intrare și te va ajuta să te simți acasă. Vino îmbrăcat cum îți este comod."
+        },
+        "worship": {
+          "title": "Închinare",
+          "body": "Serviciul începe cu cântări de laudă. Poți să cânți, să stai în picioare sau doar să asculți."
+        },
+        "word": {
+          "title": "Cuvântul",
+          "body": "Urmează un mesaj biblic, practic și pe înțelesul tuturor, de aproximativ 40 de minute."
+        },
+        "family": {
+          "title": "Copiii",
+          "body": "Avem program special pentru copii, ca cei mici să învețe pe măsura vârstei lor."
+        }
+      },
+      "cta_program": "Vezi programul",
+      "cta_leadership": "Cunoaște echipa"
+    }
+  },
+  "leadership": {
+    "eyebrow": "Conducere",
+    "title": "Cum este organizată biserica",
+    "lead": "O structură slujitoare, gândită ca fiecare zonă a bisericii să fie îngrijită.",
+    "pending": "În curs de actualizare",
+    "structure": {
+      "title": "Structura de conducere",
+      "subtitle": "Fiecare nivel slujește biserica într-un mod complementar."
+    },
+    "groups": {
+      "pastoral": {
+        "name": "Echipa pastorală",
+        "description": "Conduce spiritual biserica, predică Cuvântul și veghează asupra vieții comunității."
+      },
+      "presbytery": {
+        "name": "Presbiteriul",
+        "description": "Bătrânii bisericii, care sfătuiesc, învață și iau împreună deciziile importante."
+      },
+      "deacons": {
+        "name": "Diaconi",
+        "description": "Se ocupă de slujirea practică: ajutor social, întâmpinare, ordinea serviciilor."
+      },
+      "committee": {
+        "name": "Comitetul",
+        "description": "Administrează resursele, clădirea și partea legală a bisericii."
+      }
+    },
+    "roles": {
+      "pastor": "Pastor",
+      "elder": "Prezbiter",
+      "deacon": "Diacon",
+      "member": "Membru"
+    },
+    "ministries": {
+      "worship": {
+        "name": "Închinare",
+        "description": "Grupul de laudă, corul și partea muzicală a serviciilor."
+      },
+      "youth": {
+        "name": "Tineret",
+        "description": "Întâlniri, tabere și proiecte pentru adolescenți și tineri."
+      },
+      "children": {
+        "name": "Copii",
+        "description": "Școala duminicală și activitățile pentru cei mici."
+      },
+      "media": {
+        "name": "Media",
+        "description": "Transmisiuni, sunet, proiecție, fotografie și rețele sociale."
+      },
+      "mission": {
+        "name": "Misiune",
+        "description": "Sprijinim misionari și proiecte de evanghelizare."
+      },
+      "charity": {
+        "name": "Ajutor social",
+        "description": "Sprijin pentru familiile aflate în nevoie, în biserică și în oraș."
+      },
+      "prayer": {
+        "name": "Rugăciune",
+        "description": "Întâlniri de rugăciune și mijlocire pentru biserică și comunitate."
+      },
+      "women": {
+        "name": "Surori",
+        "description": "Părtășie, studiu biblic și slujire în rândul surorilor."
+      }
+    },
+    "ministries_section": {
+      "eyebrow": "Departamente",
+      "title": "Unde poți sluji",
+      "subtitle": "Fiecare departament are ușa deschisă pentru voluntari."
+    },
+    "contact": {
+      "title": "Vrei să vorbești cu cineva?",
+      "subtitle": "Scrie-ne sau vino la oricare dintre serviciile noastre: te așteptăm.",
+      "cta_visit": "Cum ajungi la noi",
+      "cta_about": "Cunoaște biserica"
+    }
+  },
+  "credo": {
+    "eyebrow": "Ce credem",
+    "title": "Mărturisirea de credință",
+    "lead": "Credem, mărturisim și trăim adevărurile Sfintelor Scripturi, așa cum sunt formulate în Mărturisirea de credință a Cultului Creștin Penticostal.",
+    "source": "Text adoptat în Congresul Cultului Creștin Penticostal din 8-10 octombrie 2025.",
+    "part_label": "Capitol",
+    "articles_count": "Articole: {{count}}",
+    "refs_label": "Referințe biblice:",
+    "summary": {
+      "title": "Cuprins",
+      "subtitle": "Patru capitole, treizeci de articole.",
+      "aria": "Cuprinsul mărturisirii de credință"
+    },
+    "parts": {
+      "doctrine": {
+        "name": "Afirmații doctrinare",
+        "description": "Ce credem despre Dumnezeu, despre om, despre mântuire și despre Biserică."
+      },
+      "practices": {
+        "name": "Practicile spirituale",
+        "description": "Cum se cultivă, zi de zi, relația personală cu Dumnezeu."
+      },
+      "family": {
+        "name": "Familia",
+        "description": "Căsătoria, creșterea copiilor și locul familiei în planul lui Dumnezeu."
+      },
+      "morals": {
+        "name": "Morala creștină",
+        "description": "Caracterul, dragostea față de semeni și respectul pentru viață."
+      }
+    },
+    "outro": {
+      "title": "Vrei să vorbim despre asta?",
+      "subtitle": "Ne bucurăm să stăm de vorbă despre oricare dintre aceste convingeri.",
+      "cta_about": "Cine suntem",
+      "cta_leadership": "Conducerea bisericii"
+    }
   }
 }

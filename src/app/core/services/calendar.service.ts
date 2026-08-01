@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent } from '../church.config';
+import { LoggerService } from './logger.service';
 
 /**
  * `CalendarService` — generación de archivos `.ics` (RFC 5545) y URLs
@@ -20,6 +21,7 @@ import { CHURCH_CONFIG, UpcomingEvent } from '../church.config';
 export class CalendarService {
   private readonly config = inject(CHURCH_CONFIG);
   private readonly translate = inject(TranslateService);
+  private readonly log = inject(LoggerService).prefix('calendar');
 
   private static readonly PRODID = '-//Biserica Elim Arganda//Eventos//RO';
   /** Duración por defecto del evento si no se calcula otra cosa (minutos). */
@@ -82,8 +84,9 @@ export class CalendarService {
         await navigator.clipboard.writeText(text);
         return true;
       }
-    } catch {
-      /* fallthrough */
+    } catch (err) {
+      // Permiso denegado o contexto no seguro: probamos el camino legacy.
+      this.log.debug('navigator.clipboard no disponible, usando execCommand.', err);
     }
     try {
       const ta = document.createElement('textarea');
@@ -96,7 +99,8 @@ export class CalendarService {
       const ok = document.execCommand('copy');
       document.body.removeChild(ta);
       return ok;
-    } catch {
+    } catch (err) {
+      this.log.warn('No se pudo copiar al portapapeles.', err);
       return false;
     }
   }
@@ -191,7 +195,8 @@ export class CalendarService {
     } else {
       try {
         origin = new URL(this.config.publicUrl).origin;
-      } catch {
+      } catch (err) {
+        this.log.warn('publicUrl no es una URL válida; webcal:// quedará relativo.', err);
         origin = '';
       }
     }

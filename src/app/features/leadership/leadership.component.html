@@ -1,0 +1,90 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'leadership.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'leadership.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'leadership.lead' | translate }}</p>
+  </div>
+</header>
+
+<!-- Estructura de gobierno -->
+<app-page-section
+  titleKey="leadership.structure.title"
+  subtitleKey="leadership.structure.subtitle"
+>
+  <ol class="groups">
+    @for (group of config.leadership; track group.id; let i = $index) {
+      <li class="group">
+        <span class="group__step" aria-hidden="true">{{ i + 1 }}</span>
+
+        <div class="group__head">
+          <app-icon class="group__icon" [name]="group.icon" />
+          <div>
+            <h3 class="group__title">
+              {{ 'leadership.groups.' + group.i18nKey + '.name' | translate }}
+            </h3>
+            <p class="group__desc">
+              {{ 'leadership.groups.' + group.i18nKey + '.description' | translate }}
+            </p>
+          </div>
+        </div>
+
+        @if (group.members.length > 0) {
+          <ul class="members">
+            @for (member of group.members; track member.id) {
+              <li class="member">
+                <span class="member__avatar" aria-hidden="true">
+                  {{ member.name.charAt(0) }}
+                </span>
+                <span class="member__text">
+                  <span class="member__name">{{ member.name }}</span>
+                  <span class="member__role">
+                    {{ 'leadership.roles.' + member.roleKey | translate }}
+                  </span>
+                </span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="group__pending">
+            <app-icon name="clock" />
+            {{ 'leadership.pending' | translate }}
+          </p>
+        }
+      </li>
+    }
+  </ol>
+</app-page-section>
+
+<!-- Departamentos -->
+<app-page-section
+  tinted
+  eyebrowKey="leadership.ministries_section.eyebrow"
+  titleKey="leadership.ministries_section.title"
+  subtitleKey="leadership.ministries_section.subtitle"
+>
+  <ul class="ministries">
+    @for (ministry of config.ministries; track ministry.id) {
+      <li class="ministry">
+        <app-icon class="ministry__icon" [name]="ministry.icon" />
+        <h3 class="ministry__title">
+          {{ 'leadership.ministries.' + ministry.i18nKey + '.name' | translate }}
+        </h3>
+        <p class="ministry__desc">
+          {{ 'leadership.ministries.' + ministry.i18nKey + '.description' | translate }}
+        </p>
+      </li>
+    }
+  </ul>
+</app-page-section>
+
+<!-- Contacto -->
+<app-page-section titleKey="leadership.contact.title" subtitleKey="leadership.contact.subtitle">
+  <p class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.location">
+      {{ 'leadership.contact.cta_visit' | translate }}
+    </a>
+    <a class="btn btn--ghost-dark" [routerLink]="links.about">
+      {{ 'leadership.contact.cta_about' | translate }}
+    </a>
+  </p>
+</app-page-section>

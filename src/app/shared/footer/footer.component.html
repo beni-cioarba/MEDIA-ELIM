@@ -1,0 +1,122 @@
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__main">
+      <!-- Identidad. Primero quiénes somos, luego el resto: es el orden en el
+           que se lee un pie y el que da contexto a todo lo demás. -->
+      <section class="footer__identity">
+        <app-brand-logo tone="dark" size="lg" [link]="links.home" />
+
+        <p class="footer__tagline">{{ 'brand.tagline' | translate }}</p>
+        <p class="footer__mission">{{ 'footer.mission' | translate }}</p>
+
+        <h2 class="footer__title" id="footer-social">{{ 'footer.follow' | translate }}</h2>
+        <ul class="footer__socials" aria-labelledby="footer-social">
+          @for (social of config.socials; track social.id) {
+            <li>
+              <a
+                class="footer__social"
+                [href]="social.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                [attr.aria-label]="social.handle"
+                [style.--social-a]="social.gradient[0]"
+                [style.--social-b]="social.gradient[1]"
+              >
+                <app-social-icon [name]="social.icon" />
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Mapa del sitio. Las columnas salen de MAIN_NAV: no hay lista
+           duplicada que se pueda desincronizar del menú. -->
+      @for (column of columns; track column.id) {
+        <nav class="footer__col" [attr.aria-labelledby]="'footer-nav-' + column.id">
+          <h2 class="footer__title" [id]="'footer-nav-' + column.id">
+            {{ column.titleKey | translate }}
+          </h2>
+          <ul class="footer__links">
+            @for (link of column.links; track link.id) {
+              <li>
+                <a class="footer__link" [routerLink]="link.path">
+                  {{ link.labelKey | translate }}
+                </a>
+              </li>
+            }
+          </ul>
+        </nav>
+      }
+
+      <!-- Datos prácticos: lo que de verdad se busca en un pie de iglesia. -->
+      <section class="footer__contact" aria-labelledby="footer-contact">
+        <h2 class="footer__title" id="footer-contact">{{ 'footer.visit' | translate }}</h2>
+
+        <ul class="footer__data">
+          <li class="footer__datum">
+            <app-icon class="footer__datum-icon" name="map-pin" />
+            <a
+              class="footer__link"
+              [href]="config.location.mapsShareUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ config.location.address }}
+            </a>
+          </li>
+          <li class="footer__datum">
+            <app-icon class="footer__datum-icon" name="mail" />
+            <a class="footer__link" [href]="mailto">{{ config.contact.email }}</a>
+          </li>
+          <li class="footer__datum">
+            <app-icon class="footer__datum-icon" name="phone" />
+            <a class="footer__link" [href]="tel">{{ config.contact.phoneDisplay }}</a>
+          </li>
+          <li class="footer__datum">
+            <app-icon class="footer__datum-icon" name="clock" />
+            <a class="footer__link" [routerLink]="links.location">
+              {{ 'footer.schedule' | translate }}
+            </a>
+          </li>
+        </ul>
+
+        <div class="footer__actions">
+          <a class="footer__cta footer__cta--gold" [routerLink]="links.donate">
+            <app-icon name="gift" />
+            <span>{{ 'nav.donate' | translate }}</span>
+          </a>
+          <a class="footer__cta" [routerLink]="links.live">
+            <app-icon name="play" />
+            <span>{{ 'nav.live' | translate }}</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Franja legal e institucional. -->
+    <div class="footer__legal">
+      <p class="footer__copy">
+        © {{ year }} {{ 'footer.church' | translate }} ·
+        {{ 'footer.rights' | translate }}
+      </p>
+
+      <a
+        class="footer__partner"
+        href="https://ineb.es"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="'footer.partner' | translate"
+      >
+        <img
+          src="assets/logo-ineb.png"
+          alt=""
+          width="72"
+          height="24"
+          loading="lazy"
+          decoding="async"
+          aria-hidden="true"
+        />
+      </a>
+    </div>
+  </div>
+</footer>

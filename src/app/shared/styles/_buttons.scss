@@ -1,0 +1,76 @@
+/* =====================================================================
+ * Botones compartidos entre las páginas públicas.
+ *
+ * Se distribuye como parcial SCSS (`@use`) en lugar de como CSS global
+ * para que cada página siga con estilos encapsulados. El coste en bytes es
+ * mínimo y evita colisiones con la hoja global del escenario.
+ *
+ * Uso:  @use '../../shared/styles/buttons' as *;
+ * ===================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.72rem 1.35rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  transform: translateY(-1px);
+}
+
+.btn--primary {
+  color: var(--c-on-primary);
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-soft) 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--primary:hover,
+.btn--primary:focus-visible {
+  box-shadow: var(--shadow-card);
+}
+
+.btn--ghost {
+  color: var(--c-on-primary);
+  border-color: rgba(247, 250, 252, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Variante para fondos claros. */
+.btn--ghost-dark {
+  color: var(--c-primary);
+  border-color: var(--c-hairline-strong);
+  background: var(--c-surface);
+  backdrop-filter: none;
+}
+
+.btn--ghost-dark:hover,
+.btn--ghost-dark:focus-visible {
+  background: var(--c-veil);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn:hover,
+  .btn:focus-visible {
+    transform: none;
+    transition: none;
+  }
+}

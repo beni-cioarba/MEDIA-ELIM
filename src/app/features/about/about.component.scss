@@ -1,0 +1,216 @@
+@use 'ds' as *;
+@use '../../shared/styles/buttons' as *;
+@use '../../shared/styles/page-hero' as *;
+@use '../../shared/styles/section-cta' as *;
+
+/* Estilos encapsulados de la página «Quiénes somos». */
+
+:host {
+  display: block;
+}
+
+/* --- Historia -------------------------------------------------------- */
+
+.story {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.story__text p {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--c-text);
+}
+
+.story__figure {
+  margin: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.story__figure img {
+  display: block;
+  width: 100%;
+  height: clamp(14rem, 32vh, 22rem);
+  object-fit: cover;
+}
+
+.story__figure figcaption {
+  padding: 0.6rem 0.9rem;
+  background: var(--c-surface);
+  font-size: 0.78rem;
+  color: var(--c-muted);
+}
+
+/* --- Pilares --------------------------------------------------------- */
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pillar {
+  padding: 1.4rem 1.3rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 18px;
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.pillar__icon {
+  font-size: 1.7rem;
+  color: var(--c-gold-deep);
+}
+
+.pillar__title {
+  margin: 0.7rem 0 0.4rem;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.pillar__body {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+/* --- Confesión de fe (avance) ---------------------------------------- */
+
+.credo-parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.credo-part__link {
+  display: block;
+  height: 100%;
+  padding: 1.4rem 1.3rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 18px;
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.credo-part__link:hover,
+.credo-part__link:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--c-gold);
+  box-shadow: var(--shadow-card);
+}
+
+.credo-part__numeral {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--c-gold-deep);
+}
+
+.credo-part__icon {
+  display: block;
+  font-size: 1.7rem;
+  color: var(--c-gold-deep);
+}
+
+.credo-part__name {
+  margin: 0.6rem 0 0.4rem;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.credo-part__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+.credo-part__count {
+  margin: 0.7rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+/* --- Primera visita --------------------------------------------------- */
+
+.expectations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.expectation {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1.2rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 16px;
+  background: var(--c-surface);
+}
+
+.expectation__icon {
+  flex: 0 0 auto;
+  font-size: 1.5rem;
+  color: var(--c-gold-deep);
+}
+
+.expectation h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.expectation p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+@include until('md') {
+  .story {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .credo-part__link {
+    transition: none;
+  }
+
+  .credo-part__link:hover,
+  .credo-part__link:focus-visible {
+    transform: none;
+  }
+}

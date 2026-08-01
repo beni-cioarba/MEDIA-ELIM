@@ -1,0 +1,88 @@
+<section class="upcoming" aria-labelledby="upcoming-title">
+  <header class="upcoming__header">
+    <div class="upcoming__heading">
+      <h2 id="upcoming-title" class="upcoming__title">{{ 'upcoming.title' | translate }}</h2>
+    </div>
+    @if (!fullscreen() && schedule.upcomingEvents().length > 0) {
+      <app-calendar-sync-button class="upcoming__sync-all" [events]="schedule.upcomingEvents()" />
+    }
+  </header>
+
+  @if (schedule.upcomingEvents().length === 0) {
+    <p class="upcoming__empty">{{ 'upcoming.empty' | translate }}</p>
+  } @else {
+    <ul class="upcoming__list" role="list">
+      @for (ev of schedule.upcomingEvents(); track ev.id; let first = $first; let i = $index) {
+        <li
+          class="upcoming__item"
+          [style.--item-idx]="i"
+          [class.is-today]="ev.isToday"
+          [class.is-next]="first && !ev.isToday"
+        >
+          <div class="upcoming__countdown" aria-hidden="true">
+            @if (ev.isToday) {
+              <span class="upcoming__count-num">{{ 'upcoming.today' | translate }}</span>
+            } @else {
+              <span class="upcoming__count-num">{{ ev.daysLeft }}</span>
+              <span class="upcoming__count-label">
+                {{ (ev.daysLeft === 1 ? 'upcoming.day_left' : 'upcoming.days_left') | translate }}
+              </span>
+            }
+          </div>
+
+          <div class="upcoming__body">
+            <div class="upcoming__meta">
+              <span class="upcoming__date">{{ formatEventDate(ev.date) }}</span>
+              <span class="upcoming__time">· {{ ev.time }}</span>
+              @if (first && !ev.isToday) {
+                <span class="upcoming__next-badge">{{ 'upcoming.next' | translate }}</span>
+              }
+              @if (ev.isToday) {
+                <span class="upcoming__today-badge">
+                  <span class="upcoming__live-dot" aria-hidden="true"></span>
+                  {{ 'upcoming.today' | translate }}
+                </span>
+              }
+            </div>
+
+            <h3 class="upcoming__item-title">{{ ev.title }}</h3>
+
+            @if (ev.description) {
+              <p class="upcoming__item-desc">{{ ev.description }}</p>
+            }
+
+            @if (ev.verse) {
+              <blockquote class="upcoming__verse">
+                <span class="upcoming__verse-icon" aria-hidden="true">✠</span>
+                {{ ev.verse }}
+              </blockquote>
+            }
+
+            @if (ev.preacher || ev.worshipLead) {
+              <dl class="upcoming__credits">
+                @if (ev.preacher) {
+                  <div class="upcoming__credit">
+                    <dt>{{ 'upcoming.preacher' | translate }}</dt>
+                    <dd>{{ ev.preacher }}</dd>
+                  </div>
+                }
+                @if (ev.worshipLead) {
+                  <div class="upcoming__credit">
+                    <dt>{{ 'upcoming.worship' | translate }}</dt>
+                    <dd>{{ ev.worshipLead }}</dd>
+                  </div>
+                }
+              </dl>
+            }
+
+            @if (!fullscreen()) {
+              <div class="upcoming__actions">
+                <app-calendar-sync-button [event]="ev" />
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

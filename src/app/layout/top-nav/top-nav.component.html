@@ -1,0 +1,133 @@
+<a class="u-skip-link" href="#main-content">{{ 'nav.skip_to_content' | translate }}</a>
+
+<header class="nav" [class.nav--scrolled]="ui.scrolled()">
+  <div class="nav__inner">
+    <!-- Marca: componente único compartido con el pie y con la proyección
+         (`shared/brand-logo`). Ver 45-design-system.md. -->
+    <app-brand-logo class="nav__brand" size="md" tone="light" link="/" />
+
+    <!-- Navegación de escritorio -->
+    <nav class="nav__desktop u-desktop-only" [attr.aria-label]="'nav.primary' | translate">
+      <ul class="nav__list">
+        @for (item of items; track item.id) {
+          <li class="nav__item">
+            @if (isGroup(item)) {
+              <button
+                type="button"
+                class="nav__link nav__link--group"
+                [class.is-active]="activeIds().has(item.id)"
+                [matMenuTriggerFor]="groupMenu"
+                (menuOpened)="ui.toggleGroup(item.id)"
+                (menuClosed)="ui.closeAll()"
+              >
+                <span class="nav__label">{{ item.labelKey | translate }}</span>
+                <app-icon class="nav__caret" name="chevron-down" />
+              </button>
+
+              <mat-menu #groupMenu="matMenu" class="elim-menu" xPosition="after">
+                @for (child of item.children; track child.id) {
+                  @if (isExternal(child)) {
+                    <a
+                      mat-menu-item
+                      [href]="child.externalUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      @if (child.icon) {
+                        <app-icon [name]="child.icon" />
+                      }
+                      <span class="elim-menu__label">{{ child.labelKey | translate }}</span>
+                      @if (child.descriptionKey) {
+                        <span class="elim-menu__desc">{{ child.descriptionKey | translate }}</span>
+                      }
+                    </a>
+                  } @else {
+                    <a
+                      mat-menu-item
+                      [routerLink]="child.path"
+                      [class.is-active]="activeIds().has(child.id)"
+                      [attr.aria-current]="activeIds().has(child.id) ? 'page' : null"
+                    >
+                      @if (child.icon) {
+                        <app-icon [name]="child.icon" />
+                      }
+                      <span class="elim-menu__label">{{ child.labelKey | translate }}</span>
+                      @if (child.descriptionKey) {
+                        <span class="elim-menu__desc">{{ child.descriptionKey | translate }}</span>
+                      }
+                    </a>
+                  }
+                }
+              </mat-menu>
+            } @else if (isExternal(item)) {
+              <a
+                class="nav__link"
+                [href]="item.externalUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="nav__label">{{ item.labelKey | translate }}</span>
+              </a>
+            } @else {
+              <a
+                class="nav__link"
+                [routerLink]="item.path"
+                [class.is-active]="activeIds().has(item.id)"
+                [attr.aria-current]="activeIds().has(item.id) ? 'page' : null"
+              >
+                <span class="nav__label">{{ item.labelKey | translate }}</span>
+              </a>
+            }
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Acciones. Orden deliberado: primero las llamadas a la acción (de menor
+         a mayor peso visual), después las utilidades. Así el ojo termina el
+         recorrido en «En directo», que es la conversión principal. -->
+    <div class="nav__actions">
+      @if (supportCta) {
+        <a
+          class="nav__donate u-desktop-only"
+          [routerLink]="supportCta.path"
+          [class.is-active]="activeIds().has(supportCta.id)"
+          [attr.aria-current]="activeIds().has(supportCta.id) ? 'page' : null"
+          [attr.aria-label]="supportCta.labelKey | translate"
+          [attr.title]="supportCta.labelKey | translate"
+        >
+          @if (supportCta.icon) {
+            <app-icon class="nav__donate-icon" [name]="supportCta.icon" />
+          }
+          <span class="nav__donate-label">{{ supportCta.labelKey | translate }}</span>
+        </a>
+      }
+
+      @if (liveCta) {
+        <a
+          class="nav__live"
+          [routerLink]="liveCta.path"
+          [class.is-active]="activeIds().has(liveCta.id)"
+          [attr.aria-current]="activeIds().has(liveCta.id) ? 'page' : null"
+        >
+          <span class="nav__live-dot" aria-hidden="true"></span>
+          <span class="nav__live-label">{{ liveCta.labelKey | translate }}</span>
+        </a>
+      }
+
+      <app-lang-switcher />
+
+      <button
+        type="button"
+        mat-icon-button
+        class="nav__burger u-mobile-only"
+        [attr.aria-expanded]="ui.drawerOpen()"
+        aria-controls="mobile-nav"
+        [attr.aria-label]="(ui.drawerOpen() ? 'nav.close_menu' : 'nav.open_menu') | translate"
+        (click)="ui.toggleDrawer()"
+      >
+        <app-icon [name]="ui.drawerOpen() ? 'close' : 'menu'" />
+      </button>
+    </div>
+  </div>
+</header>

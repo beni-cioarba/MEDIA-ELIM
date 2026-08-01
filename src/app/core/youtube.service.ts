@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, catchError, of, shareReplay, timer, map } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { CHURCH_CONFIG } from './church.config';
+import { LoggerService } from './services/logger.service';
 
 /**
  * Información mínima de un vídeo para mostrar en la UI.
@@ -77,6 +78,7 @@ interface YtVideosResponse {
 export class YouTubeService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(CHURCH_CONFIG);
+  private readonly log = inject(LoggerService).prefix('youtube');
 
   // Leemos desde la rama especial "youtube-data" alojada en publico por github de manera gratuita y cacheada por su CDN superrápida. 
   // Esto desconecta un 100% tu base de código principal del script de youtube!
@@ -150,8 +152,8 @@ export class YouTubeService {
     // Sin cache-buster: dejamos que el CDN de GitHub sirva la versión cacheada
     // (TTL ~5 min). Esto reduce a la mitad el tiempo de carga inicial.
     return this.http.get<YtStaticData>(this.jsonEndpoint).pipe(
-      catchError((err) => {
-        console.warn('⚠️ Falló el JSON estático de YouTube. Aplicando fallback con API directa.', err.message);
+      catchError((err: unknown) => {
+        this.log.warn('JSON estático no disponible; usando la API directa.', err);
         return this.triggerApiFallback();
       })
     );
@@ -227,14 +229,14 @@ export class YouTubeService {
               url: `https://www.youtube.com/watch?v=${liveItem.id}`,
             } satisfies YouTubeVideo;
           }),
-          catchError((err) => {
-            console.error('❌ Endpoint /videos (live) falló.', err);
+          catchError((err: unknown) => {
+            this.log.error('Endpoint /videos (live) falló.', err);
             return of<YouTubeVideo | null | undefined>(undefined);
           }),
         );
       }),
-      catchError((err) => {
-        console.error('❌ Endpoint /playlistItems (live) falló.', err);
+      catchError((err: unknown) => {
+        this.log.error('Endpoint /playlistItems (live) falló.', err);
         return of<YouTubeVideo | null | undefined>(undefined);
       }),
     );
@@ -254,8 +256,8 @@ export class YouTubeService {
     // /playlistItems cuesta 1 sola unidad. Super optimizado.
     return this.http.get<YtSearchResponse>(`${this.playlistEndpoint}?${params.toString()}`).pipe(
       map(res => this.mapItems(res)),
-      catchError(err => {
-        console.error('❌ Endpoint Recientes (/playlistItems) excedió cuota', err);
+      catchError((err: unknown) => {
+        this.log.error('Endpoint de recientes (/playlistItems) falló o excedió cuota.', err);
         return of([]);
       })
     );

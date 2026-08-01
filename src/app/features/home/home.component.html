@@ -1,532 +1,180 @@
-<main class="stage" [class.is-fullscreen]="fullscreen()">
-  <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
-  <div class="backdrop" aria-hidden="true">
-    <div class="halo halo--gold"></div>
-    <div class="halo halo--blue"></div>
-    <div class="grain"></div>
-  </div>
+<!-- ===================================================================
+     Portada pública. Orden pensado para un visitante que no conoce la
+     iglesia: quiénes somos → cuándo nos reunimos → dónde encontrarnos.
+     =================================================================== -->
 
-  <header class="brand">
-    <a class="brand__logo-link" [href]="config.youtubeChannelUrl" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'brand.name' | translate">
-      <img
-        class="brand__logo"
-        [ngSrc]="config.logo"
-        width="180"
-        height="80"
-        priority
-        [alt]="('brand.name' | translate) + ' — logo'"
-      />
+<app-hero-carousel [items]="config.heroSlides">
+  <h1 class="hero-title">{{ 'home.hero.title' | translate }}</h1>
+  <p class="hero-subtitle">{{ 'home.hero.subtitle' | translate }}</p>
+
+  <div class="hero-actions">
+    <a class="btn btn--primary" [routerLink]="links.about">
+      {{ 'home.hero.cta_about' | translate }}
     </a>
-
-    <div class="brand__spacer"></div>
-    @if (!fullscreen()) {
-      <app-share-button />
-      <app-lang-switcher />
-    }
-  </header>
-
-  <section class="content" [class.content--carousel]="fullscreen()">
-    <div class="carousel" [attr.data-slide]="currentSlide()">
-      <!-- ============ Slide 1: Redes sociales ============ -->
-      <div
-        class="slide slide--socials"
-        [class.slide--active]="!fullscreen() || currentSlide() === 0"
-        [attr.aria-hidden]="fullscreen() && currentSlide() !== 0"
-      >
-        <div class="socials" aria-labelledby="socials-title">
-          <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
-          <ul class="socials__list">
-            @for (link of config.socials; track link.id; let i = $index) {
-            <li
-              class="card"
-              [class.card--highlight]="highlightedIndex() === i"
-              [style.--card-gradient]="gradient(link)"
-            >
-              <a
-                class="card__link"
-                [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                [attr.aria-label]="socialAria()[link.id]"
-              >
-                <span class="card__icon" aria-hidden="true">
-                  <app-social-icon [name]="link.icon" />
-                </span>
-                <span class="card__body">
-                  <span class="card__name">
-                    {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
-                    <span class="card__username">{{ link.handle }}</span>
-                    @if (link.icon === 'youtube' && youtube.liveStream()) {
-                    <span
-                      class="card__live"
-                      [attr.aria-label]="'streams.live_now' | translate"
-                    >
-                      <span class="card__live-dot" aria-hidden="true"></span>
-                      {{ 'streams.live_now' | translate }}
-                    </span>
-                    }
-                  </span>
-                  <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
-                </span>
-                <span class="card__cta" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-              </a>
-            </li>
-            }
-          </ul>
-        </div>
-        
-        <!-- Scroll indicator (visible solo en móviles en la web normal) -->
-        @if (!fullscreen()) {
-          <div class="scroll-indicator" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-        }
-      </div>
-
-      <!-- ============ Slide 2: Transmisiones + EN DIRECTO ============ -->
-      <div
-        class="slide slide--streams"
-        [class.slide--active]="!fullscreen() || currentSlide() === 1"
-        [attr.aria-hidden]="fullscreen() && currentSlide() !== 1"
-      >
-        <div class="broadcasts" aria-labelledby="broadcasts-title">
-          <!-- <h2 id="broadcasts-title" class="broadcasts__title">
-            {{ 'streams.title' | translate }}
-          </h2> -->
-
-          <!-- Tarjeta destacada cuando hay transmisión EN DIRECTO -->
-          @if (youtube.liveStream(); as live) {
-          <div class="live-now-wrap">
-            <a
-              class="live-now"
-              [href]="live.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              [attr.aria-label]="('streams.live_now' | translate) + ': ' + live.title"
-            >
-              <span class="live-now__badge">
-                <span class="live-now__dot" aria-hidden="true"></span>
-                {{ 'streams.live_now' | translate }}
-              </span>
-              <img
-                class="live-now__thumb"
-                [src]="live.thumbnail"
-                [alt]="live.title"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="live-now__body">
-                <span class="live-now__label">{{ 'streams.live_label' | translate }}</span>
-                <span class="live-now__title">{{ live.title }}</span>
-                <span class="live-now__cta">{{ 'streams.watch_now' | translate }} →</span>
-              </span>
-            </a>
-            <app-share-button
-              class="live-now__share"
-              [url]="live.url"
-              [title]="live.title"
-            />
-          </div>
-          }
-
-          <!-- Mensaje cuando no hay live ni vídeos -->
-          @if (!youtube.liveStream() && youtube.recentStreams().length === 0) {
-          <p class="broadcasts__empty">
-            {{ 'streams.empty' | translate }}
-          </p>
-          }
-
-          <!-- Últimas transmisiones (siempre visibles si existen) -->
-          @if (youtube.recentStreams().length > 0) {
-          <div class="streams" aria-labelledby="streams-title">
-            <h3 id="streams-title" class="streams__title">
-              {{ 'streams.recent_title' | translate }}
-            </h3>
-            <ul class="streams__list">
-              @for (v of youtube.recentStreams(); track v.id) {
-              <li class="streams__item">
-                <a
-                  class="streams__link"
-                  [href]="v.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  [attr.aria-label]="('streams.watch_video' | translate) + ': ' + v.title"
-                  [title]="v.title"
-                >
-                  <img class="streams__thumb" [src]="v.thumbnail" [alt]="v.title" loading="lazy" decoding="async" />
-                  <span class="streams__caption">{{ v.title }}</span>
-                </a>
-                <app-share-button
-                  class="streams__share"
-                  [url]="v.url"
-                  [title]="v.title"
-                />
-              </li>
-              }
-            </ul>
-          </div>
-          }
-        </div>
-      </div>
-
-      <!-- ============ Slide 3: Galería del departamento de media ============ -->
-      <div
-        class="slide slide--gallery"
-        [class.slide--active]="!fullscreen() || currentSlide() === 2"
-        [attr.aria-hidden]="fullscreen() && currentSlide() !== 2"
-      >
-        <div class="gallery" aria-labelledby="gallery-title">
-          <header class="gallery__header">
-            <h2 id="gallery-title" class="gallery__title">
-              {{ 'gallery.title' | translate }}
-            </h2>
-            <!-- <p class="gallery__subtitle">{{ 'gallery.subtitle' | translate }}</p> -->
-          </header>
-
-          <!-- Hero destacado: imagen completa del evento que rota automáticamente -->
-          @if (config.mediaEvents[featuredEventIndex()]; as featured) {
-          <a
-            class="gallery__hero"
-            [href]="featured.driveUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            [style.--card-gradient]="eventGradient(featured)"
-            [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + featured.i18nKey + '.name' | translate)"
-          >
-            <img
-              class="gallery__hero-image"
-              [src]="featured.image"
-              [alt]="'gallery.events.' + featured.i18nKey + '.name' | translate"
-              loading="eager"
-              decoding="async"
-            />
-            <div class="gallery__hero-overlay" aria-hidden="true"></div>
-            <div class="gallery__hero-content">
-              <span class="gallery__hero-name">
-                {{ 'gallery.events.' + featured.i18nKey + '.name' | translate }}
-              </span>
-              <span class="gallery__hero-date">
-                {{ 'gallery.events.' + featured.i18nKey + '.date' | translate }}
-              </span>
-              @if (!fullscreen()) {
-              <span class="gallery__hero-cta">
-                {{ 'gallery.view_photos' | translate }}
-                <span class="gallery__hero-arrow" aria-hidden="true">→</span>
-              </span>
-              }
-            </div>
-          </a>
-          }
-
-          <!-- Mosaico de miniaturas (para seleccionar evento destacado y actuar de carrusel) -->
-          <ul class="gallery__grid" role="list" aria-label="Carrusel de eventos">
-            @for (ev of config.mediaEvents; track ev.id; let i = $index) {
-            <li class="gallery__tile-wrapper">
-              <button
-                type="button"
-                class="gallery__tile"
-                [class.is-featured]="i === featuredEventIndex()"
-                (click)="selectFeaturedEvent(i)"
-                [attr.aria-selected]="i === featuredEventIndex()"
-                role="tab"
-                [attr.aria-label]="'gallery.events.' + ev.i18nKey + '.name' | translate"
-              >
-                <img
-                  class="gallery__tile-image"
-                  [src]="ev.thumb"
-                  [alt]="'gallery.events.' + ev.i18nKey + '.name' | translate"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div class="gallery__tile-shade" aria-hidden="true"></div>
-                <span class="gallery__tile-name">
-                  {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
-                </span>
-              </button>
-            </li>
-            }
-          </ul>
-        </div>
-      </div>
-
-      <!-- ============ Slide 4: Programare săptămânală ============ -->
-      <div
-        class="slide slide--weekly"
-        [class.slide--active]="!fullscreen() || currentSlide() === 3"
-        [attr.aria-hidden]="fullscreen() && currentSlide() !== 3"
-      >
-        <section class="weekly" aria-labelledby="weekly-title">
-          <header class="weekly__header">
-            <h2 id="weekly-title" class="weekly__title">{{ 'weekly.title' | translate }}</h2>
-            <!-- <p class="weekly__subtitle">{{ 'weekly.subtitle' | translate }}</p> -->
-          </header>
-
-          <ul class="weekly__list" role="list">
-            @for (item of weeklyProgramSorted(); track item.id) {
-              <li
-                class="weekly__item"
-                [class.is-today]="item.day === currentWeekDay()"
-                [attr.aria-current]="item.day === currentWeekDay() ? 'date' : null"
-              >
-                <div class="weekly__day">
-                  <span class="weekly__day-name">{{ item.dayLabel }}</span>
-                  @if (item.day === currentWeekDay()) {
-                    <span class="weekly__today-badge">{{ 'weekly.today' | translate }}</span>
-                  }
-                </div>
-                <div class="weekly__body">
-                  <span class="weekly__time" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="14" height="14">
-                      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
-                      <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    {{ item.time }}
-                  </span>
-                  <h3 class="weekly__item-title">{{ item.title }}</h3>
-                  @if (item.description) {
-                    <p class="weekly__item-desc">{{ item.description }}</p>
-                  }
-                </div>
-              </li>
-            }
-          </ul>
-        </section>
-      </div>
-
-      <!-- ============ Slide 5: Evenimente viitoare ============ -->
-      <div
-        class="slide slide--upcoming"
-        [class.slide--active]="!fullscreen() || currentSlide() === 4"
-        [attr.aria-hidden]="fullscreen() && currentSlide() !== 4"
-      >
-        <section class="upcoming" aria-labelledby="upcoming-title">
-          <header class="upcoming__header">
-            <div class="upcoming__heading">
-              <h2 id="upcoming-title" class="upcoming__title">{{ 'upcoming.title' | translate }}</h2>
-              <!-- <p class="upcoming__subtitle">{{ 'upcoming.subtitle' | translate }}</p> -->
-            </div>
-            @if (!fullscreen() && upcomingEventsView().length > 0) {
-              <app-calendar-sync-button
-                class="upcoming__sync-all"
-                [events]="upcomingEventsView()"
-              />
-            }
-          </header>
-
-          @if (upcomingEventsView().length === 0) {
-            <p class="upcoming__empty">{{ 'upcoming.empty' | translate }}</p>
-          } @else {
-            <ul class="upcoming__list" role="list">
-              @for (ev of upcomingEventsView(); track ev.id; let first = $first; let i = $index) {
-                <li
-                  class="upcoming__item"
-                  [style.--item-idx]="i"
-                  [class.is-today]="ev.isToday"
-                  [class.is-next]="first && !ev.isToday"
-                >
-                  <div class="upcoming__countdown" aria-hidden="true">
-                    @if (ev.isToday) {
-                      <span class="upcoming__count-num">{{ 'upcoming.today' | translate }}</span>
-                    } @else {
-                      <span class="upcoming__count-num">{{ ev.daysLeft }}</span>
-                      <span class="upcoming__count-label">
-                        {{ (ev.daysLeft === 1 ? 'upcoming.day_left' : 'upcoming.days_left') | translate }}
-                      </span>
-                    }
-                  </div>
-
-                  <div class="upcoming__body">
-                    <div class="upcoming__meta">
-                      <span class="upcoming__date">{{ formatEventDate(ev.date) }}</span>
-                      <span class="upcoming__time">· {{ ev.time }}</span>
-                      @if (first && !ev.isToday) {
-                        <span class="upcoming__next-badge">{{ 'upcoming.next' | translate }}</span>
-                      }
-                      @if (ev.isToday) {
-                        <span class="upcoming__today-badge">
-                          <span class="upcoming__live-dot" aria-hidden="true"></span>
-                          {{ 'upcoming.today' | translate }}
-                        </span>
-                      }
-                    </div>
-
-                    <h3 class="upcoming__item-title">{{ ev.title }}</h3>
-
-                    @if (ev.description) {
-                      <p class="upcoming__item-desc">{{ ev.description }}</p>
-                    }
-
-                    @if (ev.verse) {
-                      <blockquote class="upcoming__verse">
-                        <span class="upcoming__verse-icon" aria-hidden="true">✠</span>
-                        {{ ev.verse }}
-                      </blockquote>
-                    }
-
-                    @if (ev.preacher || ev.worshipLead) {
-                      <dl class="upcoming__credits">
-                        @if (ev.preacher) {
-                          <div class="upcoming__credit">
-                            <dt>{{ 'upcoming.preacher' | translate }}</dt>
-                            <dd>{{ ev.preacher }}</dd>
-                          </div>
-                        }
-                        @if (ev.worshipLead) {
-                          <div class="upcoming__credit">
-                            <dt>{{ 'upcoming.worship' | translate }}</dt>
-                            <dd>{{ ev.worshipLead }}</dd>
-                          </div>
-                        }
-                      </dl>
-                    }
-
-                    @if (!fullscreen()) {
-                      <div class="upcoming__actions">
-                        <app-calendar-sync-button [event]="ev" />
-                      </div>
-                    }
-                  </div>
-                </li>
-              }
-            </ul>
-          }
-        </section>
-      </div>
-
-      <!-- ============ Ubicación / Cómo llegar ============ -->
-      @if (!fullscreen()) {
-        <div class="slide slide--location">
-          <section class="location" aria-labelledby="location-title">
-            <header class="location__header">
-              <h2 id="location-title" class="location__title">{{ 'location.title' | translate }}</h2>
-            </header>
-
-            <div class="location__layout">
-              <!-- Mapa incrustado con el punto de la iglesia -->
-              <div class="location__map">
-                <iframe
-                  class="location__map-frame"
-                  [src]="mapEmbedUrl"
-                  [title]="'location.map_title' | translate"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                  allowfullscreen
-                ></iframe>
-              </div>
-            </div>
-          </section>
-        </div>
-      }
-    </div>
-
-    <!-- El QR solo tiene sentido proyectado en la pantalla de la iglesia
-         para que la gente lo escanee; en la web normal de visionado no se
-         muestra (la página ya está abierta en su dispositivo). -->
-    @if (fullscreen()) {
-      <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
-        @defer (on idle) {
-          <app-qr-panel [data]="qrData()" />
-        } @placeholder {
-          <div class="qr__placeholder" aria-hidden="true"></div>
-        }
-      </aside>
-    }
-  </section>
-
-  <!-- Zona caliente invisible -->
-  @if (fullscreen()) {
-  <div class="stage__hover-zone" aria-hidden="true"></div>
-  }
-
-  <!-- Controles del carrusel -->
-  @if (fullscreen()) {
-  <div class="stage__controls" role="group" aria-label="Carrusel">
-    <button
-      type="button"
-      class="carousel__nav carousel__nav--prev"
-      (click)="prev()"
-      [attr.aria-label]="'carousel.prev' | translate"
-      [title]="'carousel.prev' | translate"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-    </button>
-
-    <div class="carousel__dots" role="tablist" [attr.aria-label]="'carousel.label' | translate">
-      @for (i of slideIndexes; track i) {
-      <button
-        type="button"
-        class="carousel__dot"
-        [class.is-active]="currentSlide() === i"
-        [attr.aria-selected]="currentSlide() === i"
-        [attr.aria-label]="(slideTitles[i] | translate) + ' (' + (i + 1) + '/' + slidesCount + ')'"
-        role="tab"
-        (click)="setSlide(i)"
-      >
-        <span class="carousel__dot-bar" aria-hidden="true">
-          <span
-            class="carousel__dot-progress"
-            [style.width.%]="currentSlide() === i ? slideProgress() : 0"
-          ></span>
-        </span>
-      </button>
-      }
-    </div>
-
-    <button
-      type="button"
-      class="carousel__pause"
-      (click)="togglePause()"
-      [attr.aria-pressed]="isPaused()"
-      [attr.aria-label]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
-      [title]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
-    >
-      @if (!isPaused()) {
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
-        <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
-      </svg>
-      } @else {
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M7 5l12 7-12 7V5z" fill="currentColor" />
-      </svg>
-      }
-    </button>
-
-    <button
-      type="button"
-      class="carousel__nav carousel__nav--next"
-      (click)="next()"
-      [attr.aria-label]="'carousel.next' | translate"
-      [title]="'carousel.next' | translate"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-    </button>
+    <a class="btn btn--ghost" [routerLink]="links.streams">
+      <app-icon name="play" />
+      {{ 'home.hero.cta_live' | translate }}
+    </a>
   </div>
-  }
+</app-hero-carousel>
 
-  <footer class="bar">
-    <p class="bar__verse">
-      <span class="bar__verse-text">«{{ 'verse.text' | translate }}»</span>
-      <span class="bar__verse-ref">— {{ 'verse.reference' | translate }}</span>
+<!-- Panel de presentación de la iglesia -->
+<app-page-section anchor="bienvenida">
+  <div class="welcome">
+    <div class="welcome__text">
+      <p class="welcome__eyebrow">{{ 'home.welcome.eyebrow' | translate }}</p>
+      <h2 class="welcome__title">{{ 'home.welcome.title' | translate }}</h2>
+      <p class="welcome__body">{{ 'home.welcome.body' | translate }}</p>
+      <p class="welcome__body">{{ 'home.welcome.body_2' | translate }}</p>
+
+      <blockquote class="welcome__verse">
+        <p>«{{ 'verse.text' | translate }}»</p>
+        <cite>— {{ 'verse.reference' | translate }}</cite>
+      </blockquote>
+
+      <a class="btn btn--primary" [routerLink]="links.about">
+        {{ 'home.welcome.cta' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+
+    <ul class="welcome__stats">
+      <li class="stat stat--years">
+        <app-icon class="stat__icon" name="church" />
+        <span class="stat__value">{{ years() }}+</span>
+        <span class="stat__label">{{ 'about.stats.years' | translate }}</span>
+      </li>
+      @for (stat of config.stats; track stat.id) {
+        <li class="stat">
+          <app-icon class="stat__icon" [name]="stat.icon" />
+          <span class="stat__value">{{ stat.value }}</span>
+          <span class="stat__label">{{ 'about.stats.' + stat.i18nKey | translate }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</app-page-section>
+
+<!-- Cuándo nos reunimos -->
+<app-page-section
+  tinted
+  eyebrowKey="home.today.eyebrow"
+  titleKey="home.today.title"
+  subtitleKey="home.today.subtitle"
+>
+  <div class="now">
+    <article class="now__card">
+      <header class="now__head">
+        <app-icon name="clock" />
+        <h3>{{ 'home.today.service' | translate }}</h3>
+      </header>
+      @if (schedule.todayProgram(); as today) {
+        <p class="now__time">{{ today.time }}</p>
+        <p class="now__title">{{ today.title }}</p>
+        <p class="now__day">{{ today.dayLabel }}</p>
+      } @else {
+        <p class="now__empty">{{ 'home.today.no_service' | translate }}</p>
+      }
+      <a class="now__link" [routerLink]="links.weekly">
+        {{ 'home.today.see_program' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </article>
+
+    <article class="now__card now__card--accent">
+      <header class="now__head">
+        <app-icon name="sparkles" />
+        <h3>{{ 'home.today.next_event' | translate }}</h3>
+      </header>
+      @if (nextEvent(); as event) {
+        <p class="now__time">{{ event.time }}</p>
+        <p class="now__title">{{ event.title }}</p>
+        <p class="now__day">{{ schedule.formatEventDate(event.date) }}</p>
+        <p class="now__badge">
+          @if (event.isToday) {
+            {{ 'upcoming.today' | translate }}
+          } @else {
+            {{ event.daysLeft }}
+            {{ (event.daysLeft === 1 ? 'upcoming.day_left' : 'upcoming.days_left') | translate }}
+          }
+        </p>
+      } @else {
+        <p class="now__empty">{{ 'upcoming.empty' | translate }}</p>
+      }
+      <a class="now__link" [routerLink]="links.upcoming">
+        {{ 'home.today.see_events' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </article>
+  </div>
+</app-page-section>
+
+<!-- Accesos rápidos a los módulos -->
+<app-page-section titleKey="home.quick.title" subtitleKey="home.quick.subtitle">
+  <ul class="quick">
+    @for (link of quickLinks; track link.id) {
+      <li>
+        <a class="quick__card" [routerLink]="link.path">
+          <app-icon class="quick__icon" [name]="link.icon" />
+          <span class="quick__title">
+            {{ 'home.quick.items.' + link.id + '.title' | translate }}
+          </span>
+          <span class="quick__desc">
+            {{ 'home.quick.items.' + link.id + '.desc' | translate }}
+          </span>
+          <app-icon class="quick__arrow" name="arrow-right" />
+        </a>
+      </li>
+    }
+  </ul>
+</app-page-section>
+
+<!-- Ministerios / departamentos -->
+<app-page-section
+  tinted
+  eyebrowKey="home.ministries.eyebrow"
+  titleKey="home.ministries.title"
+  subtitleKey="home.ministries.subtitle"
+>
+  <ul class="ministries">
+    @for (ministry of featuredMinistries(); track ministry.id) {
+      <li class="ministries__item">
+        <app-icon [name]="ministry.icon" />
+        {{ 'leadership.ministries.' + ministry.i18nKey + '.name' | translate }}
+      </li>
+    }
+  </ul>
+
+  <p class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.leadership">
+      {{ 'home.ministries.cta' | translate }}
+      <app-icon name="arrow-right" />
+    </a>
+  </p>
+</app-page-section>
+
+<!-- Visítanos -->
+<app-page-section titleKey="home.visit.title" subtitleKey="home.visit.subtitle">
+  <div class="visit">
+    <p class="visit__address">
+      <app-icon name="map-pin" />
+      <span>
+        {{ config.location.address }}
+        <small>{{ config.location.city }}</small>
+      </span>
     </p>
-  </footer>
-</main>
-
-<!-- Dock de controles (presentar / compartir), siempre disponible en la
-     esquina inferior derecha, tanto en la web normal como en presentación. -->
-<app-floating-actions />
-
-<!-- Footer institucional (oculto en modo presentación a pantalla completa) -->
-@if (!fullscreen()) {
-  <app-footer />
-}
+    <div class="visit__actions">
+      <a
+        class="btn btn--primary"
+        [href]="directionsUrl()"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ 'home.visit.cta_map' | translate }}
+      </a>
+      <a class="btn btn--ghost btn--ghost-dark" [routerLink]="links.location">
+        {{ 'home.visit.cta_details' | translate }}
+      </a>
+    </div>
+  </div>
+</app-page-section>

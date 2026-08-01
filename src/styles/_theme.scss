@@ -1,0 +1,127 @@
+// =====================================================================
+// TEMA DE ANGULAR MATERIAL
+//
+// Decisión de arquitectura: **un único tema, derivado de los mismos
+// tokens que el resto de la app** (`_tokens.scss`). Así es imposible que
+// un `<button mat-flat-button>` y un `.btn` propio muestren dos azules
+// distintos.
+//
+// Rendimiento: NO se usa `mat.all-component-themes()` (emite ~200 kB de
+// CSS para 40 componentes). Se incluye **sólo el tema de los componentes
+// que la app usa de verdad**; añadir uno nuevo es una línea aquí abajo.
+//
+// Al añadir un componente Material nuevo:
+//   1. Impórtalo en el componente standalone (`imports: [MatXModule]`).
+//   2. Añade `@include mat.x-theme($elim-theme);` en la lista de abajo.
+//   3. Si necesita ajustes de marca, hazlos en `_material-overrides.scss`.
+// =====================================================================
+
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use 'tokens' as *;
+
+// ---------------------------------------------------------------------
+// Paletas — construidas desde la escala de marca, con sus mapas de
+// contraste calculados para cumplir AA sobre cada tono.
+// ---------------------------------------------------------------------
+$elim-navy-palette: map.merge(
+  $navy,
+  (
+    contrast: (
+      50: navy(900),
+      100: navy(900),
+      200: navy(900),
+      300: navy(900),
+      400: neutral(0),
+      500: neutral(0),
+      600: neutral(0),
+      700: neutral(0),
+      800: neutral(0),
+      900: neutral(0),
+    ),
+  )
+);
+
+$elim-gold-palette: map.merge(
+  $gold,
+  (
+    contrast: (
+      50: navy(900),
+      100: navy(900),
+      200: navy(900),
+      300: navy(900),
+      400: navy(900),
+      500: navy(900),
+      600: navy(900),
+      700: neutral(0),
+      800: neutral(0),
+      900: neutral(0),
+    ),
+  )
+);
+
+// `default, lighter, darker` — Material los usa para hover/ripple/disabled.
+$elim-primary: mat.define-palette($elim-navy-palette, 700, 400, 900);
+$elim-accent: mat.define-palette($elim-gold-palette, 500, 300, 700);
+$elim-warn: mat.define-palette(mat.$red-palette, 700);
+
+// ---------------------------------------------------------------------
+// Tipografía de los componentes Material ("chrome": botones, menús,
+// tooltips…). Tamaños FIJOS a propósito: la escala fluida con `clamp()`
+// es para el contenido editorial, no para los controles, donde rompería
+// los cálculos de altura/densidad de Material.
+// ---------------------------------------------------------------------
+$elim-typography: mat.define-typography-config(
+  $font-family: $font-sans,
+  $headline-5:
+    mat.define-typography-level(1.75rem, 2.1rem, 600, $font-serif, -0.01em),
+  $headline-6:
+    mat.define-typography-level(1.35rem, 1.7rem, 600, $font-serif, -0.005em),
+  $subtitle-1: mat.define-typography-level(1rem, 1.5rem, 600, $font-sans, 0),
+  $subtitle-2: mat.define-typography-level(0.9rem, 1.4rem, 600, $font-sans, 0.01em),
+  $body-1: mat.define-typography-level(1rem, 1.6rem, 400, $font-sans, 0),
+  $body-2: mat.define-typography-level(0.95rem, 1.5rem, 400, $font-sans, 0),
+  $caption: mat.define-typography-level(0.8rem, 1.2rem, 500, $font-sans, 0.02em),
+  $button: mat.define-typography-level(0.92rem, 1.2rem, 600, $font-sans, 0.02em)
+);
+
+// ---------------------------------------------------------------------
+// Tema. `density: -1` compacta ligeramente los controles: la cabecera
+// gana aire sin perder el área táctil mínima de 44 px (la recuperamos en
+// `_material-overrides.scss` con `min-height`).
+// ---------------------------------------------------------------------
+$elim-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $elim-primary,
+      accent: $elim-accent,
+      warn: $elim-warn,
+    ),
+    typography: $elim-typography,
+    density: -1,
+  )
+);
+
+// ---------------------------------------------------------------------
+// Emisión. Orden importante: `mat.core()` primero (una sola vez en toda
+// la app), después el tema de cada componente utilizado.
+// ---------------------------------------------------------------------
+@include mat.core();
+
+// `core-theme` emite el marcador `.mat-theme-loaded-marker` que Material
+// busca en tiempo de ejecución (sin él avisa por consola de que no
+// encuentra el tema) además de los tokens de elevación y ripple base.
+// No incluye ningún componente: el peso sigue siendo mínimo.
+@include mat.core-theme($elim-theme);
+
+// Sólo se emite el tema de los componentes que la app importa de verdad.
+// Cada línea de más son kilobytes de CSS muerto en la pantalla del templo:
+// al añadir un `MatXModule` a un componente, añade aquí su línea; al
+// dejar de usarlo, quítala.
+@include mat.ripple-theme($elim-theme);
+@include mat.button-theme($elim-theme);
+@include mat.icon-button-theme($elim-theme);
+@include mat.icon-theme($elim-theme);
+@include mat.menu-theme($elim-theme);
+@include mat.list-theme($elim-theme);
+@include mat.divider-theme($elim-theme);

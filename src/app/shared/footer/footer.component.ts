@@ -1,213 +1,80 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { CHURCH_CONFIG } from '../../core/church.config';
+import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
+import { MAIN_NAV } from '../../core/navigation/navigation.config';
+import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
+import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
+import { IconComponent } from '../icon/icon.component';
+import { SocialIconComponent } from '../social-icon/social-icon.component';
+
+/** Grupo de enlaces del pie, derivado de la navegación principal. */
+interface FooterColumn {
+  readonly id: string;
+  readonly titleKey: string;
+  readonly links: readonly NavItem[];
+}
 
 /**
- * Footer global con los logos institucionales (ELIM + INEB) y un texto
- * de copyright. Sigue la temática "Luz y Paz": fondo azul marino
- * (`#1A365D`) con una fina línea dorada superior y texto claro. Inspirado
- * en el footer del proyecto `INEB_ELIM_Administrativ` pero adaptado al
- * lenguaje visual de esta web.
+ * Pie global del sitio.
+ *
+ * ── Por qué así ───────────────────────────────────────────────────────
+ * El pie es la segunda navegación más usada de cualquier web y, en una web de
+ * iglesia, el sitio donde acaba quien busca lo práctico: dónde estáis, a qué
+ * hora, cómo os escribo, cómo colaboro. Por eso deja de ser una firma de tres
+ * líneas y pasa a un **mapa del sitio** con los datos de contacto reales.
+ *
+ * ── Arquitectura: el pie no repite el menú, lo *deriva* ────────────────
+ * Las columnas de enlaces salen de `MAIN_NAV`. Añadir una sección a la app
+ * sigue siendo tocar **un solo fichero** (`navigation.config.ts`) y aparece a
+ * la vez en la cabecera, en el cajón móvil y aquí. Duplicar la lista a mano
+ * garantizaba que tarde o temprano divergieran.
+ *
+ * Los datos de contacto, dirección y redes salen de `CHURCH_CONFIG`, que ya es
+ * la fuente única de lo no traducible.
+ *
+ * ── Rendimiento ───────────────────────────────────────────────────────
+ * `MainLayoutComponent` lo monta con `@defer (on viewport)`: no entra en el
+ * primer pintado y en la pantalla del templo (modo presentación) no se
+ * descarga nunca. Por eso puede permitirse ser rico sin coste inicial.
  */
 @Component({
   selector: 'app-footer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
-  template: `
-    <footer class="site-footer">
-      <div class="site-footer__inner">
-        <a
-          class="site-footer__brand"
-          href="https://elimarganda.es"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Iglesia ELIM Arganda"
-        >
-          <img
-            src="assets/logo-elim.png"
-            alt=""
-            class="site-footer__logo"
-            width="44"
-            height="44"
-            loading="lazy"
-            decoding="async"
-            aria-hidden="true"
-          />
-        </a>
-
-        <div class="site-footer__text">
-          <p class="site-footer__line">
-            <span class="site-footer__church">{{ 'footer.church' | translate }}</span>
-            <span class="site-footer__sep" aria-hidden="true">·</span>
-            <span class="site-footer__year">© {{ year }}</span>
-          </p>
-          <p class="site-footer__sub">
-            {{ 'footer.department' | translate }} ·
-            <span class="site-footer__rights">{{ 'footer.rights' | translate }}</span>
-          </p>
-        </div>
-
-        <a
-          class="site-footer__brand"
-          href="https://ineb.es"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="INEB"
-        >
-          <img
-            src="assets/logo-ineb.png"
-            alt=""
-            class="site-footer__logo"
-            width="44"
-            height="44"
-            loading="lazy"
-            decoding="async"
-            aria-hidden="true"
-          />
-        </a>
-      </div>
-    </footer>
-  `,
-  styles: [
-    `
-      :host {
-        display: block;
-      }
-
-      .site-footer {
-        position: relative;
-        padding: clamp(0.5rem, 1.2vh, 0.8rem) clamp(1rem, 4vw, 3rem);
-        background:
-          radial-gradient(
-            ellipse at top,
-            rgba(212, 175, 55, 0.1) 0%,
-            transparent 60%
-          ),
-          linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
-        border-top: 1px solid rgba(212, 175, 55, 0.22);
-        color: rgba(247, 250, 252, 0.7);
-        overflow: hidden;
-      }
-
-      .site-footer::before {
-        /* Línea dorada decorativa fina sobre el borde superior. */
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: clamp(120px, 30%, 360px);
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--c-gold) 50%,
-          transparent
-        );
-        opacity: 0.7;
-      }
-
-      .site-footer__inner {
-        max-width: 1180px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: clamp(1rem, 2vw, 1.5rem);
-        flex-wrap: wrap;
-      }
-
-      .site-footer__brand {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.25s ease, filter 0.25s ease;
-
-        &:hover {
-          transform: translateY(-1px);
-          filter: brightness(1.05);
-        }
-        &:focus-visible {
-          outline: 2px solid var(--c-gold);
-          outline-offset: 3px;
-          border-radius: 4px;
-        }
-      }
-
-      .site-footer__logo {
-        height: clamp(28px, 4vh, 36px);
-        width: auto;
-        display: block;
-        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
-      }
-
-      .site-footer__text {
-        text-align: center;
-        line-height: 1.45;
-        min-width: 0;
-      }
-
-      .site-footer__line {
-        margin: 0;
-        font-family: var(--font-serif);
-        font-size: clamp(0.85rem, 1vw, 1rem);
-        color: rgba(247, 250, 252, 0.95);
-        letter-spacing: 0.01em;
-      }
-
-      .site-footer__church {
-        font-weight: 600;
-      }
-
-      .site-footer__sep {
-        margin: 0 0.4rem;
-        color: rgba(212, 175, 55, 0.75);
-      }
-
-      .site-footer__year {
-        color: var(--c-gold-soft);
-        font-weight: 600;
-      }
-
-      .site-footer__sub {
-        margin: 2px 0 0;
-        font-size: clamp(0.65rem, 0.8vw, 0.75rem);
-        font-weight: 400;
-        color: rgba(247, 250, 252, 0.55);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      .site-footer__rights {
-        text-transform: none;
-        letter-spacing: 0;
-      }
-
-      @media (max-width: 600px) {
-        .site-footer {
-          padding: 1.1rem 0.85rem 1.25rem;
-        }
-        .site-footer__inner {
-          gap: 14px 18px;
-        }
-        .site-footer__text {
-          flex: 0 0 100%;
-          order: 2;
-        }
-        .site-footer__brand {
-          order: 1;
-          padding: 4px 8px;
-        }
-        .site-footer__logo {
-          height: 36px;
-        }
-        .site-footer__sub {
-          font-size: 0.68rem;
-        }
-      }
-    `,
+  imports: [
+    RouterLink,
+    TranslateModule,
+    BrandLogoComponent,
+    IconComponent,
+    SocialIconComponent,
   ],
+  templateUrl: './footer.component.html',
+  styleUrl: './footer.component.scss',
 })
 export class FooterComponent {
+  protected readonly config = inject(CHURCH_CONFIG);
+
   protected readonly year = new Date().getFullYear();
+
+  /**
+   * Columnas de enlaces = grupos de la navegación principal. Si mañana se
+   * añade un grupo al menú, aparece aquí solo.
+   */
+  protected readonly columns: readonly FooterColumn[] = MAIN_NAV.filter(isNavGroup).map(
+    (group) => ({ id: group.id, titleKey: group.labelKey, links: group.children }),
+  );
+
+  /** Accesos que no cuelgan de ningún grupo. */
+  protected readonly links = {
+    home: `/${APP_PATHS.home}`,
+    contact: `/${APP_PATHS.contact}`,
+    donate: `/${APP_PATHS.donate}`,
+    live: blockPath('streams'),
+    location: blockPath('location'),
+  } as const;
+
+  protected readonly mailto = `mailto:${this.config.contact.email}`;
+  protected readonly tel = `tel:${this.config.contact.phone}`;
 }

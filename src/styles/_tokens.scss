@@ -1,0 +1,240 @@
+// =====================================================================
+// TOKENS DE DISEÑO — única fuente de verdad del sistema visual.
+//
+// Nivel 1 (aquí): *primitivas* — la escala cruda de color, espacio,
+//                 radio, sombra, tipografía, z-index y movimiento.
+// Nivel 2 (`_semantic.scss`): *semántica* — qué significa cada primitiva
+//                 (`--c-surface`, `--c-text`…). Es lo que consumen los
+//                 componentes; nunca uses una primitiva directamente en
+//                 un componente.
+// Nivel 3 (`_theme.scss`): el tema de Angular Material, derivado de las
+//                 mismas primitivas para que Material y los componentes
+//                 propios no puedan divergir jamás.
+//
+// Regla: si un valor de color/espacio aparece dos veces en el proyecto,
+// pertenece a este fichero.
+// =====================================================================
+
+@use 'sass:map';
+
+// ---------------------------------------------------------------------
+// Paleta primaria — "Luz y Paz"
+// Azul marino profundo (reverencia) + oro metálico (luz).
+// Escala 50→900 completa para poder generar paletas de Material y tener
+// estados hover/active coherentes sin `lighten()`/`darken()` a ojo.
+// ---------------------------------------------------------------------
+$navy: (
+  50: #eef2f8,
+  100: #d5dfee,
+  200: #b9cbe6,
+  300: #7d99bb,
+  400: #4a6f9c,
+  500: #2c5282,
+  600: #24466f,
+  700: #1a365d,
+  // ← primario de marca
+  800: #122844,
+  900: #0d1f35,
+);
+
+$gold: (
+  50: #fdf8e9,
+  100: #f8edc4,
+  200: #f0dd97,
+  300: #e3c766,
+  400: #dcbb4d,
+  500: #d4af37,
+  // ← acento de marca
+  600: #bf9a2b,
+  700: #9c7a1e,
+  800: #7a5e15,
+  900: #55400c,
+);
+
+$neutral: (
+  0: #ffffff,
+  50: #faf9f6,
+  // alabastro (lienzo)
+  100: #f6f8fb,
+  200: #eef1f6,
+  300: #e2e8f0,
+  400: #cbd5e0,
+  500: #a0aec0,
+  600: #718096,
+  700: #4a5568,
+  800: #2d3748,
+  // texto
+  900: #1a202c,
+);
+
+// Estados (feedback). Se mantienen desaturados para no romper la marca.
+$status: (
+  'success': #2f855a,
+  'warning': #b7791f,
+  'danger': #c53030,
+  'info': #2b6cb0,
+  'live': #e53e3e,
+);
+
+// ---------------------------------------------------------------------
+// Espaciado — escala de 4 px, sin valores intermedios ad-hoc.
+// ---------------------------------------------------------------------
+$space: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 0.75rem,
+  4: 1rem,
+  5: 1.25rem,
+  6: 1.5rem,
+  8: 2rem,
+  10: 2.5rem,
+  12: 3rem,
+  16: 4rem,
+  20: 5rem,
+  24: 6rem,
+);
+
+// ---------------------------------------------------------------------
+// Radios — la marca es "suave y luminosa": radios generosos.
+// ---------------------------------------------------------------------
+$radius: (
+  'xs': 6px,
+  'sm': 10px,
+  'md': 16px,
+  'lg': 24px,
+  'xl': 32px,
+  'pill': 999px,
+);
+
+// ---------------------------------------------------------------------
+// Elevación — sombras SIEMPRE azuladas, nunca negras puras: el negro
+// puro sobre alabastro se ve sucio y en proyector produce halos grises.
+// ---------------------------------------------------------------------
+$elevation: (
+  0: none,
+  1: (
+    0 4px 14px rgba(26, 54, 93, 0.08),
+  ),
+  2: (
+    0 8px 22px rgba(26, 54, 93, 0.1),
+  ),
+  3: (
+    0 18px 44px rgba(26, 54, 93, 0.14),
+  ),
+  4: (
+    0 28px 70px rgba(26, 54, 93, 0.2),
+  ),
+);
+
+// ---------------------------------------------------------------------
+// Tipografía
+// Playfair Display (serif) para títulos — carácter litúrgico.
+// Inter (sans) para el cuerpo — máxima legibilidad a 10 m de distancia.
+// ---------------------------------------------------------------------
+$font-serif: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+$font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+// Escala tipográfica fluida (clamp): el mismo componente se lee bien en
+// un móvil y proyectado en una pantalla de 4 m.
+$type-scale: (
+  'display': clamp(2.6rem, 5vw, 4.5rem),
+  'h1': clamp(2rem, 3.6vw, 3.2rem),
+  'h2': clamp(1.6rem, 2.6vw, 2.4rem),
+  'h3': clamp(1.25rem, 1.8vw, 1.65rem),
+  'body-lg': clamp(1.05rem, 1.2vw, 1.2rem),
+  'body': 1rem,
+  'sm': 0.9rem,
+  'xs': 0.78rem,
+);
+
+// ---------------------------------------------------------------------
+// Capas — un único sitio donde mirar cuando algo se solapa.
+// ---------------------------------------------------------------------
+$z: (
+  'base': 0,
+  'backdrop': 1,
+  'content': 10,
+  'sticky': 100,
+  'nav': 900,
+  'drawer': 1000,
+  'overlay': 1100,
+  'fullscreen': 9999,
+);
+
+// ---------------------------------------------------------------------
+// Movimiento — curvas y duraciones nombradas. Nada de `0.3s ease` suelto.
+// ---------------------------------------------------------------------
+$motion: (
+  'instant': 90ms,
+  'fast': 160ms,
+  'base': 240ms,
+  'slow': 400ms,
+  'slower': 700ms,
+);
+
+$easing: (
+  'standard': cubic-bezier(0.2, 0, 0, 1),
+  'decelerate': cubic-bezier(0, 0, 0, 1),
+  'accelerate': cubic-bezier(0.3, 0, 1, 1),
+  'emphasis': cubic-bezier(0.4, 0, 0.2, 1),
+);
+
+// ---------------------------------------------------------------------
+// Breakpoints — móvil primero; el modo proyección usa el más alto.
+// ---------------------------------------------------------------------
+$breakpoints: (
+  'xs': 480px,
+  'sm': 720px,
+  'md': 860px,
+  'lg': 1024px,
+  'xl': 1280px,
+  'stage': 1600px,
+);
+
+// ---------------------------------------------------------------------
+// Accesores tipados: fallan en compilación si pides una clave inexistente.
+// ---------------------------------------------------------------------
+@function navy($step) {
+  @return map.get($navy, $step);
+}
+
+@function gold($step) {
+  @return map.get($gold, $step);
+}
+
+@function neutral($step) {
+  @return map.get($neutral, $step);
+}
+
+@function space($step) {
+  @return map.get($space, $step);
+}
+
+@function radius($name) {
+  @return map.get($radius, $name);
+}
+
+@function elevation($level) {
+  @return map.get($elevation, $level);
+}
+
+@function z($name) {
+  @return map.get($z, $name);
+}
+
+@function motion($name) {
+  @return map.get($motion, $name);
+}
+
+@function easing($name) {
+  @return map.get($easing, $name);
+}
+
+@function type-size($name) {
+  @return map.get($type-scale, $name);
+}
+
+@function breakpoint($name) {
+  @return map.get($breakpoints, $name);
+}

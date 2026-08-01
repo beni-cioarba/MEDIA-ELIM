@@ -1,0 +1,140 @@
+<main class="stage" [class.is-fullscreen]="fullscreen()">
+  <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="halo halo--gold"></div>
+    <div class="halo halo--blue"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- En la web pública la marca ya está en la barra de navegación; aquí
+       sólo se muestra proyectada, donde no hay menú. Es el mismo componente
+       que la cabecera y el pie: una sola marca para toda la app. -->
+  @if (fullscreen()) {
+    <header class="stage-brand">
+      <app-brand-logo class="stage-brand__logo" size="xl" tone="light" [link]="null" />
+      <div class="stage-brand__spacer"></div>
+    </header>
+  }
+
+  <section class="content" [class.content--carousel]="fullscreen()">
+    <!-- Carrusel de bloques. En proyección sólo se renderizan los bloques
+         activos (ver PresentationBlocksService); en la web pública, todos
+         o sólo el pedido por la URL. -->
+    <div class="carousel">
+      @for (blockId of renderedBlocks(); track blockId) {
+        <div
+          [class]="'slide slide--' + blockId"
+          [class.slide--active]="isBlockVisible(blockId)"
+          [attr.aria-hidden]="!isBlockVisible(blockId)"
+        >
+          @switch (blockId) {
+            @case ('socials') { <app-socials-block /> }
+            @case ('streams') { <app-streams-block /> }
+            @case ('gallery') { <app-gallery-block /> }
+            @case ('weekly') { <app-weekly-block /> }
+            @case ('upcoming') { <app-upcoming-block /> }
+            @case ('location') { <app-location-block /> }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- El QR solo tiene sentido proyectado en la pantalla de la iglesia
+         para que la gente lo escanee; en la web normal de visionado no se
+         muestra (la página ya está abierta en su dispositivo). -->
+    @if (fullscreen()) {
+      <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
+        @defer (on idle) {
+          <app-qr-panel [data]="qrData()" />
+        } @placeholder {
+          <div class="qr__placeholder" aria-hidden="true"></div>
+        }
+      </aside>
+    }
+  </section>
+
+  <!-- Zona caliente invisible que revela los controles al acercar el ratón -->
+  @if (fullscreen()) {
+    <div class="stage__hover-zone" aria-hidden="true"></div>
+  }
+
+  <!-- Controles del carrusel -->
+  @if (fullscreen()) {
+    <div class="stage__controls" role="group" [attr.aria-label]="'carousel.label' | translate">
+      <button
+        type="button"
+        class="carousel__nav carousel__nav--prev"
+        (click)="carousel.prev()"
+        [attr.aria-label]="'carousel.prev' | translate"
+        [title]="'carousel.prev' | translate"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <div class="carousel__dots" role="tablist" [attr.aria-label]="'carousel.label' | translate">
+        @for (block of blocks.activeStates(); track block.id; let i = $index) {
+          <button
+            type="button"
+            class="carousel__dot"
+            [class.is-active]="carousel.currentIndex() === i"
+            [attr.aria-selected]="carousel.currentIndex() === i"
+            [attr.aria-label]="(block.titleKey | translate) + ' (' + (i + 1) + '/' + carousel.count() + ')'"
+            role="tab"
+            (click)="carousel.setIndex(i)"
+          >
+            <span class="carousel__dot-bar" aria-hidden="true">
+              <span
+                class="carousel__dot-progress"
+                [style.width.%]="carousel.currentIndex() === i ? carousel.progress() : 0"
+              ></span>
+            </span>
+          </button>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="carousel__pause"
+        (click)="carousel.togglePause()"
+        [attr.aria-pressed]="carousel.isPaused()"
+        [attr.aria-label]="(carousel.isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+        [title]="(carousel.isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+      >
+        @if (!carousel.isPaused()) {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
+            <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 5l12 7-12 7V5z" fill="currentColor" />
+          </svg>
+        }
+      </button>
+
+      <button
+        type="button"
+        class="carousel__nav carousel__nav--next"
+        (click)="carousel.next()"
+        [attr.aria-label]="'carousel.next' | translate"
+        [title]="'carousel.next' | translate"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <!-- Selector de bloques a presentar -->
+      <app-presentation-settings />
+    </div>
+  }
+
+  <footer class="bar">
+    <p class="bar__verse">
+      <span class="bar__verse-text">«{{ 'verse.text' | translate }}»</span>
+      <span class="bar__verse-ref">— {{ 'verse.reference' | translate }}</span>
+    </p>
+  </footer>
+</main>

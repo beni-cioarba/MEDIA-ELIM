@@ -1,0 +1,156 @@
+{
+  "credo": {
+    "articles": {
+      "scripture": {
+        "title": "La Biblia o Sagrada Escritura es la Palabra inspirada e infalible de Dios.",
+        "body": "La Biblia comprende los 66 libros del Antiguo y del Nuevo Testamento. Sus autores, inspirados por el Espíritu Santo, pusieron por escrito, sin error, la revelación necesaria para conocer a Dios y para la salvación de los hombres. La enseñanza de la Escritura es la única autoridad normativa para la doctrina y la práctica de la Iglesia, y su canon es definitivo: nadie tiene derecho a añadirle ni a quitarle nada.",
+        "refs": "2 Timoteo 3:16; 2 Pedro 1:20-21; Proverbios 30:6; Gálatas 1:8-9"
+      },
+      "trinity": {
+        "title": "Existe un solo Dios, eternamente existente en tres Personas: Padre, Hijo y Espíritu Santo.",
+        "body": "Las tres Personas son distintas, igualmente eternas y de una misma esencia. El Padre es Creador y Sustentador de todas las cosas; el Hijo, unigénito del Padre, es aquel por quien todo fue hecho; el Espíritu Santo procede del Padre y obra la renovación, la santificación y el poder en los creyentes.",
+        "refs": "Deuteronomio 6:4; Mateo 28:19; Juan 1:1-3; Juan 15:26; 2 Corintios 13:14"
+      },
+      "creation": {
+        "title": "Dios creó todas las cosas, las invisibles y las visibles.",
+        "body": "Lo invisible comprende el mundo angelical; lo visible, el universo material traído a la existencia por el poder de su Palabra. La corona de la creación es el ser humano, hecho a imagen de Dios. A causa del pecado la creación quedó sujeta a corrupción, pero será liberada al regreso del Salvador, cuando haya un cielo nuevo y una tierra nueva.",
+        "refs": "Génesis 1:1, 26-27; Colosenses 1:16; Romanos 8:19-22; 2 Pedro 3:13"
+      },
+      "angels": {
+        "title": "Dios creó a los seres angelicales.",
+        "body": "Los ángeles son seres espirituales creados para servir a Dios, ayudar a los santos y cumplir sus designios. Creados sin pecado, una parte de ellos se rebeló y fue expulsada de la presencia de Dios. El diablo, su cabecilla, fue vencido por la obra salvadora del Señor Jesús y recibirá su castigo eterno.",
+        "refs": "Hebreos 1:14; Colosenses 1:16; 2 Pedro 2:4; Judas 6; Apocalipsis 20:10"
+      },
+      "humanity": {
+        "title": "El ser humano fue creado por Dios, varón y mujer, a su imagen y semejanza.",
+        "body": "El hombre y la mujer son iguales en dignidad y complementarios en sus funciones, compuestos de cuerpo, alma y espíritu. La imagen de Dios en el ser humano se manifiesta en la razón, la voluntad libre, la conciencia moral y la capacidad de crear y de relacionarse.",
+        "refs": "Génesis 1:26-27; Génesis 2:21-22; 1 Tesalonicenses 5:23"
+      },
+      "fall": {
+        "title": "El ser humano se convirtió en un ser pecador por su rebelión contra Dios.",
+        "body": "El pecado es, en esencia, rebelión contra la voluntad de Dios. La caída trajo la separación de Dios, la degradación de la naturaleza humana y la muerte, y ese estado alcanzó a toda la humanidad. La única solución es la obra salvadora del Señor Jesús, recibida por fe; aun en su estado caído, el ser humano conserva la libertad de responder al llamado de la gracia.",
+        "refs": "Génesis 3:6; Romanos 3:23; Romanos 5:12-19; Juan 3:16; Efesios 2:8-9"
+      },
+      "christ": {
+        "title": "Jesucristo es el Hijo de Dios, que se encarnó de la virgen María para nuestra salvación.",
+        "body": "El Señor Jesús es verdadero Dios, de una misma esencia con el Padre y el Espíritu Santo, y a la vez hombre pleno, sin pecado. Murió en la cruz por nuestros pecados, fue sepultado, resucitó al tercer día, ascendió al cielo y volverá en gloria. Él es el único Mediador entre Dios y los hombres, la Cabeza de la Iglesia y Señor de toda la creación.",
+        "refs": "Juan 1:1-3, 14; Lucas 1:35; 1 Corintios 15:3-4; 1 Timoteo 2:5; Filipenses 2:9-11"
+      },
+      "redemption": {
+        "title": "La salvación del ser humano se realiza por la obra redentora del Señor Jesucristo.",
+        "body": "Nadie puede salvarse por buenas obras ni por las obras de la ley. La muerte de Cristo es el sacrificio sustitutorio, la redención, la expiación y la reconciliación del mundo con Dios. Su sacrificio es universal y plenamente suficiente, pero sólo resulta eficaz allí donde se recibe por fe personal.",
+        "refs": "Gálatas 2:16; Efesios 2:8-9; Romanos 3:24-25; Romanos 5:8-11; 1 Juan 2:2"
+      },
+      "conversion": {
+        "title": "La salvación se recibe por fe y arrepentimiento, como respuesta al llamado del Evangelio.",
+        "body": "Dios llama a todos los hombres a la salvación, porque no quiere que ninguno perezca. La fe salvadora es la confianza en la gracia del perdón por Jesucristo y viene por oír la Palabra. El arrepentimiento es el pesar sincero por el pecado, su confesión y la decisión de apartarse de él para volverse a Dios.",
+        "refs": "2 Pedro 3:9; Romanos 10:9-17; Marcos 1:14-15; Hechos 3:19"
+      },
+      "new_birth": {
+        "title": "Tras la fe y el arrepentimiento, el ser humano es perdonado, justificado y nacido de nuevo.",
+        "body": "Dios borra la culpa de quienes vuelven a él, los declara justos sobre la base de la obra de Cristo y los renueva interiormente por el Espíritu Santo. Quien nace de nuevo recibe una naturaleza nueva, queda unido espiritualmente a Cristo y llega a ser hijo de Dios y heredero de su Reino.",
+        "refs": "Hechos 10:43; Romanos 3:21-22; Romanos 8:15-17; Tito 3:5; Juan 3:5-8"
+      },
+      "sanctification": {
+        "title": "El Espíritu Santo obra en la vida del creyente la santificación, formando en él el carácter de Cristo.",
+        "body": "La santificación es el proceso por el cual el creyente crece en semejanza moral a Cristo, apartándose del pecado y consagrándose a Dios. Abarca a la persona entera —cuerpo, alma y espíritu— y tiene tres dimensiones: posicional, en el nuevo nacimiento; progresiva, a lo largo de toda la vida; y plena, en el regreso del Señor.",
+        "refs": "2 Corintios 7:1; 1 Tesalonicenses 5:23; Gálatas 5:16-25; Filipenses 3:20-21"
+      },
+      "spirit_baptism": {
+        "title": "El bautismo en el Espíritu Santo es una experiencia sobrenatural, posterior al nuevo nacimiento, acompañada por el hablar en otras lenguas.",
+        "body": "Es la promesa del Padre para los creyentes de todas las generaciones, dada por el Señor Jesús a partir del día de Pentecostés. Es una experiencia distinta de la conversión, que capacita para el testimonio y el servicio. Se recibe por fe y oración perseverante, y va seguida de sucesivas plenitudes del Espíritu Santo.",
+        "refs": "Hechos 1:4-8; Hechos 2:4; Hechos 8:14-17; Hechos 19:1-7; Efesios 5:18"
+      },
+      "gifts": {
+        "title": "Los dones espirituales son manifestaciones sobrenaturales del Espíritu Santo en la vida de la Iglesia.",
+        "body": "Todos los creyentes reciben dones, repartidos por el Espíritu según su voluntad, para el bien común de la Iglesia y no para provecho propio. Algunos son capacitaciones espontáneas —palabra de sabiduría y de ciencia, fe, sanidades, milagros, profecía, discernimiento de espíritus, lenguas e interpretación—. Otros son aptitudes puestas bajo la dirección del Espíritu: ayuda, administración, generosidad, hospitalidad, enseñanza. El ejercicio de los dones se desarrolla bajo la autoridad de la Iglesia.",
+        "refs": "Romanos 12:6-8; 1 Corintios 12:4-11, 28; 1 Pedro 4:10; 1 Corintios 14:26-33"
+      },
+      "healing": {
+        "title": "Creemos en las sanidades milagrosas y en la liberación de demonios, obradas por Dios de forma sobrenatural.",
+        "body": "La sanidad se fundamenta en el sacrificio redentor de Cristo y puede recibirse por fe personal, por los dones de sanidad, por la oración de la iglesia y por la unción con aceite hecha por los ancianos. La Escritura no desaconseja acudir a la ciencia médica, pero el creyente pone su confianza en Dios, que sigue siendo soberano en sus respuestas.",
+        "refs": "Isaías 53:4-5; Mateo 8:16-17; Santiago 5:14-16; 1 Corintios 12:9; Marcos 16:17"
+      },
+      "fruit": {
+        "title": "Al nuevo nacimiento le sigue el fruto del Espíritu Santo, y el bautismo en el Espíritu intensifica ese fruto.",
+        "body": "El fruto del Espíritu está formado por las virtudes que componen juntas el carácter de Cristo: amor, gozo, paz, paciencia, benignidad, bondad, fidelidad, mansedumbre y dominio propio. Se manifiesta ya desde el nuevo nacimiento, y el bautismo en el Espíritu Santo capacita al creyente para llevar fruto en abundancia, como testigo creíble del Reino.",
+        "refs": "Gálatas 5:16-25; Juan 15:5-8; Hechos 1:8; Tito 3:8"
+      },
+      "church": {
+        "title": "Creemos en la existencia de la Iglesia de Dios: santa, apostólica y universal.",
+        "body": "La Iglesia es el pueblo redimido de Dios, el Cuerpo de Cristo y el templo del Espíritu Santo, formado por todos los nacidos de nuevo de todos los tiempos y lugares. La iglesia local no es sólo una parte de la universal, sino su expresión en un lugar concreto. Sus obras principales son la adoración, el anuncio del Evangelio, la formación de discípulos, el servicio y la comunión fraterna.",
+        "refs": "Mateo 16:18; Hechos 2:42-47; Efesios 2:19-22; Efesios 4:11-16; Colosenses 3:16"
+      },
+      "ministers": {
+        "title": "Para el gobierno espiritual de su Iglesia, Dios ha establecido ministros.",
+        "body": "En el Nuevo Pacto el sacerdocio es universal: todos los creyentes son sacerdotes de Dios y Cristo sigue siendo el único Sumo Sacerdote. Los oficios de gobierno reconocidos son los de pastor, anciano y diácono, a los que se accede por el acto de la ordenación. Se reconocen también los ministerios de misionero, profeta, evangelista y maestro, ejercidos dentro de la Iglesia y bajo su autoridad.",
+        "refs": "1 Pedro 2:5, 9; Efesios 4:11-12; Hechos 6:1-7; 1 Timoteo 3:1-13; Tito 1:5"
+      },
+      "water_baptism": {
+        "title": "El bautismo en agua es el acto por el cual el creyente pasa a ser miembro de la Iglesia.",
+        "body": "Se administra por una sola inmersión, en el nombre del Padre, del Hijo y del Espíritu Santo, sólo a personas con uso de discernimiento que han creído, se han arrepentido y han nacido de nuevo. Es el testimonio público de la muerte al pecado y de la vida nueva en Cristo. Se recibe una única vez en la vida y lo oficia un pastor o un anciano.",
+        "refs": "Mateo 28:19; Hechos 2:38-41; Hechos 8:36-38; Romanos 6:1-4"
+      },
+      "lords_supper": {
+        "title": "Por la Cena del Señor tenemos comunión con el cuerpo y la sangre de Jesucristo.",
+        "body": "Instituida por el Señor Jesús como señal del Nuevo Pacto, la Cena mantiene viva la memoria de su sacrificio, fortalece la unidad de los creyentes y anticipa su regreso. Los elementos empleados son el pan y el fruto de la vid. Participan los creyentes bautizados, tras examinar su propia vida, al menos una vez al mes.",
+        "refs": "Mateo 26:26-29; 1 Corintios 10:16-17; 1 Corintios 11:23-28"
+      },
+      "foot_washing": {
+        "title": "El Señor Jesús instituyó el acto del lavamiento de los pies.",
+        "body": "El Señor Jesús lavó los pies a sus discípulos y les dijo: «Si yo, el Señor y el Maestro, os he lavado los pies, vosotros también debéis lavaros los pies los unos a los otros». Es una señal de humildad y de servicio mutuo, recordada en la Escritura también como muestra de piedad auténtica.",
+        "refs": "Juan 13:4-17; 1 Timoteo 5:10"
+      },
+      "child_blessing": {
+        "title": "Dios bendice a los niños presentados ante él mediante la oración de los ministros y de la Iglesia.",
+        "body": "El Salvador acostumbraba poner las manos sobre los niños para bendecirlos. La familia cristiana está llamada a pedir la bendición divina sobre sus hijos, trayéndolos a la comunión de la Iglesia desde la edad más temprana. El acto se realiza mediante la bendición pronunciada y la oración de un ministro ordenado, y no tiene valor de bautismo.",
+        "refs": "Mateo 19:13-15; Marcos 10:13-16; Números 6:24-27"
+      },
+      "discipline": {
+        "title": "Creemos en el papel benéfico de la disciplina espiritual del creyente por parte de la iglesia local.",
+        "body": "El objetivo de toda medida disciplinaria es la restauración espiritual de quien ha caído, junto con la salud y la unidad de la iglesia. Las formas van desde la amonestación personal hasta la exclusión de la iglesia local, y las medidas cesan cuando aparecen señales de arrepentimiento auténtico. Durante todo el proceso, el disciplinado recibe cuidado pastoral y el amor fraterno de la iglesia.",
+        "refs": "Mateo 18:15-20; 1 Corintios 5:1-13; Gálatas 6:1-2; 1 Timoteo 5:19-22"
+      },
+      "authorities": {
+        "title": "Las autoridades del Estado han sido establecidas por Dios para el orden social y el bien común.",
+        "body": "Los creyentes deben al Estado respeto, lealtad y el pago de los impuestos; la Iglesia y el poder político permanecen separados, sin que ello excluya la colaboración por el bien público. La lealtad termina allí donde entra en conflicto con la obediencia debida al Salvador: Cristo sigue siendo Señor por encima de toda autoridad humana.",
+        "refs": "Romanos 13:1-7; 1 Pedro 2:13-17; Hechos 5:29; Mateo 22:21"
+      },
+      "second_coming": {
+        "title": "Creemos en el regreso del Señor Jesucristo, en la resurrección de los muertos, en el juicio final y en el Reino de Dios.",
+        "body": "El regreso del Señor es inminente y su fecha sólo la conoce Dios. En el arrebatamiento de la Iglesia los muertos en Cristo resucitarán y los vivos serán transformados. Seguirá la gran tribulación, después la venida del Señor en gloria con su Iglesia, el Reino de mil años, la resurrección general y el juicio final. Los justos entrarán en la vida eterna, en un cielo nuevo y una tierra nueva; los injustos, en la condenación eterna.",
+        "refs": "Juan 14:2-3; 1 Tesalonicenses 4:15-17; 1 Corintios 15:51-53; Apocalipsis 20:1-15; Apocalipsis 21:1-4"
+      },
+      "disciplines": {
+        "title": "La relación personal con Dios se cultiva practicando con perseverancia las disciplinas espirituales.",
+        "body": "Comprenden la lectura y la meditación de la Palabra, la oración personal y comunitaria, el ayuno acompañado de oración y de buenas obras, la confesión de los pecados, la generosidad —el diezmo y las ofrendas voluntarias—, la comunión constante con la iglesia local, siendo el domingo el día de adoración, y el servicio con los dones recibidos de Dios.",
+        "refs": "Josué 1:8; Mateo 6:5-18; Malaquías 3:10; Hechos 2:42-47; Hebreos 10:24-25"
+      },
+      "family": {
+        "title": "La familia es la comunidad instituida por Dios, formada por el matrimonio entre un hombre y una mujer.",
+        "body": "El matrimonio es un pacto para toda la vida, contraído civilmente y seguido de la bendición religiosa. El marido está llamado a amar sacrificialmente a su esposa, como Cristo amó a la Iglesia, y los cónyuges a honrarse mutuamente. Los padres responden ante Dios de la crianza de sus hijos en la enseñanza y la disciplina del Señor. El divorcio no se admite salvo en caso de adulterio, y las segundas nupcias sólo en las condiciones previstas por la Escritura.",
+        "refs": "Génesis 2:18-24; Mateo 19:4-9; Efesios 5:22-33; Efesios 6:1-4"
+      },
+      "civil_marriage": {
+        "title": "Reconocemos el derecho del Estado a oficiar y certificar el matrimonio civil.",
+        "body": "El Culto Cristiano Pentecostal no reconoce ninguna otra definición del matrimonio que la fundada en las Sagradas Escrituras. Los ministros celebran bodas únicamente para parejas formadas por un hombre y una mujer, y los templos y propiedades de las iglesias no pueden emplearse para otro tipo de ceremonias.",
+        "refs": "Génesis 2:18-24; Mateo 19:4-6"
+      },
+      "conduct": {
+        "title": "La vida del creyente renovado por el Espíritu Santo se traduce en un carácter cristiano y una conducta bíblica.",
+        "body": "La conducta moral supone separación del pecado y consagración a Dios. La Escritura reprueba las prácticas pecaminosas y toda forma de relación sexual fuera del matrimonio entre un hombre y una mujer. La moral bíblica exhorta a abstenerse de bebidas alcohólicas, tabaco y sustancias psicoactivas, y la apariencia del cristiano estará marcada por la sencillez, la modestia y el decoro.",
+        "refs": "Romanos 1:28-32; 1 Corintios 6:9-20; Gálatas 5:19-23; 1 Pedro 3:3-4"
+      },
+      "love": {
+        "title": "El amor a Dios y al prójimo es la virtud central de la moral cristiana.",
+        "body": "El amor al prójimo es la señal distintiva de los discípulos de Cristo. Debemos amar a todas las personas, sin distinción de raza, nacionalidad, pertenencia étnica o convicción religiosa, evitando cualquier forma de discriminación. Los creyentes están llamados a contribuir a mejorar la situación de los más desfavorecidos y a servir a las necesidades de quienes les rodean.",
+        "refs": "Juan 13:34-35; Marcos 12:30-31; Hechos 10:34-35; Santiago 2:1-9; Mateo 25:31-46"
+      },
+      "life": {
+        "title": "Dios es el Autor de la vida; debemos proteger la vida humana y cuidar de la creación.",
+        "body": "El niño no nacido es un ser plenamente humano desde el momento de la concepción, por lo que el aborto provocado supone la supresión de una vida. El suicidio y la eutanasia son incompatibles con la moral de la Escritura. Toda la creación refleja la gloria de Dios, y el ser humano, puesto como administrador sobre ella, tiene el deber de proteger la naturaleza y de gestionar con prudencia sus recursos.",
+        "refs": "Salmo 139:13-16; Jeremías 1:5; Éxodo 20:13; Génesis 1:28; Romanos 1:20"
+      }
+    }
+  }
+}

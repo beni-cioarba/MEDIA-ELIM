@@ -1,0 +1,358 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Pie global
+// ---------------------------------------------------------------------
+// Superficie oscura de marca: cierra la página, separa el contenido del
+// «cajón de herramientas» y hace que los CTA dorados destaquen sin
+// competir con nada de arriba. Todo el color sale de tokens: el pie es
+// el único sitio de la web con fondo `--c-primary-deep` a sangre.
+// =====================================================================
+
+:host {
+  display: block;
+}
+
+.footer {
+  position: relative;
+  padding-block: clamp(var(--sp-8), 6vw, 4rem) var(--sp-6);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 62%),
+    linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
+  color: rgba(247, 250, 252, 0.72);
+  overflow: hidden;
+}
+
+// Filete dorado centrado: remata el borde superior sin la dureza de un
+// `border-top` de lado a lado.
+.footer::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-gold) 50%, transparent);
+  opacity: 0.55;
+}
+
+.footer__inner {
+  @include container(var(--w-wide));
+}
+
+// ---------------------------------------------------------------------
+// Rejilla principal
+// ---------------------------------------------------------------------
+// La identidad y el contacto piden más aire que las columnas de enlaces,
+// de ahí el reparto asimétrico. Se degrada en tres pasos en vez de
+// saltar de cinco columnas a una.
+.footer__main {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.6fr)
+    repeat(3, minmax(0, 1fr))
+    minmax(0, 1.4fr);
+  gap: clamp(var(--sp-6), 4vw, var(--sp-8));
+  padding-block-end: clamp(var(--sp-6), 4vw, var(--sp-8));
+}
+
+@include until('xl') {
+  .footer__main {
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+
+    // El contacto pasa a ocupar la fila entera: sus datos son largos y
+    // partidos en una columna estrecha se leen fatal.
+    .footer__contact {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: var(--sp-4) var(--sp-8);
+      padding-block-start: var(--sp-6);
+      border-block-start: 1px solid rgba(247, 250, 252, 0.1);
+    }
+
+    .footer__title {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+@include until('md') {
+  .footer__main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .footer__identity {
+      grid-column: 1 / -1;
+    }
+
+    .footer__contact {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+@include until('xs') {
+  .footer__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Identidad
+// ---------------------------------------------------------------------
+.footer__identity {
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-3);
+  align-content: start;
+}
+
+.footer__tagline {
+  margin: 0;
+  max-width: 28ch;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--c-gold-soft);
+}
+
+.footer__mission {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(247, 250, 252, 0.62);
+}
+
+.footer__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Círculo neutro en reposo y color de la red al pasar por encima: en
+// reposo cuatro logos a todo color dentro de un pie oscuro roban toda la
+// atención y descolocan la jerarquía.
+.footer__social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgba(247, 250, 252, 0.16);
+  border-radius: 50%;
+  color: rgba(247, 250, 252, 0.85);
+  transition:
+    background var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard),
+    color var(--mo-base) var(--ea-standard),
+    transform var(--mo-base) var(--ea-standard);
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: currentColor;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: linear-gradient(135deg, var(--social-a), var(--social-b));
+    border-color: transparent;
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Columnas de enlaces
+// ---------------------------------------------------------------------
+.footer__col {
+  min-width: 0;
+}
+
+.footer__title {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold);
+}
+
+.footer__links {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__link {
+  display: inline-block;
+  color: rgba(247, 250, 252, 0.74);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  text-decoration: none;
+  // Subrayado que crece desde la izquierda: da respuesta al puntero sin
+  // desplazar el texto ni cambiar la altura de la línea.
+  background-image: linear-gradient(var(--c-gold), var(--c-gold));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  transition:
+    color var(--mo-base) var(--ea-standard),
+    background-size var(--mo-base) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--c-on-primary);
+    background-size: 100% 1px;
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Contacto
+// ---------------------------------------------------------------------
+.footer__data {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-5);
+  padding: 0;
+  list-style: none;
+}
+
+.footer__datum {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-2);
+  font-size: 0.92rem;
+}
+
+.footer__datum-icon {
+  margin-block-start: 0.15rem;
+  font-size: 1.05rem;
+  color: var(--c-gold);
+}
+
+.footer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+// Los CTA del pie son propios y no `.btn`: aquí el fondo es oscuro y fijo,
+// así que no necesitan las variantes claro/oscuro del botón global ni su
+// relleno, pensado para bloques de contenido.
+.footer__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 2.5rem;
+  padding-inline: var(--sp-4);
+  border: 1px solid rgba(247, 250, 252, 0.28);
+  border-radius: var(--r-pill);
+  color: var(--c-on-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard),
+    transform var(--mo-base) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(247, 250, 252, 0.1);
+    border-color: rgba(247, 250, 252, 0.5);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+.footer__cta--gold {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+  color: var(--c-primary-deep);
+  box-shadow: var(--e-1);
+
+  &:hover,
+  &:focus-visible {
+    background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 100%);
+    border-color: transparent;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Franja legal
+// ---------------------------------------------------------------------
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-6);
+  padding-block-start: var(--sp-5);
+  border-block-start: 1px solid rgba(247, 250, 252, 0.12);
+  font-size: 0.8rem;
+  color: rgba(247, 250, 252, 0.55);
+}
+
+.footer__copy {
+  margin: 0;
+}
+
+.footer__partner {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--r-xs);
+  // El logo del instituto es de otra entidad y viene a todo color: se
+  // atenúa en reposo para que no compita con la marca de la iglesia.
+  opacity: 0.75;
+  transition: opacity var(--mo-base) var(--ea-standard);
+
+  img {
+    display: block;
+    height: 1.5rem;
+    width: auto;
+  }
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+@include until('md') {
+  .footer__legal {
+    justify-content: flex-start;
+  }
+}
+
+@include motion-reduce {
+  .footer__social,
+  .footer__link,
+  .footer__cta,
+  .footer__partner {
+    transition: none;
+  }
+}

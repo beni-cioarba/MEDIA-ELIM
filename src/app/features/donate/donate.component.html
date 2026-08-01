@@ -1,0 +1,107 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'donate.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'donate.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'donate.lead' | translate }}</p>
+
+    <!-- El versículo marca el tono: donación voluntaria, no cuota. -->
+    <figure class="verse">
+      <blockquote class="verse__text">{{ 'donate.verse.text' | translate }}</blockquote>
+      <figcaption class="verse__ref">{{ 'donate.verse.ref' | translate }}</figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- Primero el porqué: a qué se destina cada donativo. -->
+<app-page-section
+  eyebrowKey="donate.purposes.eyebrow"
+  titleKey="donate.purposes.title"
+  subtitleKey="donate.purposes.subtitle"
+>
+  <ul class="purposes">
+    @for (purpose of purposes; track purpose.id) {
+      <li class="purpose">
+        <span class="purpose__badge" aria-hidden="true">
+          <app-icon [name]="purpose.icon" />
+        </span>
+        <h3 class="purpose__title">
+          {{ 'donate.purposes.items.' + purpose.id + '.title' | translate }}
+        </h3>
+        <p class="purpose__body">
+          {{ 'donate.purposes.items.' + purpose.id + '.body' | translate }}
+        </p>
+      </li>
+    }
+  </ul>
+</app-page-section>
+
+<!-- Después el cómo. -->
+<app-page-section
+  tinted
+  eyebrowKey="donate.bank.eyebrow"
+  titleKey="donate.bank.title"
+  subtitleKey="donate.bank.subtitle"
+>
+  <!-- TODO(iglesia): quita este aviso cuando los datos de `church.config.ts`
+       sean los reales (junto con las claves `donate.demo.*`). -->
+  <p class="demo" role="note">
+    <strong>{{ 'donate.demo.title' | translate }}</strong>
+    {{ 'donate.demo.body' | translate }}
+  </p>
+
+  <div class="bank">
+    <dl class="bank__meta">
+      <div class="bank__row">
+        <dt>{{ 'donate.bank.holder' | translate }}</dt>
+        <dd>{{ donations.holder }}</dd>
+      </div>
+      <div class="bank__row">
+        <dt>{{ 'donate.bank.entity' | translate }}</dt>
+        <dd>{{ donations.bank }}</dd>
+      </div>
+      <div class="bank__row">
+        <dt>{{ 'donate.bank.bic' | translate }}</dt>
+        <dd>
+          <span class="bank__code">{{ donations.bic }}</span>
+          <app-copy-button [value]="donations.bic" [label]="'donate.bank.bic' | translate" />
+        </dd>
+      </div>
+    </dl>
+
+    <ul class="accounts">
+      @for (account of donations.accounts; track account.id) {
+        <li class="account">
+          <span class="account__currency">{{ account.currency }}</span>
+          <span class="account__iban">{{ account.iban }}</span>
+          <app-copy-button
+            [value]="plain(account.iban)"
+            [label]="('donate.bank.account' | translate) + ' ' + account.currency"
+          />
+        </li>
+      }
+    </ul>
+
+    @if (donations.bizum) {
+      <p class="bank__bizum">
+        <app-icon name="credit-card" />
+        <span>
+          {{ 'donate.bank.bizum' | translate }}
+          <strong>{{ donations.bizum }}</strong>
+        </span>
+      </p>
+    }
+
+    <p class="bank__note">{{ 'donate.bank.note' | translate }}</p>
+  </div>
+</app-page-section>
+
+<app-page-section titleKey="donate.thanks.title" subtitleKey="donate.thanks.subtitle">
+  <div class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.contact">
+      {{ 'donate.thanks.contact' | translate }}
+    </a>
+    <a class="btn btn--ghost-dark" [routerLink]="links.about">
+      {{ 'donate.thanks.about' | translate }}
+    </a>
+  </div>
+</app-page-section>

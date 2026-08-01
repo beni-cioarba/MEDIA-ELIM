@@ -4,19 +4,24 @@ import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
+  NgZone,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { ShareButtonComponent } from '../share-button/share-button.component';
 import { PresentationService } from '../../core/presentation.service';
+import { NavActiveService } from '../../core/navigation/nav-active.service';
+import { APP_PATHS } from '../../core/navigation/app-paths';
 
 /**
  * Dock flotante fijo en la esquina inferior derecha con los controles de
  * acción rápida, siempre accesibles:
  *
- *  - Botón de modo presentación (entrar / salir de pantalla completa).
+ *  - Botón de modo presentación, **sólo en el panel completo** (`/media`).
  *  - Botón de compartir (reutiliza `ShareButtonComponent`).
+ *  - Botón de volver arriba, que aparece tras un scroll considerable.
  *
  * Pensado tanto para el portátil que controla la proyección en la iglesia
  * (acceso inmediato a "Presentar" / "Salir") como para el visitante en la
@@ -35,53 +40,76 @@ import { PresentationService } from '../../core/presentation.service';
   template: `
     <div
       class="dock"
-      [class.dock--visible]="isVisible() && !footerVisible()"
+      [class.dock--visible]="isVisible() && (!footerVisible() || showTop())"
       [class.dock--present]="presentation.isFullscreen()"
       role="complementary"
-      [attr.aria-hidden]="footerVisible()"
+      [attr.aria-hidden]="footerVisible() && !showTop()"
     >
-      <button
-        type="button"
-        class="dock__btn dock__btn--present"
-        (click)="togglePresentation()"
-        [attr.aria-pressed]="presentation.isFullscreen()"
-        [attr.aria-label]="
-          (presentation.isFullscreen()
-            ? 'presentation.tooltip_exit'
-            : 'presentation.tooltip_enter'
-          ) | translate
-        "
-        [title]="
-          (presentation.isFullscreen()
-            ? 'presentation.tooltip_exit'
-            : 'presentation.tooltip_enter'
-          ) | translate
-        "
-      >
-        @if (!presentation.isFullscreen()) {
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-        } @else {
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-        }
-      </button>
+      @if (canPresent()) {
+        <button
+          type="button"
+          class="dock__btn dock__btn--present"
+          (click)="togglePresentation()"
+          [attr.aria-pressed]="presentation.isFullscreen()"
+          [attr.aria-label]="
+            (presentation.isFullscreen()
+              ? 'presentation.tooltip_exit'
+              : 'presentation.tooltip_enter'
+            ) | translate
+          "
+          [title]="
+            (presentation.isFullscreen()
+              ? 'presentation.tooltip_exit'
+              : 'presentation.tooltip_enter'
+            ) | translate
+          "
+        >
+          @if (!presentation.isFullscreen()) {
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          }
+        </button>
+      }
 
       <app-share-button class="dock__share" />
+
+      @if (showTop()) {
+        <button
+          type="button"
+          class="dock__btn dock__btn--top"
+          (click)="backToTop()"
+          [attr.aria-label]="'common.back_to_top' | translate"
+          [title]="'common.back_to_top' | translate"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 19V5M5 12l7-7 7 7"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      }
     </div>
   `,
   styles: [
@@ -208,11 +236,52 @@ import { PresentationService } from '../../core/presentation.service';
 export class FloatingActionsComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly navActive = inject(NavActiveService);
   protected readonly presentation = inject(PresentationService);
+
+  /**
+   * Proyectar sólo tiene sentido en el panel completo: es la única página
+   * pensada para la pantalla del templo (carrusel de bloques a pantalla
+   * completa). En el resto sería un control sin destino. Se mantiene visible
+   * mientras la presentación esté activa para poder salir siempre.
+   */
+  protected readonly canPresent = computed(
+    () => this.navActive.url() === `/${APP_PATHS.media}` || this.presentation.isFullscreen(),
+  );
 
   /** El dock está siempre disponible; solo se oculta si tapa el footer. */
   protected readonly isVisible = signal(true);
   protected readonly footerVisible = signal(false);
+
+  /**
+   * «Volver arriba» sólo aparece cuando el usuario ya se ha alejado del
+   * principio: antes de eso es ruido. El umbral es una pantalla y media, no
+   * un número de píxeles fijo, para que se comporte igual en el móvil y en
+   * la pantalla del templo. En presentación no aplica (no hay scroll).
+   */
+  protected readonly showTop = computed(
+    () => this.scrolledFar() && !this.presentation.isFullscreen(),
+  );
+
+  private readonly scrolledFar = signal(false);
+
+  constructor() {
+    if (typeof window === 'undefined') return;
+
+    // El listener vive fuera de la zona de Angular: el scroll dispara cientos
+    // de eventos y ninguno debe provocar detección de cambios. Sólo se vuelve
+    // a entrar cuando el umbral se cruza de verdad, es decir, dos veces por
+    // recorrido de página.
+    const zone = inject(NgZone);
+    const onScroll = () => {
+      const far = window.scrollY > window.innerHeight * 1.5;
+      if (far === this.scrolledFar()) return;
+      zone.run(() => this.scrolledFar.set(far));
+    };
+
+    zone.runOutsideAngular(() => window.addEventListener('scroll', onScroll, { passive: true }));
+    this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+  }
 
   ngAfterViewInit(): void {
     if (typeof IntersectionObserver === 'undefined') return;
@@ -246,5 +315,10 @@ export class FloatingActionsComponent implements AfterViewInit {
 
   protected togglePresentation(): void {
     void this.presentation.toggle();
+  }
+
+  /** Sube al principio sin recargar ni ensuciar el historial con un `#`. */
+  protected backToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

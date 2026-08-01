@@ -1,0 +1,18 @@
+// =====================================================================
+// API PÚBLICA DEL SISTEMA DE DISEÑO
+//
+// Único punto de entrada para las hojas de estilo de componente:
+//
+//   @use 'ds' as *;
+//
+// (Funciona gracias a `stylePreprocessorOptions.includePaths` en
+// `angular.json`, que añade `src/styles` al camino de búsqueda de Sass;
+// así ninguna hoja necesita `../../../` para llegar a los tokens.)
+//
+// IMPORTANTE: este fichero **no emite ni un byte de CSS**. Sólo expone
+// variables, funciones y mixins, así que puede importarse en tantos
+// componentes como haga falta sin duplicar nada en el bundle.
+// =====================================================================
+
+@forward 'tokens';
+@forward 'mixins';

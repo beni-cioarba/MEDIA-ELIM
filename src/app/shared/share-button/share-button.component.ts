@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
   inject,
   Input,
   signal,
+  ViewChild,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
@@ -48,15 +50,24 @@ import { CHURCH_CONFIG } from '../../core/church.config';
       <span class="share-btn__label">{{ 'share.button_label' | translate }}</span>
     </button>
 
-    @if (isModalOpen()) {
-    <div
+    <!-- Tiene que ser un elemento <dialog> abierto con showModal(), no un div
+         con position: fixed. Este botón vive dentro del dock flotante, que usa
+         transform y backdrop-filter, y cualquiera de los dos convierte al
+         ancestro en el bloque contenedor de sus descendientes fijos: con un div
+         el «modal a pantalla completa» acababa midiendo 54×54 px dentro del
+         propio botón. showModal() promociona el elemento a la top layer, que
+         ignora transformaciones, opacidad y recortes de los ancestros, y además
+         trae gratis atrapado de foco, cierre con Escape, fondo inerte y
+         ::backdrop. -->
+    <dialog
+      #dialogEl
       class="share-modal"
-      role="dialog"
-      aria-modal="true"
       [attr.aria-label]="'share.modal_title' | translate"
       (click)="onBackdropClick($event)"
+      (close)="onClosed()"
     >
-      <div class="share-modal__panel" role="document">
+      @if (isModalOpen()) {
+      <div class="share-modal__panel">
         <header class="share-modal__header">
           <h2 class="share-modal__title">{{ 'share.modal_title' | translate }}</h2>
           <button
@@ -212,8 +223,8 @@ import { CHURCH_CONFIG } from '../../core/church.config';
           </li>
         </ul>
       </div>
-    </div>
-    }
+      }
+    </dialog>
   `,
   styles: [
     `
@@ -264,16 +275,40 @@ import { CHURCH_CONFIG } from '../../core/church.config';
       }
 
       .share-modal {
+        // El elemento dialog trae estilos de agente de usuario (margin: auto,
+        // width: fit-content, max-width: calc(100% - 6px - 2em), borde) que hay
+        // que anular para que ocupe todo el viewport y centre el panel.
         position: fixed;
         inset: 0;
-        z-index: 1000;
-        display: grid;
-        place-items: center;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: none;
+        margin: 0;
         padding: clamp(1rem, 3vw, 2rem);
-        background: rgba(18, 40, 68, 0.5);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        animation: fade-in 0.2s ease both;
+        border: 0;
+        background: transparent;
+        overflow: auto;
+        // pointer-events se hereda: el dock lo pone a none cuando se oculta y
+        // el diálogo, aun estando en la top layer, lo heredaría.
+        pointer-events: auto;
+
+        &:not([open]) {
+          display: none;
+        }
+
+        &[open] {
+          display: grid;
+          place-items: center;
+        }
+
+        // El velo lo pinta el navegador: no hace falta un div de fondo.
+        &::backdrop {
+          background: rgba(18, 40, 68, 0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          animation: fade-in 0.2s ease both;
+        }
 
         &__panel {
           width: 100%;
@@ -450,6 +485,8 @@ export class ShareButtonComponent {
   /** Título a compartir (si la API nativa lo soporta). */
   @Input() title?: string;
 
+  @ViewChild('dialogEl') private dialogEl?: ElementRef<HTMLDialogElement>;
+
   protected readonly isModalOpen = signal(false);
   protected readonly copied = signal(false);
 
@@ -486,17 +523,36 @@ export class ShareButtonComponent {
       }
     }
     this.isModalOpen.set(true);
+    // `showModal()` lanza si ya estaba abierto.
+    const dialog = this.dialogEl?.nativeElement;
+    if (dialog && !dialog.open) dialog.showModal();
   }
 
   protected close(): void {
+    // No toca las señales: el evento `close` del diálogo dispara `onClosed()`.
+    this.dialogEl?.nativeElement.close();
+  }
+
+  /** Cierre por cualquier vía: botón, Escape o clic en el velo. */
+  protected onClosed(): void {
     this.isModalOpen.set(false);
     this.copied.set(false);
   }
 
+  /**
+   * En un `<dialog>` el velo **es** el propio elemento: un clic fuera del panel
+   * llega con `target === dialog`, así que no hace falta un div de fondo.
+   */
   protected onBackdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) this.close();
+    if (event.target === this.dialogEl?.nativeElement) this.close();
   }
 
+  /**
+   * Red de seguridad: el propio <dialog> ya se cierra con Escape en todos los
+   * navegadores modernos, pero cerrarlo aquí también es inocuo (la acción por
+   * defecto del navegador se encuentra el diálogo ya cerrado) y cubre motores
+   * antiguos o entornos donde el CloseWatcher no se dispara.
+   */
   @HostListener('document:keydown.escape')
   protected onEsc(): void {
     if (this.isModalOpen()) this.close();

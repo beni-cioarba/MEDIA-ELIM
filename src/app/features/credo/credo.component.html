@@ -1,0 +1,82 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'credo.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'credo.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'credo.lead' | translate }}</p>
+  </div>
+</header>
+
+<!-- Sumario navegable -->
+<app-page-section titleKey="credo.summary.title" subtitleKey="credo.summary.subtitle">
+  <nav class="credo-index" [attr.aria-label]="'credo.summary.aria' | translate">
+    <ol class="credo-index__list">
+      @for (part of parts; track part.id) {
+        <li>
+          <a class="credo-index__link" [routerLink]="[]" [fragment]="part.id">
+            <span class="credo-index__numeral" aria-hidden="true">{{ part.numeral }}</span>
+            <span class="credo-index__text">
+              <span class="credo-index__name">
+                {{ 'credo.parts.' + part.id + '.name' | translate }}
+              </span>
+              <span class="credo-index__count">
+                {{
+                  'credo.articles_count'
+                    | translate: { count: part.articles.length }
+                }}
+              </span>
+            </span>
+            <app-icon class="credo-index__arrow" name="arrow-right" />
+          </a>
+        </li>
+      }
+    </ol>
+  </nav>
+</app-page-section>
+
+<!-- Una sección por parte -->
+@for (part of parts; track part.id; let odd = $odd) {
+  <app-page-section
+    [tinted]="odd"
+    [anchor]="part.id"
+    [eyebrowKey]="'credo.part_label'"
+    [titleKey]="'credo.parts.' + part.id + '.name'"
+    [subtitleKey]="'credo.parts.' + part.id + '.description'"
+  >
+    <ol class="articles" [start]="part.articles[0].n">
+      @for (article of part.articles; track article.id) {
+        <li class="article">
+          <details class="article__details">
+            <summary class="article__summary">
+              <span class="article__number" aria-hidden="true">{{ article.n }}</span>
+              <span class="article__statement">
+                {{ 'credo.articles.' + article.id + '.title' | translate }}
+              </span>
+              <app-icon class="article__caret" name="chevron-down" />
+            </summary>
+            <div class="article__body">
+              <p>{{ 'credo.articles.' + article.id + '.body' | translate }}</p>
+              <p class="article__refs">
+                <span class="u-sr-only">{{ 'credo.refs_label' | translate }}</span>
+                {{ 'credo.articles.' + article.id + '.refs' | translate }}
+              </p>
+            </div>
+          </details>
+        </li>
+      }
+    </ol>
+  </app-page-section>
+}
+
+<!-- Cierre -->
+<app-page-section titleKey="credo.outro.title" subtitleKey="credo.outro.subtitle">
+  <p class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.about">
+      {{ 'credo.outro.cta_about' | translate }}
+    </a>
+    <a class="btn btn--ghost-dark" [routerLink]="links.leadership">
+      {{ 'credo.outro.cta_leadership' | translate }}
+    </a>
+  </p>
+
+  <p class="credo-source">{{ 'credo.source' | translate }}</p>
+</app-page-section>

@@ -1,0 +1,34 @@
+/* =====================================================================
+ * Fila de botones que cierra una sección (`<p class="section-cta">`).
+ * Parcial SCSS compartido: @use '../../shared/styles/section-cta' as *;
+ *
+ * Va en un `<p>` a propósito (agrupa enlaces en un párrafo semántico), así
+ * que hereda el `max-width: var(--w-prose)` global de `_base.scss`. Aquí lo
+ * anulamos: es una fila de controles, no prosa, y debe poder centrarse en
+ * todo el ancho de la sección.
+ * ===================================================================== */
+
+@use 'ds' as *;
+
+.section-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  max-width: none;
+  margin: var(--sp-8) auto 0;
+  text-align: center;
+}
+
+/* Cuando es lo único que contiene la sección, el margen superior sobra. */
+.section-cta:only-child {
+  margin-block-start: 0;
+}
+
+@include until('sm') {
+  .section-cta > * {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,95 @@
+@use 'ds' as *;
+
+:host {
+  display: block;
+  border-block-end: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+}
+
+.crumbs {
+  // Mismo contenedor que `.nav__inner`: la migaja tiene que arrancar
+  // exactamente en la vertical de la marca, no en la del contenido.
+  @include container(var(--w-wide));
+
+  // Franja deliberadamente baja: orienta sin robar protagonismo al héroe.
+  padding-block: var(--sp-2);
+}
+
+.crumbs__list {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  // La migaja nunca parte en dos líneas: la altura de la franja es fija.
+  white-space: nowrap;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.crumbs__item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+}
+
+// Separador dibujado con bordes: un chevron sin icono ni petición extra.
+.crumbs__item + .crumbs__item::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-block-start: 1.5px solid var(--c-faint);
+  border-inline-end: 1.5px solid var(--c-faint);
+  transform: rotate(45deg);
+}
+
+.crumbs__link {
+  color: var(--c-muted);
+  text-decoration: none;
+  transition: color var(--mo-base) var(--ea-standard);
+
+  &:hover {
+    color: var(--c-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// El icono de inicio necesita algo más de cuerpo que el texto para pesar
+// igual ópticamente, y área de pulsación propia al no llevar rótulo.
+.crumbs__link--home {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.crumbs__text {
+  color: var(--c-muted);
+}
+
+.crumbs__text--current {
+  color: var(--c-primary-deep);
+  font-weight: 600;
+}
+
+@include until('sm') {
+  .crumbs__item {
+    font-size: 0.72rem;
+  }
+}

@@ -1,5 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { SocialLink } from './social-link.model';
+import { IconName } from './ui/icon-name';
 
 /**
  * Evento del directorio público de fotos/vídeos de la iglesia.
@@ -89,6 +90,119 @@ export interface ChurchLocation {
   readonly mapsQuery: string;
 }
 
+/**
+ * Zona de la foto que **nunca** debe recortarse.
+ *
+ * Una foto de 3:2 metida en una banda panorámica siempre pierde altura: no es
+ * un fallo, es geometría. Lo único que se puede decidir es *qué* se pierde.
+ * Con fotos de grupo lo correcto casi siempre es `upper` (las caras están en
+ * el tercio superior), que es el valor por defecto; el resto son escapes para
+ * fotos con el motivo descentrado.
+ */
+export type ImageFocus = 'top' | 'upper' | 'center' | 'lower' | 'bottom';
+
+/**
+ * Diapositiva del carrusel de portada (hero).
+ * Reutiliza las fotos ya optimizadas de `assets/drive-media/`: son imágenes
+ * reales de la iglesia y no añaden peso nuevo al repositorio.
+ */
+export interface HeroSlide {
+  readonly id: string;
+  /** Sub-clave dentro de `home.hero.slides.*` (title, subtitle). */
+  readonly i18nKey: string;
+  /** Imagen a resolución completa (1600px webp). */
+  readonly image: string;
+  /** Miniatura (480px webp) usada como LQIP/preview. */
+  readonly thumb: string;
+  /** Encuadre. Por defecto `upper`; sólo se declara si la foto lo pide. */
+  readonly focus?: ImageFocus;
+}
+
+/** Cifra destacada de la sección «quiénes somos». */
+export interface ChurchStat {
+  readonly id: string;
+  /** Sub-clave dentro de `about.stats.*` (label). */
+  readonly i18nKey: string;
+  /** Valor mostrado tal cual (admite «25+», «7»…). */
+  readonly value: string;
+  readonly icon: IconName;
+}
+
+/** Persona con responsabilidad dentro de un grupo de liderazgo. */
+export interface LeadershipMember {
+  readonly id: string;
+  /** Nombre propio — no se traduce. */
+  readonly name: string;
+  /** Sub-clave dentro de `leadership.roles.*`. */
+  readonly roleKey: string;
+}
+
+/**
+ * Grupo del órgano de liderazgo (pastoral, comité, diaconado…).
+ * `members` puede venir vacío: la UI muestra entonces un estado «pendiente
+ * de confirmar» en lugar de inventar nombres.
+ */
+export interface LeadershipGroup {
+  readonly id: string;
+  /** Sub-clave dentro de `leadership.groups.*` (name, description). */
+  readonly i18nKey: string;
+  readonly icon: IconName;
+  readonly members: readonly LeadershipMember[];
+}
+
+/** Departamento o ministerio de la iglesia. */
+export interface Ministry {
+  readonly id: string;
+  /** Sub-clave dentro de `leadership.ministries.*` (name, description). */
+  readonly i18nKey: string;
+  readonly icon: IconName;
+}
+
+/**
+ * Canales de contacto directo.
+ *
+ * ⚠️ Los valores por defecto son **de demostración**: sirven para ver la
+ * página terminada y para saber en qué formato hay que escribir los reales.
+ * Antes de publicar, sustitúyelos (ver los `TODO(iglesia)` más abajo).
+ */
+export interface ChurchContact {
+  /** Buzón público de la iglesia. Se usa en `mailto:`. */
+  readonly email: string;
+  /** Teléfono en formato internacional sin espacios: alimenta `tel:`. */
+  readonly phone: string;
+  /** El mismo teléfono, ya formateado para leerse en pantalla. */
+  readonly phoneDisplay: string;
+  /** Número de WhatsApp (sólo dígitos, con prefijo país) o `null`. */
+  readonly whatsapp: string | null;
+  /** Horario de atención, en clave i18n bajo `contact.office.*`. */
+  readonly officeHoursKey: string;
+}
+
+/** Una cuenta bancaria de la iglesia para donativos. */
+export interface DonationAccount {
+  readonly id: string;
+  /** Código ISO 4217: EUR, RON, USD… Se muestra tal cual. */
+  readonly currency: string;
+  /** IBAN agrupado de cuatro en cuatro (así se lee y se dicta mejor). */
+  readonly iban: string;
+}
+
+/**
+ * Datos para donar. Igual que `ChurchContact`, los valores por defecto son
+ * **de demostración** (IBAN de ceros): imposible confundirlos con reales.
+ */
+export interface DonationInfo {
+  /** Titular de las cuentas, tal y como figura en el banco. */
+  readonly holder: string;
+  /** Nombre comercial del banco. */
+  readonly bank: string;
+  /** BIC / SWIFT, necesario para transferencias internacionales. */
+  readonly bic: string;
+  /** Teléfono asociado a Bizum, o `null` si no está dado de alta. */
+  readonly bizum: string | null;
+  readonly accounts: readonly DonationAccount[];
+}
+
 export interface ChurchConfig {
   readonly logo: string;
   readonly youtubeChannelUrl: string;
@@ -110,12 +224,26 @@ export interface ChurchConfig {
   readonly upcomingEvents: readonly UpcomingEvent[];
   /** Ubicación física de la iglesia (mapa + dirección). */
   readonly location: ChurchLocation;
+  /** Canales de contacto directo (correo, teléfono, WhatsApp). */
+  readonly contact: ChurchContact;
+  /** Datos bancarios para donativos. */
+  readonly donations: DonationInfo;
+  /** Año de fundación — se usa para calcular «años de historia». */
+  readonly foundedYear: number;
+  /** Diapositivas del carrusel de portada. */
+  readonly heroSlides: readonly HeroSlide[];
+  /** Cifras destacadas de la sección «quiénes somos». */
+  readonly stats: readonly ChurchStat[];
+  /** Órgano de liderazgo, agrupado por responsabilidad. */
+  readonly leadership: readonly LeadershipGroup[];
+  /** Departamentos / ministerios activos. */
+  readonly ministries: readonly Ministry[];
 }
 
 export const CHURCH_CONFIG = new InjectionToken<ChurchConfig>('CHURCH_CONFIG');
 
 export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
-  logo: 'assets/logo-elim.png',
+  logo: 'assets/logo-elim.webp',
   youtubeChannelUrl: 'https://www.youtube.com/@ElimArganda',
   youtubeStreamsUrl: 'https://www.youtube.com/@ElimArganda/streams',
   youtubeChannelId: 'UCJqLlk6CS6uNtJWS5r-7P9g',
@@ -359,4 +487,150 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     mapsShareUrl: 'https://maps.app.goo.gl/TAhrCAV6qvN3Abdv5',
     mapsQuery: 'Av. de Madrid, 30, 28500 Arganda del Rey, Madrid',
   },
+
+  // ---------------------------------------------------------------------
+  // ⚠️ DATOS DE DEMOSTRACIÓN — NO SON REALES
+  //
+  // Están puestos para que la página de contacto se vea terminada y para
+  // mostrar el formato exacto que espera cada campo.
+  //
+  // TODO(iglesia): sustituir `email`, `phone`, `phoneDisplay` y `whatsapp`
+  // por los datos reales. Reglas:
+  //   · `phone`     → formato internacional, sin espacios ni guiones
+  //                   (es lo que se pone en `tel:`).
+  //   · `whatsapp`  → sólo dígitos, con prefijo de país y sin «+»
+  //                   (es lo que espera `wa.me/`). `null` si no se usa.
+  //   · `phoneDisplay` es el único que se lee en pantalla: escríbelo
+  //                   como se dicta en voz alta.
+  // ---------------------------------------------------------------------
+  contact: {
+    email: 'contacto@example.org',
+    phone: '+34600000000',
+    phoneDisplay: '+34 600 00 00 00',
+    whatsapp: '34600000000',
+    officeHoursKey: 'contact.office.hours',
+  },
+
+  // ---------------------------------------------------------------------
+  // ⚠️ DATOS BANCARIOS DE DEMOSTRACIÓN — NO SON REALES
+  //
+  // Los IBAN son todo ceros a propósito: así es imposible confundirlos con
+  // los verdaderos ni hacer una transferencia por error.
+  //
+  // TODO(iglesia): sustituir por las cuentas reales. Reglas:
+  //   · `iban`     → agrupado de cuatro en cuatro; el botón de copiar quita
+  //                  los espacios automáticamente.
+  //   · `currency` → código ISO 4217 (EUR, RON, USD…). Se muestra tal cual.
+  //   · `bizum`    → sólo dígitos, o `null` si la iglesia no lo tiene.
+  //   · Borra las cuentas que no existan: la página se adapta sola.
+  // ---------------------------------------------------------------------
+  donations: {
+    holder: 'Iglesia Evangélica Elim Arganda del Rey',
+    bank: 'Banco Ejemplo, S.A.',
+    bic: 'XXXXESMMXXX',
+    bizum: '600000000',
+    accounts: [
+      { id: 'eur', currency: 'EUR', iban: 'ES00 0000 0000 0000 0000 0000' },
+      { id: 'ron', currency: 'RON', iban: 'RO00 XXXX 0000 0000 0000 0000' },
+    ],
+  },
+
+  // TODO(iglesia): confirmar el año real de fundación de la congregación.
+  foundedYear: 2000,
+
+  // ---------------------------------------------------------------------
+  // Carrusel de portada. Reutiliza las fotos ya optimizadas de la galería
+  // para no duplicar peso. Para cambiarlas: sube la foto a
+  // `src/assets/drive-media/`, ejecuta `node scripts/optimize-images.js`
+  // y apunta aquí a los `.webp` generados.
+  // ---------------------------------------------------------------------
+  heroSlides: [
+    {
+      id: 'hero_worship',
+      i18nKey: 'worship',
+      image: 'assets/drive-media/concert_colinde_2025.webp',
+      thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
+    },
+    {
+      id: 'hero_baptism',
+      i18nKey: 'baptism',
+      image: 'assets/drive-media/botez_2025.webp',
+      thumb: 'assets/drive-media/botez_2025-thumb.webp',
+    },
+    {
+      id: 'hero_children',
+      i18nKey: 'children',
+      image: 'assets/drive-media/concert_copii_2025.webp',
+      thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
+    },
+    {
+      id: 'hero_community',
+      i18nKey: 'community',
+      image: 'assets/drive-media/revelion_2025.webp',
+      thumb: 'assets/drive-media/revelion_2025-thumb.webp',
+      // Los músicos ocupan la franja central; con `upper` se comía la
+      // cabecera de la carpa y se perdían los acordeones.
+      focus: 'center',
+    },
+    {
+      id: 'hero_outreach',
+      i18nKey: 'outreach',
+      image: 'assets/drive-media/zambetul_cutie_2025.webp',
+      thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
+    },
+  ],
+
+  // Cifras de la sección "quiénes somos". Son datos, no textos: las
+  // etiquetas viven en `about.stats.*` de los ficheros i18n.
+  stats: [
+    { id: 'services', i18nKey: 'services', value: '7', icon: 'calendar' },
+    { id: 'departments', i18nKey: 'departments', value: '8', icon: 'users' },
+  ],
+
+  // ---------------------------------------------------------------------
+  // Órgano de liderazgo. Los grupos describen la ESTRUCTURA (siempre
+  // válida); los nombres concretos se añaden cuando la iglesia los
+  // confirme. Un grupo con `members: []` se muestra como "pendiente de
+  // confirmar" en lugar de con nombres inventados.
+  // TODO(iglesia): completar `members` con los nombres reales.
+  // ---------------------------------------------------------------------
+  leadership: [
+    {
+      id: 'pastoral',
+      i18nKey: 'pastoral',
+      icon: 'church',
+      members: [],
+    },
+    {
+      id: 'presbytery',
+      i18nKey: 'presbytery',
+      icon: 'book',
+      members: [],
+    },
+    {
+      id: 'deacons',
+      i18nKey: 'deacons',
+      icon: 'heart',
+      members: [],
+    },
+    {
+      id: 'committee',
+      i18nKey: 'committee',
+      icon: 'users',
+      members: [],
+    },
+  ],
+
+  // Departamentos activos. Estructurales y estables: se pueden mostrar
+  // aunque todavía no haya nombres de responsables.
+  ministries: [
+    { id: 'worship', i18nKey: 'worship', icon: 'music' },
+    { id: 'youth', i18nKey: 'youth', icon: 'sparkles' },
+    { id: 'children', i18nKey: 'children', icon: 'heart' },
+    { id: 'media', i18nKey: 'media', icon: 'image' },
+    { id: 'mission', i18nKey: 'mission', icon: 'share' },
+    { id: 'charity', i18nKey: 'charity', icon: 'heart' },
+    { id: 'prayer', i18nKey: 'prayer', icon: 'church' },
+    { id: 'women', i18nKey: 'women', icon: 'users' },
+  ],
 };

@@ -1,0 +1,69 @@
+<div class="gallery" aria-labelledby="gallery-title">
+  <header class="gallery__header">
+    <h2 id="gallery-title" class="gallery__title">{{ 'gallery.title' | translate }}</h2>
+  </header>
+
+  <!-- Hero destacado: imagen completa del evento que rota automáticamente -->
+  @if (config.mediaEvents[featuredEventIndex()]; as featured) {
+    <a
+      class="gallery__hero"
+      [href]="featured.driveUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      [style.--card-gradient]="eventGradient(featured)"
+      [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + featured.i18nKey + '.name' | translate)"
+    >
+      <img
+        class="gallery__hero-image"
+        [src]="featured.image"
+        [alt]="'gallery.events.' + featured.i18nKey + '.name' | translate"
+        loading="eager"
+        decoding="async"
+      />
+      <div class="gallery__hero-overlay" aria-hidden="true"></div>
+      <div class="gallery__hero-content">
+        <span class="gallery__hero-name">
+          {{ 'gallery.events.' + featured.i18nKey + '.name' | translate }}
+        </span>
+        <span class="gallery__hero-date">
+          {{ 'gallery.events.' + featured.i18nKey + '.date' | translate }}
+        </span>
+        @if (!fullscreen()) {
+          <span class="gallery__hero-cta">
+            {{ 'gallery.view_photos' | translate }}
+            <span class="gallery__hero-arrow" aria-hidden="true">→</span>
+          </span>
+        }
+      </div>
+    </a>
+  }
+
+  <!-- Mosaico de miniaturas: selecciona el evento destacado -->
+  <ul class="gallery__grid" role="list" [attr.aria-label]="'gallery.title' | translate">
+    @for (ev of config.mediaEvents; track ev.id; let i = $index) {
+      <li class="gallery__tile-wrapper">
+        <button
+          type="button"
+          class="gallery__tile"
+          [class.is-featured]="i === featuredEventIndex()"
+          (click)="selectFeaturedEvent(i)"
+          [attr.aria-selected]="i === featuredEventIndex()"
+          role="tab"
+          [attr.aria-label]="'gallery.events.' + ev.i18nKey + '.name' | translate"
+        >
+          <img
+            class="gallery__tile-image"
+            [src]="ev.thumb"
+            [alt]="'gallery.events.' + ev.i18nKey + '.name' | translate"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="gallery__tile-shade" aria-hidden="true"></div>
+          <span class="gallery__tile-name">
+            {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
+          </span>
+        </button>
+      </li>
+    }
+  </ul>
+</div>

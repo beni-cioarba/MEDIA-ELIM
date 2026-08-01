@@ -1,0 +1,169 @@
+@use 'ds' as *;
+@use '../../shared/styles/buttons' as *;
+@use '../../shared/styles/page-hero' as *;
+@use '../../shared/styles/section-cta' as *;
+
+/* Estilos encapsulados de la página «Órgano de liderazgo». */
+
+:host {
+  display: block;
+}
+
+/* --- Estructura de gobierno ------------------------------------------ */
+
+.groups {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: group;
+}
+
+.group {
+  position: relative;
+  padding: 1.4rem 1.5rem 1.4rem 3.6rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 18px;
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.group__step {
+  position: absolute;
+  top: 1.45rem;
+  left: 1.2rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--c-gold-tint);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-gold-deep);
+}
+
+.group__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.group__icon {
+  margin-top: 0.15rem;
+  font-size: 1.5rem;
+  color: var(--c-primary-soft);
+}
+
+.group__title {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.group__desc {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: var(--c-muted);
+}
+
+.group__pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 1rem 0 0;
+  padding: 0.4rem 0.85rem;
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--c-faint);
+}
+
+/* --- Miembros --------------------------------------------------------- */
+
+.members {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 12px;
+  background: var(--c-surface-2);
+}
+
+.member__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-soft) 100%);
+  color: var(--c-on-primary);
+  font-weight: 700;
+}
+
+.member__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.member__name {
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.member__role {
+  font-size: 0.78rem;
+  color: var(--c-muted);
+}
+
+/* --- Departamentos ---------------------------------------------------- */
+
+.ministries {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ministry {
+  padding: 1.25rem 1.2rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 16px;
+  background: var(--c-surface);
+}
+
+.ministry__icon {
+  font-size: 1.6rem;
+  color: var(--c-gold-deep);
+}
+
+.ministry__title {
+  margin: 0.6rem 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.ministry__desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--c-muted);
+}

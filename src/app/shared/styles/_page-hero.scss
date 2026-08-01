@@ -1,0 +1,50 @@
+/* =====================================================================
+ * Cabecera de página interior (no es el hero de la portada).
+ * Parcial SCSS compartido: @use '../../shared/styles/page-hero' as *;
+ * ===================================================================== */
+
+.page-hero {
+  padding: clamp(2.6rem, 8vh, 4.5rem) clamp(1rem, 4vw, 2.5rem);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.16) 0%, transparent 55%),
+    linear-gradient(135deg, var(--c-primary-deep) 0%, var(--c-primary) 60%, var(--c-primary-soft) 100%);
+  color: var(--c-on-primary);
+}
+
+.page-hero__inner {
+  max-width: 52rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Igual que en `page-section`: el `max-width` de prosa exige centrar la caja. */
+.page-hero__inner > p {
+  margin-inline: auto;
+}
+
+.page-hero__eyebrow {
+  margin: 0 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.page-hero__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4.4vw, 2.9rem);
+  line-height: 1.15;
+  /* Los encabezados llevan color propio en `_base.scss`: aquí toca heredarlo. */
+  color: inherit;
+}
+
+.page-hero__lead {
+  margin: 0.9rem auto 0;
+  max-width: 42rem;
+  font-size: clamp(0.96rem, 1.5vw, 1.1rem);
+  line-height: 1.65;
+  color: rgba(247, 250, 252, 0.85);
+}

@@ -1,0 +1,51 @@
+<div class="socials" aria-labelledby="socials-title">
+  <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
+  <ul class="socials__list">
+    @for (link of config.socials; track link.id; let i = $index) {
+      <li
+        class="card"
+        [class.card--highlight]="highlightedIndex() === i"
+        [style.--card-gradient]="gradient(link)"
+      >
+        <a
+          class="card__link"
+          [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="socialAria()[link.id]"
+        >
+          <span class="card__icon" aria-hidden="true">
+            <app-social-icon [name]="link.icon" />
+          </span>
+          <span class="card__body">
+            <span class="card__name">
+              {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
+              <span class="card__username">{{ link.handle }}</span>
+              @if (link.icon === 'youtube' && youtube.liveStream()) {
+                <span class="card__live" [attr.aria-label]="'streams.live_now' | translate">
+                  <span class="card__live-dot" aria-hidden="true"></span>
+                  {{ 'streams.live_now' | translate }}
+                </span>
+              }
+            </span>
+            <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
+          </span>
+          <span class="card__cta" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+</div>
+
+<!-- Indicador de scroll (sólo en la web pública, no en la proyección) -->
+@if (!fullscreen()) {
+  <div class="scroll-indicator" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+}

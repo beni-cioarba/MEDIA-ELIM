@@ -1,0 +1,237 @@
+@use 'ds' as *;
+@use '../../shared/styles/buttons' as *;
+@use '../../shared/styles/page-hero' as *;
+@use '../../shared/styles/section-cta' as *;
+
+/* Estilos encapsulados de la página «Donativos». */
+
+:host {
+  display: block;
+}
+
+/* --- Versículo del hero ----------------------------------------------- */
+
+.verse {
+  margin: clamp(1.6rem, 4vh, 2.4rem) auto 0;
+  max-width: 40rem;
+  padding-block-start: var(--sp-5);
+  border-block-start: 1px solid rgba(247, 250, 252, 0.25);
+}
+
+.verse__text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 1.9vw, 1.25rem);
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(247, 250, 252, 0.92);
+}
+
+.verse__ref {
+  margin-block-start: var(--sp-3);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+/* --- Destinos del donativo -------------------------------------------- */
+
+.purposes {
+  @include auto-grid(15rem);
+
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.purpose {
+  padding: var(--sp-5);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: 1rem;
+  transition:
+    border-color var(--mo-base) var(--ea-standard),
+    transform var(--mo-base) var(--ea-standard);
+
+  &:hover {
+    border-color: var(--c-gold);
+    transform: translateY(-2px);
+  }
+}
+
+.purpose__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.2rem;
+  color: var(--c-gold-deep);
+  background: var(--c-gold-tint);
+  border-radius: 50%;
+}
+
+.purpose__title {
+  margin: var(--sp-4) 0 var(--sp-2);
+  font-size: 1.05rem;
+}
+
+.purpose__body {
+  margin: 0;
+  max-width: none;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+/* --- Aviso de datos provisionales -------------------------------------
+ * Visible a propósito: publicar un IBAN falso sin advertirlo sería peor
+ * que no publicarlo. Se retira junto con los datos de demostración.
+ * -------------------------------------------------------------------- */
+
+.demo {
+  max-width: 46rem;
+  margin: 0 auto var(--sp-6);
+  padding: var(--sp-4) var(--sp-5);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--c-primary-deep);
+  background: var(--c-gold-tint);
+  border: 1px dashed var(--c-gold);
+  border-radius: 0.9rem;
+
+  strong {
+    display: block;
+    margin-block-end: 0.2rem;
+  }
+}
+
+/* --- Tarjeta bancaria -------------------------------------------------- */
+
+.bank {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(1.4rem, 3vw, 2.25rem);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: 1.25rem;
+  box-shadow: var(--e-1);
+}
+
+.bank__meta {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.bank__row {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: baseline;
+
+  @include until('xs') {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+
+  dt {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-gold-deep);
+  }
+
+  dd {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: 0;
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+.bank__code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* --- Cuentas ----------------------------------------------------------
+ * El IBAN es lo único que el visitante viene a buscar: se muestra en
+ * cuerpo grande, con cifras tabulares (así los grupos de cuatro se alinean)
+ * y con el botón de copiar siempre a la vista.
+ * -------------------------------------------------------------------- */
+
+.accounts {
+  display: grid;
+  gap: var(--sp-3);
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-6) 0 0;
+}
+
+.account {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--c-bg);
+  border: 1px solid var(--c-hairline);
+  border-radius: 0.9rem;
+
+  @include until('xs') {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    .account__currency {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.account__currency {
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--c-on-primary);
+  background: var(--c-primary);
+  border-radius: var(--r-pill);
+}
+
+.account__iban {
+  font-size: clamp(0.92rem, 1.6vw, 1.05rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
+
+.bank__bizum {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-5) 0 0;
+  max-width: none;
+  font-size: 0.95rem;
+  color: var(--c-text);
+
+  app-icon {
+    font-size: 1.2rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+.bank__note {
+  margin: var(--sp-5) 0 0;
+  max-width: none;
+  padding-block-start: var(--sp-4);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--c-faint);
+  border-block-start: 1px solid var(--c-hairline);
+}

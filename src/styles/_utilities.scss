@@ -1,0 +1,93 @@
+// =====================================================================
+// UTILIDADES — conjunto **cerrado y pequeño** de clases globales.
+//
+// No es Tailwind y no queremos que lo sea: utilidades atómicas para todo
+// convertirían las plantillas en ilegibles y duplicarían el trabajo del
+// sistema de tokens. Aquí sólo entran patrones que:
+//   a) se repiten en 3 o más componentes, y
+//   b) no justifican un componente propio.
+//
+// Prefijo `u-` para que se distingan de las clases BEM de componente.
+// =====================================================================
+
+@use 'mixins' as *;
+
+/** Salto al contenido para usuarios de teclado y lector de pantalla. */
+.u-skip-link {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: var(--z-overlay);
+  transform: translate(-50%, -120%);
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform var(--mo-fast) var(--ea-decelerate);
+
+  &:focus-visible {
+    transform: translate(-50%, 0);
+  }
+}
+
+/** Sólo para lectores de pantalla. */
+.u-sr-only {
+  @include visually-hidden;
+}
+
+/** Contenedor centrado estándar. */
+.u-container {
+  @include container;
+}
+
+.u-container--wide {
+  @include container(var(--w-wide));
+}
+
+/** Pila vertical con ritmo consistente (evita `margin-top` sueltos). */
+.u-stack > * + * {
+  margin-top: var(--sp-4);
+}
+
+.u-stack-lg > * + * {
+  margin-top: var(--sp-8);
+}
+
+/** Rejilla auto-ajustable, el caballo de batalla del layout. */
+.u-grid {
+  @include auto-grid;
+}
+
+/** Etiqueta superior en versalitas. */
+.u-eyebrow {
+  @include eyebrow;
+}
+
+/** Texto con degradado dorado (sólo para 1–3 palabras: es caro de pintar). */
+.u-gold {
+  @include gold-text;
+}
+
+/** Limita a N líneas. */
+.u-clamp-2 {
+  @include line-clamp(2);
+}
+
+.u-clamp-3 {
+  @include line-clamp(3);
+}
+
+/** Oculta en móvil / sólo en móvil (para duplicados de navegación). */
+.u-desktop-only {
+  @include until('lg') {
+    display: none !important;
+  }
+}
+
+.u-mobile-only {
+  @include from('lg') {
+    display: none !important;
+  }
+}

@@ -1,0 +1,186 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'contact.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'contact.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'contact.lead' | translate }}</p>
+  </div>
+</header>
+
+<app-page-section>
+  <div class="contact">
+    <!-- Formulario. No hay servidor: compone un `mailto:` (ver el componente). -->
+    <div class="form-card">
+      <h2 class="form-card__title">{{ 'contact.form.title' | translate }}</h2>
+      <p class="form-card__subtitle">{{ 'contact.form.subtitle' | translate }}</p>
+
+      <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form__row">
+          <label class="field">
+            <span class="field__label">{{ 'contact.form.name' | translate }}</span>
+            <input
+              class="field__input"
+              type="text"
+              formControlName="name"
+              autocomplete="name"
+              [attr.aria-invalid]="invalid('name')"
+              [placeholder]="'contact.form.name_ph' | translate"
+            />
+            @if (invalid('name')) {
+              <span class="field__error">{{ 'contact.form.error_name' | translate }}</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ 'contact.form.email' | translate }}</span>
+            <input
+              class="field__input"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              [attr.aria-invalid]="invalid('email')"
+              [placeholder]="'contact.form.email_ph' | translate"
+            />
+            @if (invalid('email')) {
+              <span class="field__error">{{ 'contact.form.error_email' | translate }}</span>
+            }
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field__label">
+            {{ 'contact.form.subject' | translate }}
+            <span class="field__optional">{{ 'contact.form.optional' | translate }}</span>
+          </span>
+          <input
+            class="field__input"
+            type="text"
+            formControlName="subject"
+            [placeholder]="'contact.form.subject_ph' | translate"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field__label">{{ 'contact.form.message' | translate }}</span>
+          <textarea
+            class="field__input field__input--area"
+            rows="6"
+            formControlName="message"
+            [attr.aria-invalid]="invalid('message')"
+            [placeholder]="'contact.form.message_ph' | translate"
+          ></textarea>
+          @if (invalid('message')) {
+            <span class="field__error">{{ 'contact.form.error_message' | translate }}</span>
+          }
+        </label>
+
+        <div class="form__foot">
+          <button class="btn btn--primary form__submit" type="submit">
+            <app-icon name="send" />
+            {{ 'contact.form.submit' | translate }}
+          </button>
+          <p class="form__note">{{ 'contact.form.note' | translate }}</p>
+        </div>
+
+        @if (sent()) {
+          <p class="form__sent" role="status">
+            <app-icon name="check" />
+            {{ 'contact.form.sent' | translate }}
+          </p>
+        }
+      </form>
+    </div>
+
+    <!-- Datos directos y horario -->
+    <aside class="aside">
+      <ul class="channels">
+        @for (channel of channels; track channel.id) {
+          <li class="channel">
+            <span class="channel__badge" aria-hidden="true">
+              <app-icon [name]="channel.icon" />
+            </span>
+            <div class="channel__body">
+              <p class="channel__label">
+                {{ 'contact.channels.' + channel.id | translate }}
+              </p>
+              @if (channel.href) {
+                <a
+                  class="channel__value"
+                  [href]="channel.href"
+                  [attr.target]="channel.external ? '_blank' : null"
+                  [attr.rel]="channel.external ? 'noopener noreferrer' : null"
+                >
+                  {{ channel.value }}
+                </a>
+              } @else {
+                <p class="channel__value">{{ channel.value }}</p>
+              }
+            </div>
+            @if (channel.copy) {
+              <app-copy-button
+                class="channel__copy"
+                [value]="channel.copy"
+                [label]="'contact.channels.' + channel.id | translate"
+              />
+            }
+          </li>
+        }
+      </ul>
+
+      @if (whatsappUrl) {
+        <a
+          class="btn btn--ghost-dark aside__whatsapp"
+          [href]="whatsappUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ 'contact.channels.whatsapp' | translate }}
+        </a>
+      }
+
+      <div class="schedule">
+        <h2 class="schedule__title">{{ 'contact.schedule.title' | translate }}</h2>
+        <ul class="schedule__list">
+          @for (item of weeklyProgram; track item.id) {
+            <li class="schedule__item">
+              <span class="schedule__day">{{ item.dayLabel }}</span>
+              <span class="schedule__time">{{ item.time }}</span>
+              <span class="schedule__what">{{ item.title }}</span>
+            </li>
+          }
+        </ul>
+        <a class="schedule__more" [routerLink]="links.weekly">
+          {{ 'contact.schedule.all' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+      </div>
+    </aside>
+  </div>
+</app-page-section>
+
+<!-- Mapa a ancho completo: es lo último porque sólo interesa cuando ya se ha
+     decidido venir, y así no compite con el formulario. -->
+<section class="map" [attr.aria-label]="'contact.map.title' | translate">
+  <iframe
+    class="map__frame"
+    [src]="mapEmbedUrl"
+    [title]="'contact.map.title' | translate"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    allowfullscreen
+  ></iframe>
+</section>
+
+<app-page-section
+  tinted
+  titleKey="contact.cta.title"
+  subtitleKey="contact.cta.subtitle"
+>
+  <div class="section-cta">
+    <a class="btn btn--primary" [routerLink]="links.donate">
+      {{ 'contact.cta.donate' | translate }}
+    </a>
+    <a class="btn btn--ghost-dark" [routerLink]="links.about">
+      {{ 'contact.cta.about' | translate }}
+    </a>
+  </div>
+</app-page-section>

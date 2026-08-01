@@ -1,0 +1,130 @@
+// =====================================================================
+// CAPA SEMÁNTICA — traduce las primitivas de `_tokens.scss` en variables
+// CSS con significado. **Es lo único que deben consumir los componentes.**
+//
+// ¿Por qué CSS custom properties y no variables SCSS?
+//  1. Permiten cambiar de tema (claro / proyección / alto contraste) sin
+//     recompilar ni duplicar CSS: sólo cambia el bloque de declaraciones.
+//  2. Los componentes con `styles: []` inline y los overrides de Angular
+//     Material pueden leerlas; una variable SCSS no llega ahí.
+//  3. Angular Material 17 ya expone sus propios tokens como custom
+//     properties, así que hablamos su mismo idioma.
+//
+// Nomenclatura: `--c-*` color · `--sp-*` espacio · `--r-*` radio
+//               `--e-*` elevación · `--fs-*` tamaño de fuente
+//               `--z-*` capa · `--mo-*` duración · `--ea-*` curva
+// =====================================================================
+
+@use 'sass:map';
+@use 'tokens' as *;
+
+@mixin emit-scale($prefix, $map) {
+  @each $key, $value in $map {
+    --#{$prefix}-#{$key}: #{$value};
+  }
+}
+
+:root {
+  // ---- Marca / primario ---------------------------------------------
+  --c-primary: #{navy(700)};
+  --c-primary-soft: #{navy(500)};
+  --c-primary-deep: #{navy(800)};
+  --c-primary-darkest: #{navy(900)};
+  --c-on-primary: #{neutral(50)};
+
+  // ---- Acento (oro) ---------------------------------------------------
+  --c-gold: #{gold(500)};
+  --c-gold-soft: #{gold(300)};
+  --c-gold-deep: #{gold(700)};
+  --c-on-gold: #{navy(900)};
+
+  // ---- Lienzo y superficies ------------------------------------------
+  --c-bg: #{neutral(50)};
+  --c-bg-2: #{neutral(0)};
+  --c-bg-cool: #{neutral(200)};
+  --c-surface: #{neutral(0)};
+  --c-surface-2: #{neutral(100)};
+  --c-surface-sunken: #{neutral(200)};
+
+  // ---- Texto ----------------------------------------------------------
+  --c-text: #{neutral(800)};
+  --c-muted: #{rgba(#2d3748, 0.66)};
+  --c-faint: #{rgba(#2d3748, 0.46)};
+  --c-text-inverse: #{neutral(50)};
+
+  // ---- Líneas ---------------------------------------------------------
+  --c-border: #{neutral(300)};
+  --c-hairline: #{rgba(#1a365d, 0.1)};
+  --c-hairline-strong: #{rgba(#1a365d, 0.22)};
+
+  // ---- Velos (fondos de botón/chip sin usar opacidad en el elemento) --
+  --c-veil: #{rgba(#1a365d, 0.05)};
+  --c-veil-strong: #{rgba(#1a365d, 0.11)};
+  --c-gold-tint: #{rgba(#d4af37, 0.14)};
+
+  // ---- Estados --------------------------------------------------------
+  --c-success: #{map.get($status, 'success')};
+  --c-warning: #{map.get($status, 'warning')};
+  --c-danger: #{map.get($status, 'danger')};
+  --c-info: #{map.get($status, 'info')};
+  --c-live: #{map.get($status, 'live')};
+
+  // ---- Foco: un único anillo para toda la app (WCAG 2.2 · 2.4.11) -----
+  --c-focus: #{gold(600)};
+  --focus-ring: 0 0 0 3px #{rgba(#d4af37, 0.45)};
+
+  // ---- Elevación ------------------------------------------------------
+  --e-1: #{elevation(1)};
+  --e-2: #{elevation(2)};
+  --e-3: #{elevation(3)};
+  --e-4: #{elevation(4)};
+  // Alias históricos (no usar en código nuevo).
+  --shadow-sm: var(--e-1);
+  --shadow-soft: var(--e-2);
+  --shadow-card: var(--e-3);
+
+  // ---- Tipografía -----------------------------------------------------
+  --font-serif: #{$font-serif};
+  --font-sans: #{$font-sans};
+  @include emit-scale('fs', $type-scale);
+
+  // ---- Escalas ---------------------------------------------------------
+  @include emit-scale('sp', $space);
+  @include emit-scale('r', $radius);
+  @include emit-scale('z', $z);
+  @include emit-scale('mo', $motion);
+  @include emit-scale('ea', $easing);
+
+  // ---- Anchos de contenido --------------------------------------------
+  --w-prose: 68ch;
+  --w-content: 1180px;
+  --w-wide: 1440px;
+
+  // ---- Cabecera (la usan el layout y el scroll-margin de las anclas) ---
+  --nav-height: 4.5rem;
+}
+
+// ---------------------------------------------------------------------
+// Tema de proyección: el escenario se pinta sobre el mismo lienzo claro,
+// pero necesita más contraste y trazos más gruesos para verse a 15 m.
+// Se activa con `.is-fullscreen` / `body.is-simulated-fullscreen`.
+// ---------------------------------------------------------------------
+.is-fullscreen,
+body.is-simulated-fullscreen {
+  --c-muted: #{rgba(#2d3748, 0.78)};
+  --c-faint: #{rgba(#2d3748, 0.6)};
+  --c-hairline: #{rgba(#1a365d, 0.18)};
+  --nav-height: 0px;
+}
+
+// ---------------------------------------------------------------------
+// Alto contraste del sistema operativo.
+// ---------------------------------------------------------------------
+@media (prefers-contrast: more) {
+  :root {
+    --c-muted: #{neutral(800)};
+    --c-faint: #{neutral(700)};
+    --c-border: #{navy(400)};
+    --c-hairline: #{rgba(#1a365d, 0.35)};
+  }
+}

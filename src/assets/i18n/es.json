@@ -5,6 +5,7 @@
   },
   "brand": {
     "name": "Iglesia Elim",
+    "short": "Elim",
     "location": "Arganda del Rey",
     "tagline": "Bienvenidos a la casa de Dios"
   },
@@ -61,6 +62,20 @@
     "next": "Siguiente (→)",
     "pause": "Pausar (Espacio)",
     "play": "Reanudar (Espacio)"
+  },
+  "blocks": {
+    "tooltip": "Bloques a presentar",
+    "title": "Bloques de la presentación",
+    "subtitle": "Elige qué secciones entran en la rotación al pulsar Play.",
+    "auto": "Auto",
+    "manual": "Manual",
+    "auto_on": "Se muestra: hay contenido.",
+    "auto_off": "Oculto: no hay contenido.",
+    "forced_on": "Forzado visible.",
+    "forced_off": "Oculto manualmente.",
+    "reset": "Restablecer automático",
+    "reset_one": "Volver al modo automático",
+    "min_one": "Debe quedar al menos un bloque activo."
   },
   "gallery": {
     "title": "Galería Departamento Media",
@@ -161,7 +176,435 @@
   },
   "footer": {
     "church": "Iglesia ELIM Arganda",
-    "department": "Departamento de Medios",
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "mission": "Una comunidad cristiana evangélica en Arganda del Rey. Nos reunimos cada semana para adorar a Dios, estudiar su Palabra y servir a nuestro barrio. Ven como eres: aquí hay sitio para ti.",
+    "follow": "Síguenos",
+    "visit": "Visítanos",
+    "schedule": "Horarios y cómo llegar",
+    "partner": "Instituto Nacional Evangélico Betel"
+  },
+  "common": {
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "back_to_top": "Volver arriba"
+  },
+  "contact": {
+    "eyebrow": "Estamos aquí para ti",
+    "title": "Contacto",
+    "lead": "Escríbenos, llámanos o ven el domingo. Cualquier pregunta, petición de oración o ganas de conocernos tiene respuesta.",
+    "form": {
+      "title": "Envíanos un mensaje",
+      "subtitle": "Te respondemos lo antes posible.",
+      "name": "Nombre y apellidos",
+      "name_ph": "¿Cómo te llamas?",
+      "email": "Correo electrónico",
+      "email_ph": "nombre@ejemplo.com",
+      "subject": "Asunto",
+      "subject_ph": "¿De qué se trata?",
+      "optional": "(opcional)",
+      "message": "Mensaje",
+      "message_ph": "Escribe aquí tu mensaje…",
+      "submit": "Enviar el mensaje",
+      "note": "La web no guarda nada: el botón abre tu aplicación de correo con el mensaje ya escrito, así te queda copia de lo que envías.",
+      "sent": "Hemos abierto tu aplicación de correo. Si no se ha abierto, escríbenos directamente a la dirección de abajo.",
+      "error_name": "Dinos cómo te llamas.",
+      "error_email": "Revisa la dirección de correo.",
+      "error_message": "Escribe al menos unas palabras."
+    },
+    "channels": {
+      "address": "Dirección",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "whatsapp": "Escríbenos por WhatsApp"
+    },
+    "schedule": {
+      "title": "Cuándo nos reunimos",
+      "all": "Ver el programa completo"
+    },
+    "map": {
+      "title": "Mapa con la ubicación de la iglesia"
+    },
+    "cta": {
+      "title": "¿Quieres dar un paso más?",
+      "subtitle": "Puedes sostener la obra de la iglesia o conocer primero quiénes somos.",
+      "donate": "Apoyar a la iglesia",
+      "about": "Quiénes somos"
+    }
+  },
+  "donate": {
+    "eyebrow": "Generosidad",
+    "title": "Donativos",
+    "lead": "Todo lo que hacemos —los cultos, la ayuda social, los directos— existe porque personas como tú eligen dar.",
+    "verse": {
+      "text": "«Cada uno dé como propuso en su corazón: no con tristeza ni por obligación, porque Dios ama al que da con alegría.»",
+      "ref": "2 Corintios 9:7"
+    },
+    "purposes": {
+      "eyebrow": "Transparencia",
+      "title": "A dónde va tu donativo",
+      "subtitle": "Cada aportación sostiene una de estas cuatro áreas.",
+      "items": {
+        "mission": {
+          "title": "La obra de la iglesia",
+          "body": "Los cultos semanales, los materiales de estudio bíblico y la formación de quienes sirven."
+        },
+        "building": {
+          "title": "El local",
+          "body": "El alquiler, los suministros y el mantenimiento del lugar donde nos reunimos cada semana."
+        },
+        "outreach": {
+          "title": "Ayuda social",
+          "body": "Apoyo concreto a las familias de la comunidad que atraviesan dificultades."
+        },
+        "media": {
+          "title": "Medios",
+          "body": "Las retransmisiones en directo y el equipo que lleva el culto a quien no puede venir."
+        }
+      }
+    },
+    "demo": {
+      "title": "Datos provisionales",
+      "body": "Las cuentas que aparecen abajo son un ejemplo de demostración, no son reales. No hagas ninguna transferencia hasta que se sustituyan por los datos bancarios oficiales de la iglesia."
+    },
+    "bank": {
+      "eyebrow": "Cómo donar",
+      "title": "Transferencia bancaria",
+      "subtitle": "Copia el IBAN con un clic y haz la transferencia desde la aplicación de tu banco.",
+      "holder": "Titular",
+      "entity": "Banco",
+      "bic": "Código SWIFT / BIC",
+      "account": "Cuenta",
+      "bizum": "Bizum al número",
+      "note": "En el concepto puedes indicar el destino del donativo (por ejemplo: ayuda social). Si necesitas un justificante, escríbenos y te lo enviamos."
+    },
+    "thanks": {
+      "title": "Gracias",
+      "subtitle": "Cada donativo, por pequeño que sea, mantiene la obra en pie.",
+      "contact": "¿Tienes alguna duda?",
+      "about": "Quiénes somos"
+    }
+  },
+  "nav": {
+    "primary": "Navegación principal",
+    "breadcrumb": "Dónde estás",
+    "skip_to_content": "Saltar al contenido",
+    "open_menu": "Abrir el menú",
+    "close_menu": "Cerrar el menú",
+    "home": "Inicio",
+    "about": "La iglesia",
+    "about_us": "Quiénes somos",
+    "about_us_desc": "Nuestra historia, visión y valores",
+    "credo": "Declaración de fe",
+    "credo_desc": "Los 30 artículos de nuestro credo",
+    "leadership": "Liderazgo",
+    "leadership_desc": "Estructura y departamentos de la iglesia",
+    "program": "Programa",
+    "weekly": "Programa semanal",
+    "weekly_desc": "Los cultos de cada día",
+    "upcoming": "Eventos",
+    "upcoming_desc": "Próximas reuniones especiales",
+    "media": "Medios",
+    "media_stage": "Panel completo",
+    "media_stage_desc": "Todos los bloques en una sola página",
+    "gallery": "Galería",
+    "gallery_desc": "Fotos de la vida de la iglesia",
+    "socials": "Redes sociales",
+    "socials_desc": "Instagram, Facebook, YouTube",
+    "contact": "Contacto",
+    "donate": "Donativos",
+    "live": "En directo"
+  },
+  "seo": {
+    "home": {
+      "title": "Inicio",
+      "description": "Iglesia Elim de Arganda del Rey: programa, eventos, directos y redes sociales."
+    },
+    "about": {
+      "title": "Quiénes somos",
+      "description": "Historia, visión, valores y declaración de fe de la Iglesia Elim de Arganda del Rey."
+    },
+    "credo": {
+      "title": "Declaración de fe",
+      "description": "La declaración de fe del Culto Cristiano Pentecostal en 30 artículos: doctrina, prácticas espirituales, familia y moral cristiana."
+    },
+    "leadership": {
+      "title": "Liderazgo",
+      "description": "Equipo pastoral, presbiterio, diáconos y departamentos de la Iglesia Elim."
+    },
+    "media": {
+      "title": "Medios",
+      "description": "Directos, galería, programa semanal, eventos y ubicación de la iglesia."
+    },
+    "contact": {
+      "title": "Contacto",
+      "description": "Dirección, teléfono, correo y horarios de la Iglesia Elim de Arganda del Rey. Escríbenos o ven a conocernos."
+    },
+    "donate": {
+      "title": "Donativos",
+      "description": "Sostiene la obra de la Iglesia Elim: transferencia bancaria, a dónde va cada donativo y cómo pedir justificante."
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Bienvenido a casa",
+      "subtitle": "Una familia que adora, sirve y crece unida.",
+      "aria": "Imágenes de la vida de la iglesia",
+      "cta_about": "Conócenos",
+      "cta_live": "Ver en directo",
+      "slides": {
+        "worship": "Noche de villancicos",
+        "baptism": "Bautismo",
+        "children": "Concierto de los niños",
+        "community": "Fin de año en familia",
+        "outreach": "Proyecto social"
+      }
+    },
+    "welcome": {
+      "eyebrow": "Bienvenida",
+      "title": "Una casa abierta para todos",
+      "body": "Somos una iglesia evangélica en Arganda del Rey. Nos reunimos para adorar a Dios, estudiar su Palabra y sostenernos como familia.",
+      "body_2": "No importa de dónde vengas ni en qué punto del camino estés: aquí tienes un sitio. Ven tal y como eres.",
+      "cta": "Conoce más sobre nosotros"
+    },
+    "today": {
+      "eyebrow": "Ahora mismo",
+      "title": "Lo próximo",
+      "subtitle": "El programa de hoy y el siguiente evento especial.",
+      "service": "Culto de hoy",
+      "no_service": "Hoy no hay culto programado. Te esperamos en la próxima reunión.",
+      "next_event": "Próximo evento",
+      "see_program": "Ver el programa completo",
+      "see_events": "Ver todos los eventos"
+    },
+    "quick": {
+      "title": "Acceso rápido",
+      "subtitle": "Todo lo que necesitas, a un clic.",
+      "items": {
+        "weekly": {
+          "title": "Programa semanal",
+          "desc": "Horario de los cultos de cada día"
+        },
+        "upcoming": {
+          "title": "Eventos",
+          "desc": "Reuniones y actividades especiales"
+        },
+        "streams": {
+          "title": "Directos",
+          "desc": "Síguenos en vivo por YouTube"
+        },
+        "gallery": {
+          "title": "Galería",
+          "desc": "Momentos de la vida de la iglesia"
+        },
+        "socials": {
+          "title": "Redes sociales",
+          "desc": "Mantente conectado cada día"
+        },
+        "location": {
+          "title": "Cómo llegar",
+          "desc": "Dirección e indicaciones en el mapa"
+        }
+      }
+    },
+    "ministries": {
+      "eyebrow": "Departamentos",
+      "title": "Un servicio para cada edad",
+      "subtitle": "Cada departamento es una puerta abierta para participar.",
+      "cta": "Ver toda la estructura"
+    },
+    "visit": {
+      "title": "Ven a visitarnos",
+      "subtitle": "Te esperamos con alegría en cualquiera de nuestros cultos.",
+      "cta_map": "Abrir en Google Maps",
+      "cta_details": "Ver los detalles de la ubicación"
+    }
+  },
+  "about": {
+    "eyebrow": "Quiénes somos",
+    "title": "Una familia de fe en Arganda del Rey",
+    "lead": "Nos une la fe en Jesucristo y el deseo de servir a nuestra ciudad.",
+    "stats": {
+      "years": "Años sirviendo",
+      "services": "Cultos por semana",
+      "departments": "Departamentos activos"
+    },
+    "story": {
+      "title": "Nuestra historia",
+      "subtitle": "De un grupo pequeño de familias a una comunidad viva.",
+      "body_1": "La Iglesia Elim de Arganda del Rey nació del deseo de unas pocas familias de tener un lugar donde adorar en su idioma y crecer juntas en la fe.",
+      "body_2": "Con los años la comunidad creció y se diversificó: hoy somos una iglesia multicultural, con cultos en rumano y español y departamentos para todas las edades.",
+      "body_3": "Seguimos con el mismo llamado del principio: dar a conocer el amor de Dios en nuestra ciudad, con hechos concretos y las puertas siempre abiertas.",
+      "image_alt": "Momentos de la vida de la comunidad"
+    },
+    "pillars": {
+      "eyebrow": "Lo que nos define",
+      "title": "Nuestros pilares",
+      "subtitle": "Cuatro convicciones que guían todo lo que hacemos.",
+      "items": {
+        "mission": {
+          "title": "Misión",
+          "body": "Llevar el evangelio de Jesucristo a Arganda del Rey y más allá, con la palabra y con los hechos."
+        },
+        "vision": {
+          "title": "Visión",
+          "body": "Una iglesia sana donde cada persona descubre su llamado y crece en su relación con Dios."
+        },
+        "community": {
+          "title": "Comunidad",
+          "body": "Nadie está solo: llevamos las cargas los unos de los otros y nos alegramos juntos."
+        },
+        "service": {
+          "title": "Servicio",
+          "body": "La fe se demuestra con obras: apoyamos a las familias del entorno y los proyectos sociales de la ciudad."
+        }
+      }
+    },
+    "credo": {
+      "eyebrow": "Declaración de fe",
+      "title": "En qué creemos",
+      "subtitle": "Compartimos la Declaración de fe del Culto Cristiano Pentecostal: 30 artículos agrupados en cuatro capítulos.",
+      "cta": "Leer la declaración completa ({{count}} artículos)"
+    },
+    "visit": {
+      "title": "Tu primera visita",
+      "subtitle": "Lo que puedes esperar si vienes por primera vez.",
+      "items": {
+        "welcome": {
+          "title": "Una acogida cercana",
+          "body": "Alguien te recibirá en la entrada y te ayudará a sentirte en casa. Ven vestido como te resulte cómodo."
+        },
+        "worship": {
+          "title": "Alabanza",
+          "body": "El culto empieza con cantos de alabanza. Puedes cantar, ponerte de pie o simplemente escuchar."
+        },
+        "word": {
+          "title": "La Palabra",
+          "body": "Después hay un mensaje bíblico, práctico y comprensible, de unos 40 minutos."
+        },
+        "family": {
+          "title": "Los niños",
+          "body": "Tenemos programa infantil para que los más pequeños aprendan a su medida."
+        }
+      },
+      "cta_program": "Ver el programa",
+      "cta_leadership": "Conocer al equipo"
+    }
+  },
+  "leadership": {
+    "eyebrow": "Liderazgo",
+    "title": "Cómo está organizada la iglesia",
+    "lead": "Una estructura de servicio, pensada para que cada área de la iglesia esté cuidada.",
+    "pending": "Pendiente de actualizar",
+    "structure": {
+      "title": "Estructura de liderazgo",
+      "subtitle": "Cada nivel sirve a la iglesia de forma complementaria."
+    },
+    "groups": {
+      "pastoral": {
+        "name": "Equipo pastoral",
+        "description": "Dirige espiritualmente la iglesia, predica la Palabra y cuida de la vida de la comunidad."
+      },
+      "presbytery": {
+        "name": "Presbiterio",
+        "description": "Los ancianos de la iglesia, que aconsejan, enseñan y toman juntos las decisiones importantes."
+      },
+      "deacons": {
+        "name": "Diáconos",
+        "description": "Se ocupan del servicio práctico: ayuda social, acogida y orden de los cultos."
+      },
+      "committee": {
+        "name": "Comité",
+        "description": "Administra los recursos, el edificio y la parte legal de la iglesia."
+      }
+    },
+    "roles": {
+      "pastor": "Pastor",
+      "elder": "Anciano",
+      "deacon": "Diácono",
+      "member": "Miembro"
+    },
+    "ministries": {
+      "worship": {
+        "name": "Alabanza",
+        "description": "El grupo de alabanza, el coro y la parte musical de los cultos."
+      },
+      "youth": {
+        "name": "Jóvenes",
+        "description": "Reuniones, campamentos y proyectos para adolescentes y jóvenes."
+      },
+      "children": {
+        "name": "Niños",
+        "description": "Escuela dominical y actividades para los más pequeños."
+      },
+      "media": {
+        "name": "Medios",
+        "description": "Directos, sonido, proyección, fotografía y redes sociales."
+      },
+      "mission": {
+        "name": "Misiones",
+        "description": "Apoyamos a misioneros y proyectos de evangelización."
+      },
+      "charity": {
+        "name": "Ayuda social",
+        "description": "Apoyo a las familias con necesidad, dentro y fuera de la iglesia."
+      },
+      "prayer": {
+        "name": "Oración",
+        "description": "Reuniones de oración e intercesión por la iglesia y la ciudad."
+      },
+      "women": {
+        "name": "Hermanas",
+        "description": "Comunión, estudio bíblico y servicio entre las hermanas."
+      }
+    },
+    "ministries_section": {
+      "eyebrow": "Departamentos",
+      "title": "Dónde puedes servir",
+      "subtitle": "Cada departamento tiene la puerta abierta a voluntarios."
+    },
+    "contact": {
+      "title": "¿Quieres hablar con alguien?",
+      "subtitle": "Escríbenos o ven a cualquiera de nuestros cultos: te esperamos.",
+      "cta_visit": "Cómo llegar",
+      "cta_about": "Conocer la iglesia"
+    }
+  },
+  "credo": {
+    "eyebrow": "En qué creemos",
+    "title": "Declaración de fe",
+    "lead": "Creemos, confesamos y vivimos las verdades de las Sagradas Escrituras tal como están formuladas en la Declaración de fe del Culto Cristiano Pentecostal.",
+    "source": "Texto adoptado en el Congreso del Culto Cristiano Pentecostal del 8 al 10 de octubre de 2025.",
+    "part_label": "Capítulo",
+    "articles_count": "Artículos: {{count}}",
+    "refs_label": "Referencias bíblicas:",
+    "summary": {
+      "title": "Índice",
+      "subtitle": "Cuatro capítulos, treinta artículos.",
+      "aria": "Índice de la declaración de fe"
+    },
+    "parts": {
+      "doctrine": {
+        "name": "Afirmaciones doctrinales",
+        "description": "Lo que creemos sobre Dios, sobre el ser humano, sobre la salvación y sobre la Iglesia."
+      },
+      "practices": {
+        "name": "Las prácticas espirituales",
+        "description": "Cómo se cultiva, día a día, la relación personal con Dios."
+      },
+      "family": {
+        "name": "La familia",
+        "description": "El matrimonio, la crianza de los hijos y el lugar de la familia en el plan de Dios."
+      },
+      "morals": {
+        "name": "La moral cristiana",
+        "description": "El carácter, el amor al prójimo y el respeto por la vida."
+      }
+    },
+    "outro": {
+      "title": "¿Quieres que hablemos de ello?",
+      "subtitle": "Nos alegra conversar sobre cualquiera de estas convicciones.",
+      "cta_about": "Quiénes somos",
+      "cta_leadership": "Liderazgo de la iglesia"
+    }
   }
 }

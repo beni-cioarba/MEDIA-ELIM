@@ -1,0 +1,2075 @@
+@use 'sass:color';
+@use 'styles/tokens' as *;
+@use 'styles/responsive';
+
+// =====================================================================
+// Layout principal
+//
+// NOTA: `StageComponent` usa `ViewEncapsulation.None`, por lo que esta hoja
+// es la hoja de estilos del escenario completo (incluidos los bloques hijos
+// de `features/stage/blocks/*`). Todas las clases están namespaced con BEM
+// (`.socials__`, `.streams__`, `.gallery__`, `.weekly__`, `.upcoming__`…)
+// para evitar colisiones con los componentes de `shared/`, que sí mantienen
+// encapsulación propia.
+// =====================================================================
+app-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: $color-text;
+}
+
+// En la web pública el escenario convive con la barra de navegación y el
+// pie, así que no debe forzar 100vh (provocaría scroll fantasma).
+.stage:not(.is-fullscreen) {
+  min-height: auto;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(1.5rem, 4vw, 4rem) clamp(1.5rem, 5vw, 5rem);
+  gap: clamp(1.5rem, 4vh, 3.5rem);
+  overflow-x: clip;
+  background:
+    radial-gradient(
+      ellipse at top right,
+      color.adjust($color-bg-2, $lightness: 2%) 0%,
+      $color-bg-1 70%
+    ),
+    linear-gradient(180deg, $color-bg-2 0%, $color-bg-1 100%);
+
+  &.is-fullscreen {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    padding: clamp(1rem, 3vh, 2.5rem) clamp(1.5rem, 4vw, 4rem);
+    gap: clamp(0.75rem, 2vh, 1.75rem);
+    overflow: hidden;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Fondo decorativo — halos difusos que aportan profundidad sin peso
+// visual. Oro suave y azul sereno sobre el lienzo alabastro.
+// ---------------------------------------------------------------------
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.halo {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.5;
+  will-change: transform;
+
+  &--gold {
+    width: 60vmax;
+    height: 60vmax;
+    top: -25vmax;
+    left: -20vmax;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.42) 0%, transparent 70%);
+    animation: drift 22s ease-in-out infinite alternate;
+  }
+
+  &--blue {
+    width: 55vmax;
+    height: 55vmax;
+    bottom: -25vmax;
+    right: -20vmax;
+    background: radial-gradient(circle, $color-blue-soft 0%, transparent 70%);
+    opacity: 0.4;
+    animation: drift 28s ease-in-out infinite alternate-reverse;
+  }
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(26, 54, 93, 0.05) 1px, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(4vmax, 3vmax, 0) scale(1.15); }
+}
+
+// =====================================================================
+// Header / marca
+// ---------------------------------------------------------------------
+// El bloque se llama `stage-brand` y no `brand` a propósito: este componente
+// usa `ViewEncapsulation.None`, así que sus selectores son globales y un
+// `.brand` aquí pisaría el interior de `app-brand-logo`, que usa ese mismo
+// nombre de clase. El prefijo evita la colisión.
+// =====================================================================
+.stage-brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1rem, 2vw, 2rem);
+  // Alineado con la columna de contenido (mismo ancho y centrado) para
+  // que el logo y los controles compartan el margen del contenido.
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+
+  // El tamaño lo decide `app-brand-logo` (variante `xl`, fluida y con su
+  // propio ajuste para proyectores apaisados). Aquí sólo la sombra, que es
+  // cosa del fondo del escenario, no de la marca.
+  &__logo {
+    filter: drop-shadow(0 8px 22px rgba(26, 54, 93, 0.22));
+  }
+
+  &__spacer { flex: 1; }
+}
+
+// =====================================================================
+// Contenido principal: dos columnas (redes | QR)
+// =====================================================================
+.content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  // En la web normal el QR no se muestra (solo en presentación), por lo que
+  // el contenido ocupa una sola columna centrada y con un ancho cómodo de
+  // lectura. En presentación se pasa a dos columnas (carrusel + QR).
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1180px;
+  margin-inline: auto;
+  width: 100%;
+  gap: clamp(2rem, 4vw, 5rem);
+  align-items: start;
+  align-content: start;
+  min-height: 0;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+}
+
+// En modo presentación, .content es un BLOQUE RESTRICTIVO: su altura
+// la dicta el grid track 1fr del .stage y NINGÚN hijo puede sobresalir.
+// El overflow: hidden actua de barrera definitiva por si el contenido
+// intrínseco intentara crecer (cards con muchas líneas, fuentes
+// grandes en rumano, etc.).
+.content--carousel {
+  align-items: stretch;
+  align-content: stretch;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+
+  // Cada columna (.carousel y .qr) también se confina a su celda.
+  > * {
+    min-height: 0;
+    min-width: 0;
+    max-height: 100%;
+    overflow: hidden;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Carrusel de la columna izquierda
+//   · Fuera de presentación: las slides se apilan verticalmente para que
+//     se vea todo el contenido en la web normal.
+//   · En presentación (.content--carousel): cada slide ocupa el mismo
+//     espacio (apiladas en el mismo "cell" via grid), y se alterna la
+//     visibilidad mediante opacidad + transform.
+// ---------------------------------------------------------------------
+.carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+  min-width: 0;
+}
+
+.slide {
+  min-width: 0;
+}
+
+.content--carousel .carousel {
+  // Apilamos slides en la misma celda usando grid 1x1.
+  display: grid;
+  grid-template-areas: 'stack';
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+
+  > .slide {
+    grid-area: stack;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease, visibility 0s linear 0.6s;
+    pointer-events: none;
+    align-self: stretch;
+    justify-self: stretch;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &.slide--active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+      transition: opacity 0.6s ease, transform 0.6s ease, visibility 0s linear 0s;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Zona caliente invisible para revelar los controles del carrusel.
+// ---------------------------------------------------------------------
+.stage__hover-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(70px, 10vh, 120px);
+  z-index: 4;
+  pointer-events: auto;
+  background: transparent;
+}
+
+// ---------------------------------------------------------------------
+// Controles del carrusel — anclados a .stage, centrados respecto a TODA
+// la pantalla. PowerPoint-style: invisibles hasta que el ratón entra en
+// la franja inferior, algún control recibe foco o el carrusel está pausado.
+// ---------------------------------------------------------------------
+.stage__controls {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.5rem, 1.2vh, 1rem);
+  transform: translate(-50%, 8px);
+  z-index: 5;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.35rem, 0.8vw, 0.75rem);
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid $color-hairline-strong;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: $shadow-soft;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+
+  .stage__hover-zone:hover ~ &,
+  &:hover,
+  &:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+
+  &:has(.carousel__pause[aria-pressed='true']) {
+    opacity: 0.9;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+}
+
+.carousel__nav,
+.carousel__pause {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(28px, 2.6vw, 36px);
+  height: clamp(28px, 2.6vw, 36px);
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: $color-muted;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  svg {
+    width: 60%;
+    height: 60%;
+  }
+
+  &:hover {
+    background: $color-gold-tint;
+    color: $color-gold-deep;
+    transform: scale(1.08);
+  }
+
+  &:active { transform: scale(0.94); }
+
+  &:focus-visible {
+    outline: 2px solid $color-gold;
+    outline-offset: 2px;
+  }
+}
+
+.carousel__pause[aria-pressed='true'] {
+  color: $color-gold;
+}
+
+.carousel__dots {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 0.8vw, 0.75rem);
+}
+
+.carousel__dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  min-width: clamp(18px, 2.5vw, 32px);
+  padding: 0 0.25rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover { transform: translateY(-1px); }
+
+  &:focus-visible {
+    outline: 2px solid $color-gold;
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  &-bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(26, 54, 93, 0.16);
+    overflow: hidden;
+    position: relative;
+    transition: height 0.25s ease, background 0.25s ease;
+  }
+
+  &-progress {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
+    border-radius: inherit;
+    transition: width 0.12s linear;
+  }
+
+  &.is-active {
+    .carousel__dot-bar {
+      height: 4px;
+      background: rgba(26, 54, 93, 0.28);
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.5);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Tarjetas de redes sociales
+// ---------------------------------------------------------------------
+.socials {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.25rem);
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-gold-deep;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(0.7rem, 1.2vh, 1rem);
+  }
+}
+
+.card {
+  --card-gradient: linear-gradient(135deg, #444, #222);
+  position: relative;
+  border-radius: $radius-lg;
+  background: $color-card;
+  border: 1px solid $color-hairline;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: box-shadow 0.4s ease,
+              border-color 0.4s ease,
+              transform 0.4s ease,
+              background 0.4s ease;
+
+  &::before {
+    // Tinte de color de marca muy suave que cubre la tarjeta
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--card-gradient);
+    opacity: 0.05;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  &::after {
+    // Resplandor de borde (inset shadow) con el color de la red
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: var(--card-gradient);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  &:hover,
+  &--highlight {
+    background: $color-card;
+    box-shadow: $shadow-card;
+    border-color: transparent;
+    transform: translateY(-2px);
+
+    &::before { opacity: 0.14; }
+    &::after { opacity: 0.85; }
+  }
+
+  &__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: clamp(1.25rem, 2vw, 1.75rem);
+    padding: clamp(1rem, 1.8vh, 1.4rem) clamp(1.25rem, 2.5vw, 2rem);
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 4px;
+      border-radius: $radius-lg;
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(54px, 5vw, 68px);
+    height: clamp(54px, 5vw, 68px);
+    border-radius: $radius-md;
+    background: var(--card-gradient);
+    color: #fff;
+    // Efecto de joya flotante: sombra de color + borde interior brillante
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+                0 8px 20px rgba(26, 54, 93, 0.25);
+    padding: 14px;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.4s ease;
+  }
+
+  &:hover &__icon,
+  &--highlight &__icon {
+    transform: scale(1.08) rotate(-4deg);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+                0 14px 30px rgba(26, 54, 93, 0.35);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 0.2rem;
+    overflow: hidden;
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: $color-text;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  &__username {
+    font-size: clamp(0.85rem, 1vw, 1rem);
+    color: $color-gold-deep;
+    font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: $color-gold-tint;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    margin-left: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex-shrink: 1;
+    display: inline-block;
+  }
+
+  &__handle {
+    color: $color-muted;
+    font-size: clamp(0.85rem, 1vw, 0.95rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    width: 100%;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-faint;
+    transition: transform 0.4s ease, color 0.4s ease;
+
+    svg {
+      width: clamp(20px, 2vw, 24px);
+      height: clamp(20px, 2vw, 24px);
+    }
+  }
+
+  &:hover &__cta,
+  &--highlight &__cta {
+    color: $color-gold-deep;
+    transform: translateX(6px);
+  }
+
+  &__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff3344, #d11f33);
+    color: #fff;
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    box-shadow: 0 4px 14px rgba(209, 31, 51, 0.4);
+    text-transform: uppercase;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  &__live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9);
+    animation: live-pulse 1.4s ease-out infinite;
+  }
+}
+
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9); }
+  70%  { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+// ---------------------------------------------------------------------
+// Indicador de scroll (animado) para la primera pantalla en móviles
+// ---------------------------------------------------------------------
+.scroll-indicator {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding-top: 0.75rem;
+  color: $color-gold-deep;
+  opacity: 0.8;
+  animation: bounce-subtle 2s infinite ease-in-out;
+  
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  @media (max-width: 860px) {
+    display: flex;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+// ---------------------------------------------------------------------
+// Últimas transmisiones de YouTube (lista horizontal de miniaturas).
+// ---------------------------------------------------------------------
+.streams {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  &__title {
+    margin: 0;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: $color-gold-deep;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  &__item { min-width: 0; position: relative; }
+
+  &__share {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    ::ng-deep .share-btn {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 50%;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.85);
+      border-color: $color-hairline-strong;
+      color: $color-text;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    ::ng-deep .share-btn__icon {
+      width: 14px;
+      height: 14px;
+    }
+    ::ng-deep .share-btn__label {
+      display: none;
+    }
+
+    @media (hover: none) {
+      opacity: 1;
+    }
+  }
+
+  &__item:hover &__share,
+  &__item:focus-within &__share {
+    opacity: 1;
+  }
+
+  &__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-decoration: none;
+    color: inherit;
+    border-radius: $radius-md;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+
+    &:hover { transform: translateY(-3px); }
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 3px;
+    }
+  }
+
+  &__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: $radius-md;
+    background: $color-card-2;
+    box-shadow: 0 4px 14px rgba(26, 54, 93, 0.18);
+  }
+
+  &__caption {
+    font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+    color: $color-muted;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Bloque "Transmisiones" (slide 2 del carrusel)
+// ---------------------------------------------------------------------
+.broadcasts {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.4rem);
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-gold-deep;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: clamp(1rem, 2vh, 1.4rem) clamp(1.25rem, 2vw, 1.75rem);
+    border-radius: $radius-lg;
+    background: $color-card;
+    border: 1px dashed $color-hairline-strong;
+    color: $color-muted;
+    font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+    text-align: center;
+  }
+}
+
+// Tarjeta destacada cuando hay transmisión EN DIRECTO ahora mismo.
+.live-now-wrap {
+  position: relative;
+}
+
+.live-now__share {
+  position: absolute;
+  top: clamp(0.5rem, 1vh, 0.85rem);
+  right: clamp(0.5rem, 1vw, 0.85rem);
+  z-index: 2;
+
+  ::ng-deep .share-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: $color-hairline-strong;
+    color: $color-text;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  ::ng-deep .share-btn__icon {
+    width: 16px;
+    height: 16px;
+  }
+  ::ng-deep .share-btn__label {
+    display: none;
+  }
+}
+
+.live-now {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(140px, 38%) 1fr;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: center;
+  padding: clamp(0.85rem, 1.5vh, 1.25rem);
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, rgba(255, 244, 240, 0.95), $color-card);
+  border: 1px solid rgba(209, 31, 51, 0.4);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 18px 44px rgba(209, 31, 51, 0.14), $shadow-card;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(255, 51, 68, 0.16), transparent 60%);
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  &:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 24px 56px rgba(209, 31, 51, 0.22), $shadow-card;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-gold;
+    outline-offset: 4px;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff3344, #d11f33);
+    color: #fff;
+    font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px rgba(209, 31, 51, 0.45);
+  }
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #fff;
+    animation: live-pulse 1.4s ease-out infinite;
+  }
+
+  &__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: $radius-md;
+    box-shadow: 0 8px 20px rgba(26, 54, 93, 0.25);
+    position: relative;
+    z-index: 1;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__label {
+    color: #d11f33;
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 700;
+  }
+
+  &__title {
+    color: $color-text;
+    font-size: clamp(1.1rem, 1.6vw, 1.55rem);
+    font-weight: 600;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__cta {
+    margin-top: 0.25rem;
+    color: $color-gold-deep;
+    font-weight: 700;
+    font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Galería del Departamento de Media (slide 3 del carrusel)
+//   · Card destacada con auto-rotación entre eventos.
+//   · Mosaico de miniaturas que actúa de carrusel.
+//   · CTA principal hacia la carpeta pública de Drive.
+// ---------------------------------------------------------------------
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.5rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-gold-deep;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  // ---- HERO destacado (imagen full-bleed con overlay) ----
+  &__hero {
+    --card-gradient: linear-gradient(135deg, #444, #222);
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: $shadow-card;
+    border: 1px solid $color-hairline;
+    isolation: isolate;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.5s ease, border-color 0.5s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 26px 56px rgba(26, 54, 93, 0.28);
+
+      .gallery__hero-image { transform: scale(1.05); }
+      .gallery__hero-arrow { transform: translateX(6px); }
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 4px;
+    }
+  }
+
+  &__hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &__hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(
+        to top,
+        rgba(18, 40, 68, 0.85) 0%,
+        rgba(18, 40, 68, 0.5) 40%,
+        rgba(18, 40, 68, 0.1) 70%,
+        transparent 100%
+      ),
+      linear-gradient(135deg, rgba(18, 40, 68, 0.24) 0%, transparent 60%);
+  }
+
+  &__hero-content {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  &__hero-name {
+    color: #fff;
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__hero-date {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    font-weight: 500;
+  }
+
+  &__hero-cta {
+    margin-top: 0.4rem;
+    color: $color-gold-soft;
+    font-weight: 700;
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__hero-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  // ---- Mosaico de miniaturas ----
+  &__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: clamp(0.5rem, 1vw, 0.85rem);
+  }
+
+  &__tile-wrapper { min-width: 0; }
+
+  &__tile {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: $radius-md;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    border: 1px solid $color-hairline;
+    box-shadow: $shadow-sm;
+    isolation: isolate;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.4s ease, border-color 0.4s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      border-color: rgba(212, 175, 55, 0.5);
+      box-shadow: 0 18px 32px rgba(26, 54, 93, 0.25);
+
+      .gallery__tile-image { transform: scale(1.08); }
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-gold;
+      outline-offset: 3px;
+    }
+
+    // Marco resaltado en el tile que coincide con el hero rotativo
+    &.is-featured {
+      border-color: rgba(212, 175, 55, 0.75);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35),
+                  0 14px 28px rgba(26, 54, 93, 0.25);
+    }
+  }
+
+  &__tile-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &__tile-shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgba(18, 40, 68, 0.78) 0%,
+      rgba(18, 40, 68, 0.34) 50%,
+      transparent 80%
+    );
+  }
+
+  &__tile-name {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.65rem 0.85rem;
+    color: #fff;
+    font-size: clamp(0.75rem, 0.95vw, 0.9rem);
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+@keyframes gallery-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+// ---------------------------------------------------------------------
+// Programare săptămânală (slide 4)
+//   · Lista verticală cu zilele săptămânii.
+//   · Ziua curentă primește highlight (badge "AZI" + ramă aurie).
+// ---------------------------------------------------------------------
+.weekly {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.25rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-gold-deep;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 4px 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 0.9vh, 0.85rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: minmax(110px, 22%) 1fr;
+    align-items: stretch;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    padding: clamp(0.75rem, 1.4vh, 1.1rem) clamp(0.9rem, 1.6vw, 1.25rem);
+    border-radius: $radius-md;
+    background: $color-card;
+    border: 1px solid $color-hairline;
+    box-shadow: $shadow-sm;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateX(2px);
+      border-color: rgba(212, 175, 55, 0.35);
+      box-shadow: $shadow-soft;
+    }
+
+    &.is-today {
+      background: linear-gradient(135deg,
+        rgba(212, 175, 55, 0.16),
+        rgba(255, 255, 255, 1));
+      border-color: rgba(212, 175, 55, 0.55);
+      box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.22),
+                  $shadow-soft;
+    }
+  }
+
+  &__day {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: 1px solid $color-hairline;
+    padding-right: clamp(0.5rem, 1vw, 1rem);
+  }
+
+  &__day-name {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 700;
+    color: $color-text;
+    letter-spacing: 0.02em;
+  }
+
+  &__today-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  &__time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: $color-gold-deep;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  &__item-title {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    font-weight: 600;
+    line-height: 1.3;
+    color: $color-text;
+  }
+
+  &__item-desc {
+    margin: 0;
+    color: $color-muted;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Evenimente viitoare (slide 5)
+//   · Card-uri cu contoare prominente "X zile".
+//   · Primul = "URMĂTORUL" (badge), iar dacă este azi → highlight live.
+// ---------------------------------------------------------------------
+.upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vh, 1.25rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__sync-all {
+    flex-shrink: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: $color-gold-deep;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  &__actions {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    app-calendar-sync-button {
+      --cal-sync-right: auto;
+      --cal-sync-left: 0;
+      --cal-sync-arrow-right: auto;
+      --cal-sync-arrow-left: 1.25rem;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    padding: clamp(1.5rem, 3vh, 2.5rem);
+    text-align: center;
+    color: $color-muted;
+    font-style: italic;
+    border: 1px dashed $color-hairline-strong;
+    border-radius: $radius-md;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 4px 12px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.4vh, 1.2rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: clamp(110px, 18%, 160px) 1fr;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    padding: clamp(1rem, 1.8vh, 1.4rem) clamp(1.1rem, 2vw, 1.6rem);
+    border-radius: $radius-lg;
+    background: $color-card;
+    border: 1px solid $color-hairline;
+    box-shadow: $shadow-sm;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+    /* Dinamizamos el z-index de arriba abajo (el 1er evento cubre al 2do, etc)
+       para que los menús desplegables nunca queden bajo otras tarjetas */
+    position: relative;
+    z-index: calc(100 - var(--item-idx, 0));
+
+    &:hover,
+    &:focus-within {
+      transform: translateY(-2px);
+      border-color: rgba(212, 175, 55, 0.4);
+      box-shadow: $shadow-soft;
+    }
+
+    &.is-next {
+      border-color: rgba(212, 175, 55, 0.45);
+      background: linear-gradient(135deg,
+        rgba(212, 175, 55, 0.1),
+        rgba(255, 255, 255, 1));
+    }
+
+    &.is-today {
+      border-color: rgba(209, 31, 51, 0.55);
+      background: linear-gradient(135deg,
+        rgba(255, 51, 68, 0.1),
+        rgba(255, 255, 255, 1));
+      box-shadow: 0 0 0 2px rgba(209, 31, 51, 0.18),
+                  $shadow-soft;
+    }
+  }
+
+  &__countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    border-radius: $radius-md;
+    background: $color-gold-tint;
+    border: 1px solid $color-hairline;
+
+    .is-next & {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08));
+      border-color: rgba(212, 175, 55, 0.45);
+    }
+
+    .is-today & {
+      background: linear-gradient(135deg, rgba(255, 51, 68, 0.18), rgba(255, 51, 68, 0.06));
+      border-color: rgba(209, 31, 51, 0.5);
+    }
+  }
+
+  &__count-num {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: $color-gold-deep;
+    letter-spacing: -0.02em;
+
+    .is-today & {
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #d11f33;
+    }
+  }
+
+  &__count-label {
+    margin-top: 0.3rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: $color-muted;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: $color-gold-deep;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__date {
+    text-transform: capitalize;
+    font-weight: 600;
+  }
+
+  &__time { color: $color-muted; }
+
+  &__next-badge {
+    display: inline-flex;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
+    color: #fff;
+  }
+
+  &__today-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: #d11f33;
+    color: white;
+  }
+
+  &__live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    animation: upcoming-pulse 1.6s infinite;
+  }
+
+  &__item-title {
+    margin: 0;
+    font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: $color-text;
+  }
+
+  &__item-desc {
+    margin: 0;
+    color: $color-muted;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  &__verse {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid $color-gold;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 0 $radius-md $radius-md 0;
+    color: $color-text;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-style: italic;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  &__verse-icon {
+    color: $color-gold;
+    font-size: 1rem;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+
+  &__credits {
+    margin: 0.25rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  &__credit {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    dt {
+      margin: 0;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: $color-muted;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.95rem;
+      color: $color-text;
+      font-weight: 600;
+    }
+  }
+}
+
+@keyframes upcoming-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+// Responsive: pe ecrane înguste, item-urile devin verticale
+@media (max-width: 720px) {
+  .weekly__item,
+  .upcoming__item {
+    grid-template-columns: 1fr;
+  }
+
+  .weekly__day {
+    border-right: none;
+    border-bottom: 1px solid $color-hairline;
+    padding-right: 0;
+    padding-bottom: 0.5rem;
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+
+  .upcoming__countdown {
+    flex-direction: row;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Bloque QR
+// ---------------------------------------------------------------------
+.qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: clamp(0.75rem, 1.2vw, 1.25rem);
+  border-radius: $radius-lg;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  // Sticky: el QR queda anclado a la parte alta del viewport mientras
+  // el usuario hace scroll por el contenido principal.
+  position: sticky;
+  top: clamp(1rem, 3vh, 2.5rem);
+  align-self: start;
+  height: calc(100dvh - clamp(2rem, 6vh, 5rem));
+  max-height: calc(100dvh - clamp(2rem, 6vh, 5rem));
+
+  @media (max-width: 1024px) {
+    position: static;
+    padding: 1rem;
+    max-width: 480px;
+    margin: 0 auto;
+    height: auto;
+    max-height: none;
+    min-height: clamp(280px, 60vw, 420px);
+  }
+
+  &__placeholder {
+    width: clamp(220px, 28vw, 360px);
+    aspect-ratio: 1;
+    border-radius: $radius-md;
+    background: linear-gradient(110deg, #e8edf4 30%, #f6f8fb 50%, #e8edf4 70%);
+    background-size: 200% 100%;
+    animation: qr-shimmer 1.4s linear infinite;
+  }
+
+  @keyframes qr-shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+}
+
+// =====================================================================
+// Footer / barra de control
+// =====================================================================
+.bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-top: clamp(0.75rem, 1.5vh, 1.25rem);
+  border-top: 1px solid $color-border;
+  flex-wrap: wrap;
+  // Alineado con la columna de contenido, igual que el header.
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+
+  &__verse {
+    flex: 1 1 100%;
+    min-width: 0;
+    margin: 0;
+    max-width: 100%;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    line-height: 1.5;
+    color: $color-muted;
+    padding-bottom: 0.1rem;
+
+    @media (min-width: 768px) {
+      flex: 1;
+      max-width: 80ch;
+    }
+  }
+
+  &__verse-ref {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+    color: $color-gold-deep;
+    font-style: normal;
+    font-weight: 600;
+  }
+}
+
+// =====================================================================
+// Titulares de sección en azul marino (color de marca) — jerarquía
+// serena y editorial. El oro queda como acento (subrayados, metadatos).
+// =====================================================================
+.socials__title,
+.broadcasts__title,
+.gallery__title,
+.weekly__title,
+.upcoming__title,
+.live-now__title,
+.streams__title,
+.location__title {
+  color: $color-primary;
+}
+
+// =====================================================================
+// Slide "Ubicación / Cómo llegar" — mapa con el punto de la iglesia,
+// dirección y acciones (indicaciones, abrir en Maps, compartir).
+// =====================================================================
+.location {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.8vh, 1.4rem);
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $color-muted;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.45;
+    max-width: 60ch;
+  }
+
+  &__layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__map {
+    position: relative;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    border: 1px solid $color-border;
+    box-shadow: $shadow-card;
+    background: $color-card-2;
+    min-height: clamp(300px, 45vh, 500px);
+  }
+
+  &__map-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    filter: saturate(1.02);
+  }
+}
+
+// =====================================================================
+// Ajustes a pantalla completa: maximizar la "diapositiva"
+// =====================================================================
+.stage.is-fullscreen {
+  app-lang-switcher {
+    display: none !important;
+  }
+
+  // En presentación el header y la barra ocupan todo el ancho disponible
+  // (no se limitan a la columna de lectura).
+  .stage-brand,
+  .bar {
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  // Layout vertical: header (auto) + contenido (1fr) + footer (auto).
+  grid-template-rows: auto minmax(0, 1fr) auto;
+
+  .content {
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    max-width: none;
+    margin-inline: 0;
+    overflow: hidden;
+    align-content: stretch;
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 5vw, 4.5rem);
+  }
+
+  .carousel {
+    height: 100%;
+    min-height: 0;
+    align-self: stretch;
+  }
+
+  .slide {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .socials {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(1.2rem, 3.5vh, 2.5rem);
+  }
+
+  .socials__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.75rem, 1.5vh, 1.15rem);
+    overflow: visible;
+    padding: 10px 4px;
+    margin: -10px -4px;
+  }
+
+  .socials__list > .card {
+    display: flex;
+    overflow: visible;
+    flex-shrink: 0;
+  }
+
+  .socials__list > .card .card__link {
+    flex: 1;
+    width: 100%;
+    padding: clamp(0.7rem, 2vh, 1.1rem) clamp(1rem, 2.5vw, 2rem);
+    align-items: center;
+  }
+
+  .socials__list > .card .card__icon {
+    width: clamp(42px, 5.5vh, 56px);
+    height: clamp(42px, 5.5vh, 56px);
+    padding: clamp(8px, 1.2vh, 12px);
+  }
+
+  .socials__list > .card .card__name {
+    font-size: clamp(1.05rem, 2vh, 1.45rem);
+  }
+
+  .socials__list > .card .card__handle {
+    font-size: clamp(0.85rem, 1.6vh, 1.15rem);
+  }
+
+  .socials__list > .card .card__cta {
+    transform: scale(0.85);
+  }
+
+  .socials__title,
+  .broadcasts__title {
+    font-size: clamp(1.2rem, 1.6vw, 1.7rem);
+  }
+
+  .broadcasts {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.6rem, 1.5vh, 1.25rem);
+  }
+
+  .broadcasts .streams {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .broadcasts .streams__list {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  // Galería: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
+  .gallery {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.75rem, 1.5vh, 1.25rem);
+  }
+
+  .gallery__title { font-size: clamp(1.2rem, 1.6vw, 1.7rem); }
+  .gallery__subtitle { font-size: clamp(0.95rem, 1.4vh, 1.2rem); }
+
+  .gallery__hero {
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+
+  .gallery__hero-name { font-size: clamp(1.5rem, 3vh, 2.4rem); }
+  .gallery__hero-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
+  .gallery__hero-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
+
+  .gallery__grid {
+    flex: 0 0 auto;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: clamp(0.4rem, 0.8vh, 0.7rem);
+  }
+
+  .gallery__tile {
+    aspect-ratio: 4 / 3;
+  }
+
+  .gallery__tile-name { font-size: clamp(0.75rem, 1vh, 0.95rem); }
+
+  .live-now {
+    padding: clamp(1rem, 2vh, 1.5rem);
+    grid-template-columns: minmax(180px, 42%) 1fr;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .live-now__title {
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    -webkit-line-clamp: 2;
+  }
+
+  .live-now__label {
+    font-size: clamp(1rem, 1.2vw, 1.25rem);
+  }
+
+  .live-now__cta {
+    font-size: clamp(1.1rem, 1.4vw, 1.4rem);
+  }
+
+  .streams__title {
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
+  }
+
+  .streams__caption {
+    font-size: clamp(0.85rem, 1vw, 1.05rem);
+    -webkit-line-clamp: 2;
+  }
+
+  .socials__list {
+    gap: clamp(0.5rem, 1.2vh, 1rem);
+  }
+
+  .card__link {
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .card__icon {
+    width: clamp(36px, 4vh, 64px);
+    height: clamp(36px, 4vh, 64px);
+    padding: clamp(6px, 0.9vh, 12px);
+    flex-shrink: 0;
+  }
+
+  .card__body {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .card__name {
+    font-size: clamp(0.95rem, 1.9vh, 1.5rem);
+    line-height: 1.1;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card__username {
+    font-size: clamp(0.8rem, 1.4vh, 1.15rem);
+  }
+
+  .card__handle {
+    font-size: clamp(0.75rem, 1.2vh, 1rem);
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .qr {
+    height: 100%;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vh, 2.5rem);
+  }
+
+  .bar__verse {
+    font-size: clamp(0.95rem, 1.6vh, 1.35rem);
+  }
+
+  // -------------------------------------------------------------------
+  // Legibilidad a distancia (proyección en la iglesia)
+  // En el monitor de cerca el texto fino se ve bien, pero proyectado y
+  // visto desde lejos las fuentes delgadas y los grises tenues no se
+  // distinguen. Reforzamos pesos y contraste solo en modo presentación.
+  // -------------------------------------------------------------------
+  // Títulos de sección: más peso para que destaquen de lejos.
+  .socials__title,
+  .broadcasts__title,
+  .gallery__title,
+  .weekly__title,
+  .upcoming__title {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  // Nombres / handles de redes.
+  .card__name { font-weight: 800; }
+  .card__username,
+  .card__handle {
+    font-weight: 600;
+    color: rgba(45, 55, 72, 0.86);
+  }
+
+  // Programa semanal y próximos eventos: el texto principal en negrita
+  // y los datos secundarios (hora, fecha, descripción) más marcados.
+  .weekly__item-title,
+  .upcoming__item-title {
+    font-weight: 800;
+  }
+
+  .weekly__day-name,
+  .weekly__time,
+  .upcoming__time,
+  .upcoming__date,
+  .upcoming__meta {
+    font-weight: 700;
+  }
+
+  .weekly__item-desc,
+  .upcoming__item-desc,
+  .streams__caption,
+  .gallery__subtitle {
+    font-weight: 600;
+    color: rgba(45, 55, 72, 0.82);
+  }
+
+  .streams__title { font-weight: 800; }
+
+  // Versículo del pie: en presentación que no sea tan fino ni tan tenue.
+  .bar__verse {
+    font-weight: 600;
+    color: rgba(45, 55, 72, 0.85);
+  }
+
+  .carousel { padding-bottom: 0; }
+}

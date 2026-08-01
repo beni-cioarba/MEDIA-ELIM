@@ -1,0 +1,202 @@
+// =====================================================================
+// BASE — reset ligero + estilos de elemento.
+// Sólo selectores de elemento: ninguna clase. Todo lo "opinable" vive en
+// componentes o en `_utilities.scss`.
+// =====================================================================
+
+@use 'tokens' as *;
+@use 'mixins' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  // Base fluida para `clamp()`: en el proyector de la iglesia (pantalla
+  // grande, lectura lejana) la raíz crece hasta 20 px.
+  font-size: clamp(15px, 0.9vw + 0.5rem, 20px);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  // Que las anclas (#seccion) no queden debajo de la cabecera fija.
+  scroll-padding-top: calc(var(--nav-height) + var(--sp-4));
+}
+
+@include motion-reduce {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// ---- Tipografía de contenido ----------------------------------------
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--c-primary);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+// Longitud de línea cómoda para textos largos (55–75 caracteres).
+//
+// Los `li` quedan FUERA a propósito: en esta app casi todas las listas son
+// rejillas de tarjetas y el `max-width` de prosa les rompía la maquetación
+// (había que anularlo a mano en cada componente). Para una lista que sí sea
+// prosa, envuélvela en `.u-prose`.
+//
+// OJO al usar `max-width` en un contenedor CENTRADO: hay que acompañarlo de
+// `margin-inline: auto` o el bloque se pega a la izquierda y el texto se ve
+// descolocado respecto al título.
+p {
+  max-width: var(--w-prose);
+}
+
+.u-prose li {
+  max-width: var(--w-prose);
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--c-gold);
+  text-underline-offset: 0.2em;
+  @include focus-ring;
+}
+
+button {
+  font-family: inherit;
+  @include focus-ring;
+}
+
+:where(button, [role='button'], a, input, select, textarea, summary) {
+  @include focus-ring;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+// Evita saltos de layout mientras carga una imagen con width/height.
+img {
+  height: auto;
+}
+
+blockquote,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--c-hairline);
+}
+
+::selection {
+  background: var(--c-gold-tint);
+  color: var(--c-primary);
+}
+
+// Barra de scroll discreta y en color de marca (Chromium + Firefox).
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-hairline-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--c-hairline-strong);
+  border: 3px solid transparent;
+  border-radius: var(--r-pill);
+  background-clip: content-box;
+}
+
+// Con el menú móvil abierto, el fondo no debe desplazarse.
+body.has-drawer-open {
+  overflow: hidden;
+}
+
+// ---------------------------------------------------------------------
+// Modo "fullscreen simulado": respaldo CSS cuando el navegador no permite
+// la Fullscreen API (móviles, iframes, permiso denegado…). Lo activa
+// `PresentationService` añadiendo la clase al <body>.
+// ---------------------------------------------------------------------
+body.is-simulated-fullscreen {
+  overflow: hidden;
+
+  app-root {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-fullscreen);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--c-bg);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Respeta la preferencia del sistema por reducir movimiento.
+// ---------------------------------------------------------------------
+@include motion-reduce {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

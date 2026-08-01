@@ -1,0 +1,18 @@
+<section class="location" aria-labelledby="location-title">
+  <header class="location__header">
+    <h2 id="location-title" class="location__title">{{ 'location.title' | translate }}</h2>
+  </header>
+
+  <div class="location__layout">
+    <div class="location__map">
+      <iframe
+        class="location__map-frame"
+        [src]="mapEmbedUrl"
+        [title]="'location.map_title' | translate"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</section>
