@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # El número de compilación es `git rev-list --count HEAD`: con el
+          # clon superficial por defecto (depth 1) siempre saldría 1.
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4

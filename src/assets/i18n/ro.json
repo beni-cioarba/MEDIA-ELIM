@@ -182,7 +182,10 @@
     "visit": "Vizitează-ne",
     "schedule": "Program și cum ajungi",
     "partner": "Institutul Național Evanghelic Betel",
-    "version": "Versiunea aplicației"
+    "version": "Versiunea aplicației",
+    "build": "Compilare",
+    "commit": "Revizie",
+    "built_at": "Publicată"
   },
   "common": {
     "copy": "Copiază",

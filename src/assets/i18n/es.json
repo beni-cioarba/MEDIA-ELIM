@@ -182,7 +182,10 @@
     "visit": "Visítanos",
     "schedule": "Horarios y cómo llegar",
     "partner": "Instituto Nacional Evangélico Betel",
-    "version": "Versión de la aplicación"
+    "version": "Versión de la aplicación",
+    "build": "Compilación",
+    "commit": "Revisión",
+    "built_at": "Publicada"
   },
   "common": {
     "copy": "Copiar",

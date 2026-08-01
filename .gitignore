@@ -6,6 +6,9 @@
 /out-tsc
 /bazel-out
 
+# Generado en postinstall/prestart/prebuild por scripts/generate-version.mjs
+/src/environments/version.ts
+
 # Node
 /node_modules
 npm-debug.log

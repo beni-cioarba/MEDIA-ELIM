@@ -98,12 +98,38 @@
       <p class="footer__copy">
         © {{ year }} {{ 'footer.church' | translate }} ·
         {{ 'footer.rights' | translate }}
+
+        <!--
+          Versión visible = semver manual (package.json). El detalle técnico
+          (contador de commits, hash y fecha) se guarda en el tooltip para no
+          ensuciar la franja legal, pero sigue estando a un hover de distancia
+          cuando alguien reporta una incidencia. Es focusable para que también
+          se abra con teclado y con un toque en móvil.
+        -->
         <span
           class="footer__version"
-          [title]="'footer.version' | translate"
+          tabindex="0"
+          role="button"
+          aria-describedby="footer-build"
           [attr.aria-label]="'footer.version' | translate"
-          >v{{ version }}</span
         >
+          v{{ appVersion.release }}
+
+          <span class="footer__build" id="footer-build" role="tooltip">
+            <span class="footer__build-row">
+              <span>{{ 'footer.build' | translate }}</span>
+              <b>{{ appVersion.build }}</b>
+            </span>
+            <span class="footer__build-row">
+              <span>{{ 'footer.commit' | translate }}</span>
+              <b>{{ appVersion.commit }}{{ appVersion.dirty ? '+' : '' }}</b>
+            </span>
+            <span class="footer__build-row">
+              <span>{{ 'footer.built_at' | translate }}</span>
+              <b>{{ builtAt() }}</b>
+            </span>
+          </span>
+        </span>
       </p>
 
       <a

@@ -1,12 +1,16 @@
 {
   "name": "iglesia-redes",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "scripts": {
     "ng": "ng",
+    "postinstall": "node scripts/generate-version.mjs",
+    "prestart": "node scripts/generate-version.mjs",
     "start": "ng serve",
+    "prebuild": "node scripts/generate-version.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "version:generate": "node scripts/generate-version.mjs",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs"
   },

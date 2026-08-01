@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
-import { environment } from '../../../environments/version';
+import { LanguageService } from '../../core/services/language.service';
+import { APP_VERSION } from '../../../environments/version';
 import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
 import { IconComponent } from '../icon/icon.component';
 import { SocialIconComponent } from '../social-icon/social-icon.component';
@@ -80,8 +81,20 @@ export class FooterComponent {
   protected readonly tel = `tel:${this.config.contact.phone}`;
 
   /**
-   * Versión publicada. Sirve de referencia al reportar una incidencia y para
-   * confirmar de un vistazo que el service worker ya sirve el build nuevo.
+   * Versión publicada. El número visible (`release`) lo decide una persona
+   * en `package.json`; el resto lo genera `scripts/generate-version.mjs` en
+   * cada build y sirve para identificar exactamente qué código está online
+   * cuando alguien reporta una incidencia.
    */
-  protected readonly version = environment.version;
+  protected readonly appVersion = APP_VERSION;
+
+  private readonly language = inject(LanguageService);
+
+  /** Fecha de compilación en el formato del idioma activo. */
+  protected readonly builtAt = computed(() =>
+    new Date(APP_VERSION.builtAt).toLocaleString(this.language.current(), {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }),
+  );
 }

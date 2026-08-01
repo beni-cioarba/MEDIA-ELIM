@@ -319,8 +319,9 @@
 
 // Dato técnico, no editorial: se marca como tal con una píldora tenue para
 // que esté disponible al reportar incidencias sin robar atención al aviso
-// legal.
+// legal. El detalle completo vive en el tooltip.
 .footer__version {
+  position: relative;
   display: inline-block;
   margin-inline-start: var(--sp-2);
   padding: 0.1em 0.5em;
@@ -332,6 +333,80 @@
   color: rgba(247, 250, 252, 0.45);
   white-space: nowrap;
   cursor: help;
+  transition: color var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    color: rgba(247, 250, 252, 0.85);
+    border-color: rgba(247, 250, 252, 0.32);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// Tooltip propio en vez de MatTooltip: son tres líneas estáticas dentro de un
+// chunk diferido, no compensa arrastrar el módulo ni su tema. Se abre con
+// hover, con foco de teclado y con un toque en táctil.
+.footer__build {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 50%;
+  z-index: var(--z-content);
+  display: grid;
+  gap: 0.2rem;
+  min-width: max-content;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid rgba(247, 250, 252, 0.14);
+  border-radius: var(--r-sm);
+  background: var(--c-primary-darkest);
+  box-shadow: var(--e-3);
+  color: rgba(247, 250, 252, 0.9);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  text-align: start;
+  // Invisible pero fuera del flujo de puntero: así el tooltip nunca tapa la
+  // franja legal ni intercepta clics cuando está cerrado.
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 0.25rem);
+  transition: opacity var(--mo-fast) var(--ea-standard),
+    transform var(--mo-fast) var(--ea-decelerate), visibility var(--mo-fast);
+
+  // Flecha.
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    border: 0.35rem solid transparent;
+    border-block-end-width: 0;
+    border-block-start-color: var(--c-primary-darkest);
+    transform: translateX(-50%);
+  }
+
+  .footer__version:hover &,
+  .footer__version:focus-visible & {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+}
+
+.footer__build-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  color: rgba(247, 250, 252, 0.55);
+
+  b {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(247, 250, 252, 0.92);
+  }
 }
 
 .footer__partner {
@@ -369,7 +444,13 @@
   .footer__social,
   .footer__link,
   .footer__cta,
-  .footer__partner {
+  .footer__partner,
+  .footer__version,
+  .footer__build {
     transition: none;
+  }
+
+  .footer__build {
+    transform: translate(-50%, 0);
   }
 }
