@@ -75,6 +75,13 @@
 
 .field {
   display: grid;
+  // `start` y no el `stretch` por defecto.
+  //
+  // `.field` es un ítem de `.form__row`, así que se estira al alto de la
+  // fila. Sus filas son automáticas, y con `stretch` la rejilla REPARTE el
+  // sobrante entre ellas: cuando el campo vecino mostraba un error, éste
+  // separaba su etiqueta de su caja y los dos dejaban de estar alineados.
+  align-content: start;
   gap: var(--sp-2);
 }
 
@@ -119,7 +126,7 @@
   }
 
   &[aria-invalid='true'] {
-    border-color: #c53030;
+    border-color: var(--c-danger);
   }
 }
 
@@ -131,7 +138,12 @@
 
 .field__error {
   font-size: 0.8rem;
-  color: #c53030;
+  line-height: 1.4;
+  // El hueco se reserva siempre, haya error o no: así el mensaje aparece y
+  // desaparece sin empujar nada de lo que viene debajo. `1.4em` es una
+  // línea exacta con este cuerpo, sin números mágicos.
+  min-height: 1.4em;
+  color: var(--c-danger);
 }
 
 /* --- Pie del formulario ----------------------------------------------
@@ -248,8 +260,39 @@
   }
 }
 
+/* --- Canal de WhatsApp ------------------------------------------------
+ * Deja de ser un `.btn--ghost-dark` genérico. Era una píldora perfilada
+ * indistinguible de cualquier acción secundaria: nada decía que abre otra
+ * aplicación, y flotaba sin peso entre la lista de datos y el horario.
+ *
+ * Ahora es sólido, del ancho de la columna y con el verde del propio
+ * WhatsApp. El color hace el trabajo que haría el logotipo, sin meter otro
+ * icono en una página de la que ya los hemos quitado.
+ * --------------------------------------------------------------------- */
+
 .aside__whatsapp {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
+  /* Cómodo de pulsar con el pulgar sin depender del cuerpo del texto. */
+  min-height: 2.75rem;
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--c-whatsapp);
+  color: var(--c-on-whatsapp);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-whatsapp-deep);
+  }
+
+  @include focus-ring;
 }
 
 /* --- Horario ---------------------------------------------------------- */

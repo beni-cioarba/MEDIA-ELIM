@@ -324,7 +324,6 @@
 .ministries__item {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
   padding: 0.55rem 1rem;
   border: 1px solid var(--c-hairline);
   border-radius: 999px;
@@ -332,11 +331,6 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--c-text);
-}
-
-.ministries__item app-icon {
-  font-size: 1.05rem;
-  color: var(--c-gold-deep);
 }
 
 /* --- Visítanos ------------------------------------------------------ */

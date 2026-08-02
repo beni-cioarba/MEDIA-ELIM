@@ -1,169 +1,386 @@
 @use 'ds' as *;
+// La plantilla usa `.btn` y `.section-cta`. Son parciales que cada
+// componente importa por su cuenta: `styles.scss` NO los carga en global.
+// Sin estas dos líneas los botones del final salen sin estilo ninguno.
 @use '../../shared/styles/buttons' as *;
-@use '../../shared/styles/page-hero' as *;
 @use '../../shared/styles/section-cta' as *;
 
-/* Estilos encapsulados de la página «Órgano de liderazgo». */
+// =====================================================================
+// Conducere — organigrama
+//
+// Jerarquía visual en tres pesos, de mayor a menor:
+//   1. Cargos de gobierno  → tarjeta con borde dorado, avatar grande.
+//   2. Departamentos       → tarjeta neutra, avatar pequeño.
+//   3. Ficha de persona    → superficie flotante sobre velo.
+// Sin fotos: no existen de las 33 personas y una galería a medias se ve
+// peor que ninguna. El avatar es tipográfico y siempre coherente.
+// =====================================================================
 
-:host {
-  display: block;
-}
-
-/* --- Estructura de gobierno ------------------------------------------ */
-
-.groups {
+// ---------------------------------------------------------------------
+// Cargos de gobierno
+// ---------------------------------------------------------------------
+.offices {
   display: grid;
-  gap: 1rem;
+  // Son exactamente cuatro: 13rem deja que quepan en una fila en escritorio,
+  // dos en tableta y una en móvil, sin ninguna media query.
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--sp-4);
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: group;
 }
 
-.group {
-  position: relative;
-  padding: 1.4rem 1.5rem 1.4rem 3.6rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: 18px;
-  background: var(--c-surface);
-  box-shadow: var(--shadow-sm);
-}
-
-.group__step {
-  position: absolute;
-  top: 1.45rem;
-  left: 1.2rem;
+.office {
+  @include surface;
   display: grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 999px;
-  background: var(--c-gold-tint);
-  font-size: 0.82rem;
-  font-weight: 700;
+  align-content: start;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  // El filo dorado es lo único que distingue estas tarjetas de las de
+  // departamento: mismo lenguaje, distinto peso.
+  border-block-start: 3px solid var(--c-gold);
+}
+
+.office__label {
+  @include eyebrow;
+  margin: 0;
   color: var(--c-gold-deep);
 }
 
-.group__head {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.85rem;
+.office__people {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.group__icon {
-  margin-top: 0.15rem;
-  font-size: 1.5rem;
-  color: var(--c-primary-soft);
+// ---------------------------------------------------------------------
+// Comitetul Bisericii
+//
+// Nueve nombres sin jerarquía interna: una rejilla de filas `.person`, no
+// nueve tarjetas. Es todo el CSS que necesita el bloque — la fila, el
+// avatar y las etiquetas ya existen y se reutilizan tal cual.
+// ---------------------------------------------------------------------
+.committee {
+  display: grid;
+  // Carriles del ancho del CONTENIDO y grupo centrado, no `1fr`.
+  //
+  // Con `1fr` los carriles se estiraban a todo el ancho de la sección y
+  // cada nombre se quedaba pegado al borde izquierdo del suyo: el bloque
+  // entero se leía desplazado a la izquierda bajo un título que sí está
+  // centrado. Con `max-content` el grupo mide lo que miden los nombres y
+  // `justify-content: center` lo centra de verdad.
+  //
+  // Columnas explícitas por breakpoint en vez de `auto-fit`: `auto-fit`
+  // necesita un tamaño definido para contar repeticiones y no se lleva
+  // bien con carriles intrínsecos.
+  grid-template-columns: 1fr;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from('sm') {
+    grid-template-columns: repeat(2, max-content);
+  }
+
+  @include from('lg') {
+    grid-template-columns: repeat(3, max-content);
+  }
 }
 
-.group__title {
-  margin: 0 0 0.25rem;
+// ---------------------------------------------------------------------
+// Áreas y departamentos
+// ---------------------------------------------------------------------
+.depts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dept {
+  @include surface;
+  display: grid;
+  align-content: start;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+}
+
+// Sin icono: el de la tarjeta era el del área, así que los mismos siete
+// glifos se repetían en las veintisiete cabeceras y sólo cargaban el
+// diseño. Queda el filete, que es lo que de verdad separa.
+.dept__head {
+  padding-block-end: var(--sp-3);
+  border-block-end: 1px solid var(--c-hairline);
+}
+
+.dept__title {
+  margin: 0;
   font-family: var(--font-serif);
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.3;
   color: var(--c-primary);
 }
 
-.group__desc {
-  margin: 0;
-  font-size: 0.94rem;
-  line-height: 1.65;
-  color: var(--c-muted);
-}
-
-.group__pending {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin: 1rem 0 0;
-  padding: 0.4rem 0.85rem;
-  border: 1px dashed var(--c-hairline-strong);
-  border-radius: 999px;
-  font-size: 0.82rem;
-  color: var(--c-faint);
-}
-
-/* --- Miembros --------------------------------------------------------- */
-
-.members {
+.dept__people {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
-  gap: 0.6rem;
-  margin: 1rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.member {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: 12px;
-  background: var(--c-surface-2);
-}
-
-.member__avatar {
-  display: grid;
-  place-items: center;
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-soft) 100%);
-  color: var(--c-on-primary);
-  font-weight: 700;
-}
-
-.member__text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-}
-
-.member__name {
-  font-weight: 600;
-  color: var(--c-primary);
-}
-
-.member__role {
-  font-size: 0.78rem;
-  color: var(--c-muted);
-}
-
-/* --- Departamentos ---------------------------------------------------- */
-
-.ministries {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap: 1rem;
+  gap: var(--sp-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.ministry {
-  padding: 1.25rem 1.2rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: 16px;
-  background: var(--c-surface);
+// ---------------------------------------------------------------------
+// Persona (botón)
+//
+// Es un botón real, no un div con click: se tabula, se activa con Enter y
+// los lectores de pantalla lo anuncian como accionable.
+// ---------------------------------------------------------------------
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-2);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  // `_base.scss` sólo le pasa al botón la familia, no el cuerpo: sin esto
+  // los nombres se pintaban al tamaño por defecto del navegador (~13 px) y
+  // no acompañaban al `font-size` fluido de la raíz.
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-surface-sunken);
+  }
+
+  // El mixin ya se aplica sobre `:focus-visible`; anidarlo lo duplicaba.
+  @include focus-ring;
 }
 
-.ministry__icon {
-  font-size: 1.6rem;
+.person__text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.person__name {
+  font-weight: 550;
+  color: var(--c-text);
+}
+
+.person__role {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+.person__titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.person--lg {
+  padding: 0;
+
+  &:hover {
+    background: transparent;
+  }
+
+  .person__name {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--c-primary);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Etiquetas de cargo permanente
+// ---------------------------------------------------------------------
+.tag {
+  display: inline-block;
+  padding: 0.1em 0.55em;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.tag--gold {
+  border-color: var(--c-gold);
+  background: var(--c-gold-tint);
   color: var(--c-gold-deep);
 }
 
-.ministry__title {
-  margin: 0.6rem 0 0.35rem;
-  font-size: 1rem;
+// ---------------------------------------------------------------------
+// Pista de uso — sin ella nadie descubre que los nombres son pulsables.
+// ---------------------------------------------------------------------
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  // `auto` en el eje en línea, no `0`: es un `<p>` y hereda el
+  // `max-width: var(--w-prose)` de `_base.scss`, así que sin esto la caja
+  // se pega a la izquierda y queda descuadrada respecto al título.
+  margin: var(--sp-5) auto 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+  text-align: center;
+
+  app-icon {
+    flex: none;
+    width: 1.05rem;
+    height: 1.05rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Ficha de persona
+// ---------------------------------------------------------------------
+.sheet {
+  width: min(100%, 30rem);
+  max-height: min(80vh, 40rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--e-4);
+  color: var(--c-text);
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: var(--c-veil-strong);
+    backdrop-filter: blur(3px);
+  }
+
+  @include motion-safe {
+    animation: sheet-in var(--mo-base) var(--ea-decelerate);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+.sheet__inner {
+  position: relative;
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+}
+
+.sheet__close {
+  position: absolute;
+  inset-block-start: var(--sp-3);
+  inset-inline-end: var(--sp-3);
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-surface-sunken);
+    color: var(--c-text);
+  }
+
+  @include focus-ring;
+
+  app-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+}
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding-inline-end: var(--sp-7);
+}
+
+.sheet__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: var(--r-pill);
+  background: linear-gradient(140deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
+  color: var(--c-on-primary);
+  font-size: 1.05rem;
   font-weight: 600;
+}
+
+.sheet__name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
   color: var(--c-primary);
 }
 
-.ministry__desc {
+.sheet__titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: var(--sp-2) 0 0;
+}
+
+.sheet__subtitle {
+  @include eyebrow;
   margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.6;
   color: var(--c-muted);
+}
+
+.sheet__list {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.posting {
+  display: grid;
+  gap: 0.1rem;
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-sunken);
+}
+
+.posting__dept {
+  font-weight: 550;
+}
+
+.posting__meta {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+@include motion-reduce {
+  .person,
+  .sheet__close {
+    transition: none;
+  }
 }

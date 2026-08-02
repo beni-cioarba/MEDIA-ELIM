@@ -69,6 +69,11 @@
   --c-info: #{map.get($status, 'info')};
   --c-live: #{map.get($status, 'live')};
 
+  // ---- Canales externos (color propio del producto, no de la marca) ---
+  --c-whatsapp: #{map.get($channels, 'whatsapp')};
+  --c-whatsapp-deep: #{map.get($channels, 'whatsapp-deep')};
+  --c-on-whatsapp: #{neutral(0)};
+
   // ---- Foco: un único anillo para toda la app (WCAG 2.2 · 2.4.11) -----
   --c-focus: #{gold(600)};
   --focus-ring: 0 0 0 3px #{rgba(#d4af37, 0.45)};

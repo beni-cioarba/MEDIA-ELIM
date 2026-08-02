@@ -1,90 +1,213 @@
-<header class="page-hero">
-  <div class="page-hero__inner">
-    <p class="page-hero__eyebrow">{{ 'leadership.eyebrow' | translate }}</p>
-    <h1 class="page-hero__title">{{ 'leadership.title' | translate }}</h1>
-    <p class="page-hero__lead">{{ 'leadership.lead' | translate }}</p>
-  </div>
-</header>
+<!--
+  Sin cabecera visual: repetía lo que ya dicen el menú y el título de la
+  primera sección. El `<h1>` se queda en el marcado pero oculto: sin él la
+  página no tendría encabezado de nivel 1 y su esquema empezaría en `<h2>`,
+  que es una regresión de SEO y de lectores de pantalla.
+-->
+<h1 class="u-sr-only">{{ 'leadership.title' | translate }}</h1>
 
-<!-- Estructura de gobierno -->
+<!-- ================= Estructura de conducere ================= -->
 <app-page-section
   titleKey="leadership.structure.title"
   subtitleKey="leadership.structure.subtitle"
 >
-  <ol class="groups">
-    @for (group of config.leadership; track group.id; let i = $index) {
-      <li class="group">
-        <span class="group__step" aria-hidden="true">{{ i + 1 }}</span>
+  <ul class="offices">
+    @for (office of offices; track office.id) {
+      <li class="office">
+        <p class="office__label">
+          {{ 'leadership.departments.' + office.i18nKey | translate }}
+        </p>
 
-        <div class="group__head">
-          <app-icon class="group__icon" [name]="group.icon" />
-          <div>
-            <h3 class="group__title">
-              {{ 'leadership.groups.' + group.i18nKey + '.name' | translate }}
-            </h3>
-            <p class="group__desc">
-              {{ 'leadership.groups.' + group.i18nKey + '.description' | translate }}
-            </p>
-          </div>
-        </div>
-
-        @if (group.members.length > 0) {
-          <ul class="members">
-            @for (member of group.members; track member.id) {
-              <li class="member">
-                <span class="member__avatar" aria-hidden="true">
-                  {{ member.name.charAt(0) }}
+        <ul class="office__people">
+          @for (assignment of office.members; track assignment.person) {
+            <li>
+              <button
+                type="button"
+                class="person person--lg"
+                aria-haspopup="dialog"
+                (click)="open(profile(assignment))"
+              >
+                <span class="person__text">
+                  <span class="person__name">{{ profile(assignment).name }}</span>
+                  <!--
+                    Sólo los cargos que NO repiten el rótulo de la tarjeta:
+                    poner «Pastor» debajo del epígrafe «Pastor» es ruido, pero
+                    saber que el secretario es además diácono, no.
+                  -->
+                  @if (extraTitles(office, profile(assignment)); as titles) {
+                    <span class="person__titles">
+                      @for (title of titles; track title) {
+                        <span class="tag">{{ 'leadership.titles.' + title | translate }}</span>
+                      }
+                    </span>
+                  }
                 </span>
-                <span class="member__text">
-                  <span class="member__name">{{ member.name }}</span>
-                  <span class="member__role">
-                    {{ 'leadership.roles.' + member.roleKey | translate }}
-                  </span>
-                </span>
-              </li>
-            }
-          </ul>
-        } @else {
-          <p class="group__pending">
-            <app-icon name="clock" />
-            {{ 'leadership.pending' | translate }}
-          </p>
-        }
+              </button>
+            </li>
+          }
+        </ul>
       </li>
     }
-  </ol>
+  </ul>
+
+  <p class="hint">
+    <app-icon name="sparkles" />
+    {{ 'leadership.hint' | translate }}
+  </p>
 </app-page-section>
 
-<!-- Departamentos -->
+<!-- ================= Comitetul Bisericii =================
+  Nómina plana: el documento oficial no reparte funciones dentro del
+  comité, así que no se inventa ninguna. La etiqueta bajo cada nombre es
+  el cargo permanente que la persona ya tiene en `PEOPLE`; quien no tiene
+  ninguno sale sólo con su nombre.
+
+  Reutiliza la misma fila `.person` que los departamentos a propósito: un
+  bloque con lenguaje visual propio desentonaría justo entre los cargos
+  de gobierno y las áreas de servicio.
+-->
 <app-page-section
   tinted
-  eyebrowKey="leadership.ministries_section.eyebrow"
-  titleKey="leadership.ministries_section.title"
-  subtitleKey="leadership.ministries_section.subtitle"
+  titleKey="leadership.committee.title"
+  subtitleKey="leadership.committee.subtitle"
 >
-  <ul class="ministries">
-    @for (ministry of config.ministries; track ministry.id) {
-      <li class="ministry">
-        <app-icon class="ministry__icon" [name]="ministry.icon" />
-        <h3 class="ministry__title">
-          {{ 'leadership.ministries.' + ministry.i18nKey + '.name' | translate }}
-        </h3>
-        <p class="ministry__desc">
-          {{ 'leadership.ministries.' + ministry.i18nKey + '.description' | translate }}
-        </p>
+  <ul class="committee">
+    @for (person of committee; track person.id) {
+      <li>
+        <button type="button" class="person" aria-haspopup="dialog" (click)="open(person)">
+          <span class="person__text">
+            <span class="person__name">{{ person.name }}</span>
+            @if (person.titles; as titles) {
+              <span class="person__titles">
+                @for (title of titles; track title) {
+                  <span class="tag">{{ 'leadership.titles.' + title | translate }}</span>
+                }
+              </span>
+            }
+          </span>
+        </button>
       </li>
     }
   </ul>
 </app-page-section>
 
-<!-- Contacto -->
+<!-- ================= Áreas de servicio ================= -->
+@for (area of areas; track area.id; let odd = $odd) {
+  <app-page-section
+    [tinted]="odd"
+    [titleKey]="'leadership.areas.' + area.i18nKey + '.name'"
+    [subtitleKey]="'leadership.areas.' + area.i18nKey + '.description'"
+  >
+    <ul class="depts">
+      @for (department of area.departments; track department.id) {
+        <li class="dept">
+          <div class="dept__head">
+            <h3 class="dept__title">
+              {{ 'leadership.departments.' + department.i18nKey | translate }}
+            </h3>
+          </div>
+
+          <ul class="dept__people">
+            @for (assignment of department.members; track $index) {
+              <li>
+                <button
+                  type="button"
+                  class="person"
+                  aria-haspopup="dialog"
+                  (click)="open(profile(assignment))"
+                >
+                  <span class="person__text">
+                    <span class="person__name">{{ profile(assignment).name }}</span>
+                    @if (assignment.roles; as roles) {
+                      <span class="person__role">
+                        @for (role of roles; track role; let last = $last) {
+                          {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
+                        }
+                      </span>
+                    }
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        </li>
+      }
+    </ul>
+  </app-page-section>
+}
+
+<!-- ================= Contacto ================= -->
 <app-page-section titleKey="leadership.contact.title" subtitleKey="leadership.contact.subtitle">
   <p class="section-cta">
-    <a class="btn btn--primary" [routerLink]="links.location">
-      {{ 'leadership.contact.cta_visit' | translate }}
+    <a class="btn btn--primary" [routerLink]="links.contact">
+      {{ 'leadership.contact.cta_contact' | translate }}
     </a>
-    <a class="btn btn--ghost-dark" [routerLink]="links.about">
-      {{ 'leadership.contact.cta_about' | translate }}
+    <a class="btn btn--ghost-dark" [routerLink]="links.location">
+      {{ 'leadership.contact.cta_visit' | translate }}
     </a>
   </p>
 </app-page-section>
+
+<!--
+  Ficha de persona. `<dialog>` nativo: vive en la top layer, así que ningún
+  ancestro con overflow o transform puede recortarla, y el navegador ya
+  aporta foco atrapado, cierre con Esc e inerte el resto de la página.
+-->
+<dialog
+  #personDialog
+  class="sheet"
+  [attr.aria-label]="selected()?.name"
+  (click)="onDialogClick($event)"
+  (close)="selected.set(null)"
+>
+  @if (selected(); as person) {
+    <div class="sheet__inner">
+      <button
+        type="button"
+        class="sheet__close"
+        (click)="close()"
+        [attr.aria-label]="'common.close' | translate"
+      >
+        <app-icon name="close" />
+      </button>
+
+      <div class="sheet__head">
+        <span class="sheet__avatar" aria-hidden="true">{{ initials(person.name) }}</span>
+        <div>
+          <h2 class="sheet__name">{{ person.name }}</h2>
+          @if (person.titles; as titles) {
+            <p class="sheet__titles">
+              @for (title of titles; track title) {
+                <span class="tag tag--gold">{{ 'leadership.titles.' + title | translate }}</span>
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      <h3 class="sheet__subtitle">{{ 'leadership.sheet.serves' | translate }}</h3>
+
+      <ul class="sheet__list">
+        @for (posting of person.postings; track $index) {
+          <li class="posting">
+            <span class="posting__dept">
+              {{ 'leadership.departments.' + posting.departmentKey | translate }}
+            </span>
+            <span class="posting__meta">
+              @if (posting.areaKey) {
+                {{ 'leadership.areas.' + posting.areaKey + '.name' | translate }}
+              } @else {
+                {{ 'leadership.sheet.governance' | translate }}
+              }
+              @if (posting.roles; as roles) {
+                @for (role of roles; track role) {
+                  · {{ 'leadership.roles.' + role | translate }}
+                }
+              }
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</dialog>

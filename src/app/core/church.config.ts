@@ -128,28 +128,6 @@ export interface ChurchStat {
   readonly icon: IconName;
 }
 
-/** Persona con responsabilidad dentro de un grupo de liderazgo. */
-export interface LeadershipMember {
-  readonly id: string;
-  /** Nombre propio — no se traduce. */
-  readonly name: string;
-  /** Sub-clave dentro de `leadership.roles.*`. */
-  readonly roleKey: string;
-}
-
-/**
- * Grupo del órgano de liderazgo (pastoral, comité, diaconado…).
- * `members` puede venir vacío: la UI muestra entonces un estado «pendiente
- * de confirmar» en lugar de inventar nombres.
- */
-export interface LeadershipGroup {
-  readonly id: string;
-  /** Sub-clave dentro de `leadership.groups.*` (name, description). */
-  readonly i18nKey: string;
-  readonly icon: IconName;
-  readonly members: readonly LeadershipMember[];
-}
-
 /** Departamento o ministerio de la iglesia. */
 export interface Ministry {
   readonly id: string;
@@ -234,9 +212,11 @@ export interface ChurchConfig {
   readonly heroSlides: readonly HeroSlide[];
   /** Cifras destacadas de la sección «quiénes somos». */
   readonly stats: readonly ChurchStat[];
-  /** Órgano de liderazgo, agrupado por responsabilidad. */
-  readonly leadership: readonly LeadershipGroup[];
-  /** Departamentos / ministerios activos. */
+  /**
+   * Departamentos / ministerios activos, en versión «invitación a servir»
+   * para la portada. El organigrama real (personas y cargos) vive aparte,
+   * en `leadership.config.ts`.
+   */
   readonly ministries: readonly Ministry[];
 }
 
@@ -588,39 +568,6 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   ],
 
   // ---------------------------------------------------------------------
-  // Órgano de liderazgo. Los grupos describen la ESTRUCTURA (siempre
-  // válida); los nombres concretos se añaden cuando la iglesia los
-  // confirme. Un grupo con `members: []` se muestra como "pendiente de
-  // confirmar" en lugar de con nombres inventados.
-  // TODO(iglesia): completar `members` con los nombres reales.
-  // ---------------------------------------------------------------------
-  leadership: [
-    {
-      id: 'pastoral',
-      i18nKey: 'pastoral',
-      icon: 'church',
-      members: [],
-    },
-    {
-      id: 'presbytery',
-      i18nKey: 'presbytery',
-      icon: 'book',
-      members: [],
-    },
-    {
-      id: 'deacons',
-      i18nKey: 'deacons',
-      icon: 'heart',
-      members: [],
-    },
-    {
-      id: 'committee',
-      i18nKey: 'committee',
-      icon: 'users',
-      members: [],
-    },
-  ],
-
   // Departamentos activos. Estructurales y estables: se pueden mostrar
   // aunque todavía no haya nombres de responsables.
   ministries: [

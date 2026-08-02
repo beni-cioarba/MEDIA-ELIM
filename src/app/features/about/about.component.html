@@ -1,10 +1,10 @@
-<header class="page-hero">
-  <div class="page-hero__inner">
-    <p class="page-hero__eyebrow">{{ 'about.eyebrow' | translate }}</p>
-    <h1 class="page-hero__title">{{ 'about.title' | translate }}</h1>
-    <p class="page-hero__lead">{{ 'about.lead' | translate }}</p>
-  </div>
-</header>
+<!--
+  Sin cabecera visual: repetía lo que ya dicen el menú y el título de la
+  primera sección. El `<h1>` se queda en el marcado pero oculto: sin él la
+  página no tendría encabezado de nivel 1 y su esquema empezaría en `<h2>`,
+  que es una regresión de SEO y de lectores de pantalla.
+-->
+<h1 class="u-sr-only">{{ 'about.title' | translate }}</h1>
 
 <!-- Historia -->
 <app-page-section titleKey="about.story.title" subtitleKey="about.story.subtitle">

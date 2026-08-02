@@ -190,6 +190,7 @@
   "common": {
     "copy": "Copiar",
     "copied": "Copiado",
+    "close": "Cerrar",
     "back_to_top": "Volver arriba"
   },
   "contact": {
@@ -375,7 +376,8 @@
       "title": "Lo próximo",
       "subtitle": "El programa de hoy y el siguiente evento especial.",
       "service": "Culto de hoy",
-      "no_service": "Hoy no hay culto programado. Te esperamos en la próxima reunión.",
+      "next_service": "Próximo culto",
+      "no_service": "No hay cultos programados.",
       "next_event": "Próximo evento",
       "see_program": "Ver el programa completo",
       "see_events": "Ver todos los eventos"
@@ -475,11 +477,11 @@
       "items": {
         "welcome": {
           "title": "Una acogida cercana",
-          "body": "Alguien te recibirá en la entrada y te ayudará a sentirte en casa. Ven vestido como te resulte cómodo."
+          "body": "Alguien te recibirá en la entrada y te ayudará a sentirte en casa."
         },
         "worship": {
           "title": "Alabanza",
-          "body": "El culto empieza con cantos de alabanza. Puedes cantar, ponerte de pie o simplemente escuchar."
+          "body": "El culto empieza con cantos de alabanza."
         },
         "word": {
           "title": "La Palabra",
@@ -498,34 +500,96 @@
     "eyebrow": "Liderazgo",
     "title": "Cómo está organizada la iglesia",
     "lead": "Una estructura de servicio, pensada para que cada área de la iglesia esté cuidada.",
-    "pending": "Pendiente de actualizar",
+    "hint": "Pulsa cualquier nombre y verás todo lo que esa persona sirve en la iglesia.",
     "structure": {
       "title": "Estructura de liderazgo",
-      "subtitle": "Cada nivel sirve a la iglesia de forma complementaria."
+      "subtitle": "Los cargos que representan a la iglesia y responden por ella."
     },
-    "groups": {
-      "pastoral": {
-        "name": "Equipo pastoral",
-        "description": "Dirige espiritualmente la iglesia, predica la Palabra y cuida de la vida de la comunidad."
-      },
-      "presbytery": {
-        "name": "Presbiterio",
-        "description": "Los ancianos de la iglesia, que aconsejan, enseñan y toman juntos las decisiones importantes."
-      },
-      "deacons": {
-        "name": "Diáconos",
-        "description": "Se ocupan del servicio práctico: ayuda social, acogida y orden de los cultos."
-      },
-      "committee": {
-        "name": "Comité",
-        "description": "Administra los recursos, el edificio y la parte legal de la iglesia."
-      }
+    "committee": {
+      "title": "Comité de la iglesia",
+      "subtitle": "Los miembros que forman el comité y toman las decisiones de la iglesia."
     },
-    "roles": {
+    "titles": {
       "pastor": "Pastor",
+      "assistant_pastor": "Pastor asistente",
       "elder": "Anciano",
       "deacon": "Diácono",
-      "member": "Miembro"
+      "secretary": "Secretario",
+      "treasurer": "Tesorero",
+      "censor": "Censor",
+      "lawyer": "Abogada"
+    },
+    "roles": {
+      "lead": "Responsable",
+      "assistant": "Ayudante",
+      "conductor": "Director",
+      "delegate": "Delegado"
+    },
+    "areas": {
+      "pastoral": {
+        "name": "Cuidado espiritual",
+        "description": "Restauración, oración, enseñanza y acompañamiento de la vida de la iglesia."
+      },
+      "generations": {
+        "name": "Generaciones",
+        "description": "Niños, adolescentes y jóvenes: cada edad con su equipo."
+      },
+      "worship": {
+        "name": "Alabanza y música",
+        "description": "Los grupos, el coro y la fanfarria que acompañan cada culto."
+      },
+      "media": {
+        "name": "Medios y técnica",
+        "description": "Sonido, proyección y transmisión en directo."
+      },
+      "relations": {
+        "name": "Relaciones exteriores",
+        "description": "Con otras iglesias, con la filial de San Martín de la Vega y con las instituciones."
+      },
+      "hospitality": {
+        "name": "Acogida",
+        "description": "Quien te recibe en la puerta y quien cuida de los invitados."
+      },
+      "facilities": {
+        "name": "Administración y edificio",
+        "description": "El local, el diseño y el mantenimiento del día a día."
+      }
+    },
+    "departments": {
+      "pastor": "Pastor",
+      "assistant_pastor": "Pastor asistente",
+      "elders": "Ancianos",
+      "deacons": "Diáconos",
+      "secretary": "Secretario",
+      "treasurer": "Tesorero",
+      "censors": "Censores",
+      "restoration": "Restauración, relaciones y familia",
+      "recovery": "Recuperación",
+      "intercession": "Intercesión, ayuno, ayuda, misión y evangelización",
+      "teaching": "Enseñanza",
+      "spiritual_gifts": "Dones espirituales",
+      "youth": "Jóvenes",
+      "teens": "Adolescentes",
+      "children": "Niños",
+      "worship_groups": "Grupos de alabanza",
+      "choir": "Coro",
+      "brass_band": "Fanfarria",
+      "sound": "Sonido",
+      "projection": "Proyección",
+      "live_stream": "Transmisión en directo",
+      "other_churches": "Relaciones con otras iglesias",
+      "san_martin": "Iglesia de San Martín de la Vega",
+      "authorities": "Relaciones con el Estado y el Ayuntamiento",
+      "welcome": "Acogida, hospitalidad y orden",
+      "guests": "Recepción y organización de invitados",
+      "travel": "Billetes y reserva de hotel para invitados",
+      "administration": "Administración",
+      "design": "Diseño",
+      "cleaning": "Limpieza"
+    },
+    "sheet": {
+      "serves": "Dónde sirve",
+      "governance": "Estructura de liderazgo"
     },
     "ministries": {
       "worship": {
@@ -569,14 +633,14 @@
     "contact": {
       "title": "¿Quieres hablar con alguien?",
       "subtitle": "Escríbenos o ven a cualquiera de nuestros cultos: te esperamos.",
-      "cta_visit": "Cómo llegar",
-      "cta_about": "Conocer la iglesia"
+      "cta_contact": "Escríbenos",
+      "cta_visit": "Cómo llegar"
     }
   },
   "credo": {
     "eyebrow": "En qué creemos",
     "title": "Declaración de fe",
-    "lead": "Creemos, confesamos y vivimos las verdades de las Sagradas Escrituras tal como están formuladas en la Declaración de fe del Culto Cristiano Pentecostal.",
+    "lead": "Creemos, confesamos y vivimos las verdades de las Sagradas Escrituras.",
     "source": "Texto adoptado en el Congreso del Culto Cristiano Pentecostal del 8 al 10 de octubre de 2025.",
     "part_label": "Capítulo",
     "articles_count": "Artículos: {{count}}",

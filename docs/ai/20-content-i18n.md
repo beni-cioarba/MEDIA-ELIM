@@ -36,6 +36,41 @@ ChurchConfig {
 > repositorio. **No añadas secretos reales** aquí; los del cron viven en
 > GitHub Secrets (ver `docs/ai/50-build-deploy.md`).
 
+## `leadership.config.ts` — el organigrama
+
+Vive **aparte** de `church.config.ts` porque no es una lista más: es un grafo
+personas ↔ departamentos, y se actualiza cuando cambia la iglesia, no cuando
+cambia la web.
+
+```ts
+PEOPLE              // registro único de nombres → deriva el tipo `PersonId`
+LEADERSHIP_OFFICES  // pastor, secretar, casier, cenzori (Department[])
+SERVICE_AREAS       // 7 áreas, cada una con sus departamentos
+PEOPLE_INDEX        // derivado: PersonId → todos sus cargos
+```
+
+Regla de oro: **el nombre se escribe una sola vez**, en `PEOPLE`. Los
+departamentos sólo guardan `PersonId`, así que una referencia a alguien que no
+existe **no compila**, y el «¿qué más hace esta persona?» de la ficha se
+calcula solo recorriendo la estructura.
+
+| Quiero…                        | Hago                                                                       |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| Añadir una persona             | Entrada en `PEOPLE` + referencia desde su departamento                     |
+| Cambiar quién lleva algo       | Editar `members` de ese `Department`                                       |
+| Añadir un departamento         | Meterlo en su `ServiceArea` + clave `leadership.departments.<id>` en es/ro |
+| Añadir un cargo permanente     | Valor en `PersonTitle` + clave `leadership.titles.*`                       |
+| Añadir una función interna     | Valor en `ServiceRole` + clave `leadership.roles.*`                        |
+
+`Assignment.roles` es una lista: alguien puede ser responsable **y** director
+del mismo departamento sin aparecer dos veces en la tarjeta. Y un cargo de
+gobierno puede declarar `impliedTitle` para no repetir «Cenzor» debajo de un
+nombre en la tarjeta que ya se titula «Cenzori».
+
+> `church.config.ts → ministries` es **otra cosa**: los 8 bloques de «dónde
+> puedes servir» de la portada, en clave de invitación. No los borres pensando
+> que duplican el organigrama.
+
 ## Recetas
 
 ### Añadir un evento futuro (Evenimente viitoare)

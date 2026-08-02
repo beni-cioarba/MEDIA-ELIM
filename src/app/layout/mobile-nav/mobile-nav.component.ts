@@ -78,9 +78,6 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
                   [attr.aria-current]="activeIds().has(child.id) ? 'page' : null"
                   (click)="ui.closeDrawer()"
                 >
-                  @if (child.icon) {
-                    <app-icon matListItemIcon [name]="child.icon" />
-                  }
                   <span matListItemTitle>{{ child.labelKey | translate }}</span>
                   @if (child.descriptionKey) {
                     <span matListItemLine>{{ child.descriptionKey | translate }}</span>
@@ -98,9 +95,6 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  @if (item.icon) {
-                    <app-icon matListItemIcon [name]="item.icon" />
-                  }
                   <span matListItemTitle>{{ item.labelKey | translate }}</span>
                 </a>
               } @else {
@@ -111,9 +105,6 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
                   [attr.aria-current]="activeIds().has(item.id) ? 'page' : null"
                   (click)="ui.closeDrawer()"
                 >
-                  @if (item.icon) {
-                    <app-icon matListItemIcon [name]="item.icon" />
-                  }
                   <span matListItemTitle>{{ item.labelKey | translate }}</span>
                 </a>
               }

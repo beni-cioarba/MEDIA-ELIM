@@ -33,9 +33,6 @@
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      @if (child.icon) {
-                        <app-icon [name]="child.icon" />
-                      }
                       <span class="elim-menu__label">{{ child.labelKey | translate }}</span>
                       @if (child.descriptionKey) {
                         <span class="elim-menu__desc">{{ child.descriptionKey | translate }}</span>
@@ -48,9 +45,6 @@
                       [class.is-active]="activeIds().has(child.id)"
                       [attr.aria-current]="activeIds().has(child.id) ? 'page' : null"
                     >
-                      @if (child.icon) {
-                        <app-icon [name]="child.icon" />
-                      }
                       <span class="elim-menu__label">{{ child.labelKey | translate }}</span>
                       @if (child.descriptionKey) {
                         <span class="elim-menu__desc">{{ child.descriptionKey | translate }}</span>
@@ -96,9 +90,6 @@
           [attr.aria-label]="supportCta.labelKey | translate"
           [attr.title]="supportCta.labelKey | translate"
         >
-          @if (supportCta.icon) {
-            <app-icon class="nav__donate-icon" [name]="supportCta.icon" />
-          }
           <span class="nav__donate-label">{{ supportCta.labelKey | translate }}</span>
         </a>
       }

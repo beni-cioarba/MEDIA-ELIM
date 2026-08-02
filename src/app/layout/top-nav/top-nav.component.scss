@@ -86,7 +86,8 @@
   // px la barra apenas tiene holgura y la lista invadía la zona de
   // acciones. Con `clamp` se comprime sola y recupera el aire en pantallas
   // grandes, sin saltos visibles al redimensionar. El techo es deliberadamente
-  // corto (0.8rem) porque a partir de `xl` reaparece el rótulo del donativo.
+  // corto (0.8rem) porque el rótulo del donativo está siempre visible y ya no
+  // se repliega para hacer sitio.
   padding-block: var(--sp-2);
   padding-inline: clamp(0.4rem, 0.85vw, 0.8rem);
   min-height: 40px;
@@ -156,18 +157,20 @@
 // ---- CTA de donativos ------------------------------------------------
 // Píldora perfilada, no rellena: es la acción *secundaria*. Si compitiera en
 // peso con «En directo» el usuario tendría dos focos a la vez y ninguno
-// destacaría. El icono ayuda a identificarla sin leer, que es lo que hace la
-// gente que ya sabe a qué viene.
+// destacaría. Sólo rótulo: el icono de regalo cargaba la barra sin aportar
+// nada que la palabra no diga ya.
 .nav__donate {
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
   height: 2.375rem;
-  padding-inline: var(--sp-3);
+  // Sin icono, el rótulo ya no puede replegarse: si se ocultara quedaría
+  // una píldora vacía. Así que el ajuste de la franja estrecha sale de
+  // aquí — acolchado y cuerpo se comprimen solos, sin saltos.
+  padding-inline: clamp(var(--sp-2), 1vw, var(--sp-3));
   border: 1px solid var(--c-gold);
   border-radius: var(--r-pill);
   color: var(--c-primary);
-  font-size: 0.875rem;
+  font-size: clamp(0.8rem, 0.35vw + 0.6rem, 0.875rem);
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -189,10 +192,6 @@
   }
 }
 
-.nav__donate-icon {
-  font-size: 1.05rem;
-  color: var(--c-gold-deep);
-}
 
 // Entre `lg` (donde aparece el menú horizontal) y `xl` la barra va justa:
 // cinco enlaces, dos CTA y el selector de idioma. El rótulo del donativo se
@@ -201,13 +200,14 @@
 // «Doneață» y con el rótulo visible la lista invadía la zona de acciones en
 // castellano. El nombre completo sigue en `aria-label` y en `title`.
 @include until('xl') {
-  .nav__donate {
-    gap: 0;
-    padding-inline: var(--sp-2);
+  // El rótulo ya no se esconde (sin icono dejaría un botón vacío), así que
+  // los ~55 px que costaba mostrarlo se recuperan apretando la lista.
+  .nav__link {
+    padding-inline: clamp(0.3rem, 0.7vw, 0.6rem);
   }
 
-  .nav__donate-label {
-    display: none;
+  .nav__list {
+    gap: 0;
   }
 }
 

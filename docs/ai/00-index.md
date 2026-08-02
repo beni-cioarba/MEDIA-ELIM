@@ -25,6 +25,7 @@ src/app/
     mobile-nav/             Drawer móvil (diferido, cdkTrapFocus)
   core/
     church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
+    leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -76,6 +77,7 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
+| «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
 | «Que tal bloque no salga al presentar»              | Panel de bloques en la UI (nada de código)              |

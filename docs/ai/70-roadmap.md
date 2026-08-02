@@ -41,9 +41,8 @@ Estado tras la reestructuración de navegación + design system.
      bloque, persistencia.
    - `CarouselService`: recorte de índice al cambiar el conjunto de bloques.
    - `UiStore`: transiciones de drawer/grupo.
-2. **Contenido real pendiente** en `church.config.ts`: `leadership` está con
-   `members: []` y `foundedYear: 2000` sin confirmar. La UI ya contempla el
-   estado «pendiente», pero es contenido visible.
+2. **Contenido real pendiente** en `church.config.ts`: `foundedYear: 2000` sigue
+   sin confirmar. El organigrama ya está completo en `leadership.config.ts`.
 3. **`stage.component.scss` sigue con ~2.100 líneas.** Conviene partirlo en
    parciales (`styles/_socials.scss`, `_streams.scss`, …). Movimiento mecánico
    pero de riesgo visual: hacerlo con la proyección delante.

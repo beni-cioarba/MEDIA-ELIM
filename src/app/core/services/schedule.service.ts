@@ -57,6 +57,22 @@ export class ScheduleService {
   );
 
   /**
+   * El servicio que toca anunciar en portada: el de hoy si lo hay y, si no,
+   * el del siguiente día que tenga culto.
+   *
+   * Anunciar «hoy no hay culto» y nada más era un callejón sin salida: quien
+   * entra un martes quiere saber cuándo es el próximo, no que hoy no toca.
+   * Quien consulta el rótulo para saber cuál de los dos casos está viendo
+   * tiene `todayProgram()`, que sigue siendo la respuesta a «¿hay hoy?».
+   *
+   * `weeklyProgram` ya viene rotado por cercanía, así que el primero es el
+   * más próximo. Sólo es `null` si no hay ningún servicio configurado.
+   */
+  readonly featuredProgram = computed<WeeklyProgram | null>(
+    () => this.todayProgram() ?? this.weeklyProgram()[0] ?? null,
+  );
+
+  /**
    * Eventos futuros: descarta los pasados y ordena por día y hora de inicio.
    */
   readonly upcomingEvents = computed<readonly UpcomingEventView[]>(() => {

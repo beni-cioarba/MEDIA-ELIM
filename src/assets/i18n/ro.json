@@ -190,6 +190,7 @@
   "common": {
     "copy": "Copiază",
     "copied": "Copiat",
+    "close": "Închide",
     "back_to_top": "Înapoi sus"
   },
   "contact": {
@@ -375,7 +376,8 @@
       "title": "Ce urmează",
       "subtitle": "Programul de azi și următorul eveniment special.",
       "service": "Serviciul de azi",
-      "no_service": "Astăzi nu avem serviciu programat. Te așteptăm la următoarea întâlnire.",
+      "next_service": "Următorul serviciu",
+      "no_service": "Nu sunt servicii programate.",
       "next_event": "Următorul eveniment",
       "see_program": "Vezi programul complet",
       "see_events": "Vezi toate evenimentele"
@@ -475,11 +477,11 @@
       "items": {
         "welcome": {
           "title": "O primire caldă",
-          "body": "Cineva te va întâmpina la intrare și te va ajuta să te simți acasă. Vino îmbrăcat cum îți este comod."
+          "body": "Cineva te va întâmpina la intrare și te va ajuta să te simți acasă."
         },
         "worship": {
           "title": "Închinare",
-          "body": "Serviciul începe cu cântări de laudă. Poți să cânți, să stai în picioare sau doar să asculți."
+          "body": "Serviciul începe cu cântări de laudă."
         },
         "word": {
           "title": "Cuvântul",
@@ -498,34 +500,96 @@
     "eyebrow": "Conducere",
     "title": "Cum este organizată biserica",
     "lead": "O structură slujitoare, gândită ca fiecare zonă a bisericii să fie îngrijită.",
-    "pending": "În curs de actualizare",
+    "hint": "Apasă pe orice nume și vezi tot ce slujește persoana aceea în biserică.",
     "structure": {
       "title": "Structura de conducere",
-      "subtitle": "Fiecare nivel slujește biserica într-un mod complementar."
+      "subtitle": "Funcțiile care reprezintă biserica și răspund pentru ea."
     },
-    "groups": {
-      "pastoral": {
-        "name": "Echipa pastorală",
-        "description": "Conduce spiritual biserica, predică Cuvântul și veghează asupra vieții comunității."
-      },
-      "presbytery": {
-        "name": "Presbiteriul",
-        "description": "Bătrânii bisericii, care sfătuiesc, învață și iau împreună deciziile importante."
-      },
-      "deacons": {
-        "name": "Diaconi",
-        "description": "Se ocupă de slujirea practică: ajutor social, întâmpinare, ordinea serviciilor."
-      },
-      "committee": {
-        "name": "Comitetul",
-        "description": "Administrează resursele, clădirea și partea legală a bisericii."
-      }
+    "committee": {
+      "title": "Comitetul Bisericii",
+      "subtitle": "Membrii care alcătuiesc comitetul și iau deciziile bisericii."
     },
-    "roles": {
+    "titles": {
       "pastor": "Pastor",
+      "assistant_pastor": "Pastor asistent",
       "elder": "Prezbiter",
       "deacon": "Diacon",
-      "member": "Membru"
+      "secretary": "Secretar",
+      "treasurer": "Casier",
+      "censor": "Cenzor",
+      "lawyer": "Avocat"
+    },
+    "roles": {
+      "lead": "Responsabil",
+      "assistant": "Ajutor",
+      "conductor": "Dirijor",
+      "delegate": "Delegat"
+    },
+    "areas": {
+      "pastoral": {
+        "name": "Grija spirituală",
+        "description": "Restaurare, rugăciune, învățătură și însoțirea vieții bisericii."
+      },
+      "generations": {
+        "name": "Generații",
+        "description": "Copii, adolescenți și tineri: fiecare vârstă cu echipa ei."
+      },
+      "worship": {
+        "name": "Închinare și muzică",
+        "description": "Grupurile, corul și fanfara care însoțesc fiecare serviciu."
+      },
+      "media": {
+        "name": "Media și tehnic",
+        "description": "Sunet, proiecție și transmisie live."
+      },
+      "relations": {
+        "name": "Relații externe",
+        "description": "Cu alte biserici, cu filiala din San Martín de la Vega și cu instituțiile."
+      },
+      "hospitality": {
+        "name": "Primire",
+        "description": "Cine te întâmpină la ușă și cine are grijă de oaspeți."
+      },
+      "facilities": {
+        "name": "Administrație și clădire",
+        "description": "Localul, designul și întreținerea de zi cu zi."
+      }
+    },
+    "departments": {
+      "pastor": "Pastor",
+      "assistant_pastor": "Pastor asistent",
+      "elders": "Prezbiteri",
+      "deacons": "Diaconi",
+      "secretary": "Secretar",
+      "treasurer": "Casier",
+      "censors": "Cenzori",
+      "restoration": "Restaurare, relații, familie",
+      "recovery": "Recuperare",
+      "intercession": "Mijlocire, post, ajutorare, misiune și evanghelizare",
+      "teaching": "Învățătură",
+      "spiritual_gifts": "Daruri spirituale",
+      "youth": "Tineret",
+      "teens": "Adolescenți",
+      "children": "Copii",
+      "worship_groups": "Grupuri de laudă",
+      "choir": "Cor",
+      "brass_band": "Fanfară",
+      "sound": "Sunet",
+      "projection": "Proiecție",
+      "live_stream": "Transmisie live",
+      "other_churches": "Relații cu alte biserici",
+      "san_martin": "Biserica din San Martín de la Vega",
+      "authorities": "Relații cu statul și primăria",
+      "welcome": "Primire, ospitalitate și ordine",
+      "guests": "Primire și organizare oaspeți",
+      "travel": "Bilete și rezervare hotel invitați",
+      "administration": "Administrativ",
+      "design": "Design",
+      "cleaning": "Curățenie"
+    },
+    "sheet": {
+      "serves": "Unde slujește",
+      "governance": "Structura de conducere"
     },
     "ministries": {
       "worship": {
@@ -569,14 +633,14 @@
     "contact": {
       "title": "Vrei să vorbești cu cineva?",
       "subtitle": "Scrie-ne sau vino la oricare dintre serviciile noastre: te așteptăm.",
-      "cta_visit": "Cum ajungi la noi",
-      "cta_about": "Cunoaște biserica"
+      "cta_contact": "Scrie-ne",
+      "cta_visit": "Cum ajungi la noi"
     }
   },
   "credo": {
     "eyebrow": "Ce credem",
     "title": "Mărturisirea de credință",
-    "lead": "Credem, mărturisim și trăim adevărurile Sfintelor Scripturi, așa cum sunt formulate în Mărturisirea de credință a Cultului Creștin Penticostal.",
+    "lead": "Credem, mărturisim și trăim adevărurile Sfintelor Scripturi.",
     "source": "Text adoptat în Congresul Cultului Creștin Penticostal din 8-10 octombrie 2025.",
     "part_label": "Capitol",
     "articles_count": "Articole: {{count}}",

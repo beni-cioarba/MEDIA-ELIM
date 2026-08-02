@@ -76,6 +76,19 @@ $status: (
   'live': #e53e3e,
 );
 
+// Canales externos. Es el único sitio donde entra un color ajeno a la marca:
+// el control pertenece a otro producto y se reconoce por su color antes que
+// por su rótulo.
+//
+// Se usa el verde OSCURO de la paleta de WhatsApp, no el claro (#25d366):
+// con texto blanco ese verde da 4,2:1 y no llega al 4,5:1 que exige la AA
+// para texto normal. El oscuro da 7,7:1 y además convive con el navy de la
+// marca en vez de pelearse con él.
+$channels: (
+  'whatsapp': #075e54,
+  'whatsapp-deep': #04443c,
+);
+
 // ---------------------------------------------------------------------
 // Espaciado — escala de 4 px, sin valores intermedios ad-hoc.
 // ---------------------------------------------------------------------

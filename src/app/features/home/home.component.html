@@ -66,12 +66,20 @@
     <article class="now__card">
       <header class="now__head">
         <app-icon name="clock" />
-        <h3>{{ 'home.today.service' | translate }}</h3>
+        <!--
+          El rótulo sigue al dato: «Serviciul de azi» sólo si hoy hay culto
+          de verdad; si no, se anuncia el próximo y se dice que lo es.
+        -->
+        <h3>
+          {{
+            (schedule.todayProgram() ? 'home.today.service' : 'home.today.next_service') | translate
+          }}
+        </h3>
       </header>
-      @if (schedule.todayProgram(); as today) {
-        <p class="now__time">{{ today.time }}</p>
-        <p class="now__title">{{ today.title }}</p>
-        <p class="now__day">{{ today.dayLabel }}</p>
+      @if (schedule.featuredProgram(); as program) {
+        <p class="now__time">{{ program.time }}</p>
+        <p class="now__title">{{ program.title }}</p>
+        <p class="now__day">{{ program.dayLabel }}</p>
       } @else {
         <p class="now__empty">{{ 'home.today.no_service' | translate }}</p>
       }
@@ -139,7 +147,6 @@
   <ul class="ministries">
     @for (ministry of featuredMinistries(); track ministry.id) {
       <li class="ministries__item">
-        <app-icon [name]="ministry.icon" />
         {{ 'leadership.ministries.' + ministry.i18nKey + '.name' | translate }}
       </li>
     }

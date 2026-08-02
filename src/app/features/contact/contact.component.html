@@ -25,9 +25,16 @@
               [attr.aria-invalid]="invalid('name')"
               [placeholder]="'contact.form.name_ph' | translate"
             />
-            @if (invalid('name')) {
-              <span class="field__error">{{ 'contact.form.error_name' | translate }}</span>
-            }
+            <!--
+              El hueco existe siempre y sólo se rellena: si el `<span>`
+              apareciera y desapareciera, el formulario daría un salto cada
+              vez que se valida un campo.
+            -->
+            <span class="field__error" role="alert">
+              @if (invalid('name')) {
+                {{ 'contact.form.error_name' | translate }}
+              }
+            </span>
           </label>
 
           <label class="field">
@@ -40,9 +47,11 @@
               [attr.aria-invalid]="invalid('email')"
               [placeholder]="'contact.form.email_ph' | translate"
             />
-            @if (invalid('email')) {
-              <span class="field__error">{{ 'contact.form.error_email' | translate }}</span>
-            }
+            <span class="field__error" role="alert">
+              @if (invalid('email')) {
+                {{ 'contact.form.error_email' | translate }}
+              }
+            </span>
           </label>
         </div>
 
@@ -68,9 +77,11 @@
             [attr.aria-invalid]="invalid('message')"
             [placeholder]="'contact.form.message_ph' | translate"
           ></textarea>
-          @if (invalid('message')) {
-            <span class="field__error">{{ 'contact.form.error_message' | translate }}</span>
-          }
+          <span class="field__error" role="alert">
+            @if (invalid('message')) {
+              {{ 'contact.form.error_message' | translate }}
+            }
+          </span>
         </label>
 
         <div class="form__foot">
@@ -128,7 +139,7 @@
 
       @if (whatsappUrl) {
         <a
-          class="btn btn--ghost-dark aside__whatsapp"
+          class="aside__whatsapp"
           [href]="whatsappUrl"
           target="_blank"
           rel="noopener noreferrer"
