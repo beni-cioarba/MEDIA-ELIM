@@ -19,7 +19,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -74,6 +74,13 @@ export const APP_VERSION: AppVersion = {
   builtAt: '${builtAt}',
 };
 `;
+
+// `src/environments/` no contiene ningún otro fichero, y éste está en
+// `.gitignore`. Como git no guarda directorios vacíos, en un clon limpio —el
+// del CI— la carpeta sencillamente no existe y `writeFileSync` fallaba con
+// ENOENT en `postinstall`, antes siquiera de compilar. Crearla aquí mantiene
+// el repo sin ficheros centinela.
+mkdirSync(dirname(OUTPUT), { recursive: true });
 
 writeFileSync(OUTPUT, contents, 'utf8');
 
