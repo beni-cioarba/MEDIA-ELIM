@@ -127,14 +127,8 @@
   color: var(--c-gold-deep);
 }
 
-.credo-part__icon {
-  display: block;
-  font-size: 1.7rem;
-  color: var(--c-gold-deep);
-}
-
 .credo-part__name {
-  margin: 0.6rem 0 0.4rem;
+  margin: 0 0 0.4rem;
   font-family: var(--font-serif);
   font-size: 1.05rem;
   font-weight: 600;
@@ -169,18 +163,10 @@
 }
 
 .expectation {
-  display: flex;
-  gap: 0.9rem;
   padding: 1.2rem;
   border: 1px solid var(--c-hairline);
   border-radius: 16px;
   background: var(--c-surface);
-}
-
-.expectation__icon {
-  flex: 0 0 auto;
-  font-size: 1.5rem;
-  color: var(--c-gold-deep);
 }
 
 .expectation h3 {

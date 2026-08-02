@@ -59,7 +59,6 @@
       <li class="credo-part">
         <a class="credo-part__link" [routerLink]="links.credo" [fragment]="part.id">
           <span class="credo-part__numeral" aria-hidden="true">{{ part.numeral }}</span>
-          <app-icon class="credo-part__icon" [name]="part.icon" />
           <h3 class="credo-part__name">
             {{ 'credo.parts.' + part.id + '.name' | translate }}
           </h3>
@@ -90,7 +89,6 @@
   <ul class="expectations">
     @for (item of expectations; track item.id) {
       <li class="expectation">
-        <app-icon class="expectation__icon" [name]="item.icon" />
         <div>
           <h3>{{ 'about.visit.items.' + item.id + '.title' | translate }}</h3>
           <p>{{ 'about.visit.items.' + item.id + '.body' | translate }}</p>
