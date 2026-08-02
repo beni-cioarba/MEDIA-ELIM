@@ -44,7 +44,8 @@ cambia la web.
 
 ```ts
 PEOPLE              // registro único de nombres → deriva el tipo `PersonId`
-LEADERSHIP_OFFICES  // pastor, secretar, casier, cenzori (Department[])
+LEADERSHIP_OFFICES  // 7 cargos de gobierno, del pastor a los cenzori (Department[])
+CHURCH_COMMITTEE    // comitetul bisericii: sólo PersonId, en el orden del acta
 SERVICE_AREAS       // 7 áreas, cada una con sus departamentos
 PEOPLE_INDEX        // derivado: PersonId → todos sus cargos
 ```
@@ -58,6 +59,7 @@ calcula solo recorriendo la estructura.
 | ------------------------------ | -------------------------------------------------------------------------- |
 | Añadir una persona             | Entrada en `PEOPLE` + referencia desde su departamento                     |
 | Cambiar quién lleva algo       | Editar `members` de ese `Department`                                       |
+| Cambiar el comité              | Editar `CHURCH_COMMITTEE`: lista de `PersonId`, sin función propia         |
 | Añadir un departamento         | Meterlo en su `ServiceArea` + clave `leadership.departments.<id>` en es/ro |
 | Añadir un cargo permanente     | Valor en `PersonTitle` + clave `leadership.titles.*`                       |
 | Añadir una función interna     | Valor en `ServiceRole` + clave `leadership.roles.*`                        |
