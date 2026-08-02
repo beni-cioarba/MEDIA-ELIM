@@ -510,7 +510,7 @@
       "subtitle": "Membrii care alcătuiesc comitetul și iau deciziile bisericii."
     },
     "titles": {
-      "pastor": "Pastor coordonator",
+      "pastor": "Pastor",
       "assistant_pastor": "Pastor asistent",
       "elder": "Prezbiter",
       "deacon": "Diacon",
@@ -556,7 +556,7 @@
       }
     },
     "departments": {
-      "pastor": "Pastor coordonator",
+      "pastor": "Pastor",
       "assistant_pastor": "Pastor asistent",
       "elders": "Prezbiteri",
       "deacons": "Diaconi",
