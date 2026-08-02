@@ -510,7 +510,7 @@
       "subtitle": "Los miembros que forman el comité y toman las decisiones de la iglesia."
     },
     "titles": {
-      "pastor": "Pastor",
+      "pastor": "Pastor coordinador",
       "assistant_pastor": "Pastor asistente",
       "elder": "Anciano",
       "deacon": "Diácono",
@@ -556,7 +556,7 @@
       }
     },
     "departments": {
-      "pastor": "Pastor",
+      "pastor": "Pastor coordinador",
       "assistant_pastor": "Pastor asistente",
       "elders": "Ancianos",
       "deacons": "Diáconos",
