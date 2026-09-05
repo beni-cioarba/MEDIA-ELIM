@@ -1,0 +1,41 @@
+{
+  "updatedAt": "2026-09-05T19:09:44.552Z",
+  "liveStream": null,
+  "recentStreams": [
+    {
+      "id": "HwR10xZIPk4",
+      "title": "Slujbă de seară - Duminică 30 August 2026",
+      "publishedAt": "2026-08-31T06:00:43Z",
+      "thumbnail": "https://i.ytimg.com/vi/HwR10xZIPk4/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=HwR10xZIPk4"
+    },
+    {
+      "id": "NXf7vrzSeJU",
+      "title": "Slujbă de dimineța - Duminică 30 August 2026",
+      "publishedAt": "2026-08-30T10:15:28Z",
+      "thumbnail": "https://i.ytimg.com/vi/NXf7vrzSeJU/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=NXf7vrzSeJU"
+    },
+    {
+      "id": "9slEYBDM8MM",
+      "title": "Slujbă de seară - Duminică 23 August 2026",
+      "publishedAt": "2026-08-23T18:12:34Z",
+      "thumbnail": "https://i.ytimg.com/vi/9slEYBDM8MM/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=9slEYBDM8MM"
+    },
+    {
+      "id": "w5rVBC2151w",
+      "title": "Slujbă de dimineța - Duminică 23 August 2026",
+      "publishedAt": "2026-08-23T10:22:41Z",
+      "thumbnail": "https://i.ytimg.com/vi/w5rVBC2151w/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=w5rVBC2151w"
+    },
+    {
+      "id": "_RIDm5o_AGo",
+      "title": "Slujbă de seară - Duminică 9 August 2026",
+      "publishedAt": "2026-08-16T18:10:59Z",
+      "thumbnail": "https://i.ytimg.com/vi/_RIDm5o_AGo/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=_RIDm5o_AGo"
+    }
+  ]
+}
