@@ -1,0 +1,41 @@
+{
+  "updatedAt": "2026-09-12T22:11:32.362Z",
+  "liveStream": null,
+  "recentStreams": [
+    {
+      "id": "ZCmqLvzajHk",
+      "title": "Seară de tineret - Duminică 6 septembrie 2026",
+      "publishedAt": "2026-09-07T06:24:17Z",
+      "thumbnail": "https://i.ytimg.com/vi/ZCmqLvzajHk/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=ZCmqLvzajHk"
+    },
+    {
+      "id": "dsMOjnzwYPA",
+      "title": "Cina Domnului - Duminică 6 Septembrie 2026",
+      "publishedAt": "2026-09-06T10:09:12Z",
+      "thumbnail": "https://i.ytimg.com/vi/dsMOjnzwYPA/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=dsMOjnzwYPA"
+    },
+    {
+      "id": "HwR10xZIPk4",
+      "title": "Slujbă de seară - Duminică 30 August 2026",
+      "publishedAt": "2026-08-31T06:00:43Z",
+      "thumbnail": "https://i.ytimg.com/vi/HwR10xZIPk4/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=HwR10xZIPk4"
+    },
+    {
+      "id": "NXf7vrzSeJU",
+      "title": "Slujbă de dimineța - Duminică 30 August 2026",
+      "publishedAt": "2026-08-30T10:15:28Z",
+      "thumbnail": "https://i.ytimg.com/vi/NXf7vrzSeJU/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=NXf7vrzSeJU"
+    },
+    {
+      "id": "9slEYBDM8MM",
+      "title": "Slujbă de seară - Duminică 23 August 2026",
+      "publishedAt": "2026-08-23T18:12:34Z",
+      "thumbnail": "https://i.ytimg.com/vi/9slEYBDM8MM/hqdefault.jpg",
+      "url": "https://www.youtube.com/watch?v=9slEYBDM8MM"
+    }
+  ]
+}
