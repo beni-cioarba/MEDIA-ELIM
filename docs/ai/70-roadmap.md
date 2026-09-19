@@ -32,6 +32,21 @@ Estado tras la reestructuración de navegación + design system.
 - `LoggerService` con ámbito, cableado en `YouTubeService` y `CalendarService`.
 - Logotipo web pasado a WebP de 384 px: **423 kB → 9 kB**.
 
+### Iteración 3 — proyección legible a distancia
+
+- **Sistema de proyección** propio (`features/stage/styles/_projection.scss`):
+  unidad de diapositiva `--pj-u` y escala `--pj-fs-*` proporcional al lienzo,
+  como una diapositiva; misma imagen en XGA, Full HD y 4K.
+- Panel de medios **neutro**: tarjetas blancas con icono navy, sin gradientes
+  de red, sin halos animados ni resaltado rotatorio en proyección; título
+  anclado arriba en todas las diapositivas; dock y controles ocultos hasta
+  acercar el ratón.
+- Jerarquía de redes para el templo: red en versalitas → **@handle** a 4,8u →
+  descripción. QR con corrección `M` (módulos un 24 % mayores).
+- Primer paso del troceado de `stage.component.scss`: la proyección y el
+  responsive salen a parciales-mixin incluidos al final (arregla, además, que
+  Sass emitiera sus reglas antes de las base y quedaran pisadas).
+
 ## Pendiente — prioridad alta
 
 1. **Sin tests.** Karma/Jasmine está configurado pero no hay ni un `.spec.ts`.
@@ -43,9 +58,10 @@ Estado tras la reestructuración de navegación + design system.
    - `UiStore`: transiciones de drawer/grupo.
 2. **Contenido real pendiente** en `church.config.ts`: `foundedYear: 2000` sigue
    sin confirmar. El organigrama ya está completo en `leadership.config.ts`.
-3. **`stage.component.scss` sigue con ~2.100 líneas.** Conviene partirlo en
-   parciales (`styles/_socials.scss`, `_streams.scss`, …). Movimiento mecánico
-   pero de riesgo visual: hacerlo con la proyección delante.
+3. **`stage.component.scss` sigue con ~1.750 líneas.** La proyección y el
+   responsive ya viven en parciales-mixin; falta partir los bloques
+   (`styles/_socials.scss`, `_streams.scss`, …) con el mismo patrón.
+   Movimiento mecánico pero de riesgo visual: hacerlo con la proyección delante.
 
 ## Pendiente — prioridad media
 

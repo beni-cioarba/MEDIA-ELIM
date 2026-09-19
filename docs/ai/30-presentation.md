@@ -84,7 +84,57 @@ Garantías:
 Salvo `F` y `Esc`, sólo actúan en modo presentación. El panel de bloques hace
 `stopPropagation()` mientras está abierto para no disparar estos atajos.
 
-## Receta — añadir un bloque proyectable nuevo
+## Sistema de proyección (`features/stage/styles/_projection.scss`)
+
+La pantalla del templo se lee desde 15-20 m: lo que importa no es la
+resolución sino **qué fracción del lienzo ocupa cada letra**, como en una
+diapositiva. Por eso en proyección no se usan `rem` ni `clamp()` con topes en
+px, sino la **unidad de diapositiva**:
+
+```
+--pj-u = min(1vh, 0.5625vw)     → 1/100 del alto de un lienzo 16:9 encajado
+```
+
+| Pantalla    | 1u       | Qué manda                                 |
+| ----------- | -------- | ----------------------------------------- |
+| 1920×1080   | 10,8 px  | alto                                      |
+| 3840×2160   | 21,6 px  | alto — misma imagen que en Full HD         |
+| 1024×768    | 5,76 px  | ancho — lienzo 16:9 dentro del 4:3         |
+| 2560×1080   | 10,8 px  | alto — lienzo centrado, márgenes laterales |
+
+Escala (todas en `.stage.is-fullscreen`):
+
+| Variable            | u    | Uso                                              |
+| ------------------- | ---- | ------------------------------------------------ |
+| `--pj-fs-eyebrow`   | 2,2  | etiquetas en versalitas («INSTAGRAM», «HOY»)      |
+| `--pj-fs-caption`   | 2,5  | descripciones, leyenda del QR, versículo          |
+| `--pj-fs-body`      | 2,9  | cuerpo de lectura (hora + título del programa)    |
+| `--pj-fs-lead`      | 3,4  | destacado dentro de una tarjeta                   |
+| `--pj-fs-title`     | 4,2  | título de la diapositiva (`pj-section-title`)     |
+| `--pj-fs-hero`      | 4,8  | el dato clave: `@handle`, nombre del evento       |
+| `--pj-fs-display`   | 7    | cifras y titulares de anuncio                     |
+| `--pj-sp-1…6`       | 1…6  | espaciado · `--pj-r`, `--pj-r-sm` radios · `--pj-stroke` trazo ≥ 1px · `--pj-icon`, `--pj-icon-sm` |
+
+Criterio: ~1 cm de altura de letra por cada 3-4 m de distancia ⇒ nada
+secundario por debajo de 2,5u y el dato clave en 4,4-5u.
+
+Reglas fijas del lienzo proyectado:
+
+- **Área segura** (`padding` 3u × 6u) frente al overscan de TV/proyector y
+  lienzo 16:9 centrado en pantallas más anchas (`--pj-canvas-w`).
+- **Fondo plano**: halos y grano ocultos (bandas y suciedad en proyector).
+- **Título anclado arriba** en todos los bloques, con el mismo cuerpo y una
+  regla dorada corta (`@include pj-section-title`). Los subtítulos se ocultan.
+- **Colores neutros**: superficies blancas, texto carbón/`--c-muted`, marca
+  navy. Oro sólo como acento; rojo `--c-live` sólo para «en directo» / «hoy».
+- **Sin chrome**: flecha de las tarjetas, botones de compartir y dock
+  flotante ocultos (el dock y la barra reaparecen al acercar el ratón).
+- **Sin movimiento propio**: el resaltado rotatorio de redes sólo existe en
+  la web pública; el único movimiento es el cambio de diapositiva.
+- **Tres emisiones** en «Transmisiones» (`PROJECTED_STREAMS`), en lista
+  vertical con miniatura + título a cuerpo de lectura.
+
+## Receta — añadir un bloque proyectable nuevo (anuncios, avisos…)
 
 1. `features/stage/blocks/<nombre>-block/` con componente standalone + OnPush y
    `styles: [':host { display: contents; }']` (para no romper el layout flex/grid
@@ -94,12 +144,23 @@ Salvo `F` y `Esc`, sólo actúan en modo presentación. El panel de bloques hace
 3. Añade su regla automática en `autoAvailability` (`true` si siempre aplica).
 4. Registra el componente en `StageComponent.imports` y añade su `@case` en el
    `@switch` de `stage.component.html`.
-5. Estilos: sección nueva en `stage.component.scss` con prefijo BEM propio
-   (`.<nombre>__…`) — ver `docs/ai/40-styling.md`.
-6. Claves i18n en `es.json` y `ro.json`.
+5. Estilos de la web pública: sección nueva en `stage.component.scss` con
+   prefijo BEM propio (`.<nombre>__…`) — ver `docs/ai/40-styling.md`.
+6. Estilos de proyección: sección nueva dentro de `stage-projection` en
+   `styles/_projection.scss`, **sólo** con variables `--pj-*`: el bloque ocupa
+   `height: 100%`, es `flex-direction: column`, su `__title` incluye
+   `pj-section-title` y el cuerpo crece con `flex: 1 1 auto; min-height: 0`.
+7. Claves i18n en `es.json` y `ro.json`.
 
 ## QR
 
 `shared/qr-panel`, cargado con `@defer (on idle)`. Codifica siempre
 `config.publicUrl` (no la URL del navegador) para que apunte a producción
 aunque se esté proyectando desde `localhost`.
+
+- Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
+  corregir y `H` sólo añade módulos (41×41 → 33×33 con esta URL). A igual
+  tamaño, módulos un 24 % mayores = se escanea desde más lejos.
+- El componente está encapsulado: la proyección lo escala por variables
+  (`--qr-frame-pad`, `--qr-frame-radius`, `--qr-gap`, `--qr-caption-size`,
+  `--qr-caption-weight`, `--qr-caption-color`), fijadas en `.stage.is-fullscreen .qr`.

@@ -6,8 +6,9 @@ propia web — cualquier persona en la sala puede escanearlo con el móvil.
 
 ## Características
 
-- Tarjetas de Instagram (cuenta principal y de jóvenes), Facebook y YouTube
-  con marca visual de cada red.
+- Tarjetas de Instagram (cuenta principal y de jóvenes), Facebook y YouTube,
+  neutras (icono en el navy de la marca) para que el panel se lea limpio
+  proyectado.
 - **i18n** completo en **Español** (por defecto) y **Rumano** vía
   `@ngx-translate/core`. Traducciones en `src/assets/i18n/{es,ro}.json`.
   Detecta automáticamente el idioma del navegador y persiste la elección
@@ -18,8 +19,11 @@ propia web — cualquier persona en la sala puede escanearlo con el móvil.
   (sin claves de API ni `iframe` pesado) + CTA al canal `@ElimArganda/streams`.
 - **Modo presentación** a pantalla completa: botón en la barra inferior o
   tecla `F`. `Esc` para salir.
-- Resaltado rotatorio sutil entre las redes para evitar una pantalla
-  completamente estática.
+- Resaltado rotatorio sutil entre las redes en la web pública (en proyección
+  se desactiva: el carrusel ya aporta el movimiento).
+- **Proyección proporcional**: en pantalla completa todo se mide en centésimas
+  del alto de un lienzo 16:9 (`--pj-u`), así que la misma imagen sale en un
+  proyector XGA, un Full HD o un 4K, con cuerpos pensados para leerse a 15 m.
 - Accesible: `aria-label` en todos los enlaces, foco visible, respeta
   `prefers-reduced-motion`.
 - Enlaces externos con `rel="noopener noreferrer"`.

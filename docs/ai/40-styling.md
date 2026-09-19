@@ -11,16 +11,32 @@
 | `src/styles.scss`                             | Orquesta el design system global            |
 | `src/styles/*`                                | Design system (ver `45-design-system.md`)   |
 | `features/stage/styles/_tokens.scss`          | Variables propias del escenario             |
-| `features/stage/styles/_responsive.scss`      | Media queries del escenario                 |
-| `features/stage/stage.component.scss` (~2.100)| Hoja del escenario **y de todos los bloques** |
+| `features/stage/styles/_responsive.scss`      | Media queries de la **web pública** (mixin `stage-responsive`) |
+| `features/stage/styles/_projection.scss`      | **Proyección**: unidad `--pj-u`, escala y overrides de todos los bloques (mixin `stage-projection`) — ver `30-presentation.md` |
+| `features/stage/stage.component.scss` (~1.750)| Hoja del escenario **y de todos los bloques** en la web pública |
 | Cada componente de `shared/` y `layout/`      | `styles: [...]` inline, encapsulado         |
+
+### Orden del cascade (no lo cambies)
+
+`_responsive.scss` y `_projection.scss` exponen **mixins** que
+`stage.component.scss` incluye **al final**:
+
+```scss
+@include responsive.stage-responsive;
+@include projection.stage-projection;
+```
+
+Motivo: Sass emite el CSS de un módulo `@use` *antes* del fichero que lo usa,
+y a igual especificidad gana la regla que va después. Con `@use` suelto la
+mayoría de media queries y todos los overrides de proyección quedaban
+pisados por las reglas base (así estaba hasta la reforma de la proyección).
 
 ## Decisión clave: `ViewEncapsulation.None` en `StageComponent`
 
 `stage.component.scss` contiene reglas transversales que cruzan fronteras de
 componente:
 
-- overrides de proyección: `.stage.is-fullscreen .card__name { … }`
+- overrides de proyección: `.stage.is-fullscreen .card__handle { … }` (en `_projection.scss`)
 - responsive: `@media (max-width: 768px) { .streams__list { … } }`
 
 Con encapsulación emulada esas reglas no alcanzarían el DOM de
@@ -48,31 +64,33 @@ Aproximado, para no leer el fichero entero:
 | Layout                            | `app-home`, `.stage`, `.backdrop`, `.halo`, `.grain`      |
 | Cabecera y contenido              | `.brand`, `.content`, `.content--carousel`                |
 | Carrusel                          | `.carousel`, `.slide`, `.stage__hover-zone`, `.stage__controls`, `.carousel__dot*`, `.carousel__nav`, `.carousel__pause` |
-| Bloque redes                      | `.socials*`, `.card*`, `.scroll-indicator`                |
+| Bloque redes                      | `.socials*`, `.card*` (`__network`, `__handle`, `__desc`), `.scroll-indicator` |
 | Bloque transmisiones              | `.broadcasts*`, `.streams*`, `.live-now*`                 |
 | Bloque galería                    | `.gallery*`                                               |
 | Bloque semanal                    | `.weekly*`                                                |
 | Bloque próximos eventos           | `.upcoming*`                                              |
 | QR y pie                          | `.qr*`, `.bar*`                                           |
 | Ubicación                         | `.location*`                                              |
-| **Overrides de proyección**       | `.stage.is-fullscreen { … }` (al final del fichero)       |
+| Cierre                            | `@include` de responsive y proyección (al final)          |
 
-Al final hay un bloque dedicado a **legibilidad a distancia**: en proyección se
-suben pesos tipográficos y contraste, porque las fuentes finas no se leen desde
-el fondo del templo. Si añades texto proyectable, súmalo a esas listas.
+Los **overrides de proyección** (`.stage.is-fullscreen { … }`) ya no viven en
+este fichero: están en `styles/_projection.scss`, con su propia escala. Si
+añades texto proyectable, dale tamaño allí con `--pj-fs-*`.
+
+Las tarjetas de redes son **neutras** (superficie blanca, icono navy): el
+campo `gradient` de `SocialLink` sólo lo consume ya el pie de la web pública.
 
 ## Responsive
 
-Escalado con `clamp()` y estos cortes (`_responsive.scss`):
+Sólo la **web pública** usa media queries (`_responsive.scss`). La proyección
+escala de forma proporcional con `--pj-u` y no necesita cortes.
 
 | Rango                              | Objetivo                              |
 | ---------------------------------- | ------------------------------------- |
-| ≥ 1600px                           | Proyector grande / TV 4K              |
-| 1025–1280px                        | Escritorio pequeño (2 columnas)       |
-| ≤ 1024px                           | Tablet: el QR se oculta, 1 columna    |
+| ≤ 1024px                           | Tablet: una columna                   |
+| ≤ 1024px **y vertical**            | Proyección en un dispositivo en vertical: el QR se oculta. Un proyector XGA (1024×768) es apaisado y conserva las dos columnas |
 | ≤ 768px                            | Móvil grande                          |
 | ≤ 480px                            | Móvil pequeño                         |
-| landscape y `max-height: 720px`    | Portátiles/proyectores bajos          |
 | `prefers-reduced-motion: reduce`   | Sin animaciones ni transiciones       |
 
 ## Encuadre de las fotos (hero)

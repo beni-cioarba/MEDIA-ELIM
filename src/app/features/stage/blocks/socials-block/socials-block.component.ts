@@ -9,18 +9,24 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../../core/church.config';
-import { SocialLink } from '../../../../core/social-link.model';
 import { YouTubeService } from '../../../../core/youtube.service';
 import { PresentationService } from '../../../../core/presentation.service';
 import { ClockService } from '../../../../core/services/clock.service';
 import { SocialIconComponent } from '../../../../shared/social-icon/social-icon.component';
 
-/** Cadencia del resaltado rotatorio entre tarjetas de redes. */
+/** Cadencia del resaltado rotatorio entre tarjetas de redes (sólo web pública). */
 const HIGHLIGHT_ROTATION_MS = 4_000;
 
 /**
- * Bloque «Redes sociales»: tarjetas enlazadas a los perfiles oficiales con un
- * resaltado que rota para dar vida a la proyección.
+ * Bloque «Redes sociales»: tarjetas enlazadas a los perfiles oficiales.
+ *
+ * En la web pública un resaltado rota entre las tarjetas para dar vida a la
+ * página. En proyección **no**: el carrusel ya aporta movimiento y cualquier
+ * animación extra distrae durante el culto, así que el temporizador se salta
+ * los ticks mientras la presentación está activa.
+ *
+ * Las tarjetas son neutras (superficie clara + icono en el navy de la marca):
+ * el color corporativo de cada red vive sólo en el pie de la web pública.
  *
  * Reutilizable: no depende del carrusel, sólo de `CHURCH_CONFIG`.
  */
@@ -60,16 +66,11 @@ export class SocialsBlockComponent {
 
   constructor() {
     const timer = setInterval(() => {
-      if (!this.clock.pageVisible()) return;
+      if (!this.clock.pageVisible() || this.fullscreen()) return;
       const total = this.config.socials.length;
       if (total === 0) return;
       this.highlightedIndex.update((i) => (i + 1) % total);
     }, HIGHLIGHT_ROTATION_MS);
     this.destroyRef.onDestroy(() => clearInterval(timer));
-  }
-
-  protected gradient(link: SocialLink): string {
-    const [from, to] = link.gradient;
-    return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
   }
 }

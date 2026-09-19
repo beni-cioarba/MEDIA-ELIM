@@ -87,7 +87,7 @@ estado vive en un servicio con `computed()`.
 ## Por qué `StageComponent` usa `ViewEncapsulation.None`
 
 `stage.component.scss` estiliza el escenario completo, incluidos los bloques
-hijos, y contiene overrides transversales (`.stage.is-fullscreen .card__name`,
+hijos, y contiene overrides transversales (`.stage.is-fullscreen .card__handle`,
 media queries sobre `.streams__list`…). Con encapsulación emulada esas reglas
 no alcanzarían el DOM de los componentes de bloque. Todas las clases usan BEM
 namespaced, y los componentes de `shared/` mantienen su encapsulación propia,

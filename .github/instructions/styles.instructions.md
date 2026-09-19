@@ -41,9 +41,11 @@ _tokens.scss (Sass, primitivas) → _semantic.scss (variables CSS) → component
   Nunca `.title`, `.item`, `.grid`.
 - Los componentes de `features/stage/blocks/*` sólo llevan
   `:host { display: contents; }` para no romper el layout del `.slide` padre.
-- En modo proyección el texto se lee desde lejos: los overrides de peso y
-  contraste viven en el bloque `.stage.is-fullscreen` al final de la hoja.
-  Si añades texto proyectable, súmalo allí.
+- En modo proyección el texto se lee desde lejos: los overrides viven en
+  `features/stage/styles/_projection.scss` (mixin `stage-projection`,
+  incluido al final de la hoja) y se miden SÓLO con la unidad `--pj-u` y las
+  variables `--pj-fs-*` / `--pj-sp-*`; nada de px/rem. Si añades texto
+  proyectable, dale tamaño allí (ver `docs/ai/30-presentation.md`).
 
 ## Resto
 

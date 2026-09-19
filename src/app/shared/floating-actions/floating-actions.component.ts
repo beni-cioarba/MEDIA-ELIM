@@ -27,8 +27,8 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
  * (acceso inmediato a "Presentar" / "Salir") como para el visitante en la
  * web pública (compartir la página por WhatsApp / redes).
  *
- * En modo presentación el dock se atenúa y se revela al pasar el ratón,
- * para no distraer en la proyección pero seguir estando a mano. Fuera de
+ * En modo presentación el dock se oculta y se revela al pasar el ratón o
+ * enfocarlo, para no ensuciar la proyección pero seguir a mano. Fuera de
  * presentación se oculta si el footer institucional entra en el viewport,
  * para no taparlo (IntersectionObserver sobre `app-footer`).
  */
@@ -147,11 +147,13 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
           pointer-events: auto;
         }
 
-        // En presentación el dock se mantiene a mano pero discreto: atenuado
-        // mientras no se usa y totalmente visible al pasar el ratón o enfocar,
-        // para poder salir de la presentación con facilidad sin distraer.
+        // En presentación el dock desaparece del todo: dos botones flotando
+        // en la esquina de la pantalla del templo se leen como suciedad. Sigue
+        // ahí para el operador (aparece al acercar el ratón o al enfocarlo con
+        // el teclado), igual que la barra del carrusel, y las teclas F / Esc
+        // funcionan siempre.
         &--present.dock--visible {
-          opacity: 0.4;
+          opacity: 0;
 
           &:hover,
           &:focus-within {

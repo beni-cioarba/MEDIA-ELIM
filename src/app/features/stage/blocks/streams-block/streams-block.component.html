@@ -40,7 +40,7 @@
     <div class="streams" aria-labelledby="streams-title">
       <h3 id="streams-title" class="streams__title">{{ 'streams.recent_title' | translate }}</h3>
       <ul class="streams__list">
-        @for (v of youtube.recentStreams(); track v.id) {
+        @for (v of visibleStreams(); track v.id) {
           <li class="streams__item">
             <a
               class="streams__link"

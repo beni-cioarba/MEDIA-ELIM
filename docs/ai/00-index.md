@@ -59,7 +59,7 @@ src/app/
       blocks/               Un componente por bloque proyectable
         socials-block/  streams-block/  gallery-block/
         weekly-block/   upcoming-block/ location-block/
-      styles/               Tokens y responsive propios del escenario
+      styles/               Tokens, responsive (web) y proyección (`_projection.scss`)
   shared/                   Componentes reutilizables y "tontos"
     icon/ social-icon/ lang-switcher/ qr-panel/ footer/ share-button/
     floating-actions/ calendar-sync-button/ presentation-settings/
@@ -86,7 +86,8 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |
 | «Color, espaciado, tipografía, componente Material» | `docs/ai/45-design-system.md`                           |
-| «Ajusta el diseño / tamaños en proyección»          | `docs/ai/40-styling.md`                                 |
+| «Ajusta el diseño / tamaños en proyección»          | `docs/ai/30-presentation.md` (sistema `--pj-u`) + `styles/_projection.scss` |
+| «Nuevo panel de anuncios / avisos proyectable»      | `docs/ai/30-presentation.md` (receta del bloque nuevo) |
 
 ## Invariantes que nunca deben romperse
 

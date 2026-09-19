@@ -1,6 +1,7 @@
 @use 'sass:color';
 @use 'styles/tokens' as *;
 @use 'styles/responsive';
+@use 'styles/projection';
 
 // =====================================================================
 // Layout principal
@@ -396,6 +397,18 @@ app-stage {
 
 // ---------------------------------------------------------------------
 // Tarjetas de redes sociales
+//
+// Neutras a propósito: superficie clara, icono en el navy de la marca y
+// texto en gris carbón. El color corporativo de cada red (rosa de
+// Instagram, azul de Facebook…) se reserva al pie de la web pública; en el
+// panel de medios competiría con la marca y, proyectado, se lee como ruido.
+//
+// Jerarquía del cuerpo (`.card__body`):
+//   · `.card__network`  la red («Instagram · Jóvenes»).
+//   · `.card__handle`   lo que hay que teclear («@elimarganda»).
+//   · `.card__desc`     descripción corta.
+// En la web la red y el handle comparten línea; en proyección se apilan y
+// el handle pasa a ser el protagonista (ver `styles/_projection.scss`).
 // ---------------------------------------------------------------------
 .socials {
   display: flex;
@@ -421,7 +434,6 @@ app-stage {
 }
 
 .card {
-  --card-gradient: linear-gradient(135deg, #444, #222);
   position: relative;
   border-radius: $radius-lg;
   background: $color-card;
@@ -430,46 +442,13 @@ app-stage {
   overflow: hidden;
   transition: box-shadow 0.4s ease,
               border-color 0.4s ease,
-              transform 0.4s ease,
-              background 0.4s ease;
-
-  &::before {
-    // Tinte de color de marca muy suave que cubre la tarjeta
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: var(--card-gradient);
-    opacity: 0.05;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-  }
-
-  &::after {
-    // Resplandor de borde (inset shadow) con el color de la red
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.5px;
-    background: var(--card-gradient);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-  }
+              transform 0.4s ease;
 
   &:hover,
   &--highlight {
-    background: $color-card;
     box-shadow: $shadow-card;
-    border-color: transparent;
+    border-color: $color-hairline-strong;
     transform: translateY(-2px);
-
-    &::before { opacity: 0.14; }
-    &::after { opacity: 0.85; }
   }
 
   &__link {
@@ -493,73 +472,66 @@ app-stage {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     width: clamp(54px, 5vw, 68px);
     height: clamp(54px, 5vw, 68px);
-    border-radius: $radius-md;
-    background: var(--card-gradient);
-    color: #fff;
-    // Efecto de joya flotante: sombra de color + borde interior brillante
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28),
-                0 8px 20px rgba(26, 54, 93, 0.25);
     padding: 14px;
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-                box-shadow 0.4s ease;
+    border-radius: $radius-md;
+    background: $color-primary;
+    color: $color-on-primary;
+    transition: background 0.4s ease;
   }
 
   &:hover &__icon,
   &--highlight &__icon {
-    transform: scale(1.08) rotate(-4deg);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4),
-                0 14px 30px rgba(26, 54, 93, 0.35);
+    background: $color-primary-soft;
   }
 
   &__body {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.6rem;
+    row-gap: 0.2rem;
     min-width: 0;
     flex: 1 1 auto;
-    gap: 0.2rem;
     overflow: hidden;
   }
 
-  &__name {
-    display: flex;
+  &__network {
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     font-size: clamp(1rem, 1.4vw, 1.3rem);
     font-weight: 600;
     letter-spacing: 0.01em;
     color: $color-text;
-    min-width: 0;
     white-space: nowrap;
-    overflow: hidden;
   }
 
-  &__username {
-    font-size: clamp(0.85rem, 1vw, 1rem);
-    color: $color-gold-deep;
-    font-weight: 600;
+  &__handle {
+    display: inline-block;
     font-family: 'Inter', system-ui, sans-serif;
-    background: $color-gold-tint;
+    font-size: clamp(0.85rem, 1vw, 1rem);
+    font-weight: 600;
+    color: $color-primary;
+    background: $color-surface;
     padding: 0.15rem 0.5rem;
     border-radius: 6px;
-    margin-left: 0.1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    flex-shrink: 1;
-    display: inline-block;
+    min-width: 0;
   }
 
-  &__handle {
+  &__desc {
+    flex-basis: 100%;
     color: $color-muted;
     font-size: clamp(0.85rem, 1vw, 0.95rem);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block;
-    width: 100%;
   }
 
   &__cta {
@@ -581,19 +553,19 @@ app-stage {
     transform: translateX(6px);
   }
 
+  // «EN DIRECTO» es un estado, no decoración: es el único rojo permitido
+  // en el panel y siempre plano (nada de degradados ni resplandores).
   &__live {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    margin-left: 0.4rem;
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ff3344, #d11f33);
-    color: #fff;
+    background: var(--c-live);
+    color: $color-on-primary;
     font-size: clamp(0.7rem, 0.85vw, 0.85rem);
     font-weight: 700;
     letter-spacing: 0.08em;
-    box-shadow: 0 4px 14px rgba(209, 31, 51, 0.4);
     text-transform: uppercase;
     font-family: 'Inter', system-ui, sans-serif;
   }
@@ -602,7 +574,7 @@ app-stage {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #fff;
+    background: $color-on-primary;
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9);
     animation: live-pulse 1.4s ease-out infinite;
   }
@@ -1625,11 +1597,6 @@ app-stage {
   gap: 0.85rem;
   padding: clamp(0.75rem, 1.2vw, 1.25rem);
   border-radius: $radius-lg;
-  background: transparent;
-  border: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: none;
   // Sticky: el QR queda anclado a la parte alta del viewport mientras
   // el usuario hace scroll por el contenido principal.
   position: sticky;
@@ -1784,292 +1751,15 @@ app-stage {
 }
 
 // =====================================================================
-// Ajustes a pantalla completa: maximizar la "diapositiva"
+// Cierre del cascade — el orden importa
+//
+//   1. Reglas base del escenario y de cada bloque (todo lo anterior).
+//   2. Media queries de la web pública (`styles/_responsive.scss`).
+//   3. Proyección (`styles/_projection.scss`): debe ganar a todo lo demás.
+//
+// Las dos hojas se incluyen como mixins y no como `@use` sueltos porque
+// Sass emite el CSS de un módulo `@use` ANTES del fichero que lo usa, y a
+// igual especificidad gana la regla que va después.
 // =====================================================================
-.stage.is-fullscreen {
-  app-lang-switcher {
-    display: none !important;
-  }
-
-  // En presentación el header y la barra ocupan todo el ancho disponible
-  // (no se limitan a la columna de lectura).
-  .stage-brand,
-  .bar {
-    max-width: none;
-    margin-inline: 0;
-  }
-
-  // Layout vertical: header (auto) + contenido (1fr) + footer (auto).
-  grid-template-rows: auto minmax(0, 1fr) auto;
-
-  .content {
-    min-height: 0;
-    height: 100%;
-    max-height: 100%;
-    max-width: none;
-    margin-inline: 0;
-    overflow: hidden;
-    align-content: stretch;
-    align-items: stretch;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: clamp(1.5rem, 5vw, 4.5rem);
-  }
-
-  .carousel {
-    height: 100%;
-    min-height: 0;
-    align-self: stretch;
-  }
-
-  .slide {
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .socials {
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(1.2rem, 3.5vh, 2.5rem);
-  }
-
-  .socials__list {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(0.75rem, 1.5vh, 1.15rem);
-    overflow: visible;
-    padding: 10px 4px;
-    margin: -10px -4px;
-  }
-
-  .socials__list > .card {
-    display: flex;
-    overflow: visible;
-    flex-shrink: 0;
-  }
-
-  .socials__list > .card .card__link {
-    flex: 1;
-    width: 100%;
-    padding: clamp(0.7rem, 2vh, 1.1rem) clamp(1rem, 2.5vw, 2rem);
-    align-items: center;
-  }
-
-  .socials__list > .card .card__icon {
-    width: clamp(42px, 5.5vh, 56px);
-    height: clamp(42px, 5.5vh, 56px);
-    padding: clamp(8px, 1.2vh, 12px);
-  }
-
-  .socials__list > .card .card__name {
-    font-size: clamp(1.05rem, 2vh, 1.45rem);
-  }
-
-  .socials__list > .card .card__handle {
-    font-size: clamp(0.85rem, 1.6vh, 1.15rem);
-  }
-
-  .socials__list > .card .card__cta {
-    transform: scale(0.85);
-  }
-
-  .socials__title,
-  .broadcasts__title {
-    font-size: clamp(1.2rem, 1.6vw, 1.7rem);
-  }
-
-  .broadcasts {
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(0.6rem, 1.5vh, 1.25rem);
-  }
-
-  .broadcasts .streams {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .broadcasts .streams__list {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  }
-
-  // Galería: el hero ocupa la mayor parte, el grid de tiles abajo y el CTA al pie.
-  .gallery {
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(0.75rem, 1.5vh, 1.25rem);
-  }
-
-  .gallery__title { font-size: clamp(1.2rem, 1.6vw, 1.7rem); }
-  .gallery__subtitle { font-size: clamp(0.95rem, 1.4vh, 1.2rem); }
-
-  .gallery__hero {
-    flex: 1 1 auto;
-    min-height: 0;
-    aspect-ratio: auto;
-  }
-
-  .gallery__hero-name { font-size: clamp(1.5rem, 3vh, 2.4rem); }
-  .gallery__hero-date { font-size: clamp(0.95rem, 1.5vh, 1.25rem); }
-  .gallery__hero-cta { font-size: clamp(1rem, 1.6vh, 1.3rem); }
-
-  .gallery__grid {
-    flex: 0 0 auto;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: clamp(0.4rem, 0.8vh, 0.7rem);
-  }
-
-  .gallery__tile {
-    aspect-ratio: 4 / 3;
-  }
-
-  .gallery__tile-name { font-size: clamp(0.75rem, 1vh, 0.95rem); }
-
-  .live-now {
-    padding: clamp(1rem, 2vh, 1.5rem);
-    grid-template-columns: minmax(180px, 42%) 1fr;
-    gap: clamp(1.25rem, 2.5vw, 2rem);
-  }
-
-  .live-now__title {
-    font-size: clamp(1.4rem, 2vw, 2rem);
-    -webkit-line-clamp: 2;
-  }
-
-  .live-now__label {
-    font-size: clamp(1rem, 1.2vw, 1.25rem);
-  }
-
-  .live-now__cta {
-    font-size: clamp(1.1rem, 1.4vw, 1.4rem);
-  }
-
-  .streams__title {
-    font-size: clamp(1rem, 1.3vw, 1.25rem);
-  }
-
-  .streams__caption {
-    font-size: clamp(0.85rem, 1vw, 1.05rem);
-    -webkit-line-clamp: 2;
-  }
-
-  .socials__list {
-    gap: clamp(0.5rem, 1.2vh, 1rem);
-  }
-
-  .card__link {
-    gap: clamp(1rem, 2vw, 1.75rem);
-  }
-
-  .card__icon {
-    width: clamp(36px, 4vh, 64px);
-    height: clamp(36px, 4vh, 64px);
-    padding: clamp(6px, 0.9vh, 12px);
-    flex-shrink: 0;
-  }
-
-  .card__body {
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .card__name {
-    font-size: clamp(0.95rem, 1.9vh, 1.5rem);
-    line-height: 1.1;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .card__username {
-    font-size: clamp(0.8rem, 1.4vh, 1.15rem);
-  }
-
-  .card__handle {
-    font-size: clamp(0.75rem, 1.2vh, 1rem);
-    line-height: 1.15;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .qr {
-    height: 100%;
-    justify-content: center;
-    gap: clamp(1.5rem, 3vh, 2.5rem);
-  }
-
-  .bar__verse {
-    font-size: clamp(0.95rem, 1.6vh, 1.35rem);
-  }
-
-  // -------------------------------------------------------------------
-  // Legibilidad a distancia (proyección en la iglesia)
-  // En el monitor de cerca el texto fino se ve bien, pero proyectado y
-  // visto desde lejos las fuentes delgadas y los grises tenues no se
-  // distinguen. Reforzamos pesos y contraste solo en modo presentación.
-  // -------------------------------------------------------------------
-  // Títulos de sección: más peso para que destaquen de lejos.
-  .socials__title,
-  .broadcasts__title,
-  .gallery__title,
-  .weekly__title,
-  .upcoming__title {
-    font-weight: 800;
-    letter-spacing: -0.01em;
-  }
-
-  // Nombres / handles de redes.
-  .card__name { font-weight: 800; }
-  .card__username,
-  .card__handle {
-    font-weight: 600;
-    color: rgba(45, 55, 72, 0.86);
-  }
-
-  // Programa semanal y próximos eventos: el texto principal en negrita
-  // y los datos secundarios (hora, fecha, descripción) más marcados.
-  .weekly__item-title,
-  .upcoming__item-title {
-    font-weight: 800;
-  }
-
-  .weekly__day-name,
-  .weekly__time,
-  .upcoming__time,
-  .upcoming__date,
-  .upcoming__meta {
-    font-weight: 700;
-  }
-
-  .weekly__item-desc,
-  .upcoming__item-desc,
-  .streams__caption,
-  .gallery__subtitle {
-    font-weight: 600;
-    color: rgba(45, 55, 72, 0.82);
-  }
-
-  .streams__title { font-weight: 800; }
-
-  // Versículo del pie: en presentación que no sea tan fino ni tan tenue.
-  .bar__verse {
-    font-weight: 600;
-    color: rgba(45, 55, 72, 0.85);
-  }
-
-  .carousel { padding-bottom: 0; }
-}
+@include responsive.stage-responsive;
+@include projection.stage-projection;

@@ -2,11 +2,9 @@
   <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
   <ul class="socials__list">
     @for (link of config.socials; track link.id; let i = $index) {
-      <li
-        class="card"
-        [class.card--highlight]="highlightedIndex() === i"
-        [style.--card-gradient]="gradient(link)"
-      >
+      <!-- El resaltado rotatorio sólo existe en la web pública: en proyección
+           distrae y el carrusel ya aporta el movimiento necesario. -->
+      <li class="card" [class.card--highlight]="!fullscreen() && highlightedIndex() === i">
         <a
           class="card__link"
           [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
@@ -17,10 +15,11 @@
           <span class="card__icon" aria-hidden="true">
             <app-social-icon [name]="link.icon" />
           </span>
+          <!-- Tres piezas con jerarquía propia: la red (qué es), el handle (lo
+               que hay que teclear: protagonista en proyección) y la descripción. -->
           <span class="card__body">
-            <span class="card__name">
+            <span class="card__network">
               {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
-              <span class="card__username">{{ link.handle }}</span>
               @if (link.icon === 'youtube' && youtube.liveStream()) {
                 <span class="card__live" [attr.aria-label]="'streams.live_now' | translate">
                   <span class="card__live-dot" aria-hidden="true"></span>
@@ -28,7 +27,8 @@
                 </span>
               }
             </span>
-            <span class="card__handle">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
+            <span class="card__handle">{{ link.handle }}</span>
+            <span class="card__desc">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
           </span>
           <span class="card__cta" aria-hidden="true">
             <svg viewBox="0 0 24 24">
