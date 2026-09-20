@@ -23,6 +23,7 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   gallery: 12,
   weekly: 12,
   upcoming: 15,
+  bible: 20,
 };
 
 interface DisplayPrefs {

@@ -1,0 +1,64 @@
+<section class="bible" aria-labelledby="bible-title">
+  <header class="bible__header">
+    <h2 id="bible-title" class="bible__title">{{ 'bible.title' | translate }}</h2>
+    @if (!fullscreen()) {
+      <p class="bible__subtitle">{{ 'bible.subtitle' | translate }}</p>
+    }
+  </header>
+
+  @if (week(); as w) {
+    <!-- Panel de la semana: el tramo que se anuncia, con su número y sus fechas. -->
+    <div class="bible__week" [class.bible__week--upcoming]="w.startsTomorrow">
+      <div class="bible__week-number" aria-hidden="true">
+        <span class="bible__week-label">{{ 'bible.week_label' | translate }}</span>
+        <span class="bible__week-num">{{ w.number }}</span>
+      </div>
+      <div class="bible__week-body">
+        <p class="bible__range">
+          <app-icon name="calendar" />
+          <span>{{ bible.formatRange(w.start, w.end) }}</span>
+          @if (w.startsTomorrow) {
+            <span class="bible__starts">{{ 'bible.starts_tomorrow' | translate }}</span>
+          }
+        </p>
+        <p class="bible__summary">
+          <span class="u-sr-only">{{ 'bible.week' | translate: { n: w.number } }}: </span>
+          {{ w.summary }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Lecturas diarias. -->
+    <ol class="bible__days" [class.bible__days--nt]="hasNewTestament()">
+      @for (day of w.days; track day.date) {
+        <li
+          class="bible__day"
+          [class.is-today]="day.isToday"
+          [class.is-past]="day.isPast"
+          [attr.aria-current]="day.isToday ? 'date' : null"
+        >
+          <span class="bible__day-date">
+            <span class="bible__day-name">{{ bible.formatWeekday(day.date) }}</span>
+            <span class="bible__day-num">{{ bible.formatDayNumber(day.date) }}</span>
+          </span>
+          <span class="bible__day-passage">{{ day.passage }}</span>
+          @if (day.newTestament) {
+            <span class="bible__day-passage bible__day-passage--nt">{{ day.newTestament }}</span>
+          }
+          @if (day.isToday) {
+            <span class="bible__today">{{ 'weekly.today' | translate }}</span>
+          }
+        </li>
+      }
+    </ol>
+
+    <p class="bible__meta">
+      <span class="bible__plan">{{ bible.plan.title }}</span>
+      <span class="bible__scope">
+        {{ 'bible.month_scope' | translate: { month: w.month.label, scope: w.month.scope } }}
+      </span>
+    </p>
+  } @else {
+    <p class="bible__empty">{{ 'bible.empty' | translate }}</p>
+  }
+</section>

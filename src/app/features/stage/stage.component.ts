@@ -29,6 +29,7 @@ import { StreamsBlockComponent } from './blocks/streams-block/streams-block.comp
 import { GalleryBlockComponent } from './blocks/gallery-block/gallery-block.component';
 import { WeeklyBlockComponent } from './blocks/weekly-block/weekly-block.component';
 import { UpcomingBlockComponent } from './blocks/upcoming-block/upcoming-block.component';
+import { BibleBlockComponent } from './blocks/bible-block/bible-block.component';
 import { LocationBlockComponent } from './blocks/location-block/location-block.component';
 
 /**
@@ -73,6 +74,7 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
     GalleryBlockComponent,
     WeeklyBlockComponent,
     UpcomingBlockComponent,
+    BibleBlockComponent,
     LocationBlockComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

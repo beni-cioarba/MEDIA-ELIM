@@ -46,6 +46,7 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 | id              | Componente                   | Regla automática (¿hay contenido?)   |
 | --------------- | ---------------------------- | ------------------------------------ |
 | `announcements` | `AnnouncementBlockComponent` | `AnnouncementsService.hasActive()`   |
+| `bible`         | `BibleBlockComponent`        | `BibleReadingService.hasReading()`   |
 | `socials`  | `SocialsBlockComponent`  | `socials.length > 0`               |
 | `streams`  | `StreamsBlockComponent`  | siempre                            |
 | `gallery`  | `GalleryBlockComponent`  | `mediaEvents.length > 0`           |
@@ -55,9 +56,21 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 `location` existe como bloque (`LocationBlockComponent`) pero **sólo se muestra
 en la web pública**, no en la proyección.
 
-Los anuncios van **primero**: son lo que la congregación necesita leer antes
-de que empiece el programa. Un bloque de anuncios forzado a visible sin
-anuncios vigentes produce una única diapositiva con el estado vacío.
+Los anuncios y la lectura bíblica van **primero**: son lo que la congregación
+necesita leer antes de que empiece el programa. Un bloque de anuncios forzado
+a visible sin anuncios vigentes produce una única diapositiva con el estado
+vacío.
+
+### Bloque «Citirea Bibliei»
+
+Proyecta la semana del plan de lectura que toca anunciar (`BibleReadingService`):
+la que contiene **mañana**. El domingo se anuncia la semana que empieza el
+lunes (con la insignia «Începe mâine»); de lunes a sábado, la semana en curso
+con el día de hoy resaltado y los pasados atenuados. Sin nada que configurar
+cada semana. Datos: `core/bible-reading.config.ts`, **generado** desde el
+Excel de la iglesia (receta en `20-content-i18n.md`). Duración por defecto
+20 s. Lleva su hoja propia (`bible-block.component.scss`, web + proyección),
+igual que la tarjeta de anuncio.
 
 ## Selector de bloques (auto / manual)
 
@@ -101,6 +114,7 @@ Cada diapositiva dura lo que su bloque tenga fijado
 | Bloque          | s  | Por qué                                              |
 | --------------- | -- | ---------------------------------------------------- |
 | `announcements` | 30 | se leen, y hay que darles tiempo a los más lentos     |
+| `bible`         | 20 | siete lecturas que muchos apuntan                     |
 | `upcoming`      | 15 | dos eventos con fecha, título y descripción por página |
 | resto           | 12 | contenido que se reconoce, no se lee                  |
 

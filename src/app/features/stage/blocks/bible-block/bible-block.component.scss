@@ -1,0 +1,395 @@
+@use 'ds' as *;
+@use '../../styles/projection' as pj;
+
+// =====================================================================
+// Bloque «Citirea Bibliei» — hoja GLOBAL (`ViewEncapsulation.None`, BEM
+// `.bible__*`). Dos contextos:
+//   1. Web pública (`/media` y `/media/citirea-bibliei`): tokens `--c-*`, `--fs-*`.
+//   2. Proyección (`.stage.is-fullscreen .bible`): unidad `--pj-u` heredada
+//      del escenario (ver `features/stage/styles/_projection.scss`).
+//
+// Anatomía:
+//   title    «Citirea Bibliei»
+//   week     panel navy: número de semana · fechas · TRAMO (lo que se anuncia)
+//   days     lunes→domingo con la lectura de cada día; hoy resaltado
+//   meta     nombre del plan · tramo del mes
+// =====================================================================
+
+app-bible-block {
+  display: contents;
+}
+
+// ---------------------------------------------------------------------
+// 1 · Web pública
+// ---------------------------------------------------------------------
+.bible {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  min-height: 0;
+}
+
+.bible__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.bible__title {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--c-primary);
+}
+
+.bible__subtitle {
+  margin: 0;
+  max-width: 60ch;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+// ---- Panel de la semana ---------------------------------------------
+
+.bible__week {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-5);
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+  border-radius: var(--r-lg);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  box-shadow: var(--e-2);
+}
+
+.bible__week-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 4.5rem;
+  padding-right: var(--sp-5);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.bible__week-label {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.bible__week-num {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bible__week-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.bible__range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-gold-soft);
+
+  app-icon {
+    flex: 0 0 auto;
+  }
+}
+
+.bible__starts {
+  padding: 0.15em 0.6em;
+  border-radius: var(--r-pill);
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bible__summary {
+  margin: 0;
+  max-width: none;
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--c-on-primary);
+}
+
+// ---- Lecturas diarias -----------------------------------------------
+
+.bible__days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.bible__day {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+
+  &.is-past {
+    color: var(--c-muted);
+  }
+
+  &.is-today {
+    background: var(--c-gold-tint);
+    border-color: var(--c-gold);
+  }
+}
+
+.bible__days--nt .bible__day {
+  grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
+.bible__day-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+// Intl devuelve el día en minúscula («luni»); sólo la inicial en mayúscula.
+.bible__day-name {
+  display: inline-block;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-primary);
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+
+  .is-past & {
+    color: inherit;
+  }
+}
+
+.bible__day-num {
+  font-size: var(--fs-body);
+  font-weight: 800;
+  color: var(--c-primary);
+
+  .is-past & {
+    color: inherit;
+  }
+}
+
+.bible__day-passage {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  min-width: 0;
+
+  &--nt {
+    font-weight: 600;
+    color: var(--c-muted);
+  }
+}
+
+.bible__today {
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold-deep);
+  color: var(--c-on-primary);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+// ---- Pie --------------------------------------------------------------
+
+.bible__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.bible__plan {
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.bible__empty {
+  margin: 0;
+  padding: clamp(1.5rem, 3vh, 2.5rem);
+  text-align: center;
+  color: var(--c-muted);
+  font-style: italic;
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: var(--r-md);
+}
+
+// ---------------------------------------------------------------------
+// 2 · Proyección — todo en `--pj-*`
+// ---------------------------------------------------------------------
+.stage.is-fullscreen {
+  // Contrato de bloque (ver `_projection.scss` § 3).
+  .bible {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: calc(var(--pj-u) * 2.4);
+  }
+
+  .bible__title {
+    @include pj.pj-section-title;
+  }
+
+  // ---- Panel de la semana ---------------------------------------------
+
+  .bible__week {
+    gap: var(--pj-sp-3);
+    padding: calc(var(--pj-u) * 2.2) var(--pj-sp-3);
+    border-radius: var(--pj-r);
+    box-shadow: none;
+  }
+
+  .bible__week-number {
+    min-width: calc(var(--pj-u) * 12);
+    padding-right: var(--pj-sp-3);
+    border-right-width: var(--pj-stroke);
+  }
+
+  .bible__week-label {
+    font-size: calc(var(--pj-u) * 1.9);
+    letter-spacing: 0.2em;
+  }
+
+  .bible__week-num {
+    font-size: var(--pj-fs-display);
+  }
+
+  .bible__week-body {
+    gap: calc(var(--pj-u) * 0.8);
+  }
+
+  .bible__range {
+    gap: var(--pj-sp-2);
+    font-size: var(--pj-fs-eyebrow);
+    letter-spacing: 0.06em;
+  }
+
+  .bible__starts {
+    padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 1.2);
+    font-size: calc(var(--pj-u) * 1.8);
+  }
+
+  .bible__summary {
+    font-size: var(--pj-fs-title);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  // ---- Lecturas diarias -----------------------------------------------
+
+  .bible__days {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-auto-rows: minmax(0, 1fr);
+    gap: calc(var(--pj-u) * 0.7);
+  }
+
+  .bible__day {
+    grid-template-columns: calc(var(--pj-u) * 22) minmax(0, 1fr) auto;
+    gap: var(--pj-sp-3);
+    min-height: 0;
+    padding: calc(var(--pj-u) * 0.4) var(--pj-sp-3);
+    border-radius: var(--pj-r-sm);
+    border-width: var(--pj-stroke);
+    box-shadow: var(--e-1);
+
+    // Hoy: la única fila con color; el resto son planas.
+    &.is-today {
+      border-left: calc(var(--pj-u) * 0.6) solid var(--c-gold);
+    }
+  }
+
+  .bible__days--nt .bible__day {
+    grid-template-columns: calc(var(--pj-u) * 22) minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .bible__day-date {
+    gap: var(--pj-sp-1);
+  }
+
+  .bible__day-name {
+    font-size: var(--pj-fs-caption);
+    font-weight: 700;
+  }
+
+  .bible__day-num {
+    font-size: var(--pj-fs-body);
+  }
+
+  .bible__day-passage {
+    font-size: var(--pj-fs-lead);
+    font-weight: 700;
+    line-height: 1.15;
+
+    &--nt {
+      font-size: var(--pj-fs-body);
+    }
+  }
+
+  .bible__today {
+    padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 1);
+    font-size: calc(var(--pj-u) * 1.7);
+  }
+
+  // ---- Pie --------------------------------------------------------------
+
+  .bible__meta {
+    gap: var(--pj-sp-1) var(--pj-sp-3);
+    font-size: var(--pj-fs-eyebrow);
+    font-weight: 600;
+  }
+
+  .bible__empty {
+    font-size: var(--pj-fs-body);
+    font-weight: 600;
+  }
+
+  // Sin QR: dos columnas de días para no estirar filas de un extremo al otro.
+  // Se rellenan por columnas (lunes→jueves | viernes→domingo): se lee como
+  // una lista, no como una tabla.
+  &.stage--no-qr .bible__days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: column;
+    column-gap: var(--pj-sp-3);
+  }
+}

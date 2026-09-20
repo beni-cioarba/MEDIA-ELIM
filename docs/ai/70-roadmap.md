@@ -62,6 +62,9 @@ Estado tras la reestructuración de navegación + design system.
   30 s por defecto) y casilla por anuncio para dejar fuera el que no toque.
 - Tarjeta de anuncio rediseñada (ficha de fecha, columnas editoriales, tipos
   de sección `prices`/`people`/`schedule`, banda de cierre).
+- **Citirea Bibliei**: bloque proyectable con la semana del plan de lectura
+  que toca (la que contiene mañana), datos generados desde el Excel de la
+  iglesia por `scripts/import-bible-plan.py`.
 
 ## Pendiente — prioridad alta
 

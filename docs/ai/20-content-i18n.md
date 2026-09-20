@@ -96,6 +96,25 @@ No hace falta borrar los pasados: `ScheduleService` los filtra solos. Cuando la
 lista queda vacía, el bloque desaparece de la proyección automáticamente
 (ver `docs/ai/30-presentation.md`).
 
+### Actualizar el plan de lectura bíblica (Citirea Bibliei)
+
+El plan vive en `src/app/core/bible-reading.config.ts` y **se genera** desde el
+Excel de la iglesia (`PROGRAMARE_CITIREA_BIBLIEI.xlsx`, una hoja por mes):
+
+```bash
+python scripts/import-bible-plan.py "ruta/PROGRAMARE_CITIREA_BIBLIEI.xlsx"
+```
+
+- No edites el `.ts` a mano: la próxima importación lo sobrescribe entero.
+- El script espera la estructura del Excel actual (A1 año, A2 mes, fila 3 de
+  cabeceras y, por semana, 7 filas con el número en la primera y el resumen del
+  tramo en la tercera). Si falta el resumen, lo deriva de las lecturas diarias.
+- Qué semana se proyecta lo decide `BibleReadingService` (la que contiene
+  *mañana*); cuando el plan termina el bloque se autoexcluye. Detalle en
+  `docs/ai/30-presentation.md`.
+- Cuando llegue el Excel del año siguiente, basta con importarlo: los meses
+  se ordenan por fecha y las semanas siguen la numeración del Excel.
+
 ### Añadir un anuncio (anunț)
 
 Objeto `Announcement` en `church.config.ts → announcements`, con `expiresOn`
@@ -155,8 +174,8 @@ vuelve a fusionar al cambiar de idioma). Referencia:
 - Interpolación: `{{ 'socials.open_aria' | translate: { name: x } }}`.
 - Claves raíz actuales: `app`, `brand`, `verse`, `socials`, `qr`, `streams`,
   `presentation`, `carousel`, `blocks`, `credo`, `gallery`, `calendar`, `weekly`,
-  `upcoming`, `announcements`, `location`, `lang`, `share`, `footer`, `common`,
-  `contact`, `donate`, `nav`, `seo`, `home`, `about`, `leadership`.
+  `upcoming`, `announcements`, `bible`, `location`, `lang`, `share`, `footer`,
+  `common`, `contact`, `donate`, `nav`, `seo`, `home`, `about`, `leadership`.
 - `verse.text/reference` es el versículo de la **portada**;
   `verse.stage_text/stage_reference`, el del **panel proyectado**.
 - Las traducciones se **embeben en el bundle** (`core/i18n/inline-translate-loader.ts`);

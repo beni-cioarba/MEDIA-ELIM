@@ -40,6 +40,7 @@
             @case ('gallery') { <app-gallery-block /> }
             @case ('weekly') { <app-weekly-block /> }
             @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
+            @case ('bible') { <app-bible-block /> }
             @case ('location') { <app-location-block /> }
           }
         </div>

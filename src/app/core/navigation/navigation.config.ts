@@ -75,6 +75,13 @@ export const MAIN_NAV: readonly NavItem[] = [
         path: blockPath('upcoming'),
         icon: 'calendar',
       },
+      {
+        id: 'bible',
+        labelKey: 'nav.bible',
+        descriptionKey: 'nav.bible_desc',
+        path: blockPath('bible'),
+        icon: 'book',
+      },
     ],
   },
   {

@@ -21,3 +21,19 @@ export function startOfDay(date: Date): Date {
 
 /** Milisegundos de un día natural (para contadores «faltan X días»). */
 export const DAY_MS = 86_400_000;
+
+/**
+ * Suma días naturales respetando el calendario local. No se suma `DAY_MS`:
+ * en los cambios de hora un día tiene 23 o 25 horas y el resultado se
+ * desplazaría al día anterior o a la 01:00.
+ */
+export function addDays(date: Date, days: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+}
+
+/** `Date` local → `YYYY-MM-DD`. */
+export function toIsoDate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}

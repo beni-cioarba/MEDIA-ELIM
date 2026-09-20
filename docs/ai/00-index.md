@@ -26,6 +26,7 @@ src/app/
   core/
     church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
     leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
+    bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -45,6 +46,7 @@ src/app/
       clock.service.ts               Reloj reactivo + visibilidad de pestaña
       schedule.service.ts            Programa semanal + eventos futuros derivados
       announcements.service.ts       ⭐ Anuncios vigentes (por fecha de caducidad)
+      bible-reading.service.ts       Semana del plan de lectura que toca anunciar (la que contiene mañana)
       presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual) y sus diapositivas
       presentation-display.service.ts QR visible / tamaño del QR en proyección
       carousel.service.ts            Motor del carrusel (diapositiva, pausa, progreso)
@@ -62,8 +64,8 @@ src/app/
     stage/                  ⭐ Escenario proyectable (.stage)
       stage.component.*     Marca, carrusel, QR, controles
       blocks/               Un componente por bloque proyectable
-        announcement-block/ socials-block/  streams-block/  gallery-block/
-        weekly-block/       upcoming-block/ location-block/
+        announcement-block/ bible-block/    socials-block/  streams-block/
+        gallery-block/      weekly-block/   upcoming-block/ location-block/
       styles/               Tokens, responsive (web) y proyección (`_projection.scss`)
   shared/                   Componentes reutilizables y "tontos"
     icon/ social-icon/ lang-switcher/ qr-panel/ footer/ share-button/
@@ -81,6 +83,7 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 | --------------------------------------------------- | ------------------------------------------------------- |
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
+| «Nuevo Excel del plan de lectura bíblica»           | `python scripts/import-bible-plan.py <xlsx>` → regenera `core/bible-reading.config.ts` (`20-content-i18n.md`) |
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |

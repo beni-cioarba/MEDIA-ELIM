@@ -178,6 +178,15 @@
     "all": "Todos los anuncios",
     "open_link": "Abrir este anuncio"
   },
+  "bible": {
+    "title": "Lectura bíblica",
+    "subtitle": "El tramo de la semana del plan de lectura de la iglesia, con la lectura de cada día.",
+    "week_label": "Semana",
+    "week": "Semana {{n}}",
+    "starts_tomorrow": "Empieza mañana",
+    "month_scope": "{{month}}: {{scope}}",
+    "empty": "El plan de lectura ha terminado. Pronto publicaremos el siguiente."
+  },
   "location": {
     "title": "Cómo llegar",
     "map_title": "Mapa de la ubicación de la iglesia"
@@ -343,7 +352,9 @@
     "donate": "Donativos",
     "live": "En directo",
     "announcements": "Anuncios",
-    "announcements_desc": "Avisos de la iglesia en vigor"
+    "announcements_desc": "Avisos de la iglesia en vigor",
+    "bible": "Lectura bíblica",
+    "bible_desc": "La semana del plan de lectura"
   },
   "seo": {
     "home": {

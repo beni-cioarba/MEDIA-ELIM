@@ -479,7 +479,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       title: 'Aniversare: 25 de ani de la înființarea Bisericii Elim',
       description:
         'Sărbătoare în biserică, apoi masă festivă la restaurantul Oma Bodas din Arganda del Rey (cu înscriere).',
-      verse: 'Psalmul 84:10 — „Căci mai mult face o zi în curțile Tale decât o mie în altă parte.”',
+      verse: '',
       preacher: 'Simion Bumbar',
       worshipLead: '',
     },
@@ -648,7 +648,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: 'talantul_in_negot_2026',
-      title: 'Înscrieri la „Talantul în negoț”',
+      title: 'Înscrieri la "Talantul în negoț"',
       lead:
         'De astăzi și până duminica viitoare, educatoarele de copii țin deschisă lista de înscrieri. Încurajați copiii, adolescenții și tinerii să participe!',
       sections: [

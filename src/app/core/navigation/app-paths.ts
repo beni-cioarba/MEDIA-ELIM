@@ -43,6 +43,7 @@ export const STAGE_BLOCK_SLUGS = {
   gallery: 'galerie',
   weekly: 'program',
   upcoming: 'evenimente',
+  bible: 'citirea-bibliei',
   location: 'locatie',
 } as const satisfies Record<StageBlockId, string>;
 

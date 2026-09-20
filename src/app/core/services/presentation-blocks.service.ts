@@ -1,6 +1,7 @@
 import { Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { Announcement, CHURCH_CONFIG } from '../church.config';
 import { AnnouncementsService } from './announcements.service';
+import { BibleReadingService } from './bible-reading.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
 
 /** Identificador estable de cada bloque proyectable del carrusel. */
@@ -10,7 +11,8 @@ export type PresentationBlockId =
   | 'streams'
   | 'gallery'
   | 'weekly'
-  | 'upcoming';
+  | 'upcoming'
+  | 'bible';
 
 /** Preferencia manual del operador. `null` ⇒ decide la regla automática. */
 export type PresentationBlockOverride = boolean | null;
@@ -75,11 +77,12 @@ const HIDDEN_ANNOUNCEMENTS_KEY = 'iglesia-redes.presentation.announcements.hidde
 
 /**
  * Orden de proyección. Cambiarlo aquí cambia el orden del carrusel.
- * Los anuncios van primero: son lo que la congregación necesita leer antes
- * de que empiece el programa.
+ * Los anuncios y la lectura bíblica de la semana van primero: son lo que la
+ * congregación necesita leer antes de que empiece el programa.
  */
 const BLOCK_DEFS: readonly PresentationBlockDef[] = [
   { id: 'announcements', titleKey: 'announcements.title' },
+  { id: 'bible', titleKey: 'bible.title' },
   { id: 'socials', titleKey: 'socials.section_title' },
   { id: 'streams', titleKey: 'streams.title' },
   { id: 'gallery', titleKey: 'gallery.title' },
@@ -112,6 +115,7 @@ export class PresentationBlocksService {
   private readonly config = inject(CHURCH_CONFIG);
   private readonly schedule = inject(ScheduleService);
   private readonly announcements = inject(AnnouncementsService);
+  private readonly bible = inject(BibleReadingService);
 
   /** Preferencias manuales persistidas (ausente ⇒ modo automático). */
   private readonly overrides = signal<Partial<Record<PresentationBlockId, boolean>>>(
@@ -131,6 +135,7 @@ export class PresentationBlocksService {
     gallery: this.config.mediaEvents.length > 0,
     weekly: this.config.weeklyProgram.length > 0,
     upcoming: this.schedule.hasUpcomingEvents(),
+    bible: this.bible.hasReading(),
   }));
 
   /** Estado resuelto de todos los bloques (para el panel de ajustes). */

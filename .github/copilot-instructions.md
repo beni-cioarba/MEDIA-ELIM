@@ -84,4 +84,5 @@ npm run build             # producción
 npm test                  # Karma/Jasmine (aún sin specs)
 npm run pwa:icons         # regenera iconos PWA desde el logo
 node scripts/optimize-images.js   # webp hero+thumb para la galería
+python scripts/import-bible-plan.py <xlsx>   # regenera el plan de lectura bíblica desde el Excel
 ```

@@ -178,6 +178,15 @@
     "all": "Toate anunțurile",
     "open_link": "Deschide acest anunț"
   },
+  "bible": {
+    "title": "Citirea Bibliei",
+    "subtitle": "Porțiunea săptămânii din planul de citire al bisericii, cu citirea fiecărei zile.",
+    "week_label": "Săptămâna",
+    "week": "Săptămâna {{n}}",
+    "starts_tomorrow": "Începe mâine",
+    "month_scope": "{{month}}: {{scope}}",
+    "empty": "Planul de citire s-a încheiat. În curând publicăm următorul."
+  },
   "location": {
     "title": "Cum ajungi la noi",
     "map_title": "Harta cu locația bisericii"
@@ -343,7 +352,9 @@
     "donate": "Donează",
     "live": "În direct",
     "announcements": "Anunțuri",
-    "announcements_desc": "Avizele bisericii în vigoare"
+    "announcements_desc": "Avizele bisericii în vigoare",
+    "bible": "Citirea Bibliei",
+    "bible_desc": "Săptămâna din planul de citire"
   },
   "seo": {
     "home": {

@@ -95,6 +95,7 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
 | `generate-pwa-icons.mjs` | Iconos PWA desde el logo                                     |
 | `fetch-youtube.js`       | Genera `youtube.json` (usado por el cron)                    |
 | `check-i18n-parity.mjs`  | Verifica que ES y RO tengan las mismas claves                 |
+| `import-bible-plan.py`   | Excel del plan de lectura → `src/app/core/bible-reading.config.ts` (Python + `openpyxl`) |
 
 Ejecuta `optimize-images.js` **siempre** antes de añadir un `MediaEvent`: las
 imágenes originales de Drive pesan decenas de MB.
