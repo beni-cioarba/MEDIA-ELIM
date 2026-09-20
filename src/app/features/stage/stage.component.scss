@@ -1449,9 +1449,14 @@ app-stage {
     font-variant-numeric: tabular-nums;
   }
 
+  // Sólo la primera letra en mayúscula: `capitalize` daría «De Octubre De».
   &__date {
-    text-transform: capitalize;
+    display: inline-block;
     font-weight: 600;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
   }
 
   &__time { color: $color-muted; }
@@ -1687,8 +1692,24 @@ app-stage {
 .upcoming__title,
 .live-now__title,
 .streams__title,
-.location__title {
+.location__title,
+.announcements-empty__title {
   color: $color-primary;
+}
+
+// Estado vacío del bloque de anuncios en la web pública (`/media/anunturi`
+// sin anuncios vigentes). Las tarjetas con anuncio llevan su propia hoja.
+.announcements-empty__title {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.announcements-empty__text {
+  margin: 0.5rem 0 0;
+  color: $color-muted;
 }
 
 // =====================================================================

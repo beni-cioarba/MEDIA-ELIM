@@ -1,0 +1,82 @@
+@use 'ds' as *;
+@use '../../shared/styles/buttons' as *;
+@use '../../shared/styles/page-hero' as *;
+
+/* Estilos encapsulados de la página «Anunțuri». La tarjeta en sí es global
+   (`announcement-card.component.scss`); aquí sólo el ritmo de la lista, las
+   acciones que se proyectan dentro de cada tarjeta y los estados vacíos. */
+
+:host {
+  display: block;
+}
+
+.list {
+  display: grid;
+  gap: clamp(1.5rem, 3.5vw, 2.5rem);
+  max-width: 62rem;
+  margin-inline: auto;
+}
+
+/* --- Acciones de la tarjeta (compartir, enlace propio) ---------------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.actions__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--c-gold-deep);
+  }
+}
+
+.actions__icon--back {
+  transform: rotate(180deg);
+}
+
+/* --- Estados vacíos ---------------------------------------------------- */
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-4);
+  max-width: 34rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 3.5rem) var(--sp-4);
+  text-align: center;
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+
+  app-icon {
+    font-size: 2.4rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+.empty__text {
+  margin: 0;
+  font-size: var(--fs-body-lg);
+  color: var(--c-muted);
+}
+
+.empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}

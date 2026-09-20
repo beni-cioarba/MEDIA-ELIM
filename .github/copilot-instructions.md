@@ -17,6 +17,7 @@ repositorio, lee el shard que corresponda a tu tarea** (y sólo ese).
 | Estado compartido, signals, SignalStore, logs                       | `docs/ai/16-state.md`      |
 | Contenido: eventos, redes, programa semanal, textos, idiomas        | `docs/ai/20-content-i18n.md` |
 | Modo presentación, carrusel, bloques a proyectar, atajos, QR        | `docs/ai/30-presentation.md` |
+| **Anuncios** (añadir, redactar, retirar; cómo se proyectan)          | `docs/ai/35-announcements.md` |
 | Estilos del escenario, responsive, encapsulación                    | `docs/ai/40-styling.md`    |
 | Tokens, tema, Angular Material, iconos, tipografía                  | `docs/ai/45-design-system.md` |
 | Build, despliegue, PWA, GitHub Actions, scripts de imágenes/YouTube | `docs/ai/50-build-deploy.md` |
@@ -49,6 +50,10 @@ en cada prompt**:
 - Estado con **signals** (`signal` / `computed` / `effect`), no `BehaviorSubject`.
 - Datos no traducibles → `src/app/core/church.config.ts`. Textos → `src/assets/i18n/{es,ro}.json`.
   **Las dos claves deben existir en ambos idiomas.**
+- Un **anuncio** nuevo es un objeto `Announcement` en `church.config.ts →
+  announcements` con `expiresOn` obligatorio; **nunca** una plantilla o un
+  componente a medida. Redáctalo siguiendo el protocolo de
+  `docs/ai/35-announcements.md` (corregir, estructurar, acortar, caducidad).
 - Nada de texto literal en plantillas: siempre `| translate`.
 - Rutas nuevas → `src/app/app.routes.ts`, siempre con `loadComponent`,
   colgando de `MainLayoutComponent` y con `data.seo`. El segmento se declara

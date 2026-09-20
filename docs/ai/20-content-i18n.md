@@ -20,6 +20,7 @@ ChurchConfig {
   mediaEvents: MediaEvent[],      // id, i18nKey, image, thumb, gradient, driveUrl
   weeklyProgram: WeeklyProgram[], // id, day (0=Dom…6=Sáb), dayLabel, time, title, description
   upcomingEvents: UpcomingEvent[],// id, date 'YYYY-MM-DD', time, title, description, verse?, preacher?, worshipLead?
+  announcements: Announcement[],  // id, title, date?, time?, place?, lead, sections[], footnote?, publishedOn?, expiresOn — ver 35-announcements.md
   location: ChurchLocation,       // address, city, mapsShareUrl, mapsQuery
   contact: ChurchContact,         // email, phone, phoneDisplay, whatsapp, officeHoursKey
   donations: DonationInfo,        // holder, bank, bic, bizum, accounts: DonationAccount[]
@@ -95,6 +96,13 @@ No hace falta borrar los pasados: `ScheduleService` los filtra solos. Cuando la
 lista queda vacía, el bloque desaparece de la proyección automáticamente
 (ver `docs/ai/30-presentation.md`).
 
+### Añadir un anuncio (anunț)
+
+Objeto `Announcement` en `church.config.ts → announcements`, con `expiresOn`
+obligatorio. Es contenido estructurado (secciones en columnas) y se proyecta
+como diapositiva propia mientras esté vigente. **Protocolo de redacción,
+límites y ficheros: `docs/ai/35-announcements.md`** (léelo antes).
+
 ### Añadir una red social
 
 1. Nuevo `SocialLink` en `socials` con `i18nKey` único.
@@ -147,6 +155,9 @@ vuelve a fusionar al cambiar de idioma). Referencia:
 - Interpolación: `{{ 'socials.open_aria' | translate: { name: x } }}`.
 - Claves raíz actuales: `app`, `brand`, `verse`, `socials`, `qr`, `streams`,
   `presentation`, `carousel`, `blocks`, `credo`, `gallery`, `calendar`, `weekly`,
-  `upcoming`, `location`, `lang`, `share`, `footer`.
+  `upcoming`, `announcements`, `location`, `lang`, `share`, `footer`, `common`,
+  `contact`, `donate`, `nav`, `seo`, `home`, `about`, `leadership`.
+- `verse.text/reference` es el versículo de la **portada**;
+  `verse.stage_text/stage_reference`, el del **panel proyectado**.
 - Las traducciones se **embeben en el bundle** (`core/i18n/inline-translate-loader.ts`);
   si añades un idioma hay que registrarlo también ahí y en `LanguageService.supported`.

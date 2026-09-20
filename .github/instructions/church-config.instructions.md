@@ -15,6 +15,13 @@ que alguien no desarrollador pueda actualizarlo.
   `ScheduleService` los filtra y, cuando la lista queda vacía, el bloque
   «Próximos eventos» se excluye solo de la proyección.
 - `weeklyProgram[].day` sigue la convención de `Date.getDay()` (0 = domingo).
+- `announcements[]` (anunțuri): **contenido estructurado**, nunca texto libre
+  ni HTML. `expiresOn` (`YYYY-MM-DD`, último día visible) es obligatorio; el
+  anuncio desaparece solo de la web y de la proyección al caducar. Límites
+  para que se lea proyectado: título de una frase, `lead` ≤ 2 frases, ≤ 3
+  `sections`, ≤ 7 `items` por sección. Texto en rumano con diacríticos y horas
+  «18:00». Si el aviso implica un evento, añade también su `upcomingEvents`.
+  Protocolo completo: `docs/ai/35-announcements.md`.
 - `mediaEvents[].image` / `.thumb` deben apuntar a los `.webp` generados por
   `node scripts/optimize-images.js` (1600 px y 480 px). Nunca a los originales.
 - Cada `i18nKey` nuevo obliga a crear sus claves en `es.json` y `ro.json`

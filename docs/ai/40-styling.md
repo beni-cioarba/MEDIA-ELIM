@@ -77,6 +77,15 @@ Los **overrides de proyección** (`.stage.is-fullscreen { … }`) ya no viven en
 este fichero: están en `styles/_projection.scss`, con su propia escala. Si
 añades texto proyectable, dale tamaño allí con `--pj-fs-*`.
 
+**Excepción documentada**: la tarjeta de anuncio
+(`features/announcements/announcement-card/announcement-card.component.scss`)
+es global (`ViewEncapsulation.None`, BEM `.announcement__*`) y lleva sus
+propios overrides `.stage.is-fullscreen .announcement…` en **su** hoja, porque
+se reutiliza fuera del escenario (página `/anunturi`) y porque la hoja del
+escenario está al límite de su presupuesto. Sus medidas de proyección se
+multiplican por `--fit` (autoajuste). Aplica el mismo criterio a cualquier
+otra tarjeta que viva en la web y en la proyección a la vez.
+
 Las tarjetas de redes son **neutras** (superficie blanca, icono navy): el
 campo `gradient` de `SocialLink` sólo lo consume ya el pie de la web pública.
 

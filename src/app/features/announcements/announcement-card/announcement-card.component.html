@@ -1,0 +1,88 @@
+<!--
+  Un solo marcado para la web y para la proyección. Jerarquía de lectura a
+  distancia: la ficha de fecha y la insignia dicen QUÉ y CUÁNDO de un vistazo,
+  el título QUÉ PASA, la línea de lugar DÓNDE, el resumen lo esencial y las
+  columnas el detalle. La nota final cierra con lo que no debe olvidarse.
+-->
+<article class="announcement" [attr.id]="'anunt-' + announcement.id" appFitToBox>
+  <div class="announcement__inner">
+    <header class="announcement__head" [class.announcement__head--dated]="!!announcement.date">
+      @if (announcement.date) {
+        <!-- Ficha de fecha: día grande + mes. Lo que se reconoce desde el fondo. -->
+        <div class="announcement__datebox" aria-hidden="true">
+          <span class="announcement__datebox-day">{{ day() }}</span>
+          <span class="announcement__datebox-month">{{ monthShort() }}</span>
+        </div>
+      }
+
+      <div class="announcement__headline">
+        <p class="announcement__kicker">
+          <span class="announcement__badge">
+            <app-icon name="megaphone" />
+            {{ 'announcements.badge' | translate }}
+          </span>
+          @if (announcement.date) {
+            <time class="announcement__date" [attr.datetime]="announcement.date">
+              {{ schedule.formatEventDate(announcement.date) }}
+            </time>
+          }
+          @if (announcement.time) {
+            <span class="announcement__time">
+              <app-icon name="clock" />
+              {{ announcement.time }}
+            </span>
+          }
+        </p>
+
+        <h2 class="announcement__title">{{ announcement.title }}</h2>
+
+        @if (announcement.place) {
+          <p class="announcement__place">
+            <app-icon name="map-pin" />
+            {{ announcement.place }}
+          </p>
+        }
+      </div>
+    </header>
+
+    <p class="announcement__lead">{{ announcement.lead }}</p>
+
+    @if (announcement.sections.length > 0) {
+      <div class="announcement__sections" [style.--announcement-cols]="announcement.sections.length">
+        @for (section of announcement.sections; track section.heading) {
+          <section
+            class="announcement__section"
+            [class]="'announcement__section announcement__section--' + (section.kind ?? 'list')"
+          >
+            <h3 class="announcement__section-title">{{ section.heading }}</h3>
+            <ul
+              class="announcement__items"
+              [class.announcement__items--columns]="section.kind === 'people' && section.items.length > 5"
+              role="list"
+            >
+              @for (item of section.items; track item.label) {
+                <li class="announcement__item">
+                  <span class="announcement__item-label">{{ item.label }}</span>
+                  @if (item.value) {
+                    <span class="announcement__item-leader" aria-hidden="true"></span>
+                    <span class="announcement__item-value">{{ item.value }}</span>
+                  }
+                  @if (item.note) {
+                    <span class="announcement__item-note">{{ item.note }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    }
+
+    @if (announcement.footnote) {
+      <p class="announcement__footnote">{{ announcement.footnote }}</p>
+    }
+
+    <!-- Acciones de la web pública (compartir, enlace…). En proyección no se proyecta nada. -->
+    <ng-content />
+  </div>
+</article>

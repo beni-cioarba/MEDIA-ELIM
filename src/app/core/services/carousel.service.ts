@@ -1,10 +1,12 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { ClockService } from './clock.service';
-import { PresentationBlockId, PresentationBlocksService } from './presentation-blocks.service';
+import {
+  PresentationBlockId,
+  PresentationBlocksService,
+  PresentationSlide,
+} from './presentation-blocks.service';
+import { PresentationDisplayService } from './presentation-display.service';
 import { PresentationService } from '../presentation.service';
-
-/** Duración por defecto de cada slide en modo presentación. */
-export const SLIDE_DURATION_MS = 12_000;
 
 /**
  * Motor del carrusel de la presentación.
@@ -12,27 +14,31 @@ export const SLIDE_DURATION_MS = 12_000;
  * Sustituye al bucle `requestAnimationFrame` + `setInterval(250)` que vivía
  * dentro de `HomeComponent`: ahora un único `effect` arranca y para el rAF de
  * forma declarativa cuando cambia el modo presentación, la pausa, la
- * visibilidad de la pestaña o el conjunto de bloques activos.
+ * visibilidad de la pestaña, el conjunto de diapositivas o la duración.
  *
- * Trabaja siempre sobre `PresentationBlocksService.activeBlockIds()`, así que
- * los bloques desactivados (manual o automáticamente) simplemente no existen
- * para el carrusel: ni se muestran, ni cuentan en los dots, ni en los atajos.
+ * Trabaja siempre sobre `PresentationBlocksService.activeSlides()`: los
+ * bloques desactivados no existen para el carrusel (ni se muestran, ni cuentan
+ * en los dots, ni en los atajos) y los bloques paginados (anuncios, eventos)
+ * aparecen expandidos en una diapositiva por anuncio o por página.
+ *
+ * Cada diapositiva dura lo que fije `PresentationDisplayService` para su
+ * bloque (los anuncios, más; una lista de redes, menos). Como la duración es
+ * una signal, cambiarla desde el panel reinicia el temporizador al momento.
  */
 @Injectable({ providedIn: 'root' })
 export class CarouselService {
   private readonly presentation = inject(PresentationService);
   private readonly blocks = inject(PresentationBlocksService);
   private readonly clock = inject(ClockService);
+  private readonly display = inject(PresentationDisplayService);
 
-  readonly slideDurationMs = SLIDE_DURATION_MS;
-
-  /** Índice solicitado; se recorta contra el número real de bloques activos. */
+  /** Índice solicitado; se recorta contra el número real de diapositivas. */
   private readonly requestedIndex = signal<number>(0);
   private readonly _isPaused = signal<boolean>(false);
   private readonly _progress = signal<number>(0);
 
-  /** Bloques proyectables, en orden. */
-  readonly slides = this.blocks.activeBlockIds;
+  /** Diapositivas proyectables, en orden. */
+  readonly slides = this.blocks.activeSlides;
   readonly count = computed<number>(() => this.slides().length);
 
   readonly currentIndex = computed<number>(() => {
@@ -41,14 +47,20 @@ export class CarouselService {
     return Math.min(this.requestedIndex(), total - 1);
   });
 
-  readonly currentBlockId = computed<PresentationBlockId | null>(
+  readonly currentSlide = computed<PresentationSlide | null>(
     () => this.slides()[this.currentIndex()] ?? null,
   );
 
   readonly isPaused = this._isPaused.asReadonly();
 
-  /** Progreso 0-100 del slide actual hacia el siguiente. */
+  /** Progreso 0-100 de la diapositiva actual hacia la siguiente. */
   readonly progress = this._progress.asReadonly();
+
+  /** Duración (ms) de la diapositiva actual, según su bloque. */
+  readonly currentDurationMs = computed<number>(() => {
+    const block = this.currentSlide()?.block;
+    return block ? this.display.durationFor(block) * 1000 : 0;
+  });
 
   constructor() {
     effect(
@@ -59,12 +71,14 @@ export class CarouselService {
           this.clock.pageVisible() &&
           this.count() > 1;
 
-        // Leer el índice hace que el temporizador se reinicie limpiamente
-        // cada vez que se cambia de slide (manual o automáticamente).
+        // Leer el índice y la duración hace que el temporizador se reinicie
+        // limpiamente cada vez que se cambia de diapositiva (manual o
+        // automáticamente) o el operador ajusta el tiempo del bloque.
         this.currentIndex();
+        const durationMs = this.currentDurationMs();
 
         this._progress.set(0);
-        if (!running) return;
+        if (!running || durationMs <= 0) return;
 
         let rafId = 0;
         let last: number | null = null;
@@ -75,12 +89,12 @@ export class CarouselService {
           elapsed += timestamp - last;
           last = timestamp;
 
-          if (elapsed >= this.slideDurationMs) {
+          if (elapsed >= durationMs) {
             this._progress.set(0);
             this.next();
             return; // el effect se re-ejecuta y arranca un rAF nuevo
           }
-          this._progress.set(Math.min(100, (elapsed / this.slideDurationMs) * 100));
+          this._progress.set(Math.min(100, (elapsed / durationMs) * 100));
           rafId = requestAnimationFrame(tick);
         };
 
@@ -93,20 +107,20 @@ export class CarouselService {
     );
   }
 
-  /** ¿Es este el bloque visible ahora mismo en la presentación? */
-  isActive(id: PresentationBlockId): boolean {
-    return this.currentBlockId() === id;
+  /** ¿Es esta la diapositiva visible ahora mismo? (por clave de diapositiva) */
+  isActive(key: string): boolean {
+    return this.currentSlide()?.key === key;
+  }
+
+  /** ¿Está en pantalla alguna diapositiva de este bloque? */
+  isBlockActive(id: PresentationBlockId): boolean {
+    return this.currentSlide()?.block === id;
   }
 
   setIndex(index: number): void {
     const total = this.count();
     if (total === 0 || index < 0 || index >= total) return;
     this.requestedIndex.set(index);
-  }
-
-  setBlock(id: PresentationBlockId): void {
-    const index = this.slides().indexOf(id);
-    if (index >= 0) this.requestedIndex.set(index);
   }
 
   next(): void {

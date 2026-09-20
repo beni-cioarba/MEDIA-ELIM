@@ -80,6 +80,34 @@ export const APP_ROUTES: Routes = [
         },
       },
       {
+        // Anunțuri vigentes. `:id` abre uno solo (enlace para compartir);
+        // mismo componente, mismo chunk.
+        path: APP_PATHS.announcements,
+        loadComponent: () =>
+          import('./features/announcements/announcements.component').then(
+            (m) => m.AnnouncementsComponent,
+          ),
+        data: {
+          seo: {
+            titleKey: 'seo.announcements.title',
+            descriptionKey: 'seo.announcements.description',
+          },
+        },
+      },
+      {
+        path: `${APP_PATHS.announcements}/:id`,
+        loadComponent: () =>
+          import('./features/announcements/announcements.component').then(
+            (m) => m.AnnouncementsComponent,
+          ),
+        data: {
+          seo: {
+            titleKey: 'seo.announcements.title',
+            descriptionKey: 'seo.announcements.description',
+          },
+        },
+      },
+      {
         path: APP_PATHS.contact,
         loadComponent: () =>
           import('./features/contact/contact.component').then(

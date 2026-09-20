@@ -54,6 +54,14 @@ export const MAIN_NAV: readonly NavItem[] = [
     icon: 'calendar',
     children: [
       {
+        // Primero: es lo que caduca y lo que la congregación busca al entrar.
+        id: 'announcements',
+        labelKey: 'nav.announcements',
+        descriptionKey: 'nav.announcements_desc',
+        path: `/${APP_PATHS.announcements}`,
+        icon: 'megaphone',
+      },
+      {
         id: 'weekly',
         labelKey: 'nav.weekly',
         descriptionKey: 'nav.weekly_desc',

@@ -26,6 +26,7 @@ export type IconName =
   | 'music'
   | 'church'
   | 'sparkles'
+  | 'megaphone'
   | 'chevron-down'
   | 'arrow-right'
   | 'menu'

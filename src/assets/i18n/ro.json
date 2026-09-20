@@ -11,7 +11,9 @@
   },
   "verse": {
     "text": "Căci acolo unde sunt doi sau trei adunați în Numele Meu, sunt și Eu în mijlocul lor.",
-    "reference": "Matei 18:20"
+    "reference": "Matei 18:20",
+    "stage_text": "Căci mai mult face o zi în curțile Tale decât o mie în altă parte.",
+    "stage_reference": "Psalmul 84:10"
   },
   "socials": {
     "section_title": "Urmărește-ne pe rețelele sociale",
@@ -75,7 +77,19 @@
     "forced_off": "Ascuns manual.",
     "reset": "Revino la automat",
     "reset_one": "Revino la modul automat",
-    "min_one": "Trebuie să rămână cel puțin un bloc activ."
+    "min_one": "Trebuie să rămână cel puțin un bloc activ.",
+    "qr_title": "Cod QR",
+    "qr_show": "Afișează codul QR în proiecție",
+    "qr_shortcut": "Tasta Q pentru a-l comuta",
+    "qr_size": "Mărime",
+    "qr_size_s": "S",
+    "qr_size_m": "M",
+    "qr_size_l": "L",
+    "duration": "Secunde pe diapozitiv",
+    "duration_less": "Mai puțin timp (−5 s)",
+    "duration_more": "Mai mult timp (+5 s)",
+    "duration_reset": "Revino la timpul implicit",
+    "announcements_summary": "Se proiectează {{shown}} din {{total}} anunțuri"
   },
   "gallery": {
     "title": "Galerie Departamentul Media",
@@ -153,6 +167,16 @@
     "days_left": "zile rămase",
     "preacher": "Cuvânt",
     "worship": "Închinare"
+  },
+  "announcements": {
+    "badge": "Anunț",
+    "title": "Anunțuri",
+    "eyebrow": "Biserica Elim",
+    "lead": "Anunțurile bisericii, așa cum se citesc înainte de fiecare program. Fiecare anunț dispare singur când nu mai este în vigoare.",
+    "empty": "Nu sunt anunțuri în acest moment.",
+    "not_found": "Acest anunț nu mai este în vigoare.",
+    "all": "Toate anunțurile",
+    "open_link": "Deschide acest anunț"
   },
   "location": {
     "title": "Cum ajungi la noi",
@@ -317,7 +341,9 @@
     "socials_desc": "Instagram, Facebook, YouTube",
     "contact": "Contact",
     "donate": "Donează",
-    "live": "În direct"
+    "live": "În direct",
+    "announcements": "Anunțuri",
+    "announcements_desc": "Avizele bisericii în vigoare"
   },
   "seo": {
     "home": {
@@ -347,6 +373,10 @@
     "donate": {
       "title": "Donează",
       "description": "Susține lucrarea Bisericii Elim: transfer bancar, unde ajung darurile și cum ceri o dovadă a donației."
+    },
+    "announcements": {
+      "title": "Anunțuri",
+      "description": "Anunțurile în vigoare ale Bisericii Elim din Arganda del Rey: înscrieri, sărbători, conferințe și comunicate."
     }
   },
   "home": {

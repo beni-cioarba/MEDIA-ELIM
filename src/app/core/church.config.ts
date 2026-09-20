@@ -76,6 +76,72 @@ export interface UpcomingEvent {
 }
 
 /**
+ * Línea de una sección de anuncio.
+ *  - `label`  lo que se lee («Adult», «Halas Petrică», «Sâmbătă 26, 18:00»).
+ *  - `value`  el dato destacado, opcional («26 €», «Timișoara»). Se pinta a la
+ *             derecha y en negrita: es lo que la gente busca con la vista.
+ *  - `note`   aclaración en letra pequeña, opcional.
+ */
+export interface AnnouncementItem {
+  readonly label: string;
+  readonly value?: string;
+  readonly note?: string;
+}
+
+/**
+ * Cómo se maqueta una sección. Decide la relación entre `label` y `value`:
+ *  - `list`      líneas sueltas; `value` como detalle en la misma línea.
+ *  - `prices`    tarifa: `label` … línea de puntos … `value` (26 €).
+ *  - `people`    nombres; `value` es el acompañante o el origen («cu soția»,
+ *                «Timișoara»). Con más de cinco, la lista fluye en dos columnas.
+ *  - `schedule`  programa: `label` es el cuándo (en negrita) y `value` el qué.
+ */
+export type AnnouncementSectionKind = 'list' | 'prices' | 'people' | 'schedule';
+
+/**
+ * Sección de un anuncio: un epígrafe corto y sus líneas. En proyección cada
+ * sección es una columna, así que **máximo 3 secciones y ~7 líneas** por
+ * sección para que se lea desde el fondo del templo.
+ */
+export interface AnnouncementSection {
+  /** Epígrafe en versalitas («Meniu», «Înscrieri la», «Invitați»). */
+  readonly heading: string;
+  /** Maquetación de las líneas. Por defecto `list`. */
+  readonly kind?: AnnouncementSectionKind;
+  readonly items: readonly AnnouncementItem[];
+}
+
+/**
+ * Anuncio de la congregación. Se muestra en la web (`/anunturi`, con enlace
+ * propio `/anunturi/<id>`) y como diapositiva del panel de medios mientras
+ * esté vigente. Es **contenido estructurado**, no texto libre: el mismo
+ * modelo sirve para precios, listas de personas, programas o avisos, y el
+ * renderizador garantiza que quepa en la pantalla del templo.
+ *
+ * El texto va en rumano y no se traduce (como el programa y los eventos):
+ * son avisos propios de la iglesia.
+ */
+export interface Announcement {
+  readonly id: string;
+  /** Título corto, en una frase: es lo que se lee de lejos. */
+  readonly title: string;
+  /** Fecha del hecho anunciado (`YYYY-MM-DD`), si lo tiene. */
+  readonly date?: string;
+  /** Hora libre («18:00», «10:00 & 18:00»). */
+  readonly time?: string;
+  readonly place?: string;
+  /** Resumen de 1-2 frases: lo que se lee en voz alta antes del programa. */
+  readonly lead: string;
+  readonly sections: readonly AnnouncementSection[];
+  /** Nota de cierre (invitado principal, aviso importante…). */
+  readonly footnote?: string;
+  /** Primer día en que se muestra (`YYYY-MM-DD`, incluido). Sin valor: ya. */
+  readonly publishedOn?: string;
+  /** Último día en que se muestra (`YYYY-MM-DD`, incluido). Obligatorio. */
+  readonly expiresOn: string;
+}
+
+/**
  * Ubicación física de la iglesia. Centraliza la dirección y los enlaces
  * de mapa para mostrar el punto, compartir y abrir indicaciones.
  */
@@ -200,6 +266,11 @@ export interface ChurchConfig {
   readonly weeklyProgram: readonly WeeklyProgram[];
   /** Evenimente viitoare puntuale (botezuri, conferințe, etc.). */
   readonly upcomingEvents: readonly UpcomingEvent[];
+  /**
+   * Anunțuri vigentes. Cada uno se muestra en la web y se proyecta hasta su
+   * `expiresOn` (incluido); después desaparece solo, no hay que borrarlo.
+   */
+  readonly announcements: readonly Announcement[];
   /** Ubicación física de la iglesia (mapa + dirección). */
   readonly location: ChurchLocation;
   /** Canales de contacto directo (correo, teléfono, WhatsApp). */
@@ -337,7 +408,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       day: 2,
       dayLabel: 'Marți',
       time: '20:30',
-      title: 'Învățătură · Studiu biblic',
+      title: 'Rugăciune',
       description: '',
     },
     {
@@ -380,6 +451,38 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   // Formato `date`: ISO YYYY-MM-DD (sin hora, sin zona horaria).
   // ---------------------------------------------------------------------
   upcomingEvents: [
+    {
+      id: 'ancorat_2026_09_26',
+      date: '2026-09-26',
+      time: '18:00',
+      title: 'Conferință de tineret „ANCORAT”',
+      description:
+        'Organizată de Departamentul de tineret. Participă tineri din cel puțin 12 biserici; după mesaj, întrebări și răspunsuri.',
+      verse: '',
+      preacher: 'Daniel Popa (Timișoara)',
+      worshipLead: '',
+    },
+    {
+      id: 'evanghelizare_2026_09_27',
+      date: '2026-09-27',
+      time: '10:00 & 18:00',
+      title: 'Evanghelizare',
+      description: 'Fratele Daniel Popa slujește la ambele programe ale zilei.',
+      verse: '',
+      preacher: 'Daniel Popa (Timișoara)',
+      worshipLead: '',
+    },
+    {
+      id: 'aniversare_25_2026_10_18',
+      date: '2026-10-18',
+      time: '10:00',
+      title: 'Aniversare: 25 de ani de la înființarea Bisericii Elim',
+      description:
+        'Sărbătoare în biserică, apoi masă festivă la restaurantul Oma Bodas din Arganda del Rey (cu înscriere).',
+      verse: 'Psalmul 84:10 — „Căci mai mult face o zi în curțile Tale decât o mie în altă parte.”',
+      preacher: 'Simion Bumbar',
+      worshipLead: '',
+    },
     {
       id: '2',
       date: '2026-06-21',
@@ -455,6 +558,108 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       worshipLead: 'Beni Cioarba',
     }, 
     */
+  ],
+  // ---------------------------------------------------------------------
+  // Anunțuri. Reglas (detalle en `docs/ai/35-announcements.md`):
+  //  · `expiresOn` es el último día que se muestra; después desaparece solo.
+  //  · Título de una frase; `lead` de 1-2 frases (lo que se lee en voz alta).
+  //  · Máximo 3 `sections` y ~7 líneas por sección: en proyección cada
+  //    sección es una columna y todo tiene que leerse desde el fondo.
+  //  · Texto en rumano, revisado (diacríticos, «18:00» y no «18;OO»).
+  // ---------------------------------------------------------------------
+  announcements: [
+    {
+      id: 'aniversare_25_ani',
+      title: 'Sărbătoare: 25 de ani de la înființarea Bisericii Elim',
+      date: '2026-10-18',
+      time: '10:00',
+      place: 'Biserica Elim · masă festivă la restaurantul Oma Bodas, Arganda del Rey',
+      lead:
+        'Continuăm sărbătoarea și la masă. Înscrierea este necesară pentru fiecare loc, inclusiv pentru copiii mici care au nevoie de scaun lângă părinți.',
+      sections: [
+        {
+          heading: 'Meniu',
+          kind: 'prices',
+          items: [
+            { label: 'Adult', value: '26 €' },
+            { label: 'Copil sub 10 ani', value: '13 €' },
+            {
+              label: 'Copil sub 4 ani',
+              value: 'gratuit',
+              note: 'fără meniu; cu meniu 13 €. Se înscrie dacă are nevoie de loc.',
+            },
+          ],
+        },
+        {
+          heading: 'Înscrieri la frații',
+          kind: 'people',
+          items: [
+            { label: 'Halas Petrică' },
+            { label: 'Sidor Ionel' },
+            { label: 'Bogdan Samuel' },
+            { label: 'Șanta Pavel' },
+            { label: 'Vasile Vălean' },
+            { label: 'Silviu Dobre' },
+            { label: 'Aurel Burdeț' },
+          ],
+        },
+        {
+          heading: 'Vor fi împreună cu noi',
+          kind: 'people',
+          items: [
+            { label: 'Pastor Gavrilă Zăgrean', value: 'cu sora Ana' },
+            { label: 'Pastor Mircea Coptil', value: 'cu soția' },
+            { label: 'Prezbiter Adrian Mureșan', value: 'cu soția' },
+            { label: 'Prezbiter Nicu Răducanu' },
+            { label: 'Prezbiter Ioan Șuiu', value: 'cu Maria' },
+            { label: 'Prezbiter Daniel Oros', value: 'cu Camelia' },
+            { label: 'Diacon Dan Cifor', value: 'cu Dana' },
+          ],
+        },
+      ],
+      footnote:
+        'Mesajul de bază: pastorul Simion Bumbar, secretarul Cultului Creștin Penticostal din România.',
+      expiresOn: '2026-10-18',
+    },
+    {
+      id: 'ancorat_2026',
+      title: 'Conferință de tineret "ANCORAT"',
+      date: '2026-09-26',
+      time: '18:00',
+      place: 'Biserica Elim',
+      lead:
+        'Departamentul de tineret al Bisericii Elim organizează o conferință la care participă tineri din cel puțin 12 biserici.',
+      sections: [
+        {
+          heading: 'Invitat',
+          kind: 'people',
+          items: [{ label: 'Daniel Popa', value: 'Timișoara' }],
+        },
+        {
+          heading: 'Program',
+          kind: 'schedule',
+          items: [
+            { label: 'Sâmbătă 26 septembrie, 18:00', value: 'Mesaj, apoi întrebări și răspunsuri' },
+            { label: 'Duminică 27 septembrie, 10:00 & 18:00', value: 'Evanghelizare cu fratele Daniel Popa' },
+          ],
+        },
+      ],
+      expiresOn: '2026-09-27',
+    },
+    {
+      id: 'talantul_in_negot_2026',
+      title: 'Înscrieri la „Talantul în negoț”',
+      lead:
+        'De astăzi și până duminica viitoare, educatoarele de copii țin deschisă lista de înscrieri. Încurajați copiii, adolescenții și tinerii să participe!',
+      sections: [
+        {
+          heading: 'Înscrierile se fac la educatoarele',
+          kind: 'people',
+          items: [{ label: 'Mari Dobre' }, { label: 'Simona Pintilei' }],
+        },
+      ],
+      expiresOn: '2026-09-27',
+    },
   ],
   // ---------------------------------------------------------------------
   // Ubicación de la iglesia. `mapsQuery` se usa tanto para el mapa

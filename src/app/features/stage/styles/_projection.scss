@@ -100,6 +100,19 @@
     // Iconografía.
     --pj-icon: calc(var(--pj-u) * 8.5);
     --pj-icon-sm: calc(var(--pj-u) * 2.6);
+
+    // Columna del QR (regla 1:10: lado del QR ≈ distancia de escaneo ÷ 10).
+    // En una pantalla de ~3 m: S ≈ 0,58 m (6 m), M ≈ 0,75 m (7-8 m),
+    // L ≈ 0,95 m (10 m). La elige el operador (`PresentationDisplayService`).
+    --pj-qr-col: calc(var(--pj-u) * 44);
+
+    &[data-qr-size='s'] {
+      --pj-qr-col: calc(var(--pj-u) * 34);
+    }
+
+    &[data-qr-size='l'] {
+      --pj-qr-col: calc(var(--pj-u) * 56);
+    }
   }
 
   // -------------------------------------------------------------------
@@ -146,10 +159,15 @@
       overflow: hidden;
       align-content: stretch;
       align-items: stretch;
-      // Contenido | QR. El QR necesita ser grande (regla 1:10 entre lado y
-      // distancia de escaneo) pero la información es la protagonista.
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      // Contenido | QR. El contenido es el protagonista: se lleva todo lo
+      // que el QR no necesita, y el QR mide lo que el operador haya elegido.
+      grid-template-columns: minmax(0, 1fr) var(--pj-qr-col);
       gap: var(--pj-sp-6);
+    }
+
+    // Sin QR: una sola columna, todo el lienzo para el contenido.
+    &.stage--no-qr .content {
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .carousel {
@@ -194,7 +212,8 @@
     .streams__title,
     .gallery__title,
     .weekly__title,
-    .upcoming__title {
+    .upcoming__title,
+    .announcements-empty__title {
       @include pj-section-title;
     }
 
@@ -203,6 +222,22 @@
     .weekly__subtitle,
     .upcoming__subtitle {
       display: none;
+    }
+
+    // Estado vacío del bloque de anuncios (forzado a visible sin anuncios).
+    // Las diapositivas con anuncio las estiliza la propia tarjeta
+    // (`announcement-card.component.scss`, sección de proyección).
+    .announcements-empty {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pj-sp-3);
+    }
+
+    .announcements-empty__text {
+      margin: 0;
+      font-size: var(--pj-fs-body);
+      font-weight: 600;
+      color: var(--c-muted);
     }
   }
 
@@ -231,6 +266,7 @@
       display: flex;
       align-self: center;
       width: 100%;
+      height: 100%;
       min-height: 0;
       max-height: calc(var(--pj-u) * 18);
       border-radius: var(--pj-r);
@@ -619,15 +655,35 @@
   // 10 · Próximos eventos
   // -------------------------------------------------------------------
   .stage.is-fullscreen {
+    // Página «n/N» junto al título cuando el bloque viene paginado. Va en
+    // línea (no flex) para no romper la regla dorada `::after` del título.
+    .upcoming__page {
+      margin-left: var(--pj-sp-2);
+      font-family: var(--font-sans);
+      font-size: var(--pj-fs-eyebrow);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: none;
+      color: var(--c-muted);
+    }
+
+    // Las páginas traen 2 eventos como máximo: tarjetas a su altura natural,
+    // ancladas arriba (una sola no se estira hasta llenar la diapositiva ni
+    // se recorta si trae versículo y predicador).
     .upcoming__list {
       flex: 1 1 auto;
       min-height: 0;
-      gap: calc(var(--pj-u) * 1.4);
+      display: grid;
+      grid-auto-rows: auto;
+      align-content: start;
+      gap: calc(var(--pj-u) * 1.6);
+      padding: 0;
       overflow: hidden;
     }
 
     .upcoming__item {
       grid-template-columns: calc(var(--pj-u) * 20) minmax(0, 1fr);
+      align-items: center;
       gap: var(--pj-sp-3);
       padding: var(--pj-sp-2) var(--pj-sp-3);
       border-radius: var(--pj-r);
@@ -678,6 +734,59 @@
     .upcoming__empty {
       font-size: var(--pj-fs-body);
       color: var(--c-muted);
+    }
+  }
+
+  // -------------------------------------------------------------------
+  // 11 · Sin QR — el contenido tiene el lienzo entero (~162u de ancho) y
+  // las listas de una columna se convertirían en barras kilométricas. Cada
+  // bloque se recoloca a dos o tres columnas; el resto escala solo.
+  // -------------------------------------------------------------------
+  .stage.is-fullscreen.stage--no-qr {
+    // Redes: 2 × 2 tarjetas, más altas.
+    .socials__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--pj-sp-2);
+    }
+
+    .socials__list > .card {
+      max-height: calc(var(--pj-u) * 24);
+    }
+
+    // Transmisiones: tres tarjetas en fila con la miniatura arriba, a su
+    // altura natural (16:9) y centradas en la columna.
+    .broadcasts .streams__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: auto;
+      align-content: center;
+    }
+
+    .streams__link {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      align-items: start;
+      padding: var(--pj-sp-1);
+      padding-bottom: var(--pj-sp-2);
+    }
+
+    .streams__thumb {
+      width: 100%;
+      height: auto;
+    }
+
+    .streams__caption {
+      padding-inline: var(--pj-sp-1);
+    }
+
+    // Programa semanal: dos columnas de días.
+    .weekly__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: minmax(0, 1fr);
+      column-gap: var(--pj-sp-3);
+    }
+
+    .weekly__item {
+      grid-template-columns: minmax(0, 32%) minmax(0, 1fr);
     }
   }
 }

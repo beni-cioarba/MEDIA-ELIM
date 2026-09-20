@@ -41,7 +41,7 @@ export class GalleryBlockComponent {
       if (!this.clock.pageVisible()) return;
       // En proyección sólo rota mientras la galería es el slide visible;
       // fuera de proyección todo está a la vista, así que rota siempre.
-      if (this.fullscreen() && !this.carousel.isActive('gallery')) return;
+      if (this.fullscreen() && !this.carousel.isBlockActive('gallery')) return;
       const total = this.config.mediaEvents.length;
       if (total === 0) return;
       this.featuredEventIndex.update((i) => (i + 1) % total);

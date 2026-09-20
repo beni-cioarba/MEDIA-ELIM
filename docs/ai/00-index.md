@@ -39,11 +39,15 @@ src/app/
     ui/
       icon-name.ts          Unión de nombres de icono permitidos
       icon-registry.ts      provideElimIcons(): SVG inline en MatIconRegistry
+    util/
+      iso-date.ts                    parseIsoDate / startOfDay para fechas `YYYY-MM-DD`
     services/
       clock.service.ts               Reloj reactivo + visibilidad de pestaña
       schedule.service.ts            Programa semanal + eventos futuros derivados
-      presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual)
-      carousel.service.ts            Motor del carrusel (slide, pausa, progreso)
+      announcements.service.ts       ⭐ Anuncios vigentes (por fecha de caducidad)
+      presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual) y sus diapositivas
+      presentation-display.service.ts QR visible / tamaño del QR en proyección
+      carousel.service.ts            Motor del carrusel (diapositiva, pausa, progreso)
       calendar.service.ts            Generación de .ics / webcal / Google Calendar
       language.service.ts            ES/RO + persistencia
       logger.service.ts              Log con ámbito (`.prefix('youtube')`)
@@ -54,11 +58,12 @@ src/app/
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Estructura de liderazgo y departamentos
+    announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección) + autoajuste
     stage/                  ⭐ Escenario proyectable (.stage)
       stage.component.*     Marca, carrusel, QR, controles
       blocks/               Un componente por bloque proyectable
-        socials-block/  streams-block/  gallery-block/
-        weekly-block/   upcoming-block/ location-block/
+        announcement-block/ socials-block/  streams-block/  gallery-block/
+        weekly-block/       upcoming-block/ location-block/
       styles/               Tokens, responsive (web) y proyección (`_projection.scss`)
   shared/                   Componentes reutilizables y "tontos"
     icon/ social-icon/ lang-switcher/ qr-panel/ footer/ share-button/
@@ -74,6 +79,7 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 
 | Petición típica                                     | Fichero(s)                                              |
 | --------------------------------------------------- | ------------------------------------------------------- |
+| «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
@@ -81,6 +87,9 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
 | «Que tal bloque no salga al presentar»              | Panel de bloques en la UI (nada de código)              |
+| «Quitar / achicar el QR al proyectar»               | Panel de ajustes (tecla `Q`, tamaño S/M/L) — `PresentationDisplayService` |
+| «Que tal bloque dure más / menos» · «hoy no leáis este anuncio» | Panel de ajustes (−/+ segundos por bloque; casilla por anuncio). Defectos en `DEFAULT_DURATIONS_S` |
+| «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |
 | «Nueva página / sección»                            | `docs/ai/10-architecture.md` (receta completa)          |
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
@@ -96,6 +105,8 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 3. Todo componente es `standalone` + `OnPush`.
 4. El bundle inicial se mantiene bajo presupuesto (620 kB aviso / 800 kB error).
 5. La proyección nunca debe quedarse en blanco: siempre hay ≥ 1 bloque activo.
+   Y nunca proyecta contenido caducado: anuncios y eventos se filtran por fecha
+   con el reloj compartido (`ClockService`), sin recargar.
 6. Los componentes consumen **variables semánticas** (`--c-*`, `--sp-*`…), nunca
    valores en crudo ni primitivas de `_tokens.scss`.
 7. El menú se define **sólo** en `core/navigation/navigation.config.ts`.

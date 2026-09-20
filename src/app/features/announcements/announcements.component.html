@@ -1,0 +1,51 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'announcements.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'announcements.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'announcements.lead' | translate }}</p>
+  </div>
+</header>
+
+<app-page-section>
+  @if (notFound()) {
+    <!-- Enlace compartido a un anuncio que ya ha caducado: decirlo y ofrecer el resto. -->
+    <div class="empty">
+      <app-icon name="megaphone" />
+      <p class="empty__text">{{ 'announcements.not_found' | translate }}</p>
+      <a class="btn btn--primary" [routerLink]="links.all">{{ 'announcements.all' | translate }}</a>
+    </div>
+  } @else if (shown().length === 0) {
+    <div class="empty">
+      <app-icon name="megaphone" />
+      <p class="empty__text">{{ 'announcements.empty' | translate }}</p>
+      <div class="empty__actions">
+        <a class="btn btn--primary" [routerLink]="links.upcoming">{{ 'nav.upcoming' | translate }}</a>
+        <a class="btn btn--ghost" [routerLink]="links.weekly">{{ 'nav.weekly' | translate }}</a>
+      </div>
+    </div>
+  } @else {
+    <div class="list">
+      @for (announcement of shown(); track announcement.id) {
+        <app-announcement-card [announcement]="announcement">
+          <div class="actions">
+            <app-share-button
+              [url]="shareUrl(announcement)"
+              [title]="announcement.title"
+            />
+            @if (requestedId() === null) {
+              <a class="actions__link" [routerLink]="detailLink(announcement)">
+                {{ 'announcements.open_link' | translate }}
+                <app-icon name="arrow-right" />
+              </a>
+            } @else {
+              <a class="actions__link" [routerLink]="links.all">
+                <app-icon name="arrow-right" class="actions__icon--back" />
+                {{ 'announcements.all' | translate }}
+              </a>
+            }
+          </div>
+        </app-announcement-card>
+      }
+    </div>
+  }
+</app-page-section>

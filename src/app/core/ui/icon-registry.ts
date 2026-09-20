@@ -108,6 +108,11 @@ const ICON_PATHS: Record<IconName, readonly string[]> = {
   'chevron-down': ['M6 9l6 6 6-6'],
   'arrow-right': ['M5 12h14', 'M13 6l6 6-6 6'],
   menu: ['M4 7h16M4 12h16M4 17h16'],
+  megaphone: [
+    'M3 10v4a1 1 0 0 0 1 1h2.5l6.5 4V5L6.5 9H4a1 1 0 0 0-1 1z',
+    'M16.5 9.5a3.5 3.5 0 0 1 0 5',
+    'M19.5 7a7.5 7.5 0 0 1 0 10',
+  ],
   close: ['M6 6l12 12M18 6L6 18'],
 };
 

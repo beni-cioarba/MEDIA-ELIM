@@ -15,6 +15,8 @@ export const APP_PATHS = {
   credo: 'marturisirea-de-credinta',
   /** Escenario multimedia completo (y raíz de los bloques individuales). */
   media: 'media',
+  /** Anunțuri vigentes; admite `/anunturi/:id` como enlace propio de cada uno. */
+  announcements: 'anunturi',
   /** Página de contacto: formulario, datos directos y cómo llegar. */
   contact: 'contact',
   /** Donativos: transferencia bancaria y por qué se dona. */
@@ -35,6 +37,7 @@ export type StageBlockId = PresentationBlockId | 'location';
  * público objetivo; los slugs son parte de la marca y no se traducen.
  */
 export const STAGE_BLOCK_SLUGS = {
+  announcements: 'anunturi',
   socials: 'retele',
   streams: 'transmisiuni',
   gallery: 'galerie',

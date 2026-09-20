@@ -1,4 +1,9 @@
-<main class="stage" [class.is-fullscreen]="fullscreen()">
+<main
+  class="stage"
+  [class.is-fullscreen]="fullscreen()"
+  [class.stage--no-qr]="fullscreen() && !display.qrVisible()"
+  [attr.data-qr-size]="fullscreen() ? display.qrSize() : null"
+>
   <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
   <div class="backdrop" aria-hidden="true">
     <div class="halo halo--gold"></div>
@@ -17,22 +22,24 @@
   }
 
   <section class="content" [class.content--carousel]="fullscreen()">
-    <!-- Carrusel de bloques. En proyección sólo se renderizan los bloques
-         activos (ver PresentationBlocksService); en la web pública, todos
-         o sólo el pedido por la URL. -->
+    <!-- Carrusel de diapositivas. En proyección sólo se renderizan las
+         activas (ver PresentationBlocksService); en la web pública, todas
+         o sólo las del bloque pedido por la URL. El bloque de anuncios va
+         expandido: una diapositiva por anuncio vigente. -->
     <div class="carousel">
-      @for (blockId of renderedBlocks(); track blockId) {
+      @for (slide of renderedSlides(); track slide.key) {
         <div
-          [class]="'slide slide--' + blockId"
-          [class.slide--active]="isBlockVisible(blockId)"
-          [attr.aria-hidden]="!isBlockVisible(blockId)"
+          [class]="'slide slide--' + slide.block"
+          [class.slide--active]="isSlideVisible(slide)"
+          [attr.aria-hidden]="!isSlideVisible(slide)"
         >
-          @switch (blockId) {
+          @switch (slide.block) {
+            @case ('announcements') { <app-announcement-block [announcement]="slide.announcement ?? null" /> }
             @case ('socials') { <app-socials-block /> }
             @case ('streams') { <app-streams-block /> }
             @case ('gallery') { <app-gallery-block /> }
             @case ('weekly') { <app-weekly-block /> }
-            @case ('upcoming') { <app-upcoming-block /> }
+            @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
             @case ('location') { <app-location-block /> }
           }
         </div>
@@ -41,8 +48,10 @@
 
     <!-- El QR solo tiene sentido proyectado en la pantalla de la iglesia
          para que la gente lo escanee; en la web normal de visionado no se
-         muestra (la página ya está abierta en su dispositivo). -->
-    @if (fullscreen()) {
+         muestra (la página ya está abierta en su dispositivo). El operador
+         puede ocultarlo (tecla Q / panel de ajustes) para dar todo el lienzo
+         al contenido. -->
+    @if (showQr()) {
       <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
         @defer (on idle) {
           <app-qr-panel [data]="qrData()" />
@@ -74,13 +83,13 @@
       </button>
 
       <div class="carousel__dots" role="tablist" [attr.aria-label]="'carousel.label' | translate">
-        @for (block of blocks.activeStates(); track block.id; let i = $index) {
+        @for (slide of carousel.slides(); track slide.key; let i = $index) {
           <button
             type="button"
             class="carousel__dot"
             [class.is-active]="carousel.currentIndex() === i"
             [attr.aria-selected]="carousel.currentIndex() === i"
-            [attr.aria-label]="(block.titleKey | translate) + ' (' + (i + 1) + '/' + carousel.count() + ')'"
+            [attr.aria-label]="(slide.announcement?.title ?? (slide.titleKey | translate)) + (slide.page ? ' ' + (slide.page.index + 1) + '/' + slide.page.total : '') + ' (' + (i + 1) + '/' + carousel.count() + ')'"
             role="tab"
             (click)="carousel.setIndex(i)"
           >
@@ -126,15 +135,16 @@
         </svg>
       </button>
 
-      <!-- Selector de bloques a presentar -->
+      <!-- Selector de bloques a presentar + ajustes del QR -->
       <app-presentation-settings />
     </div>
   }
 
+  <!-- Versículo propio del panel (la portada tiene el suyo: `verse.*`). -->
   <footer class="bar">
     <p class="bar__verse">
-      <span class="bar__verse-text">«{{ 'verse.text' | translate }}»</span>
-      <span class="bar__verse-ref">— {{ 'verse.reference' | translate }}</span>
+      <span class="bar__verse-text">«{{ 'verse.stage_text' | translate }}»</span>
+      <span class="bar__verse-ref">— {{ 'verse.stage_reference' | translate }}</span>
     </p>
   </footer>
 </main>

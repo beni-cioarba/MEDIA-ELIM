@@ -59,6 +59,12 @@ Los slugs viven en `STAGE_BLOCK_SLUGS` y se traducen con `blockPath(id)` /
 4. `navigation.config.ts` → entrada en `MAIN_NAV` (o dentro de un grupo).
 5. `es.json` **y** `ro.json` → `nav.donations`, `seo.donations.*` y los textos.
 
+Si la página admite un elemento con URL propia (como `/anunturi/:id`), se
+declara una segunda ruta con el **mismo** `loadComponent` y el componente lee
+el parámetro con `ActivatedRoute.paramMap` (patrón de `/media/:blockId`). El
+menú sólo enlaza la ruta base; `NavActiveService` marca la entrada también en
+la ruta hija por coincidencia de prefijo.
+
 ## Reglas del menú (para que escale)
 
 - **1 módulo = 1 entrada.** Si un módulo necesita varias páginas, agrúpalas.

@@ -17,8 +17,14 @@ propia web — cualquier persona en la sala puede escanearlo con el móvil.
   que reconfigurar nada al desplegar).
 - **Bloque de últimas transmisiones** de YouTube con miniaturas oficiales
   (sin claves de API ni `iframe` pesado) + CTA al canal `@ElimArganda/streams`.
+- **Anuncios (anunțuri)**: avisos de la congregación con fecha de caducidad,
+  declarados en `church.config.ts`. Se muestran en `/anunturi` (con enlace
+  propio por anuncio para compartir) y se proyectan como diapositiva propia
+  mientras estén en vigor; después desaparecen solos. Guía completa:
+  `docs/ai/35-announcements.md`.
 - **Modo presentación** a pantalla completa: botón en la barra inferior o
-  tecla `F`. `Esc` para salir.
+  tecla `F`. `Esc` para salir. `Q` muestra u oculta el QR, cuyo tamaño
+  (S/M/L) se elige en el panel de ajustes de la barra de controles.
 - Resaltado rotatorio sutil entre las redes en la web pública (en proyección
   se desactiva: el carrusel ya aporta el movimiento).
 - **Proyección proporcional**: en pantalla completa todo se mide en centésimas

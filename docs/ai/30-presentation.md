@@ -2,7 +2,8 @@
 
 La web se proyecta en la pantalla del templo. Al pulsar **Presentar** (botón
 del dock o tecla `F`) se entra a pantalla completa y el contenido pasa de
-página larga a **carrusel de bloques** con el QR a la derecha.
+página larga a **carrusel de diapositivas**, con el QR a la derecha (opcional
+y de tamaño configurable) o con todo el lienzo para el contenido.
 
 > El botón de presentar **sólo aparece en `/media`** (panel completo), que es la
 > única página pensada para proyectarse; en el resto sería un control sin
@@ -15,19 +16,36 @@ página larga a **carrusel de bloques** con el QR a la derecha.
 | Pieza                           | Responsabilidad                                              |
 | ------------------------------- | ------------------------------------------------------------ |
 | `PresentationService`           | Fullscreen API nativa; si falla, modo *simulado* con la clase `is-simulated-fullscreen` en `<body>` |
-| `PresentationBlocksService`     | Qué bloques entran en la rotación                             |
-| `CarouselService`               | Slide activo, pausa, progreso, avance automático              |
-| `PresentationSettingsComponent` | UI del selector de bloques (en `shared/`)                     |
+| `PresentationBlocksService`     | Qué bloques entran en la rotación y cómo se **expanden en diapositivas** (`activeSlides`, `expand()`) |
+| `PresentationDisplayService`    | QR visible sí/no y tamaño (`s`/`m`/`l`); persistido en `localStorage['iglesia-redes.presentation.display']` |
+| `AnnouncementsService`          | Anuncios vigentes (alimenta el bloque `announcements`) — ver `35-announcements.md` |
+| `CarouselService`               | Diapositiva activa, pausa, progreso, avance automático        |
+| `PresentationSettingsComponent` | UI del selector de bloques + ajustes del QR (en `shared/`)     |
 | `StageComponent`                 | Escenario, atajos de teclado, QR, controles                   |
 | `features/stage/blocks/*`        | Contenido de cada bloque                                      |
 
-## Bloques proyectables
+## Bloques y diapositivas
 
 Definidos en `BLOCK_DEFS` (`core/services/presentation-blocks.service.ts`).
 El orden del array **es** el orden del carrusel.
 
-| id         | Componente             | Regla automática (¿hay contenido?)   |
-| ---------- | ---------------------- | ------------------------------------ |
+Un **bloque** es una sección con interruptor propio; una **diapositiva**
+(`PresentationSlide`, clave `key`) es lo que se proyecta. Casi siempre
+coinciden, salvo dos bloques que `PresentationBlocksService.expand()` pagina:
+
+- `announcements` → **una diapositiva por anuncio vigente y visible**
+  (`key = 'announcements:<id>'`).
+- `upcoming` → **páginas de `UPCOMING_PER_SLIDE` (2) eventos**
+  (`key = 'upcoming:<n>'`, con `events` y `page = {index, total}`; el bloque
+  pinta «n/N» junto al título). Así ningún evento se corta y cada página tiene
+  su tiempo. Para paginar otro bloque, sigue el mismo patrón en `expand()`.
+
+Los dots, los atajos `1…9` y `CarouselService` trabajan sobre diapositivas; el
+panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
+
+| id              | Componente                   | Regla automática (¿hay contenido?)   |
+| --------------- | ---------------------------- | ------------------------------------ |
+| `announcements` | `AnnouncementBlockComponent` | `AnnouncementsService.hasActive()`   |
 | `socials`  | `SocialsBlockComponent`  | `socials.length > 0`               |
 | `streams`  | `StreamsBlockComponent`  | siempre                            |
 | `gallery`  | `GalleryBlockComponent`  | `mediaEvents.length > 0`           |
@@ -36,6 +54,10 @@ El orden del array **es** el orden del carrusel.
 
 `location` existe como bloque (`LocationBlockComponent`) pero **sólo se muestra
 en la web pública**, no en la proyección.
+
+Los anuncios van **primero**: son lo que la congregación necesita leer antes
+de que empiece el programa. Un bloque de anuncios forzado a visible sin
+anuncios vigentes produce una única diapositiva con el estado vacío.
 
 ## Selector de bloques (auto / manual)
 
@@ -59,16 +81,63 @@ Garantías:
 - `activeBlockIds()` nunca devuelve lista vacía (fallback al primer bloque).
 - La UI deshabilita el interruptor del último bloque activo.
 - El filtro **sólo afecta a la proyección**: en la web pública se renderizan
-  todos los bloques (`StageComponent.renderedBlocks`).
+  todos los bloques (`StageComponent.renderedSlides`), también expandidos.
+
+## Anuncios uno a uno
+
+Bajo el bloque «Anunțuri» del panel, cada anuncio vigente tiene su propia
+casilla (`PresentationBlocksService.setAnnouncementVisible`), con el resumen
+«se proyectan n de N». Ocultar un anuncio es una decisión **de proyección**:
+sigue publicado en `/anunturi` y conserva su caducidad. Los ids ocultos se
+guardan en `localStorage['iglesia-redes.presentation.announcements.hidden']`;
+«Restablecer» los limpia. Si se ocultan todos y no hay otro bloque activo, el
+carrusel recurre al primer bloque con contenido: nunca se queda en negro.
+
+## Duración por bloque
+
+Cada diapositiva dura lo que su bloque tenga fijado
+(`PresentationDisplayService.durationFor`, en segundos). Valores por defecto:
+
+| Bloque          | s  | Por qué                                              |
+| --------------- | -- | ---------------------------------------------------- |
+| `announcements` | 30 | se leen, y hay que darles tiempo a los más lentos     |
+| `upcoming`      | 15 | dos eventos con fecha, título y descripción por página |
+| resto           | 12 | contenido que se reconoce, no se lee                  |
+
+El operador lo ajusta en el panel con `−` / `+` (pasos de 5 s, entre 5 y 120)
+en cada fila de bloque; pulsar el valor lo devuelve al defecto y «Restablecer»
+devuelve todos. Cambiar la duración de la diapositiva en pantalla **reinicia su
+temporizador** (la duración es una signal que lee el `effect` del carrusel).
+Persistencia: mismo `localStorage['iglesia-redes.presentation.display']` que
+el QR. Los defectos viven en `DEFAULT_DURATIONS_S`; un bloque nuevo **debe**
+añadirse ahí (el tipo lo exige).
+
+## Ajustes del QR (mostrar / tamaño)
+
+Misma barra de controles, debajo de los bloques (`PresentationSettingsComponent`
+→ `PresentationDisplayService`):
+
+- **Mostrar el QR**: interruptor o tecla `Q`. Sin QR, `.stage` lleva
+  `stage--no-qr`: el contenido ocupa todo el lienzo y los bloques se recolocan
+  (redes 2×2, transmisiones en 3 columnas con miniatura arriba, programa en 2
+  columnas; anuncios y galería escalan solos). Ver `_projection.scss` § 11.
+- **Tamaño**: `S` / `M` / `L` → `data-qr-size` en `.stage` → `--pj-qr-col`
+  (34u / 44u / 56u). Regla 1:10 (lado ≈ distancia de escaneo ÷ 10): en una
+  pantalla de ~3 m, «M» se escanea desde ~7 m y «L» desde ~10 m. Por defecto
+  «M»: el contenido es el protagonista.
+- Todo lo que cambia el lienzo (QR sí/no, tamaño) reajusta las diapositivas de
+  anuncio automáticamente (`appFitToBox`, ver `35-announcements.md`).
 
 ## Carrusel
 
-- Avance automático cada `SLIDE_DURATION_MS` (12 s).
+- Avance automático **por diapositiva**, con la duración de su bloque (ver
+  «Duración por bloque»): cada anuncio y cada página de eventos tiene su tiempo.
 - El bucle `requestAnimationFrame` se arranca y se detiene desde un único
   `effect()` que observa: fullscreen, pausa, `ClockService.pageVisible` y número
-  de bloques activos. Fuera de presentación **no corre nada**.
-- `currentIndex` se recorta contra el número real de bloques activos, así que
-  activar/desactivar bloques nunca deja el carrusel en un índice inválido.
+  de diapositivas. Fuera de presentación **no corre nada**.
+- `currentIndex` se recorta contra el número real de diapositivas, así que
+  activar/desactivar bloques (o caducar un anuncio) nunca deja el carrusel en
+  un índice inválido.
 
 ## Atajos de teclado (`StageComponent.handleKey`)
 
@@ -76,10 +145,11 @@ Garantías:
 | ------------ | ------------------------------------------ |
 | `F`          | Entrar / salir de presentación             |
 | `Esc`        | Salir del modo simulado                    |
-| `←` `→`      | Bloque anterior / siguiente                |
+| `←` `→`      | Diapositiva anterior / siguiente           |
 | `PageUp/Down`| Igual que las flechas                      |
 | `Espacio`    | Pausar / reanudar                          |
-| `1`…`9`      | Ir al bloque n-ésimo **de los activos**    |
+| `Q`          | Mostrar / ocultar el código QR             |
+| `1`…`9`      | Ir a la diapositiva n-ésima **de las activas** |
 
 Salvo `F` y `Esc`, sólo actúan en modo presentación. El panel de bloques hace
 `stopPropagation()` mientras está abierto para no disparar estos atajos.
@@ -164,3 +234,11 @@ aunque se esté proyectando desde `localhost`.
 - El componente está encapsulado: la proyección lo escala por variables
   (`--qr-frame-pad`, `--qr-frame-radius`, `--qr-gap`, `--qr-caption-size`,
   `--qr-caption-weight`, `--qr-caption-color`), fijadas en `.stage.is-fullscreen .qr`.
+- Su anchura la decide el operador (ver «Ajustes del QR»); el marco es siempre
+  cuadrado y nunca supera la altura disponible.
+
+## Versículo del panel
+
+El pie del escenario usa `verse.stage_text` / `verse.stage_reference`
+(Psalmul 84:10). La portada tiene el suyo propio (`verse.text` /
+`verse.reference`): cambiar uno no cambia el otro.

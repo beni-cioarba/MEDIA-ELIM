@@ -27,7 +27,8 @@ carrusel de bloques, QR, ES/RO). Sin backend: todo es estático + GitHub Pages.
 | `docs/ai/15-navigation.md`   | Menú, rutas con nombre, layout, enlaces profundos          |
 | `docs/ai/16-state.md`        | Signals, servicios con estado y SignalStore                |
 | `docs/ai/20-content-i18n.md` | Eventos, redes, programa semanal, traducciones             |
-| `docs/ai/30-presentation.md` | Fullscreen, carrusel, bloques a proyectar, atajos, QR      |
+| `docs/ai/30-presentation.md` | Fullscreen, carrusel, bloques a proyectar, atajos, QR, escala `--pj-u` |
+| `docs/ai/35-announcements.md`| **Anunțuri**: modelo, vigencia, límites de proyección, protocolo de redacción |
 | `docs/ai/40-styling.md`      | SCSS del escenario, responsive, encapsulación              |
 | `docs/ai/45-design-system.md`| Tokens, tema, Angular Material, iconos, tipografía         |
 | `docs/ai/50-build-deploy.md` | Build, PWA, GitHub Actions, scripts de datos e imágenes    |

@@ -1,0 +1,536 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Tarjeta de anuncio — hoja GLOBAL (`ViewEncapsulation.None`, BEM
+// `.announcement__*`). Dos contextos en un solo fichero:
+//   1. Web pública (`/anunturi` y `/media` sin proyectar): tokens `--c-*`,
+//      `--fs-*`, `--sp-*` del design system.
+//   2. Proyección (`.stage.is-fullscreen .announcement`): unidad `--pj-u` y
+//      escala `--pj-fs-*` heredadas del escenario, multiplicadas por `--fit`
+//      (la fija `appFitToBox` cuando el contenido no cabe en la diapositiva).
+//
+// Anatomía (misma en ambos):
+//   head      ficha de fecha (día + mes) · insignia «ANUNȚ» · fecha larga · hora
+//             título · lugar
+//   lead      resumen
+//   sections  columnas editoriales con tipo: list | prices | people | schedule
+//   footnote  banda dorada de cierre
+// =====================================================================
+
+/// Medida de proyección que se encoge con el autoajuste.
+@function fit($value) {
+  @return calc(#{$value} * var(--fit, 1));
+}
+
+// ---------------------------------------------------------------------
+// 1 · Web pública
+// ---------------------------------------------------------------------
+app-announcement-card {
+  display: block;
+}
+
+.announcement {
+  display: block;
+  color: var(--c-text);
+}
+
+.announcement__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-1);
+}
+
+// ---- Cabecera --------------------------------------------------------
+
+.announcement__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+
+  &--dated {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+// Ficha de fecha: el dato que se reconoce antes de leer nada.
+.announcement__datebox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 4.6rem;
+  padding: 0.55rem 0.4rem 0.6rem;
+  border-radius: var(--r-md);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  box-shadow: var(--e-2);
+}
+
+.announcement__datebox-day {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.announcement__datebox-month {
+  margin-top: 0.25rem;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.announcement__headline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.announcement__kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+// La insignia distingue un anuncio de cualquier otra tarjeta.
+.announcement__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.25em 0.75em;
+  border-radius: var(--r-pill);
+  background: var(--c-gold-tint);
+  color: var(--c-gold-deep);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+// `Intl` devuelve el día en minúscula («domingo, 18 de octubre»); sólo la
+// primera letra va en mayúscula (`capitalize` pondría «De Octubre De»).
+.announcement__date {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.announcement__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+  font-weight: 700;
+}
+
+.announcement__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--c-primary);
+}
+
+.announcement__place {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-muted);
+
+  app-icon {
+    flex: 0 0 auto;
+    margin-top: 0.15em;
+    color: var(--c-gold-deep);
+  }
+}
+
+// ---- Resumen ---------------------------------------------------------
+
+.announcement__lead {
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-body-lg);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+
+// ---- Secciones -------------------------------------------------------
+
+.announcement__sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--sp-6);
+}
+
+.announcement__section {
+  min-width: 0;
+  padding-top: var(--sp-3);
+  border-top: 3px solid var(--c-gold);
+}
+
+.announcement__section-title {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.announcement__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+
+  // Listas largas de nombres: fluyen en dos columnas cuando hay anchura para
+  // ello (`column-width`, no `column-count`: en una columna estrecha los
+  // nombres se partirían en tres líneas).
+  &--columns {
+    display: block;
+    columns: 12rem;
+    column-gap: var(--sp-5);
+
+    .announcement__item {
+      break-inside: avoid;
+      margin-bottom: var(--sp-2);
+    }
+  }
+}
+
+.announcement__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  row-gap: 0.15rem;
+  font-size: var(--fs-body);
+  line-height: 1.35;
+}
+
+.announcement__item-label {
+  min-width: 0;
+  font-weight: 600;
+}
+
+// Línea de puntos entre concepto y precio: sólo en tarifas.
+.announcement__item-leader {
+  display: none;
+  flex: 1 1 1rem;
+  min-width: 1rem;
+  border-bottom: 2px dotted var(--c-hairline-strong);
+  transform: translateY(-0.35em);
+}
+
+.announcement__item-value {
+  font-weight: 800;
+  color: var(--c-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.announcement__item-note {
+  flex-basis: 100%;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+// prices: concepto … precio (a la derecha).
+.announcement__section--prices {
+  .announcement__item {
+    flex-wrap: wrap;
+  }
+
+  .announcement__item-label {
+    flex: 0 1 auto;
+  }
+
+  .announcement__item-leader {
+    display: block;
+  }
+
+  .announcement__item-value {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+// people / list: texto corrido — nombre en negrita · detalle atenuado — que
+// parte de línea donde haga falta, como una frase.
+.announcement__section--people,
+.announcement__section--list {
+  .announcement__item {
+    display: block;
+  }
+
+  .announcement__item-label,
+  .announcement__item-value {
+    display: inline;
+  }
+
+  .announcement__item-note {
+    display: block;
+  }
+
+  .announcement__item-value {
+    font-weight: 500;
+    color: var(--c-muted);
+
+    // Con espacio delante: Angular elimina los nodos de texto en blanco
+    // entre los `<span>`, así que el separador tiene que traer el suyo.
+    &::before {
+      content: ' · ';
+    }
+  }
+}
+
+// schedule: cuándo (negrita) y debajo el qué.
+.announcement__section--schedule {
+  .announcement__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+
+  .announcement__item-label {
+    color: var(--c-primary);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .announcement__item-value {
+    font-weight: 500;
+    color: var(--c-text);
+  }
+
+  .announcement__item + .announcement__item {
+    margin-top: var(--sp-1);
+  }
+}
+
+// ---- Cierre ----------------------------------------------------------
+
+.announcement__footnote {
+  margin: 0;
+  max-width: none;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border-left: 4px solid var(--c-gold);
+  background: var(--c-gold-tint);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--c-primary);
+}
+
+// ---------------------------------------------------------------------
+// 2 · Proyección — todo en `--pj-*` × `--fit`
+// ---------------------------------------------------------------------
+.stage.is-fullscreen {
+  // El host del componente es transparente al layout de la diapositiva
+  // (como los bloques del escenario): así `height: 100%` de la tarjeta se
+  // resuelve contra el `.slide` y el autoajuste tiene una caja real que medir.
+  app-announcement-card {
+    display: contents;
+  }
+
+  .announcement {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden; // habilita el autoajuste (`appFitToBox`)
+    display: flex;
+    flex-direction: column;
+    --fit: 1;
+  }
+
+  .announcement__inner {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: fit(calc(var(--pj-u) * 2.6));
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  // ---- Cabecera -------------------------------------------------------
+
+  .announcement__head {
+    gap: fit(var(--pj-sp-3));
+    align-items: center;
+  }
+
+  .announcement__datebox {
+    width: fit(calc(var(--pj-u) * 11));
+    padding: fit(calc(var(--pj-u) * 1.2)) fit(var(--pj-sp-1)) fit(calc(var(--pj-u) * 1.4));
+    border-radius: fit(var(--pj-r));
+    box-shadow: none;
+  }
+
+  .announcement__datebox-day {
+    font-size: fit(calc(var(--pj-u) * 5.6));
+  }
+
+  .announcement__datebox-month {
+    margin-top: fit(calc(var(--pj-u) * 0.5));
+    font-size: fit(calc(var(--pj-u) * 1.9));
+    letter-spacing: 0.2em;
+  }
+
+  .announcement__headline {
+    gap: fit(calc(var(--pj-u) * 0.9));
+  }
+
+  .announcement__kicker {
+    gap: fit(var(--pj-sp-2));
+    font-size: fit(var(--pj-fs-eyebrow));
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .announcement__badge {
+    padding: fit(calc(var(--pj-u) * 0.45)) fit(calc(var(--pj-u) * 1.4));
+    background: var(--c-gold);
+    color: var(--c-on-gold);
+    font-size: fit(var(--pj-fs-eyebrow));
+    letter-spacing: 0.18em;
+    border-radius: fit(var(--pj-r-sm));
+  }
+
+  .announcement__time {
+    gap: fit(calc(var(--pj-u) * 0.5));
+  }
+
+  .announcement__title {
+    font-size: fit(var(--pj-fs-title));
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+  }
+
+  .announcement__place {
+    gap: fit(var(--pj-sp-1));
+    font-size: fit(var(--pj-fs-caption));
+    font-weight: 600;
+  }
+
+  // ---- Resumen --------------------------------------------------------
+
+  .announcement__lead {
+    font-size: fit(var(--pj-fs-lead));
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--c-primary);
+  }
+
+  // ---- Secciones: columnas editoriales separadas por filetes ----------
+
+  // Sin `min-height: 0`: la rejilla nunca se encoge por debajo de su
+  // contenido, así el desbordamiento sale por abajo del `__inner` y el
+  // autoajuste lo detecta (si se encogiera, pisaría la nota sin avisar).
+  .announcement__sections {
+    grid-template-columns: repeat(var(--announcement-cols, 1), minmax(0, 1fr));
+    align-content: start;
+    gap: 0;
+  }
+
+  .announcement__section {
+    min-width: 0;
+    padding: 0 fit(var(--pj-sp-3));
+    border-top: 0;
+    border-left: var(--pj-stroke) solid var(--c-hairline-strong);
+
+    &:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+
+  .announcement__section-title {
+    margin: 0 0 fit(calc(var(--pj-u) * 1.4));
+    padding-bottom: fit(calc(var(--pj-u) * 0.8));
+    border-bottom: max(2px, fit(calc(var(--pj-u) * 0.3))) solid var(--c-gold);
+    font-size: fit(var(--pj-fs-eyebrow));
+    letter-spacing: 0.18em;
+  }
+
+  .announcement__items {
+    gap: fit(calc(var(--pj-u) * 0.9));
+
+    &--columns {
+      columns: fit(calc(var(--pj-u) * 26));
+      column-gap: fit(var(--pj-sp-3));
+
+      .announcement__item {
+        margin-bottom: fit(calc(var(--pj-u) * 0.9));
+      }
+    }
+  }
+
+  .announcement__item {
+    column-gap: fit(calc(var(--pj-u) * 1.2));
+    row-gap: fit(calc(var(--pj-u) * 0.2));
+    font-size: fit(var(--pj-fs-body));
+    line-height: 1.25;
+  }
+
+  .announcement__item-leader {
+    border-bottom-width: max(2px, fit(calc(var(--pj-u) * 0.22)));
+    transform: translateY(-0.3em);
+  }
+
+  .announcement__item-note {
+    font-size: fit(var(--pj-fs-eyebrow));
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .announcement__section--schedule {
+    .announcement__item + .announcement__item {
+      margin-top: fit(calc(var(--pj-u) * 0.6));
+    }
+  }
+
+  // ---- Cierre ---------------------------------------------------------
+
+  .announcement__footnote {
+    padding: fit(calc(var(--pj-u) * 1.4)) fit(var(--pj-sp-3));
+    border-radius: fit(var(--pj-r-sm));
+    border-left-width: max(3px, fit(calc(var(--pj-u) * 0.5)));
+    font-size: fit(var(--pj-fs-caption));
+    font-weight: 700;
+    line-height: 1.3;
+  }
+}

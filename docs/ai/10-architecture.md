@@ -34,6 +34,8 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'conducere'`       | `LeadershipComponent`  | Estructura de liderazgo        |
 | `'media'`           | `StageComponent`       | Todos los bloques proyectables |
 | `'media/:blockId'`  | `StageComponent`       | Un bloque con URL propia       |
+| `'anunturi'`        | `AnnouncementsComponent` | Anuncios vigentes             |
+| `'anunturi/:id'`    | `AnnouncementsComponent` | Un anuncio (enlace compartible) |
 | `'contact'`         | `ContactComponent`     | Formulario `mailto:`, datos y mapa |
 | `'doneaza'`         | `DonateComponent`      | Donativos y datos bancarios    |
 | `**`                | redirect a `''`        | GitHub Pages sirve 404.html    |
@@ -56,9 +58,11 @@ Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
 | ------------------------------ | ----------------------------------------------------------------------- |
 | `ClockService`                 | `now` (tick 1 min), `pageVisible`. **Única** fuente de tiempo/visibilidad |
 | `ScheduleService`              | `currentWeekDay`, `weeklyProgram`, `todayProgram`, `upcomingEvents`, `hasUpcomingEvents`, `formatEventDate()` |
+| `AnnouncementsService`         | `active`, `hasActive`, `byId()` — anuncios vigentes por fecha (`35-announcements.md`) |
+| `PresentationDisplayService`   | `qrVisible`, `qrSize`, `toggleQr()`, `setQrSize()`, `durations`, `durationFor()`, `stepDuration()`, `resetDurations()` + persistencia |
 | `PresentationService`          | `isFullscreen`, `isSimulated`, `toggle()`, `exitSimulatedIfActive()`     |
-| `PresentationBlocksService`    | `states`, `activeBlockIds`, `activeStates`, `setEnabled()`, `resetToAuto()`, `resetAll()` |
-| `CarouselService`              | `slides`, `currentIndex`, `currentBlockId`, `progress`, `isPaused`, `next/prev/setIndex/togglePause` |
+| `PresentationBlocksService`    | `states`, `activeBlockIds`, `activeSlides`, `expand()`, `announcementStates`, `setAnnouncementVisible()`, `setEnabled()`, `resetToAuto()`, `resetAll()` |
+| `CarouselService`              | `slides`, `currentIndex`, `currentSlide`, `currentDurationMs`, `isActive(key)`, `isBlockActive(id)`, `progress`, `isPaused`, `next/prev/setIndex/togglePause` |
 | `YouTubeService`               | `liveStream`, `recentStreams`, `start()`                                 |
 | `CalendarService`              | `.ics`, `webcal://`, URL de Google Calendar, portapapeles                |
 | `LanguageService`              | `current`, `use()`, `toggle()` + persistencia                            |
@@ -71,10 +75,11 @@ Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
 ```
 church.config.ts ──▶ CHURCH_CONFIG (InjectionToken)
         │
-        ├─▶ ScheduleService ──(hasUpcomingEvents)──▶ PresentationBlocksService
+        ├─▶ ScheduleService ──(hasUpcomingEvents)──▶ PresentationBlocksService ──▶ activeSlides
+        ├─▶ AnnouncementsService ──(hasActive, active)──▶      │        (un anuncio = una diapositiva)
         │            │                                        │
         │            ▼                                        ▼
-        │      blocks/*-block                          CarouselService
+        │      blocks/*-block · announcement-card        CarouselService
         │                                                     │
         └──────────────────────────────────────────▶ StageComponent (.stage)
 assets/i18n/*.json ──▶ InlineTranslateLoader ──▶ pipe | translate

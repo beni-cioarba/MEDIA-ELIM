@@ -1,10 +1,8 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent, WeeklyProgram } from '../church.config';
+import { DAY_MS, parseIsoDate, startOfDay } from '../util/iso-date';
 import { ClockService } from './clock.service';
-
-/** Milisegundos en un día (para el contador de días restantes). */
-const DAY_MS = 86_400_000;
 
 /** Valor de orden usado cuando una hora no se puede interpretar: va al final. */
 const UNPARSEABLE_TIME_ORDER = 24 * 60;
@@ -108,16 +106,6 @@ export class ScheduleService {
       return iso;
     }
   }
-}
-
-function startOfDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-/** Parsea `YYYY-MM-DD` en hora local para evitar desfases de zona horaria. */
-function parseIsoDate(iso: string): Date {
-  const [year, month, day] = iso.split('-').map((n) => parseInt(n, 10));
-  return new Date(year, (month || 1) - 1, day || 1);
 }
 
 /** Convierte "10:00" / "18:30" en minutos desde medianoche (para ordenar). */

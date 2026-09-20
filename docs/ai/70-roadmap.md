@@ -47,6 +47,22 @@ Estado tras la reestructuración de navegación + design system.
   responsive salen a parciales-mixin incluidos al final (arregla, además, que
   Sass emitiera sus reglas antes de las base y quedaran pisadas).
 
+### Iteración 4 — anuncios y control del lienzo
+
+- **Anunțuri** (`docs/ai/35-announcements.md`): modelo estructurado en
+  `church.config.ts` con caducidad, servicio de vigencia, página `/anunturi`
+  (+ enlace propio por anuncio) y **una diapositiva por anuncio** al principio
+  del carrusel. Un solo renderizador para web y proyección, con autoajuste
+  (`appFitToBox`) para que siempre quepa, con o sin QR.
+- Modelo de **diapositivas** (`PresentationSlide`) separado del de bloques;
+  «Próximos eventos» paginado (2 por diapositiva) para que nada se corte.
+- **QR configurable**: mostrar/ocultar (tecla `Q`) y tamaño S/M/L
+  (`PresentationDisplayService`); sin QR los bloques se recolocan.
+- **Ritmo y selección**: duración por bloque editable desde el panel (anuncios
+  30 s por defecto) y casilla por anuncio para dejar fuera el que no toque.
+- Tarjeta de anuncio rediseñada (ficha de fecha, columnas editoriales, tipos
+  de sección `prices`/`people`/`schedule`, banda de cierre).
+
 ## Pendiente — prioridad alta
 
 1. **Sin tests.** Karma/Jasmine está configurado pero no hay ni un `.spec.ts`.
@@ -101,8 +117,11 @@ Ordenadas por relación valor/esfuerzo:
 
 Mejoras sobre lo existente:
 
-- Bloque de anuncios editable sin desplegar (JSON en la rama de datos, igual
-  que `youtube.json`).
+- Anuncios editables **sin desplegar** (JSON en la rama de datos, igual que
+  `youtube.json`): el modelo `Announcement` ya existe; faltaría cargarlo desde
+  un JSON externo en vez de `church.config.ts`.
+- Avance de los anuncios vigentes en la portada (`home`), enlazando a
+  `/anunturi`.
 - Programación horaria de bloques (ej. «Próximos eventos» sólo los domingos).
 - Contador en vivo para el evento más cercano cuando falta menos de 24 h.
 - Buscador global (rutas + eventos + predicaciones) con `MatAutocomplete`.
