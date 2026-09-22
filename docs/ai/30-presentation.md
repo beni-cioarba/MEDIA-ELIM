@@ -1,26 +1,114 @@
 # 30 · Modo presentación
 
-La web se proyecta en la pantalla del templo. Al pulsar **Presentar** (botón
-del dock o tecla `F`) se entra a pantalla completa y el contenido pasa de
-página larga a **carrusel de diapositivas**, con el QR a la derecha (opcional
-y de tamaño configurable) o con todo el lienzo para el contenido.
+La web se proyecta en la pantalla del templo desde un **panel de control**
+(`/media/control`), como la vista del presentador de PowerPoint: el operador ve
+la lista de diapositivas, la vista previa, el transporte y los ajustes en su
+portátil, y la **ventana de proyección** (`/media/ecran`) se abre aparte para
+llevarla a la segunda pantalla. Ambas hablan por un canal local y la proyección
+sigue sola si el panel se cierra.
 
-> El botón de presentar **sólo aparece en `/media`** (panel completo), que es la
-> única página pensada para proyectarse; en el resto sería un control sin
-> destino. Lo decide `FloatingActionsComponent.canPresent()` comparando
-> `NavActiveService.url()` con `APP_PATHS.media`. Se mantiene visible mientras
-> la presentación esté activa para poder salir siempre.
+```
+ Portátil del operador                              Pantalla del templo
+┌───────────────────────────────┐                  ┌────────────────────────────┐
+│ /media/control  (Panou)       │  BroadcastChannel│ /media/ecran  (Proiecție)  │
+│ · diapositivas por bloque     │ ◀──── state ──── │ · <app-stage> presentando  │
+│ · ◀ ⏸ ▶  7/10  ━━━░  0:12     │ ──── órdenes ──▶ │ · controles al pasar el    │
+│ · vista previa (iframe)       │                  │   ratón · F pantalla compl.│
+│ · bloques · duraciones · QR   │                  │                            │
+└───────────────────────────────┘                  └────────────────────────────┘
+        localStorage compartido (ajustes) → evento `storage` sincroniza las dos
+```
+
+> El botón del dock en `/media` **abre el panel de control**. La tecla `F` en
+> `/media` sigue dando una pantalla completa rápida en la misma pestaña (un
+> solo monitor). Lo decide `FloatingActionsComponent.canPresent()`.
+
+## Rutas del operador (fuera del shell público)
+
+| Ruta                     | Componente             | Qué es                                                     |
+| ------------------------ | ---------------------- | ---------------------------------------------------------- |
+| `/media/control`         | `PresenterComponent`   | Panel de control. No proyecta: envía órdenes y refleja estado |
+| `/media/ecran`           | `ProjectionComponent`  | Ventana de proyección: `<app-stage>` ya presentando, sin nav ni pie |
+| `/media/ecran?rol=preview` | `ProjectionComponent` | Vista previa incrustada en el panel (`<iframe>`): sin controles ni pantalla completa |
+
+Se declaran **antes** del `MainLayoutComponent` en `app.routes.ts` (si no,
+`media/:blockId` las capturaría). No van en el menú: el acceso permanente es
+la píldora «Panou de control» de la franja legal del pie (`footer__operator`)
+y el botón del dock en `/media`.
+
+## Un solo reloj: roles y `PresentationSyncService`
+
+Puede haber varias instancias de la app presentando a la vez en la misma
+máquina. Cada una se une con la prioridad de su papel (`ROLE_PRIORITY`):
+**ventana 20 · pestaña en pantalla completa 10 · vista previa 1**. La de mayor
+prioridad viva es el **líder**: la única que avanza el carrusel. Publica
+`{index, paused, startedAt, durationMs, count, slideKey, fullscreen}` cuando
+cambia y como latido cada 2 s (`fullscreen` es sólo informativo: el panel lo usa
+para pintar el botón de pantalla completa como pulsado); las demás lo reflejan y calculan el progreso en local a partir
+de `startedAt` (nadie retransmite 60 mensajes por segundo).
+
+- Llega una ventana (mejor prioridad) → durante 400 ms escucha y **hereda** la
+  diapositiva del líder anterior; después manda.
+- Se cierra el líder (`bye` en `pagehide`, o 6 s sin latido) → la siguiente
+  instancia toma el relevo. Sin ventana, la vista previa del panel proyecta
+  sola: sirve para ensayar.
+- **Órdenes** (`next`, `prev`, `goto`, `pause`, `play`, `toggle`): cualquier
+  ventana las envía, el líder las ejecuta. `CarouselService.next()` y compañía
+  ya pasan por ahí, así que teclado, controles y panel se comportan igual.
+- Los **ajustes** (bloques, anuncios ocultos, duraciones, QR) no viajan por el
+  canal: viven en `localStorage` y `PresentationBlocksService` /
+  `PresentationDisplayService` releen al recibir `storage`.
+- El reloj sólo corre con la página **visible** (`ClockService.pageVisible`):
+  una ventana minimizada no avanza. En el templo la ventana siempre está a la
+  vista; si el operador esconde la pestaña del panel sin ventana abierta, la
+  vista previa se detiene hasta que vuelva.
+
+## Ventana de proyección: `ProjectionWindowService`
+
+`window.open` con nombre fijo (`elim-proiectie`): abrir dos veces trae la
+misma. Con la **Window Management API** (Chrome/Edge) el panel pide permiso,
+elige la pantalla que no es la actual y abre la ventana sobre ella, ya a
+pantalla completa donde el navegador lo admite (`fullscreen` en las features).
+Sin la API: popup 16:9 que se arrastra a la otra pantalla y `F`.
+
+### Pantalla completa desde el panel
+
+La Fullscreen API exige un gesto del usuario **en la ventana que la pide**, y
+el clic ocurre en el panel. Se resuelve con la **delegación de capacidades**
+(Chromium ≥ 104): `ProjectionWindowService.toggleFullscreen()` hace
+`postMessage({type: PROJECTION_MESSAGE.fullscreen}, {targetOrigin, delegate:
+'fullscreen'})` a la referencia de la ventana y el gesto viaja con el mensaje.
+`ProjectionComponent` (sólo con `role === 'window'` y mismo origen) llama a
+`PresentationService.toggleNative()` **dentro del manejador** —la capacidad sólo
+vale mientras se despacha el mensaje— y contesta `PROJECTION_MESSAGE.
+fullscreenResult {ok}`. Con `ok: false` (Firefox/Safari no delegan) el panel
+muestra `fullscreenDenied` → «pulsa F en la proyección». El estado real llega
+por el latido del líder (`SyncState.fullscreen`), no por la respuesta.
+
+Este protocolo va por `postMessage` directo y **no por el `BroadcastChannel`**:
+sólo un `postMessage` a una referencia de ventana puede delegar el gesto. Por
+eso el servicio necesita la referencia; si el panel se recargó y la perdió, la
+**recupera por el nombre** (`window.open('', 'elim-proiectie')` devuelve la
+ventana viva sin navegarla; si no existía, abre una en blanco que se detecta y
+se cierra al instante, así que sólo se intenta cuando el canal dice que hay
+ventana). La misma recuperación sirve a «Ir a la ventana». La tecla `F` y el
+botón de los controles flotantes de la propia ventana siguen funcionando.
 
 ## Piezas
 
 | Pieza                           | Responsabilidad                                              |
 | ------------------------------- | ------------------------------------------------------------ |
-| `PresentationService`           | Fullscreen API nativa; si falla, modo *simulado* con la clase `is-simulated-fullscreen` en `<body>` |
-| `PresentationBlocksService`     | Qué bloques entran en la rotación y cómo se **expanden en diapositivas** (`activeSlides`, `expand()`) |
-| `PresentationDisplayService`    | QR visible sí/no y tamaño (`s`/`m`/`l`); persistido en `localStorage['iglesia-redes.presentation.display']` |
+| `PresentationService`           | Estado de presentación: nativa, simulada o **ruta de proyección** (`role`: `window` / `preview` / `inline`); `canRequestNativeFullscreen` |
+| `PresentationSyncService`       | Canal entre ventanas, elección de líder, estado remoto y órdenes |
+| `ProjectionWindowService`       | Abrir / vigilar / cerrar / recuperar la ventana; pantalla completa a distancia (`toggleFullscreen`, `fullscreenDenied`); URL de proyección con `base href` |
+| `PresentationBlocksService`     | Qué bloques entran en la rotación y cómo se **expanden en diapositivas** (`activeSlides`, `expand(id, view)` con `view` = `projection` (sólo anuncios visibles, eventos de dos en dos) · `panel` (todos los anuncios, páginas de eventos) · `web` (todo entero, sin páginas)); relee `storage` |
+| `PresentationDisplayService`    | QR visible sí/no y tamaño; duración por bloque; relee `storage` |
 | `AnnouncementsService`          | Anuncios vigentes (alimenta el bloque `announcements`) — ver `35-announcements.md` |
-| `CarouselService`               | Diapositiva activa, pausa, progreso, avance automático        |
-| `PresentationSettingsComponent` | UI del selector de bloques + ajustes del QR (en `shared/`)     |
+| `BibleReadingService`           | Semana del plan de lectura que toca anunciar                  |
+| `CarouselService`               | Diapositiva activa, pausa, progreso; reloj sólo si es líder; órdenes vía canal |
+| `PresenterComponent`            | Panel de control (`features/presenter/`)                      |
+| `ProjectionComponent`           | Ventana / vista previa (`features/projection/`)               |
+| `PresentationSettingsComponent` | Popover de bloques + QR en los controles flotantes de la proyección (respaldo) |
 | `StageComponent`                 | Escenario, atajos de teclado, QR, controles                   |
 | `features/stage/blocks/*`        | Contenido de cada bloque                                      |
 
@@ -72,6 +160,11 @@ Excel de la iglesia (receta en `20-content-i18n.md`). Duración por defecto
 20 s. Lleva su hoja propia (`bible-block.component.scss`, web + proyección),
 igual que la tarjeta de anuncio.
 
+Sólo en la web, debajo, un `<details>` «Vezi toată programarea» muestra el
+plan completo (`BibleReadingService.planOverview`): mes a mes, cada semana con
+su tramo y estado (`past` atenuada · `current` resaltada · `upcoming`), y cada
+semana desplegable a sus lecturas diarias. En proyección no se pinta.
+
 ## Selector de bloques (auto / manual)
 
 Botón con icono de cuadrícula y contador `n/N` dentro de la barra de controles.
@@ -96,6 +189,20 @@ Garantías:
 - El filtro **sólo afecta a la proyección**: en la web pública se renderizan
   todos los bloques (`StageComponent.renderedSlides`), también expandidos.
 
+### Orden de los bloques (arrastrar)
+
+En el panel de control cada bloque tiene un agarrador (⋮⋮): se arrastra a la
+posición deseada (CDK `DragDrop`) o, con el foco en el agarrador, `↑` `↓`
+`Inicio` `Fin`. El orden se guarda en
+`localStorage['iglesia-redes.presentation.order']` (lista de ids) y **todo
+deriva de él**: `PresentationBlocksService.definitions()` (computed) alimenta
+`states`, `activeSlides`, los dots y la web pública (`/media` apila los
+bloques en el mismo orden, **salvo anuncios y lectura bíblica**, que en la web
+sólo se ven en su sección —`/anunturi`, `/media/citirea-bibliei`— y en la
+proyección: `WEB_PANEL_EXCLUDED` en `StageComponent`). Un bloque nuevo en el código que no esté en la
+lista guardada se añade al final en su orden por defecto. «Orden por defecto»
+borra la preferencia; `BLOCK_DEFS` sigue siendo el orden inicial.
+
 ## Anuncios uno a uno
 
 Bajo el bloque «Anunțuri» del panel, cada anuncio vigente tiene su propia
@@ -119,8 +226,9 @@ Cada diapositiva dura lo que su bloque tenga fijado
 | resto           | 12 | contenido que se reconoce, no se lee                  |
 
 El operador lo ajusta en el panel con `−` / `+` (pasos de 5 s, entre 5 y 120)
-en cada fila de bloque; pulsar el valor lo devuelve al defecto y «Restablecer»
-devuelve todos. Cambiar la duración de la diapositiva en pantalla **reinicia su
+o **escribiendo los segundos** en el campo central (Intro o salir del campo
+confirma; fuera de límites se acota); el ↺ que aparece al personalizar
+devuelve el defecto y «Restablecer» devuelve todos. Cambiar la duración de la diapositiva en pantalla **reinicia su
 temporizador** (la duración es una signal que lee el `effect` del carrusel).
 Persistencia: mismo `localStorage['iglesia-redes.presentation.display']` que
 el QR. Los defectos viven en `DEFAULT_DURATIONS_S`; un bloque nuevo **debe**
@@ -141,6 +249,10 @@ Misma barra de controles, debajo de los bloques (`PresentationSettingsComponent`
   «M»: el contenido es el protagonista.
 - Todo lo que cambia el lienzo (QR sí/no, tamaño) reajusta las diapositivas de
   anuncio automáticamente (`appFitToBox`, ver `35-announcements.md`).
+- El panel del QR se **monta una vez** (`@defer (on immediate)`) y al ocultarlo
+  sólo se esconde (`[hidden]`): recrearlo con `on idle` obligaba a esperar a que
+  el navegador estuviera ocioso, que con el reloj del carrusel podía tardar
+  segundos.
 
 ## Carrusel
 
@@ -157,8 +269,8 @@ Misma barra de controles, debajo de los bloques (`PresentationSettingsComponent`
 
 | Tecla        | Acción                                     |
 | ------------ | ------------------------------------------ |
-| `F`          | Entrar / salir de presentación             |
-| `Esc`        | Salir del modo simulado                    |
+| `F`          | En `/media`: entrar / salir de presentación. En la ventana de proyección: pantalla completa del navegador sí / no (también desde el botón «Pantalla completa» del panel) |
+| `Esc`        | Salir del modo simulado (o de la pantalla completa nativa, lo hace el navegador) |
 | `←` `→`      | Diapositiva anterior / siguiente           |
 | `PageUp/Down`| Igual que las flechas                      |
 | `Espacio`    | Pausar / reanudar                          |
@@ -167,6 +279,67 @@ Misma barra de controles, debajo de los bloques (`PresentationSettingsComponent`
 
 Salvo `F` y `Esc`, sólo actúan en modo presentación. El panel de bloques hace
 `stopPropagation()` mientras está abierto para no disparar estos atajos.
+El **panel de control** (`PresenterComponent.handleKey`) responde a las mismas
+teclas de transporte y `Q`, enviándolas como órdenes al líder; se ignoran con
+el foco en un control (un botón enfocado ya reacciona a Espacio).
+
+## Legibilidad a distancia: el presupuesto (obligatorio)
+
+Principio de diseño (decisión del usuario, 22/09/2026): **cada diapositiva se
+ve entera de un vistazo**. Un anuncio es una diapositiva, la semana es una
+diapositiva, los eventos van de dos en dos. Nada se pagina: lo que hace legible
+el cartel es la **jerarquía**, no el tamaño uniforme: el titular se lee desde
+el fondo, los datos clave desde media sala, el detalle desde las primeras
+filas y en el móvil vía QR.
+
+Medido con la regla práctica *altura de mayúscula ≥ distancia / 200* (a 1080p,
+1u = 10,8 px; pantalla de ~3 m de ancho → 1,56 mm por píxel). Suelos de la
+escala `--pj-fs-*` (sección 1 de `_projection.scss`; los vigila
+`scripts/check-projection-sizes.mjs`, en `npm run check` y en la CI):
+
+| Papel | Token | u | px a 1080p | Legible desde | Para |
+| --- | --- | --- | --- | --- | --- |
+| Mínimo absoluto / etiquetas | `--pj-fs-eyebrow` | **3,2** | 35 | ~8 m | insignias, mes de la ficha, «1/2», epígrafes |
+| Secundario | `--pj-fs-caption` | 3,8 | 41 | ~10 m | hora, lugar, quién, notas, versículo, descripción de evento |
+| Cuerpo | `--pj-fs-body` | **4,6** | 50 | ~12 m | resumen del anuncio, filas de listas, título del programa |
+| Destacado / rótulo de bloque | `--pj-fs-lead` | 5,6 | 60 | ~14 m | pasaje del día, nombre del evento, día y hora del programa, `pj-section-title` |
+| Titular del contenido | `--pj-fs-title` | **8** | 86 | ~20 m | título del anuncio, @handle |
+| Dato clave | `--pj-fs-hero` / `--pj-fs-display` | 8,6 / 11 | 93 / 119 | — | número de semana, cuenta atrás |
+
+Reglas que se derivan (y que ya cumplen todos los bloques):
+
+1. **Todo el lienzo y una sola diapositiva.** Marca a 5u (`--brand-size` en
+   `.stage-brand__logo`, `size="context"`), rótulo de bloque a `lead` en una
+   línea (clave `*.title_pj` cuando el título web es largo), filas a su altura
+   natural (nunca `grid-auto-rows: minmax(0, 1fr)` ni `overflow: hidden` para
+   «hacer que quepa»: aplastaban y solapaban las filas).
+2. **Anuncios: cartel.** La tarjeta ocupa el lienzo y `appFitToBox` la ajusta
+   entre 1 y **0,7** (a 0,7 el cuerpo queda justo en 3,2u y el titular en
+   5,6u; las etiquetas y secundarios nunca bajan de 3,2u porque la hoja los
+   fija con `max()`). Hasta dos secciones van en columnas; tres o más se
+   apilan a todo el ancho y las listas de personas pasan a texto corrido. Si
+   ni a 0,7 cabe, sobra contenido: sección `webOnly` o texto más corto
+   (`35-announcements.md`).
+3. **Eventos de dos en dos** (`UPCOMING_PER_SLIDE = 2`): descripción recortada
+   a dos líneas y créditos («CUVÂNT Daniel Popa») en una línea; el detalle
+   está en la web.
+4. **Programa semanal entero**: fila = DÍA (`lead`) | hora (`lead`) | título
+   (`body`), tres columnas de rejilla (`.weekly__body { display: contents }`);
+   un título largo parte en dos líneas y la semana sigue cabiendo.
+5. **Las imágenes se ven enteras**: las miniaturas de YouTube se piden en 16:9
+   real (`core/youtube-thumb.ts`: `hq720`, respaldo `mqdefault`) y la caja es
+   16:9 gobernada por el **ancho** de su columna (`width: 100%; height: auto`),
+   nunca por el alto de la fila; así `object-fit: cover` no recorta nada. El
+   `hqdefault` de la API es 4:3 y ya llega recortado de lado.
+6. **Lo secundario se quita en proyección, no se achica**: descripciones de
+   redes y del programa, etiqueta «hoy» (la fila ya va resaltada), «Următorul»
+   (la cuenta atrás lo dice), nombre del plan de lectura.
+7. **Prueba de banco**: en `/media/ecran` a 960×540 (miniatura fiel del 1080p)
+   recorrer todas las diapositivas **con y sin QR** y comprobar por JS que
+   ningún elemento sobresale de `.slide--active` y que el texto mínimo es
+   ≥ 3,2u. Estado (22/09/2026): 10 diapositivas, cero desbordes en ambos modos,
+   mínimo 3,2u; autoajuste de los anuncios: 1,00 · 0,82 · 0,70 con QR (1,00 ·
+   1,00 · 0,86 sin QR).
 
 ## Sistema de proyección (`features/stage/styles/_projection.scss`)
 

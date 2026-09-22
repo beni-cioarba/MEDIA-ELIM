@@ -94,7 +94,7 @@ export class ScheduleService {
 
   /** Fecha larga localizada (ej: "domingo, 21 de junio de 2026"). */
   formatEventDate(iso: string): string {
-    const lang = this.translate.currentLang || this.translate.defaultLang || 'ro';
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
     try {
       return new Intl.DateTimeFormat(lang, {
         weekday: 'long',

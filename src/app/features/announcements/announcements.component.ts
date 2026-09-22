@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Announcement, CHURCH_CONFIG } from '../../core/church.config';
 import { AnnouncementsService } from '../../core/services/announcements.service';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
@@ -23,19 +23,18 @@ import { AnnouncementCardComponent } from './announcement-card/announcement-card
  * así que quien escanea el QR encuentra el mismo aviso, entero y en su móvil.
  */
 @Component({
-  selector: 'app-announcements',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    TranslateModule,
-    PageSectionComponent,
-    ShareButtonComponent,
-    IconComponent,
-    AnnouncementCardComponent,
-  ],
-  templateUrl: './announcements.component.html',
-  styleUrl: './announcements.component.scss',
+    selector: 'app-announcements',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        TranslatePipe,
+        PageSectionComponent,
+        ShareButtonComponent,
+        IconComponent,
+        AnnouncementCardComponent,
+    ],
+    templateUrl: './announcements.component.html',
+    styleUrl: './announcements.component.scss'
 })
 export class AnnouncementsComponent {
   private readonly route = inject(ActivatedRoute);

@@ -1,12 +1,14 @@
 ---
 applyTo: "src/app/**/*.ts"
-description: "Convenciones de código Angular 17 (standalone + signals) de este repo."
+description: "Convenciones de código Angular 22 (standalone + signals, Material M3) de este repo."
 ---
 
 # Código TypeScript / Angular
 
-- `standalone: true` + `ChangeDetectionStrategy.OnPush` en **todos** los componentes.
-  Nada de `NgModule`.
+- Standalone (implícito en Angular 22: **no** escribas `standalone: true`) +
+  `ChangeDetectionStrategy.OnPush` en **todos** los componentes. Nada de `NgModule`.
+- Entradas con `input()` / `input.required()`; traducciones con `TranslatePipe`
+  (no existe `TranslateModule`); `provideAppInitializer` en vez de `APP_INITIALIZER`.
 - Inyección con `inject()` en campos `readonly`; no uses parámetros de constructor.
 - Estado: `signal()` / `computed()` / `effect()`. Nada de `BehaviorSubject`.
   Expón sólo lectura con `asReadonly()`.

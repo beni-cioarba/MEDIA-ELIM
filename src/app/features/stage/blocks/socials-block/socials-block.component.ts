@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../../core/church.config';
 import { YouTubeService } from '../../../../core/youtube.service';
 import { PresentationService } from '../../../../core/presentation.service';
@@ -31,12 +31,11 @@ const HIGHLIGHT_ROTATION_MS = 4_000;
  * Reutilizable: no depende del carrusel, sólo de `CHURCH_CONFIG`.
  */
 @Component({
-  selector: 'app-socials-block',
-  standalone: true,
-  imports: [TranslateModule, SocialIconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './socials-block.component.html',
-  styles: [':host { display: contents; }'],
+    selector: 'app-socials-block',
+    imports: [TranslatePipe, SocialIconComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './socials-block.component.html',
+    styles: [':host { display: contents; }']
 })
 export class SocialsBlockComponent {
   protected readonly config = inject(CHURCH_CONFIG);

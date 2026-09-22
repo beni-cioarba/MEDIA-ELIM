@@ -14,6 +14,9 @@ export interface BibleReadingDayView {
   readonly isPast: boolean;
 }
 
+/** Dónde cae la semana respecto a hoy. `current` = la que se anuncia. */
+export type BibleReadingWeekStatus = 'past' | 'current' | 'upcoming';
+
 /** Semana lista para pintar: fechas, lecturas diarias y el mes al que pertenece. */
 export interface BibleReadingWeekView {
   readonly number: number;
@@ -25,6 +28,15 @@ export interface BibleReadingWeekView {
   readonly month: BibleReadingMonth;
   /** `true` cuando la semana empieza mañana (se anuncia el domingo). */
   readonly startsTomorrow: boolean;
+  readonly status: BibleReadingWeekStatus;
+}
+
+/** Un mes del plan con sus semanas ya resueltas (para la vista completa). */
+export interface BibleReadingMonthView {
+  readonly id: string;
+  readonly label: string;
+  readonly scope: string;
+  readonly weeks: readonly BibleReadingWeekView[];
 }
 
 type PlannedWeek = BibleReadingWeek & { readonly month: BibleReadingMonth };
@@ -58,17 +70,54 @@ export class BibleReadingService {
     month.weeks.map((week) => ({ ...week, month })),
   );
 
-  /** Semana que toca anunciar, o `null` si el plan no cubre estas fechas. */
-  readonly announcedWeek = computed<BibleReadingWeekView | null>(() => {
+  /** Número de la semana que toca anunciar, o `null` si el plan no cubre estas fechas. */
+  private readonly announcedNumber = computed<number | null>(() => {
     const today = startOfDay(new Date(this.clock.now()));
-    const todayIso = toIsoDate(today);
     const tomorrowIso = toIsoDate(addDays(today, 1));
-
     const containing = this.weeks.find(
       (week) => week.start <= tomorrowIso && tomorrowIso <= endOf(week),
     );
-    const week = containing ?? this.weeks.find((w) => w.start > tomorrowIso) ?? null;
-    if (!week) return null;
+    return (containing ?? this.weeks.find((w) => w.start > tomorrowIso))?.number ?? null;
+  });
+
+  /** Semana que toca anunciar, o `null` si el plan no cubre estas fechas. */
+  readonly announcedWeek = computed<BibleReadingWeekView | null>(() => {
+    const number = this.announcedNumber();
+    const week = this.weeks.find((w) => w.number === number);
+    return week ? this.toView(week) : null;
+  });
+
+  readonly hasReading = computed<boolean>(() => this.announcedWeek() !== null);
+
+  /**
+   * El plan completo, mes a mes, con cada semana marcada como pasada, actual
+   * o futura: para la vista «toda la programación» de la web.
+   */
+  readonly planOverview = computed<readonly BibleReadingMonthView[]>(() =>
+    BIBLE_READING_PLAN.months.map((month) => ({
+      id: month.id,
+      label: month.label,
+      scope: month.scope,
+      weeks: month.weeks.map((week) => this.toView({ ...week, month })),
+    })),
+  );
+
+  /** Total de semanas y extremos del plan, para el rótulo del desplegable. */
+  readonly planSpan = computed<{ readonly weeks: number; readonly start: string; readonly end: string } | null>(
+    () => {
+      const first = this.weeks[0];
+      const last = this.weeks[this.weeks.length - 1];
+      if (!first || !last) return null;
+      return { weeks: this.weeks.length, start: first.start, end: endOf(last) };
+    },
+  );
+
+  private toView(week: PlannedWeek): BibleReadingWeekView {
+    const today = startOfDay(new Date(this.clock.now()));
+    const todayIso = toIsoDate(today);
+    const tomorrowIso = toIsoDate(addDays(today, 1));
+    const announced = this.announcedNumber();
+    const end = endOf(week);
 
     const start = parseIsoDate(week.start);
     const days = week.readings.map<BibleReadingDayView>((passage, index) => {
@@ -82,18 +131,22 @@ export class BibleReadingService {
       };
     });
 
+    // Pasada = ya no se anuncia (el domingo, la semana que termina hoy ya cede
+    // el sitio a la siguiente): por eso se compara con mañana, no con hoy.
+    const status: BibleReadingWeekStatus =
+      week.number === announced ? 'current' : end < tomorrowIso ? 'past' : 'upcoming';
+
     return {
       number: week.number,
       summary: week.summary,
       start: week.start,
-      end: endOf(week),
+      end,
       days,
       month: week.month,
       startsTomorrow: week.start === tomorrowIso,
+      status,
     };
-  });
-
-  readonly hasReading = computed<boolean>(() => this.announcedWeek() !== null);
+  }
 
   /** «21 – 27 septembrie 2026» / «28 septembrie – 4 octombrie 2026», localizado. */
   formatRange(startIso: string, endIso: string): string {
@@ -113,9 +166,15 @@ export class BibleReadingService {
   }
 
   /** Día de la semana completo («luni»), localizado. */
-  formatWeekday(iso: string): string {
+  /**
+   * Día de la semana («luni» / «lun»). La forma corta es para la proyección,
+   * donde «miercuri» o «duminică» partían la fila en dos líneas.
+   */
+  formatWeekday(iso: string, form: 'long' | 'short' = 'long'): string {
     try {
-      return new Intl.DateTimeFormat(this.lang(), { weekday: 'long' }).format(parseIsoDate(iso));
+      return new Intl.DateTimeFormat(this.lang(), { weekday: form })
+        .format(parseIsoDate(iso))
+        .replace(/.$/, '');
     } catch {
       return iso;
     }
@@ -127,7 +186,7 @@ export class BibleReadingService {
   }
 
   private lang(): string {
-    return this.translate.currentLang || this.translate.defaultLang || 'ro';
+    return this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
   }
 }
 

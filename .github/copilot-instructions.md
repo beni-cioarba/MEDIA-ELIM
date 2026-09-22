@@ -1,6 +1,6 @@
 # Copilot · Instrucciones del repositorio
 
-App Angular 17 (standalone + signals) de la **Iglesia Elim Arganda**: una web
+App Angular 22 (standalone + signals, Material M3) de la **Iglesia Elim Arganda**: una web
 pública que además funciona como **diapositiva proyectable** en el templo
 (modo presentación a pantalla completa con carrusel de bloques y QR).
 
@@ -46,7 +46,7 @@ en cada prompt**:
 
 ## Reglas duras
 
-- Angular 17 **standalone**, sin `NgModule`. Siempre `ChangeDetectionStrategy.OnPush`.
+- Angular 22 **standalone** (por defecto, sin `standalone: true`), sin `NgModule`. Siempre `ChangeDetectionStrategy.OnPush`.
 - Estado con **signals** (`signal` / `computed` / `effect`), no `BehaviorSubject`.
 - Datos no traducibles → `src/app/core/church.config.ts`. Textos → `src/assets/i18n/{es,ro}.json`.
   **Las dos claves deben existir en ambos idiomas.**
@@ -81,8 +81,9 @@ en cada prompt**:
 ```bash
 npm start                 # ng serve
 npm run build             # producción
-npm test                  # Karma/Jasmine (aún sin specs)
-npm run pwa:icons         # regenera iconos PWA desde el logo
+npm test                  # Vitest (aún sin specs)
+npm run check             # i18n:check + check:projection (puertas de calidad; también corre en prebuild y en CI)
+npm run pwa:icons         # regenera el icono de la app (PWA, Apple, favicon) desde el emblema
 node scripts/optimize-images.js   # webp hero+thumb para la galería
 python scripts/import-bible-plan.py <xlsx>   # regenera el plan de lectura bíblica desde el Excel
 ```

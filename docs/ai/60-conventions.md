@@ -5,18 +5,26 @@
 ```ts
 @Component({
   selector: 'app-x',
-  standalone: true,
-  imports: [TranslateModule, /* … */],
+  imports: [TranslatePipe, /* … */],            // standalone es lo implícito en Angular ≥ 19
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './x.component.html',   // inline sólo si < ~40 líneas
 })
 export class XComponent {
   private readonly service = inject(SomeService);   // siempre inject(), no constructor
+  readonly title = input.required<string>();        // entradas como signals (input()), no @Input
   protected readonly items = computed(() => …);     // protected si sólo lo usa la plantilla
 }
 ```
 
-- `standalone: true` y `OnPush` **siempre**. Nada de `NgModule`.
+- Standalone (implícito) y `OnPush` **siempre**. Nada de `NgModule` ni
+  `standalone: true` (Angular 22 lo da por hecho; la migración lo quitó).
+- Traducciones en plantilla: `TranslatePipe` (ngx-translate 18 ya no tiene
+  `TranslateModule`); en código, `TranslateService.instant/stream`,
+  `getCurrentLang()`/`getFallbackLang()` (no `currentLang`/`defaultLang`).
+- Inicializadores: `provideAppInitializer(() => inject(X).init())`, no
+  `APP_INITIALIZER`.
+- Entradas nuevas con `input()` / `input.required()`; las `@Input` que quedan
+  son heredadas y se migran al tocar el componente.
 - Inyección con `inject()`, campos `readonly`.
 - Visibilidad: `private` para uso interno, `protected` para la plantilla,
   `public` sólo para API consumida por otro componente.
@@ -86,7 +94,11 @@ prefijo `iglesia-redes.`:
 
 ## Antes de dar por terminado un cambio
 
-1. `npm run build` sin errores y sin superar presupuestos.
+1. `npm run build` sin errores y sin superar presupuestos (el `prebuild` ya
+   ejecuta `npm run check`: paridad i18n + presupuesto de proyección).
 2. Claves i18n presentes en `es.json` **y** `ro.json`.
 3. Verificado en modo presentación (tecla `F`), no sólo en la web pública.
-4. Shard de `docs/ai/` actualizado si cambió arquitectura, contenido o presentación.
+4. **Responsive al 100 %**: `scripts/responsive-audit.snippet.js` en 320 · 375 ·
+   768 · 1024 · 1280 sobre cada ruta tocada devuelve `ok` (procedimiento en
+   `docs/ai/40-styling.md` → «Responsive»).
+5. Shard de `docs/ai/` actualizado si cambió arquitectura, contenido o presentación.

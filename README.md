@@ -22,9 +22,13 @@ propia web — cualquier persona en la sala puede escanearlo con el móvil.
   propio por anuncio para compartir) y se proyectan como diapositiva propia
   mientras estén en vigor; después desaparecen solos. Guía completa:
   `docs/ai/35-announcements.md`.
-- **Modo presentación** a pantalla completa: botón en la barra inferior o
-  tecla `F`. `Esc` para salir. `Q` muestra u oculta el QR, cuyo tamaño
-  (S/M/L) se elige en el panel de ajustes de la barra de controles.
+- **Panel de control** (`/media/control`), como la vista del presentador de
+  PowerPoint: lista de diapositivas, vista previa en vivo, anterior/pausa/
+  siguiente, duraciones, bloques y QR. Desde él se abre la **ventana de
+  proyección** (`/media/ecran`), que se lleva a la pantalla del templo
+  (directamente en la segunda pantalla en Chrome/Edge). La proyección sigue
+  sola si se cierra el panel; en la ventana, `F` da la pantalla completa y los
+  controles aparecen al acercar el ratón. `Q` muestra u oculta el QR.
 - Resaltado rotatorio sutil entre las redes en la web pública (en proyección
   se desactiva: el carrusel ya aporta el movimiento).
 - **Proyección proporcional**: en pantalla completa todo se mide en centésimas
@@ -65,7 +69,7 @@ Mientras `latestStreams` esté vacío, el bloque solo muestra el CTA hacia
 
 ```b
 ├── assets/
-│   ├── logo-elim.png
+│   ├── pwa/                   # Icono de la app (generado: npm run pwa:icons)
 │   └── i18n/
 │       ├── es.json            # Traducciones en español
 │       └── ro.json            # Traducciones en rumano
@@ -81,13 +85,15 @@ Mientras `latestStreams` esté vacío, el bloque solo muestra el CTA hacia
     │   ├── home/              # Pantalla principal (diapositiva)
     │   └── streams/           # Bloque de últimas transmisiones
     └── shared/
+        ├── brand-logo/        # Wordmark ELIM: la marca de la iglesia en toda la UI
+        ├── ineb-logo/         # Marca INEB en SVG (autocontenida, con hoja de marca)
         ├── lang-switcher/     # Conmutador ES / RO con banderas
         └── social-icon/       # Iconos SVG inline (offline-friendly)
 ```
 
 ## Stack
 
-- Angular 17 (componentes standalone, OnPush, signals).
+- Angular 22 (componentes standalone, OnPush, signals; Node ≥ 22.22 / 24 LTS).
 - `@ngx-translate/core` + `@ngx-translate/http-loader` para i18n
 
 ## Estructura de carpetas
@@ -104,6 +110,6 @@ src/app/
 
 ## Stack
 
-- Angular 17 (componentes standalone, OnPush, signals).
+- Angular 22 (componentes standalone, OnPush, signals; Node ≥ 22.22 / 24 LTS).
 - `angularx-qrcode` para la generación del QR.
 - SCSS con tokens de diseño centralizados.

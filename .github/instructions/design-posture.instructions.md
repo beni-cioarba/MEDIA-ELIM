@@ -33,6 +33,14 @@ cubren el *cómo* técnico): aquí va el *criterio*.
 6. **Degradación en pasos.** Los layouts no saltan de N columnas a 1: se
    reordenan por etapas. Cuando un bloque tiene contenido largo (direcciones,
    textos), que ocupe la fila entera antes que estrecharse.
+   **Responsive al 100 % es invariante, no una fase**: de 320 px a 4K, en web,
+   panel de control y proyección, sin scroll horizontal, solapes ni textos
+   recortados. Fluido antes que breakpoint (`clamp`, `minmax`, `auto-fit`,
+   `flex-wrap`); `nowrap` sólo con ellipsis; `min-width: 0` sólo en el hijo que
+   debe encoger; las barras envuelven (`flex-wrap`) en vez de aplastar; los
+   cortes son los de `$breakpoints`. Antes de dar por hecho un cambio de UI, pasa
+   `scripts/responsive-audit.snippet.js` en 320 · 375 · 768 · 1024 · 1280
+   (`docs/ai/40-styling.md` → «Responsive»).
 7. **Sin CLS.** Todo lo diferido reserva altura. Toda imagen lleva `width`,
    `height`, `loading` y `decoding`.
 8. **Contraste real.** Texto sobre superficie oscura: mínimo AA (4.5:1) para
@@ -47,7 +55,18 @@ cubren el *cómo* técnico): aquí va el *criterio*.
 
 ## Marca
 
-`app-brand-logo` (`src/app/shared/brand-logo/`) es **la única** representación
-de la marca. Cabecera, pie y proyección la consumen con distinto `size` y
-`tone`. No vuelvas a escribir el wordmark ni a insertar `logo-elim.*` en un
-componente nuevo.
+Tres piezas, cada una con un único uso (detalle en `docs/ai/45-design-system.md`
+→ «Marca»):
+
+- **La iglesia dentro de la UI** → `app-brand-logo` (`src/app/shared/brand-logo/`,
+  hoja de marca en su `README.md`), siempre. Cabecera, pie, proyección y panel de
+  control la consumen con distinto `size` y `tone` (claro: navy + oro profundo;
+  oscuro: papel + oro; los oros no se cruzan). Forma completa nunca bajo 24 px
+  (`showLocation="false"` por debajo). No reescribas el wordmark ni insertes una
+  imagen de marca; «Elim» y «Arganda del Rey» no se traducen.
+- **El icono de la app** (favicon, PWA, Apple) → el emblema sobre baldosa navy,
+  generado con `npm run pwa:icons`. Nunca dentro de una página, nunca un PNG
+  retocado a mano.
+- **INEB** → `app-ineb-logo` (`src/app/shared/ineb-logo/`, con su hoja de marca en
+  el `README.md`): `tone` según el fondo, `--ineb-size` en **px** y la forma
+  completa nunca por debajo de 32 px. Colores intocables.

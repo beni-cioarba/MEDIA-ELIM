@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, HostListener, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
@@ -27,21 +27,20 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
  * `role="dialog"` + `aria-modal` lo anuncian correctamente.
  */
 @Component({
-  selector: 'app-mobile-nav',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    TranslateModule,
-    A11yModule,
-    MatListModule,
-    MatDividerModule,
-    MatButtonModule,
-    IconComponent,
-    LangSwitcherComponent,
-    ShareButtonComponent,
-  ],
-  template: `
+    selector: 'app-mobile-nav',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        TranslatePipe,
+        A11yModule,
+        MatListModule,
+        MatDividerModule,
+        MatButtonModule,
+        IconComponent,
+        LangSwitcherComponent,
+        ShareButtonComponent,
+    ],
+    template: `
     <div class="scrim" (click)="ui.closeDrawer()" aria-hidden="true"></div>
 
     <aside
@@ -119,8 +118,8 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
       </footer>
     </aside>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         position: fixed;
         inset: 0;
@@ -218,7 +217,7 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
         }
       }
     `,
-  ],
+    ]
 })
 export class MobileNavComponent {
   protected readonly ui = inject(UiStore);

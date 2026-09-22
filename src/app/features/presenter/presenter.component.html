@@ -1,0 +1,319 @@
+<div class="presenter">
+  <!-- ══════════ Barra superior: identidad, estado y ventana de proyección ══════════ -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <!-- La misma marca que la web en su tinta para fondo oscuro (papel + oro),
+           directamente sobre la barra: sin pastilla, como en el pie. -->
+      <app-brand-logo class="topbar__logo" size="context" tone="dark" [link]="mediaLink" />
+      <div class="topbar__titles">
+        <h1 class="topbar__title">{{ 'presenter.title' | translate }}</h1>
+        <p class="topbar__subtitle">{{ 'presenter.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="topbar__status" [class.is-live]="sync.hasProjectionWindow()" role="status">
+      <span class="topbar__dot" aria-hidden="true"></span>
+      {{ (sync.hasProjectionWindow() ? 'presenter.status_window' : 'presenter.status_preview') | translate }}
+    </div>
+
+    <div class="topbar__actions">
+      @if (!sync.hasProjectionWindow()) {
+        @if (projection.canPlaceOnOtherScreen()) {
+          <button type="button" class="btn btn--primary" (click)="open('other-screen')">
+            <app-icon name="play" />
+            {{ 'presenter.open_other_screen' | translate }}
+          </button>
+          <button type="button" class="btn btn--ghost" (click)="open('here')">
+            {{ 'presenter.open' | translate }}
+          </button>
+        } @else {
+          <button type="button" class="btn btn--primary" (click)="open('here')">
+            <app-icon name="play" />
+            {{ 'presenter.open' | translate }}
+          </button>
+        }
+      } @else {
+        <!-- Ventana abierta. Pantalla completa a distancia: el gesto del clic
+             viaja delegado a la ventana (ver ProjectionWindowService). El
+             estado lo publica el líder con su latido. Si este panel no abrió
+             la ventana (se recargó), la recupera por su nombre. -->
+        <button
+          type="button"
+          class="btn btn--ghost"
+          [class.is-active]="isWindowFullscreen()"
+          [attr.aria-pressed]="isWindowFullscreen()"
+          (click)="toggleFullscreen()"
+        >
+          <app-icon [name]="isWindowFullscreen() ? 'fullscreen-exit' : 'fullscreen'" />
+          {{ (isWindowFullscreen() ? 'presenter.fullscreen_exit' : 'presenter.fullscreen') | translate }}
+        </button>
+        <button type="button" class="btn btn--ghost" (click)="focusWindow()">
+          {{ 'presenter.focus' | translate }}
+        </button>
+        @if (projection.isOpen()) {
+          <button type="button" class="btn btn--ghost" (click)="close()">
+            <app-icon name="close" />
+            {{ 'presenter.close' | translate }}
+          </button>
+        }
+      }
+    </div>
+  </header>
+
+  @if (popupBlocked()) {
+    <p class="alert" role="alert">{{ 'presenter.blocked' | translate }}</p>
+  }
+  @if (projection.fullscreenDenied()) {
+    <p class="alert" role="status">{{ 'presenter.fullscreen_denied' | translate }}</p>
+  }
+
+  <!-- ══════════ Cuerpo: diapositivas | vista previa + transporte + ajustes ══════════ -->
+  <div class="body">
+    <!-- ── Lista de diapositivas, agrupadas por bloque ─────────────────────── -->
+    <aside class="slides" [attr.aria-label]="'presenter.slides' | translate">
+      <h2 class="slides__title">
+        {{ 'presenter.slides' | translate }}
+        <span class="slides__count">{{ slides().length }}</span>
+      </h2>
+
+      <!-- Bloques arrastrables (CDK): el orden es el de la proyección. -->
+      <ol
+        class="slides__groups"
+        role="list"
+        cdkDropList
+        [cdkDropListData]="groups()"
+        (cdkDropListDropped)="dropped($event)"
+      >
+        @for (group of groups(); track group.state.id; let i = $index) {
+          <li class="group" [class.is-off]="!group.state.enabled" cdkDrag [cdkDragData]="group.state.id">
+            <div class="group__placeholder" *cdkDragPlaceholder></div>
+
+            <!-- Cabecera del bloque: agarrador, interruptor, nombre, duración -->
+            <div class="group__head">
+              <button
+                type="button"
+                class="group__grip"
+                cdkDragHandle
+                (keydown)="onGripKeydown($event, i)"
+                [attr.aria-label]="'presenter.reorder' | translate: { name: (group.state.titleKey | translate) }"
+                [title]="'presenter.reorder_hint' | translate"
+              >
+                <app-icon name="grip" />
+              </button>
+
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  [checked]="group.state.enabled"
+                  [disabled]="group.state.enabled && blocks.activeCount() === 1"
+                  (change)="setEnabled(group.state.id, $event)"
+                />
+                <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+                <span class="group__name">{{ group.state.titleKey | translate }}</span>
+              </label>
+
+              <span class="group__meta">
+                @if (group.state.isAuto) {
+                  <span class="tag tag--auto">{{ 'blocks.auto' | translate }}</span>
+                } @else {
+                  <button
+                    type="button"
+                    class="tag tag--manual"
+                    (click)="blocks.resetToAuto(group.state.id)"
+                    [title]="'blocks.reset_one' | translate"
+                  >
+                    {{ 'blocks.manual' | translate }} ↺
+                  </button>
+                }
+              </span>
+
+              <!-- Duración: −/+ en pasos de 5 s o el número escrito a mano. -->
+              <div
+                class="duration"
+                [class.is-custom]="!display.isDefaultDuration(group.state.id)"
+                role="group"
+                [attr.aria-label]="'blocks.duration' | translate"
+              >
+                <button
+                  type="button"
+                  class="duration__btn"
+                  [disabled]="display.durationFor(group.state.id) <= durationMin"
+                  (click)="display.stepDuration(group.state.id, -1)"
+                  [attr.aria-label]="'blocks.duration_less' | translate"
+                >−</button>
+                <input
+                  class="duration__input"
+                  type="number"
+                  inputmode="numeric"
+                  [min]="durationMin"
+                  [max]="durationMax"
+                  step="1"
+                  [value]="display.durationFor(group.state.id)"
+                  (change)="setDuration(group.state.id, $event)"
+                  (keydown.enter)="commitDuration($event)"
+                  [attr.aria-label]="'blocks.duration' | translate"
+                />
+                <span class="duration__unit" aria-hidden="true">s</span>
+                <button
+                  type="button"
+                  class="duration__btn"
+                  [disabled]="display.durationFor(group.state.id) >= durationMax"
+                  (click)="display.stepDuration(group.state.id, 1)"
+                  [attr.aria-label]="'blocks.duration_more' | translate"
+                >+</button>
+                @if (!display.isDefaultDuration(group.state.id)) {
+                  <button
+                    type="button"
+                    class="duration__btn duration__reset"
+                    (click)="display.resetDuration(group.state.id)"
+                    [attr.aria-label]="'blocks.duration_reset' | translate"
+                    [title]="'blocks.duration_reset' | translate"
+                  >↺</button>
+                }
+              </div>
+            </div>
+
+            <!-- Diapositivas del bloque -->
+            <ol class="group__slides" role="list">
+              @for (slide of group.slides; track slide.key) {
+                <li
+                  class="slide"
+                  [class.is-current]="isCurrent(slide)"
+                  [class.is-hidden]="slide.announcement && !isAnnouncementVisible(slide)"
+                >
+                  @if (slide.announcement) {
+                    <input
+                      type="checkbox"
+                      class="slide__check"
+                      [checked]="isAnnouncementVisible(slide)"
+                      [disabled]="!group.state.enabled"
+                      (change)="setAnnouncementVisible(slide.announcement.id, $event)"
+                      [attr.aria-label]="slide.announcement.title"
+                    />
+                  } @else {
+                    <span class="slide__check slide__check--spacer" aria-hidden="true"></span>
+                  }
+                  <button
+                    type="button"
+                    class="slide__btn"
+                    [disabled]="position(slide) === null"
+                    (click)="goTo(slide)"
+                    [attr.aria-current]="isCurrent(slide) ? 'true' : null"
+                  >
+                    <span class="slide__num">{{ position(slide) ?? '–' }}</span>
+                    <span class="slide__label">{{ label(slide) }}</span>
+                    @if (isCurrent(slide)) {
+                      <span class="slide__bar" aria-hidden="true">
+                        <span class="slide__bar-fill" [style.width.%]="progress()"></span>
+                      </span>
+                    }
+                  </button>
+                </li>
+              }
+            </ol>
+          </li>
+        }
+      </ol>
+
+      <div class="slides__foot">
+        <p class="slides__note">{{ 'blocks.min_one' | translate }} {{ 'presenter.reorder_hint' | translate }}</p>
+        <div class="slides__foot-actions">
+          @if (blocks.hasCustomOrder()) {
+            <button type="button" class="link" (click)="blocks.resetOrder()">{{ 'presenter.reset_order' | translate }}</button>
+          }
+          @if (blocks.hasManualOverrides() || display.hasCustomDurations()) {
+            <button type="button" class="link" (click)="resetAll()">{{ 'blocks.reset' | translate }}</button>
+          }
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Vista previa, transporte y ajustes de pantalla ───────────────────── -->
+    <section class="stage-panel">
+      <div class="preview">
+        <iframe
+          class="preview__frame"
+          [src]="previewUrl"
+          [title]="'presenter.preview' | translate"
+          tabindex="-1"
+          aria-hidden="true"
+        ></iframe>
+        @if (!sync.hasProjectionWindow()) {
+          <span class="preview__badge">{{ 'presenter.preview_only' | translate }}</span>
+        }
+      </div>
+
+      <!-- Transporte -->
+      <div class="transport" role="group" [attr.aria-label]="'carousel.label' | translate">
+        <button type="button" class="transport__btn" (click)="prev()" [attr.aria-label]="'carousel.prev' | translate" [title]="'carousel.prev' | translate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+        <button
+          type="button"
+          class="transport__btn transport__btn--main"
+          (click)="togglePause()"
+          [attr.aria-pressed]="isPaused()"
+          [attr.aria-label]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+          [title]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+        >
+          @if (isPaused()) {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7V5z" fill="currentColor" /></svg>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" /><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" /></svg>
+          }
+        </button>
+        <button type="button" class="transport__btn" (click)="next()" [attr.aria-label]="'carousel.next' | translate" [title]="'carousel.next' | translate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+
+        <div class="transport__progress">
+          <div class="transport__row">
+            <span class="transport__counter">{{ currentIndex() + 1 }} / {{ slides().length }}</span>
+            <span class="transport__time">{{ format(elapsedS()) }} / {{ format(durationS()) }}</span>
+          </div>
+          <div class="transport__bar" aria-hidden="true">
+            <span class="transport__fill" [style.width.%]="progress()"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ahora / siguiente -->
+      <dl class="cue">
+        <div class="cue__item cue__item--now">
+          <dt>{{ 'presenter.now' | translate }}</dt>
+          <dd>{{ currentSlide() ? label(currentSlide()!) : '—' }}</dd>
+        </div>
+        <div class="cue__item">
+          <dt>{{ 'presenter.next' | translate }}</dt>
+          <dd>{{ nextSlide() ? label(nextSlide()!) : '—' }}</dd>
+        </div>
+      </dl>
+
+      <!-- Pantalla: QR y atajos -->
+      <div class="screen">
+        <label class="switch">
+          <input type="checkbox" [checked]="display.qrVisible()" (change)="setQrVisible($event)" />
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="screen__label">{{ 'blocks.qr_show' | translate }}</span>
+        </label>
+        <div class="segments" role="radiogroup" [attr.aria-label]="'blocks.qr_size' | translate">
+          @for (size of qrSizes; track size) {
+            <button
+              type="button"
+              role="radio"
+              class="segments__btn"
+              [class.is-active]="display.qrSize() === size"
+              [attr.aria-checked]="display.qrSize() === size"
+              [disabled]="!display.qrVisible()"
+              (click)="display.setQrSize(size)"
+            >{{ 'blocks.qr_size_' + size | translate }}</button>
+          }
+        </div>
+        <p class="screen__hint">{{ 'presenter.shortcuts' | translate }}</p>
+        @if (sync.hasProjectionWindow()) {
+          <p class="screen__hint">{{ 'presenter.hint_fullscreen' | translate }}</p>
+        }
+      </div>
+    </section>
+  </div>
+</div>

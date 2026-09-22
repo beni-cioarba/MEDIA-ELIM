@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 
 /** Idiomas soportados por la aplicación. */
 export type AppLanguage = 'es' | 'ro';
@@ -24,18 +25,21 @@ export class LanguageService {
 
   readonly supported = SUPPORTED;
 
-  init(): void {
+  /**
+   * Arranque: elige el idioma (guardado → navegador → rumano) y **espera** a
+   * que su JSON esté cargado antes de pintar nada. El idioma de reserva lo fija
+   * `provideTranslateService` en `app.config.ts`.
+   */
+  init(): Promise<void> {
     this.translate.addLangs([...SUPPORTED]);
-    this.translate.setDefaultLang(DEFAULT_LANG);
-
-    // Default to romanian initially, checking browser if no saved preference
     const initial = this.readFromStorage() || this.detectFromBrowser() || DEFAULT_LANG;
-    this.use(initial);
+    return this.use(initial);
   }
 
-  use(lang: AppLanguage): void {
+  /** Cambia de idioma; resuelve cuando sus traducciones están disponibles. */
+  async use(lang: AppLanguage): Promise<void> {
     if (!SUPPORTED.includes(lang)) lang = DEFAULT_LANG;
-    this.translate.use(lang);
+    await firstValueFrom(this.translate.use(lang));
     this.current.set(lang);
     this.writeToStorage(lang);
     // Mantener el atributo `lang` del documento sincronizado: mejora la
@@ -45,8 +49,8 @@ export class LanguageService {
     }
   }
 
-  toggle(): void {
-    this.use(this.current() === 'es' ? 'ro' : 'es');
+  toggle(): Promise<void> {
+    return this.use(this.current() === 'es' ? 'ro' : 'es');
   }
 
   private detectFromBrowser(): AppLanguage | null {

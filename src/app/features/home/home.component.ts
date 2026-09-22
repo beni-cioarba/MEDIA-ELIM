@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { ScheduleService } from '../../core/services/schedule.service';
@@ -26,18 +26,17 @@ interface QuickLink {
  * reutilizables (`app-hero-carousel`, `app-page-section`).
  */
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    TranslateModule,
-    HeroCarouselComponent,
-    PageSectionComponent,
-    IconComponent,
-  ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+    selector: 'app-home',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        TranslatePipe,
+        HeroCarouselComponent,
+        PageSectionComponent,
+        IconComponent,
+    ],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent {
   protected readonly config = inject(CHURCH_CONFIG);

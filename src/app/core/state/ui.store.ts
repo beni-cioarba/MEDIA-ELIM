@@ -45,7 +45,7 @@ const initialState: UiState = {
 const SCROLL_THRESHOLD = 12;
 
 export const UiStore = signalStore(
-  { providedIn: 'root' },
+  { providedIn: 'root', protectedState: false },
   withState(initialState),
   withComputed(({ drawerOpen, openGroup }) => ({
     /** Hay algún panel de navegación abierto (bloquea el scroll del body). */

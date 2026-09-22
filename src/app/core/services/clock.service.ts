@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+
+import { DestroyRef, Injectable, inject, signal, DOCUMENT } from '@angular/core';
 
 /** Cadencia del reloj reactivo (1 minuto es suficiente para fechas/contadores). */
 const CLOCK_TICK_MS = 60_000;

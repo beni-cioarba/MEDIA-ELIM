@@ -47,9 +47,15 @@
 
     <p class="announcement__lead">{{ announcement.lead }}</p>
 
-    @if (announcement.sections.length > 0) {
-      <div class="announcement__sections" [style.--announcement-cols]="announcement.sections.length">
-        @for (section of announcement.sections; track section.heading) {
+    @if (sections().length > 0) {
+      <!-- Hasta dos secciones van en columnas; con tres o más se apilan a todo
+           el ancho (en proyección) y las listas de personas pasan a texto corrido. -->
+      <div
+        class="announcement__sections"
+        [class.announcement__sections--stacked]="sections().length > 2"
+        [style.--announcement-cols]="sections().length"
+      >
+        @for (section of sections(); track section.heading) {
           <section
             class="announcement__section"
             [class]="'announcement__section announcement__section--' + (section.kind ?? 'list')"

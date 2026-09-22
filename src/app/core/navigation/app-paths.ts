@@ -15,6 +15,12 @@ export const APP_PATHS = {
   credo: 'marturisirea-de-credinta',
   /** Escenario multimedia completo (y raíz de los bloques individuales). */
   media: 'media',
+  /**
+   * Rutas del operador, hijas de `media` pero **fuera** del shell público
+   * (sin cabecera ni pie): el panel de control y la ventana de proyección.
+   */
+  control: 'control',
+  projection: 'ecran',
   /** Anunțuri vigentes; admite `/anunturi/:id` como enlace propio de cada uno. */
   announcements: 'anunturi',
   /** Página de contacto: formulario, datos directos y cómo llegar. */

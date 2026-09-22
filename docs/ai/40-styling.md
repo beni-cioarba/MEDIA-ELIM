@@ -89,10 +89,42 @@ otra tarjeta que viva en la web y en la proyección a la vez.
 Las tarjetas de redes son **neutras** (superficie blanca, icono navy): el
 campo `gradient` de `SocialLink` sólo lo consume ya el pie de la web pública.
 
-## Responsive
+## Responsive — 100 %, siempre
 
-Sólo la **web pública** usa media queries (`_responsive.scss`). La proyección
-escala de forma proporcional con `--pj-u` y no necesita cortes.
+**Invariante**: toda pantalla de la app (web pública, panel de control y
+proyección) funciona de **320 px a 4K sin scroll horizontal, sin solapes y sin
+textos recortados**, y sin que el operador tenga que hacer zoom. No es una fase
+final: cada componente nuevo nace responsive y se verifica antes de darse por
+hecho.
+
+Cómo se consigue (en este orden de preferencia):
+
+1. **Fluido antes que breakpoint**: `clamp()`, `minmax()`, `auto-fit`,
+   `flex-wrap`, `aspect-ratio`. Un breakpoint sólo cuando cambia la
+   *disposición*, no para ajustar píxeles.
+2. **Nada tiene ancho mínimo implícito**: `white-space: nowrap` sólo con
+   `overflow: hidden; text-overflow: ellipsis` o dentro de algo que envuelve;
+   `min-width: 0` sólo en el hijo que debe encoger (el que lleva el ellipsis),
+   nunca en la caja de un rótulo que no puede desaparecer.
+3. **Las barras envuelven, no aplastan**: `flex-wrap: wrap` y el grupo de
+   acciones baja a otra fila (`flex: 1 1 100%` en estrecho) antes que pintar
+   encima del título. Ejemplo: `.topbar` del panel de control.
+4. **Degradación en pasos** (criterio 6 del diseño): N columnas → N-1 → 1; lo
+   largo ocupa la fila entera antes que estrecharse.
+5. **Los cortes son los del sistema** (`_tokens.scss` → `$breakpoints`: xs 480 ·
+   sm 720 · md 860 · lg 1024 · xl 1280 · stage 1600) con `@include until()` /
+   `from()`. Ningún número suelto.
+6. **La proyección escala con `--pj-u`** (1/100 del lienzo 16:9) y no necesita
+   cortes; lo que debe caber, cabe por proporción o se autoajusta
+   (`appFitToBox`) — nunca se recorta.
+
+**Verificación obligatoria** antes de dar por terminado un cambio de UI:
+`scripts/responsive-audit.snippet.js` pegado en la consola (o ejecutado por la
+IA con su navegador) en **320 · 375 · 768 · 1024 · 1280** en cada ruta tocada;
+debe devolver `ok` (sin `hScroll`, `overflowing`, `overlaps` ni `nowrap`). Los
+únicos falsos positivos admitidos son `.u-sr-only` y `.footer__version`.
+
+Estado auditado (sep. 2026): las 11 rutas pasan en los cinco anchos.
 
 | Rango                              | Objetivo                              |
 | ---------------------------------- | ------------------------------------- |

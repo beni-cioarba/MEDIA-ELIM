@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -31,18 +31,17 @@ interface Purpose {
  * demostración**; la propia página lo advierte mientras sigan siéndolo.
  */
 @Component({
-  selector: 'app-donate',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    TranslateModule,
-    PageSectionComponent,
-    IconComponent,
-    CopyButtonComponent,
-  ],
-  templateUrl: './donate.component.html',
-  styleUrl: './donate.component.scss',
+    selector: 'app-donate',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        TranslatePipe,
+        PageSectionComponent,
+        IconComponent,
+        CopyButtonComponent,
+    ],
+    templateUrl: './donate.component.html',
+    styleUrl: './donate.component.scss'
 })
 export class DonateComponent {
   private readonly config = inject(CHURCH_CONFIG);

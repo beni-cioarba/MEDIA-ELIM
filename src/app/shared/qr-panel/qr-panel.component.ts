@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { QRCodeModule } from 'angularx-qrcode';
-import { TranslateModule } from '@ngx-translate/core';
+import { QRCodeComponent } from 'angularx-qrcode';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Panel del QR. El SVG es vectorial: generamos un único QR de 1024px
@@ -33,11 +33,10 @@ import { TranslateModule } from '@ngx-translate/core';
  * inicial con `angularx-qrcode` (~30 kB CommonJS).
  */
 @Component({
-  selector: 'app-qr-panel',
-  standalone: true,
-  imports: [QRCodeModule, TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-qr-panel',
+    imports: [QRCodeComponent, TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <div class="qr-panel__frame">
       <qrcode
         [qrdata]="data"
@@ -51,8 +50,8 @@ import { TranslateModule } from '@ngx-translate/core';
     </div>
     <p class="qr-panel__caption">{{ 'qr.caption' | translate }}</p>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: flex;
         flex-direction: column;
@@ -105,7 +104,7 @@ import { TranslateModule } from '@ngx-translate/core';
         color: var(--qr-caption-color, var(--c-muted));
       }
     `,
-  ],
+    ]
 })
 export class QrPanelComponent {
   @Input({ required: true }) data!: string;

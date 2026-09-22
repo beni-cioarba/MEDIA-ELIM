@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
+import { TranslationObject } from '@ngx-translate/core';
 import {
   TranslationPackLoader,
   TranslationPackService,
@@ -16,7 +17,7 @@ const loadCredoArticles: TranslationPackLoader = async (lang) => {
       ? await import('../../../assets/i18n/credo-articles.es.json')
       : await import('../../../assets/i18n/credo-articles.ro.json');
 
-  return pack.default as unknown as Record<string, unknown>;
+  return pack.default as unknown as TranslationObject;
 };
 
 /**

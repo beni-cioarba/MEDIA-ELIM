@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal, HostListener, ElementRef, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+
+import { TranslatePipe } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AppLanguage, LanguageService } from '../../core/services/language.service';
 
@@ -12,11 +12,10 @@ interface LangOption {
 }
 
 @Component({
-  selector: 'app-lang-switcher',
-  standalone: true,
-  imports: [CommonModule, TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-lang-switcher',
+    imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <div class="lang-dropdown" [class.is-open]="isOpen()">
       <button
         type="button"
@@ -24,31 +23,34 @@ interface LangOption {
         (click)="toggleDropdown()"
         [attr.aria-expanded]="isOpen()"
         [attr.aria-label]="'lang.label' | translate"
-      >
+        >
         <span class="lang-flag" [innerHTML]="activeOption().svgFlag" aria-hidden="true"></span>
         <span class="lang-code">{{ activeOption().code.toUpperCase() }}</span>
         <svg class="lang-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
-
-      <div class="lang-dropdown__menu" *ngIf="isOpen()">
-        <button
-          *ngFor="let opt of options"
-          type="button"
-          class="lang-dropdown__item"
-          [class.lang-dropdown__item--active]="lang.current() === opt.code"
-          (click)="selectLang(opt.code)"
-          [title]="opt.label"
-        >
-          <span class="lang-flag" [innerHTML]="opt.svgFlag" aria-hidden="true"></span>
-          <span class="lang-label">{{ opt.label }}</span>
-        </button>
-      </div>
+    
+      @if (isOpen()) {
+        <div class="lang-dropdown__menu">
+          @for (opt of options; track opt) {
+            <button
+              type="button"
+              class="lang-dropdown__item"
+              [class.lang-dropdown__item--active]="lang.current() === opt.code"
+              (click)="selectLang(opt.code)"
+              [title]="opt.label"
+              >
+              <span class="lang-flag" [innerHTML]="opt.svgFlag" aria-hidden="true"></span>
+              <span class="lang-label">{{ opt.label }}</span>
+            </button>
+          }
+        </div>
+      }
     </div>
-  `,
-  styles: [
-    `
+    `,
+    styles: [
+        `
       :host {
         display: block;
         position: relative;
@@ -144,7 +146,7 @@ interface LangOption {
       .lang-flag :global(svg),
       .lang-flag svg { width: 100%; height: 100%; display: block; object-fit: cover; }
     `,
-  ],
+    ]
 })
 export class LangSwitcherComponent implements OnInit {
   protected readonly lang = inject(LanguageService);

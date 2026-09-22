@@ -48,7 +48,9 @@ src/app/
       announcements.service.ts       ⭐ Anuncios vigentes (por fecha de caducidad)
       bible-reading.service.ts       Semana del plan de lectura que toca anunciar (la que contiene mañana)
       presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual) y sus diapositivas
-      presentation-display.service.ts QR visible / tamaño del QR en proyección
+      presentation-display.service.ts QR visible / tamaño del QR / duración por bloque
+      presentation-sync.service.ts   ⭐ Canal entre ventanas: elección de líder, estado, órdenes
+      projection-window.service.ts   Abre/cierra la ventana de proyección (2.ª pantalla si el navegador lo permite)
       carousel.service.ts            Motor del carrusel (diapositiva, pausa, progreso)
       calendar.service.ts            Generación de .ics / webcal / Google Calendar
       language.service.ts            ES/RO + persistencia
@@ -61,6 +63,8 @@ src/app/
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Estructura de liderazgo y departamentos
     announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección) + autoajuste
+    presenter/              ⭐ Panel de control de la proyección (`/media/control`, sin shell)
+    projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)
     stage/                  ⭐ Escenario proyectable (.stage)
       stage.component.*     Marca, carrusel, QR, controles
       blocks/               Un componente por bloque proyectable
@@ -68,12 +72,16 @@ src/app/
         gallery-block/      weekly-block/   upcoming-block/ location-block/
       styles/               Tokens, responsive (web) y proyección (`_projection.scss`)
   shared/                   Componentes reutilizables y "tontos"
+    brand-logo/             ⭐ Wordmark ELIM: la única marca de la iglesia en la UI; carpeta autocontenida + README (hoja de marca)
+    ineb-logo/              ⭐ Marca INEB en SVG, carpeta autocontenida + README (hoja de marca)
     icon/ social-icon/ lang-switcher/ qr-panel/ footer/ share-button/
     floating-actions/ calendar-sync-button/ presentation-settings/
     page-section/ hero-carousel/
     styles/                 Parciales SCSS compartidos (botones, page-hero)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
-scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
+src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
+scripts/                      Utilidades Node (imágenes, icono de la app, YouTube)
+  assets-src/emblema-elim.png Máster del emblema (674 px, no se publica)
 .github/workflows/            Deploy a Pages + cron de datos de YouTube
 ```
 
@@ -89,7 +97,8 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
-| «Que tal bloque no salga al presentar»              | Panel de bloques en la UI (nada de código)              |
+| «Proyectar en la pantalla del templo»               | `/media/control` → «Abrir proyección» (nada de código; `docs/ai/30-presentation.md`) |
+| «Que tal bloque no salga al presentar»              | Panel de control (o popover de la ventana), nada de código |
 | «Quitar / achicar el QR al proyectar»               | Panel de ajustes (tecla `Q`, tamaño S/M/L) — `PresentationDisplayService` |
 | «Que tal bloque dure más / menos» · «hoy no leáis este anuncio» | Panel de ajustes (−/+ segundos por bloque; casilla por anuncio). Defectos en `DEFAULT_DURATIONS_S` |
 | «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
@@ -98,6 +107,12 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |
 | «Color, espaciado, tipografía, componente Material» | `docs/ai/45-design-system.md`                           |
+| «¿Qué logo pongo aquí?» · «Cambia el icono de la app» · «Logo de INEB» | `docs/ai/45-design-system.md` → «Marca» (wordmark `app-brand-logo` / emblema → `npm run pwa:icons` / `app-ineb-logo`; hoja de marca INEB en `shared/ineb-logo/README.md`) |
+| «Pantalla completa de la proyección desde el panel» | Botón «Pantalla completa» del panel (`ProjectionWindowService.toggleFullscreen`, gesto delegado) — `docs/ai/30-presentation.md` |
+| «¿Se ve bien en móvil?» · «Hazlo responsive»        | `scripts/responsive-audit.snippet.js` en 320 · 375 · 768 · 1024 · 1280 — regla en `docs/ai/40-styling.md` → Responsive |
+| «Mejorar rendimiento / carga» · «Nuevo módulo grande» | `docs/ai/75-plan-evolucion.md` (diagnóstico medido + plan por fases) |
+| «Textos pequeños al proyectar» · «No cabe en la diapositiva» | `docs/ai/30-presentation.md` → «Legibilidad» (escala de cartel: un anuncio = una diapositiva, jerarquía, autoajuste 1–0,7, `webOnly`); `npm run check:projection` |
+| «Subir Angular / dependencias»                      | `docs/ai/50-build-deploy.md` → Node (24 portable en `.tools`) y `ng update` por versiones |
 | «Ajusta el diseño / tamaños en proyección»          | `docs/ai/30-presentation.md` (sistema `--pj-u`) + `styles/_projection.scss` |
 | «Nuevo panel de anuncios / avisos proyectable»      | `docs/ai/30-presentation.md` (receta del bloque nuevo) |
 
@@ -113,3 +128,7 @@ scripts/                      Utilidades Node (imágenes, iconos PWA, YouTube)
 6. Los componentes consumen **variables semánticas** (`--c-*`, `--sp-*`…), nunca
    valores en crudo ni primitivas de `_tokens.scss`.
 7. El menú se define **sólo** en `core/navigation/navigation.config.ts`.
+8. **Todo es responsive al 100 %**, de 320 px a 4K, en web, panel y proyección:
+   sin scroll horizontal, sin solapes, sin textos recortados. Se verifica con
+   `scripts/responsive-audit.snippet.js` en 320 · 375 · 768 · 1024 · 1280 antes
+   de dar por hecho cualquier cambio de UI (`docs/ai/40-styling.md`).

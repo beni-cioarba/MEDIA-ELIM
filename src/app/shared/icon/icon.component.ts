@@ -28,15 +28,14 @@ import { IconName } from '../../core/ui/icon-name';
  * `<mat-icon fontIcon="volunteer_activism" />`
  */
 @Component({
-  selector: 'app-icon',
-  standalone: true,
-  imports: [MatIconModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-icon',
+    imports: [MatIconModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <mat-icon class="elim-icon" [svgIcon]="svgIcon()" aria-hidden="true" />
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: inline-flex;
         width: 1em;
@@ -50,7 +49,7 @@ import { IconName } from '../../core/ui/icon-name';
         font-size: inherit;
       }
     `,
-  ],
+    ]
 })
 export class IconComponent {
   private readonly _name = signal<IconName>('home');

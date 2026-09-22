@@ -1,0 +1,924 @@
+@use 'ds' as *;
+@use '../../shared/styles/buttons' as *;
+
+/* =====================================================================
+ * Panel de control («vista del presentador»).
+ *
+ * Es la sala de máquinas, no la web: fondo navy oscuro para que el operador
+ * distinga de un vistazo qué ventana es la suya y para no deslumbrar en el
+ * templo a media luz. Todo compacto: la información útil (qué se proyecta,
+ * cuánto queda, qué viene) cabe en un portátil de 13" sin scroll.
+ * ===================================================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--c-primary-darkest);
+  color: var(--c-on-primary);
+  --ink-soft: rgba(247, 250, 252, 0.72);
+  --ink-faint: rgba(247, 250, 252, 0.45);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --panel: rgba(255, 255, 255, 0.04);
+  --panel-raised: rgba(255, 255, 255, 0.07);
+}
+
+.presenter {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* --- Barra superior ------------------------------------------------------ */
+
+// La barra **envuelve** en vez de encoger: la marca y los títulos no ceden ancho
+// (su mínimo es su contenido), así que cuando no caben las acciones bajan a una
+// segunda fila alineadas a la derecha. Antes `min-width: 0` aplastaba los
+// títulos a 0 px y el texto se pintaba encima del estado.
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-3) var(--sp-5);
+  border-bottom: 1px solid var(--line);
+  background: var(--c-primary-deep);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex: 0 0 auto;
+}
+
+/* La marca de la web (`app-brand-logo`) en su tinta para fondo oscuro (papel +
+   oro), directamente sobre la barra, como en el pie. Un filete la separa de los
+   títulos; nada de pastillas claras en el panel oscuro.
+
+   Tamaño **fluido**: con `size="context"` el cuerpo lo fija aquí la barra, así
+   la marca aprovecha el sitio disponible (de 26 px en un portátil pequeño a
+   38 px en una pantalla ancha) en vez de quedarse en el mínimo de 24 px. El
+   suelo es el mínimo de la forma completa; el techo, lo que mide el bloque de
+   títulos a su lado, para que la barra no crezca por la marca. */
+.topbar__logo {
+  flex: 0 0 auto;
+  --brand-size: clamp(26px, 2.2vw, 38px);
+  padding-inline-end: var(--sp-4);
+  border-inline-end: 1px solid var(--line-strong);
+}
+
+.topbar__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.topbar__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-lg);
+  font-weight: 700;
+  color: var(--c-on-primary);
+  white-space: nowrap;
+}
+
+.topbar__subtitle {
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+
+  &.is-live {
+    border-color: rgba(212, 175, 55, 0.6);
+    color: var(--c-gold-soft);
+  }
+}
+
+.topbar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+
+  .is-live & {
+    background: var(--c-gold);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+  }
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-left: auto;
+
+  .btn {
+    padding-block: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .btn--ghost {
+    color: var(--c-on-primary);
+    border-color: var(--line-strong);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--panel-raised);
+      color: var(--c-gold-soft);
+    }
+
+    // Estado «pulsado» (la ventana ya ocupa la pantalla): mismo lenguaje que
+    // el indicador en vivo de la barra, borde y texto dorados.
+    &.is-active {
+      color: var(--c-gold-soft);
+      border-color: rgba(212, 175, 55, 0.6);
+      background: rgba(212, 175, 55, 0.1);
+    }
+  }
+}
+
+@include until('sm') {
+  .topbar {
+    padding-inline: var(--sp-4);
+  }
+
+  // Las acciones ocupan su fila, se reparten el ancho y, si aun así no caben,
+  // el rótulo parte en dos líneas antes que desbordar la pantalla.
+  .topbar__actions {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+
+    .btn {
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: center;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+}
+
+.alert {
+  margin: var(--sp-3) var(--sp-5) 0;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: rgba(212, 175, 55, 0.12);
+  font-size: var(--fs-sm);
+  color: var(--c-gold-soft);
+}
+
+/* --- Cuerpo -------------------------------------------------------------- */
+
+.body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(300px, 27rem) minmax(0, 1fr);
+  gap: var(--sp-5);
+  padding: var(--sp-5);
+  min-height: 0;
+}
+
+@include until('lg') {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .slides {
+    order: 2;
+  }
+}
+
+/* --- Lista de diapositivas ------------------------------------------------ */
+
+.slides {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.slides__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.slides__count {
+  padding: 0.05rem 0.5rem;
+  border-radius: var(--r-pill);
+  background: var(--panel-raised);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-on-primary);
+}
+
+.slides__groups {
+  list-style: none;
+  margin: 0;
+  padding: var(--sp-2);
+  display: grid;
+  gap: var(--sp-2);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.group {
+  border-radius: var(--r-md);
+  background: var(--panel);
+  border: 1px solid transparent;
+  transition: opacity var(--mo-fast) var(--ea-standard);
+
+  &.is-off {
+    opacity: 0.55;
+  }
+}
+
+.group__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-1);
+}
+
+// Muy estrecho: el nombre del bloque se quedaba en ~30 px entre la etiqueta y
+// la duración. Dos filas: agarrador + interruptor + nombre arriba; etiqueta y
+// duración debajo, a la derecha.
+@include until('xs') {
+  .group__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .group__meta {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .group__head > .duration {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+}
+
+/* --- Arrastrar para reordenar (CDK DragDrop) ----------------------------- */
+
+.group__grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--ink-faint);
+  cursor: grab;
+  touch-action: none;
+
+  &:hover {
+    color: var(--c-on-primary);
+    background: var(--panel-raised);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: 1px;
+    color: var(--c-gold);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+/* Hueco que deja el bloque mientras se arrastra. */
+.group__placeholder {
+  min-height: 3rem;
+  border-radius: var(--r-md);
+  border: 1px dashed rgba(212, 175, 55, 0.6);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+/* El bloque «en el aire»: mismo aspecto, con sombra, sobre fondo oscuro. */
+.cdk-drag-preview.group {
+  box-sizing: border-box;
+  background: var(--c-primary-deep);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: var(--e-4);
+  color: var(--c-on-primary);
+}
+
+.cdk-drag-animating,
+.slides__groups.cdk-drop-list-dragging .group:not(.cdk-drag-placeholder) {
+  transition: transform var(--mo-base) var(--ea-standard);
+}
+
+.group__name {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-on-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group__meta {
+  display: inline-flex;
+}
+
+.tag {
+  padding: 0.1rem 0.45rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+
+  &--auto {
+    background: rgba(212, 175, 55, 0.18);
+    color: var(--c-gold-soft);
+  }
+
+  &--manual {
+    background: var(--panel-raised);
+    color: var(--c-on-primary);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+  }
+}
+
+.group__slides {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--sp-2) var(--sp-2);
+  display: grid;
+  gap: 2px;
+}
+
+.slide {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem;
+
+  &.is-hidden .slide__label {
+    color: var(--ink-faint);
+    text-decoration: line-through;
+  }
+}
+
+.slide__check {
+  width: 14px;
+  height: 14px;
+  margin: 0 0 0 0.4rem;
+  accent-color: var(--c-gold);
+  cursor: pointer;
+
+  &--spacer {
+    visibility: hidden;
+  }
+}
+
+.slide__btn {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--c-on-primary);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover:not(:disabled) {
+    background: var(--panel-raised);
+  }
+
+  &:disabled {
+    cursor: default;
+    color: var(--ink-faint);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: -2px;
+  }
+
+  .is-current & {
+    background: rgba(212, 175, 55, 0.16);
+    box-shadow: inset 3px 0 0 var(--c-gold);
+  }
+}
+
+.slide__num {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  text-align: right;
+
+  .is-current & {
+    color: var(--c-gold);
+  }
+}
+
+.slide__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slide__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(212, 175, 55, 0.25);
+}
+
+.slide__bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--c-gold);
+  transition: width 120ms linear;
+}
+
+.slides__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4) var(--sp-3);
+  border-top: 1px solid var(--line);
+}
+
+.slides__note {
+  margin: 0;
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+}
+
+.slides__foot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--c-gold-soft);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* --- Interruptor y duración (mismo lenguaje que el popover del escenario) -- */
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  input:disabled ~ .switch__track {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  input:focus-visible ~ .switch__track {
+    outline: 2px solid var(--c-gold);
+    outline-offset: 2px;
+  }
+
+  input:checked ~ .switch__track {
+    background: var(--c-gold);
+
+    .switch__thumb {
+      transform: translateX(14px);
+      background: var(--c-primary-darkest);
+    }
+  }
+}
+
+.switch__track {
+  flex: 0 0 auto;
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.18);
+  transition: background var(--mo-fast) var(--ea-standard);
+}
+
+.switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--c-on-primary);
+  transition: transform var(--mo-fast) var(--ea-standard), background var(--mo-fast) var(--ea-standard);
+}
+
+.duration {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+
+  &.is-custom {
+    border-color: rgba(212, 175, 55, 0.6);
+    background: rgba(212, 175, 55, 0.1);
+  }
+}
+
+.duration__btn {
+  border: 0;
+  background: transparent;
+  color: var(--c-on-primary);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+
+  &:not(:disabled):hover {
+    background: var(--panel-raised);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: -2px;
+  }
+}
+
+.duration__btn {
+  width: 22px;
+  font-size: 0.9rem;
+}
+
+/* Segundos escritos a mano: campo numérico sin flechas del navegador (ya
+   están los botones −/+), con el mismo cuerpo que el resto de la fila. */
+.duration__input {
+  width: 2.6rem;
+  padding: 0.25rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--c-on-primary);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: -2px;
+    border-radius: var(--r-xs);
+  }
+}
+
+.duration__unit {
+  align-self: center;
+  margin-right: 2px;
+  font-size: 0.6rem;
+  color: var(--ink-faint);
+}
+
+.duration__reset {
+  color: var(--c-gold-soft);
+  border-left: 1px solid var(--line);
+}
+
+/* --- Vista previa, transporte y pantalla ---------------------------------- */
+
+.stage-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line-strong);
+  background: #000;
+  overflow: hidden;
+  box-shadow: var(--e-4);
+}
+
+.preview__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Es un espejo: nada de clics ni foco dentro. */
+  pointer-events: none;
+}
+
+// Abajo a la izquierda: arriba tapaba la marca del escenario proyectado; la
+// franja del versículo es la zona menos crítica del lienzo.
+.preview__badge {
+  position: absolute;
+  bottom: var(--sp-3);
+  left: var(--sp-3);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--r-pill);
+  background: rgba(13, 31, 53, 0.75);
+  border: 1px solid var(--line-strong);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  backdrop-filter: blur(6px);
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.transport__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--c-on-primary);
+  cursor: pointer;
+  transition: background var(--mo-fast) var(--ea-standard), transform var(--mo-fast) var(--ea-standard);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: var(--panel-raised);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: 2px;
+  }
+
+  &--main {
+    width: 52px;
+    height: 52px;
+    background: var(--c-gold);
+    border-color: var(--c-gold);
+    color: var(--c-primary-darkest);
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    &:hover {
+      background: var(--c-gold-soft);
+    }
+  }
+}
+
+.transport__progress {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.transport__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.transport__counter {
+  color: var(--c-on-primary);
+  // «1 / 10» no se parte en dos líneas en pantallas estrechas.
+  white-space: nowrap;
+}
+
+.transport__bar {
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.transport__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c-gold);
+  transition: width 120ms linear;
+}
+
+.cue {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.cue__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  min-width: 0;
+
+  dt {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--fs-body);
+    font-weight: 700;
+    color: var(--c-on-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &--now {
+    border-color: rgba(212, 175, 55, 0.45);
+
+    dt {
+      color: var(--c-gold-soft);
+    }
+  }
+}
+
+.screen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.screen__label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.segments {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+}
+
+.segments__btn {
+  padding: 0.25rem 0.7rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-on-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &.is-active {
+    background: var(--c-gold);
+    color: var(--c-primary-darkest);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: 2px;
+  }
+}
+
+.screen__hint {
+  margin: 0;
+  margin-left: auto;
+  max-width: none;
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+}
+
+@include motion-reduce {
+  .switch__track,
+  .switch__thumb,
+  .slide__btn,
+  .slide__bar-fill,
+  .transport__fill,
+  .transport__btn,
+  .group {
+    transition: none;
+  }
+}

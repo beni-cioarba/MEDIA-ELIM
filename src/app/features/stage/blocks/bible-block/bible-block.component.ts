@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BibleReadingService } from '../../../../core/services/bible-reading.service';
 import { PresentationService } from '../../../../core/presentation.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
@@ -23,13 +23,12 @@ import { IconComponent } from '../../../../shared/icon/icon.component';
  * sus dos contextos.
  */
 @Component({
-  selector: 'app-bible-block',
-  standalone: true,
-  imports: [TranslateModule, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-  templateUrl: './bible-block.component.html',
-  styleUrl: './bible-block.component.scss',
+    selector: 'app-bible-block',
+    imports: [TranslatePipe, IconComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    templateUrl: './bible-block.component.html',
+    styleUrl: './bible-block.component.scss'
 })
 export class BibleBlockComponent {
   protected readonly bible = inject(BibleReadingService);
@@ -37,9 +36,4 @@ export class BibleBlockComponent {
 
   protected readonly fullscreen = this.presentation.isFullscreen;
   protected readonly week = this.bible.announcedWeek;
-
-  /** El plan trae columna de Nuevo Testamento esta semana (hoy no; el modelo lo admite). */
-  protected readonly hasNewTestament = computed<boolean>(
-    () => this.week()?.days.some((day) => day.newTestament !== null) ?? false,
-  );
 }

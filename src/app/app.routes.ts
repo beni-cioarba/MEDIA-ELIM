@@ -15,6 +15,28 @@ import { credoTranslationsResolver } from './features/credo/credo-translations.r
  *  4. Las rutas no se escriben como literales sueltos: salen de `APP_PATHS`.
  */
 export const APP_ROUTES: Routes = [
+  // ── Rutas del operador (sin shell) ─────────────────────────────────────
+  // Van ANTES del layout: `media/:blockId` las capturaría como un bloque.
+  {
+    // Panel de control de la proyección: lista de diapositivas, transporte,
+    // vista previa y ajustes. Abre la ventana de proyección.
+    path: `${APP_PATHS.media}/${APP_PATHS.control}`,
+    loadComponent: () =>
+      import('./features/presenter/presenter.component').then((m) => m.PresenterComponent),
+    data: {
+      seo: { titleKey: 'seo.control.title', descriptionKey: 'seo.control.description' },
+    },
+  },
+  {
+    // Ventana de proyección: sólo el escenario, ya presentando. Con
+    // `?rol=preview` es la vista previa incrustada en el panel.
+    path: `${APP_PATHS.media}/${APP_PATHS.projection}`,
+    loadComponent: () =>
+      import('./features/projection/projection.component').then((m) => m.ProjectionComponent),
+    data: {
+      seo: { titleKey: 'seo.projection.title', descriptionKey: 'seo.projection.description' },
+    },
+  },
   {
     path: '',
     component: MainLayoutComponent,
@@ -67,6 +89,11 @@ export const APP_ROUTES: Routes = [
         data: {
           seo: { titleKey: 'seo.media.title', descriptionKey: 'seo.media.description' },
         },
+      },
+      {
+        // Los anuncios tienen página propia: `/media/anunturi` no es un bloque web.
+        path: `${APP_PATHS.media}/${APP_PATHS.announcements}`,
+        redirectTo: APP_PATHS.announcements,
       },
       {
         // Un bloque como página propia (`/media/galerie`, `/media/program`…).

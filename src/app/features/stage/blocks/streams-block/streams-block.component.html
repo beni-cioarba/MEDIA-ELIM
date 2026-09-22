@@ -15,7 +15,8 @@
         </span>
         <img
           class="live-now__thumb"
-          [src]="live.thumbnail"
+          [src]="thumb(live.thumbnail)"
+          (error)="onThumbError($event)"
           [alt]="live.title"
           loading="lazy"
           decoding="async"
@@ -50,7 +51,14 @@
               [attr.aria-label]="('streams.watch_video' | translate) + ': ' + v.title"
               [title]="v.title"
             >
-              <img class="streams__thumb" [src]="v.thumbnail" [alt]="v.title" loading="lazy" decoding="async" />
+              <img
+                class="streams__thumb"
+                [src]="thumb(v.thumbnail)"
+                (error)="onThumbError($event)"
+                [alt]="v.title"
+                loading="lazy"
+                decoding="async"
+              />
               <span class="streams__caption">{{ v.title }}</span>
             </a>
             <app-share-button class="streams__share" [url]="v.url" [title]="v.title" />

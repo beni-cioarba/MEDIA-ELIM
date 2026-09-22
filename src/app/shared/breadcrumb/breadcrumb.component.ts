@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { NavItem } from '../../core/navigation/nav.model';
@@ -34,11 +34,10 @@ const HOME = MAIN_NAV.find((item) => item.id === 'home');
  *    mantiene la altura estable (cero CLS) y el último nivel visible.
  */
 @Component({
-  selector: 'app-breadcrumb',
-  standalone: true,
-  imports: [RouterLink, TranslateModule, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-breadcrumb',
+    imports: [RouterLink, TranslatePipe, IconComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     @if (crumbs().length > 1) {
       <nav class="crumbs" [attr.aria-label]="'nav.breadcrumb' | translate">
         <ol class="crumbs__list">
@@ -72,7 +71,7 @@ const HOME = MAIN_NAV.find((item) => item.id === 'home');
       </nav>
     }
   `,
-  styleUrl: './breadcrumb.component.scss',
+    styleUrl: './breadcrumb.component.scss'
 })
 export class BreadcrumbComponent {
   private readonly trail = inject(NavActiveService).trail;

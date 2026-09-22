@@ -8,7 +8,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 
 /**
@@ -25,11 +25,10 @@ import { CHURCH_CONFIG } from '../../core/church.config';
  * son URLs `https://...` con parámetros estándar.
  */
 @Component({
-  selector: 'app-share-button',
-  standalone: true,
-  imports: [TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-share-button',
+    imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <button
       type="button"
       class="share-btn"
@@ -226,8 +225,8 @@ import { CHURCH_CONFIG } from '../../core/church.config';
       }
     </dialog>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: inline-flex;
       }
@@ -474,7 +473,7 @@ import { CHURCH_CONFIG } from '../../core/church.config';
         }
       }
     `,
-  ],
+    ]
 })
 export class ShareButtonComponent {
   private readonly config = inject(CHURCH_CONFIG);

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
@@ -9,6 +9,7 @@ import { LanguageService } from '../../core/services/language.service';
 import { APP_VERSION } from '../../../environments/version';
 import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
 import { IconComponent } from '../icon/icon.component';
+import { InebLogoComponent } from '../ineb-logo/ineb-logo.component';
 import { SocialIconComponent } from '../social-icon/social-icon.component';
 
 /** Grupo de enlaces del pie, derivado de la navegación principal. */
@@ -42,18 +43,18 @@ interface FooterColumn {
  * descarga nunca. Por eso puede permitirse ser rico sin coste inicial.
  */
 @Component({
-  selector: 'app-footer',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    TranslateModule,
-    BrandLogoComponent,
-    IconComponent,
-    SocialIconComponent,
-  ],
-  templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss',
+    selector: 'app-footer',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        TranslatePipe,
+        BrandLogoComponent,
+        IconComponent,
+        InebLogoComponent,
+        SocialIconComponent,
+    ],
+    templateUrl: './footer.component.html',
+    styleUrl: './footer.component.scss'
 })
 export class FooterComponent {
   protected readonly config = inject(CHURCH_CONFIG);
@@ -75,6 +76,8 @@ export class FooterComponent {
     donate: `/${APP_PATHS.donate}`,
     live: blockPath('streams'),
     location: blockPath('location'),
+    /** Panel de control de la proyección (herramienta del operador). */
+    control: `/${APP_PATHS.media}/${APP_PATHS.control}`,
   } as const;
 
   protected readonly mailto = `mailto:${this.config.contact.email}`;

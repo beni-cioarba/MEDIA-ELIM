@@ -8,8 +8,9 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Announcement } from '../../../core/church.config';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Announcement, AnnouncementSection } from '../../../core/church.config';
+import { PresentationService } from '../../../core/presentation.service';
 import { ScheduleService } from '../../../core/services/schedule.service';
 import { parseIsoDate } from '../../../core/util/iso-date';
 import { IconComponent } from '../../../shared/icon/icon.component';
@@ -34,17 +35,17 @@ import { FitToBoxDirective } from '../fit-to-box.directive';
  *    la hoja del escenario está al límite de su presupuesto.
  */
 @Component({
-  selector: 'app-announcement-card',
-  standalone: true,
-  imports: [TranslateModule, IconComponent, FitToBoxDirective],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-  templateUrl: './announcement-card.component.html',
-  styleUrl: './announcement-card.component.scss',
+    selector: 'app-announcement-card',
+    imports: [TranslatePipe, IconComponent, FitToBoxDirective],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    templateUrl: './announcement-card.component.html',
+    styleUrl: './announcement-card.component.scss'
 })
 export class AnnouncementCardComponent {
   protected readonly schedule = inject(ScheduleService);
   private readonly translate = inject(TranslateService);
+  private readonly presentation = inject(PresentationService);
 
   private readonly current = signal<Announcement | null>(null);
   private readonly langChange = toSignal(this.translate.onLangChange, { initialValue: null });
@@ -57,6 +58,15 @@ export class AnnouncementCardComponent {
     return this.current() as Announcement;
   }
 
+  /**
+   * Secciones que se pintan: todas en la web; en proyección se omiten las
+   * marcadas `webOnly` (detalle que no cabe legible en el cartel).
+   */
+  protected readonly sections = computed<readonly AnnouncementSection[]>(() => {
+    const all = this.current()?.sections ?? [];
+    return this.presentation.isFullscreen() ? all.filter((s) => !s.webOnly) : all;
+  });
+
   /** Día del mes para la ficha de fecha («18»). */
   protected readonly day = computed<string>(() => {
     const iso = this.current()?.date;
@@ -68,7 +78,7 @@ export class AnnouncementCardComponent {
     this.langChange();
     const iso = this.current()?.date;
     if (!iso) return '';
-    const lang = this.translate.currentLang || this.translate.defaultLang || 'ro';
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
     try {
       return new Intl.DateTimeFormat(lang, { month: 'short' })
         .format(parseIsoDate(iso))

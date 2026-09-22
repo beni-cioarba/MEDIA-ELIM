@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { PresentationService } from '../../core/presentation.service';
 import { YouTubeService } from '../../core/youtube.service';
@@ -31,6 +31,13 @@ import { WeeklyBlockComponent } from './blocks/weekly-block/weekly-block.compone
 import { UpcomingBlockComponent } from './blocks/upcoming-block/upcoming-block.component';
 import { BibleBlockComponent } from './blocks/bible-block/bible-block.component';
 import { LocationBlockComponent } from './blocks/location-block/location-block.component';
+
+/**
+ * Bloques que en la web tienen sección propia y por eso **no** entran en el
+ * panel completo (`/media`): los anuncios viven en `/anunturi` y la lectura
+ * bíblica en `/media/citirea-bibliei`. En la proyección siguen entrando.
+ */
+const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>(['announcements', 'bible']);
 
 /**
  * Diapositiva del escenario: las del carrusel más `location`, que sólo
@@ -61,26 +68,25 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
  * usan BEM namespaced, así que no hay riesgo de colisión).
  */
 @Component({
-  selector: 'app-stage',
-  standalone: true,
-  imports: [
-    TranslateModule,
-    BrandLogoComponent,
-    QrPanelComponent,
-    PresentationSettingsComponent,
-    AnnouncementBlockComponent,
-    SocialsBlockComponent,
-    StreamsBlockComponent,
-    GalleryBlockComponent,
-    WeeklyBlockComponent,
-    UpcomingBlockComponent,
-    BibleBlockComponent,
-    LocationBlockComponent,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-  templateUrl: './stage.component.html',
-  styleUrl: './stage.component.scss',
+    selector: 'app-stage',
+    imports: [
+        TranslatePipe,
+        BrandLogoComponent,
+        QrPanelComponent,
+        PresentationSettingsComponent,
+        AnnouncementBlockComponent,
+        SocialsBlockComponent,
+        StreamsBlockComponent,
+        GalleryBlockComponent,
+        WeeklyBlockComponent,
+        UpcomingBlockComponent,
+        BibleBlockComponent,
+        LocationBlockComponent,
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    templateUrl: './stage.component.html',
+    styleUrl: './stage.component.scss'
 })
 export class StageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -97,11 +103,15 @@ export class StageComponent implements OnInit {
   /** ¿Se pinta la columna del QR? Sólo proyectando y si el operador lo quiere. */
   protected readonly showQr = computed<boolean>(() => this.fullscreen() && this.display.qrVisible());
 
-  /** Todos los bloques de la web pública (los proyectables + ubicación). */
-  private readonly allBlocks: readonly StageBlockId[] = [
-    ...this.blocks.allBlockIds,
+  /**
+   * Bloques del panel completo de la web (`/media`): los proyectables en su
+   * orden más la ubicación, **menos** los que ya tienen sección propia en la
+   * web (`WEB_PANEL_EXCLUDED`), que en la web sólo se ven allí y en la proyección.
+   */
+  private readonly allBlocks = computed<readonly StageBlockId[]>(() => [
+    ...this.blocks.allBlockIds().filter((id) => !WEB_PANEL_EXCLUDED.has(id)),
     'location',
-  ];
+  ]);
 
   private readonly params = toSignal(this.route.paramMap);
 
@@ -120,7 +130,7 @@ export class StageComponent implements OnInit {
   protected readonly renderedSlides = computed<readonly StageSlide[]>(() => {
     if (this.fullscreen()) return this.carousel.slides();
     const selected = this.selectedBlock();
-    const ids = selected ? [selected] : this.allBlocks;
+    const ids = selected ? [selected] : this.allBlocks();
     return ids.flatMap((id) => this.expand(id));
   });
 
@@ -201,6 +211,6 @@ export class StageComponent implements OnInit {
    */
   private expand(id: StageBlockId): readonly StageSlide[] {
     if (id === 'location') return [{ key: id, block: id, titleKey: 'location.title' }];
-    return this.blocks.expand(id, false);
+    return this.blocks.expand(id, 'web');
   }
 }

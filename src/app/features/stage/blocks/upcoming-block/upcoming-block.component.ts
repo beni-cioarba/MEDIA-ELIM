@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, computed, inject, signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { PresentationService } from '../../../../core/presentation.service';
 import { ScheduleService, UpcomingEventView } from '../../../../core/services/schedule.service';
 import { SlidePage } from '../../../../core/services/presentation-blocks.service';
@@ -20,12 +20,11 @@ import { CalendarSyncButtonComponent } from '../../../../shared/calendar-sync-bu
  * lo fuerce manualmente desde el panel de bloques).
  */
 @Component({
-  selector: 'app-upcoming-block',
-  standalone: true,
-  imports: [TranslateModule, CalendarSyncButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './upcoming-block.component.html',
-  styles: [':host { display: contents; }'],
+    selector: 'app-upcoming-block',
+    imports: [TranslatePipe, CalendarSyncButtonComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './upcoming-block.component.html',
+    styles: [':host { display: contents; }']
 })
 export class UpcomingBlockComponent {
   protected readonly schedule = inject(ScheduleService);

@@ -8,7 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { HeroSlide, ImageFocus } from '../../core/church.config';
 import { ClockService } from '../../core/services/clock.service';
 import { IconComponent } from '../icon/icon.component';
@@ -42,11 +42,10 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
  *  - Respeta `prefers-reduced-motion`: sin auto-avance ni transiciones.
  */
 @Component({
-  selector: 'app-hero-carousel',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, IconComponent],
-  template: `
+    selector: 'app-hero-carousel',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [TranslatePipe, IconComponent],
+    template: `
     <div class="hero" [attr.aria-roledescription]="'carousel'">
       <div class="hero__media" aria-hidden="true">
         @for (frame of frames(); track frame.slide.id; let i = $index) {
@@ -92,8 +91,8 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       }
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: block;
       }
@@ -223,7 +222,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         }
       }
     `,
-  ],
+    ]
 })
 export class HeroCarouselComponent {
   private readonly clock = inject(ClockService);

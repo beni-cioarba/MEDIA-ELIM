@@ -7,9 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Conectează-te cu Biserica Elim: Instagram, Facebook, YouTube și cod QR.">
   <meta name="theme-color" content="#060914">
+  <!-- Icono de la app: el emblema de la iglesia sobre baldosa navy, generado
+       con `npm run pwa:icons` (ver docs/ai/45-design-system.md → Marca).
+       PNG de 32 para las pestañas y favicon.ico (16/32/48) en la raíz. -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/pwa/favicon-32.png">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="assets/pwa/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/pwa/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ELIM Arganda">
@@ -52,8 +56,8 @@
   <!-- Preload de la primera diapositiva del hero (LCP de la portada) para que
        el navegador la descargue en paralelo con el JS. Debe coincidir con
        `heroSlides[0].image` de `church.config.ts`.
-       El logotipo NO se precarga: la cabecera usa un wordmark tipográfico y
-       la imagen sólo aparece en el pie y en el modo presentación. -->
+       La marca no se precarga: no hay imagen que cargar (wordmark tipográfico
+       y logo INEB en SVG dentro del bundle). -->
   <link rel="preload" as="image" href="assets/drive-media/concert_colinde_2025.webp" fetchpriority="high">
 </head>
 <body>

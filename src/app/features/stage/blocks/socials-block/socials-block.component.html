@@ -1,5 +1,5 @@
 <div class="socials" aria-labelledby="socials-title">
-  <h2 id="socials-title" class="socials__title">{{ 'socials.section_title' | translate }}</h2>
+  <h2 id="socials-title" class="socials__title">{{ (fullscreen() ? 'socials.title_pj' : 'socials.section_title') | translate }}</h2>
   <ul class="socials__list">
     @for (link of config.socials; track link.id; let i = $index) {
       <!-- El resaltado rotatorio sólo existe en la web pública: en proyección

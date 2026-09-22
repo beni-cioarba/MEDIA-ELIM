@@ -30,7 +30,9 @@ Estado tras la reestructuración de navegación + design system.
   tipados con `IconName`; Material Symbols como fuente secundaria no bloqueante.
 - `UiStore` con `@ngrx/signals` para el estado de la interfaz.
 - `LoggerService` con ámbito, cableado en `YouTubeService` y `CalendarService`.
-- Logotipo web pasado a WebP de 384 px: **423 kB → 9 kB**.
+- Logotipo web pasado a WebP de 384 px: **423 kB → 9 kB** (después retirado del
+  todo: la iglesia es el wordmark `app-brand-logo`, INEB es SVG en el bundle y el
+  icono de la app se genera desde el emblema — `45-design-system.md` → «Marca»).
 
 ### Iteración 3 — proyección legible a distancia
 
@@ -66,9 +68,84 @@ Estado tras la reestructuración de navegación + design system.
   que toca (la que contiene mañana), datos generados desde el Excel de la
   iglesia por `scripts/import-bible-plan.py`.
 
+### Iteración 5 — panel de control y ventana de proyección
+
+- **Dos ventanas**: panel de control (`/media/control`, vista del presentador
+  con lista de diapositivas, vista previa, transporte y ajustes) y ventana de
+  proyección (`/media/ecran`) que se abre aparte y se lleva a la segunda
+  pantalla (directamente, con la Window Management API en Chromium).
+- **Un solo reloj**: `PresentationSyncService` (BroadcastChannel) elige líder
+  por prioridad, publica estado y ejecuta órdenes; los ajustes se sincronizan
+  por `storage`. La proyección sigue sola si se cierra el panel; la vista
+  previa releva si se cierra la ventana.
+- Los controles flotantes de la proyección se conservan como respaldo.
+- **Pantalla completa desde el panel**: el gesto del clic viaja delegado a la
+  ventana (`postMessage` + `delegate: 'fullscreen'`), el líder publica
+  `fullscreen` en su latido y el panel pinta el botón como pulsado; donde no hay
+  delegación, aviso para pulsar `F`. La referencia a la ventana se recupera por
+  su nombre si el panel se recarga.
+
+### Iteración 6 — sistema de marca compartido con la app administrativa
+
+- **Tres piezas y un solo uso para cada una** (`45-design-system.md` → «Marca»):
+  wordmark `app-brand-logo` para la iglesia en la UI; **emblema** (disco interior
+  del sello institucional) sólo en el icono de la app, generado con
+  `npm run pwa:icons` sobre baldosa navy (un PNG para `any` + `maskable`, Apple
+  180, favicon PNG + ICO 16/32/48); **INEB** como `app-ineb-logo`, SVG
+  autocontenido copiado tal cual de la app administrativa con su hoja de marca.
+- Retirados `assets/logo-elim.png/webp` y `logo-ineb.png` y el campo
+  `CHURCH_CONFIG.logo`: no queda ninguna imagen de marca en `assets/`.
+- **Auditoría del wordmark** con el listón de INEB: `app-brand-logo` pasa a ser
+  autocontenido (paleta y tipografías de marca literales, CSS plano, ngx-translate
+  opcional, `mono`, `label`, `size="context"`, enlace externo) con su propio
+  `README.md` (hoja de marca: retícula, contrastes medidos por fondo, mínimo 24 px,
+  prohibiciones, reproducción fuera de Angular). Arreglado el hueco entre líneas,
+  que dependía del cuerpo del contexto y no del tamaño de marca. `brand.short` y
+  `brand.location` dejan de ser claves i18n (son constantes de identidad). La
+  copia *port* de la app administrativa debe sustituirse por esta carpeta.
+
+### Iteración 7 — responsive 100 % y plan de evolución
+
+- Auditoría responsive de las 11 rutas en 320 · 375 · 768 · 1024 · 1280 con
+  `scripts/responsive-audit.snippet.js`; corregidos la barra del panel (envuelve
+  en vez de aplastar), la cabecera pública a 320 px (dos columnas, directo en
+  icono), el rango de semana del bloque bíblico, la cabecera de bloque del panel
+  y el distintivo de vista previa. Regla e invariante «responsive 100 %» escritos
+  para la IA.
+- Marca en el panel de control en su tinta oscura (sin pastilla clara).
+- `docs/ai/75-plan-evolucion.md`: diagnóstico medido (bundle, fuentes, proyección,
+  densidad) y plan por fases. **Los pendientes de abajo quedan subordinados a ese
+  plan.**
+
+### Iteración 8 — Angular 22, tema M3, proyección legible
+
+- **Angular 17 → 22.1** paso a paso con `ng update` (Material/CDK, `@ngrx/signals`,
+  `angularx-qrcode` 22; ngx-translate 18 con `provideTranslateService` y
+  `TranslatePipe`; TypeScript 6; `@angular/build` + Vitest en vez de devkit +
+  Karma; `provideAppInitializer`). Node 24 LTS portable en `C:/workspace/.tools`
+  porque el CLI exige ≥ 22.22. zone.js sigue, explícito: zoneless pendiente de
+  decisión.
+- **Tema Material M3** (`mat.theme` + paletas generadas + overrides a navy/oro):
+  hoja global 38 → 21 kB; ya no hay que registrar el tema de cada componente.
+- **i18n sólo del idioma activo**: chunk por idioma (`import()`), inicial 585 kB
+  (597 en Angular 17 pese a cinco versiones más).
+- **Proyección legible a distancia, en escala de cartel** (segunda vuelta tras
+  probar la paginación y descartarla: «cada anuncio en una diapositiva, de un
+  vistazo»): escala `--pj-fs-*` 3,2 / 3,8 / 4,6 / 5,6 / 8u; un anuncio = una
+  diapositiva con jerarquía (columnas hasta 2 secciones, apiladas con 3+,
+  personas en texto corrido, autoajuste 1–0,7 con suelo de 3,2u por `max()`,
+  sección `webOnly` para el detalle); semana entera en una diapositiva (fila
+  día | hora | título); eventos de dos en dos; rótulos cortos; filas a altura
+  natural; secundario fuera; `check-projection-sizes.mjs` en `npm run check` y
+  en CI. Medido con y sin QR: 10 diapositivas sin desbordes, mínimo 3,2u.
+- El panel completo de la web (`/media`) ya **no** muestra anuncios ni lectura
+  bíblica: cada uno vive en su sección (`/anunturi`, `/media/citirea-bibliei`)
+  y en la proyección. `expand(id, view)` distingue `projection` / `panel` / `web`
+  (la web no pagina nada).
+
 ## Pendiente — prioridad alta
 
-1. **Sin tests.** Karma/Jasmine está configurado pero no hay ni un `.spec.ts`.
+1. **Sin tests.** Vitest (`@angular/build:unit-test`) está configurado pero no hay ni un `.spec.ts`.
    Candidatos de mayor valor (lógica pura, fácil de cubrir):
    - `ScheduleService`: filtrado de pasados, orden por día y hora, `hasUpcomingEvents`.
    - `PresentationBlocksService`: resolución `override ?? auto`, fallback a un

@@ -5,8 +5,6 @@
   },
   "brand": {
     "name": "Iglesia Elim",
-    "short": "Elim",
-    "location": "Arganda del Rey",
     "tagline": "Bienvenidos a la casa de Dios"
   },
   "verse": {
@@ -17,6 +15,7 @@
   },
   "socials": {
     "section_title": "Síguenos en nuestras redes",
+    "title_pj": "Redes sociales",
     "open_aria": "Abrir {{name}} en una nueva pestaña",
     "items": {
       "instagram_main": {
@@ -56,7 +55,33 @@
     "enter": "Presentar",
     "exit": "Salir",
     "tooltip_enter": "Pantalla completa (F)",
-    "tooltip_exit": "Salir de pantalla completa (F)"
+    "tooltip_exit": "Salir de pantalla completa (F)",
+    "open_control": "Abrir el panel de control de la proyección"
+  },
+  "presenter": {
+    "title": "Panel de control",
+    "subtitle": "Proyección",
+    "window_title": "Proyección · Iglesia Elim",
+    "status_window": "Proyección en pantalla",
+    "status_preview": "Sin ventana de proyección",
+    "open": "Abrir proyección",
+    "open_other_screen": "Proyectar en la 2.ª pantalla",
+    "focus": "Ir a la ventana",
+    "close": "Cerrar proyección",
+    "fullscreen": "Pantalla completa",
+    "fullscreen_exit": "Salir de pantalla completa",
+    "fullscreen_denied": "Este navegador exige el gesto en la propia ventana: pulsa F en la proyección.",
+    "blocked": "El navegador ha bloqueado la ventana. Permite las ventanas emergentes para este sitio y vuelve a pulsar.",
+    "slides": "Diapositivas",
+    "preview": "Vista previa de la proyección",
+    "preview_only": "Vista previa",
+    "now": "Ahora",
+    "next": "Siguiente",
+    "shortcuts": "Teclas: ← → cambian · Espacio pausa · Q código QR · 1-9 ir a",
+    "hint_fullscreen": "Pantalla completa: el botón de arriba, o F en la propia ventana de proyección.",
+    "reorder": "Mover «{{name}}»: arrastra o usa ↑ ↓",
+    "reorder_hint": "Arrastra los bloques para cambiar el orden de la proyección.",
+    "reset_order": "Orden por defecto"
   },
   "carousel": {
     "label": "Carrusel de contenido",
@@ -93,6 +118,7 @@
   },
   "gallery": {
     "title": "Galería Departamento Media",
+    "title_pj": "Galería de fotos",
     "subtitle": "Revive los momentos más especiales de la iglesia: bautismos, conciertos, evangelizaciones y eventos.",
     "featured_event": "Evento destacado",
     "view_photos": "Ver fotos y vídeos",
@@ -185,7 +211,11 @@
     "week": "Semana {{n}}",
     "starts_tomorrow": "Empieza mañana",
     "month_scope": "{{month}}: {{scope}}",
-    "empty": "El plan de lectura ha terminado. Pronto publicaremos el siguiente."
+    "empty": "El plan de lectura ha terminado. Pronto publicaremos el siguiente.",
+    "plan_toggle": "Ver toda la programación",
+    "plan_range": "{{range}} · {{weeks}} semanas",
+    "week_short": "Sem.",
+    "current": "En curso"
   },
   "location": {
     "title": "Cómo llegar",
@@ -218,7 +248,8 @@
     "version": "Versión de la aplicación",
     "build": "Compilación",
     "commit": "Revisión",
-    "built_at": "Publicada"
+    "built_at": "Publicada",
+    "control": "Panel de control"
   },
   "common": {
     "copy": "Copiar",
@@ -388,6 +419,14 @@
     "announcements": {
       "title": "Anuncios",
       "description": "Avisos en vigor de la Iglesia Elim de Arganda del Rey: inscripciones, celebraciones, conferencias y comunicados."
+    },
+    "control": {
+      "title": "Panel de control",
+      "description": "Panel de control de la proyección en el templo."
+    },
+    "projection": {
+      "title": "Proyección",
+      "description": "Ventana de proyección para la pantalla del templo."
     }
   },
   "home": {

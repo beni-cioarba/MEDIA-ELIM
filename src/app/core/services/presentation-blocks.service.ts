@@ -1,4 +1,4 @@
-import { Injectable, Signal, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { Announcement, CHURCH_CONFIG } from '../church.config';
 import { AnnouncementsService } from './announcements.service';
 import { BibleReadingService } from './bible-reading.service';
@@ -63,17 +63,24 @@ export interface PresentationSlide {
   readonly page?: SlidePage;
 }
 
+/** Quién va a pintar las diapositivas que devuelve `expand()`. */
+export type ExpandView = 'projection' | 'panel' | 'web';
+
 /** Estado de un anuncio en el panel de ajustes: vigente y ¿se proyecta? */
 export interface AnnouncementSlideState {
   readonly announcement: Announcement;
   readonly visible: boolean;
 }
 
-/** Eventos por diapositiva: dos caben grandes y legibles con o sin QR. */
+/**
+ * Eventos por diapositiva: dos caben grandes y legibles con la escala de cartel
+ * (descripción recortada a dos líneas en proyección; el detalle está en la web).
+ */
 export const UPCOMING_PER_SLIDE = 2;
 
 const STORAGE_KEY = 'iglesia-redes.presentation.blocks';
 const HIDDEN_ANNOUNCEMENTS_KEY = 'iglesia-redes.presentation.announcements.hidden';
+const ORDER_KEY = 'iglesia-redes.presentation.order';
 
 /**
  * Orden de proyección. Cambiarlo aquí cambia el orden del carrusel.
@@ -125,7 +132,46 @@ export class PresentationBlocksService {
   /** Anuncios que el operador ha decidido no proyectar (por id). */
   private readonly hiddenAnnouncementIds = signal<ReadonlySet<string>>(readHiddenAnnouncements());
 
-  readonly definitions = BLOCK_DEFS;
+  /** Orden elegido por el operador (ids). Vacío ⇒ el orden de `BLOCK_DEFS`. */
+  private readonly customOrder = signal<readonly PresentationBlockId[]>(readStoredOrder());
+
+  /**
+   * Definiciones en el **orden de proyección efectivo**: el guardado por el
+   * operador, con los bloques que no conozca (nuevos en el código) al final
+   * en su orden por defecto. Todo lo demás (estados, diapositivas, dots)
+   * deriva de aquí.
+   */
+  readonly definitions = computed<readonly PresentationBlockDef[]>(() => {
+    const order = this.customOrder();
+    if (order.length === 0) return BLOCK_DEFS;
+    const byId = new Map(BLOCK_DEFS.map((d) => [d.id, d] as const));
+    const ordered = order.map((id) => byId.get(id)).filter((d): d is PresentationBlockDef => !!d);
+    const rest = BLOCK_DEFS.filter((d) => !order.includes(d.id));
+    return [...ordered, ...rest];
+  });
+
+  /** `true` si el operador ha cambiado el orden por defecto. */
+  readonly hasCustomOrder = computed<boolean>(() => this.customOrder().length > 0);
+
+  constructor() {
+    // Otra ventana de la misma máquina (panel de control ↔ proyección) ha
+    // cambiado los ajustes: `storage` sólo salta en las demás ventanas, así
+    // que basta con releer para que ambas vean lo mismo al instante.
+    if (typeof window === 'undefined') return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === null || event.key === STORAGE_KEY) {
+        this.overrides.set(readStoredOverrides());
+      }
+      if (event.key === null || event.key === HIDDEN_ANNOUNCEMENTS_KEY) {
+        this.hiddenAnnouncementIds.set(readHiddenAnnouncements());
+      }
+      if (event.key === null || event.key === ORDER_KEY) {
+        this.customOrder.set(readStoredOrder());
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', onStorage));
+  }
 
   /** Reglas automáticas: un bloque sólo se auto-proyecta si tiene contenido. */
   private readonly autoAvailability: Signal<Record<PresentationBlockId, boolean>> = computed(() => ({
@@ -142,7 +188,7 @@ export class PresentationBlocksService {
   readonly states = computed<readonly PresentationBlockState[]>(() => {
     const auto = this.autoAvailability();
     const overrides = this.overrides();
-    return BLOCK_DEFS.map((def) => {
+    return this.definitions().map((def) => {
       const override = overrides[def.id] ?? null;
       const autoAvailable = auto[def.id];
       return {
@@ -203,7 +249,9 @@ export class PresentationBlocksService {
   readonly activeCount = computed<number>(() => this.states().filter((s) => s.enabled).length);
 
   /** Todos los identificadores, en orden de proyección. */
-  readonly allBlockIds: readonly PresentationBlockId[] = BLOCK_DEFS.map((d) => d.id);
+  readonly allBlockIds = computed<readonly PresentationBlockId[]>(() =>
+    this.definitions().map((d) => d.id),
+  );
 
   /** `true` si alguna preferencia manual difiere del automático. */
   readonly hasManualOverrides = computed<boolean>(
@@ -211,19 +259,24 @@ export class PresentationBlocksService {
   );
 
   /**
-   * Expande un bloque en sus diapositivas. Lo usa también el escenario en la
-   * web pública (`projection = false`), donde se renderizan **todos** los
-   * bloques y todos los anuncios vigentes: ocultar un anuncio es una decisión
-   * de proyección, no de publicación.
+   * Expande un bloque en sus diapositivas, según quién las va a pintar:
    *
-   *  - `announcements`: una por anuncio vigente (y visible, en proyección);
-   *    ninguna si el operador los ha ocultado todos.
-   *  - `upcoming`: páginas de `UPCOMING_PER_SLIDE` eventos futuros.
-   *  - Sin contenido (bloque forzado a visible): una diapositiva vacía con su
-   *    mensaje, para que el operador entienda la pantalla en blanco.
+   *  - `projection` (por defecto): lo que se proyecta. **Un anuncio = una
+   *    diapositiva** (entero, de un vistazo: la tarjeta se autoajusta), sólo
+   *    los visibles; eventos de dos en dos.
+   *  - `panel`: la lista del panel de control. Todos los anuncios vigentes
+   *    (también los ocultos, para poder volver a marcarlos); eventos con sus
+   *    páginas, para poder ir a cada una.
+   *  - `web`: la web pública. Todo entero y sin páginas. Ocultar un anuncio
+   *    es una decisión de proyección, no de publicación.
+   *
+   * Sin contenido (bloque forzado a visible): una diapositiva vacía con su
+   * mensaje, para que el operador entienda la pantalla en blanco.
    */
-  expand(id: PresentationBlockId, projection = true): readonly PresentationSlide[] {
+  expand(id: PresentationBlockId, view: ExpandView = 'projection'): readonly PresentationSlide[] {
     const titleKey = this.titleKeyOf(id);
+    const projection = view === 'projection';
+    const paginate = view !== 'web';
 
     if (id === 'announcements') {
       const active = this.announcements.active();
@@ -240,6 +293,7 @@ export class PresentationBlocksService {
     if (id === 'upcoming') {
       const events = this.schedule.upcomingEvents();
       if (events.length === 0) return this.emptySlide(id);
+      if (!paginate) return [{ key: id, block: id, titleKey, events }];
       const total = Math.ceil(events.length / UPCOMING_PER_SLIDE);
       return Array.from({ length: total }, (_, index) => ({
         key: `${id}:${index}`,
@@ -285,6 +339,36 @@ export class PresentationBlocksService {
     this.overrides.set({});
     this.hiddenAnnouncementIds.set(new Set());
     persistHiddenAnnouncements(new Set());
+  }
+
+  /**
+   * Mueve un bloque de una posición a otra del orden de proyección (índices
+   * sobre `definitions()`), al estilo de arrastrar en una lista.
+   */
+  moveBlock(from: number, to: number): void {
+    const ids = [...this.allBlockIds()];
+    if (from === to || from < 0 || to < 0 || from >= ids.length || to >= ids.length) return;
+    const [moved] = ids.splice(from, 1);
+    ids.splice(to, 0, moved);
+    this.setOrder(ids);
+  }
+
+  /** Fija el orden completo (ids desconocidos se ignoran; los que falten van al final). */
+  setOrder(ids: readonly PresentationBlockId[]): void {
+    const valid = new Set<PresentationBlockId>(BLOCK_DEFS.map((d) => d.id));
+    const order = ids.filter((id, index) => valid.has(id) && ids.indexOf(id) === index);
+    // Igual que el orden por defecto ⇒ no hay nada que recordar.
+    const isDefault =
+      order.length === BLOCK_DEFS.length && order.every((id, index) => id === BLOCK_DEFS[index].id);
+    const next = isDefault ? [] : order;
+    this.customOrder.set(next);
+    persistOrder(next);
+  }
+
+  /** Vuelve al orden por defecto de `BLOCK_DEFS`. */
+  resetOrder(): void {
+    this.customOrder.set([]);
+    persistOrder([]);
   }
 
   /** Muestra u oculta un anuncio concreto en la proyección. */
@@ -350,6 +434,34 @@ function readHiddenAnnouncements(): ReadonlySet<string> {
     return new Set(parsed.filter((v): v is string => typeof v === 'string'));
   } catch {
     return new Set();
+  }
+}
+
+/** Orden guardado (ids de bloque válidos, sin repetidos). */
+function readStoredOrder(): readonly PresentationBlockId[] {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(ORDER_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const valid = new Set<string>(BLOCK_DEFS.map((d) => d.id));
+    return parsed.filter(
+      (v, index): v is PresentationBlockId =>
+        typeof v === 'string' && valid.has(v) && parsed.indexOf(v) === index,
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistOrder(ids: readonly PresentationBlockId[]): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    if (ids.length === 0) localStorage.removeItem(ORDER_KEY);
+    else localStorage.setItem(ORDER_KEY, JSON.stringify(ids));
+  } catch {
+    /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
   }
 }
 

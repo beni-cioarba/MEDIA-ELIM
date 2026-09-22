@@ -288,6 +288,31 @@
   }
 }
 
+// Con el menú de escritorio oculto, la columna central vacía seguía cobrando
+// sus dos huecos: a 320 px eso era lo que echaba la marca encima de las
+// acciones. Dos columnas y un hueco menor; la pastilla del directo se queda en
+// el punto que late (sigue siendo un enlace con nombre accesible).
+@include until('xs') {
+  .nav__inner {
+    grid-template-columns: auto auto;
+    gap: var(--sp-2);
+  }
+
+  .nav__desktop {
+    display: none;
+  }
+
+  .nav__live {
+    width: 2.125rem;
+    padding-inline: 0;
+    justify-content: center;
+  }
+
+  .nav__live-label {
+    @include visually-hidden;
+  }
+}
+
 // ---- Acciones --------------------------------------------------------
 .nav__actions {
   display: flex;

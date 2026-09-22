@@ -59,6 +59,11 @@ Los slugs viven en `STAGE_BLOCK_SLUGS` y se traducen con `blockPath(id)` /
 4. `navigation.config.ts` → entrada en `MAIN_NAV` (o dentro de un grupo).
 5. `es.json` **y** `ro.json` → `nav.donations`, `seo.donations.*` y los textos.
 
+Las **rutas del operador** (`/media/control`, `/media/ecran`) no cuelgan del
+`MainLayoutComponent`: se declaran antes que él en `APP_ROUTES`, sin cabecera
+ni pie, y no aparecen en `MAIN_NAV`. Cualquier herramienta interna nueva sigue
+ese patrón; una página pública, el de abajo.
+
 Si la página admite un elemento con URL propia (como `/anunturi/:id`), se
 declara una segunda ruta con el **mismo** `loadComponent` y el componente lee
 el parámetro con `ActivatedRoute.paramMap` (patrón de `/media/:blockId`). El

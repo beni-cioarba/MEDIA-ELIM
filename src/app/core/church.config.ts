@@ -99,9 +99,10 @@ export interface AnnouncementItem {
 export type AnnouncementSectionKind = 'list' | 'prices' | 'people' | 'schedule';
 
 /**
- * Sección de un anuncio: un epígrafe corto y sus líneas. En proyección cada
- * sección es una columna, así que **máximo 3 secciones y ~7 líneas** por
- * sección para que se lea desde el fondo del templo.
+ * Sección de un anuncio: un epígrafe corto y sus líneas. En proyección un
+ * anuncio es **una sola diapositiva** (cartel): hasta dos secciones van en
+ * columnas y con tres o más se apilan; lo que no cabe se encoge hasta el mínimo
+ * legible y, si sigue sin caber, la sección que sea detalle se marca `webOnly`.
  */
 export interface AnnouncementSection {
   /** Epígrafe en versalitas («Meniu», «Înscrieri la», «Invitați»). */
@@ -109,6 +110,12 @@ export interface AnnouncementSection {
   /** Maquetación de las líneas. Por defecto `list`. */
   readonly kind?: AnnouncementSectionKind;
   readonly items: readonly AnnouncementItem[];
+  /**
+   * Sólo en la web (`/anunturi`), no en la proyección: para el detalle que no
+   * cabe legible en el cartel (listas largas de nombres, condiciones…). Quien
+   * lo quiera lo tiene a un escaneo del QR.
+   */
+  readonly webOnly?: boolean;
 }
 
 /**
@@ -248,7 +255,6 @@ export interface DonationInfo {
 }
 
 export interface ChurchConfig {
-  readonly logo: string;
   readonly youtubeChannelUrl: string;
   readonly youtubeStreamsUrl: string;
   /** YouTube channel ID (UC...). Necesario para llamadas a YouTube Data API. */
@@ -294,7 +300,6 @@ export interface ChurchConfig {
 export const CHURCH_CONFIG = new InjectionToken<ChurchConfig>('CHURCH_CONFIG');
 
 export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
-  logo: 'assets/logo-elim.webp',
   youtubeChannelUrl: 'https://www.youtube.com/@ElimArganda',
   youtubeStreamsUrl: 'https://www.youtube.com/@ElimArganda/streams',
   youtubeChannelId: 'UCJqLlk6CS6uNtJWS5r-7P9g',
@@ -455,7 +460,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'ancorat_2026_09_26',
       date: '2026-09-26',
       time: '18:00',
-      title: 'Conferință de tineret „ANCORAT”',
+      title: 'Conferință de tineret "ANCORAT"',
       description:
         'Organizată de Departamentul de tineret. Participă tineri din cel puțin 12 biserici; după mesaj, întrebări și răspunsuri.',
       verse: '',
@@ -606,6 +611,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
         {
           heading: 'Vor fi împreună cu noi',
           kind: 'people',
+          // Detalle para la web: en el cartel no cabe legible junto al menú y las inscripciones.
+          webOnly: true,
           items: [
             { label: 'Pastor Gavrilă Zăgrean', value: 'cu sora Ana' },
             { label: 'Pastor Mircea Coptil', value: 'cu soția' },

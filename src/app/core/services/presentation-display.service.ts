@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import type { PresentationBlockId } from './presentation-blocks.service';
 
 /** Tamaño del código QR proyectado (columna del lienzo que ocupa). */
@@ -59,6 +59,16 @@ const DEFAULTS: DisplayPrefs = { qrVisible: true, qrSize: 'm', durations: {} };
 @Injectable({ providedIn: 'root' })
 export class PresentationDisplayService {
   private readonly prefs = signal<DisplayPrefs>(readStoredPrefs());
+
+  constructor() {
+    // Cambios hechos desde otra ventana (panel de control ↔ proyección).
+    if (typeof window === 'undefined') return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === null || event.key === STORAGE_KEY) this.prefs.set(readStoredPrefs());
+    };
+    window.addEventListener('storage', onStorage);
+    inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', onStorage));
+  }
 
   readonly qrVisible = computed<boolean>(() => this.prefs().qrVisible);
   readonly qrSize = computed<QrSize>(() => this.prefs().qrSize);

@@ -165,8 +165,12 @@ app-bible-block {
   }
 }
 
-.bible__days--nt .bible__day {
-  grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr) minmax(0, 1fr) auto;
+// AT y NT en la misma celda, uno al lado del otro mientras quepan.
+.bible__day-passages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem var(--sp-4);
+  min-width: 0;
 }
 
 .bible__day-date {
@@ -251,18 +255,283 @@ app-bible-block {
   border-radius: var(--r-md);
 }
 
+// ---- Toda la programación (desplegable, sólo web) ---------------------
+// `<details>` nativo: accesible, sin JS y recuerda el estado abierto en la
+// navegación hacia atrás. Dentro, cada semana es a su vez un `<details>`
+// con sus lecturas diarias.
+
+.bible__all {
+  margin-top: var(--sp-2);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+
+  &[open] .bible__all-summary app-icon {
+    transform: rotate(180deg);
+  }
+}
+
+.bible__all-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  cursor: pointer;
+  list-style: none;
+  border-radius: inherit;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--c-surface-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  app-icon {
+    color: var(--c-gold-deep);
+    transition: transform var(--mo-base) var(--ea-standard);
+  }
+}
+
+.bible__all-title {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.bible__all-range {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.bible__months {
+  display: grid;
+  gap: var(--sp-5);
+  padding: var(--sp-2) var(--sp-4) var(--sp-5);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.bible__month-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-3);
+  margin: var(--sp-3) 0 var(--sp-2);
+  padding-bottom: var(--sp-2);
+  border-bottom: 2px solid var(--c-gold);
+}
+
+.bible__month-name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.bible__month-scope {
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.bible__weeks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.bible__week-row {
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+
+  &[data-status='past'] {
+    color: var(--c-muted);
+
+    .bible__week-passage,
+    .bible__week-badge {
+      color: inherit;
+    }
+  }
+
+  &[data-status='current'] {
+    background: var(--c-gold-tint);
+    border-color: var(--c-gold);
+  }
+}
+
+.bible__week-details[open] .bible__week-chevron {
+  transform: rotate(180deg);
+}
+
+.bible__week-summary {
+  display: grid;
+  grid-template-columns: auto minmax(9rem, auto) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  cursor: pointer;
+  list-style: none;
+  border-radius: inherit;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+}
+
+.bible__week-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  min-width: 4.5rem;
+  font-size: var(--fs-body);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-primary);
+}
+
+.bible__week-badge-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.bible__week-range {
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+  // Una línea mientras cabe; a 320 px se partía sin puntos suspensivos.
+  white-space: normal;
+}
+
+.bible__week-passage {
+  min-width: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.bible__week-current {
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold-deep);
+  color: var(--c-on-primary);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bible__week-chevron {
+  color: var(--c-faint);
+  transition: transform var(--mo-base) var(--ea-standard);
+}
+
+.bible__week-days {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--sp-3) var(--sp-3) calc(var(--sp-3) + 4.5rem + var(--sp-3));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.2rem var(--sp-5);
+}
+
+.bible__week-day {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: 0.2rem 0;
+  font-size: var(--fs-sm);
+  border-bottom: 1px dashed var(--c-hairline);
+
+  &.is-today {
+    color: var(--c-gold-deep);
+  }
+}
+
+.bible__week-day-date {
+  flex: 0 0 7rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+
+  .bible__day-name {
+    font-size: inherit;
+    font-weight: 600;
+    color: inherit;
+  }
+}
+
+.bible__week-day-passage {
+  font-weight: 700;
+
+  &--nt {
+    font-weight: 500;
+    color: var(--c-muted);
+  }
+}
+
+@include until('sm') {
+  .bible__week-summary {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .bible__week-range {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  .bible__week-days {
+    padding-left: var(--sp-3);
+  }
+}
+
+@include motion-reduce {
+  .bible__all-summary app-icon,
+  .bible__week-chevron {
+    transition: none;
+  }
+}
+
 // ---------------------------------------------------------------------
 // 2 · Proyección — todo en `--pj-*`
 // ---------------------------------------------------------------------
 .stage.is-fullscreen {
   // Contrato de bloque (ver `_projection.scss` § 3).
+  // Presupuesto vertical (75u útiles): título 12 · panel de semana 16 · días
+  // 4 filas × 8 = 32 · pie 4 · huecos 6 = 70u. Por eso los días van siempre
+  // en dos columnas (4 + 3) y el panel de semana usa `hero`/`lead`, no
+  // `display`/`title`.
   .bible {
     height: 100%;
     min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: calc(var(--pj-u) * 2.4);
+    gap: calc(var(--pj-u) * 1.6);
   }
 
   .bible__title {
@@ -285,12 +554,13 @@ app-bible-block {
   }
 
   .bible__week-label {
-    font-size: calc(var(--pj-u) * 1.9);
+    font-size: calc(var(--pj-u) * 3.2);
     letter-spacing: 0.2em;
   }
 
   .bible__week-num {
-    font-size: var(--pj-fs-display);
+    font-size: var(--pj-fs-hero);
+    line-height: 1;
   }
 
   .bible__week-body {
@@ -305,29 +575,37 @@ app-bible-block {
 
   .bible__starts {
     padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 1.2);
-    font-size: calc(var(--pj-u) * 1.8);
+    font-size: calc(var(--pj-u) * 3.2);
   }
 
   .bible__summary {
-    font-size: var(--pj-fs-title);
+    font-size: var(--pj-fs-lead);
     font-weight: 700;
     line-height: 1.15;
   }
 
   // ---- Lecturas diarias -----------------------------------------------
 
+  // Dos columnas rellenadas por columnas (lunes→jueves | viernes→domingo):
+  // se lee como una lista. Las filas miden lo que mide su texto: nunca se
+  // aplastan ni se solapan.
   .bible__days {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
-    grid-auto-rows: minmax(0, 1fr);
-    gap: calc(var(--pj-u) * 0.7);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, auto);
+    grid-auto-flow: column;
+    gap: calc(var(--pj-u) * 0.8) var(--pj-sp-3);
   }
 
+  // Fila de un día: «Luni 21 · Isaia 57-58» en una línea de cuerpo (5,5u).
+  // La fecha mide lo que mide; el pasaje se lleva el resto y sólo parte si
+  // de verdad no cabe (nunca se recorta).
   .bible__day {
-    grid-template-columns: calc(var(--pj-u) * 22) minmax(0, 1fr) auto;
-    gap: var(--pj-sp-3);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--pj-sp-2);
     min-height: 0;
-    padding: calc(var(--pj-u) * 0.4) var(--pj-sp-3);
+    padding: calc(var(--pj-u) * 0.5) var(--pj-sp-2);
     border-radius: var(--pj-r-sm);
     border-width: var(--pj-stroke);
     box-shadow: var(--e-1);
@@ -338,8 +616,8 @@ app-bible-block {
     }
   }
 
-  .bible__days--nt .bible__day {
-    grid-template-columns: calc(var(--pj-u) * 22) minmax(0, 1fr) minmax(0, 1fr) auto;
+  .bible__day-passages {
+    gap: 0 var(--pj-sp-2);
   }
 
   .bible__day-date {
@@ -347,7 +625,7 @@ app-bible-block {
   }
 
   .bible__day-name {
-    font-size: var(--pj-fs-caption);
+    font-size: var(--pj-fs-eyebrow);
     font-weight: 700;
   }
 
@@ -365,17 +643,27 @@ app-bible-block {
     }
   }
 
+  // «Hoy» ya lo dice la fila (barra dorada y fondo): la etiqueta sólo quitaba
+  // sitio al pasaje.
   .bible__today {
-    padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 1);
-    font-size: calc(var(--pj-u) * 1.7);
+    display: none;
   }
 
   // ---- Pie --------------------------------------------------------------
 
+  // Sólo el alcance del mes, en una línea; el nombre del plan es ruido a
+  // distancia y el desplegable completo vive en la web.
   .bible__meta {
     gap: var(--pj-sp-1) var(--pj-sp-3);
     font-size: var(--pj-fs-eyebrow);
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bible__plan {
+    display: none;
   }
 
   .bible__empty {
@@ -383,13 +671,4 @@ app-bible-block {
     font-weight: 600;
   }
 
-  // Sin QR: dos columnas de días para no estirar filas de un extremo al otro.
-  // Se rellenan por columnas (lunes→jueves | viernes→domingo): se lee como
-  // una lista, no como una tabla.
-  &.stage--no-qr .bible__days {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(4, minmax(0, 1fr));
-    grid-auto-flow: column;
-    column-gap: var(--pj-sp-3);
-  }
 }

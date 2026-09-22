@@ -6,7 +6,7 @@ Es intencionadamente corto: **la documentación real está fragmentada en
 
 ## Qué es este proyecto
 
-Angular 17 (standalone + signals) · web pública de la Iglesia Elim Arganda que
+Angular 22 (standalone + signals, Material M3) · web pública de la Iglesia Elim Arganda que
 también actúa como diapositiva proyectable en el templo (pantalla completa,
 carrusel de bloques, QR, ES/RO). Sin backend: todo es estático + GitHub Pages.
 
@@ -34,6 +34,7 @@ carrusel de bloques, QR, ES/RO). Sin backend: todo es estático + GitHub Pages.
 | `docs/ai/50-build-deploy.md` | Build, PWA, GitHub Actions, scripts de datos e imágenes    |
 | `docs/ai/60-conventions.md`  | Convenciones y recetas paso a paso                         |
 | `docs/ai/70-roadmap.md`      | Deuda técnica y mejoras pendientes                         |
+| `docs/ai/75-plan-evolucion.md` | **Plan por fases**: carga rápida, proyección legible, web compacta, arquitectura modular, Angular 20/zoneless, CI. Leer antes de empezar cualquier fase |
 
 Instrucciones automáticas por tipo de fichero (se aplican solas al editar):
 `.github/instructions/*.instructions.md`.

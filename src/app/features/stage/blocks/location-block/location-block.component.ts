@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../../core/church.config';
 
 /**
@@ -8,12 +8,11 @@ import { CHURCH_CONFIG } from '../../../../core/church.config';
  * Sólo se muestra en la web pública (no aporta nada proyectado).
  */
 @Component({
-  selector: 'app-location-block',
-  standalone: true,
-  imports: [TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './location-block.component.html',
-  styles: [':host { display: contents; }'],
+    selector: 'app-location-block',
+    imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './location-block.component.html',
+    styles: [':host { display: contents; }']
 })
 export class LocationBlockComponent {
   private readonly config = inject(CHURCH_CONFIG);

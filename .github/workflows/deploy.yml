@@ -27,11 +27,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Angular 22 exige Node ^22.22 || ^24.15 (ver "engines" en package.json).
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+
+      # Puertas de calidad: paridad de traducciones y presupuesto de
+      # legibilidad de la proyección. Si fallan, no se publica.
+      - name: Checks (i18n parity, projection sizes)
+        run: npm run check
 
       - name: Build (production, base href = /MEDIA-ELIM/)
         run: npx ng build --configuration production --base-href /MEDIA-ELIM/

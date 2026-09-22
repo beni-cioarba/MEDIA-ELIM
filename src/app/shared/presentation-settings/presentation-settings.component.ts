@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   PresentationBlockId,
   PresentationBlocksService,
@@ -41,11 +41,10 @@ import {
  * `PresentationDisplayService`).
  */
 @Component({
-  selector: 'app-presentation-settings',
-  standalone: true,
-  imports: [TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-presentation-settings',
+    imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <div class="blocks" (keydown)="onKeydown($event)">
       <button
         type="button"
@@ -63,7 +62,7 @@ import {
           <rect x="3" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" />
           <path d="M14.5 17.5l2 2 4-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span class="blocks__count">{{ blocks.activeCount() }}/{{ blocks.definitions.length }}</span>
+        <span class="blocks__count">{{ blocks.activeCount() }}/{{ blocks.definitions().length }}</span>
       </button>
 
       @if (open()) {
@@ -119,14 +118,19 @@ import {
                       [attr.aria-label]="'blocks.duration_less' | translate"
                       [title]="'blocks.duration_less' | translate"
                     >−</button>
-                    <button
-                      type="button"
-                      class="duration__value"
-                      [disabled]="display.isDefaultDuration(state.id)"
-                      (click)="display.resetDuration(state.id)"
-                      [attr.aria-label]="'blocks.duration_reset' | translate"
-                      [title]="'blocks.duration_reset' | translate"
-                    >{{ display.durationFor(state.id) }}<span class="duration__unit">s</span></button>
+                    <input
+                      class="duration__input"
+                      type="number"
+                      inputmode="numeric"
+                      [min]="durationMin"
+                      [max]="durationMax"
+                      step="1"
+                      [value]="display.durationFor(state.id)"
+                      (change)="setDuration(state.id, $event)"
+                      (keydown.enter)="commitDuration($event)"
+                      [attr.aria-label]="'blocks.duration' | translate"
+                    />
+                    <span class="duration__unit" aria-hidden="true">s</span>
                     <button
                       type="button"
                       class="duration__btn"
@@ -135,6 +139,15 @@ import {
                       [attr.aria-label]="'blocks.duration_more' | translate"
                       [title]="'blocks.duration_more' | translate"
                     >+</button>
+                    @if (!display.isDefaultDuration(state.id)) {
+                      <button
+                        type="button"
+                        class="duration__btn duration__reset"
+                        (click)="display.resetDuration(state.id)"
+                        [attr.aria-label]="'blocks.duration_reset' | translate"
+                        [title]="'blocks.duration_reset' | translate"
+                      >↺</button>
+                    }
                   </div>
 
                   @if (!state.isAuto) {
@@ -227,8 +240,8 @@ import {
       }
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: inline-flex;
       }
@@ -281,9 +294,12 @@ import {
         left: 50%;
         transform: translateX(-50%);
         z-index: 30;
-        width: min(420px, 92vw);
-        max-height: min(78vh, 720px);
+        /* En proyección la raíz mide hasta 20px: el ancho va en rem para que
+           crezca con el texto y las filas nunca desborden a los lados. */
+        width: min(27rem, 92vw);
+        max-height: min(80vh, 46rem);
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 0.9rem;
         border-radius: 16px;
         border: 1px solid rgba(26, 54, 93, 0.14);
@@ -407,11 +423,15 @@ import {
       }
 
       .blocks__hint {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: 0.35rem;
+        min-width: 0;
         font-size: 0.7rem;
         color: rgba(45, 55, 72, 0.7);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .blocks__badge {
@@ -451,8 +471,7 @@ import {
         }
       }
 
-      .duration__btn,
-      .duration__value {
+      .duration__btn {
         border: 0;
         background: transparent;
         color: #1a365d;
@@ -480,25 +499,45 @@ import {
         font-size: 0.95rem;
       }
 
-      .duration__value {
-        min-width: 38px;
-        padding: 0.3rem 0.15rem;
+      /* Segundos a mano: campo numérico sin flechas del navegador (ya están −/+). */
+      .duration__input {
+        width: 2.4rem;
+        padding: 0.3rem 0;
+        border: 0;
+        background: transparent;
+        color: #1a365d;
+        font: inherit;
         font-size: 0.78rem;
+        font-weight: 700;
         font-variant-numeric: tabular-nums;
         text-align: center;
+        -moz-appearance: textfield;
+        appearance: textfield;
 
-        /* Deshabilitado = ya está en el valor por defecto: se lee, no se apaga. */
-        &:disabled {
-          opacity: 1;
-          color: #1a365d;
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          appearance: none;
+          margin: 0;
+        }
+
+        &:focus-visible {
+          outline: 2px solid #c9a227;
+          outline-offset: -2px;
+          border-radius: 6px;
         }
       }
 
       .duration__unit {
-        margin-left: 1px;
+        align-self: center;
+        margin-right: 2px;
         font-size: 0.65rem;
         font-weight: 600;
         color: rgba(45, 55, 72, 0.6);
+      }
+
+      .duration__reset {
+        color: #8a6d10;
+        border-left: 1px solid rgba(26, 54, 93, 0.12);
       }
 
       /* --- Anuncios individuales ---------------------------------------- */
@@ -720,7 +759,7 @@ import {
         }
       }
     `,
-  ],
+    ]
 })
 export class PresentationSettingsComponent {
   protected readonly blocks = inject(PresentationBlocksService);
@@ -747,6 +786,21 @@ export class PresentationSettingsComponent {
   protected toggle(event: MouseEvent): void {
     event.stopPropagation();
     this.open.update((value) => !value);
+  }
+
+  /** Segundos escritos a mano: se acotan a los límites y se reflejan en el campo. */
+  protected setDuration(id: PresentationBlockId, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const seconds = Number(input.value);
+    if (Number.isFinite(seconds) && input.value.trim() !== '') {
+      this.display.setDuration(id, seconds);
+    }
+    input.value = String(this.display.durationFor(id));
+  }
+
+  /** Intro en el campo de segundos: confirmar y soltar el foco. */
+  protected commitDuration(event: Event): void {
+    (event.target as HTMLInputElement).blur();
   }
 
   protected setQrVisible(event: Event): void {

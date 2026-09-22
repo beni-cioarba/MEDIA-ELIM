@@ -4,7 +4,7 @@
 // Regla de oro: **nunca** pisar clases internas `.mat-mdc-*` con
 // `!important` ni con selectores frágiles. Se usan, por este orden:
 //   1. El tema (`_theme.scss`) → color, tipografía, densidad.
-//   2. Los tokens CSS que Material 17 expone (`--mdc-*`, `--mat-*`).
+//   2. Los tokens CSS que Material 17 expone (`--mat-*`, `--mat-*`).
 //   3. Sólo si no queda otra, una clase propia aplicada con
 //      `panelClass` / `class` sobre el componente.
 //
@@ -81,17 +81,17 @@ html:not(.fonts-symbols-ready) .material-symbols-outlined {
 // alineamos el radio con el sistema (Material usa 4px por defecto).
 // ---------------------------------------------------------------------
 .mat-mdc-button-base {
-  --mdc-text-button-container-shape: var(--r-pill);
-  --mdc-filled-button-container-shape: var(--r-pill);
-  --mdc-outlined-button-container-shape: var(--r-pill);
-  --mdc-protected-button-container-shape: var(--r-pill);
+  --mat-button-text-container-shape: var(--r-pill);
+  --mat-button-filled-container-shape: var(--r-pill);
+  --mat-button-outlined-container-shape: var(--r-pill);
+  --mat-button-protected-container-shape: var(--r-pill);
   letter-spacing: 0.02em;
 }
 
 .mat-mdc-icon-button {
-  --mdc-icon-button-state-layer-size: 44px;
-  width: var(--mdc-icon-button-state-layer-size);
-  height: var(--mdc-icon-button-state-layer-size);
+  --mat-icon-button-state-layer-size: 44px;
+  width: var(--mat-icon-button-state-layer-size);
+  height: var(--mat-icon-button-state-layer-size);
   padding: 0;
 }
 

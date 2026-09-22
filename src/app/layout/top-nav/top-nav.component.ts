@@ -8,7 +8,7 @@ import {
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
@@ -40,20 +40,19 @@ import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component
  * no usar `routerLinkActive`).
  */
 @Component({
-  selector: 'app-top-nav',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    TranslateModule,
-    MatButtonModule,
-    MatMenuModule,
-    IconComponent,
-    LangSwitcherComponent,
-    BrandLogoComponent,
-  ],
-  templateUrl: './top-nav.component.html',
-  styleUrl: './top-nav.component.scss',
+    selector: 'app-top-nav',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        TranslatePipe,
+        MatButtonModule,
+        MatMenuModule,
+        IconComponent,
+        LangSwitcherComponent,
+        BrandLogoComponent,
+    ],
+    templateUrl: './top-nav.component.html',
+    styleUrl: './top-nav.component.scss'
 })
 export class TopNavComponent {
   private readonly router = inject(Router);

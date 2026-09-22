@@ -8,8 +8,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CalendarService } from '../../core/services/calendar.service';
 import { UpcomingEvent } from '../../core/church.config';
@@ -18,11 +18,10 @@ import { UpcomingEvent } from '../../core/church.config';
  * `CalendarSyncButtonComponent` — botón con menú emergente usando Angular CDK.
  */
 @Component({
-  selector: 'app-calendar-sync-button',
-  standalone: true,
-  imports: [CommonModule, TranslateModule, OverlayModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-calendar-sync-button',
+    imports: [TranslatePipe, OverlayModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <div class="cal-sync" [class.cal-sync--icon-only]="iconOnly">
       <button
         type="button"
@@ -187,7 +186,7 @@ import { UpcomingEvent } from '../../core/church.config';
       </ng-template>
     </div>
   `,
-  styleUrl: './calendar-sync-button.component.scss',
+    styleUrl: './calendar-sync-button.component.scss'
 })
 export class CalendarSyncButtonComponent {
   /** Evento individual para sincronizar. Mutuamente excluyente con `events`. */
@@ -270,7 +269,7 @@ export class CalendarSyncButtonComponent {
   protected formatShortDate(iso: string): string {
     const [y, m, d] = iso.split('-').map((n) => parseInt(n, 10));
     const date = new Date(y, (m || 1) - 1, d || 1);
-    const lang = this.translate.currentLang || this.translate.defaultLang || 'ro';
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
     try {
       return new Intl.DateTimeFormat(lang, {
         weekday: 'short',

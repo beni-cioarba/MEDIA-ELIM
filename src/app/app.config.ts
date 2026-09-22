@@ -1,10 +1,11 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
-  importProvidersFrom,
+  inject,
   isDevMode,
+  provideAppInitializer,
+  provideZoneChangeDetection,
 } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import {
   PreloadAllModules,
   TitleStrategy,
@@ -15,10 +16,10 @@ import {
 } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, provideTranslateService } from '@ngx-translate/core';
 import { APP_ROUTES } from './app.routes';
 import { CHURCH_CONFIG, DEFAULT_CHURCH_CONFIG } from './core/church.config';
-import { inlineTranslateLoaderFactory } from './core/i18n/inline-translate-loader';
+import { InlineTranslateLoader } from './core/i18n/inline-translate-loader';
 import { AppTitleStrategy } from './core/seo/app-title.strategy';
 import { provideElimIcons } from './core/ui/icon-registry';
 import { LanguageService } from './core/services/language.service';
@@ -26,7 +27,12 @@ import { PwaUpdateService } from './core/services/pwa-update.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    // Detección de cambios con zone.js, explícita desde Angular 21 (antes era
+    // el valor por defecto implícito). Toda la app ya es OnPush + signals, así
+    // que el paso a `provideZonelessChangeDetection()` es una línea; queda
+    // pendiente de decisión (docs/ai/75-plan-evolucion.md, fase 5).
+    provideZoneChangeDetection(),
+    provideHttpClient(withXhr()),
     // Angular Material necesita el motor de animaciones. `...Async` lo carga
     // en un chunk aparte tras el primer pintado: el bundle inicial no paga
     // los ~40 kB de @angular/animations y el LCP no se resiente.
@@ -48,27 +54,14 @@ export const appConfig: ApplicationConfig = {
       withPreloading(PreloadAllModules),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
     ),
-    importProvidersFrom(
-      TranslateModule.forRoot({
-        defaultLanguage: 'ro',
-        loader: {
-          provide: TranslateLoader,
-          useFactory: inlineTranslateLoaderFactory,
-        },
-      }),
-    ),
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [LanguageService],
-      useFactory: (lang: LanguageService) => () => lang.init(),
-    },
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [PwaUpdateService],
-      useFactory: (pwa: PwaUpdateService) => () => pwa.init(),
-    },
+    provideTranslateService({
+      fallbackLang: 'ro',
+      loader: { provide: TranslateLoader, useClass: InlineTranslateLoader },
+    }),
+    // El idioma se resuelve antes del primer pintado: `init()` devuelve la
+    // promesa de carga del JSON del idioma activo (ver LanguageService).
+    provideAppInitializer(() => inject(LanguageService).init()),
+    provideAppInitializer(() => inject(PwaUpdateService).init()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Comprueba actualizaciones en cuanto la app se estabiliza (≈30s).

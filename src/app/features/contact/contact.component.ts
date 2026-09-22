@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -43,19 +43,18 @@ interface Channel {
  * Por eso tampoco hay captcha: no existe endpoint que proteger.
  */
 @Component({
-  selector: 'app-contact',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    ReactiveFormsModule,
-    TranslateModule,
-    PageSectionComponent,
-    IconComponent,
-    CopyButtonComponent,
-  ],
-  templateUrl: './contact.component.html',
-  styleUrl: './contact.component.scss',
+    selector: 'app-contact',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterLink,
+        ReactiveFormsModule,
+        TranslatePipe,
+        PageSectionComponent,
+        IconComponent,
+        CopyButtonComponent,
+    ],
+    templateUrl: './contact.component.html',
+    styleUrl: './contact.component.scss'
 })
 export class ContactComponent {
   protected readonly config = inject(CHURCH_CONFIG);

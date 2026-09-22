@@ -5,8 +5,6 @@
   },
   "brand": {
     "name": "Biserica Elim",
-    "short": "Elim",
-    "location": "Arganda del Rey",
     "tagline": "Bine ați venit în casa Domnului"
   },
   "verse": {
@@ -17,6 +15,7 @@
   },
   "socials": {
     "section_title": "Urmărește-ne pe rețelele sociale",
+    "title_pj": "Rețele sociale",
     "open_aria": "Deschide {{name}} într-o filă nouă",
     "items": {
       "instagram_main": {
@@ -56,7 +55,33 @@
     "enter": "Prezintă",
     "exit": "Ieși",
     "tooltip_enter": "Ecran complet (F)",
-    "tooltip_exit": "Ieși din ecran complet (F)"
+    "tooltip_exit": "Ieși din ecran complet (F)",
+    "open_control": "Deschide panoul de control al proiecției"
+  },
+  "presenter": {
+    "title": "Panou de control",
+    "subtitle": "Proiecție",
+    "window_title": "Proiecție · Biserica Elim",
+    "status_window": "Proiecție pe ecran",
+    "status_preview": "Fără fereastră de proiecție",
+    "open": "Deschide proiecția",
+    "open_other_screen": "Proiectează pe al 2-lea ecran",
+    "focus": "Mergi la fereastră",
+    "close": "Închide proiecția",
+    "fullscreen": "Ecran complet",
+    "fullscreen_exit": "Ieși din ecran complet",
+    "fullscreen_denied": "Acest browser cere gestul în fereastra însăși: apasă F în proiecție.",
+    "blocked": "Browserul a blocat fereastra. Permite ferestrele pop-up pentru acest site și apasă din nou.",
+    "slides": "Diapozitive",
+    "preview": "Previzualizarea proiecției",
+    "preview_only": "Previzualizare",
+    "now": "Acum",
+    "next": "Următorul",
+    "shortcuts": "Taste: ← → schimbă · Spațiu pauză · Q cod QR · 1-9 salt la",
+    "hint_fullscreen": "Ecran complet: butonul de sus, sau F în fereastra de proiecție.",
+    "reorder": "Mută „{{name}}”: trage sau folosește ↑ ↓",
+    "reorder_hint": "Trage blocurile pentru a schimba ordinea proiecției.",
+    "reset_order": "Ordinea implicită"
   },
   "carousel": {
     "label": "Carusel de conținut",
@@ -93,6 +118,7 @@
   },
   "gallery": {
     "title": "Galerie Departamentul Media",
+    "title_pj": "Galerie foto",
     "subtitle": "Reveziti cele mai speciale momente ale bisericii: botezuri, concerte, evanghelizări și evenimente.",
     "featured_event": "Eveniment recomandat",
     "view_photos": "Vezi fotografii și clipuri",
@@ -185,7 +211,11 @@
     "week": "Săptămâna {{n}}",
     "starts_tomorrow": "Începe mâine",
     "month_scope": "{{month}}: {{scope}}",
-    "empty": "Planul de citire s-a încheiat. În curând publicăm următorul."
+    "empty": "Planul de citire s-a încheiat. În curând publicăm următorul.",
+    "plan_toggle": "Vezi toată programarea",
+    "plan_range": "{{range}} · {{weeks}} săptămâni",
+    "week_short": "Săpt.",
+    "current": "În curs"
   },
   "location": {
     "title": "Cum ajungi la noi",
@@ -218,7 +248,8 @@
     "version": "Versiunea aplicației",
     "build": "Compilare",
     "commit": "Revizie",
-    "built_at": "Publicată"
+    "built_at": "Publicată",
+    "control": "Panou de control"
   },
   "common": {
     "copy": "Copiază",
@@ -388,6 +419,14 @@
     "announcements": {
       "title": "Anunțuri",
       "description": "Anunțurile în vigoare ale Bisericii Elim din Arganda del Rey: înscrieri, sărbători, conferințe și comunicate."
+    },
+    "control": {
+      "title": "Panou de control",
+      "description": "Panoul de control al proiecției din biserică."
+    },
+    "projection": {
+      "title": "Proiecție",
+      "description": "Fereastra de proiecție pentru ecranul bisericii."
     }
   },
   "home": {

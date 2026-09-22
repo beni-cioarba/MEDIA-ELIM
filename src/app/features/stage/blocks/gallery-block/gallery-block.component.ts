@@ -5,7 +5,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG, MediaEvent } from '../../../../core/church.config';
 import { PresentationService } from '../../../../core/presentation.service';
 import { CarouselService } from '../../../../core/services/carousel.service';
@@ -19,12 +19,11 @@ const FEATURED_ROTATION_MS = 4_500;
  * miniaturas seleccionables que enlazan al directorio público de Drive.
  */
 @Component({
-  selector: 'app-gallery-block',
-  standalone: true,
-  imports: [TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './gallery-block.component.html',
-  styles: [':host { display: contents; }'],
+    selector: 'app-gallery-block',
+    imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './gallery-block.component.html',
+    styles: [':host { display: contents; }']
 })
 export class GalleryBlockComponent {
   protected readonly config = inject(CHURCH_CONFIG);

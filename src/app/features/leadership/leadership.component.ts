@@ -7,7 +7,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import {
   Assignment,
@@ -48,12 +48,11 @@ import { IconComponent } from '../../shared/icon/icon.component';
  * foco atrapado, del `Esc` y del `inert` del resto de la página.
  */
 @Component({
-  selector: 'app-leadership',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TranslateModule, PageSectionComponent, IconComponent],
-  templateUrl: './leadership.component.html',
-  styleUrl: './leadership.component.scss',
+    selector: 'app-leadership',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [RouterLink, TranslatePipe, PageSectionComponent, IconComponent],
+    templateUrl: './leadership.component.html',
+    styleUrl: './leadership.component.scss'
 })
 export class LeadershipComponent {
   protected readonly offices = LEADERSHIP_OFFICES;

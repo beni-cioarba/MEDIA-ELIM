@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -17,12 +17,11 @@ import { CREDO_ARTICLE_COUNT, CREDO_PARTS } from './credo.data';
  * `credo.data.ts`.
  */
 @Component({
-  selector: 'app-credo',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TranslateModule, PageSectionComponent, IconComponent],
-  templateUrl: './credo.component.html',
-  styleUrl: './credo.component.scss',
+    selector: 'app-credo',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [RouterLink, TranslatePipe, PageSectionComponent, IconComponent],
+    templateUrl: './credo.component.html',
+    styleUrl: './credo.component.scss'
 })
 export class CredoComponent {
   protected readonly parts = CREDO_PARTS;

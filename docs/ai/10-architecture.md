@@ -2,9 +2,19 @@
 
 ## Stack
 
-Angular 17 standalone · signals · `@ngx-translate/core` (loader embebido) ·
-`@angular/service-worker` (PWA) · `angularx-qrcode` · SCSS. Sin backend.
-TypeScript en `strict` + `strictTemplates`.
+**Angular 22** (standalone por defecto, signals, `input()`, bloques de control)
+· Angular Material 22 con tema **M3** · `@ngrx/signals` 22 · `@ngx-translate/core`
+18 (`provideTranslateService`, cargador por idioma) · `@angular/service-worker`
+(PWA) · `angularx-qrcode` 22 · SCSS · builder `@angular/build` (esbuild) ·
+Vitest como runner de tests. Sin backend. TypeScript 6 en `strict` +
+`strictTemplates`. **Node ≥ 22.22 / 24 LTS** (`engines` en `package.json`; en
+el hub hay un Node 24 portable en `C:\workspace\.tools\node24`, ver
+`50-build-deploy.md`).
+
+Detección de cambios: **zone.js explícito** (`provideZoneChangeDetection()` en
+`app.config.ts`). Toda la app es OnPush + signals, así que pasar a
+`provideZonelessChangeDetection()` es una línea; es una decisión pendiente del
+usuario (`75-plan-evolucion.md`, fase 5).
 
 ## Bootstrap
 
@@ -12,11 +22,16 @@ TypeScript en `strict` + `strictTemplates`.
 
 `app.config.ts` provee:
 
+- `provideZoneChangeDetection()` (explícito desde Angular 21; ver arriba).
 - `provideRouter(APP_ROUTES, withInMemoryScrolling(...), withRouterConfig(...))`
-- `TranslateModule.forRoot()` con `inlineTranslateLoaderFactory`
-  (las traducciones se importan como JSON dentro del bundle → 0 peticiones HTTP
-  en el primer pintado y sin condición de carrera con `APP_INITIALIZER`)
-- `APP_INITIALIZER` × 2: `LanguageService.init()` y `PwaUpdateService.init()`
+- `provideTranslateService({ fallbackLang: 'ro', loader: InlineTranslateLoader })`:
+  el JSON de cada idioma es un **chunk propio** (`import()` dinámico); al
+  arrancar sólo se carga el idioma activo (~23 kB) y el otro sólo si se cambia.
+  Como son chunks del build, el Service Worker los precachea y no hay petición
+  de red ni condición de carrera: `LanguageService.init()` devuelve la promesa
+  de carga y el inicializador espera.
+- `provideAppInitializer(() => inject(LanguageService).init())` y otro para
+  `PwaUpdateService.init()`.
 - `provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode() })`
 - `{ provide: CHURCH_CONFIG, useValue: DEFAULT_CHURCH_CONFIG }`
 
@@ -32,8 +47,11 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'despre-noi'`      | `AboutComponent`       | Quiénes somos                   |
 | `'marturisirea-de-credinta'` | `CredoComponent` | Confesión de fe (30 artículos) |
 | `'conducere'`       | `LeadershipComponent`  | Estructura de liderazgo        |
-| `'media'`           | `StageComponent`       | Todos los bloques proyectables |
-| `'media/:blockId'`  | `StageComponent`       | Un bloque con URL propia       |
+| `'media'`           | `StageComponent`       | Panel completo de la web: los bloques proyectables **menos anuncios y lectura bíblica**, que tienen sección propia (`WEB_PANEL_EXCLUDED`) |
+| `'media/anunturi'`  | redirect → `'anunturi'` | Los anuncios no son un bloque de la web |
+| `'media/:blockId'`  | `StageComponent`       | Un bloque con URL propia (`/media/citirea-bibliei`, `/media/galerie`…) |
+| `'media/control'`   | `PresenterComponent`   | **Panel de control** de la proyección (fuera del shell) |
+| `'media/ecran'`     | `ProjectionComponent`  | **Ventana de proyección** / vista previa `?rol=preview` (fuera del shell) |
 | `'anunturi'`        | `AnnouncementsComponent` | Anuncios vigentes             |
 | `'anunturi/:id'`    | `AnnouncementsComponent` | Un anuncio (enlace compartible) |
 | `'contact'`         | `ContactComponent`     | Formulario `mailto:`, datos y mapa |
@@ -61,10 +79,13 @@ Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
 | `AnnouncementsService`         | `active`, `hasActive`, `byId()` — anuncios vigentes por fecha (`35-announcements.md`) |
 | `BibleReadingService`          | `announcedWeek` (la que contiene mañana), `hasReading`, `formatRange()`, `formatWeekday()` |
 | `PresentationDisplayService`   | `qrVisible`, `qrSize`, `toggleQr()`, `setQrSize()`, `durations`, `durationFor()`, `stepDuration()`, `resetDurations()` + persistencia |
-| `PresentationService`          | `isFullscreen`, `isSimulated`, `toggle()`, `exitSimulatedIfActive()`     |
+| `PresentationService`          | `isFullscreen`, `isNativeFullscreen`, `isSimulated`, `role`, `isPreview`, `canRequestNativeFullscreen`, `toggle()`, `enterProjectionRoute()` |
+| `PresentationSyncService`      | `isLeader`, `hasProjectionWindow`, `remoteState`, `remoteProgress`, `join()`, `sendCommand()` — canal entre ventanas (`30-presentation.md`) |
+| `ProjectionWindowService`      | `open()`, `close()`, `focus()`, `isOpen`, `canPlaceOnOtherScreen`, `projectionUrl()` |
 | `PresentationBlocksService`    | `states`, `activeBlockIds`, `activeSlides`, `expand()`, `announcementStates`, `setAnnouncementVisible()`, `setEnabled()`, `resetToAuto()`, `resetAll()` |
 | `CarouselService`              | `slides`, `currentIndex`, `currentSlide`, `currentDurationMs`, `isActive(key)`, `isBlockActive(id)`, `progress`, `isPaused`, `next/prev/setIndex/togglePause` |
 | `YouTubeService`               | `liveStream`, `recentStreams`, `start()`                                 |
+| `youtube-thumb.ts`             | `youtubeThumb()` / `youtubeThumbFallback()`: miniatura en **16:9 real** (`hq720`, respaldo `mqdefault`). La API da `hqdefault`, que es 4:3 y ya viene recortada de lado |
 | `CalendarService`              | `.ics`, `webcal://`, URL de Google Calendar, portapapeles                |
 | `LanguageService`              | `current`, `use()`, `toggle()` + persistencia                            |
 | `LoggerService`                | `prefix('ámbito')` → `debug/info/warn/error`. **Nada de `console.*`**    |

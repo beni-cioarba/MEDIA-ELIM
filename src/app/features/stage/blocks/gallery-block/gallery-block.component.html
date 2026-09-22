@@ -1,6 +1,6 @@
 <div class="gallery" aria-labelledby="gallery-title">
   <header class="gallery__header">
-    <h2 id="gallery-title" class="gallery__title">{{ 'gallery.title' | translate }}</h2>
+    <h2 id="gallery-title" class="gallery__title">{{ (fullscreen() ? 'gallery.title_pj' : 'gallery.title') | translate }}</h2>
   </header>
 
   <!-- Hero destacado: imagen completa del evento que rota automáticamente -->

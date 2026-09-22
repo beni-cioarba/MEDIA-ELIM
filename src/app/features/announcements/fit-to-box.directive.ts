@@ -1,11 +1,17 @@
 import { AfterViewInit, Directive, ElementRef, NgZone, OnDestroy, inject } from '@angular/core';
 
-/** Escala mínima: por debajo el texto ya no se lee y el anuncio es demasiado largo. */
-const MIN_FIT = 0.6;
+/**
+ * Escala mínima. Es la **red de seguridad** para un anuncio cargado, no la
+ * norma: se redacta para que quepa a 1 (`35-announcements.md`). A 0,7 el
+ * cuerpo (4,6u) queda justo en el mínimo absoluto (3,2u ≈ 35 px) y el titular
+ * en 5,6u; las etiquetas no bajan de 3,2u porque la hoja las fija con `max()`.
+ * Si ni así cabe, sobra contenido: sección `webOnly` o texto más corto.
+ */
+const MIN_FIT = 0.7;
 
 /**
  * Pasos de la búsqueda binaria de la escala. Con 7 pasos entre 0,6 y 1 la
- * precisión es de ~0,003: la mayor escala que cabe, sin hueco sobrante.
+ * precisión es de ~0,001: la mayor escala que cabe, sin hueco sobrante.
  */
 const SEARCH_STEPS = 7;
 

@@ -1,195 +1,253 @@
-import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-
-/** Tamaños canónicos. Se traducen a un único token (`--brand-size`). */
-export type BrandLogoSize = 'sm' | 'md' | 'lg' | 'xl';
-
-/** Fondo sobre el que se pinta la marca. */
-export type BrandLogoTone = 'light' | 'dark';
+import { TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 
 /**
- * Marca de la iglesia — **única fuente de verdad visual**.
+ * Marca de la iglesia ELIM — el **wordmark** tipográfico: «ELIM» sobre
+ * «ARGANDA DEL REY». Es la única representación de la iglesia dentro de la
+ * interfaz (el emblema sólo vive en el icono de la app; ver el README).
  *
- * Antes había tres marcas distintas conviviendo: el wordmark tipográfico de la
- * cabecera, un `logo-elim.webp` en el pie y otro en el escenario proyectable.
- * Tres cosas que cambiar cada vez que se retoca la identidad y tres formas
- * distintas de leerse. Ahora hay **una**, y todo lo demás la referencia.
+ * **Autocontenido a propósito**, como `app-ineb-logo`: paleta y tipografías
+ * propias con valores de marca literales, sin tokens de la app ni mixins. La
+ * carpeta se copia tal cual a otro proyecto Angular y funciona igual; sólo
+ * hace falta cargar Playfair Display 600 e Inter 600 (Google Fonts). La
+ * traducción del nombre accesible es opcional: si hay `TranslateService`, usa
+ * `brand.name`; si no, `label` o el nombre por defecto.
  *
  * ── Por qué tipografía y no imagen ────────────────────────────────────
  * · Pesa 0 kB y no añade una petición de red al primer pintado.
- * · Escala sin perder nitidez: el mismo componente sirve para 1,3 rem en el
- *   pie y para 5 rem en el proyector de la iglesia.
- * · Hereda el color del tema, así que funciona sobre fondo claro y oscuro sin
- *   mantener dos ficheros.
+ * · Escala sin perder nitidez: el mismo componente sirve para 24 px en una
+ *   barra y para 90 px en el proyector del templo.
+ * · Dos tintas (claro / oscuro) en un solo componente, sin dos ficheros.
  * · Es texto real: buscadores y lectores de pantalla lo leen.
  *
  * ── Cómo se autoajusta ────────────────────────────────────────────────
- * La línea de la localidad se justifica al ancho **real** de «ELIM» en tres
- * pasos, para que ambas líneas terminen a la vez y no quede un margen suelto
- * a la derecha:
+ * Todo deriva de un único tamaño, `--brand-size` (el cuerpo de «ELIM»):
+ * la localidad mide 0,289 de él y el hueco entre líneas 0,14; así la
+ * proporción es fija a cualquier medida. La localidad se justifica al ancho
+ * **real** de «ELIM» en tres pasos, para que ambas líneas terminen a la vez:
  *
- *  1. La rejilla tiene una sola columna `max-content`, así que su ancho lo fija
- *     el nombre.
+ *  1. La rejilla tiene una sola columna `max-content`: su ancho lo fija el
+ *     nombre.
  *  2. `letter-spacing` añade espacio *después* de la última letra; el
- *     `margin-inline-end` negativo lo descuenta y, al ser una rejilla, además
- *     reduce lo que el nombre aporta a la columna.
+ *     `margin-inline-end` negativo lo descuenta, de modo que la columna mide
+ *     tinta y no la caja con el hueco fantasma.
  *  3. La localidad no aporta ancho (`width: 0; min-width: 100%`) y reparte la
  *     holgura con `text-align-last: justify`.
  *
- * El tamaño de la localidad **deriva** del nombre (`calc(… * 0.289)`), así que
- * la proporción se mantiene en cualquier medida y nunca puede partirse en dos
- * líneas por un ajuste manual olvidado.
- *
  * ── Uso ───────────────────────────────────────────────────────────────
  * ```html
- * <app-brand-logo />                                  <!-- cabecera -->
+ * <app-brand-logo />                                  <!-- cabecera: md, claro -->
  * <app-brand-logo tone="dark" size="lg" />            <!-- pie -->
- * <app-brand-logo size="xl" [link]="null" />          <!-- proyección -->
+ * <app-brand-logo size="xl" [link]="null" />          <!-- proyección: imagen no navegable -->
+ * <app-brand-logo size="sm" [showLocation]="false" /> <!-- compacta: sólo el nombre -->
+ * <app-brand-logo [mono]="true" />                    <!-- una tinta (sello, grabado) -->
+ * <app-brand-logo size="context" link="https://…" />  <!-- otra app: tamaño del contexto, enlace externo -->
  * ```
  */
+
+/** Escalas. `context` deja el tamaño al `--brand-size` del consumidor (24 px si nadie lo fija). */
+export type BrandLogoSize = 'sm' | 'md' | 'lg' | 'xl' | 'context';
+
+/** Fondo sobre el que se pinta: decide tinta y acento. No hay dos ficheros, hay dos tintas. */
+export type BrandLogoTone = 'light' | 'dark';
+
+/** Nombre accesible por defecto cuando no hay traducción ni `label`. */
+const DEFAULT_LABEL = 'Biserica Elim';
+
 @Component({
-  selector: 'app-brand-logo',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, TranslateModule],
-  template: `
-    <!-- El nombre completo viaja en aria-label: en pantalla se lee «ELIM» +
-         localidad, pero el lector debe anunciar «Biserica Elim». -->
-    @if (link) {
-      <a class="brand" [routerLink]="link" [attr.aria-label]="'brand.name' | translate">
+    selector: 'app-brand-logo',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgTemplateOutlet, RouterLink],
+    host: { '[class]': 'hostClass()' },
+    template: `
+    <!-- En pantalla se lee «ELIM» + localidad; el lector anuncia el nombre completo. -->
+    @if (external()) {
+      <!-- Fuera de la app (p. ej. desde la app administrativa hacia la web): pestaña nueva. -->
+      <a class="brand" [href]="link()" target="_blank" rel="noopener noreferrer" [attr.aria-label]="ariaLabel()">
+        <ng-container *ngTemplateOutlet="mark" />
+      </a>
+    } @else if (link() !== null) {
+      <a class="brand" [routerLink]="link()" [attr.aria-label]="ariaLabel()">
         <ng-container *ngTemplateOutlet="mark" />
       </a>
     } @else {
-      <span class="brand" role="img" [attr.aria-label]="'brand.name' | translate">
+      <span class="brand" role="img" [attr.aria-label]="ariaLabel()">
         <ng-container *ngTemplateOutlet="mark" />
       </span>
     }
 
     <ng-template #mark>
-      <span class="brand__name">{{ 'brand.short' | translate }}</span>
-      @if (showLocation) {
-        <span class="brand__city">{{ 'brand.location' | translate }}</span>
+      <span class="brand__name">{{ name() }}</span>
+      @if (showLocation()) {
+        <span class="brand__city">{{ location() }}</span>
       }
     </ng-template>
   `,
-  styles: [
-    `
-      @use 'ds' as *;
+    styles: `
+    :host {
+      display: inline-block;
+      line-height: 1;
+      /* Paleta de marca (coincide con navy 700/800 y oro 500/700/300 de la app, pero se
+         declara aquí a propósito: el wordmark es la marca, no el tema de una app). Se puede
+         sobrescribir desde fuera, pero entonces ya no es la marca. */
+      --brand-navy: #1a365d;
+      --brand-navy-deep: #122844;
+      --brand-gold: #d4af37;
+      --brand-gold-deep: #9c7a1e;
+      --brand-gold-soft: #e3c766;
+      --brand-paper: #faf9f6;
+      /* Playfair Display 600 para el nombre, Inter 600 para la localidad. Las carga la app
+         (Google Fonts); sin ellas se usa el fallback y la marca pierde su forma. */
+      --brand-font-name: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --brand-font-location: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
 
-      :host {
-        display: inline-block;
-        line-height: 1;
-      }
+    /* ── Escala ─────────────────────────────────────────────────────────────
+       Un único tamaño gobierna todo el bloque. Se declara en el host por preset;
+       el preset "context" no declara nada y los hijos leen el del consumidor (24 px si falta). */
+    :host(.is-sm) { --brand-size: 24px; }                        /* mínimo de la forma completa */
+    :host(.is-md) { --brand-size: clamp(24px, 5vw, 1.8rem); }     /* cabecera: fluida, nunca bajo el mínimo */
+    :host(.is-lg) { --brand-size: 2.25rem; }                      /* pie */
+    :host(.is-xl) { --brand-size: clamp(2.5rem, 5vw, 4.5rem); }   /* proyector: manda el ancho de pantalla */
+    /* Portátiles y proyectores apaisados con poca altura: si no se recorta, la marca
+       se come la fila del contenido. */
+    @media (orientation: landscape) and (max-height: 720px) {
+      :host(.is-xl) { --brand-size: clamp(2rem, 3.5vw, 3rem); }
+    }
 
-      // Escala. Un único token gobierna todo el bloque: el nombre lo usa tal
-      // cual y la localidad deriva de él, así la proporción es inmutable.
-      :host(.is-sm) {
-        --brand-size: 1.3rem;
-      }
-      // La medida de la cabecera es fluida: en móvil baja a 1.6rem sola, sin
-      // que el consumidor tenga que reajustarla por breakpoint (y sin que la
-      // localidad se parta en dos líneas, que es lo que pasaba antes).
-      :host(.is-md) {
-        --brand-size: clamp(1.6rem, 5vw, 1.8rem);
-      }
-      :host(.is-lg) {
-        --brand-size: 2.25rem;
-      }
-      // El proyector está a varios metros del banco más lejano: aquí manda el
-      // ancho de la pantalla, no la escala tipográfica de la web.
-      :host(.is-xl) {
-        --brand-size: clamp(2.5rem, 5vw, 4.5rem);
+    /* ── Tintas ─────────────────────────────────────────────────────────────
+       Claro: navy + oro profundo (el oro claro no contrasta sobre alabastro).
+       Oscuro: papel + oro (el oro profundo no contrasta sobre navy). */
+    :host(.is-light) {
+      --brand-ink: var(--brand-navy);
+      --brand-ink-hover: var(--brand-navy-deep);
+      --brand-accent: var(--brand-gold-deep);
+    }
+    :host(.is-dark) {
+      --brand-ink: var(--brand-paper);
+      --brand-ink-hover: var(--brand-gold-soft);
+      --brand-accent: var(--brand-gold);
+    }
+    /* Una sola tinta (sello, grabado, bordado, fotocopia): la localidad toma la del nombre. */
+    :host(.is-mono) {
+      --brand-accent: var(--brand-ink);
+      --brand-ink-hover: var(--brand-ink);
+    }
 
-        // Portátiles y proyectores apaisados con poca altura: si no se
-        // recorta, la marca se come la fila del contenido.
-        @include short-landscape {
-          --brand-size: clamp(2rem, 3.5vw, 3rem);
-        }
-      }
+    .brand {
+      display: grid;
+      grid-template-columns: max-content;
+      /* El hueco entre líneas deriva del tamaño de marca, no del cuerpo del contexto. */
+      row-gap: calc(var(--brand-size, 24px) * 0.14);
+      line-height: 1;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 2px;
+    }
 
-      :host(.is-light) {
-        --brand-ink: var(--c-primary);
-        --brand-ink-hover: var(--c-primary-deep);
-        --brand-accent: var(--c-gold-deep);
-      }
-      :host(.is-dark) {
-        --brand-ink: var(--c-on-primary);
-        --brand-ink-hover: var(--c-gold-soft);
-        --brand-accent: var(--c-gold);
-      }
+    .brand__name {
+      justify-self: start;
+      font-family: var(--brand-font-name);
+      font-size: var(--brand-size, 24px);
+      font-weight: 600;
+      /* El tracking es lo que da el aire de marca institucional; el margen negativo
+         devuelve el hueco que deja tras la «M». */
+      letter-spacing: 0.22em;
+      margin-inline-end: -0.22em;
+      text-transform: uppercase;
+      color: var(--brand-ink);
+      transition: color 200ms ease;
+    }
 
-      .brand {
-        display: grid;
-        grid-template-columns: max-content;
-        row-gap: 0.14em;
-        line-height: 1;
-        text-decoration: none;
-        color: inherit;
-      }
+    .brand__city {
+      width: 0;            /* no aporta ancho a la columna… */
+      min-width: 100%;     /* …pero la ocupa entera */
+      font-family: var(--brand-font-location);
+      font-size: calc(var(--brand-size, 24px) * 0.289);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      margin-inline-end: -0.06em;
+      text-transform: uppercase;
+      /* Exige 2+ palabras y es incompatible con white-space: nowrap. */
+      text-align-last: justify;
+      color: var(--brand-accent);
+      transition: color 200ms ease;
+    }
 
-      .brand__name {
-        justify-self: start;
-        font-family: var(--font-serif);
-        font-size: var(--brand-size);
-        font-weight: 600;
-        // El tracking es lo que da el aire de marca institucional; el margen
-        // negativo devuelve el hueco que deja tras la «M».
-        letter-spacing: 0.22em;
-        margin-inline-end: -0.22em;
-        text-transform: uppercase;
-        color: var(--brand-ink);
-        transition: color var(--mo-base) var(--ea-standard);
-      }
+    a.brand:hover .brand__name,
+    a.brand:focus-visible .brand__name {
+      color: var(--brand-ink-hover);
+    }
 
+    /* Anillo de foco: el de la app si define --c-focus; si no, oro 600 de la marca. */
+    a.brand:focus-visible {
+      outline: 2px solid var(--c-focus, #bf9a2b);
+      outline-offset: 4px;
+    }
+    a.brand:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .brand__name,
       .brand__city {
-        width: 0; // no aporta ancho a la columna…
-        min-width: 100%; // …pero la ocupa entera
-        font-size: calc(var(--brand-size) * 0.289);
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        margin-inline-end: -0.06em;
-        text-transform: uppercase;
-        // Requiere ≥2 palabras y es incompatible con white-space: nowrap.
-        text-align-last: justify;
-        color: var(--brand-accent);
-        transition: color var(--mo-base) var(--ea-standard);
+        transition: none;
       }
-
-      a.brand:hover .brand__name,
-      a.brand:focus-visible .brand__name {
-        color: var(--brand-ink-hover);
-      }
-
-      a.brand:focus-visible {
-        @include focus-ring(4px);
-      }
-
-      @include motion-reduce {
-        .brand__name,
-        .brand__city {
-          transition: none;
-        }
-      }
-    `,
-  ],
+    }
+  `
 })
 export class BrandLogoComponent {
   /** Escala. `xl` es la del proyector y es fluida con el ancho de pantalla. */
-  @Input() size: BrandLogoSize = 'md';
+  readonly size = input<BrandLogoSize>('md');
 
-  /** Fondo sobre el que va: decide la tinta y el acento, no hay dos ficheros. */
-  @Input() tone: BrandLogoTone = 'light';
+  /** Fondo sobre el que va: decide la tinta y el acento. */
+  readonly tone = input<BrandLogoTone>('light');
 
-  /** Ruta interna del enlace. `null` la pinta como imagen no navegable. */
-  @Input() link: string | null = '/';
+  /**
+   * A dónde lleva: una ruta interna (`'/'`), una dirección completa (`https://…`,
+   * se abre en pestaña nueva) o `null` para pintarla como imagen no navegable.
+   */
+  readonly link = input<string | null>('/');
 
-  /** La segunda línea se puede omitir en espacios muy estrechos. */
-  @Input() showLocation = true;
+  /** La segunda línea se omite en espacios estrechos (forma compacta, mínimo 16 px). */
+  readonly showLocation = input(true);
 
-  @HostBinding('class')
-  protected get hostClass(): string {
-    return `is-${this.size} is-${this.tone}`;
-  }
+  /** Una sola tinta: reproducciones que no admiten el acento dorado. */
+  readonly mono = input(false);
+
+  /** Textos de la marca. Son constantes de identidad, no traducciones. */
+  readonly name = input('Elim');
+  readonly location = input('Arganda del Rey');
+
+  /**
+   * Nombre accesible. Vacío = el traducido (`brand.name`) si la app tiene
+   * ngx-translate, o «Biserica Elim» si no.
+   */
+  readonly label = input('');
+
+  private readonly translate = inject(TranslateService, { optional: true });
+
+  /** `stream` emite el valor actual y cada cambio de idioma; sin traductor, nada. */
+  private readonly translatedLabel = toSignal(
+    this.translate ? this.translate.stream('brand.name') : of(''),
+    { initialValue: '' },
+  );
+
+  protected readonly ariaLabel = computed<string>(() => {
+    const explicit = this.label();
+    if (explicit) return explicit;
+    const translated = this.translatedLabel();
+    // Sin traducción cargada, `stream` devuelve la propia clave.
+    return translated && translated !== 'brand.name' ? translated : DEFAULT_LABEL;
+  });
+
+  protected readonly external = computed<boolean>(() => this.link()?.startsWith('http') ?? false);
+
+  protected readonly hostClass = computed<string>(
+    () => `is-${this.size()} is-${this.tone()}${this.mono() ? ' is-mono' : ''}`,
+  );
 }

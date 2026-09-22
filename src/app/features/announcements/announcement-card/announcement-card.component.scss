@@ -370,10 +370,15 @@ app-announcement-card {
     --fit: 1;
   }
 
+  // Un anuncio = una diapositiva, de un vistazo. La jerarquía hace el trabajo:
+  // titular (8u) desde el fondo, datos clave (lead) desde media sala, detalle
+  // (body/caption) para las primeras filas y para el móvil vía QR. La tarjeta
+  // ocupa el lienzo y `appFitToBox` la ajusta si un anuncio viene cargado;
+  // las etiquetas nunca bajan de 3,2u (`max()` con el mínimo sin escalar).
   .announcement__inner {
     flex: 1 1 auto;
     min-height: 0;
-    gap: fit(calc(var(--pj-u) * 2.6));
+    gap: fit(calc(var(--pj-u) * 1.6));
     padding: 0;
     background: none;
     border: 0;
@@ -389,19 +394,19 @@ app-announcement-card {
   }
 
   .announcement__datebox {
-    width: fit(calc(var(--pj-u) * 11));
+    width: fit(calc(var(--pj-u) * 14));
     padding: fit(calc(var(--pj-u) * 1.2)) fit(var(--pj-sp-1)) fit(calc(var(--pj-u) * 1.4));
     border-radius: fit(var(--pj-r));
     box-shadow: none;
   }
 
   .announcement__datebox-day {
-    font-size: fit(calc(var(--pj-u) * 5.6));
+    font-size: fit(calc(var(--pj-u) * 8));
   }
 
   .announcement__datebox-month {
     margin-top: fit(calc(var(--pj-u) * 0.5));
-    font-size: fit(calc(var(--pj-u) * 1.9));
+    font-size: calc(var(--pj-u) * 3.2);
     letter-spacing: 0.2em;
   }
 
@@ -411,7 +416,7 @@ app-announcement-card {
 
   .announcement__kicker {
     gap: fit(var(--pj-sp-2));
-    font-size: fit(var(--pj-fs-eyebrow));
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-eyebrow)));
     font-weight: 700;
     letter-spacing: 0.04em;
   }
@@ -420,7 +425,7 @@ app-announcement-card {
     padding: fit(calc(var(--pj-u) * 0.45)) fit(calc(var(--pj-u) * 1.4));
     background: var(--c-gold);
     color: var(--c-on-gold);
-    font-size: fit(var(--pj-fs-eyebrow));
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-eyebrow)));
     letter-spacing: 0.18em;
     border-radius: fit(var(--pj-r-sm));
   }
@@ -438,31 +443,34 @@ app-announcement-card {
 
   .announcement__place {
     gap: fit(var(--pj-sp-1));
-    font-size: fit(var(--pj-fs-caption));
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-caption)));
     font-weight: 600;
   }
 
   // ---- Resumen --------------------------------------------------------
 
+  // El resumen se lee en voz alta: cuerpo (no `lead`), interlineado justo.
   .announcement__lead {
-    font-size: fit(var(--pj-fs-lead));
+    font-size: fit(var(--pj-fs-body));
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.22;
     color: var(--c-primary);
   }
 
   // ---- Secciones: columnas editoriales separadas por filetes ----------
 
-  // Sin `min-height: 0`: la rejilla nunca se encoge por debajo de su
-  // contenido, así el desbordamiento sale por abajo del `__inner` y el
-  // autoajuste lo detecta (si se encogiera, pisaría la nota sin avisar).
+  // Hasta dos secciones: columnas a partes iguales separadas por un filete.
+  // Sin `min-height: 0`: la caja nunca se encoge por debajo de su contenido,
+  // así el desbordamiento sale por abajo del `__inner` y el autoajuste lo
+  // detecta.
   .announcement__sections {
-    grid-template-columns: repeat(var(--announcement-cols, 1), minmax(0, 1fr));
-    align-content: start;
+    display: flex;
+    align-items: flex-start;
     gap: 0;
   }
 
   .announcement__section {
+    flex: 1 1 0;
     min-width: 0;
     padding: 0 fit(var(--pj-sp-3));
     border-top: 0;
@@ -478,19 +486,79 @@ app-announcement-card {
     }
   }
 
+  // Tres secciones o más: apiladas a todo el ancho del lienzo. Tres columnas
+  // de 38u parten cada nombre en tres líneas; a todo el ancho, una lista de
+  // personas es texto corrido de dos líneas. Las filas con valor (precios,
+  // programa) conservan su forma.
+  .announcement__sections--stacked {
+    flex-direction: column;
+    gap: fit(calc(var(--pj-u) * 1.6));
+
+    .announcement__section {
+      flex: 0 0 auto;
+      width: 100%;
+      padding: 0;
+      border-left: 0;
+    }
+
+    .announcement__section-title {
+      margin-bottom: fit(calc(var(--pj-u) * 0.7));
+    }
+
+    .announcement__section--people,
+    .announcement__section--list {
+      .announcement__items {
+        display: block;
+        columns: auto;
+      }
+
+      .announcement__item {
+        display: inline;
+        margin: 0;
+
+        // Separador entre personas, salvo tras la última.
+        &:not(:last-child)::after {
+          content: ' · ';
+          color: var(--c-gold-deep);
+          font-weight: 800;
+        }
+      }
+    }
+  }
+
+  // Programa: «cuándo — qué» en una sola línea de texto corrido; a lo ancho de
+  // una columna ahorra una línea por acto respecto a apilar el qué debajo.
+  .announcement__section--schedule {
+    .announcement__item {
+      display: block;
+    }
+
+    .announcement__item-label,
+    .announcement__item-value {
+      display: inline;
+    }
+
+    .announcement__item-value::before {
+      content: ' — ';
+      color: var(--c-muted);
+    }
+  }
+
   .announcement__section-title {
-    margin: 0 0 fit(calc(var(--pj-u) * 1.4));
-    padding-bottom: fit(calc(var(--pj-u) * 0.8));
+    margin: 0 0 fit(calc(var(--pj-u) * 0.9));
+    padding-bottom: fit(calc(var(--pj-u) * 0.5));
     border-bottom: max(2px, fit(calc(var(--pj-u) * 0.3))) solid var(--c-gold);
-    font-size: fit(var(--pj-fs-eyebrow));
-    letter-spacing: 0.18em;
+    // Nunca por debajo del mínimo absoluto, aunque el autoajuste encoja el resto.
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-eyebrow)));
+    letter-spacing: 0.16em;
   }
 
   .announcement__items {
     gap: fit(calc(var(--pj-u) * 0.9));
 
     &--columns {
-      columns: fit(calc(var(--pj-u) * 26));
+      // Dos columnas anchas: un nombre con apellido cabe en una línea.
+      columns: 2;
       column-gap: fit(var(--pj-sp-3));
 
       .announcement__item {
@@ -503,7 +571,7 @@ app-announcement-card {
     column-gap: fit(calc(var(--pj-u) * 1.2));
     row-gap: fit(calc(var(--pj-u) * 0.2));
     font-size: fit(var(--pj-fs-body));
-    line-height: 1.25;
+    line-height: 1.18;
   }
 
   .announcement__item-leader {
@@ -511,26 +579,32 @@ app-announcement-card {
     transform: translateY(-0.3em);
   }
 
+  // La aclaración va a continuación de la fila, no en una línea propia.
   .announcement__item-note {
-    font-size: fit(var(--pj-fs-eyebrow));
+    flex-basis: auto;
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-eyebrow)));
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.2;
+
+    &::before {
+      content: '· ';
+    }
   }
 
   .announcement__section--schedule {
     .announcement__item + .announcement__item {
-      margin-top: fit(calc(var(--pj-u) * 0.6));
+      margin-top: fit(calc(var(--pj-u) * 0.5));
     }
   }
 
   // ---- Cierre ---------------------------------------------------------
 
   .announcement__footnote {
-    padding: fit(calc(var(--pj-u) * 1.4)) fit(var(--pj-sp-3));
+    padding: fit(calc(var(--pj-u) * 0.8)) fit(var(--pj-sp-2));
     border-radius: fit(var(--pj-r-sm));
     border-left-width: max(3px, fit(calc(var(--pj-u) * 0.5)));
-    font-size: fit(var(--pj-fs-caption));
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-caption)));
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.22;
   }
 }

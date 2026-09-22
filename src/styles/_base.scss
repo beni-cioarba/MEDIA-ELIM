@@ -173,6 +173,13 @@ body.has-drawer-open {
 // la Fullscreen API (móviles, iframes, permiso denegado…). Lo activa
 // `PresentationService` añadiendo la clase al <body>.
 // ---------------------------------------------------------------------
+// Ventana de proyección / vista previa (`/media/ecran`): el escenario ocupa
+// el viewport entero y el documento no debe hacer scroll ni mostrar nada más.
+body.is-projection-route {
+  overflow: hidden;
+  background: var(--c-bg);
+}
+
 body.is-simulated-fullscreen {
   overflow: hidden;
 

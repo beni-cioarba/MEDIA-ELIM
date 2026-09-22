@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { IconComponent } from '../icon/icon.component';
 
 /**
@@ -24,11 +24,10 @@ import { IconComponent } from '../icon/icon.component';
  *    ve el cambio de icono.
  */
 @Component({
-  selector: 'app-copy-button',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, IconComponent],
-  template: `
+    selector: 'app-copy-button',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [TranslatePipe, IconComponent],
+    template: `
     <button
       type="button"
       class="copy"
@@ -45,8 +44,8 @@ import { IconComponent } from '../icon/icon.component';
       }
     </span>
   `,
-  styles: [
-    `
+    styles: [
+        `
       @use 'ds' as *;
 
       :host {
@@ -89,7 +88,7 @@ import { IconComponent } from '../icon/icon.component';
         background: var(--c-gold-tint);
       }
     `,
-  ],
+    ]
 })
 export class CopyButtonComponent {
   private readonly destroyRef = inject(DestroyRef);

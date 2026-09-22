@@ -9,9 +9,10 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ShareButtonComponent } from '../share-button/share-button.component';
 import { PresentationService } from '../../core/presentation.service';
+import { Router } from '@angular/router';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 
@@ -33,11 +34,10 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
  * para no taparlo (IntersectionObserver sobre `app-footer`).
  */
 @Component({
-  selector: 'app-floating-actions',
-  standalone: true,
-  imports: [TranslateModule, ShareButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-floating-actions',
+    imports: [TranslatePipe, ShareButtonComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     <div
       class="dock"
       [class.dock--visible]="isVisible() && (!footerVisible() || showTop())"
@@ -54,13 +54,13 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
           [attr.aria-label]="
             (presentation.isFullscreen()
               ? 'presentation.tooltip_exit'
-              : 'presentation.tooltip_enter'
+              : 'presentation.open_control'
             ) | translate
           "
           [title]="
             (presentation.isFullscreen()
               ? 'presentation.tooltip_exit'
-              : 'presentation.tooltip_enter'
+              : 'presentation.open_control'
             ) | translate
           "
         >
@@ -112,8 +112,8 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
       }
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: contents;
       }
@@ -233,12 +233,13 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
         display: none;
       }
     `,
-  ],
+    ]
 })
 export class FloatingActionsComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly navActive = inject(NavActiveService);
+  private readonly router = inject(Router);
   protected readonly presentation = inject(PresentationService);
 
   /**
@@ -315,8 +316,17 @@ export class FloatingActionsComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Presentando (pantalla completa en esta pestaña) → salir. Si no, abrir el
+   * **panel de control**, desde donde se lanza la ventana de proyección; la
+   * tecla `F` sigue ofreciendo la pantalla completa rápida en esta pestaña.
+   */
   protected togglePresentation(): void {
-    void this.presentation.toggle();
+    if (this.presentation.isFullscreen()) {
+      void this.presentation.toggle();
+      return;
+    }
+    void this.router.navigate(['/', APP_PATHS.media, APP_PATHS.control]);
   }
 
   /** Sube al principio sin recargar ni ensuciar el historial con un `#`. */

@@ -1,20 +1,36 @@
-import { DOCUMENT } from '@angular/common';
-import { Injectable, inject, signal, computed } from '@angular/core';
+
+import { Injectable, inject, signal, computed, DOCUMENT } from '@angular/core';
 
 /**
- * Encapsula la Fullscreen API del navegador para usar la web como
- * presentación en la pantalla de la iglesia.
+ * Papel de esta instancia de la app dentro de la proyección.
+ *  - `window`   ventana de proyección abierta desde el panel de control
+ *               (`/media/ecran`): la que se lleva a la pantalla del templo.
+ *  - `preview`  vista previa incrustada en el panel de control (mismo
+ *               componente, en un `<iframe>`): sigue a la ventana o, si no
+ *               hay ventana, proyecta ella sola en pequeño.
+ *  - `inline`   pantalla completa en la propia pestaña de `/media` (tecla `F`),
+ *               para un solo monitor.
+ */
+export type ProjectionRole = 'window' | 'preview' | 'inline';
+
+/**
+ * Estado del **modo presentación** de esta instancia.
  *
- * Si la API nativa no está disponible o el navegador rechaza el permiso
- * (p. ej. iframes sin `allow="fullscreen"`, navegadores móviles que
- * lo restringen, o usuarios que han denegado el permiso), se activa un
- * modo "simulated fullscreen" puramente CSS que ocupa todo el viewport
- * y oculta cualquier scroll del documento. Visualmente el resultado es
- * el mismo en el monitor de proyección.
+ * Tres formas de estar presentando, todas con el mismo resultado visual
+ * (`.stage.is-fullscreen`):
+ *  1. Fullscreen API nativa (pantalla completa del navegador).
+ *  2. Fullscreen *simulado* (clase CSS en `<body>`), respaldo cuando la API
+ *     no está disponible o el usuario deniega el permiso.
+ *  3. **Ruta de proyección** (`/media/ecran`): la ventana o el iframe que
+ *     nacen ya proyectando, sin depender de la Fullscreen API. Dentro de esa
+ *     ventana la pantalla completa nativa es opcional (sólo oculta el marco
+ *     del navegador) y se pide con `F` o con el botón de los controles.
  *
  * Expone:
- *  - `isFullscreen`     → true si el modo presentación está activo (real o simulado).
- *  - `isSimulated`      → true sólo cuando el modo activo es el fallback CSS.
+ *  - `isFullscreen`      → presentando (por cualquiera de las tres vías).
+ *  - `isNativeFullscreen`→ la ventana ocupa la pantalla completa de verdad.
+ *  - `isSimulated`       → respaldo CSS activo.
+ *  - `role`              → papel de esta instancia (o `null` fuera de proyección).
  */
 @Injectable({ providedIn: 'root' })
 export class PresentationService {
@@ -22,11 +38,31 @@ export class PresentationService {
 
   private readonly nativeFullscreen = signal<boolean>(false);
   private readonly simulatedFullscreen = signal<boolean>(false);
+  private readonly projectionRole = signal<ProjectionRole | null>(null);
 
-  readonly isFullscreen = computed(
-    () => this.nativeFullscreen() || this.simulatedFullscreen(),
-  );
+  readonly isNativeFullscreen = this.nativeFullscreen.asReadonly();
   readonly isSimulated = this.simulatedFullscreen.asReadonly();
+  readonly role = this.projectionRole.asReadonly();
+
+  /** Presentando, por la vía que sea. */
+  readonly isFullscreen = computed(
+    () =>
+      this.nativeFullscreen() || this.simulatedFullscreen() || this.projectionRole() !== null,
+  );
+
+  /** Ruta de proyección activa (ventana o vista previa). */
+  readonly isProjectionRoute = computed(() => this.projectionRole() !== null);
+
+  /** Vista previa incrustada: sin controles ni pantalla completa. */
+  readonly isPreview = computed(() => this.projectionRole() === 'preview');
+
+  /**
+   * ¿Tiene sentido ofrecer «pantalla completa» aquí? Sólo en la ventana de
+   * proyección que aún no la ocupa (en el iframe nunca; inline ya lo es).
+   */
+  readonly canRequestNativeFullscreen = computed(
+    () => this.projectionRole() === 'window' && !this.nativeFullscreen(),
+  );
 
   constructor() {
     // Mantener la signal sincronizada con el estado real del navegador,
@@ -36,7 +72,17 @@ export class PresentationService {
     this.document.addEventListener('webkitfullscreenchange', onChange);
   }
 
+  /**
+   * Alterna la presentación.
+   *  - En la ruta de proyección alterna sólo la pantalla completa nativa: la
+   *    ventana sigue proyectando aunque el navegador vuelva a tener marco.
+   *  - En el resto, entra o sale del modo presentación (nativo o simulado).
+   */
   async toggle(): Promise<void> {
+    if (this.projectionRole() !== null) {
+      await this.toggleNative();
+      return;
+    }
     if (this.isFullscreen()) {
       await this.exit();
       return;
@@ -44,7 +90,33 @@ export class PresentationService {
     await this.enter();
   }
 
-  private async enter(): Promise<void> {
+  /**
+   * Alterna **sólo** la pantalla completa nativa. Devuelve `false` si el
+   * navegador rechazó la petición: sin API, o porque exigía un gesto del
+   * usuario en esta misma ventana (caso de la orden que llega desde el panel
+   * de control en navegadores sin delegación de capacidades).
+   */
+  async toggleNative(): Promise<boolean> {
+    if (this.nativeFullscreen()) {
+      await this.exitNative();
+      return true;
+    }
+    return this.requestNative();
+  }
+
+  /** Declara esta instancia como ruta de proyección (ventana o vista previa). */
+  enterProjectionRoute(role: Exclude<ProjectionRole, 'inline'>): void {
+    this.projectionRole.set(role);
+    this.document.body.classList.add('is-projection-route');
+  }
+
+  leaveProjectionRoute(): void {
+    this.projectionRole.set(null);
+    this.document.body.classList.remove('is-projection-route');
+  }
+
+  /** Pantalla completa nativa (requiere gesto del usuario en esta ventana). */
+  async requestNative(): Promise<boolean> {
     const el = this.document.documentElement as HTMLElement & {
       webkitRequestFullscreen?: () => Promise<void> | void;
       msRequestFullscreen?: () => Promise<void> | void;
@@ -53,17 +125,19 @@ export class PresentationService {
       el.requestFullscreen?.bind(el) ??
       el.webkitRequestFullscreen?.bind(el) ??
       el.msRequestFullscreen?.bind(el);
-
-    if (!request) {
-      this.activateSimulated();
-      return;
-    }
+    if (!request) return false;
     try {
       await request();
+      return true;
     } catch {
-      // Permiso denegado o contexto que no permite fullscreen → fallback CSS.
-      this.activateSimulated();
+      return false;
     }
+  }
+
+  private async enter(): Promise<void> {
+    if (await this.requestNative()) return;
+    // API no disponible, permiso denegado o contexto sin fullscreen → respaldo CSS.
+    this.activateSimulated();
   }
 
   private async exit(): Promise<void> {
@@ -71,6 +145,10 @@ export class PresentationService {
       this.deactivateSimulated();
       return;
     }
+    await this.exitNative();
+  }
+
+  private async exitNative(): Promise<void> {
     const doc = this.document as Document & {
       webkitExitFullscreen?: () => Promise<void> | void;
       msExitFullscreen?: () => Promise<void> | void;
@@ -79,8 +157,11 @@ export class PresentationService {
       doc.exitFullscreen?.bind(doc) ??
       doc.webkitExitFullscreen?.bind(doc) ??
       doc.msExitFullscreen?.bind(doc);
-    if (exit) {
-      try { await exit(); } catch { /* ignore */ }
+    if (!exit || !this.document.fullscreenElement) return;
+    try {
+      await exit();
+    } catch {
+      /* ya no estaba en pantalla completa */
     }
   }
 
@@ -103,4 +184,3 @@ export class PresentationService {
     this.document.body.classList.remove('is-simulated-fullscreen');
   }
 }
-

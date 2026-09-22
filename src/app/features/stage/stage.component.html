@@ -16,7 +16,7 @@
        que la cabecera y el pie: una sola marca para toda la app. -->
   @if (fullscreen()) {
     <header class="stage-brand">
-      <app-brand-logo class="stage-brand__logo" size="xl" tone="light" [link]="null" />
+      <app-brand-logo class="stage-brand__logo" size="context" tone="light" [link]="null" />
       <div class="stage-brand__spacer"></div>
     </header>
   }
@@ -52,9 +52,17 @@
          muestra (la página ya está abierta en su dispositivo). El operador
          puede ocultarlo (tecla Q / panel de ajustes) para dar todo el lienzo
          al contenido. -->
-    @if (showQr()) {
-      <aside id="qr-section" class="qr" [attr.aria-label]="'qr.aria' | translate">
-        @defer (on idle) {
+    @if (fullscreen()) {
+      <!-- Se monta una sola vez y se esconde con `hidden`: recrearlo al volver
+           a mostrarlo obligaba a esperar a que el navegador estuviera «idle»,
+           algo que con el reloj del carrusel puede tardar segundos. -->
+      <aside
+        id="qr-section"
+        class="qr"
+        [hidden]="!display.qrVisible()"
+        [attr.aria-label]="'qr.aria' | translate"
+      >
+        @defer (on immediate) {
           <app-qr-panel [data]="qrData()" />
         } @placeholder {
           <div class="qr__placeholder" aria-hidden="true"></div>
@@ -63,13 +71,14 @@
     }
   </section>
 
-  <!-- Zona caliente invisible que revela los controles al acercar el ratón -->
-  @if (fullscreen()) {
+  <!-- Zona caliente invisible que revela los controles al acercar el ratón.
+       En la vista previa incrustada del panel no hay controles: manda el panel. -->
+  @if (fullscreen() && !presentation.isPreview()) {
     <div class="stage__hover-zone" aria-hidden="true"></div>
   }
 
-  <!-- Controles del carrusel -->
-  @if (fullscreen()) {
+  <!-- Controles del carrusel (aparecen al acercar el ratón, como en PowerPoint) -->
+  @if (fullscreen() && !presentation.isPreview()) {
     <div class="stage__controls" role="group" [attr.aria-label]="'carousel.label' | translate">
       <button
         type="button"
@@ -138,6 +147,21 @@
 
       <!-- Selector de bloques a presentar + ajustes del QR -->
       <app-presentation-settings />
+
+      <!-- Pantalla completa del navegador (sólo en la ventana de proyección) -->
+      @if (presentation.canRequestNativeFullscreen()) {
+        <button
+          type="button"
+          class="carousel__nav carousel__fullscreen"
+          (click)="presentation.toggle()"
+          [attr.aria-label]="'presentation.tooltip_enter' | translate"
+          [title]="'presentation.tooltip_enter' | translate"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      }
     </div>
   }
 

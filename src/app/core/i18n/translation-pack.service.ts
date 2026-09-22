@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslationObject } from '@ngx-translate/core';
 
 /**
  * Función que descarga el paquete de traducciones de un idioma concreto.
  * Debe devolver el objeto ya anidado con su clave raíz, tal cual se fusionará
  * en el diccionario de ngx-translate.
  */
-export type TranslationPackLoader = (lang: string) => Promise<Record<string, unknown>>;
+export type TranslationPackLoader = (lang: string) => Promise<TranslationObject>;
 
 /**
  * Carga perezosa de paquetes de traducción.
@@ -38,7 +38,7 @@ export class TranslationPackService {
   /** Registra el paquete y lo fusiona con el idioma activo. Idempotente. */
   async load(id: string, loader: TranslationPackLoader): Promise<void> {
     this.loaders.set(id, loader);
-    await this.apply(id, loader, this.translate.currentLang || this.translate.defaultLang);
+    await this.apply(id, loader, this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? undefined);
   }
 
   private async applyAll(lang: string): Promise<void> {

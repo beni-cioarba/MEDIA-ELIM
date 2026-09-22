@@ -178,5 +178,17 @@ vuelve a fusionar al cambiar de idioma). Referencia:
   `common`, `contact`, `donate`, `nav`, `seo`, `home`, `about`, `leadership`.
 - `verse.text/reference` es el versículo de la **portada**;
   `verse.stage_text/stage_reference`, el del **panel proyectado**.
-- Las traducciones se **embeben en el bundle** (`core/i18n/inline-translate-loader.ts`);
-  si añades un idioma hay que registrarlo también ahí y en `LanguageService.supported`.
+- Las traducciones van **empaquetadas, un chunk por idioma**
+  (`core/i18n/inline-translate-loader.ts`: `import()` dinámico del JSON): al
+  arrancar sólo se descarga el idioma activo, el otro sólo si se cambia, y una
+  vez cargado no se vuelve a pedir. Si añades un idioma hay que registrarlo ahí
+  (`LOADERS`) y en `LanguageService.supported`.
+- **No hay i18n por módulo** para el núcleo (500 claves ≈ 8 kB comprimidos por
+  idioma: partirlo costaría una petición por módulo y no ahorraría nada
+  apreciable). Lo que sí se separa son los **textos largos de una página**
+  (`TranslationPackService`, p. ej. los 30 artículos del credo): se cargan al
+  entrar en la ruta, se fusionan una sola vez por idioma y no se recargan.
+- Rótulos de bloque para la proyección: si el título web es largo, clave
+  `*.title_pj` corta (una línea a 6,2u); el bloque elige con `fullscreen()`.
+- «Elim» y «Arganda del Rey» no son claves i18n: son constantes de marca del
+  componente `app-brand-logo` (`brand.name` sigue siendo traducible).

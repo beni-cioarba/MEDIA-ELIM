@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, booleanAttribute } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Envoltura estándar de una sección de página: ancho máximo, ritmo vertical
@@ -9,11 +9,10 @@ import { TranslateModule } from '@ngx-translate/core';
  * sin copiar y pegar estilos. El contenido se proyecta con `<ng-content>`.
  */
 @Component({
-  selector: 'app-page-section',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
-  template: `
+    selector: 'app-page-section',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [TranslatePipe],
+    template: `
     <section class="section" [class.section--tinted]="tinted" [attr.id]="anchor">
       <div class="section__inner">
         @if (titleKey) {
@@ -31,8 +30,8 @@ import { TranslateModule } from '@ngx-translate/core';
       </div>
     </section>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: block;
       }
@@ -96,7 +95,7 @@ import { TranslateModule } from '@ngx-translate/core';
         color: var(--c-muted);
       }
     `,
-  ],
+    ]
 })
 export class PageSectionComponent {
   /** Clave i18n del antetítulo (opcional). */

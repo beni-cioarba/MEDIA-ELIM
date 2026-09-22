@@ -40,15 +40,18 @@
 
 @use 'tokens' as *;
 
-/// Título de diapositiva: mismo cuerpo, peso y regla dorada en todos los
-/// bloques. Cualquier panel nuevo lo incluye en su `__title`.
+/// Rótulo de bloque («CITIREA BIBLIEI»): mismo cuerpo, peso y regla dorada en
+/// todos los bloques. Es **contexto**, no el mensaje: va en `lead` (6,2u ≈ 67 px,
+/// legible desde ~16 m) y en una línea; el título de 8u (`--pj-fs-title`) se
+/// reserva para el contenido que hay que leer (título del anuncio, del evento).
+/// Cualquier panel nuevo lo incluye en su `__title`.
 @mixin pj-section-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: var(--pj-fs-title);
+  font-size: var(--pj-fs-lead);
   font-weight: 700;
   line-height: 1.1;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: $color-primary;
 
@@ -75,14 +78,22 @@
     // en pantallas más anchas que 16:9.
     --pj-canvas-w: calc(var(--pj-u) * 177.78);
 
-    // Tipografía (de menor a mayor jerarquía).
-    --pj-fs-eyebrow: calc(var(--pj-u) * 2.2);   // etiquetas en versalitas
-    --pj-fs-caption: calc(var(--pj-u) * 2.5);   // descripciones, leyendas, versículo
-    --pj-fs-body: calc(var(--pj-u) * 2.9);      // cuerpo de lectura
-    --pj-fs-lead: calc(var(--pj-u) * 3.4);      // destacados dentro de una tarjeta
-    --pj-fs-title: calc(var(--pj-u) * 4.2);     // título de la diapositiva
-    --pj-fs-hero: calc(var(--pj-u) * 4.8);      // el dato clave (@handle, nombre del evento)
-    --pj-fs-display: calc(var(--pj-u) * 7);     // cifras / titulares de anuncio
+    // Tipografía (de menor a mayor jerarquía). **Presupuesto de legibilidad a
+    // distancia** (docs/ai/30-presentation.md → «Legibilidad»): a 1080p 1u =
+    // 10,8 px y la altura de mayúscula debe rondar distancia/200: 3,2u (35 px)
+    // se lee desde ~8 m, 4,6u (50 px) desde ~12 m, 5,6u (60 px) desde ~14 m y
+    // 8u (86 px) desde ~20 m. Es una escala de **cartel**: cada diapositiva se
+    // ve entera de un vistazo (un anuncio = una diapositiva, la semana = una
+    // diapositiva) y la jerarquía hace el trabajo: el titular desde el fondo,
+    // los datos clave desde media sala, el detalle en el móvil vía QR. Nada por
+    // debajo de 3,2u: lo vigila scripts/check-projection-sizes.mjs.
+    --pj-fs-eyebrow: calc(var(--pj-u) * 3.2);   // etiquetas en versalitas (mínimo absoluto)
+    --pj-fs-caption: calc(var(--pj-u) * 3.8);   // secundario: hora, lugar, quién, notas, versículo
+    --pj-fs-body: calc(var(--pj-u) * 4.6);      // cuerpo: resumen, filas de programa, ítems
+    --pj-fs-lead: calc(var(--pj-u) * 5.6);      // destacados: pasaje del día, nombre del evento, rótulo de bloque
+    --pj-fs-title: calc(var(--pj-u) * 8);       // titular del contenido (anuncio, @handle)
+    --pj-fs-hero: calc(var(--pj-u) * 8.6);      // el dato clave (número de semana)
+    --pj-fs-display: calc(var(--pj-u) * 11);    // cifras (cuenta atrás)
 
     // Espaciado.
     --pj-sp-1: var(--pj-u);
@@ -144,8 +155,11 @@
     .stage-brand {
       align-items: center;
 
-      // Una sombra bajo texto proyectado sólo lo emborrona.
+      // La marca escala con el lienzo (unidad u), no con el ancho del
+      // navegador: 5u de cuerpo → 7,2u de alto total. Una sombra bajo texto
+      // proyectado sólo lo emborrona.
       &__logo {
+        --brand-size: calc(var(--pj-u) * 5);
         filter: none;
       }
     }
@@ -248,15 +262,15 @@
   //                 descripción
   // -------------------------------------------------------------------
   .stage.is-fullscreen {
-    // Las tarjetas se reparten el alto disponible a partes iguales; con
-    // pocas redes se limita la altura para que no parezcan pancartas.
+    // Una tarjeta por red a su altura natural (red + @handle): 4 × ~14u bajo
+    // el rótulo. Nunca se aplastan: si hubiera más redes, se paginan.
     .socials__list {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
       display: grid;
-      grid-auto-rows: minmax(0, 1fr);
-      align-content: stretch;
-      gap: calc(var(--pj-u) * 1.6);
+      grid-auto-rows: auto;
+      align-content: start;
+      gap: var(--pj-sp-1);
       margin: 0;
       padding: 0;
       overflow: visible;
@@ -264,11 +278,9 @@
 
     .socials__list > .card {
       display: flex;
-      align-self: center;
+      align-self: start;
       width: 100%;
-      height: 100%;
       min-height: 0;
-      max-height: calc(var(--pj-u) * 18);
       border-radius: var(--pj-r);
       border-width: var(--pj-stroke);
       box-shadow: $shadow-sm;
@@ -281,14 +293,16 @@
       width: 100%;
       grid-template-columns: auto minmax(0, 1fr);
       align-items: center;
-      gap: calc(var(--pj-u) * 2.6);
-      padding: calc(var(--pj-u) * 1.4) calc(var(--pj-u) * 2.8);
+      gap: calc(var(--pj-u) * 2.4);
+      padding: var(--pj-sp-1) calc(var(--pj-u) * 2.4);
     }
 
+    // Icono de 7u + 1,4u de relleno: la tarjeta queda en ~11,5u y cuatro
+    // redes caben bajo el rótulo con aire.
     .card__icon {
-      width: var(--pj-icon);
-      height: var(--pj-icon);
-      padding: calc(var(--pj-u) * 2);
+      width: calc(var(--pj-u) * 7);
+      height: calc(var(--pj-u) * 7);
+      padding: calc(var(--pj-u) * 1.4);
       border-radius: var(--pj-r-sm);
     }
 
@@ -306,6 +320,7 @@
       gap: var(--pj-sp-1);
       font-size: var(--pj-fs-eyebrow);
       font-weight: 700;
+      line-height: 1.1;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--c-muted);
@@ -316,20 +331,16 @@
       padding: 0;
       border-radius: 0;
       background: none;
-      font-size: var(--pj-fs-hero);
+      font-size: var(--pj-fs-title);
       font-weight: 800;
       letter-spacing: -0.01em;
       line-height: 1.05;
       color: $color-primary;
     }
 
+    // El @handle es el mensaje; la descripción de cada red es de la web.
     .card__desc {
-      flex-basis: auto;
-      max-width: 100%;
-      font-size: var(--pj-fs-caption);
-      font-weight: 600;
-      line-height: 1.2;
-      color: var(--c-muted);
+      display: none;
     }
 
     // Nadie pulsa una pantalla proyectada.
@@ -340,7 +351,7 @@
     .card__live {
       gap: calc(var(--pj-u) * 0.6);
       padding: calc(var(--pj-u) * 0.3) var(--pj-sp-1);
-      font-size: calc(var(--pj-u) * 1.8);
+      font-size: calc(var(--pj-u) * 3.2);
     }
 
     .card__live-dot {
@@ -361,6 +372,12 @@
     padding: 0;
     gap: 0;
     justify-content: center;
+
+    // Oculto sin destruir (`[hidden]`): `display: flex` de la clase pisaría
+    // el estilo de agente de usuario del atributo.
+    &[hidden] {
+      display: none;
+    }
 
     --qr-frame-pad: calc(var(--pj-u) * 2.2);
     --qr-frame-radius: var(--pj-r);
@@ -421,11 +438,17 @@
     // proyección) con la miniatura a la izquierda y el título a cuerpo de
     // lectura. Una rejilla de miniaturas obligaba a captions de ~20 px y
     // dejaba dos tercios de la columna vacíos.
+    // Filas a su altura natural: la manda la miniatura (16:9 exacto, gobernada
+    // por el ancho de su columna). Antes las filas se estiraban a partes
+    // iguales y la miniatura, con `height: 100%`, acababa más alta que 16:9
+    // dentro de una columna estrecha: `object-fit: cover` la recortaba por
+    // los lados. Ahora se ve siempre entera.
     .broadcasts .streams__list {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
       grid-template-columns: minmax(0, 1fr);
-      grid-auto-rows: minmax(0, 1fr);
+      grid-auto-rows: auto;
+      align-content: start;
       gap: var(--pj-sp-2);
     }
 
@@ -437,7 +460,7 @@
     .streams__link {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(0, 36%) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 27%) minmax(0, 1fr);
       align-items: center;
       gap: calc(var(--pj-u) * 2.5);
       min-height: 0;
@@ -451,9 +474,11 @@
     }
 
     .streams__thumb {
-      height: 100%;
+      width: 100%;
+      height: auto;
       min-height: 0;
       aspect-ratio: 16 / 9;
+      object-fit: cover; // sólo recorta las bandas negras del hqdefault (4:3)
       border-radius: var(--pj-r-sm);
       box-shadow: none;
     }
@@ -548,7 +573,7 @@
     }
 
     .gallery__tile-name {
-      font-size: calc(var(--pj-u) * 1.9);
+      font-size: calc(var(--pj-u) * 3.2);
       line-height: 1.15;
     }
   }
@@ -557,18 +582,24 @@
   // 9 · Programa semanal — una fila por día: DÍA | hora  título
   // -------------------------------------------------------------------
   .stage.is-fullscreen {
+    // La semana entera en una diapositiva, una fila por día a su altura
+    // natural (nunca se aplastan ni se recortan): 6 filas × ~8u + huecos
+    // caben bajo el rótulo con la escala de cartel (día y hora en `lead`,
+    // título en `body`). Un título largo parte en dos líneas y sigue cabiendo.
     .weekly__list {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
       display: grid;
-      grid-auto-rows: minmax(0, 1fr);
-      gap: calc(var(--pj-u) * 1.2);
+      grid-auto-rows: auto;
+      gap: calc(var(--pj-u) * 0.7);
       padding: 0;
-      overflow: hidden;
     }
 
+    // Tres columnas: DÍA | hora | título. `display: contents` en el cuerpo
+    // deja que la hora y el título sean celdas de la fila, así el título nunca
+    // cae bajo la hora y una fila corta mide una sola línea.
     .weekly__item {
-      grid-template-columns: minmax(0, 27%) minmax(0, 1fr);
+      grid-template-columns: calc(var(--pj-u) * 22) auto minmax(0, 1fr);
       align-items: center;
       gap: var(--pj-sp-3);
       min-height: 0;
@@ -577,7 +608,6 @@
       border-width: var(--pj-stroke);
       box-shadow: $shadow-sm;
       transform: none;
-      overflow: hidden;
 
       // «Hoy»: fondo plano teñido de oro, sin degradados ni resplandor.
       &.is-today {
@@ -599,28 +629,25 @@
     .weekly__day-name {
       font-size: var(--pj-fs-lead);
       font-weight: 800;
+      line-height: 1.1;
       color: $color-primary;
     }
 
+    // «Hoy» ya lo dice la fila (fondo y borde dorados).
     .weekly__today-badge {
-      padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 0.9);
-      font-size: calc(var(--pj-u) * 1.6);
-      background: $color-gold-deep;
-      box-shadow: none;
+      display: none;
     }
 
     .weekly__body {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: baseline;
-      column-gap: var(--pj-sp-2);
-      row-gap: calc(var(--pj-u) * 0.3);
+      display: contents;
     }
 
     .weekly__time {
       gap: calc(var(--pj-u) * 0.6);
-      font-size: var(--pj-fs-body);
+      font-size: var(--pj-fs-lead);
       font-weight: 800;
+      line-height: 1.1;
+      white-space: nowrap;
       color: $color-gold-deep;
 
       svg {
@@ -634,20 +661,13 @@
       font-family: var(--font-sans);
       font-size: var(--pj-fs-body);
       font-weight: 700;
-      line-height: 1.15;
+      line-height: 1.12;
       color: $color-text;
     }
 
+    // La descripción es secundaria: la web la muestra.
     .weekly__item-desc {
-      flex-basis: 100%;
-      font-size: var(--pj-fs-caption);
-      font-weight: 600;
-      line-height: 1.2;
-      color: var(--c-muted);
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      display: none;
     }
   }
 
@@ -685,7 +705,7 @@
       grid-template-columns: calc(var(--pj-u) * 20) minmax(0, 1fr);
       align-items: center;
       gap: var(--pj-sp-3);
-      padding: var(--pj-sp-2) var(--pj-sp-3);
+      padding: calc(var(--pj-u) * 1.4) var(--pj-sp-3);
       border-radius: var(--pj-r);
       border-width: var(--pj-stroke);
       transform: none;
@@ -704,13 +724,23 @@
       gap: var(--pj-sp-1);
       font-size: var(--pj-fs-caption);
       font-weight: 600;
+      line-height: 1.15;
     }
 
-    .upcoming__next-badge,
+    .upcoming__body {
+      gap: calc(var(--pj-u) * 0.7);
+    }
+
     .upcoming__today-badge {
       padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 0.9);
-      font-size: calc(var(--pj-u) * 1.7);
+      font-size: calc(var(--pj-u) * 3.2);
       box-shadow: none;
+    }
+
+    // La cuenta atrás («4 zile rămase») ya dice que es el próximo; la etiqueta
+    // sólo partía la línea de la fecha en dos.
+    .upcoming__next-badge {
+      display: none;
     }
 
     .upcoming__item-title {
@@ -724,7 +754,28 @@
     .upcoming__credit dd {
       font-size: var(--pj-fs-caption);
       font-weight: 600;
-      line-height: 1.3;
+      line-height: 1.2;
+    }
+
+    // Quién predica / dirige, en una línea: «CUVÂNT Daniel Popa · CÂNTARE …».
+    .upcoming__credits {
+      margin: 0;
+      gap: var(--pj-sp-3);
+    }
+
+    .upcoming__credit {
+      flex-direction: row;
+      align-items: baseline;
+      gap: var(--pj-sp-1);
+    }
+
+    // Dos eventos por diapositiva: la descripción es un resumen de dos líneas
+    // (el detalle completo está en la web, a un escaneo del QR).
+    .upcoming__item-desc {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .upcoming__credit dt {
@@ -778,15 +829,8 @@
       padding-inline: var(--pj-sp-1);
     }
 
-    // Programa semanal: dos columnas de días.
-    .weekly__list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-auto-rows: minmax(0, 1fr);
-      column-gap: var(--pj-sp-3);
-    }
-
-    .weekly__item {
-      grid-template-columns: minmax(0, 32%) minmax(0, 1fr);
-    }
+    // Programa semanal: la misma lista de una columna (día | hora | título); con
+    // todo el ancho las filas simplemente respiran más. Dos columnas de días
+    // aplastaban las filas (`minmax(0, 1fr)`) y partían los títulos.
   }
 }

@@ -132,6 +132,16 @@
         </span>
       </p>
 
+      <!-- Acceso del operador al panel de control de la proyección. Siempre
+           presente, en la franja legal: es una herramienta, no navegación. -->
+      <a class="footer__operator" [routerLink]="links.control">
+        <app-icon name="play" />
+        {{ 'footer.control' | translate }}
+      </a>
+
+      <!-- Marca de INEB en SVG (componente autocontenido, hoja de marca en su
+           README): forma completa, mínimo 32 px, nombre en blanco sobre el
+           navy del pie. El enlace lleva el nombre accesible; el SVG es decorativo. -->
       <a
         class="footer__partner"
         href="https://ineb.es"
@@ -139,15 +149,7 @@
         rel="noopener noreferrer"
         [attr.aria-label]="'footer.partner' | translate"
       >
-        <img
-          src="assets/logo-ineb.png"
-          alt=""
-          width="72"
-          height="24"
-          loading="lazy"
-          decoding="async"
-          aria-hidden="true"
-        />
+        <app-ineb-logo tone="dark" />
       </a>
     </div>
   </div>

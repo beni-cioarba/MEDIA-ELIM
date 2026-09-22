@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Announcement } from '../../../../core/church.config';
 import { AnnouncementCardComponent } from '../../../announcements/announcement-card/announcement-card.component';
 
@@ -16,11 +16,10 @@ import { AnnouncementCardComponent } from '../../../announcements/announcement-c
  * por qué la diapositiva está en blanco.
  */
 @Component({
-  selector: 'app-announcement-block',
-  standalone: true,
-  imports: [TranslateModule, AnnouncementCardComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
+    selector: 'app-announcement-block',
+    imports: [TranslatePipe, AnnouncementCardComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
     @if (announcement; as current) {
       <app-announcement-card [announcement]="current" />
     } @else {
@@ -32,7 +31,7 @@ import { AnnouncementCardComponent } from '../../../announcements/announcement-c
       </section>
     }
   `,
-  styles: [':host { display: contents; }'],
+    styles: [':host { display: contents; }']
 })
 export class AnnouncementBlockComponent {
   @Input() announcement: Announcement | null = null;

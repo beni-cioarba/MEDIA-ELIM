@@ -113,7 +113,14 @@ const ICON_PATHS: Record<IconName, readonly string[]> = {
     'M16.5 9.5a3.5 3.5 0 0 1 0 5',
     'M19.5 7a7.5 7.5 0 0 1 0 10',
   ],
+  // Seis puntos: agarrador para arrastrar (los trazos de longitud 0 con
+  // remate redondo se pintan como puntos).
+  grip: ['M9 5.6v.8M9 11.6v.8M9 17.6v.8M15 5.6v.8M15 11.6v.8M15 17.6v.8'],
   close: ['M6 6l12 12M18 6L6 18'],
+  // Cuatro esquinas hacia fuera / hacia dentro: el mismo dibujo que el botón
+  // de pantalla completa del escenario, para que se reconozca en el panel.
+  fullscreen: ['M4 9V4h5', 'M20 9V4h-5', 'M4 15v5h5', 'M20 15v5h-5'],
+  'fullscreen-exit': ['M9 4v5H4', 'M15 4v5h5', 'M9 20v-5H4', 'M15 20v-5h5'],
 };
 
 function toSvg(paths: readonly string[]): string {

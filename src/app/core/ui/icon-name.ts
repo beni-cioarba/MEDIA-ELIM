@@ -27,7 +27,10 @@ export type IconName =
   | 'church'
   | 'sparkles'
   | 'megaphone'
+  | 'grip'
   | 'chevron-down'
   | 'arrow-right'
   | 'menu'
-  | 'close';
+  | 'close'
+  | 'fullscreen'
+  | 'fullscreen-exit';

@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, inject, DOCUMENT } from '@angular/core';
+
 import { RouterOutlet } from '@angular/router';
 import { PresentationService } from '../../core/presentation.service';
 import { UiStore } from '../../core/state/ui.store';
@@ -28,18 +28,17 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
  * mantiene porque contiene el botón de salir.
  */
 @Component({
-  selector: 'app-main-layout',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterOutlet,
-    TopNavComponent,
-    MobileNavComponent,
-    BreadcrumbComponent,
-    FooterComponent,
-    FloatingActionsComponent,
-  ],
-  template: `
+    selector: 'app-main-layout',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        RouterOutlet,
+        TopNavComponent,
+        MobileNavComponent,
+        BreadcrumbComponent,
+        FooterComponent,
+        FloatingActionsComponent,
+    ],
+    template: `
     @if (!fullscreen()) {
       <app-top-nav />
       <app-breadcrumb />
@@ -67,8 +66,8 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
       }
     }
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: flex;
         flex-direction: column;
@@ -90,7 +89,7 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
         min-height: clamp(26rem, 55vw, 32rem);
       }
     `,
-  ],
+    ]
 })
 export class MainLayoutComponent {
   private readonly presentation = inject(PresentationService);

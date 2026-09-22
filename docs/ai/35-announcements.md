@@ -17,7 +17,8 @@ El mismo objeto se pinta en **tres sitios** con **un solo renderizador**
 | ----------------------------- | ------------------------------------------------------------------- |
 | Web `/anunturi`               | `AnnouncementsComponent` lista los vigentes, el más próximo primero  |
 | Web `/anunturi/<id>`          | El mismo componente con uno solo: **enlace para compartir** (WhatsApp) |
-| Panel de medios (proyección)  | Bloque `announcements`, **una diapositiva por anuncio**, al principio del carrusel |
+| Proyección                    | Bloque `announcements`, **un anuncio = una o varias diapositivas** (páginas), al principio del carrusel |
+| Panel completo de la web (`/media`) | **No aparecen** (decisión del usuario, 22/09/2026): los anuncios sólo viven en su sección y en la proyección; `/media/anunturi` redirige a `/anunturi` |
 
 Vigencia: desde `publishedOn` (opcional, incluido) hasta `expiresOn`
 (obligatorio, incluido), en días naturales locales. `AnnouncementsService`
@@ -35,7 +36,7 @@ está en vigor» con acceso a los demás.
 ```ts
 {
   id: 'ancorat_2026',                 // estable, minúsculas, sin espacios (va en la URL)
-  title: 'Conferință de tineret „ANCORAT”',   // UNA frase: es lo que se lee de lejos
+  title: 'Conferință de tineret "ANCORAT"',   // UNA frase: es lo que se lee de lejos
   date: '2026-09-26',                 // opcional, YYYY-MM-DD: fecha del hecho anunciado
   time: '18:00',                      // opcional, texto libre ('10:00 & 18:00')
   place: 'Biserica Elim',             // opcional
@@ -106,27 +107,56 @@ en `/anunturi`); «Restablecer» vuelve a mostrarlos todos. Cada diapositiva de
 anuncio dura por defecto **30 s** (ajustable en la misma fila; ver
 `30-presentation.md → Duración por bloque`).
 
-## Límites de proyección (lo que garantiza que se lea a 15 m)
+## Cómo se proyecta: **un anuncio = una diapositiva** (cartel)
 
-La diapositiva mide el contenido y, si no cabe, **encoge todo a la vez**
-(`appFitToBox` busca por bisección la mayor escala `--fit` entre 1 y 0,6 con
-la que cabe; `announcement-card.component.scss` multiplica cuerpos y
-espaciados por ese factor). Funciona con y sin QR y con cualquier tamaño de
-QR. Pero por debajo de ~0,8 la letra empieza a perder lectura desde el fondo,
-así que la regla es **redactar para que quepa a 1**:
+Decisión del usuario (22/09/2026): los anuncios **no se parten** en páginas;
+verlos de un vistazo vale más que un cuerpo uniforme. La tarjeta se maqueta
+como un cartel y la jerarquía hace el trabajo:
+
+| Pieza | Tamaño | Se lee desde |
+| --- | --- | --- |
+| Título | `--pj-fs-title` (8u) | el fondo |
+| Fecha, hora, lugar, insignia | `caption` / `eyebrow` (≥ 3,2u siempre) | media sala |
+| Resumen (`lead`) | `body` (4,6u) | media sala |
+| Secciones | epígrafe `eyebrow`, filas `body` | primeras filas y móvil (QR) |
+| Nota de cierre | `caption` | media sala |
+
+Maquetación (`announcement-card.component.scss`, bloque `.stage.is-fullscreen`):
+
+- **Hasta dos secciones → columnas** a partes iguales (una lista de personas
+  larga va a dos subcolumnas). **Tres o más → apiladas** a todo el ancho y las
+  listas de personas/`list` en **texto corrido** («Halas Petrică · Sidor Ionel
+  · …»): tres columnas de 38u partían cada nombre en tres líneas.
+- El programa (`schedule`) va «cuándo — qué» en una línea; las notas de una
+  fila (`note`) a continuación de la fila, no debajo.
+- `appFitToBox` ajusta la tarjeta entre **1 y 0,7**. Es la red de seguridad,
+  no la norma: a 0,7 el cuerpo queda en 3,2u (el mínimo absoluto) y el titular
+  en 5,6u; etiquetas y secundarios no bajan de 3,2u (`max()` en la hoja).
+- **`webOnly: true`** en una sección la deja sólo para la web (`/anunturi`),
+  no para el cartel: es la válvula para el detalle que no cabe legible (listas
+  largas de nombres, condiciones). Ejemplo: en el 25.º aniversario la lista de
+  invitados va `webOnly`; el menú y las inscripciones (lo accionable) se
+  proyectan.
+
+En el panel de control cada anuncio es una fila; la casilla de visibilidad
+decide si se proyecta.
+
+### Límites de redacción (para que el cartel quepa a escala 1)
 
 | Pieza        | Límite recomendado                                             |
 | ------------ | -------------------------------------------------------------- |
-| `title`      | ≤ 60 caracteres, sin punto final                               |
-| `lead`       | ≤ 2 frases, ≤ 220 caracteres                                   |
-| `sections`   | ≤ 3 (cada una es una columna)                                  |
-| `items`      | ≤ 7 por sección; `label` ≤ 40 caracteres                       |
-| `footnote`   | 1 frase                                                        |
+| `title`      | ≤ 56 caracteres (dos líneas a 8u), sin punto final             |
+| `place`      | ≤ 45 caracteres (una línea)                                    |
+| `lead`       | ≤ 2 frases, ≤ 130 caracteres (dos líneas)                      |
+| `sections`   | ≤ 2 para columnas; con 3 pasan a apiladas                      |
+| `items`      | ≤ 6 por sección; `label` ≤ 40 caracteres; personas ≤ 8 por lista |
+| `footnote`   | 1 frase, ≤ 85 caracteres (dos líneas)                          |
 
-Si un aviso trae más información que esto, **no la aprietes**: quita lo que no
-se decide mirando la pantalla (p. ej. detalles de menú secundarios) o divide en
-dos anuncios con `id` distintos (uno por tema). El detalle completo siempre está
-en la web, a un escaneo del QR.
+Cuando un aviso trae más que esto, el orden de decisión es: (1) acortar el
+texto sin perder el dato, (2) marcar `webOnly` la sección que es detalle,
+(3) partir en **dos anuncios** con `id` distintos (uno por tema). Nunca
+apretar: si el autoajuste baja de ~0,85 el cartel se lee mal desde el fondo,
+y el detalle completo siempre está en la web, a un escaneo del QR.
 
 ## Cómo redactar (protocolo para la IA)
 

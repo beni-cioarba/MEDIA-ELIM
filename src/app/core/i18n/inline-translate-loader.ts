@@ -1,30 +1,32 @@
-import { TranslateLoader } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
-import esTranslations from '../../../assets/i18n/es.json';
-import roTranslations from '../../../assets/i18n/ro.json';
+import { Injectable } from '@angular/core';
+import { TranslateLoader, TranslationObject } from '@ngx-translate/core';
+import { Observable, from, of } from 'rxjs';
 
 /**
- * Loader de traducciones embebido en el bundle.
+ * Cargador de traducciones **empaquetado y por idioma**.
  *
- * Ventajas frente al `TranslateHttpLoader` clásico:
- *  - 0 peticiones HTTP en el primer paint (ahorra ~150 ms en redes lentas).
- *  - Sin race condition entre `APP_INITIALIZER` y la carga del JSON.
- *  - El bundler puede minificar y comprimir las cadenas junto al resto.
+ * Cada JSON de `assets/i18n/` se importa con `import()` dinámico, así que el
+ * bundler lo convierte en un chunk propio: al arrancar sólo se descarga el
+ * idioma activo (~40 kB menos en el bundle inicial que con los dos idiomas
+ * embebidos) y el otro sólo si el usuario cambia de idioma. Al ser chunks del
+ * build, el Service Worker los precachea igual que el resto del JS: no hay
+ * petición de red al arrancar ni condición de carrera con el inicializador
+ * (`LanguageService.init()` espera a que el idioma esté cargado).
  *
- * Como solo tenemos 2 idiomas y los JSON ocupan ~3 KB cada uno (~1 KB tras
- * gzip), inlinearlos es objetivamente mejor que servirlos por HTTP.
+ * Los textos largos que sólo usa una página (confesión de fe, etc.) no van aquí:
+ * viajan como paquetes aparte (`TranslationPackService`), que se fusionan una
+ * sola vez por idioma.
  */
-const TRANSLATIONS: Record<string, unknown> = {
-  es: esTranslations,
-  ro: roTranslations,
+const LOADERS: Record<string, () => Promise<{ default: TranslationObject }>> = {
+  es: () => import('../../../assets/i18n/es.json'),
+  ro: () => import('../../../assets/i18n/ro.json'),
 };
 
+@Injectable({ providedIn: 'root' })
 export class InlineTranslateLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<unknown> {
-    return of(TRANSLATIONS[lang] ?? TRANSLATIONS['ro']);
+  getTranslation(lang: string): Observable<TranslationObject> {
+    const load = LOADERS[lang] ?? LOADERS['ro'];
+    if (!load) return of({});
+    return from(load().then((m) => m.default));
   }
-}
-
-export function inlineTranslateLoaderFactory(): TranslateLoader {
-  return new InlineTranslateLoader();
 }

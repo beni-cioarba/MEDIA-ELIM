@@ -29,7 +29,7 @@
     </div>
 
     <!-- Lecturas diarias. -->
-    <ol class="bible__days" [class.bible__days--nt]="hasNewTestament()">
+    <ol class="bible__days">
       @for (day of w.days; track day.date) {
         <li
           class="bible__day"
@@ -38,13 +38,15 @@
           [attr.aria-current]="day.isToday ? 'date' : null"
         >
           <span class="bible__day-date">
-            <span class="bible__day-name">{{ bible.formatWeekday(day.date) }}</span>
+            <span class="bible__day-name">{{ bible.formatWeekday(day.date, fullscreen() ? 'short' : 'long') }}</span>
             <span class="bible__day-num">{{ bible.formatDayNumber(day.date) }}</span>
           </span>
-          <span class="bible__day-passage">{{ day.passage }}</span>
-          @if (day.newTestament) {
-            <span class="bible__day-passage bible__day-passage--nt">{{ day.newTestament }}</span>
-          }
+          <span class="bible__day-passages">
+            <span class="bible__day-passage">{{ day.passage }}</span>
+            @if (day.newTestament) {
+              <span class="bible__day-passage bible__day-passage--nt">{{ day.newTestament }}</span>
+            }
+          </span>
           @if (day.isToday) {
             <span class="bible__today">{{ 'weekly.today' | translate }}</span>
           }
@@ -60,5 +62,64 @@
     </p>
   } @else {
     <p class="bible__empty">{{ 'bible.empty' | translate }}</p>
+  }
+
+  <!-- Toda la programación, sólo en la web: para quien quiere ir por delante. -->
+  @if (!fullscreen() && bible.planSpan(); as span) {
+    <details class="bible__all">
+      <summary class="bible__all-summary">
+        <app-icon name="chevron-down" />
+        <span class="bible__all-title">{{ 'bible.plan_toggle' | translate }}</span>
+        <span class="bible__all-range">
+          {{ 'bible.plan_range' | translate: { range: bible.formatRange(span.start, span.end), weeks: span.weeks } }}
+        </span>
+      </summary>
+
+      <div class="bible__months">
+        @for (month of bible.planOverview(); track month.id) {
+          <section class="bible__month">
+            <header class="bible__month-head">
+              <h3 class="bible__month-name">{{ month.label }}</h3>
+              <p class="bible__month-scope">{{ month.scope }}</p>
+            </header>
+
+            <ol class="bible__weeks" role="list">
+              @for (week of month.weeks; track week.number) {
+                <li class="bible__week-row" [attr.data-status]="week.status">
+                  <details class="bible__week-details">
+                    <summary class="bible__week-summary">
+                      <span class="bible__week-badge">
+                        <span class="bible__week-badge-label">{{ 'bible.week_short' | translate }}</span>
+                        {{ week.number }}
+                      </span>
+                      <span class="bible__week-range">{{ bible.formatRange(week.start, week.end) }}</span>
+                      <span class="bible__week-passage">{{ week.summary }}</span>
+                      @if (week.status === 'current') {
+                        <span class="bible__week-current">{{ 'bible.current' | translate }}</span>
+                      }
+                      <app-icon name="chevron-down" class="bible__week-chevron" />
+                    </summary>
+                    <ol class="bible__week-days" role="list">
+                      @for (day of week.days; track day.date) {
+                        <li class="bible__week-day" [class.is-today]="day.isToday">
+                          <span class="bible__week-day-date">
+                            <span class="bible__day-name">{{ bible.formatWeekday(day.date) }}</span>
+                            {{ bible.formatDayNumber(day.date) }}
+                          </span>
+                          <span class="bible__week-day-passage">{{ day.passage }}</span>
+                          @if (day.newTestament) {
+                            <span class="bible__week-day-passage bible__week-day-passage--nt">{{ day.newTestament }}</span>
+                          }
+                        </li>
+                      }
+                    </ol>
+                  </details>
+                </li>
+              }
+            </ol>
+          </section>
+        }
+      </div>
+    </details>
   }
 </section>
