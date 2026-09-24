@@ -59,6 +59,10 @@ interface BlockGroup {
  */
 @Component({
     selector: 'app-presenter',
+    // Consola: densidad compacta + superficie oscura del sistema. Va en el
+    // host (no en un div interno) para que las variables locales del `:host`
+    // se resuelvan ya con los valores oscuros.
+    host: { class: 'ui-dense ui-dark' },
     imports: [TranslatePipe, DragDropModule, BrandLogoComponent, IconComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './presenter.component.html',

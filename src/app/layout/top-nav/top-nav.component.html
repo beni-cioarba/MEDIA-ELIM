@@ -4,7 +4,7 @@
   <div class="nav__inner">
     <!-- Marca: componente único compartido con el pie y con la proyección
          (`shared/brand-logo`). Ver 45-design-system.md. -->
-    <app-brand-logo class="nav__brand" size="md" tone="light" link="/" />
+    <app-brand-logo class="nav__brand" size="context" tone="light" link="/" />
 
     <!-- Navegación de escritorio -->
     <nav class="nav__desktop u-desktop-only" [attr.aria-label]="'nav.primary' | translate">
@@ -16,43 +16,15 @@
                 type="button"
                 class="nav__link nav__link--group"
                 [class.is-active]="activeIds().has(item.id)"
-                [matMenuTriggerFor]="groupMenu"
-                (menuOpened)="ui.toggleGroup(item.id)"
-                (menuClosed)="ui.closeAll()"
+                [attr.aria-expanded]="ui.openGroup() === item.id"
+                [attr.aria-controls]="'nav-panel-' + item.id"
+                (click)="ui.toggleGroup(item.id)"
+                (mouseenter)="hoverGroup(item.id)"
+                (focus)="hoverGroup(item.id)"
               >
                 <span class="nav__label">{{ item.labelKey | translate }}</span>
                 <app-icon class="nav__caret" name="chevron-down" />
               </button>
-
-              <mat-menu #groupMenu="matMenu" class="elim-menu" xPosition="after">
-                @for (child of item.children; track child.id) {
-                  @if (isExternal(child)) {
-                    <a
-                      mat-menu-item
-                      [href]="child.externalUrl"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span class="elim-menu__label">{{ child.labelKey | translate }}</span>
-                      @if (child.descriptionKey) {
-                        <span class="elim-menu__desc">{{ child.descriptionKey | translate }}</span>
-                      }
-                    </a>
-                  } @else {
-                    <a
-                      mat-menu-item
-                      [routerLink]="child.path"
-                      [class.is-active]="activeIds().has(child.id)"
-                      [attr.aria-current]="activeIds().has(child.id) ? 'page' : null"
-                    >
-                      <span class="elim-menu__label">{{ child.labelKey | translate }}</span>
-                      @if (child.descriptionKey) {
-                        <span class="elim-menu__desc">{{ child.descriptionKey | translate }}</span>
-                      }
-                    </a>
-                  }
-                }
-              </mat-menu>
             } @else if (isExternal(item)) {
               <a
                 class="nav__link"
@@ -121,4 +93,124 @@
       </button>
     </div>
   </div>
+
+  <!-- ===================================================================
+       Panel de grupo. Va dentro de la cabecera y a ancho completo: no
+       puede salirse de la pantalla porque ocupa toda la pantalla, así que
+       no hace falta overlay ni cálculo de posición. Y al no ser un menú
+       ARIA admite contenido —la tira de álbumes, lo próximo del programa—,
+       que es justo lo que un `role="menu"` prohíbe.
+       =================================================================== -->
+  @if (openGroup(); as grupo) {
+    <div
+      class="nav__panel u-desktop-only"
+      [id]="'nav-panel-' + grupo.id"
+      role="group"
+      [attr.aria-label]="grupo.labelKey | translate"
+    >
+      <div class="nav__panel-inner">
+        <ul class="nav__panel-links" role="list">
+          @for (child of grupo.children; track child.id) {
+            <li>
+              <a
+                class="nav__panel-link"
+                [class.is-active]="activeIds().has(child.id)"
+                [attr.aria-current]="activeIds().has(child.id) ? 'page' : null"
+                [routerLink]="isExternal(child) ? null : child.path"
+                [attr.href]="isExternal(child) ? child.externalUrl : null"
+                [attr.target]="isExternal(child) ? '_blank' : null"
+                [attr.rel]="isExternal(child) ? 'noopener noreferrer' : null"
+                (click)="ui.closeAll()"
+              >
+                @if (child.icon; as icono) {
+                  <app-icon class="nav__panel-icon" [name]="icono" />
+                }
+                <span class="nav__panel-text">
+                  <span class="nav__panel-label">{{ child.labelKey | translate }}</span>
+                  @if (child.descriptionKey) {
+                    <span class="nav__panel-desc">{{ child.descriptionKey | translate }}</span>
+                  }
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+
+        @if (grupo.id === 'program') {
+          <!-- «¿Y ahora qué?»: la respuesta sin entrar en ninguna entrada. Es
+               el único grupo cuyas cuatro secciones son tiempo. -->
+          <section class="nav__strip" [attr.aria-label]="'home.board.title' | translate">
+            <ul class="nav__next" role="list">
+              @if (nextService(); as culto) {
+                <li>
+                  <a class="nav__next-item" [routerLink]="weeklyPath" (click)="ui.closeAll()">
+                    <span class="nav__next-when">{{ culto.dayLabel }} · {{ culto.time }}</span>
+                    <span class="nav__next-what">{{ culto.title }}</span>
+                  </a>
+                </li>
+              }
+              @if (nextEvent(); as evento) {
+                <li>
+                  <a class="nav__next-item" [routerLink]="upcomingPath" (click)="ui.closeAll()">
+                    <span class="nav__next-when">
+                      {{ schedule.formatEventDateShort(evento.date) }} · {{ evento.time }}
+                    </span>
+                    <span class="nav__next-what">{{ evento.title }}</span>
+                  </a>
+                </li>
+              }
+              @if (todayReading(); as lectura) {
+                <li>
+                  <a class="nav__next-item" [routerLink]="biblePath" (click)="ui.closeAll()">
+                    <span class="nav__next-when">
+                      {{ lectura.when }} · {{ 'nav.bible' | translate }}
+                    </span>
+                    <span class="nav__next-what">{{ lectura.passage }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (grupo.id === 'media' && albums.length > 0) {
+          <!-- Tira de álbumes: el contenido real de la galería dentro del
+               menú. **No se mueve sola** — ver 47-design-language.md: en una
+               superficie que se abre para elegir, lo que se mueve es lo que
+               te quita de delante lo que ibas a pulsar. -->
+          <section class="nav__strip" [attr.aria-label]="'nav.gallery' | translate">
+            <header class="nav__strip-head">
+              <span class="nav__strip-title">{{ 'nav.gallery' | translate }}</span>
+              <a class="nav__strip-all" [routerLink]="galleryPath" (click)="ui.closeAll()">
+                {{ 'home.board.all' | translate }}
+              </a>
+            </header>
+            <ul class="nav__strip-list" role="list">
+              @for (album of albums; track album.id) {
+                <li>
+                  <a
+                    class="nav__album"
+                    [routerLink]="galleryPath"
+                    (click)="ui.closeAll()"
+                    [attr.title]="'gallery.events.' + album.i18nKey + '.name' | translate"
+                  >
+                    <img
+                      class="nav__album-img"
+                      [src]="album.thumb"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span class="nav__album-name">
+                      {{ 'gallery.events.' + album.i18nKey + '.name' | translate }}
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    </div>
+  }
 </header>

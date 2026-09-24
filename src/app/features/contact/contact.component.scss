@@ -39,13 +39,13 @@
   padding: clamp(1.4rem, 3vw, 2.25rem);
   background: var(--c-surface);
   border: 1px solid var(--c-hairline);
-  border-radius: 1.25rem;
+  border-radius: var(--r-card);
   box-shadow: var(--e-1);
 }
 
 .form-card__title {
   margin: 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 2.4vw, 1.6rem);
 }
 
@@ -106,7 +106,7 @@
   color: var(--c-text);
   background: var(--c-bg);
   border: 1px solid var(--c-hairline);
-  border-radius: 0.7rem;
+  border-radius: var(--r-md);
   transition:
     border-color var(--mo-base) var(--ea-standard),
     box-shadow var(--mo-base) var(--ea-standard);
@@ -179,7 +179,7 @@
   font-size: 0.88rem;
   color: var(--c-primary-deep);
   background: var(--c-gold-tint);
-  border-radius: 0.7rem;
+  border-radius: var(--r-md);
 }
 
 /* --- Columna lateral -------------------------------------------------- */
@@ -205,7 +205,7 @@
   padding: var(--sp-4);
   background: var(--c-surface);
   border: 1px solid var(--c-hairline);
-  border-radius: 1rem;
+  border-radius: var(--r-card);
   transition: border-color var(--mo-base) var(--ea-standard);
 
   &:hover {
@@ -301,12 +301,12 @@
   padding: var(--sp-5);
   background: var(--c-surface);
   border: 1px solid var(--c-hairline);
-  border-radius: 1rem;
+  border-radius: var(--r-card);
 }
 
 .schedule__title {
   margin: 0 0 var(--sp-4);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.15rem;
 }
 

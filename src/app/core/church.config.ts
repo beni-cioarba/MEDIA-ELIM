@@ -13,8 +13,12 @@ export interface MediaEvent {
   readonly i18nKey: string;
   /** Imagen representativa principal (1600px webp). */
   readonly image: string;
+  /** Variante intermedia (960px webp): la que se sirve en móvil. */
+  readonly medium: string;
   /** Variante miniatura (480px webp) para el grid del mosaico. */
   readonly thumb: string;
+  /** Color medio de la foto, medido con canvas (fondo mientras carga). */
+  readonly tone: string;
   /** Gradient de fondo de la card como tinte de color de marca [from, to]. */
   readonly gradient: readonly [string, string];
   /** URL pública directa a la subcarpeta de Drive. */
@@ -73,6 +77,16 @@ export interface UpcomingEvent {
   readonly preacher?: string;
   /** Nombre del responsabil de cantare/închinare. */
   readonly worshipLead?: string;
+  /**
+   * Cartel del evento (el que se publica en redes), en `assets/posters/`.
+   *
+   * Cuando existe, **es la portada de la tarjeta**: el cartel ya lleva la
+   * identidad del evento, su fecha y su invitado, y ninguna foto de archivo
+   * compite con eso. Como los carteles son cuadrados o verticales y la
+   * portada es 16:9, se muestran **enteros** sobre una copia desenfocada de
+   * sí mismos (`promo__cover--poster`): recortarlos les cortaría el texto.
+   */
+  readonly poster?: string;
 }
 
 /**
@@ -142,6 +156,8 @@ export interface Announcement {
   readonly sections: readonly AnnouncementSection[];
   /** Nota de cierre (invitado principal, aviso importante…). */
   readonly footnote?: string;
+  /** Cartel del anuncio, si lo tiene. Mismas reglas que `UpcomingEvent.poster`. */
+  readonly poster?: string;
   /** Primer día en que se muestra (`YYYY-MM-DD`, incluido). Sin valor: ya. */
   readonly publishedOn?: string;
   /** Último día en que se muestra (`YYYY-MM-DD`, incluido). Obligatorio. */
@@ -185,8 +201,19 @@ export interface HeroSlide {
   readonly i18nKey: string;
   /** Imagen a resolución completa (1600px webp). */
   readonly image: string;
+  /** Variante intermedia (960px webp) para móviles de densidad doble. */
+  readonly medium: string;
   /** Miniatura (480px webp) usada como LQIP/preview. */
   readonly thumb: string;
+  /**
+   * Color medio de la foto, medido con canvas.
+   *
+   * Es el fondo del escenario mientras la imagen viaja por la red: en vez del
+   * navy de marca —que no se parece a nada de lo que va a aparecer— se ve el
+   * tono de la propia foto, así que la entrada no da un salto de color. Cuesta
+   * cero bytes.
+   */
+  readonly tone: string;
   /** Encuadre. Por defecto `upper`; sólo se declara si la foto lo pide. */
   readonly focus?: ImageFocus;
 }
@@ -352,7 +379,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'botez_2025_11_30',
       i18nKey: 'botez_2025_11_30',
       image: 'assets/drive-media/botez_2025.webp',
+      medium: 'assets/drive-media/botez_2025-960.webp',
       thumb: 'assets/drive-media/botez_2025-thumb.webp',
+      tone: '#91979f',
       gradient: ['#1e3a8a', '#3b82f6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -361,7 +390,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'concert_colinde_copii',
       i18nKey: 'concert_colinde_copii',
       image: 'assets/drive-media/concert_copii_2025.webp',
+      medium: 'assets/drive-media/concert_copii_2025-960.webp',
       thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
+      tone: '#797474',
       gradient: ['#7c3aed', '#ec4899'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -370,7 +401,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'concert_colinde_elim',
       i18nKey: 'concert_colinde_elim',
       image: 'assets/drive-media/concert_colinde_2025.webp',
+      medium: 'assets/drive-media/concert_colinde_2025-960.webp',
       thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
+      tone: '#777e7e',
       gradient: ['#b45309', '#f59e0b'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -379,7 +412,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'seara_revelion',
       i18nKey: 'seara_revelion',
       image: 'assets/drive-media/revelion_2025.webp',
+      medium: 'assets/drive-media/revelion_2025-960.webp',
       thumb: 'assets/drive-media/revelion_2025-thumb.webp',
+      tone: '#5e6163',
       gradient: ['#831843', '#f43f5e'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -388,7 +423,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'zambetul_din_cutie',
       i18nKey: 'zambetul_din_cutie',
       image: 'assets/drive-media/zambetul_cutie_2025.webp',
+      medium: 'assets/drive-media/zambetul_cutie_2025-960.webp',
       thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
+      tone: '#736d74',
       gradient: ['#9d174d', '#f472b6'],
       driveUrl:
         'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
@@ -458,6 +495,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   upcomingEvents: [
     {
       id: 'ancorat_2026_09_26',
+      poster: 'assets/posters/conferinta-ancorat-2026.webp',
       date: '2026-09-26',
       time: '18:00',
       title: 'Conferință de tineret "ANCORAT"',
@@ -469,6 +507,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: 'evanghelizare_2026_09_27',
+      poster: 'assets/posters/conferinta-ancorat-2026.webp',
       date: '2026-09-27',
       time: '10:00 & 18:00',
       title: 'Evanghelizare',
@@ -479,6 +518,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: 'aniversare_25_2026_10_18',
+      poster: 'assets/posters/aniversare-25-ani-2026.webp',
       date: '2026-10-18',
       time: '10:00',
       title: 'Aniversare: 25 de ani de la înființarea Bisericii Elim',
@@ -728,7 +768,10 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   },
 
   // TODO(iglesia): confirmar el año real de fundación de la congregación.
-  foundedYear: 2000,
+  // 2001, no 2000: la iglesia cumple **25 años el 18 de octubre de 2026**
+  // (es el evento `aniversare_25_2026_10_18`), así que se fundó en 2001. Con
+  // 2000 la portada anunciaba 26 años de servicio, uno de más.
+  foundedYear: 2001,
 
   // ---------------------------------------------------------------------
   // Carrusel de portada. Reutiliza las fotos ya optimizadas de la galería
@@ -741,25 +784,33 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'hero_worship',
       i18nKey: 'worship',
       image: 'assets/drive-media/concert_colinde_2025.webp',
+      medium: 'assets/drive-media/concert_colinde_2025-960.webp',
       thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
+      tone: '#777e7e',
     },
     {
       id: 'hero_baptism',
       i18nKey: 'baptism',
       image: 'assets/drive-media/botez_2025.webp',
+      medium: 'assets/drive-media/botez_2025-960.webp',
       thumb: 'assets/drive-media/botez_2025-thumb.webp',
+      tone: '#91979f',
     },
     {
       id: 'hero_children',
       i18nKey: 'children',
       image: 'assets/drive-media/concert_copii_2025.webp',
+      medium: 'assets/drive-media/concert_copii_2025-960.webp',
       thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
+      tone: '#797474',
     },
     {
       id: 'hero_community',
       i18nKey: 'community',
       image: 'assets/drive-media/revelion_2025.webp',
+      medium: 'assets/drive-media/revelion_2025-960.webp',
       thumb: 'assets/drive-media/revelion_2025-thumb.webp',
+      tone: '#5e6163',
       // Los músicos ocupan la franja central; con `upper` se comía la
       // cabecera de la carpa y se perdían los acordeones.
       focus: 'center',
@@ -768,7 +819,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       id: 'hero_outreach',
       i18nKey: 'outreach',
       image: 'assets/drive-media/zambetul_cutie_2025.webp',
+      medium: 'assets/drive-media/zambetul_cutie_2025-960.webp',
       thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
+      tone: '#736d74',
     },
   ],
 

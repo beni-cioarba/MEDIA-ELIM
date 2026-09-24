@@ -4,6 +4,24 @@
      =================================================================== -->
 
 <app-hero-carousel [items]="config.heroSlides">
+  <!-- La pregunta número uno de quien llega a la web de una iglesia es
+       «¿cuándo os reunís?». Estaba respondida más abajo, fuera de la primera
+       pantalla. Una línea la sube arriba sin robarle sitio al titular. -->
+  @if (schedule.featuredProgram(); as culto) {
+    <p class="hero-next">
+      <span class="hero-next__dot" aria-hidden="true"></span>
+      <span class="hero-next__when">
+        @if (schedule.todayProgram()) {
+          {{ 'weekly.today' | translate }}
+        } @else {
+          {{ culto.dayLabel }}
+        }
+        · {{ culto.time }}
+      </span>
+      <span class="hero-next__what">{{ culto.title }}</span>
+    </p>
+  }
+
   <h1 class="hero-title">{{ 'home.hero.title' | translate }}</h1>
   <p class="hero-subtitle">{{ 'home.hero.subtitle' | translate }}</p>
 
@@ -18,170 +36,313 @@
   </div>
 </app-hero-carousel>
 
-<!-- Panel de presentación de la iglesia -->
-<app-page-section anchor="bienvenida">
-  <div class="welcome">
+<!-- ===================================================================
+     Franja de avisos. Va ANTES del carrusel y pegada al hero a propósito:
+     un anuncio es lo único de la portada con fecha de caducidad —el programa
+     y el plan de lectura siguen ahí la semana que viene; un aviso o se ve hoy
+     o no sirve—. Dentro del carrusel se podía pasar de largo.
+     Formato comprimido al máximo: una línea por aviso, sin tarjeta.
+     =================================================================== -->
+@if (noticeItems().length > 0) {
+  <section class="notice" [attr.aria-label]="'nav.announcements' | translate">
+    <div class="notice__inner">
+      <!-- Cabecera en su propia línea: el rótulo a la izquierda y el enlace a
+           la derecha. Antes el rótulo ocupaba una columna entera y dejaba un
+           hueco muerto de 370 px; así el ancho completo queda para el dato. -->
+      <header class="notice__head">
+        <p class="notice__label">
+          <app-icon name="megaphone" />
+          <span>{{ 'nav.announcements' | translate }}</span>
+          <span class="notice__count">{{ announcements.active().length }}</span>
+        </p>
+        <a class="notice__all" [routerLink]="links.announcements">
+          {{ 'home.board.all' | translate }}
+          <app-icon name="chevron-right" />
+        </a>
+      </header>
+
+      <ul class="notice__list" role="list">
+        @for (item of noticeItems(); track item.id) {
+          <li>
+            <a class="notice__row" [routerLink]="[links.announcements, item.id]">
+              <!-- Pastilla de fecha: el número y el mes alinean todas las
+                   filas y se leen antes que una fecha corrida. -->
+              <span class="notice__date" [class.is-empty]="!item.day">
+                @if (item.day) {
+                  <span class="notice__day">{{ item.day }}</span>
+                  <span class="notice__month">{{ item.month }}</span>
+                }
+              </span>
+
+              <!-- Cuatro columnas fijas, no un flex que se reparte solo: es lo
+                   que hace que el resumen de todas las filas empiece en la
+                   misma vertical y se puedan barrer con la vista. -->
+              <span class="notice__title">{{ item.title }}</span>
+              <span class="notice__lead">{{ item.lead }}</span>
+              <span class="notice__meta">{{ item.meta }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+}
+
+<!-- ===================================================================
+     Tablero «lo que viene»: carrusel de tarjetas de promoción.
+     La anatomía está calcada del carrusel de play.google.com/store/apps
+     (medido, no mirado): portada con foto, insignia superpuesta arriba a la
+     izquierda, titular grande sobre el fondo tonal de la tarjeta y barra
+     inferior con el icono de la sección, su nombre y el botón de acción.
+     Cada tarjeta es una sección de la web y lleva delante lo más inmediato
+     que tiene; debajo, las dos siguientes.
+     Detalle y medidas: docs/ai/48-carousel-cards.md.
+     =================================================================== -->
+<section class="board">
+  <app-card-carousel
+    labelKey="home.board.title"
+    gutter="var(--board-gutter)"
+    itemWidth="clamp(19rem, 38vw, 33rem)"
+    gap="1.5rem"
+    [autoplayMs]="5000"
+    [loop]="true"
+  >
+    <!-- Las tarjetas van en una plantilla y no proyectadas: el bucle sin fin
+         necesita pintarlas dos veces, y `ng-content` sólo se puede pintar una. -->
+    <ng-template>
+      @for (card of boardCards(); track card.id) {
+      <li class="ui-carousel__item">
+        <a class="promo" [class]="'promo ' + card.tone" [routerLink]="card.link">
+          <div
+            class="promo__cover"
+            [class.promo__cover--data]="coverFor(card) === 'data'"
+            [class.promo__cover--poster]="coverFor(card) === 'poster'"
+          >
+            @if (coverFor(card) === 'poster') {
+              <!-- El cartel entero sobre una copia desenfocada de sí mismo:
+                   recortarlo le cortaría el texto. Si el fichero aún no está
+                   en `assets/posters/`, la tarjeta cae a su foto. -->
+              <img class="promo__poster-bg" [src]="card.poster" alt="" aria-hidden="true"
+                   loading="lazy" decoding="async" />
+              <img class="promo__poster" [src]="card.poster" [alt]="card.headline"
+                   loading="lazy" decoding="async" (error)="onPosterError(card)" />
+            } @else if (coverFor(card) === 'photo') {
+              <img
+                class="promo__image"
+                [src]="card.thumb"
+                [srcset]="card.thumb + ' 480w, ' + card.image + ' 1600w'"
+                sizes="(max-width: 860px) 86vw, 33rem"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            } @else {
+              <!-- Portada de datos: el icono de la sección de marca de agua y
+                   la agenda de la semana comprimida. Informa más que una foto
+                   de archivo, que es lo que habría que poner aquí si no. -->
+              <app-icon class="promo__watermark" [name]="card.icon" />
+
+              @if (card.agenda.length > 0) {
+                <div class="promo__agenda">
+                  <p class="promo__agenda-head">{{ card.agendaKey | translate }}</p>
+                  @for (row of card.agenda; track row.id) {
+                    <p class="promo__agenda-row">
+                      <span class="promo__agenda-when">{{ row.when }}</span>
+                      <span class="promo__agenda-what">{{ row.what }}</span>
+                      @if (row.time) {
+                        <span class="promo__agenda-time">{{ row.time }}</span>
+                      }
+                    </p>
+                  }
+                </div>
+              }
+            }
+
+            @if (card.badge) {
+              <span class="promo__badge">{{ card.badge }}</span>
+            }
+
+            <!-- El texto va SOBRE la portada, como en la referencia: titular
+                 de 24 px y descripción de 18 px sobre el degradado. Con
+                 cartel NO se pone: el cartel ya lo dice todo y el texto le
+                 taparía justo lo que hay que leer. -->
+            @if (coverFor(card) !== 'poster') {
+              <div class="promo__lead">
+                <p class="promo__headline">{{ card.headline }}</p>
+                @if (card.description) {
+                  <p class="promo__desc">{{ card.description }}</p>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="promo__foot">
+            <span class="promo__tile"><app-icon [name]="card.icon" /></span>
+            <span class="promo__id">
+              <span class="promo__name">{{ card.titleKey | translate }}</span>
+              @if (card.meta) {
+                <span class="promo__sub">{{ card.meta }}</span>
+              }
+            </span>
+            <span class="promo__cta">{{ 'home.board.all' | translate }}</span>
+          </div>
+          </a>
+        </li>
+      }
+    </ng-template>
+  </app-card-carousel>
+</section>
+
+<!-- ===================================================================
+     Quiénes somos. Dos columnas: el texto a la izquierda y el versículo
+     como cita destacada a la derecha. En una sola columna, en un monitor
+     de 1920 el bloque medía 470 px de alto y dejaba media pantalla vacía
+     a la derecha; así ocupa el ancho, baja a ~290 px y el versículo pasa
+     de ser un recuadro más a ser el contrapunto del texto.
+     =================================================================== -->
+<section class="welcome" id="bienvenida">
+  <div class="welcome__inner">
     <div class="welcome__text">
       <p class="welcome__eyebrow">{{ 'home.welcome.eyebrow' | translate }}</p>
       <h2 class="welcome__title">{{ 'home.welcome.title' | translate }}</h2>
       <p class="welcome__body">{{ 'home.welcome.body' | translate }}</p>
       <p class="welcome__body">{{ 'home.welcome.body_2' | translate }}</p>
 
-      <blockquote class="welcome__verse">
-        <p>«{{ 'verse.text' | translate }}»</p>
-        <cite>— {{ 'verse.reference' | translate }}</cite>
-      </blockquote>
-
-      <a class="btn btn--primary" [routerLink]="links.about">
+      <a class="btn btn--primary welcome__cta" [routerLink]="links.about">
         {{ 'home.welcome.cta' | translate }}
         <app-icon name="arrow-right" />
       </a>
     </div>
 
-    <ul class="welcome__stats">
-      <li class="stat stat--years">
-        <app-icon class="stat__icon" name="church" />
-        <span class="stat__value">{{ years() }}+</span>
-        <span class="stat__label">{{ 'about.stats.years' | translate }}</span>
+    <figure class="welcome__verse">
+      <blockquote>«{{ 'verse.text' | translate }}»</blockquote>
+      <figcaption>{{ 'verse.reference' | translate }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================================================================
+     Banda de cifras. Antes: tres números flotando centrados en medio de una
+     franja, sin jerarquía, con los rótulos a 10 px y sin ser pulsables —una
+     decoración—. Ahora tiene un rótulo a la izquierda que le da sentido, las
+     cifras ocupan el ancho separadas por filetes, y **cada una enlaza a la
+     sección que la respalda**: el dato deja de ser un adorno y se convierte
+     en una puerta.
+     =================================================================== -->
+<section class="figures">
+  <div class="figures__inner">
+    <h2 class="figures__title">{{ 'home.stats.label' | translate }}</h2>
+
+    <ul class="figures__list" role="list">
+      <li>
+        <a class="figures__item" [routerLink]="links.about">
+          <span class="figures__value">{{ years() }}</span>
+          <span class="figures__label">{{ 'about.stats.years' | translate }}</span>
+        </a>
       </li>
-      @for (stat of config.stats; track stat.id) {
-        <li class="stat">
-          <app-icon class="stat__icon" [name]="stat.icon" />
-          <span class="stat__value">{{ stat.value }}</span>
-          <span class="stat__label">{{ 'about.stats.' + stat.i18nKey | translate }}</span>
-        </li>
-      }
+      <li>
+        <a class="figures__item" [routerLink]="links.weekly">
+          <span class="figures__value">{{ config.stats[0].value }}</span>
+          <span class="figures__label">{{ 'about.stats.services' | translate }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="figures__item" [routerLink]="links.leadership">
+          <span class="figures__value">{{ config.stats[1].value }}</span>
+          <span class="figures__label">{{ 'about.stats.departments' | translate }}</span>
+        </a>
+      </li>
     </ul>
   </div>
-</app-page-section>
+</section>
 
-<!-- Cuándo nos reunimos -->
-<app-page-section
-  tinted
-  eyebrowKey="home.today.eyebrow"
-  titleKey="home.today.title"
-  subtitleKey="home.today.subtitle"
->
-  <div class="now">
-    <article class="now__card">
-      <header class="now__head">
-        <app-icon name="clock" />
-        <!--
-          El rótulo sigue al dato: «Serviciul de azi» sólo si hoy hay culto
-          de verdad; si no, se anuncia el próximo y se dice que lo es.
-        -->
-        <h3>
-          {{
-            (schedule.todayProgram() ? 'home.today.service' : 'home.today.next_service') | translate
-          }}
-        </h3>
-      </header>
-      @if (schedule.featuredProgram(); as program) {
-        <p class="now__time">{{ program.time }}</p>
-        <p class="now__title">{{ program.title }}</p>
-        <p class="now__day">{{ program.dayLabel }}</p>
-      } @else {
-        <p class="now__empty">{{ 'home.today.no_service' | translate }}</p>
-      }
-      <a class="now__link" [routerLink]="links.weekly">
-        {{ 'home.today.see_program' | translate }}
-        <app-icon name="arrow-right" />
-      </a>
-    </article>
-
-    <article class="now__card now__card--accent">
-      <header class="now__head">
-        <app-icon name="sparkles" />
-        <h3>{{ 'home.today.next_event' | translate }}</h3>
-      </header>
-      @if (nextEvent(); as event) {
-        <p class="now__time">{{ event.time }}</p>
-        <p class="now__title">{{ event.title }}</p>
-        <p class="now__day">{{ schedule.formatEventDate(event.date) }}</p>
-        <p class="now__badge">
-          @if (event.isToday) {
-            {{ 'upcoming.today' | translate }}
-          } @else {
-            {{ event.daysLeft }}
-            {{ (event.daysLeft === 1 ? 'upcoming.day_left' : 'upcoming.days_left') | translate }}
-          }
-        </p>
-      } @else {
-        <p class="now__empty">{{ 'upcoming.empty' | translate }}</p>
-      }
-      <a class="now__link" [routerLink]="links.upcoming">
-        {{ 'home.today.see_events' | translate }}
-        <app-icon name="arrow-right" />
-      </a>
-    </article>
-  </div>
-</app-page-section>
-
-<!-- Accesos rápidos a los módulos -->
-<app-page-section titleKey="home.quick.title" subtitleKey="home.quick.subtitle">
-  <ul class="quick">
+<!-- ===================================================================
+     Accesos rápidos. Sin cabecera: «Acces rapid» + «Tot ce ai nevoie, la un
+     click distanță» eran dos líneas que no decían nada que las propias
+     tarjetas no dijeran ya. El nombre de la sección se queda en el
+     `aria-label`, que es donde hace falta.
+     Y sin descripciones: la mitad repetían el rótulo («Galerie — Momente din
+     viața bisericii»). En un acceso rápido el rótulo ES la señal; lo demás
+     dobla el alto sin añadir nada. La descripción pasa al `title`, para quien
+     se pare encima.
+     =================================================================== -->
+<section class="quick-nav" [attr.aria-label]="'home.quick.title' | translate">
+  <ul class="quick" role="list">
     @for (link of quickLinks; track link.id) {
       <li>
-        <a class="quick__card" [routerLink]="link.path">
+        <a
+          class="quick__card"
+          [routerLink]="link.path"
+          [attr.title]="'home.quick.items.' + link.id + '.desc' | translate"
+        >
           <app-icon class="quick__icon" [name]="link.icon" />
           <span class="quick__title">
             {{ 'home.quick.items.' + link.id + '.title' | translate }}
           </span>
-          <span class="quick__desc">
-            {{ 'home.quick.items.' + link.id + '.desc' | translate }}
-          </span>
-          <app-icon class="quick__arrow" name="arrow-right" />
         </a>
       </li>
     }
   </ul>
-</app-page-section>
+</section>
 
-<!-- Ministerios / departamentos -->
-<app-page-section
-  tinted
-  eyebrowKey="home.ministries.eyebrow"
-  titleKey="home.ministries.title"
-  subtitleKey="home.ministries.subtitle"
->
-  <ul class="ministries">
-    @for (ministry of featuredMinistries(); track ministry.id) {
-      <li class="ministries__item">
-        {{ 'leadership.ministries.' + ministry.i18nKey + '.name' | translate }}
+<!-- ===================================================================
+     Departamentos. Antes: antetítulo + título + subtítulo + chips + botón,
+     250 px para seis palabras. Ahora el rótulo va a la izquierda y los
+     chips ocupan el resto de la fila: misma información, un tercio del alto.
+     Y los chips **enlazan**: antes eran etiquetas muertas.
+     =================================================================== -->
+<section class="depts" [attr.aria-label]="'home.ministries.title' | translate">
+  <div class="depts__inner">
+    <div class="depts__head">
+      <h2 class="depts__title">{{ 'home.ministries.title' | translate }}</h2>
+      <p class="depts__sub">{{ 'home.ministries.subtitle' | translate }}</p>
+    </div>
+
+    <ul class="depts__list" role="list">
+      @for (ministry of featuredMinistries(); track ministry.id) {
+        <li>
+          <a class="depts__chip" [routerLink]="links.leadership">
+            {{ 'leadership.ministries.' + ministry.i18nKey + '.name' | translate }}
+          </a>
+        </li>
+      }
+      <li>
+        <a class="depts__chip depts__chip--all" [routerLink]="links.leadership">
+          {{ 'home.ministries.cta' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
       </li>
-    }
-  </ul>
+    </ul>
+  </div>
+</section>
 
-  <p class="section-cta">
-    <a class="btn btn--primary" [routerLink]="links.leadership">
-      {{ 'home.ministries.cta' | translate }}
-      <app-icon name="arrow-right" />
-    </a>
-  </p>
-</app-page-section>
-
-<!-- Visítanos -->
-<app-page-section titleKey="home.visit.title" subtitleKey="home.visit.subtitle">
-  <div class="visit">
+<!-- ===================================================================
+     Visítanos. Antes: título + subtítulo + tarjeta con una línea de texto,
+     250 px para una dirección. Ahora es una banda de una fila: el dato a la
+     izquierda y las dos acciones a la derecha.
+     =================================================================== -->
+<section class="visit" [attr.aria-label]="'home.visit.title' | translate">
+  <div class="visit__inner">
     <p class="visit__address">
-      <app-icon name="map-pin" />
-      <span>
-        {{ config.location.address }}
-        <small>{{ config.location.city }}</small>
+      <app-icon class="visit__pin" name="map-pin" />
+      <span class="visit__text">
+        <span class="visit__street">{{ config.location.address }}</span>
+        <span class="visit__city">{{ config.location.city }}</span>
       </span>
     </p>
+
     <div class="visit__actions">
       <a
-        class="btn btn--primary"
+        class="btn btn--primary btn--sm"
         [href]="directionsUrl()"
         target="_blank"
         rel="noopener noreferrer"
       >
         {{ 'home.visit.cta_map' | translate }}
       </a>
-      <a class="btn btn--ghost btn--ghost-dark" [routerLink]="links.location">
+      <a class="btn btn--ghost btn--ghost-dark btn--sm" [routerLink]="links.location">
         {{ 'home.visit.cta_details' | translate }}
       </a>
     </div>
   </div>
-</app-page-section>
+</section>

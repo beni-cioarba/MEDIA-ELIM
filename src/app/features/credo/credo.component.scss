@@ -33,14 +33,14 @@
   box-shadow: var(--shadow-sm);
   text-decoration: none;
   transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease;
+    box-shadow var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard);
 }
 
+/* Sin salto al apuntar: las referencias mueven el filete, no la caja. Con
+   una rejilla de tarjetas, el salto hace que la retícula «baile». */
 .credo-index__link:hover,
 .credo-index__link:focus-visible {
-  transform: translateY(-2px);
   border-color: var(--c-gold);
   box-shadow: var(--shadow-card);
 }
@@ -53,7 +53,7 @@
   height: 2.4rem;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--c-primary-deep), var(--c-primary));
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--c-text-inverse);
@@ -190,10 +190,5 @@
   .credo-index__link,
   .article__caret {
     transition: none;
-  }
-
-  .credo-index__link:hover,
-  .credo-index__link:focus-visible {
-    transform: none;
   }
 }

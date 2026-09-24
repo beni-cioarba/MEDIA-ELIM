@@ -29,8 +29,11 @@
        serie). La hoja se pide con `media="print"` + `onload` para que
        NO bloquee el primer pintado; el `<noscript>` cubre el caso sin JS.
 
-       · Playfair Display + Inter → tipografía de la marca (`display=swap`:
-         preferimos texto con fallback a texto invisible).
+       · Plus Jakarta Sans (titulares) + Inter (cuerpo) → tipografía del
+         producto. Playfair Display se reduce a los dos pesos que de verdad
+         se usan: 600 para el wordmark de la marca y la cursiva 500 para los
+         versículos (`display=swap`: preferimos texto con fallback a texto
+         invisible).
        · Material Symbols Outlined → catálogo completo de iconos de Google
          para pantallas secundarias. Los iconos críticos de navegación NO
          dependen de esta fuente: son SVG en línea (ver `icon-registry.ts`),
@@ -40,7 +43,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap"
     media="print"
     onload="this.media='all'">
   <link
@@ -50,15 +53,26 @@
     onload="this.media='all';document.documentElement.classList.add('fonts-symbols-ready')">
   <noscript>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap">
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap">
   </noscript>
 
   <!-- Preload de la primera diapositiva del hero (LCP de la portada) para que
        el navegador la descargue en paralelo con el JS. Debe coincidir con
-       `heroSlides[0].image` de `church.config.ts`.
+       `heroSlides[0]` de `church.config.ts`, **incluido el `imagesrcset`**:
+       una precarga con un solo `href` gana siempre al `srcset` de la etiqueta
+       —el recurso ya está descargado y el navegador lo reutiliza—, así que un
+       móvil seguía bajando la imagen de 1600 px por mucho `srcset` que
+       tuviera el `<img>`. Con `imagesrcset`/`imagesizes` la precarga elige el
+       mismo ancho que elegiría la etiqueta.
        La marca no se precarga: no hay imagen que cargar (wordmark tipográfico
        y logo INEB en SVG dentro del bundle). -->
-  <link rel="preload" as="image" href="assets/drive-media/concert_colinde_2025.webp" fetchpriority="high">
+  <link rel="preload" as="image"
+        href="assets/drive-media/concert_colinde_2025.webp"
+        imagesrcset="assets/drive-media/concert_colinde_2025-thumb.webp 480w,
+                     assets/drive-media/concert_colinde_2025-960.webp 960w,
+                     assets/drive-media/concert_colinde_2025.webp 1600w"
+        imagesizes="100vw"
+        fetchpriority="high">
 </head>
 <body>
   <app-root></app-root>

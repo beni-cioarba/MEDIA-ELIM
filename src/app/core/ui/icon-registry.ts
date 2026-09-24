@@ -106,6 +106,10 @@ const ICON_PATHS: Record<IconName, readonly string[]> = {
     'M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z',
   ],
   'chevron-down': ['M6 9l6 6 6-6'],
+  // Trazo idéntico al de `chevron-down` girado: así las tres flechas
+  // pesan lo mismo ópticamente en la misma retícula de 24.
+  'chevron-left': ['M15 6l-6 6 6 6'],
+  'chevron-right': ['M9 6l6 6-6 6'],
   'arrow-right': ['M5 12h14', 'M13 6l6 6-6 6'],
   menu: ['M4 7h16M4 12h16M4 17h16'],
   megaphone: [

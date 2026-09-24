@@ -14,9 +14,12 @@
 }
 
 html {
-  // Base fluida para `clamp()`: en el proyector de la iglesia (pantalla
-  // grande, lectura lejana) la raíz crece hasta 20 px.
-  font-size: clamp(15px, 0.9vw + 0.5rem, 20px);
+  // Base fluida, **contenida**: de 15 px en móvil a 17 px en escritorio.
+  // Antes llegaba a 20 px «para que se viera de lejos», pero la proyección
+  // ya no depende de la raíz (tiene su propia unidad `--pj-u`), así que lo
+  // único que hacía era inflar la web en pantallas grandes: menos
+  // información por pantalla y aire muerto entre bloques.
+  font-size: clamp(15px, 0.35vw + 14px, 17px);
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   // Que las anclas (#seccion) no queden debajo de la cabecera fija.
@@ -61,17 +64,37 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-family: var(--font-serif);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
   line-height: 1.15;
-  letter-spacing: -0.01em;
   color: var(--c-primary);
   text-wrap: balance;
 }
 
-h1 { font-size: var(--fs-h1); }
-h2 { font-size: var(--fs-h2); }
-h3 { font-size: var(--fs-h3); }
+// Tracking **graduado por nivel** (ver `$tracking` en `_tokens.scss`): se
+// cierra a medida que crece el cuerpo. Un valor único cerrado servía para el
+// titular de portada pero empastaba los encabezados pequeños, que es donde
+// más texto hay.
+h1 {
+  font-size: var(--fs-h1);
+  letter-spacing: var(--ls-h1);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+}
+
+// `h4` no fija tamaño a propósito (lo pone cada contexto): sólo hereda el
+// tracking de su escalón.
+h4 {
+  letter-spacing: var(--ls-section);
+}
 
 p {
   margin: 0;

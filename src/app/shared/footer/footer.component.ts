@@ -78,6 +78,7 @@ export class FooterComponent {
     location: blockPath('location'),
     /** Panel de control de la proyección (herramienta del operador). */
     control: `/${APP_PATHS.media}/${APP_PATHS.control}`,
+    styleguide: `/${APP_PATHS.styleguide}`,
   } as const;
 
   protected readonly mailto = `mailto:${this.config.contact.email}`;

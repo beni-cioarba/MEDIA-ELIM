@@ -249,6 +249,7 @@
     "build": "Compilación",
     "commit": "Revisión",
     "built_at": "Publicada",
+    "styleguide": "Guía de estilos",
     "control": "Panel de control"
   },
   "common": {
@@ -420,6 +421,10 @@
       "title": "Anuncios",
       "description": "Avisos en vigor de la Iglesia Elim de Arganda del Rey: inscripciones, celebraciones, conferencias y comunicados."
     },
+    "styleguide": {
+      "title": "Guía de estilos",
+      "description": "Catálogo interno de tokens, primitivas y patrones de la aplicación."
+    },
     "control": {
       "title": "Panel de control",
       "description": "Panel de control de la proyección en el templo."
@@ -430,6 +435,15 @@
     }
   },
   "home": {
+    "stats": {
+      "label": "La iglesia en cifras"
+    },
+    "board": {
+      "title": "Lo que viene",
+      "rest_week": "El resto de la semana",
+      "rest_readings": "El resto de las lecturas",
+      "all": "Ver todo"
+    },
     "hero": {
       "title": "Bienvenido a casa",
       "subtitle": "Una familia que adora, sirve y crece unida.",
@@ -445,11 +459,11 @@
       }
     },
     "welcome": {
-      "eyebrow": "Bienvenida",
+      "eyebrow": "Quiénes somos",
       "title": "Una casa abierta para todos",
-      "body": "Somos una iglesia evangélica en Arganda del Rey. Nos reunimos para adorar a Dios, estudiar su Palabra y sostenernos como familia.",
+      "body": "Somos una iglesia evangélica en Arganda del Rey, Madrid. Nos reunimos cada semana para adorar a Dios, estudiar su Palabra y sostenernos como familia.",
       "body_2": "No importa de dónde vengas ni en qué punto del camino estés: aquí tienes un sitio. Ven tal y como eres.",
-      "cta": "Conoce más sobre nosotros"
+      "cta": "Nuestra historia"
     },
     "today": {
       "eyebrow": "Ahora mismo",
@@ -684,7 +698,7 @@
         "name": "Niños",
         "description": "Escuela dominical y actividades para los más pequeños."
       },
-      "media": {
+    "media": {
         "name": "Medios",
         "description": "Directos, sonido, proyección, fotografía y redes sociales."
       },

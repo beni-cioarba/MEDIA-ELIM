@@ -13,6 +13,8 @@
     "version:generate": "node scripts/generate-version.mjs",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs",
+    "posters": "node scripts/optimize-posters.mjs",
+    "images": "node scripts/generate-image-sizes.mjs",
     "check:projection": "node scripts/check-projection-sizes.mjs",
     "check": "npm run i18n:check && npm run check:projection"
   },

@@ -47,7 +47,7 @@
 /// Cualquier panel nuevo lo incluye en su `__title`.
 @mixin pj-section-title {
   margin: 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: var(--pj-fs-lead);
   font-weight: 700;
   line-height: 1.1;

@@ -1,0 +1,520 @@
+<!--
+  Guía de estilos viva. Todo lo que se ve aquí usa las clases reales del
+  catálogo (`_primitives.scss`) sobre los tokens reales: si cambia un token,
+  cambia esta página. No hay nada «pintado a mano» para la demostración.
+-->
+<div class="sg">
+  <header class="sg__hero">
+    <p class="sg__eyebrow">Sistem de design</p>
+    <h1 class="sg__title">Guía de estilos</h1>
+    <p class="sg__lead">
+      El catálogo de la aplicación: tokens, primitivas y patrones. Es la referencia para quien
+      desarrolla, para quien diseña y para la IA. Antes de inventar una pieza, búscala aquí.
+    </p>
+    <nav class="sg__toc" aria-label="Secciones">
+      <a class="ui-chip ui-chip--selectable" href="#principios">Principios</a>
+      <a class="ui-chip ui-chip--selectable" href="#referencias">Referencias</a>
+      <a class="ui-chip ui-chip--selectable" href="#color">Color</a>
+      <a class="ui-chip ui-chip--selectable" href="#tipografia">Tipografía</a>
+      <a class="ui-chip ui-chip--selectable" href="#escalas">Escalas</a>
+      <a class="ui-chip ui-chip--selectable" href="#primitivas">Primitivas</a>
+      <a class="ui-chip ui-chip--selectable" href="#escaparate">Escaparate</a>
+      <a class="ui-chip ui-chip--selectable" href="#densidad">Densidad</a>
+      <a class="ui-chip ui-chip--selectable" href="#proyeccion">Proyección</a>
+    </nav>
+  </header>
+
+  <!-- ══════════ Principios ══════════ -->
+  <section class="sg__section" id="principios" aria-labelledby="sg-principios">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-principios">Principios</h2>
+    </div>
+    <div class="sg__grid sg__grid--principles">
+      @for (p of principles; track p.title) {
+        <article class="ui-card">
+          <h3 class="sg__card-title">{{ p.title }}</h3>
+          <p class="sg__card-text">{{ p.body }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ══════════ Referencias medidas ══════════ -->
+  <section class="sg__section" id="referencias" aria-labelledby="sg-ref">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-ref">Referencias medidas</h2>
+    </div>
+    <p class="sg__note">
+      Los valores de la derecha no salen de una impresión ni de una captura: están leídos con
+      <code>getComputedStyle</code> sobre las páginas que el proyecto tomó como referencia. Sirven
+      para justificar una decisión y para no discutir de memoria. Lo que <strong>no</strong> se
+      copia es el color de marca ni la voz.
+    </p>
+    <div class="sg__table-wrap">
+      <table class="sg__table">
+        <thead>
+          <tr>
+            <th scope="col">Pieza</th>
+            <th scope="col">Coursera</th>
+            <th scope="col">Google Store</th>
+            <th scope="col">Aquí</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of references; track r.piece) {
+            <tr>
+              <th scope="row">{{ r.piece }}</th>
+              <td>{{ r.coursera }}</td>
+              <td>{{ r.google }}</td>
+              <td>{{ r.ours }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════ Color ══════════ -->
+  <section class="sg__section" id="color" aria-labelledby="sg-color">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-color">Color</h2>
+    </div>
+
+    @for (group of colorGroups; track group.title) {
+      <div class="sg__group">
+        <h3 class="sg__group-title">{{ group.title }}</h3>
+        <p class="sg__group-note">{{ group.note }}</p>
+        <ul class="sg__swatches" role="list">
+          @for (s of group.swatches; track s.token) {
+            <li class="ui-card sg__swatch">
+              <span class="sg__swatch-chip" [style.background]="'var(' + s.token + ')'"></span>
+              <code class="sg__token">{{ s.token }}</code>
+              <span class="sg__swatch-use">{{ s.use }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </section>
+
+  <!-- ══════════ Tipografía ══════════ -->
+  <section class="sg__section" id="tipografia" aria-labelledby="sg-tipo">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-tipo">Tipografía</h2>
+      <p class="ui-meta"><span>Playfair Display para titulares</span><span>Inter para todo lo demás</span></p>
+    </div>
+    <ul class="ui-list sg__type" role="list">
+      @for (t of typeScale; track t.token) {
+        <li class="ui-row sg__type-row">
+          <span class="sg__type-sample" [style.font-size]="'var(' + t.token + ')'">{{ t.sample }}</span>
+          <code class="sg__token">{{ t.token }}</code>
+          <span class="ui-row__meta">{{ t.role }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ══════════ Escalas: espacio, radio, elevación ══════════ -->
+  <section class="sg__section" id="escalas" aria-labelledby="sg-escalas">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-escalas">Escalas</h2>
+    </div>
+
+    <div class="sg__scales">
+      <div class="ui-card">
+        <h3 class="sg__card-title">Espacio</h3>
+        <p class="sg__card-text">Ritmo de 4 px. Entre piezas de un bloque, 2–4; entre bloques, 6–10.</p>
+        <ul class="sg__bars" role="list">
+          @for (step of spaceSteps; track step) {
+            <li class="sg__bar-row">
+              <code class="sg__token">--sp-{{ step }}</code>
+              <span class="sg__bar" [style.width]="'var(--sp-' + step + ')'"></span>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="ui-card">
+        <h3 class="sg__card-title">Radios</h3>
+        <p class="sg__card-text">Contenidos: la esquina no debe comerse la retícula. <code>pill</code> sólo para píldoras.</p>
+        <ul class="sg__radii" role="list">
+          @for (step of radiusSteps; track step) {
+            <li class="sg__radius">
+              <span class="sg__radius-box" [style.border-radius]="'var(--r-' + step + ')'"></span>
+              <code class="sg__token">--r-{{ step }}</code>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="ui-card">
+        <h3 class="sg__card-title">Elevación</h3>
+        <p class="sg__card-text">Plana a propósito: en reposo manda el filete; la sombra es para lo que flota.</p>
+        <ul class="sg__elevations" role="list">
+          @for (step of elevationSteps; track step) {
+            <li class="sg__elevation">
+              <span class="sg__elevation-box" [style.box-shadow]="'var(--e-' + step + ')'"></span>
+              <code class="sg__token">--e-{{ step }}</code>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ Primitivas ══════════ -->
+  <section class="sg__section" id="primitivas" aria-labelledby="sg-prim">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-prim">Primitivas</h2>
+      <label class="sg__toggle">
+        <input type="checkbox" [checked]="dense()" (change)="dense.set(!dense())" />
+        Densidad compacta (<code>.ui-dense</code>)
+      </label>
+    </div>
+
+    <div class="sg__samples" [class.ui-dense]="dense()">
+      @for (item of primitives; track item.id) {
+        <article class="sg__sample" [id]="'p-' + item.id">
+          <header class="sg__sample-head">
+            <code class="sg__name">{{ item.name }}</code>
+            <app-copy-button [value]="item.snippet" [label]="item.name" />
+          </header>
+          <p class="sg__card-text">{{ item.when }}</p>
+
+          <div class="sg__stage">
+            @switch (item.id) {
+              @case ('card') {
+                <div class="sg__row-demo">
+                  <article class="ui-card">
+                    <h4 class="sg__card-title">Tarjeta</h4>
+                    <p class="sg__card-text">Caja de contenido por defecto.</p>
+                  </article>
+                  <a class="ui-card ui-card--interactive" href="#p-card">
+                    <h4 class="sg__card-title">Pulsable</h4>
+                    <p class="sg__card-text">Filete al apuntar, sin saltos.</p>
+                  </a>
+                  <div class="ui-card ui-card--accent">
+                    <h4 class="sg__card-title">Agrupador</h4>
+                    <p class="sg__card-text">Agrupa sin pintar una caja fuerte.</p>
+                  </div>
+                  <div class="ui-card ui-card--soft">
+                    <h4 class="sg__card-title">Superficie</h4>
+                    <p class="sg__card-text">Un tono más, sin filete: para tarjetas con imagen.</p>
+                  </div>
+                </div>
+              }
+              @case ('row') {
+                <ul class="ui-list" role="list">
+                  <li class="ui-row ui-row--interactive is-active">
+                    <span class="ui-row__main">Conferință de tineret „ANCORAT”</span>
+                    <span class="ui-row__meta">26 sept</span>
+                    <span class="ui-row__actions"><button type="button" class="ui-icon-btn" aria-label="Quitar">✕</button></span>
+                  </li>
+                  <li class="ui-row ui-row--interactive">
+                    <span class="ui-row__main">Înscrieri la „Talantul în negoț”</span>
+                    <span class="ui-row__meta">28 sept</span>
+                    <span class="ui-row__actions"><button type="button" class="ui-icon-btn" aria-label="Quitar">✕</button></span>
+                  </li>
+                  <li class="ui-row ui-row--interactive ui-row--wrap">
+                    <span class="ui-row__main">Sărbătoare: 25 de ani de la înființarea Bisericii Elim</span>
+                    <span class="ui-row__meta">18 oct</span>
+                  </li>
+                </ul>
+                <p class="sg__note">
+                  La última usa <code>--wrap</code>: el título se ajusta a dos líneas en vez de
+                  recortarse. Es lo que hay que usar en columnas estrechas.
+                </p>
+              }
+              @case ('toolbar') {
+                <div class="ui-toolbar">
+                  <div class="ui-toolbar__group">
+                    <button type="button" class="ui-icon-btn" aria-label="Anterior">‹</button>
+                    <button type="button" class="ui-icon-btn" aria-label="Siguiente">›</button>
+                  </div>
+                  <span class="ui-toolbar__sep"></span>
+                  <div class="ui-toolbar__group">
+                    <span class="ui-status ui-status--live">În direct</span>
+                  </div>
+                  <div class="ui-toolbar__group ui-toolbar__group--end">
+                    <button type="button" class="btn btn--sm btn--ghost-dark">Acțiune</button>
+                    <button type="button" class="btn btn--sm btn--primary">Principală</button>
+                  </div>
+                </div>
+              }
+              @case ('panel') {
+                <section class="ui-panel sg__panel-demo">
+                  <header class="ui-panel__head">
+                    <h4 class="ui-panel__title">Diapozitive</h4>
+                    <span class="ui-status">10</span>
+                  </header>
+                  <div class="ui-panel__body">
+                    <ul class="ui-list" role="list">
+                      <li class="ui-row"><span class="ui-row__main">Anunțuri</span><span class="ui-row__meta">3</span></li>
+                      <li class="ui-row"><span class="ui-row__main">Citirea Bibliei</span><span class="ui-row__meta">1</span></li>
+                      <li class="ui-row"><span class="ui-row__main">Programare săptămânală</span><span class="ui-row__meta">1</span></li>
+                    </ul>
+                  </div>
+                </section>
+              }
+              @case ('chip') {
+                <ul class="ui-chips" role="list">
+                  @for (c of ['all', 'anunturi', 'evenimente']; track c) {
+                    <li>
+                      <button
+                        type="button"
+                        class="ui-chip ui-chip--selectable"
+                        [class.is-active]="chip() === c"
+                        [attr.aria-pressed]="chip() === c"
+                        (click)="chip.set(c)"
+                      >{{ c === 'all' ? 'Toate' : c === 'anunturi' ? 'Anunțuri' : 'Evenimente' }}</button>
+                    </li>
+                  }
+                </ul>
+              }
+              @case ('status') {
+                <p class="sg__inline">
+                  <span class="ui-status ui-status--ok">Publicat</span>
+                  <span class="ui-status ui-status--warn">Expiră curând</span>
+                  <span class="ui-status ui-status--danger">Eroare</span>
+                  <span class="ui-status ui-status--info">Informativ</span>
+                  <span class="ui-status ui-status--live">În direct</span>
+                </p>
+              }
+              @case ('segmented') {
+                <div class="ui-segmented" role="radiogroup" aria-label="Tamaño">
+                  @for (s of ['s', 'm', 'l']; track s) {
+                    <button
+                      type="button"
+                      class="ui-segmented__btn"
+                      role="radio"
+                      [class.is-active]="size() === s"
+                      [attr.aria-checked]="size() === s"
+                      (click)="size.set($any(s))"
+                    >{{ s.toUpperCase() }}</button>
+                  }
+                </div>
+              }
+              @case ('field') {
+                <div class="sg__inline">
+                  <label class="ui-field">
+                    <span class="ui-field__label">Durată</span>
+                    <input class="ui-input" type="number" value="30" aria-label="Durată" />
+                  </label>
+                  <label class="ui-field">
+                    <span class="ui-field__label">Titlu</span>
+                    <input class="ui-input" type="text" value="Anunț" aria-label="Titlu" />
+                  </label>
+                  <label class="ui-field">
+                    <span class="ui-field__label">Blocat</span>
+                    <input class="ui-input" type="text" value="—" disabled aria-label="Blocat" />
+                  </label>
+                </div>
+              }
+              @case ('tabs') {
+                <nav class="ui-tabs" aria-label="Vistas">
+                  @for (t of ['visual', 'date', 'jurnal']; track t) {
+                    <button
+                      type="button"
+                      class="ui-tab"
+                      [class.is-active]="tab() === t"
+                      [attr.aria-current]="tab() === t ? 'page' : null"
+                      (click)="tab.set(t)"
+                    >{{ t === 'visual' ? 'Vizual' : t === 'date' ? 'Date' : 'Jurnal' }}</button>
+                  }
+                </nav>
+              }
+              @case ('band') {
+                <section class="ui-band sg__band-demo">
+                  <div class="ui-band__inner">
+                    <ul class="sg__band-stats" role="list">
+                      <li class="ui-stat ui-stat--band">
+                        <span class="ui-stat__value">26+</span>
+                        <span class="ui-stat__label">Ani de slujire</span>
+                      </li>
+                      <li class="ui-stat ui-stat--band">
+                        <span class="ui-stat__value">7</span>
+                        <span class="ui-stat__label">Servicii pe săptămână</span>
+                      </li>
+                      <li class="ui-stat ui-stat--band">
+                        <span class="ui-stat__value">8</span>
+                        <span class="ui-stat__label">Departamente active</span>
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+              }
+              @case ('stat') {
+                <div class="sg__row-demo">
+                  <div class="ui-stat"><span class="ui-stat__value">10</span><span class="ui-stat__label">Diapozitive</span></div>
+                  <div class="ui-stat"><span class="ui-stat__value">3</span><span class="ui-stat__label">Anunțuri</span></div>
+                  <div class="ui-stat"><span class="ui-stat__value">0:30</span><span class="ui-stat__label">Durată</span></div>
+                </div>
+              }
+              @case ('meta') {
+                <p class="ui-meta">
+                  <span>Duminică, 18 octombrie</span><span>10:00</span><span>Biserica Elim</span>
+                </p>
+              }
+              @case ('empty') {
+                <div class="ui-empty">
+                  <p class="ui-empty__title">Niciun anunț activ</p>
+                  <p class="sg__card-text">Los avisos aparecen aquí mientras están vigentes.</p>
+                </div>
+              }
+              @case ('kbd') {
+                <p class="sg__inline">
+                  <span>Pausa <kbd class="ui-kbd">Espacio</kbd></span>
+                  <span>Siguiente <kbd class="ui-kbd">→</kbd></span>
+                  <span>Pantalla completa <kbd class="ui-kbd">F</kbd></span>
+                  <span>QR <kbd class="ui-kbd">Q</kbd></span>
+                </p>
+              }
+            }
+          </div>
+
+          <pre class="sg__code"><code>{{ item.snippet }}</code></pre>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ══════════ Densidad ══════════ -->
+  <!-- ══════════ Escaparate (línea nueva) ══════════ -->
+  <section class="sg__section" id="escaparate" aria-labelledby="sg-esc">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-esc">Escaparate: carrusel y tarjeta de promoción</h2>
+    </div>
+    <p class="sg__lead">
+      <strong>Línea de diseño nueva.</strong> Estas piezas no salen del catálogo
+      <code>ui-*</code>: están calcadas de <code>play.google.com/store/apps</code> con sus medidas
+      reales (tarjeta de 385 px, hueco de 16 px, insignia de 28 px, barra inferior de 66 px). Dentro
+      de un carrusel o de una tarjeta de promoción, <strong>manda la referencia</strong>; fuera de
+      ahí sigue mandando el catálogo. Las reglas completas, en
+      <code>docs/ai/48-carousel-cards.md</code>.
+    </p>
+
+    <div class="sg__showcase">
+      <article class="promo is-teal sg__promo-demo">
+        <div class="promo__cover promo__cover--data">
+          <app-icon class="promo__watermark" name="calendar" />
+          <div class="promo__agenda">
+            <p class="promo__agenda-head">Rótulo de la agenda</p>
+            <p class="promo__agenda-row">
+              <span class="promo__agenda-when">Joi</span>
+              <span class="promo__agenda-what">Lo que toca ese día</span>
+              <span class="promo__agenda-time">20:30</span>
+            </p>
+            <p class="promo__agenda-row">
+              <span class="promo__agenda-when">Vineri</span>
+              <span class="promo__agenda-what">Y lo del siguiente</span>
+              <span class="promo__agenda-time">20:30</span>
+            </p>
+          </div>
+          <span class="promo__badge">Insignia</span>
+          <div class="promo__lead">
+            <p class="promo__headline">Titular: el dato más inmediato</p>
+            <p class="promo__desc">Descripción de 18 px, la que convierte un título en información.</p>
+          </div>
+        </div>
+        <div class="promo__foot">
+          <span class="promo__tile"><app-icon name="calendar" /></span>
+          <span class="promo__id">
+            <span class="promo__name">Nombre de la sección</span>
+            <span class="promo__sub">Fecha · hora · lugar</span>
+          </span>
+          <span class="promo__cta">Ver todo</span>
+        </div>
+      </article>
+
+      <div class="sg__showcase-notes">
+        <p class="sg__note">
+          <strong>Anatomía medida</strong> (ventana de 1512 px): tarjeta 526 × 394 · portada 16:9
+          ocupando el 75 % · titular 24/500 y descripción 18/400 <strong>encima de la
+          portada</strong> · pie de 98 px con relleno 24, icono de 48 (radio 12) y botón · hueco
+          entre tarjetas 24 px.
+        </p>
+        <p class="sg__note">
+          <strong>Dos tipos de portada.</strong> <code>photo</code> cuando la sección tiene una
+          imagen que dice algo; <code>promo__cover--data</code> cuando su contenido <em>es</em> una
+          agenda — el tono con trama, el icono de marca de agua y la semana comprimida. Ninguna
+          foto de archivo informa tanto como el propio dato bien puesto.
+        </p>
+        <p class="sg__note">
+          <strong>El color sale de la foto.</strong> Se midió el color medio de cada imagen con
+          canvas, se conservó su matiz y se le dio cuerpo (S 0,32 · L 0,20). El blanco encima queda
+          entre 10,7:1 y 14:1.
+        </p>
+        <ul class="sg__tones" role="list">
+          <li class="sg__tone is-teal"><span>#234343</span></li>
+          <li class="sg__tone is-plum"><span>#3f2343</span></li>
+          <li class="sg__tone is-blue"><span>#233143</span></li>
+          <li class="sg__tone is-clay"><span>#432323</span></li>
+        </ul>
+        <p class="sg__note">
+          <strong>Lo que no se negocia.</strong> El ancho deja asomar la tarjeta siguiente (sin ese
+          corte nadie desliza); las flechas aparecen al apuntar y nunca en táctil; toda la tarjeta
+          es un enlace; y <strong>nunca gira sola</strong> — el único carrusel automático es la
+          portada.
+        </p>
+        <pre class="sg__code"><code>&lt;app-card-carousel labelKey="home.board.title" gutter="var(--board-gutter)"
+                   itemWidth="clamp(19rem, 38vw, 33rem)" gap="1.5rem"&gt;
+  &lt;li class="ui-carousel__item"&gt;
+    &lt;a class="promo is-teal" [routerLink]="…"&gt;…&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/app-card-carousel&gt;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg__section" id="densidad" aria-labelledby="sg-dens">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-dens">Densidad</h2>
+    </div>
+    <p class="sg__lead">
+      La misma fila en las dos densidades. La web es cómoda; una consola se pone
+      <code>.ui-dense</code> en su raíz y todo su subárbol encoge: filas de 36 px, controles de
+      32 px y tipografía de 14 px. Los componentes nunca fijan alturas: consumen
+      <code>--ui-row-h</code>, <code>--ui-control-h</code>, <code>--ui-gap</code>.
+    </p>
+    <div class="sg__density">
+      <div>
+        <h3 class="sg__group-title">Cómoda (web)</h3>
+        <ul class="ui-list ui-card" role="list">
+          <li class="ui-row"><span class="ui-row__main">Conferință de tineret</span><span class="ui-row__meta">26 sept</span></li>
+          <li class="ui-row"><span class="ui-row__main">Înscrieri</span><span class="ui-row__meta">28 sept</span></li>
+        </ul>
+      </div>
+      <div class="ui-dense">
+        <h3 class="sg__group-title">Compacta (consola)</h3>
+        <ul class="ui-list ui-card" role="list">
+          <li class="ui-row"><span class="ui-row__main">Conferință de tineret</span><span class="ui-row__meta">26 sept</span></li>
+          <li class="ui-row"><span class="ui-row__main">Înscrieri</span><span class="ui-row__meta">28 sept</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ Proyección ══════════ -->
+  <section class="sg__section" id="proyeccion" aria-labelledby="sg-proy">
+    <div class="ui-section-head">
+      <h2 class="ui-section-head__title" id="sg-proy">Proyección</h2>
+      <a class="ui-link" href="/media/ecran" target="_blank" rel="noopener">Abrir el escenario →</a>
+    </div>
+    <p class="sg__lead">
+      El escenario del templo <strong>no usa esta escala</strong>: tiene la suya, de cartel, medida
+      para leerse a 15–20 m. La unidad es <code>--pj-u</code> (1/100 del lienzo 16:9) y los papeles
+      son <code>--pj-fs-*</code>. Nada de px ni rem allí.
+    </p>
+    <ul class="ui-list ui-card" role="list">
+      <li class="ui-row"><span class="ui-row__main">Etiquetas · mínimo absoluto</span><span class="ui-row__meta">3,2u · 35 px · ~8 m</span></li>
+      <li class="ui-row"><span class="ui-row__main">Secundario: hora, lugar, quién</span><span class="ui-row__meta">3,8u · 41 px · ~10 m</span></li>
+      <li class="ui-row"><span class="ui-row__main">Cuerpo: lo que hay que leer</span><span class="ui-row__meta">4,6u · 50 px · ~12 m</span></li>
+      <li class="ui-row"><span class="ui-row__main">Destacado y rótulo de bloque</span><span class="ui-row__meta">5,6u · 60 px · ~14 m</span></li>
+      <li class="ui-row"><span class="ui-row__main">Titular del contenido</span><span class="ui-row__meta">8u · 86 px · ~20 m</span></li>
+    </ul>
+    <p class="sg__card-text">
+      Lo vigila <code>npm run check:projection</code>: el build falla si algún texto baja del
+      mínimo. Regla de oro: <strong>se pagina o se resume, nunca se encoge</strong>.
+    </p>
+  </section>
+</div>

@@ -53,6 +53,18 @@ cubren el *cómo* técnico): aquí va el *criterio*.
     `shared/` o a un partial de `src/app/shared/styles/`. Nunca dos copias de
     la misma marca, botón o tarjeta.
 
+## Lenguaje visual
+
+**Antes de escribir CSS, abre `/stil`** (guía de estilos viva): si la pieza
+existe como primitiva `ui-*`, se usa; si no existe y se va a repetir, se añade
+al catálogo (`src/styles/_primitives.scss`) **y** a la guía en el mismo cambio.
+Las decisiones y sus porqués están en `docs/ai/47-design-language.md`.
+
+Lo esencial: radios contenidos (4–16 px), el filete separa y la sombra se
+reserva a lo que flota, botones planos, densidad por tokens `--ui-*`
+(`comfortable` en la web, `.ui-dense` en consolas), superficie oscura con
+`.ui-dark` en el **host** del módulo, y el oro sólo para lo accionable.
+
 ## Marca
 
 Tres piezas, cada una con un único uso (detalle en `docs/ai/45-design-system.md`

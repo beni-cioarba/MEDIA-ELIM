@@ -110,8 +110,12 @@ los ligature-icons para que no se vea el texto crudo.
 
 ## Tipografía
 
-- Serif `Playfair Display` para encabezados (`--font-serif`).
-- Sans `Inter` para texto (`--font-sans`).
+- **Display `Plus Jakarta Sans`** (`--font-display`) para encabezados e
+  interfaz destacada.
+- Sans `Inter` (`--font-sans`) para cuerpo, datos y controles.
+- Serif `Playfair Display` (`--font-serif`) **sólo** para la marca (wordmark) y
+  las citas/versículos. El porqué, en `docs/ai/47-design-language.md` →
+  «Tipografía».
 - Tamaños fluidos con `clamp()` en `--fs-*`.
 - `html { font-size: clamp(15px, 0.9vw + 0.5rem, 20px); }`: todo escala en la
   pantalla del templo sin media queries.

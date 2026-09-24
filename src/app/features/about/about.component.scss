@@ -26,7 +26,7 @@
 
 .story__figure {
   margin: 0;
-  border-radius: 20px;
+  border-radius: var(--r-card);
   overflow: hidden;
   box-shadow: var(--shadow-card);
 }
@@ -59,7 +59,7 @@
 .pillar {
   padding: 1.4rem 1.3rem;
   border: 1px solid var(--c-hairline);
-  border-radius: 18px;
+  border-radius: var(--r-card);
   background: var(--c-surface);
   box-shadow: var(--shadow-sm);
 }
@@ -71,7 +71,7 @@
 
 .pillar__title {
   margin: 0.7rem 0 0.4rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--c-primary);
@@ -100,19 +100,19 @@
   height: 100%;
   padding: 1.4rem 1.3rem;
   border: 1px solid var(--c-hairline);
-  border-radius: 18px;
+  border-radius: var(--r-card);
   background: var(--c-surface);
   box-shadow: var(--shadow-sm);
   text-decoration: none;
   transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
+    border-color var(--mo-fast) var(--ea-standard),
+    box-shadow var(--mo-fast) var(--ea-standard);
 }
 
+/* Sin salto al apuntar: las referencias mueven el filete, no la caja. Con
+   una rejilla de tarjetas, el salto hace que la retícula «baile». */
 .credo-part__link:hover,
 .credo-part__link:focus-visible {
-  transform: translateY(-3px);
   border-color: var(--c-gold);
   box-shadow: var(--shadow-card);
 }
@@ -120,7 +120,7 @@
 .credo-part__numeral {
   display: inline-block;
   margin-bottom: 0.5rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -129,7 +129,7 @@
 
 .credo-part__name {
   margin: 0 0 0.4rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--c-primary);
@@ -165,7 +165,7 @@
 .expectation {
   padding: 1.2rem;
   border: 1px solid var(--c-hairline);
-  border-radius: 16px;
+  border-radius: var(--r-card);
   background: var(--c-surface);
 }
 
@@ -192,10 +192,5 @@
 @media (prefers-reduced-motion: reduce) {
   .credo-part__link {
     transition: none;
-  }
-
-  .credo-part__link:hover,
-  .credo-part__link:focus-visible {
-    transform: none;
   }
 }

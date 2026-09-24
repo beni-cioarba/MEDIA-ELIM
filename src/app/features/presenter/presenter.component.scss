@@ -10,18 +10,23 @@
  * cuánto queda, qué viene) cabe en un portátil de 13" sin scroll.
  * ===================================================================== */
 
+/* La raíz lleva `.ui-dense .ui-dark` (plantilla): densidad de consola y
+   superficie oscura del sistema. Las variables locales de abajo son **alias**
+   de los tokens del sistema, para no reescribir 900 líneas de una vez; en
+   código nuevo usa directamente `--c-muted`, `--c-hairline`, `--c-surface`…
+   y las primitivas `ui-*` (ver /stil). */
 :host {
   display: block;
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--c-primary-darkest);
   color: var(--c-on-primary);
-  --ink-soft: rgba(247, 250, 252, 0.72);
-  --ink-faint: rgba(247, 250, 252, 0.45);
-  --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --panel: rgba(255, 255, 255, 0.04);
-  --panel-raised: rgba(255, 255, 255, 0.07);
+  --ink-soft: var(--c-muted);
+  --ink-faint: var(--c-faint);
+  --line: var(--c-hairline);
+  --line-strong: var(--c-hairline-strong);
+  --panel: var(--c-surface);
+  --panel-raised: var(--c-surface-2);
 }
 
 .presenter {

@@ -51,7 +51,28 @@
 // La marca vive en `shared/brand-logo` y se comparte con el pie y con la
 // proyección. Aquí sólo se la coloca: todo lo tipográfico es del componente,
 // que es lo que garantiza que las tres se vean igual.
+/*
+ * La marca **se ajusta al alto de la barra**, no a un escalón fijo.
+ *
+ * Antes iba en `size="sm"` (24 px clavados): ocupaba el 57 % de la barra,
+ * dejaba 13 px muertos arriba y abajo, y la línea «Arganda del Rey» caía a
+ * 6,9 px —por debajo de lo legible, se leía como una mancha—. Y al ser un
+ * valor fijo no seguía a la barra: cambiar el alto de la cabecera no movía la
+ * marca.
+ *
+ * El bloque mide **1,43 × `--brand-size`** (nombre + hueco 0,14 + localidad
+ * 0,289; proporciones de la hoja de marca, que no se tocan). Despejando: para
+ * llenar la barra menos un margen de respiro, el tamaño es
+ * `(alto − margen) / 1,43`. Con eso la marca pasa a ocupar ~76 % del alto y la
+ * localidad sube a ~9 px. El `clamp` es la red de seguridad para alturas
+ * extremas.
+ *
+ * Al derivarse de `--nav-height`, si mañana la barra cambia de alto la marca
+ * se reajusta sola. Que es justo lo que no pasaba.
+ */
 .nav__brand {
+  --brand-size: clamp(22px, calc((var(--nav-height) - 0.85rem) / 1.43), 34px);
+
   justify-self: start;
   padding-inline-end: var(--sp-2);
 }
@@ -88,14 +109,19 @@
   // grandes, sin saltos visibles al redimensionar. El techo es deliberadamente
   // corto (0.8rem) porque el rótulo del donativo está siempre visible y ya no
   // se repliega para hacer sitio.
-  padding-block: var(--sp-2);
-  padding-inline: clamp(0.4rem, 0.85vw, 0.8rem);
-  min-height: 40px;
+  padding-block: 0;
+  padding-inline: clamp(0.4rem, 0.85vw, 0.75rem);
+  // Todos los controles de la barra miden lo mismo. Antes los enlaces con
+  // submenú medían 40 px y los planos 45 (por el filete del subrayado), así
+  // que el realce al apuntar salía de dos alturas distintas en la misma fila.
+  height: var(--nav-control-h);
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-md);
   background: transparent;
   color: var(--c-text);
-  font-size: 0.95rem;
+  // 15 px: lo que miden los enlaces de cabecera de las referencias. A 16,15
+  // ocupaban 30 px más cada uno y empujaban la zona de acciones.
+  font-size: 0.9375rem;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
@@ -162,15 +188,17 @@
 .nav__donate {
   display: inline-flex;
   align-items: center;
-  height: 2.375rem;
-  // Sin icono, el rótulo ya no puede replegarse: si se ocultara quedaría
-  // una píldora vacía. Así que el ajuste de la franja estrecha sale de
-  // aquí — acolchado y cuerpo se comprimen solos, sin saltos.
+  height: var(--nav-control-h);
   padding-inline: clamp(var(--sp-2), 1vw, var(--sp-3));
-  border: 1px solid var(--c-gold);
-  border-radius: var(--r-pill);
-  color: var(--c-primary);
-  font-size: clamp(0.8rem, 0.35vw + 0.6rem, 0.875rem);
+  // **Sin borde.** Antes eran tres píldoras seguidas —donativo perfilado,
+  // directo relleno y el idioma con su propio borde dorado— compitiendo entre
+  // ellas: una cabecera profesional tiene UNA forma de botón, y las utilidades
+  // van planas. El donativo se reconoce por el color de acento y el peso, que
+  // es suficiente para una acción secundaria.
+  border: 0;
+  border-radius: var(--r-md);
+  color: var(--c-gold-deep);
+  font-size: 0.9375rem;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -182,13 +210,11 @@
   &:hover,
   &:focus-visible {
     background: var(--c-gold-tint);
-    border-color: var(--c-gold-deep);
     color: var(--c-primary-deep);
   }
 
   &.is-active {
     background: var(--c-gold-tint);
-    border-color: var(--c-gold-deep);
   }
 }
 
@@ -219,25 +245,27 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  height: 2.375rem;
-  padding-inline: var(--sp-4);
+  height: var(--nav-control-h);
+  padding-inline: var(--sp-3);
   border-radius: var(--r-pill);
-  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
-  box-shadow: var(--e-1);
-  color: var(--c-primary-deep);
+  // Plano y de un solo color: el degradado, la sombra y el salto al apuntar
+  // eran tres efectos sobre el único botón de la barra. La app ya decidió
+  // botones planos; la cabecera no es la excepción.
+  background: var(--c-gold);
+  color: var(--c-on-gold);
   font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-decoration: none;
   white-space: nowrap;
   transition:
-    box-shadow var(--mo-fast) var(--ea-standard),
-    transform var(--mo-fast) var(--ea-standard);
+    background var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
 
   &:hover,
   &:focus-visible {
-    box-shadow: var(--e-2);
-    transform: translateY(-1px);
+    background: var(--c-gold-deep);
+    color: var(--c-on-gold);
   }
 
   &.is-active {
@@ -339,4 +367,296 @@
   .nav__live-dot::after {
     animation: none;
   }
+}
+
+// =====================================================================
+// Panel de grupo (mega-menú)
+//
+// Va DENTRO de la cabecera y a ancho completo. Dos consecuencias buenas:
+// no puede salirse de la pantalla —ocupa toda la pantalla— así que no hay
+// overlay ni cálculo de posición, y al no ser un menú ARIA admite contenido
+// de verdad dentro (la tira de álbumes), que es justo lo que `role="menu"`
+// prohíbe. El porqué completo está en la cabecera del componente.
+// =====================================================================
+
+.nav__panel {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  z-index: 1;
+  border-block-end: 1px solid var(--c-hairline);
+  background: var(--c-bg-2);
+  box-shadow: 0 16px 32px -20px rgb(9 20 36 / 0.35);
+  animation: nav-panel-in 140ms var(--ea-standard) both;
+}
+
+@keyframes nav-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@include motion-reduce {
+  .nav__panel {
+    animation: none;
+  }
+}
+
+.nav__panel-inner {
+  @include container(var(--w-wide));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding-block: var(--sp-5);
+}
+
+// ---- Enlaces del grupo ------------------------------------------------
+// Rejilla automática: tres entradas caben en una fila, ocho en tres. Es lo
+// que permite que un módulo nuevo entre en un grupo sin rediseñar nada.
+.nav__panel-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__panel-link {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  height: 100%;
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(-2px);
+}
+
+// La caja del icono da la columna por la que se alinean todas las entradas.
+.nav__panel-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: var(--r-sm);
+  background: var(--c-veil);
+  font-size: 1.05rem;
+  color: var(--c-gold-deep);
+}
+
+.nav__panel-text {
+  min-width: 0;
+}
+
+.nav__panel-label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.nav__panel-desc {
+  display: block;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+// «Estás aquí»: filete dorado a la izquierda. **No se rellena el icono de
+// oro**: con el icono en dorado sobre fondo dorado el trazo desaparecía y
+// quedaba una mancha amarilla ilegible.
+.nav__panel-link.is-active {
+  background: var(--c-veil);
+  box-shadow: inset 3px 0 0 var(--c-gold);
+
+  .nav__panel-label {
+    color: var(--c-primary-deep);
+  }
+
+  .nav__panel-icon {
+    color: var(--c-gold-deep);
+  }
+}
+
+// ---- Tira de álbumes (panel de Medios) --------------------------------
+// El contenido real de la sección dentro del menú. Se desliza, pero **no se
+// mueve sola**: ver `docs/ai/47-design-language.md`.
+
+.nav__strip {
+  padding-block-start: var(--sp-4);
+  border-block-start: 1px solid var(--c-hairline);
+}
+
+.nav__strip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-block-end: var(--sp-3);
+}
+
+.nav__strip-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.nav__strip-all {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.nav__strip-list {
+  display: flex;
+  gap: var(--sp-3);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: 0;
+  padding: 0 0 0.25rem;
+  list-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/*
+ * El elemento flexible es el `li`, no el enlace (con el ancho en el `<a>` las
+ * miniaturas se encogían al ancho de su rótulo).
+ *
+ * Dos cosas que hacen que todas las tarjetas midan **exactamente lo mismo**:
+ *
+ *  · `min-width: 0` — sin él manda `min-width: auto`, y como el nombre va en
+ *    `nowrap` su ancho mínimo es la cadena entera: «Concert de Colinde ·
+ *    Copii» ensanchaba su tarjeta a 213 px frente a los 162 de las demás, y
+ *    con ella crecía la foto (120 px de alto contra 91). De ahí que nada
+ *    quedara alineado.
+ *  · `flex: 1 0 9.5rem` — **crece pero no encoge**. Si los álbumes caben,
+ *    reparten el ancho del panel entre todos por igual; si no caben, se
+ *    quedan en 9,5 rem y la tira se desplaza. Eso es lo que hace que se
+ *    autoajuste sin que haya que tocar nada al añadir álbumes.
+ */
+.nav__strip-list > li {
+  flex: 1 0 9.5rem;
+  min-width: 0;
+  /* Tope para que con dos o tres álbumes las tarjetas no se vayan a medio
+     panel. 18 rem está calculado para que los cinco de hoy **llenen** la fila
+     sin chocar con el límite: por debajo, sobraban 117 px a la derecha. */
+  max-width: 18rem;
+  scroll-snap-align: start;
+}
+
+.nav__album {
+  display: block;
+  width: 100%;
+  /* Ocupa el alto del `li` para que el realce al apuntar sea igual en todas. */
+  height: 100%;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  text-decoration: none;
+  background: var(--c-surface-2);
+  transition: transform var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  @include focus-ring(2px);
+}
+
+.nav__album-img {
+  display: block;
+  width: 100%;
+  // 16:9 y sólo 5,3 rem de alto: es una miniatura para reconocer el álbum,
+  // no para mirarlo. El menú tiene que seguir siendo un menú.
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.nav__album-name {
+  display: block;
+  padding: 0.4rem 0.5rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--c-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@include motion-reduce {
+  .nav__album:hover {
+    transform: none;
+  }
+}
+
+// ---- «Lo próximo» (panel de Programa) ---------------------------------
+// Dos tarjetas planas con el siguiente culto y el siguiente evento. Sin
+// foto: aquí el dato ES el contenido, y una imagen decorativa sólo alargaría
+// el panel.
+
+.nav__next {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__next-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  height: 100%;
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  text-decoration: none;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(2px);
+}
+
+.nav__next-when {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.nav__next-what {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--c-primary);
 }

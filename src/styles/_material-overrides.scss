@@ -141,6 +141,66 @@ html:not(.fonts-symbols-ready) .material-symbols-outlined {
   color: var(--c-muted);
 }
 
+/*
+ * Panel de dos columnas para los grupos del menú.
+ *
+ * El porqué: la navegación no crece a lo ancho —cada entrada de primer nivel
+ * cuesta ~99 px y a 1280 sólo quedan 218 px libres, o sea sitio para DOS
+ * módulos más—. Así que los módulos nuevos entran en los grupos que ya
+ * existen, y lo que tiene que escalar es el panel, no la barra. En una sola
+ * columna, ocho entradas son un tubo de 400 px; en dos, con su icono, se
+ * barren de un vistazo.
+ *
+ * Material fija un ancho máximo de 280 px en sus paneles: hay que soltarlo.
+ */
+.elim-menu--mega.mat-mdc-menu-panel {
+  // Ancho fijo en vez de «lo que pida el contenido»: con el panel ajustado,
+  // cada entrada se quedaba en 174 px y la descripción se partía en tres
+  // líneas. Con ~15 rem por columna el rótulo y su descripción caben en dos.
+  min-width: min(32rem, calc(100vw - 2rem));
+  max-width: min(36rem, calc(100vw - 2rem));
+}
+
+.elim-menu--mega .mat-mdc-menu-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.15rem;
+  padding: 0.35rem;
+}
+
+/* Con tres entradas o menos, dos columnas dejan un hueco: una sola. */
+.elim-menu--mega .mat-mdc-menu-content:has(> :last-child:nth-child(-n + 3)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.elim-menu--mega .mat-mdc-menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-height: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+}
+
+/* La caja del icono: da la columna por la que se alinean todas las entradas
+   y hace reconocible cada destino antes de leerlo. */
+.elim-menu__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: 0.1rem;
+  border-radius: var(--r-sm);
+  background: var(--c-veil);
+  font-size: 1rem;
+  color: var(--c-gold-deep);
+}
+
+.elim-menu__text {
+  min-width: 0;
+}
+
 /** Entrada activa del desplegable: filete dorado + fondo tenue. */
 .elim-menu .mat-mdc-menu-item.is-active {
   background: var(--c-gold-tint);
@@ -148,6 +208,17 @@ html:not(.fonts-symbols-ready) .material-symbols-outlined {
 
   .elim-menu__label {
     color: var(--c-primary-deep);
+  }
+}
+
+/* En el panel de rejilla el filete lateral se pierde con el radio: el activo
+   se marca con el icono relleno, que es lo que se mira primero. */
+.elim-menu--mega .mat-mdc-menu-item.is-active {
+  box-shadow: none;
+
+  .elim-menu__icon {
+    background: var(--c-gold);
+    color: var(--c-on-gold);
   }
 }
 

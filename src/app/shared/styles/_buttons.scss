@@ -1,9 +1,18 @@
 /* =====================================================================
- * Botones compartidos entre las páginas públicas.
+ * Botones de la app.
  *
- * Se distribuye como parcial SCSS (`@use`) en lugar de como CSS global
- * para que cada página siga con estilos encapsulados. El coste en bytes es
- * mínimo y evita colisiones con la hoja global del escenario.
+ * Lenguaje: **producto, no folleto**. Relleno plano, radio contenido y
+ * reacción mínima al puntero (color y filete, nunca un salto): es lo que
+ * hacen Coursera, Google y LinkedIn, y lo que aguanta ver el botón cien
+ * veces al día sin cansar. El degradado y el `translateY` de antes daban
+ * un aire de banner publicitario y, en una consola, ruido.
+ *
+ * Altura por densidad (`--ui-control-h`): el mismo botón mide 40 px en la
+ * web y 32 px dentro de un módulo `.ui-dense`. Se acompaña con
+ * `@include tap-target` donde el destino táctil deba llegar a 44 px.
+ *
+ * Se distribuye como parcial SCSS (`@use`) en vez de como CSS global para
+ * que cada página siga con estilos encapsulados.
  *
  * Uso:  @use '../../shared/styles/buttons' as *;
  * ===================================================================== */
@@ -13,64 +22,89 @@
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.72rem 1.35rem;
+  min-height: var(--ui-control-h);
+  padding: 0.35rem 1rem;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard),
+    box-shadow var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
 }
 
-.btn:hover,
-.btn:focus-visible {
-  transform: translateY(-1px);
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
+/** Tamaño compacto para barras de herramientas y controles secundarios. */
+.btn--sm {
+  min-height: calc(var(--ui-control-h) - 0.375rem);
+  padding-inline: 0.7rem;
+  font-size: var(--fs-xs);
+}
+
+/** Acción principal: un sólido de marca, sin degradado. */
 .btn--primary {
-  color: var(--c-on-primary);
-  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-soft) 100%);
-  box-shadow: var(--shadow-sm);
+  color: var(--c-on-accent);
+  background: var(--c-primary);
+  box-shadow: var(--e-1);
 }
 
 .btn--primary:hover,
 .btn--primary:focus-visible {
-  box-shadow: var(--shadow-card);
+  background: var(--c-primary-deep);
+  box-shadow: var(--e-2);
 }
 
+/** Sobre fondo oscuro (pie, panel, hero): contorno claro translúcido. */
 .btn--ghost {
   color: var(--c-on-primary);
-  border-color: rgba(247, 250, 252, 0.55);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(4px);
+  border-color: rgba(247, 250, 252, 0.4);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .btn--ghost:hover,
 .btn--ghost:focus-visible {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(247, 250, 252, 0.7);
 }
 
-/* Variante para fondos claros. */
+/** Sobre fondo claro: contorno de marca, la acción secundaria por defecto. */
 .btn--ghost-dark {
   color: var(--c-primary);
   border-color: var(--c-hairline-strong);
   background: var(--c-surface);
-  backdrop-filter: none;
 }
 
 .btn--ghost-dark:hover,
 .btn--ghost-dark:focus-visible {
   background: var(--c-veil);
+  border-color: var(--c-primary);
+}
+
+/** Acento: sólo para la acción que de verdad queremos que se pulse. */
+.btn--gold {
+  color: var(--c-on-gold);
+  background: var(--c-gold);
+}
+
+.btn--gold:hover,
+.btn--gold:focus-visible {
+  background: var(--c-gold-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn,
-  .btn:hover,
-  .btn:focus-visible {
-    transform: none;
+  .btn {
     transition: none;
   }
 }

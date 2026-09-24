@@ -58,26 +58,34 @@ interface LangOption {
       .lang-dropdown {
         position: relative;
       }
+      /*
+       * Control de utilidad, no llamada a la acción: **sin fondo y sin borde**.
+       * Era una píldora de 101 px con tinte dorado y filete propio, así que en
+       * la cabecera competía en peso con el botón de directo siendo lo menos
+       * importante de la fila. Ahora pesa lo que debe: bandera, código y
+       * chevron, y el realce sólo al apuntarlo.
+       */
       .lang-dropdown__toggle {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0.8rem;
-        border-radius: 999px;
-        background: rgba(212, 175, 55, 0.12);
-        border: 1px solid rgba(26, 54, 93, 0.14);
+        gap: 0.35rem;
+        height: var(--nav-control-h, 2.125rem);
+        padding-inline: 0.5rem;
+        border-radius: var(--r-md, 8px);
+        background: transparent;
+        border: 0;
         color: var(--c-text);
         cursor: pointer;
-        font-size: 0.85rem;
+        font-size: 0.8125rem;
         font-weight: 600;
         letter-spacing: 0.04em;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        transition: all 0.2s ease;
+        transition:
+          background 160ms cubic-bezier(0.2, 0, 0, 1),
+          color 160ms cubic-bezier(0.2, 0, 0, 1);
       }
       .lang-dropdown__toggle:hover, .lang-dropdown.is-open .lang-dropdown__toggle {
-        background: rgba(212, 175, 55, 0.2);
-        border-color: rgba(26, 54, 93, 0.26);
+        background: var(--c-veil, rgba(26, 54, 93, 0.05));
+        color: var(--c-primary, #1a365d);
       }
       .lang-chevron {
         transition: transform 0.2s ease;

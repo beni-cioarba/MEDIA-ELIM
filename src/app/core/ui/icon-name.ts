@@ -29,6 +29,8 @@ export type IconName =
   | 'megaphone'
   | 'grip'
   | 'chevron-down'
+  | 'chevron-left'
+  | 'chevron-right'
   | 'arrow-right'
   | 'menu'
   | 'close'

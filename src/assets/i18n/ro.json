@@ -249,6 +249,7 @@
     "build": "Compilare",
     "commit": "Revizie",
     "built_at": "Publicată",
+    "styleguide": "Ghid de stiluri",
     "control": "Panou de control"
   },
   "common": {
@@ -420,6 +421,10 @@
       "title": "Anunțuri",
       "description": "Anunțurile în vigoare ale Bisericii Elim din Arganda del Rey: înscrieri, sărbători, conferințe și comunicate."
     },
+    "styleguide": {
+      "title": "Ghid de stiluri",
+      "description": "Catalogul intern de tokenuri, primitive și modele ale aplicației."
+    },
     "control": {
       "title": "Panou de control",
       "description": "Panoul de control al proiecției din biserică."
@@ -430,6 +435,15 @@
     }
   },
   "home": {
+    "stats": {
+      "label": "Biserica în cifre"
+    },
+    "board": {
+      "title": "Ce urmează",
+      "rest_week": "Restul săptămânii",
+      "rest_readings": "Restul lecturilor",
+      "all": "Vezi tot"
+    },
     "hero": {
       "title": "Bine ai venit acasă",
       "subtitle": "O familie care se închină, slujește și crește împreună.",
@@ -445,11 +459,11 @@
       }
     },
     "welcome": {
-      "eyebrow": "Bine ai venit",
+      "eyebrow": "Cine suntem",
       "title": "O casă deschisă pentru fiecare",
-      "body": "Suntem o biserică evanghelică din Arganda del Rey. Ne adunăm ca să ne închinăm lui Dumnezeu, să studiem Cuvântul Său și să ne sprijinim unii pe alții ca o familie.",
+      "body": "Suntem o biserică evanghelică din Arganda del Rey, Madrid. Ne adunăm în fiecare săptămână ca să ne închinăm lui Dumnezeu, să studiem Cuvântul Său și să ne sprijinim unii pe alții ca o familie.",
       "body_2": "Nu contează de unde vii sau în ce punct al drumului te afli: aici ai un loc. Vino așa cum ești.",
-      "cta": "Află mai multe despre noi"
+      "cta": "Istoria noastră"
     },
     "today": {
       "eyebrow": "Chiar acum",
@@ -684,7 +698,7 @@
         "name": "Copii",
         "description": "Școala duminicală și activitățile pentru cei mici."
       },
-      "media": {
+    "media": {
         "name": "Media",
         "description": "Transmisiuni, sunet, proiecție, fotografie și rețele sociale."
       },

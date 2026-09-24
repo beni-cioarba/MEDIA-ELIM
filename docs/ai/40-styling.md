@@ -137,27 +137,61 @@ Estado auditado (sep. 2026): las 11 rutas pasan en los cinco anchos.
 ## Encuadre de las fotos (hero)
 
 Todas las fotos de `assets/drive-media/` salen del script de optimización a
-**1600×1067 px, es decir 3:2**. Una banda a sangre nunca puede adoptar esa
-proporción (a 1920 px de ancho medirían 1280 px de alto), así que con
-`object-fit: cover` **siempre se pierde altura**. No es un fallo de CSS: es
-geometría. Lo único que se decide es cuánto se pierde y qué se pierde.
+**1600×1067 px, es decir 3:2**. La portada a pantalla completa es más apaisada
+que eso, así que **siempre sobra alto y hay que recortar**. La pregunta no es
+si se recorta: es *qué* se recorta.
 
-- **Cuánto** — `hero-carousel.component.ts` fija
-  `min-height: clamp(24rem, min(50vw, calc(100vh - var(--nav-height))), 64rem)`.
-  El término `50vw` ancla la caja en ~2:1 en lugar de dejar que se estire a
-  3:1 en monitores anchos: el recorte queda plano en ~25 % de 1024 px en
-  adelante, en vez de crecer hasta el 53 % a 2560 px. El término con `100vh`
-  garantiza que el hero completo cabe sobre la línea de flotación.
-- **Qué** — cada `HeroSlide` puede declarar `focus` (`ImageFocus`:
-  `top | upper | center | lower | bottom`). El carrusel lo traduce a
-  `object-position`. El valor por defecto es `upper` (28 %), que es el correcto
-  para fotos de grupo porque las caras viven en el tercio superior; sólo se
-  declara `focus` cuando la foto pide otra cosa.
+Decisión (sep. 2026, revisada): **portada a sangre y a pantalla completa**,
+con el recorte gobernado.
 
-Alternativas descartadas: `object-fit: contain` (bandas negras, el hero deja de
-ser a sangre) y `aspect-ratio: 3/2` en el contenedor (hero de 1280 px de alto
-en escritorio). Si algún día se quiere el 100 % literal sin bandas, el patrón
-es imagen `contain` sobre una copia `cover` desenfocada de fondo.
+- **Alto**: desde 860 px, `calc(100svh − var(--nav-height))` —la cabecera es
+  `sticky`, así que ocupa sitio en el flujo y la resta es exacta—. Por debajo,
+  `max(26rem, 66svh)`: en un teléfono una portada de pantalla completa esconde
+  la web entera, y hay que dejar asomar lo que viene.
+- **Qué se recorta**: cada diapositiva declara su `focus` (`ImageFocus`,
+  `upper` por defecto), que `hero-carousel.component.ts` traduce a
+  `object-position`. Con `upper` el recorte se lleva el suelo y deja las
+  cabezas. En vertical el recorte pasa a ser lateral y se centra, que es lo
+  correcto para una foto de grupo.
+- **Legibilidad**: velo diagonal (100°) en horizontal —oscurece el lado del
+  texto y deja ver la foto en el otro— y de abajo arriba en vertical, donde
+  además el texto se ancla al pie en lugar de centrarse: centrado caía en la
+  franja media de la foto, la más clara y la más llena de detalle.
+- **Movimiento**: *Ken Burns* de 6 s con el sentido alternado por
+  diapositiva, fundido cruzado de 1,2 s y barra de progreso en cada punto al
+  ritmo real del carrusel. Todo se pausa con el puntero encima, con el foco
+  dentro, con la pestaña oculta (WCAG 2.2.2) y con `prefers-reduced-motion`.
+  Elegir un punto reinicia el intervalo, para que la barra no mienta.
+- Ojo con `<ng-content>`: los estilos encapsulados del carrusel **no** alcanzan
+  a los nodos proyectados; acota con un envoltorio propio (`.hero__text`), no
+  con `.hero__content > *` (así se «descolocó» el titular).
+
+### Peso de la portada (es la imagen LCP de la web)
+
+Tres cosas, por orden de impacto:
+
+1. **Tres anchos y `sizes="100vw"`.** Las fotos existían a 1600 px y a 480, sin
+   nada en medio, y el `<img>` sólo tenía `src`: **un teléfono se descargaba la
+   imagen de escritorio entera** para pintar 390 px. Se generó la variante de
+   960 px (`npm run images`) y ahora un móvil 2× coge 53 kB donde antes cogía
+   112.
+2. **La precarga también lleva `imagesrcset`.** Es la trampa: un
+   `<link rel="preload" as="image">` con un solo `href` **gana siempre** al
+   `srcset` de la etiqueta —el recurso ya está descargado y el navegador lo
+   reutiliza—, así que el móvil seguía bajando los 1600 px por mucho `srcset`
+   que tuviera el `<img>`. Con `imagesrcset`/`imagesizes` la precarga elige el
+   mismo ancho que elegiría la etiqueta. Comprobado: una sola descarga, la
+   correcta.
+3. **El escenario lleva el color medio de la foto activa** (medido con canvas,
+   campo `tone` en `church.config.ts`). Mientras la imagen viaja por la red se
+   ve su propio tono en vez del navy de marca, que no se parece a nada de lo
+   que va a aparecer. Cuesta cero bytes.
+
+Alternativa probada y descartada: **hero partido** (texto sobre navy a la
+izquierda, foto entera en un marco 3:2 a la derecha). Evitaba el recorte por
+completo, pero la bienvenida pasaba a leerse como una ficha de producto: al
+entrar no se veía la iglesia, se veía una tarjeta. El recorte controlado por
+`focus` cuesta menos que esa pérdida.
 
 ## Reglas
 

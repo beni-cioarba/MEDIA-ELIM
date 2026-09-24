@@ -1,0 +1,481 @@
+@use 'ds' as *;
+
+/* =====================================================================
+ * Guía de estilos (`/stil`).
+ *
+ * Estos estilos son **sólo el andamiaje de la página** (rejillas, muestras,
+ * bloques de código). Todo lo que se está enseñando usa las primitivas
+ * `ui-*` globales y los tokens: aquí no se redefine ninguna pieza del
+ * catálogo, o la guía dejaría de decir la verdad.
+ * ===================================================================== */
+
+:host {
+  display: block;
+  background: var(--c-bg);
+}
+
+.sg {
+  @include container(var(--w-wide));
+  padding-block: var(--sp-6) var(--sp-12);
+}
+
+/* --- Cabecera ------------------------------------------------------- */
+
+.sg__hero {
+  padding-block: var(--sp-6) var(--sp-8);
+  border-bottom: 1px solid var(--c-hairline);
+  margin-bottom: var(--sp-8);
+}
+
+.sg__eyebrow {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.sg__title {
+  margin: 0 0 var(--sp-2);
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  color: var(--c-primary);
+}
+
+.sg__lead {
+  margin: 0;
+  max-width: var(--w-prose);
+  color: var(--c-muted);
+}
+
+.sg__toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: var(--sp-5);
+}
+
+/* --- Secciones ------------------------------------------------------ */
+
+.sg__section {
+  padding-block: var(--sp-8);
+  border-bottom: 1px solid var(--c-hairline);
+  scroll-margin-top: calc(var(--nav-height) + var(--sp-4));
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.sg__group + .sg__group {
+  margin-top: var(--sp-6);
+}
+
+.sg__group-title {
+  margin: 0 0 var(--sp-1);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-lg);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.sg__group-note {
+  margin: 0 0 var(--sp-3);
+  max-width: var(--w-prose);
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+// Títulos de interfaz: sans. La serif es para contenido editorial, no
+// para etiquetar piezas de un catálogo.
+.sg__card-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.sg__card-text {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.sg__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: var(--sp-3);
+}
+
+/* --- Color ---------------------------------------------------------- */
+
+.sg__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg__swatch {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0.15rem var(--sp-3);
+}
+
+.sg__swatch-chip {
+  grid-row: 1 / span 2;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+}
+
+.sg__swatch-use {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+.sg__token {
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, monospace;
+  font-size: var(--fs-xs);
+  color: var(--c-primary);
+  word-break: break-all;
+}
+
+/* --- Tipografía ----------------------------------------------------- */
+
+.sg__type {
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+
+/* La muestra manda: la fila crece con ella en vez de recortarla. */
+.sg__type-row {
+  min-height: 0;
+  padding-block: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.sg__type-sample {
+  flex: 1 1 14rem;
+  min-width: 0;
+  font-family: var(--font-display);
+  line-height: 1.15;
+  color: var(--c-primary);
+}
+
+/* --- Escalas -------------------------------------------------------- */
+
+.sg__scales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: var(--sp-3);
+  align-items: start;
+}
+
+.sg__bars,
+.sg__radii,
+.sg__elevations {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg__bar-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.sg__bar {
+  height: 0.75rem;
+  border-radius: var(--r-xs);
+  background: var(--c-primary);
+}
+
+.sg__radii,
+.sg__elevations {
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+}
+
+.sg__radius,
+.sg__elevation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.sg__radius-box,
+.sg__elevation-box {
+  width: 3.25rem;
+  height: 3.25rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+}
+
+.sg__elevation-box {
+  border-radius: var(--r-md);
+  border-color: transparent;
+}
+
+/* --- Primitivas ----------------------------------------------------- */
+
+.sg__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+  cursor: pointer;
+}
+
+.sg__samples {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+// `min-width: 0`: sin él, el `<pre>` del ejemplo (ancho, con scroll propio)
+// estiraba la celda de la rejilla y sacaba la página del viewport en móvil.
+.sg__sample {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  scroll-margin-top: calc(var(--nav-height) + var(--sp-4));
+}
+
+.sg__sample-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.sg__name {
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, monospace;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+/* Lienzo de la muestra: fondo de la app para que se vea el contraste real. */
+.sg__stage {
+  padding: var(--sp-4);
+  border: 1px dashed var(--c-hairline);
+  border-radius: var(--r-sm);
+  background: var(--c-bg);
+}
+
+.sg__row-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--sp-2);
+}
+
+.sg__inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.sg__panel-demo {
+  max-height: 11rem;
+}
+
+.sg__code {
+  margin: 0;
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--c-primary-darkest);
+  color: var(--c-on-primary);
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, monospace;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+/* --- Densidad ------------------------------------------------------- */
+
+.sg__density {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+/* La lista ya es la tarjeta: sin relleno propio para que el filete mande. */
+.sg__density .ui-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+@include until('sm') {
+  .sg__bar-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+
+  .sg__sample {
+    padding: var(--sp-3);
+  }
+
+  .sg__stage {
+    padding: var(--sp-3);
+  }
+}
+
+/* --- Nota al pie de una muestra ---------------------------------------- */
+
+.sg__note {
+  max-width: none;
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--c-muted);
+
+  code {
+    padding: 0.1em 0.35em;
+    border-radius: var(--r-xs);
+    background: var(--c-veil);
+    font-size: 0.92em;
+  }
+}
+
+/* --- Tabla de referencias ----------------------------------------------- */
+/* El envoltorio con scroll propio evita el único scroll horizontal que la
+   app no puede permitirse: el de la página. */
+
+.sg__table-wrap {
+  overflow-x: auto;
+  margin-top: var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+}
+
+.sg__table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+
+  th,
+  td {
+    padding: var(--sp-3) var(--sp-4);
+    text-align: start;
+    vertical-align: top;
+    border-bottom: 1px solid var(--c-hairline);
+  }
+
+  thead th {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: var(--ls-caps);
+    text-transform: uppercase;
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+  tbody th {
+    font-weight: 600;
+    color: var(--c-primary);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+/* --- Muestra de la banda ------------------------------------------------ */
+/* La banda real va a sangre; dentro de una muestra se recorta con un radio
+   para que se vea que es un ejemplo y no el borde de la página. */
+
+.sg__band-demo {
+  border-radius: var(--r-card);
+}
+
+.sg__band-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+/* --- Escaparate (línea nueva) ------------------------------------------ */
+/* La muestra usa la pieza de verdad (`.promo`, hoja `_showcase.scss`), no una
+   copia: si cambia la tarjeta, cambia este ejemplo. */
+
+.sg__showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 33rem) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+}
+
+.sg__promo-demo {
+  max-width: 33rem;
+}
+
+.sg__showcase-notes {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.sg__tones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg__tone {
+  display: grid;
+  place-items: center;
+  min-height: 3.25rem;
+  border-radius: 12px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-meta);
+  color: #ffffff;
+}
+
+.sg__tone.is-teal { background: #234343; }
+.sg__tone.is-plum { background: #3f2343; }
+.sg__tone.is-blue { background: #233143; }
+.sg__tone.is-clay { background: #432323; }
+
+@media (max-width: 859.98px) {
+  .sg__showcase {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

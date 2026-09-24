@@ -50,14 +50,12 @@
   padding: var(--sp-5);
   background: var(--c-surface);
   border: 1px solid var(--c-hairline);
-  border-radius: 1rem;
-  transition:
-    border-color var(--mo-base) var(--ea-standard),
-    transform var(--mo-base) var(--ea-standard);
+  border-radius: var(--r-card);
+  transition: border-color var(--mo-fast) var(--ea-standard);
 
+  /* Reacción por filete, sin salto (ver 47-design-language.md). */
   &:hover {
     border-color: var(--c-gold);
-    transform: translateY(-2px);
   }
 }
 
@@ -100,7 +98,7 @@
   color: var(--c-primary-deep);
   background: var(--c-gold-tint);
   border: 1px dashed var(--c-gold);
-  border-radius: 0.9rem;
+  border-radius: var(--r-md);
 
   strong {
     display: block;
@@ -116,7 +114,7 @@
   padding: clamp(1.4rem, 3vw, 2.25rem);
   background: var(--c-surface);
   border: 1px solid var(--c-hairline);
-  border-radius: 1.25rem;
+  border-radius: var(--r-card);
   box-shadow: var(--e-1);
 }
 
@@ -182,7 +180,7 @@
   padding: var(--sp-4);
   background: var(--c-bg);
   border: 1px solid var(--c-hairline);
-  border-radius: 0.9rem;
+  border-radius: var(--r-md);
 
   @include until('xs') {
     grid-template-columns: minmax(0, 1fr) auto;

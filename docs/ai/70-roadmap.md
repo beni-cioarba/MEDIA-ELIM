@@ -143,6 +143,58 @@ Estado tras la reestructuración de navegación + design system.
   y en la proyección. `expand(id, view)` distingue `projection` / `panel` / `web`
   (la web no pagina nada).
 
+### Iteración 9 — lenguaje visual y guía de estilos viva
+
+- **Cambio de lenguaje visual** destilado de Coursera, Google Store, Gmail y la
+  consola de Google Cloud (detalle y porqués en `47-design-language.md`):
+  radios contenidos (4–16 px, antes 6–32), elevación plana (el filete separa,
+  la sombra flota), raíz tipográfica 15→17 px (antes llegaba a 20) y escala
+  tipográfica corta, botones planos sin degradado ni salto.
+- **Densidad como token** (`--ui-*`) con dos modos: `comfortable` (web) y
+  `compact` (consolas, clase `.ui-dense`). Y **superficie oscura** `.ui-dark`,
+  que sólo redefine tokens: las primitivas funcionan igual en claro y oscuro.
+  El panel de control ya arranca con `ui-dense ui-dark` en su host.
+- **Catálogo de primitivas** `ui-*` (`src/styles/_primitives.scss`): tarjeta,
+  panel, cabecera de sección, lista y fila densa, barra de herramientas, botón
+  de icono, chip, estado, segmentado, campo, pestañas, métrica, metadatos,
+  estado vacío, tecla y filete.
+- **Guía de estilos viva en `/stil`** (`features/styleguide/`): tokens y
+  primitivas en vivo, con su marcado copiable, un interruptor de densidad y la
+  escala de proyección. Es la referencia para personas y para la IA; una
+  primitiva nueva sin su ejemplo allí es un cambio incompleto.
+
+### Iteración 10 — las referencias, medidas y aplicadas
+
+- **Se abrieron Coursera y Google Store y se midieron** con `getComputedStyle`
+  en vez de trabajar sobre capturas. La tabla de valores vive en `/stil` →
+  «Referencias medidas» y resumida en `47-design-language.md`.
+- **Lo que cambió por lo medido**: tracking graduado por nivel (`--ls-*`, de
+  −0,02 em a +0,01 em) en vez de un −0,02 em plano; rótulo de bloque a
+  `--fs-section` (≈20 px, como las referencias) y en grotesca —el
+  `ui-section-head__title` seguía en serif, contra lo ya decidido—; radio
+  único de tarjeta `--r-card` (16 px web / 8 px consola) donde convivían
+  cinco; nada de `translateY` al apuntar; tintes planos en vez de degradados.
+- **Piezas nuevas del catálogo**: `ui-band` (+`__inner`, `--gold`) y
+  `ui-stat--band` para el corte de ritmo a sangre, `ui-card--soft` (superficie
+  con tono, sin filete) y `ui-row--wrap` (título a dos líneas, para columnas
+  estrechas).
+- **Portada**: tablero de tres columnas «lo que viene» sobre banda agrupadora,
+  banda de cifras a sangre en navy (las cifras salieron de la columna derecha
+  de «bienvenida», que pasa a ser un bloque editorial a ancho de prosa),
+  ministerios como `ui-chip` y rejilla de accesos a 3 × 2 (antes 4 + 2, con
+  fila coja).
+- **Páginas públicas** (`about`, `credo`, `contact`, `donate`): radios
+  unificados y fuera el salto al apuntar.
+- **Portada a pantalla completa otra vez** (revisa la decisión de la
+  iteración 9): foto a sangre ocupando el viewport menos la cabecera desde
+  860 px —66 svh en móvil, para que asome lo que viene—, con carrusel
+  automático, *Ken Burns* alternado, fundido de 1,2 s y barra de progreso en
+  los puntos. El recorte se gobierna con el `focus` de cada diapositiva y la
+  legibilidad, con velo diagonal (horizontal) o de abajo arriba (vertical).
+  Se para con el puntero, el foco, la pestaña oculta y `prefers-reduced-motion`.
+- Verificado a 375, 1280 y 1440 px sin scroll horizontal; `npm run check` y
+  `npm run build` en verde.
+
 ## Pendiente — prioridad alta
 
 1. **Sin tests.** Vitest (`@angular/build:unit-test`) está configurado pero no hay ni un `.spec.ts`.

@@ -91,6 +91,17 @@ export const APP_ROUTES: Routes = [
         },
       },
       {
+        // Guía de estilos viva (`/stil`): tokens, primitivas y patrones.
+        // Herramienta interna, perezosa y fuera del menú; se enlaza desde el
+        // pie junto al panel de control.
+        path: APP_PATHS.styleguide,
+        loadComponent: () =>
+          import('./features/styleguide/styleguide.component').then((m) => m.StyleguideComponent),
+        data: {
+          seo: { titleKey: 'seo.styleguide.title', descriptionKey: 'seo.styleguide.description' },
+        },
+      },
+      {
         // Los anuncios tienen página propia: `/media/anunturi` no es un bloque web.
         path: `${APP_PATHS.media}/${APP_PATHS.announcements}`,
         redirectTo: APP_PATHS.announcements,

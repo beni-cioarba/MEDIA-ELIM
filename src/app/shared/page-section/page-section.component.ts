@@ -36,22 +36,27 @@ import { TranslatePipe } from '@ngx-translate/core';
         display: block;
       }
 
+      /* Ritmo vertical de producto: secciones más juntas. Antes cada bloque
+         flotaba en aire muerto; ahora la página se recorre, no se pasea. */
       .section {
-        padding: clamp(2.6rem, 7vh, 5rem) clamp(1rem, 4vw, 2.5rem);
+        padding: clamp(2rem, 4.5vh, 3.25rem) clamp(1rem, 4vw, 2.5rem);
       }
 
+      /* Tinte PLANO, no degradado: las referencias alternan secciones con un
+         tono liso; un degradado hasta el lienzo deja un borde difuso que en
+         pantallas grandes se ve como una banda sucia. */
       .section--tinted {
-        background: linear-gradient(180deg, var(--c-bg-cool) 0%, var(--c-bg) 100%);
+        background: var(--c-bg-cool);
       }
 
       .section__inner {
-        max-width: 1180px;
+        max-width: var(--w-content);
         margin: 0 auto;
       }
 
       .section__head {
         max-width: 46rem;
-        margin: 0 auto clamp(1.6rem, 4vh, 2.6rem);
+        margin: 0 auto clamp(1.25rem, 3vh, 1.75rem);
         text-align: center;
       }
 
@@ -71,27 +76,28 @@ import { TranslatePipe } from '@ngx-translate/core';
       }
 
       .section__eyebrow {
-        margin: 0 0 0.5rem;
-        font-size: 0.72rem;
+        margin: 0 0 0.35rem;
+        font-size: var(--fs-xs);
         font-weight: 700;
-        letter-spacing: 0.18em;
+        letter-spacing: var(--ls-caps);
         text-transform: uppercase;
         color: var(--c-gold-deep);
       }
 
       .section__title {
         margin: 0;
-        font-family: var(--font-serif);
-        font-weight: 600;
-        font-size: clamp(1.5rem, 3.2vw, 2.35rem);
-        line-height: 1.18;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: var(--fs-h2);
+        line-height: 1.15;
+        letter-spacing: var(--ls-h2);
         color: var(--c-primary);
       }
 
       .section__subtitle {
-        margin: 0.7rem 0 0;
-        font-size: clamp(0.95rem, 1.4vw, 1.05rem);
-        line-height: 1.6;
+        margin: 0.5rem 0 0;
+        font-size: var(--fs-sm);
+        line-height: 1.55;
         color: var(--c-muted);
       }
     `,
@@ -107,7 +113,13 @@ export class PageSectionComponent {
   /** Fondo con velo frío para alternar secciones. Admite atributo suelto: `tinted`. */
   @Input({ transform: booleanAttribute }) tinted = false;
   /** Alineación de la cabecera. */
-  @Input() align: 'center' | 'start' = 'center';
+  /**
+   * Alineación de la cabecera. **Por defecto a la izquierda**: es donde
+   * empieza la lectura y donde la esperan las rejillas que van debajo
+   * (patrón de Coursera / Google Store). El centrado se pide a mano para la
+   * portada y los bloques de cierre.
+   */
+  @Input() align: 'center' | 'start' = 'start';
   /** `id` del elemento, para enlaces con ancla. */
   @Input() anchor?: string;
 }

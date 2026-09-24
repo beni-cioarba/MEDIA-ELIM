@@ -31,6 +31,11 @@
   --c-primary-deep: #{navy(800)};
   --c-primary-darkest: #{navy(900)};
   --c-on-primary: #{neutral(50)};
+  // Texto sobre un relleno de acento de las primitivas (`ui-chip` activo,
+  // botón primario). Existe aparte de `--c-on-primary` porque en superficie
+  // oscura el acento pasa a ser el oro y este token se invierte, mientras que
+  // `--c-on-primary` sigue significando «texto claro sobre el navy de marca».
+  --c-on-accent: #{neutral(50)};
 
   // ---- Acento (oro) ---------------------------------------------------
   --c-gold: #{gold(500)};
@@ -39,12 +44,26 @@
   --c-on-gold: #{navy(900)};
 
   // ---- Lienzo y superficies ------------------------------------------
+  // Tres niveles, como en cualquier consola: lienzo → superficie → realce.
+  // `surface-accent` es el azul muy claro de las tarjetas agrupadoras de
+  // Coursera («Más populares»): agrupa sin pintar una caja fuerte.
   --c-bg: #{neutral(50)};
   --c-bg-2: #{neutral(0)};
   --c-bg-cool: #{neutral(200)};
   --c-surface: #{neutral(0)};
   --c-surface-2: #{neutral(100)};
+  --c-surface-3: #{neutral(200)};
   --c-surface-sunken: #{neutral(200)};
+  --c-surface-accent: #{rgba(#1a365d, 0.04)};
+
+  // ---- Banda (sección a sangre con tinta propia) -----------------------
+  // El recurso de Coursera para romper la página sin recurrir a una tarjeta
+  // más: una franja de ancho completo en navy profundo (miden #002457) que
+  // aloja la cifra o el mensaje que debe quedarse. Se usa UNA vez por página;
+  // dos bandas seguidas dejan de destacar y parecen un banner.
+  --c-band: #{navy(800)};
+  --c-on-band: #{neutral(50)};
+  --c-on-band-muted: #{rgba(#f7fafc, 0.72)};
 
   // ---- Texto ----------------------------------------------------------
   --c-text: #{neutral(800)};
@@ -89,24 +108,110 @@
   --shadow-card: var(--e-3);
 
   // ---- Tipografía -----------------------------------------------------
+  --font-display: #{$font-display};
   --font-serif: #{$font-serif};
   --font-sans: #{$font-sans};
   @include emit-scale('fs', $type-scale);
+  @include emit-scale('ls', $tracking);
 
   // ---- Escalas ---------------------------------------------------------
   @include emit-scale('sp', $space);
   @include emit-scale('r', $radius);
+
+  // Radio de tarjeta: **depende de la superficie, no de la pieza**. En la web
+  // pública son 16 px (lo que miden las tarjetas de producto de Coursera; las
+  // de Google Store llegan a 28 px, pero ahí la tarjeta ES la imagen y no
+  // convive con una rejilla densa). En consola baja a 8 px con `.ui-dense`:
+  // una esquina grande repetida en una lista de veinte filas ensucia la
+  // retícula.
+  --r-card: #{radius('xl')};
   @include emit-scale('z', $z);
   @include emit-scale('mo', $motion);
   @include emit-scale('ea', $easing);
+
+  // ---- Densidad (por defecto, cómoda) ---------------------------------
+  // Las consumen las primitivas `ui-*`. Un módulo de consola las reescribe
+  // poniéndose la clase `.ui-dense` (ver más abajo).
+  @each $key, $value in map.get($density, 'comfortable') {
+    --ui-#{$key}: #{$value};
+  }
 
   // ---- Anchos de contenido --------------------------------------------
   --w-prose: 68ch;
   --w-content: 1180px;
   --w-wide: 1440px;
 
+  /*
+   * ---- Rejilla de página ----------------------------------------------
+   * **Un único margen izquierdo para toda la app.** Antes convivían tres:
+   * la cabecera en x=82, las franjas a sangre en x=45 y el contenido en
+   * x=161 (medido a 1512 px). Tres rejillas en la misma pantalla se notan
+   * aunque no se sepa por qué.
+   *
+   *  · `--page-max`    ancho máximo del contenido.
+   *  · `--page-gutter` margen mínimo contra el borde de la pantalla.
+   *  · `--page-inset`  **la distancia real del borde al contenido**. Es la
+   *    que usan las franjas que sangran (el carrusel) para que su primer
+   *    elemento caiga en la misma vertical que el resto de la página.
+   */
+  --page-max: var(--w-wide);
+  --page-gutter: clamp(1rem, 3vw, 3.5rem);
+  --page-inset: max(var(--page-gutter), calc((100% - var(--page-max)) / 2));
+
   // ---- Cabecera (la usan el layout y el scroll-margin de las anclas) ---
-  --nav-height: 4.5rem;
+  // 56 px. Las referencias de producto están entre 56 y 64; por encima, la
+  // barra empieza a comerse la portada sin dar nada a cambio. **Tiene que
+  // coincidir con el alto real**: la portada calcula `100svh - --nav-height`,
+  // así que un desfase de 5 px se arrastra hasta el pie de la pantalla.
+  --nav-height: 3.5rem;
+  /* Alto común de TODOS los controles de la barra (enlaces, botones, idioma).
+     Que midan lo mismo es lo que hace que una cabecera se vea ordenada. */
+  --nav-control-h: 2.125rem;
+}
+
+// ---------------------------------------------------------------------
+// Densidad compacta — consolas de operación (panel de proyección y los
+// módulos de gestión que vengan). Se pone en la **raíz del módulo**, no en
+// cada componente: todo su subárbol hereda filas y controles pequeños.
+// ---------------------------------------------------------------------
+.ui-dense {
+  @each $key, $value in map.get($density, 'compact') {
+    --ui-#{$key}: #{$value};
+  }
+
+  --r-card: #{radius('md')};
+}
+
+// ---------------------------------------------------------------------
+// Superficie oscura — consolas de operación. En el templo a media luz una
+// consola clara deslumbra y, además, distingue de un vistazo qué ventana
+// es la del operador y cuál la que se proyecta.
+//
+// **No duplica las primitivas**: sólo redefine los tokens de superficie,
+// texto y filete. Por eso una `ui-card`, una `ui-row` o una `ui-toolbar`
+// funcionan igual en claro y en oscuro sin una línea de CSS extra. Es el
+// mismo truco que usa `tone="dark"` en la marca: una pieza, dos tintas.
+// ---------------------------------------------------------------------
+.ui-dark {
+  --c-bg: #{navy(900)};
+  --c-bg-2: #{navy(800)};
+  --c-surface: #{rgba(#ffffff, 0.04)};
+  --c-surface-2: #{rgba(#ffffff, 0.07)};
+  --c-surface-3: #{rgba(#ffffff, 0.1)};
+  --c-surface-accent: #{rgba(#ffffff, 0.06)};
+  --c-veil: #{rgba(#ffffff, 0.07)};
+  --c-veil-strong: #{rgba(#ffffff, 0.14)};
+  --c-text: #{neutral(50)};
+  --c-muted: #{rgba(#f7fafc, 0.72)};
+  --c-faint: #{rgba(#f7fafc, 0.45)};
+  --c-hairline: #{rgba(#ffffff, 0.1)};
+  --c-hairline-strong: #{rgba(#ffffff, 0.18)};
+  // El acento sobre oscuro es el oro: el navy desaparecería. `--c-on-primary`
+  // NO se toca (sigue siendo la tinta clara sobre el navy de marca).
+  --c-primary: #{gold(500)};
+  --c-on-accent: #{navy(900)};
+
+  color: var(--c-text);
 }
 
 // ---------------------------------------------------------------------

@@ -139,6 +139,12 @@
         {{ 'footer.control' | translate }}
       </a>
 
+      <!-- Herramienta de construcción, no navegación: junto al panel del
+           operador y con el mismo peso visual (ver docs/ai/47-design-language). -->
+      <a class="footer__operator" [routerLink]="links.styleguide">
+        {{ 'footer.styleguide' | translate }}
+      </a>
+
       <!-- Marca de INEB en SVG (componente autocontenido, hoja de marca en su
            README): forma completa, mínimo 32 px, nombre en blanco sobre el
            navy del pie. El enlace lleva el nombre accesible; el SVG es decorativo. -->

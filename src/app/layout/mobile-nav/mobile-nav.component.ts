@@ -159,7 +159,7 @@ import { ShareButtonComponent } from '../../shared/share-button/share-button.com
       }
 
       .drawer__title {
-        font-family: var(--font-serif);
+        font-family: var(--font-display);
         font-size: 1.05rem;
         font-weight: 600;
         color: var(--c-primary);

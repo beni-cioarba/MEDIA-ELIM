@@ -106,6 +106,57 @@ export class ScheduleService {
       return iso;
     }
   }
+
+  /**
+   * Día y mes por separado (ej: `{ day: '26', month: 'SEP' }`), para las
+   * pastillas de fecha: el número grande y el mes debajo en versalitas se
+   * alinean entre filas y se leen antes que una fecha corrida.
+   */
+  formatDayParts(iso: string): { readonly day: string; readonly month: string } {
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
+    try {
+      const fecha = parseIsoDate(iso);
+      const mes = new Intl.DateTimeFormat(lang, { month: 'short' })
+        .format(fecha)
+        .replace('.', '')
+        .toUpperCase();
+      return { day: new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(fecha), month: mes };
+    } catch {
+      return { day: '', month: '' };
+    }
+  }
+
+  /**
+   * Día de la semana abreviado (ej: «lun»). Para listas donde lo que sitúa al
+   * lector no es la fecha sino el día: un plan de lectura se sigue por «hoy es
+   * miércoles», no por «hoy es 24».
+   */
+  formatWeekdayShort(iso: string): string {
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, { weekday: 'short' }).format(parseIsoDate(iso));
+    } catch {
+      return iso;
+    }
+  }
+
+  /**
+   * Fecha corta localizada (ej: «26 sept.»). Para listas de columna estrecha,
+   * donde la fecha larga se come el ancho del título y lo deja truncado a
+   * tres letras: ahí el dato que importa es el título, y la fecha sólo tiene
+   * que situarlo. El año se omite a propósito — en una lista de «próximos»
+   * siempre es el actual o el siguiente.
+   */
+  formatEventDateShort(iso: string): string {
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short' }).format(
+        parseIsoDate(iso),
+      );
+    } catch {
+      return iso;
+    }
+  }
 }
 
 /** Convierte "10:00" / "18:30" en minutos desde medianoche (para ordenar). */

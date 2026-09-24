@@ -1,0 +1,969 @@
+// =====================================================================
+// PRIMITIVAS `ui-*` — el catálogo de piezas reutilizables de la app.
+//
+// Qué es esto y por qué es global (y no un parcial por componente):
+//  · Son las piezas que se repiten en **todas** las superficies (tarjeta,
+//    fila de lista, barra de herramientas, chip, panel, estado vacío…).
+//    Si cada módulo las redefine, en tres módulos hay tres tarjetas
+//    distintas. Aquí hay una.
+//  · Al ser CSS global, cualquier plantilla las usa escribiendo la clase,
+//    sin importar parciales ni romper la encapsulación de su componente
+//    (los estilos encapsulados siguen mandando sobre estos, que son la
+//    base neutra).
+//  · Se ven todas en vivo en **`/stil`** (módulo de guía de estilos), que
+//    es la referencia para personas y para la IA. Si añades una primitiva
+//    aquí, añade su ejemplo allí en el mismo cambio.
+//
+// Reglas del catálogo:
+//  1. Sólo tokens: nada de valores en crudo (`#fff`, `12px`, `0.3s`).
+//  2. Densidad heredada (`--ui-*`): la misma primitiva sirve para la web
+//     y para una consola con `.ui-dense`. Nunca fijes alturas a mano.
+//  3. En reposo, filete; la sombra se reserva a lo que flota.
+//  4. Estados completos: `:hover`, `:focus-visible`, `[disabled]`,
+//     `[aria-current]` / `.is-active` donde tenga sentido.
+//  5. Nombre `ui-<pieza>` y modificadores `ui-<pieza>--<variante>`.
+// =====================================================================
+
+@use 'tokens' as *;
+@use 'mixins' as *;
+
+// ---------------------------------------------------------------------
+// 1 · Superficies: tarjeta, panel y sección
+// ---------------------------------------------------------------------
+
+/** Tarjeta: la caja de contenido por defecto. Filete + radio pequeño. */
+.ui-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-gap);
+  padding: var(--ui-pad-y) var(--ui-pad-x);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  color: inherit;
+}
+
+/**
+ * Tarjeta de superficie: **sin filete, sobre un tono más**. Es el recurso de
+ * Google Store (miden fondo #f9f9f9, radio grande y cero borde): la caja se
+ * reconoce por el cambio de tinta, no por una línea. Se usa cuando las
+ * tarjetas van en rejilla y llevan imagen o icono; para listas densas o
+ * contenido de texto sigue mandando `ui-card` con filete (Coursera), que
+ * separa mejor cuando hay mucho elemento junto.
+ */
+.ui-card--soft {
+  border-color: transparent;
+  background: var(--c-surface-2);
+}
+
+/** Tarjeta que se pulsa (enlace o botón): reacción mínima, sin saltos. */
+.ui-card--interactive {
+  text-decoration: none;
+  transition:
+    border-color var(--mo-fast) var(--ea-standard),
+    box-shadow var(--mo-fast) var(--ea-standard),
+    background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    border-color: var(--c-hairline-strong);
+    box-shadow: var(--e-1);
+  }
+
+  @include focus-ring(2px);
+}
+
+/** Agrupador suave, el «bloque de contenido» de Coursera. */
+.ui-card--accent {
+  border-color: transparent;
+  background: var(--c-surface-accent);
+}
+
+/** Panel de consola: cabecera fija + cuerpo con scroll propio. */
+.ui-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+
+.ui-panel__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-gap);
+  padding: var(--ui-pad-y) var(--ui-pad-x);
+  border-bottom: 1px solid var(--c-hairline);
+  background: var(--c-surface-2);
+}
+
+.ui-panel__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.ui-panel__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/** Cabecera de sección: título a la izquierda, acción a la derecha. */
+.ui-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+/**
+ * Rótulo de bloque. Deliberadamente **pequeño** (≈20 px): en las referencias
+ * el rótulo no es lo que jerarquiza —lo hacen el aire de la sección y el
+ * enlace de la derecha—, así que agrandarlo sólo roba sitio al contenido.
+ * Va en la grotesca de titulares; la serif está reservada a marca y cita.
+ */
+.ui-section-head__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: var(--ls-section);
+  color: var(--c-primary);
+}
+
+/** Enlace «ver todo →» de una sección. */
+.ui-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  color: var(--c-primary);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--r-xs);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include focus-ring(2px);
+}
+
+// ---------------------------------------------------------------------
+// 2 · Listas densas (Gmail / Cloud Console)
+// ---------------------------------------------------------------------
+
+/** Lista separada por filetes, sin bordes exteriores. */
+.ui-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/**
+ * Fila: alto mínimo por densidad, contenido en columnas y acciones a la
+ * derecha. Es la pieza que hace que una consola se lea de un vistazo.
+ */
+.ui-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-gap);
+  min-height: var(--ui-row-h);
+  padding: 0 var(--ui-pad-x);
+  border-bottom: 1px solid var(--c-hairline);
+  font-size: var(--ui-fs);
+  color: inherit;
+  text-decoration: none;
+  transition: background var(--mo-instant) var(--ea-standard);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+/** Fila pulsable: fondo al pasar, como una bandeja de correo. */
+.ui-row--interactive {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(-2px);
+
+  &.is-active,
+  &[aria-current='true'] {
+    background: var(--c-gold-tint);
+    box-shadow: inset 3px 0 0 var(--c-gold);
+  }
+}
+
+/** Texto principal de la fila: se recorta antes de empujar a los demás. */
+.ui-row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/**
+ * Fila de dos líneas. El recorte a una línea es lo correcto en una bandeja
+ * ancha (Gmail), pero en una columna estrecha —un tablero de tres columnas—
+ * deja títulos cortados a tres letras. Con esta variante el texto principal
+ * se ajusta y se limita a dos líneas: sigue siendo una lista regular, pero
+ * el título se lee.
+ */
+.ui-row--wrap {
+  align-items: flex-start;
+  padding-block: var(--ui-pad-y);
+
+  .ui-row__main {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .ui-row__meta {
+    padding-top: 0.1rem;
+  }
+}
+
+/** Dato secundario (fecha, autor, estado). */
+.ui-row__meta {
+  flex: 0 0 auto;
+  font-size: var(--ui-fs-meta);
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/** Acciones de la fila: aparecen al apuntar, como en Gmail. */
+.ui-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity var(--mo-fast) var(--ea-standard);
+
+  .ui-row:hover &,
+  .ui-row:focus-within & {
+    opacity: 1;
+  }
+
+  // Sin puntero (táctil) siempre visibles: no hay «pasar por encima».
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 3 · Barra de herramientas (consola)
+// ---------------------------------------------------------------------
+
+.ui-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-gap);
+  min-height: var(--ui-row-h);
+  padding: var(--ui-pad-y) var(--ui-pad-x);
+  border-bottom: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+}
+
+/** Grupo de controles relacionados; `--end` se alinea a la derecha. */
+.ui-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ui-toolbar__group--end {
+  margin-left: auto;
+}
+
+/** Separador vertical entre grupos. */
+.ui-toolbar__sep {
+  width: 1px;
+  align-self: stretch;
+  margin-inline: 0.25rem;
+  background: var(--c-hairline);
+}
+
+// ---------------------------------------------------------------------
+// 4 · Controles: botón de icono, chips, segmentado, campo
+// ---------------------------------------------------------------------
+
+/** Botón sólo icono, cuadrado y del alto del control. */
+.ui-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ui-control-h);
+  height: var(--ui-control-h);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition:
+    background var(--mo-instant) var(--ea-standard),
+    color var(--mo-instant) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+    color: var(--c-primary);
+  }
+
+  @include focus-ring(1px);
+
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/**
+ * Chip: filtro, etiqueta o categoría. Pulsable con `--selectable`.
+ *
+ * Geometría medida en Coursera: alto 32 px, píldora completa, filete de 1 px
+ * y relleno 4/12. El **peso normal en reposo** es intencionado: una fila de
+ * doce chips todos en negrita se lee como un muro. El peso fuerte queda para
+ * el que está activo, que además se rellena.
+ */
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font-size: var(--ui-fs-meta);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+
+.ui-chip--selectable {
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--mo-instant) var(--ea-standard),
+    border-color var(--mo-instant) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(2px);
+
+  &.is-active,
+  &[aria-pressed='true'],
+  &[aria-selected='true'] {
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    color: var(--c-on-accent);
+    font-weight: 600;
+  }
+}
+
+/** Fila de chips que envuelve sin romper la rejilla. */
+.ui-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/** Estado: verde, ámbar, rojo, azul o «en directo». */
+.ui-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.15em 0.6em;
+  border-radius: var(--r-pill);
+  background: var(--c-veil);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--c-muted);
+
+  &::before {
+    content: '';
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: currentcolor;
+  }
+}
+
+.ui-status--ok { color: var(--c-success); }
+.ui-status--warn { color: var(--c-warning); }
+.ui-status--danger { color: var(--c-danger); }
+.ui-status--info { color: var(--c-info); }
+.ui-status--live { color: var(--c-live); }
+
+/** Segmentado: dos o tres opciones excluyentes (tamaño del QR, vista…). */
+.ui-segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+}
+
+.ui-segmented__btn {
+  min-width: 2.25rem;
+  height: calc(var(--ui-control-h) - 6px);
+  padding-inline: 0.6rem;
+  border: 0;
+  border-radius: calc(var(--r-sm) - 2px);
+  background: transparent;
+  font-size: var(--ui-fs-meta);
+  font-weight: 700;
+  color: var(--c-muted);
+  cursor: pointer;
+
+  @include focus-ring(1px);
+
+  &.is-active,
+  &[aria-checked='true'] {
+    background: var(--c-surface);
+    color: var(--c-primary);
+    box-shadow: var(--e-1);
+  }
+
+  &[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/** Campo de formulario compacto: etiqueta encima, control del alto estándar. */
+.ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.ui-field__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.ui-input {
+  height: var(--ui-control-h);
+  padding-inline: 0.6rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-sm);
+  background: var(--c-surface);
+  font: inherit;
+  font-size: var(--ui-fs);
+  color: var(--c-text);
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: -1px;
+    border-color: var(--c-focus);
+  }
+
+  &[disabled] {
+    background: var(--c-surface-2);
+    color: var(--c-faint);
+  }
+}
+
+/** Pestañas subrayadas (Coursera, Gmail): navegación dentro de una página. */
+.ui-tabs {
+  display: flex;
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--c-hairline);
+  list-style: none;
+}
+
+.ui-tab {
+  padding: var(--ui-pad-y) 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: var(--ui-fs);
+  font-weight: 600;
+  color: var(--c-muted);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--c-text);
+  }
+
+  @include focus-ring(2px);
+
+  &.is-active,
+  &[aria-current='page'] {
+    border-bottom-color: var(--c-primary);
+    color: var(--c-primary);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 5 · Datos y estados
+// ---------------------------------------------------------------------
+
+/**
+ * Banda a sangre. Una franja de ancho completo con tinta propia que corta la
+ * página y sujeta el mensaje que debe quedarse (una cifra, una promesa, una
+ * cita). Es el recurso con el que las referencias rompen una sucesión larga
+ * de rejillas sin inventarse otro tipo de tarjeta.
+ *
+ * Uso: `<section class="ui-band"><div class="ui-band__inner">…</div></section>`.
+ * Regla: **una por página**. Dos bandas seguidas se anulan entre sí.
+ */
+.ui-band {
+  padding-block: clamp(2rem, 5vh, 3.25rem);
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+  background: var(--c-band);
+  color: var(--c-on-band);
+
+  // Dentro de la banda, los encabezados no pueden seguir siendo navy sobre
+  // navy: el color de texto manda sobre el de marca.
+  h1,
+  h2,
+  h3,
+  h4,
+  .ui-section-head__title {
+    color: inherit;
+  }
+}
+
+.ui-band__inner {
+  max-width: var(--w-content);
+  margin-inline: auto;
+}
+
+/** Banda en el acento cálido, para cierres y llamadas a la acción. */
+.ui-band--gold {
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+}
+
+/** Cifra + rótulo: el bloque de métrica de un panel de control. */
+.ui-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--ui-pad-y) var(--ui-pad-x);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+}
+
+.ui-stat__value {
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--c-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-stat__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/**
+ * Cifra dentro de una `ui-band`: sin caja ni filete —la banda ya es la caja—
+ * y con el valor a cuerpo de titular, que es lo que hace que la cifra se lea
+ * antes que su rótulo.
+ */
+.ui-stat--band {
+  padding: 0;
+  border: 0;
+  background: none;
+
+  .ui-stat__value {
+    font-size: var(--fs-h1);
+    letter-spacing: var(--ls-h1);
+    color: inherit;
+  }
+
+  .ui-stat__label {
+    color: var(--c-on-band-muted);
+  }
+}
+
+/** Línea de metadatos separada por puntos medios. */
+.ui-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  font-size: var(--ui-fs-meta);
+  color: var(--c-muted);
+
+  > * + *::before {
+    content: '·';
+    margin-inline-end: 0.5rem;
+    color: var(--c-faint);
+  }
+}
+
+/** Estado vacío: qué pasa, por qué y qué hacer. Nunca una caja en blanco. */
+.ui-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-8) var(--sp-4);
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: var(--r-md);
+  text-align: center;
+  color: var(--c-muted);
+}
+
+.ui-empty__title {
+  margin: 0;
+  font-size: var(--fs-body-lg);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+/** Tecla: atajos del operador («Espacio», «F»). */
+.ui-kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--c-hairline-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--r-xs);
+  background: var(--c-surface-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-align: center;
+  color: var(--c-text);
+}
+
+/** Filete horizontal con el color y el grosor del sistema. */
+.ui-divider {
+  height: 1px;
+  margin: var(--sp-4) 0;
+  border: 0;
+  background: var(--c-hairline);
+}
+
+// ---------------------------------------------------------------------
+// 6 · Carrusel de tarjetas
+//
+// Medido en play.google.com/store/apps, que es la referencia que se pidió:
+// pista `flex` con hueco de 16 px, tarjetas con `scroll-snap-align: start`,
+// sangrado izquierdo igual al margen de la página (para que la primera
+// tarjeta quede alineada con el título y la última pueda llegar al borde) y
+// flechas circulares superpuestas a los lados.
+//
+// **Cuándo usar un carrusel**: cuando hay MÁS elementos equivalentes de los
+// que caben y ninguno es imprescindible por sí solo. Nunca para esconder algo
+// que el visitante tiene que ver sí o sí —lo que está fuera de pantalla, para
+// la mayoría, no existe—. Por eso el ancho de tarjeta se elige para que en
+// escritorio se vean tres enteras y asome la cuarta: el asomo es lo que dice
+// «hay más», y sin él nadie desliza.
+//
+// **Nunca gira solo.** El único carrusel automático de la app es la portada
+// (es su entrada, y se para al apuntarla). Un carrusel de contenido que se
+// mueve mientras se lee es un fallo de accesibilidad (WCAG 2.2.2), no una
+// gracia.
+// ---------------------------------------------------------------------
+
+/**
+ * Raíz del carrusel. Ajusta `--carousel-item-w` (ancho de tarjeta) y
+ * `--carousel-gutter` (sangrado; normalmente el margen de la página) desde
+ * quien lo usa.
+ */
+.ui-carousel {
+  --carousel-item-w: 20rem;
+  --carousel-gutter: 0px;
+  --carousel-gap: 1rem;
+
+  position: relative;
+}
+
+/**
+ * La ventana con el scroll. Lleva `tabindex="0"` desde el componente: una
+ * región con scroll tiene que poder recorrerse con el teclado (WCAG 2.1.1).
+ */
+.ui-carousel__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  // Para que el elemento al que salta el scroll no quede pegado al borde.
+  scroll-padding-inline: var(--carousel-gutter);
+  scroll-behavior: smooth;
+  // El gesto horizontal no debe arrastrar la página ni disparar el «atrás».
+  overscroll-behavior-x: contain;
+  // La barra se oculta: la posición ya la cuentan las flechas y el degradado
+  // del borde. El scroll sigue funcionando con rueda, gesto y teclado.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: var(--r-card);
+  }
+
+  /*
+   * Arrastre con el ratón. La mano abierta sólo aparece donde hay un ratón de
+   * verdad y donde de verdad hay algo que arrastrar: en táctil el gesto es
+   * nativo y un cursor no significa nada.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .ui-carousel.is-scrollable-end &,
+    .ui-carousel.is-scrollable-start & {
+      cursor: grab;
+    }
+  }
+
+  /*
+   * Mientras se arrastra hay que **apagar el anclaje**: con
+   * `scroll-snap-type: mandatory`, cada asignación de `scrollLeft` vuelve al
+   * punto de anclaje más cercano y el carrusel se queda pegado. Al soltar se
+   * enciende otra vez y la tarjeta se coloca sola.
+   */
+  // La regla de `grab` va anidada bajo `.ui-carousel`, así que pesa más que
+  // un `&.is-dragging` a secas: hay que igualarle la especificidad o el
+  // cursor se queda en mano abierta mientras se arrastra.
+  .ui-carousel &.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    user-select: none;
+  }
+
+  /*
+   * Mientras se arrastra —y un instante después— las tarjetas no reciben
+   * puntero: el `click` llega detrás del `pointerup` y, si lo recibieran,
+   * soltar encima de una tarjeta navegaría a su sección. Se resuelve así y no
+   * cancelando el clic porque es determinista: si el elemento no recibe
+   * punteros, no hay clic que cancelar.
+   */
+  &.is-dragging .ui-carousel__item,
+  &.is-just-dragged .ui-carousel__item {
+    pointer-events: none;
+  }
+}
+
+.ui-carousel__track {
+  display: flex;
+  gap: var(--carousel-gap);
+  // Con pocos elementos la fila se centra en vez de quedarse pegada a la
+  // izquierda con un vacío al otro lado. La clase la pone el componente,
+  // que es quien sabe si hay desbordamiento.
+  justify-content: var(--carousel-justify, flex-start);
+  padding-inline: var(--carousel-gutter);
+  // Sitio para el filete y la sombra de las tarjetas al apuntarlas: sin esto
+  // el `overflow` las recorta por arriba y por abajo.
+  padding-block: 0.25rem;
+  margin: 0;
+  list-style: none;
+}
+
+/*
+ * La tarjeta **crece pero no encoge**. Si sobran elementos, cada una se queda
+ * en su ancho y la pista se desplaza (carrusel); si caben todos, reparten el
+ * sitio libre entre ellas hasta un tope, para no dejar un hueco muerto a la
+ * derecha. El tope evita que con dos tarjetas cada una se vaya a media
+ * pantalla y deforme su portada.
+ *
+ * `min-width: 0` no es opcional: sin él manda `min-width: auto` y un texto
+ * con `nowrap` dentro ensancha su tarjeta por encima de la base, que es lo
+ * que descuadra una fila entera (pasó en la tira de álbumes del menú).
+ */
+.ui-carousel__item {
+  flex: 1 0 var(--carousel-item-w);
+  max-width: var(--carousel-item-max, calc(var(--carousel-item-w) * 1.15));
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+/**
+ * Flechas. Sólo con puntero fino y a partir de 860 px: en táctil se desliza,
+ * y ahí una flecha sólo roba sitio. El componente las deshabilita en los
+ * extremos y las oculta enteras cuando no hay nada que desplazar.
+ */
+.ui-carousel__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-top: -1.375rem;
+  padding: 0;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  box-shadow: var(--e-3);
+  color: var(--c-primary);
+  cursor: pointer;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    box-shadow var(--mo-fast) var(--ea-standard),
+    opacity var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-surface-2);
+  }
+
+  // En el extremo no se oculta del todo: se apaga. Desaparecer de golpe hace
+  // que el usuario crea que el carrusel se ha roto.
+  &[disabled] {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+
+  @include focus-ring(2px);
+
+  @media (min-width: 860px) and (pointer: fine) {
+    display: grid;
+    // **Aparecen al apuntar el carrusel**, como en la referencia: en reposo
+    // la fila es sólo contenido; el control sale cuando hace falta. Se
+    // mantienen visibles con el foco dentro, porque quien navega con teclado
+    // necesita verlas para saber que existen.
+    opacity: 0;
+
+    .ui-carousel:hover &,
+    .ui-carousel:focus-within & {
+      opacity: 1;
+    }
+  }
+}
+
+.ui-carousel__nav--prev {
+  left: 0.5rem;
+}
+
+.ui-carousel__nav--next {
+  right: 0.5rem;
+}
+
+/**
+ * Degradados de borde: la señal de que hay más a un lado. Se encienden desde
+ * el componente (`is-scrollable-start` / `is-scrollable-end`), no siempre,
+ * porque un degradado permanente sobre un carrusel que ya está al final se
+ * lee como suciedad.
+ */
+.ui-carousel::before,
+.ui-carousel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: clamp(1.5rem, 4vw, 3rem);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--mo-base) var(--ea-standard);
+}
+
+.ui-carousel::before {
+  left: 0;
+  background: linear-gradient(to right, var(--c-carousel-fade, var(--c-bg)), transparent);
+}
+
+.ui-carousel::after {
+  right: 0;
+  background: linear-gradient(to left, var(--c-carousel-fade, var(--c-bg)), transparent);
+}
+
+.ui-carousel.is-scrollable-start::before,
+.ui-carousel.is-scrollable-end::after {
+  opacity: 1;
+}
+
+/** Todo cabe: no hay carrusel que recorrer, así que la fila se centra. */
+.ui-carousel.is-fitted {
+  --carousel-justify: center;
+}
+
+// ---------------------------------------------------------------------
+// 7 · Anatomía de tarjeta (cabecera, pie e insignia de icono)
+// ---------------------------------------------------------------------
+
+/** Cabecera de una tarjeta: icono, títulos y, a la derecha, su estado. */
+.ui-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.ui-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: var(--ls-section);
+  line-height: 1.25;
+  color: var(--c-primary);
+}
+
+.ui-card__sub {
+  margin: 0.1rem 0 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--c-muted);
+}
+
+/** Pie de la tarjeta: se pega abajo para que una rejilla quede alineada. */
+.ui-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: auto;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--c-hairline);
+}
+
+/** Insignia redonda con el icono de la sección. */
+.ui-icon-badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold-tint);
+  color: var(--c-gold-deep);
+  font-size: 1.15rem;
+}

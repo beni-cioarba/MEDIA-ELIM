@@ -63,7 +63,8 @@ src/app/
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Estructura de liderazgo y departamentos
     announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección) + autoajuste
-    presenter/              ⭐ Panel de control de la proyección (`/media/control`, sin shell)
+    presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
+    styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
     projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)
     stage/                  ⭐ Escenario proyectable (.stage)
       stage.component.*     Marca, carrusel, QR, controles
@@ -107,6 +108,9 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |
 | «Color, espaciado, tipografía, componente Material» | `docs/ai/45-design-system.md`                           |
+| «¿Qué clase uso?» · «Necesito una tarjeta / fila / barra» | Abre **`/stil`** y usa la primitiva `ui-*`; catálogo y reglas en `docs/ai/47-design-language.md` |
+| «Monto un carrusel o un bloque de escaparate» | `docs/ai/48-carousel-cards.md` — **línea nueva**, calcada de la referencia medida; manda sobre el catálogo dentro de un carrusel o una tarjeta de promoción |
+| «Módulo de gestión nuevo (consola)»                 | `host: { class: 'ui-dense ui-dark' }` + `ui-toolbar` + `ui-panel` — `docs/ai/47-design-language.md` |
 | «¿Qué logo pongo aquí?» · «Cambia el icono de la app» · «Logo de INEB» | `docs/ai/45-design-system.md` → «Marca» (wordmark `app-brand-logo` / emblema → `npm run pwa:icons` / `app-ineb-logo`; hoja de marca INEB en `shared/ineb-logo/README.md`) |
 | «Pantalla completa de la proyección desde el panel» | Botón «Pantalla completa» del panel (`ProjectionWindowService.toggleFullscreen`, gesto delegado) — `docs/ai/30-presentation.md` |
 | «¿Se ve bien en móvil?» · «Hazlo responsive»        | `scripts/responsive-audit.snippet.js` en 320 · 375 · 768 · 1024 · 1280 — regla en `docs/ai/40-styling.md` → Responsive |
@@ -125,8 +129,9 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 5. La proyección nunca debe quedarse en blanco: siempre hay ≥ 1 bloque activo.
    Y nunca proyecta contenido caducado: anuncios y eventos se filtran por fecha
    con el reloj compartido (`ClockService`), sin recargar.
-6. Los componentes consumen **variables semánticas** (`--c-*`, `--sp-*`…), nunca
-   valores en crudo ni primitivas de `_tokens.scss`.
+6. Los componentes consumen **variables semánticas** (`--c-*`, `--sp-*`, `--ui-*`),
+   nunca valores en crudo ni primitivas de `_tokens.scss`. Antes de escribir CSS
+   nuevo se mira el catálogo `ui-*` en **`/stil`** (`docs/ai/47-design-language.md`).
 7. El menú se define **sólo** en `core/navigation/navigation.config.ts`.
 8. **Todo es responsive al 100 %**, de 320 px a 4K, en web, panel y proyección:
    sin scroll horizontal, sin solapes, sin textos recortados. Se verifica con

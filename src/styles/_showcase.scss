@@ -1,0 +1,439 @@
+// =====================================================================
+// ESCAPARATE — piezas de la línea de diseño NUEVA.
+//
+// **Esto no es el catálogo `ui-*`.** Son las piezas calcadas del carrusel de
+// `play.google.com/store/apps`, con sus medidas reales leídas con
+// `getComputedStyle`. La guía de estilos de la app no filtra esto: la
+// referencia manda (ver `AGENTS.md` → «el diseño no está cerrado»).
+//
+// Medidas de la tarjeta GRANDE de la referencia (viewport de 1512 px):
+//
+//   tarjeta   526 × 394   radio 8      fondo tonal propio (medido #460b5a)
+//   ├─ foto     y 0–296   (16 : 9)     a sangre, el 75 % de la tarjeta
+//   │   └─ texto SOBRE la foto, a 24 px de los lados:
+//   │        titular      24 px / 500 / interlínea 32
+//   │        descripción  18 px / 400 / interlínea 24
+//   └─ pie      y 296–394 (98 px)      relleno 24 · icono 48 (radio 12)
+//                                      + dos líneas + botón
+//   hueco entre tarjetas: 24 px
+//
+// Las cuatro cosas que hacen que funcione, y que son fáciles de perder:
+//   1. **La foto manda**: tres cuartos de la tarjeta, a sangre.
+//   2. **El texto va encima de la foto**, no debajo: es lo que da la
+//      sensación de cartel en vez de ficha.
+//   3. **El color sale de la foto** (tono dominante), así no hay costura.
+//   4. **Dos líneas de texto, no una**: titular y descripción. Con sólo el
+//      titular la tarjeta no informa; con una lista, deja de ser escaparate.
+//
+// El porqué de cada valor está en `docs/ai/48-carousel-cards.md`.
+// =====================================================================
+
+/* --- La tarjeta -------------------------------------------------------- */
+
+.promo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #233143;
+  color: #ffffff;
+  text-decoration: none;
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--c-gold);
+    outline-offset: 3px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Los cuatro tonos. **Derivados de la foto de cada tarjeta**, no elegidos a
+// ojo: se midió el color medio de cada imagen con canvas (descartando
+// sombras y focos), se conservó su matiz y se le dio cuerpo (saturación
+// 0,32 · luminosidad 0,20). El blanco encima queda entre 10,7:1 y 14:1.
+// ---------------------------------------------------------------------
+.promo.is-teal { background: #234343; }
+.promo.is-plum { background: #3f2343; }
+.promo.is-blue { background: #233143; }
+.promo.is-clay { background: #432323; }
+.promo.is-slate { background: #233843; }
+
+/* --- La portada -------------------------------------------------------- */
+
+.promo__cover {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  // 16:9, la proporción de la referencia (526 × 296).
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.promo__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 35%;
+  transition: transform 500ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.promo:hover .promo__image {
+  transform: scale(1.04);
+}
+
+/*
+ * Velo sobre la foto. Es lo que permite poner dos líneas de texto encima sin
+ * perder contraste, y lo que ata la foto con el tono de la tarjeta: sin él se
+ * ve la costura entre una y otro.
+ */
+.promo__cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.08) 0%,
+    rgb(0 0 0 / 0.02) 38%,
+    rgb(0 0 0 / 0.55) 72%,
+    rgb(0 0 0 / 0.82) 100%
+  );
+}
+
+/*
+ * Portada de DATOS: para las secciones cuyo contenido es una agenda y no una
+ * imagen. En vez de una foto que no dice nada (una foto de la congregación no
+ * explica qué se estudia el miércoles), el fondo es el tono de la tarjeta con
+ * un motivo tramado y **el contenido de la semana, comprimido**. Ninguna foto
+ * de archivo informa tanto como el propio dato bien puesto.
+ */
+.promo__cover--data {
+  /*
+   * **El destacado va ARRIBA y la lista debajo.** Antes era al revés —la
+   * agenda encima y el titular al fondo— porque las portadas de foto ponen el
+   * texto abajo, sobre la imagen. Sin foto eso invierte la jerarquía: se leía
+   * «el resto de la semana» *antes* que lo de hoy, y el dato grande, sin
+   * rótulo y al final, no se entendía de qué era.
+   */
+  justify-content: flex-start;
+  // Transparente: deja ver el tono de la propia tarjeta, así no hay dos
+  // colores que mantener sincronizados.
+  background-color: transparent;
+  background-image:
+    // Trama diagonal muy tenue: da textura sin competir con el texto.
+    repeating-linear-gradient(
+      135deg,
+      rgb(255 255 255 / 0.05) 0 2px,
+      transparent 2px 10px
+    ),
+    // Halo cálido en la esquina: rompe el plano sin usar una imagen.
+    radial-gradient(120% 90% at 85% 0%, rgb(255 255 255 / 0.16), transparent 62%);
+}
+
+.promo__cover--data::after {
+  // El velo sólo hace falta en el tercio inferior: encima no hay foto.
+  background: linear-gradient(to bottom, transparent 40%, rgb(0 0 0 / 0.35) 100%);
+}
+
+/*
+ * Portada de CARTEL. Los carteles de la iglesia son cuadrados o verticales y
+ * la portada es 16:9: recortarlos les cortaría el texto, que es justo lo que
+ * los hace útiles. Se muestran **enteros y centrados** sobre una copia de sí
+ * mismos ampliada y desenfocada, que rellena el hueco de los lados con sus
+ * propios colores. Es la técnica que usan los reproductores cuando la carátula
+ * no encaja en el marco.
+ *
+ * Aquí el cartel funciona como identidad, no como texto legible (a 296 px de
+ * alto no se lee): la información la llevan el titular, la descripción y el
+ * pie. El cartel entero está a un clic, en su sección.
+ */
+.promo__cover--poster {
+  /* Algo más de alto que las otras portadas (3:2 en vez de 16:9): un cartel
+     cuadrado dentro de un marco muy apaisado sale diminuto. */
+  aspect-ratio: 3 / 2;
+}
+
+.promo__poster-bg {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  object-fit: cover;
+  filter: blur(28px) saturate(1.25) brightness(0.7);
+}
+
+/*
+ * El cartel, ENTERO. `contain` dentro de una caja absoluta que ocupa toda la
+ * portada: nunca se recorta, y lo que sobra a los lados lo rellena su propia
+ * copia desenfocada.
+ */
+.promo__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 500ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.promo:hover .promo__poster {
+  transform: scale(1.03);
+}
+
+/*
+ * Sin velo y SIN TEXTO encima. El cartel ya lleva el título, la fecha, la hora
+ * y el invitado —está diseñado para eso—, así que repetirlo en la tarjeta es
+ * ruido, y ponerlo encima le tapa justo lo que hay que leer. La tarjeta se
+ * limita a la insignia y al pie, que es información que el cartel no da
+ * (a qué sección pertenece y cuánto falta).
+ */
+.promo__cover--poster::after {
+  content: none;
+}
+
+/* Marca de agua: el icono de la sección, grande y muy tenue. */
+.promo__watermark {
+  position: absolute;
+  top: -1rem;
+  right: -0.75rem;
+  font-size: 7.5rem;
+  line-height: 1;
+  color: rgb(255 255 255 / 0.07);
+  pointer-events: none;
+}
+
+/* --- Agenda comprimida (dentro de la portada de datos) ------------------ */
+
+/*
+ * La lista va después del destacado, separada por un filete: primero qué toca
+ * hoy, después qué viene. Ya no necesita dejar sitio a la insignia porque no
+ * es lo primero de la tarjeta.
+ */
+.promo__agenda {
+  position: relative;
+  z-index: 1;
+  margin: 0 1.5rem;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+  list-style: none;
+}
+
+.promo__agenda-head {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.62);
+}
+
+/*
+ * Cada línea: el cuándo a la izquierda con ancho fijo, el qué en el medio y
+ * la hora a la derecha. La columna fija es lo que hace que tres líneas se
+ * lean como una tabla ordenada sin necesidad de pintar una.
+ */
+.promo__agenda-row {
+  display: grid;
+  grid-template-columns: 4.75rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.3rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+.promo__agenda-when {
+  font-weight: 600;
+  color: rgb(255 255 255 / 0.95);
+}
+
+.promo__agenda-what {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.promo__agenda-time {
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.62);
+}
+
+/* --- Insignia ----------------------------------------------------------- */
+
+.promo__badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  // 32 px de alto y 16 px de texto: lo que mide en la tarjeta grande.
+  height: 2rem;
+  padding: 0 0.875rem;
+  // Esquina viva por el lado de la tarjeta y redondeada por dentro.
+  border-radius: 12px 0 8px 0;
+  background: rgb(32 33 36 / 0.72);
+  backdrop-filter: blur(4px);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* --- Titular y descripción (sobre la portada) --------------------------- */
+
+.promo__lead {
+  position: relative;
+  z-index: 1;
+  // 24 px de los lados, como en la referencia.
+  padding: 0 1.5rem 1.25rem;
+}
+
+/*
+ * En la portada de datos el destacado **encabeza** la tarjeta. Hace falta
+ * `order`: en el marcado la lista va primero (comparte plantilla con las
+ * portadas de foto, donde el texto sí va al fondo sobre la imagen), y
+ * `justify-content` reparte pero no reordena.
+ * El relleno superior deja sitio a la insignia, que ahora tiene el destacado
+ * justo debajo.
+ */
+.promo__cover--data .promo__lead {
+  order: -1;
+  padding-top: 2.9rem;
+  padding-bottom: 0.9rem;
+}
+
+/*
+ * 24 px y peso 500, no 700. La referencia no grita: el titular es grande pero
+ * de peso normal, y lo que destaca es la imagen. Con peso 700 y tracking
+ * cerrado la tarjeta se lee como un cartel de rebajas.
+ */
+.promo__headline {
+  margin: 0;
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.33;
+  color: #ffffff;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* La segunda línea, de 18 px: es la que convierte un título en información. */
+.promo__desc {
+  margin: 0.25rem 0 0;
+  max-width: none;
+  font-size: clamp(0.9375rem, 1.15vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: rgb(255 255 255 / 0.86);
+  text-shadow: 0 1px 10px rgb(0 0 0 / 0.3);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Pie de identidad --------------------------------------------------- */
+
+.promo__foot {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  // Relleno de 24, como en la referencia.
+  padding: 1.25rem 1.5rem;
+}
+
+.promo__tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  // 48 px con radio 12: el icono de app de la referencia.
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.14);
+  font-size: 1.35rem;
+  color: #ffffff;
+}
+
+.promo__id {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.promo__name,
+.promo__sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+.promo__name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.promo__sub {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgb(255 255 255 / 0.7);
+}
+
+/* El «Descargar» de la referencia: rectángulo de esquina suave con relleno
+   claro sobre el tono, que es lo que le da aspecto de botón de verdad. */
+.promo__cta {
+  flex: none;
+  padding: 0.5625rem 1.125rem;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.22);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  transition: background 160ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.promo:hover .promo__cta {
+  background: rgb(255 255 255 / 0.34);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo,
+  .promo__image,
+  .promo__cta {
+    transition: none;
+  }
+
+  .promo:hover,
+  .promo:hover .promo__image {
+    transform: none;
+  }
+}
+
+/* En pantalla pequeña la agenda sobra: la tarjeta se queda con el titular,
+   la descripción y el pie, que es lo que cabe legible. */
+@media (max-width: 559.98px) {
+  .promo__agenda {
+    display: none;
+  }
+}

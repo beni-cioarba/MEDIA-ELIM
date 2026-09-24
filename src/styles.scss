@@ -7,8 +7,14 @@
  *   2. Tema de Material       — `mat.core()` + tema por componente.
  *   3. Semántica              — variables CSS de la marca.
  *   4. Base                   — reset y estilos de elemento.
- *   5. Utilidades             — clases `u-*`.
- *   6. Overrides de Material  — ajustes de marca (van al final para ganar
+ *   5. Primitivas             — catálogo `ui-*` (tarjeta, fila, barra de
+ *                               herramientas, chip, panel…). Se ven en
+ *                               vivo en `/stil`.
+ *   6. Escaparate             — piezas de la línea nueva (carrusel y
+ *                               tarjeta de promoción), calcadas de la
+ *                               referencia. Ver `48-carousel-cards.md`.
+ *   7. Utilidades             — clases `u-*`.
+ *   8. Overrides de Material  — ajustes de marca (van al final para ganar
  *                               a los estilos del tema sin `!important`).
  *
  * Las fuentes NO se cargan aquí con `@import url(...)`: eso encadena
@@ -21,5 +27,7 @@
 @use 'styles/theme';
 @use 'styles/semantic';
 @use 'styles/base';
+@use 'styles/primitives';
+@use 'styles/showcase';
 @use 'styles/utilities';
 @use 'styles/material-overrides';

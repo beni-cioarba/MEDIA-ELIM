@@ -27,6 +27,12 @@ export const APP_PATHS = {
   contact: 'contact',
   /** Donativos: transferencia bancaria y por qué se dona. */
   donate: 'doneaza',
+  /**
+   * Guía de estilos viva: el catálogo de tokens y primitivas de la app.
+   * Es una herramienta de construcción (como el panel de control), no una
+   * sección pública: no entra en el menú ni en el sitemap.
+   */
+  styleguide: 'stil',
 } as const;
 
 export type AppPathKey = keyof typeof APP_PATHS;

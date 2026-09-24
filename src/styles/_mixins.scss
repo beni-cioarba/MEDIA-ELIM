@@ -170,11 +170,26 @@
 // ---------------------------------------------------------------------
 
 /** Contenedor centrado con los márgenes fluidos del sistema. */
-@mixin container($max: var(--w-content)) {
+/**
+ * Contenedor de página. Usa los tokens `--page-*` para que **todo** —cabecera,
+ * pie, migas, contenido y franjas a sangre— comparta el mismo margen
+ * izquierdo. El argumento se mantiene para casos puntuales, pero por defecto
+ * manda la rejilla de página.
+ */
+@mixin container($max: var(--page-max)) {
   width: 100%;
-  max-width: $max;
+  /*
+   * El tope incluye los dos márgenes **a propósito**: aquí `max-width` y
+   * `padding` van en el mismo elemento, así que el relleno se comería el
+   * ancho del contenido; las franjas de la portada, en cambio, ponen el
+   * relleno fuera y el tope dentro. Sin este `calc`, los dos modelos de caja
+   * dan insets distintos justo cuando la ventana mide poco más que el tope
+   * —a 1512 px, 76 px contra 45— y la cabecera se desalineaba del contenido.
+   * Con él, el contenido cae en la misma vertical en los dos casos.
+   */
+  max-width: calc(#{$max} + 2 * var(--page-gutter));
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
+  padding-inline: var(--page-gutter);
 }
 
 /** Rejilla auto-ajustable: la forma más barata de ser responsive. */
