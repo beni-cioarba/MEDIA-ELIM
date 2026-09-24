@@ -1,9 +1,9 @@
 // =====================================================================
 // Barra de navegación principal.
 // Estilos encapsulados (por defecto): esta cabecera es un componente
-// cerrado, no un "layout" abierto como el escenario.
-// Excepción: los paneles de `mat-menu` se renderizan en el <body> y se
-// estilan en `styles/_material-overrides.scss` (clase `.elim-menu`).
+// cerrado, no un "layout" abierto como el escenario. Todo lo suyo vive
+// aquí, incluido el panel de grupo: al renderizarse dentro de la cabecera
+// (y no en el <body>, como hacía `mat-menu`) no necesita estilos globales.
 // =====================================================================
 
 @use 'ds' as *;
@@ -19,17 +19,26 @@
   --nav-bg: rgba(250, 249, 246, 0.72);
   @include glass(var(--nav-bg));
 
-  border-bottom: 1px solid transparent;
+  /*
+   * El filete inferior se dibuja con `box-shadow`, no con `border-bottom`.
+   *
+   * Un borde suma al alto: la barra medía 60,5 px mientras `--nav-height`
+   * decía 59,5, y la portada calcula `100svh - var(--nav-height)`, así que
+   * arrastraba 1 px de desbordamiento hasta el pie de la primera pantalla.
+   * Una sombra interior ocupa cero y el alto real vuelve a ser exactamente
+   * el declarado.
+   */
+  box-shadow: none;
   transition:
     background var(--mo-base) var(--ea-standard),
-    border-color var(--mo-base) var(--ea-standard),
     box-shadow var(--mo-base) var(--ea-standard);
 }
 
 .nav--scrolled {
   --nav-bg: rgba(250, 249, 246, 0.94);
-  border-bottom-color: var(--c-hairline);
-  box-shadow: var(--e-1);
+  box-shadow:
+    inset 0 -1px 0 var(--c-hairline),
+    var(--e-1);
 }
 
 .nav__inner {
@@ -171,9 +180,20 @@
   transition: transform var(--mo-fast) var(--ea-standard);
 }
 
-// `mat-menu` marca su disparador con esta clase mientras el panel está abierto.
+/*
+ * Disparador con su panel abierto: velo + rótulo en la tinta fuerte.
+ *
+ * Se probó a pintarlo del color del panel para que se leyera como la pestaña
+ * de la hoja abierta, y no funciona: el disparador mide 34 px dentro de una
+ * barra de 59,5, así que **no llega a tocar el panel** y el efecto de pestaña
+ * no llega a producirse. Lo único que queda es un blanco sobre crema
+ * translúcido que casi no se ve. El velo se distingue siempre y, con el
+ * rótulo más oscuro y el galón girado, deja claro cuál de los tres está
+ * abierto.
+ */
 .nav__link--group[aria-expanded='true'] {
   background: var(--c-veil);
+  color: var(--c-primary-deep);
 
   .nav__caret {
     transform: rotate(180deg);
@@ -181,10 +201,10 @@
 }
 
 // ---- CTA de donativos ------------------------------------------------
-// Píldora perfilada, no rellena: es la acción *secundaria*. Si compitiera en
-// peso con «En directo» el usuario tendría dos focos a la vez y ninguno
-// destacaría. Sólo rótulo: el icono de regalo cargaba la barra sin aportar
-// nada que la palabra no diga ya.
+// Plana y sin relleno: es la acción *secundaria*. Si compitiera en peso con
+// «En directo» el usuario tendría dos focos a la vez y ninguno destacaría.
+// Sólo rótulo: el icono de regalo cargaba la barra sin aportar nada que la
+// palabra no diga ya.
 .nav__donate {
   display: inline-flex;
   align-items: center;
@@ -403,33 +423,71 @@
   }
 }
 
+/*
+ * ---- Las dos zonas del panel -----------------------------------------
+ *
+ * Enlaces a la izquierda en una columna acotada, destacado a la derecha.
+ * **No es una preferencia, es aritmética**: apilados (enlaces arriba,
+ * contenido abajo) la fila de enlaces se repartía en cinco columnas de
+ * 275 px de las que se ocupaban tres, dejando 568 px muertos a la derecha
+ * —el 40 % de la fila— mientras la descripción de «Panel completo» se
+ * partía en dos líneas dentro de su columna estrecha. Y el panel medía
+ * 390 px: el 43 % de la pantalla para tres enlaces y cinco fotos.
+ *
+ * En dos zonas ese hueco es el destacado, el panel baja a ~250 px y las
+ * miniaturas recuperan tamaño de miniatura.
+ *
+ * `minmax(0, 22rem)` para la columna de enlaces: 22 rem es lo que necesita
+ * la descripción más larga para caber en una línea, y el `minmax(0, …)`
+ * evita que una traducción larga la ensanche a costa del destacado.
+ *
+ * Sin destacado (un grupo futuro que no tenga nada que enseñar) el panel
+ * cae solo a la rejilla de enlaces a todo el ancho: `has-aside` es lo único
+ * que cambia.
+ */
 .nav__panel-inner {
   @include container(var(--w-wide));
 
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-4);
   padding-block: var(--sp-5);
 }
 
-// ---- Enlaces del grupo ------------------------------------------------
-// Rejilla automática: tres entradas caben en una fila, ocho en tres. Es lo
-// que permite que un módulo nuevo entre en un grupo sin rediseñar nada.
-.nav__panel-links {
+.nav__panel-inner.has-aside {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  gap: var(--sp-2);
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  gap: clamp(var(--sp-5), 3vw, var(--sp-8));
+  align-items: start;
+}
+
+// ---- Enlaces del grupo ------------------------------------------------
+// Con destacado: una sola columna apilada (la columna mide 22 rem, no caben
+// dos). Sin destacado: rejilla automática a todo el ancho.
+.nav__panel-links {
+  // `auto-fit`, no `auto-fill`: con `auto-fill` la rejilla reserva todas las
+  // columnas que caben aunque estén vacías —tres enlaces en cinco columnas de
+  // 275 px dejaban 568 px muertos— y con `auto-fit` las vacías se colapsan y
+  // las que hay se reparten el ancho.
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--sp-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.has-aside .nav__panel-links {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .nav__panel-link {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--sp-3);
   height: 100%;
-  padding: var(--sp-3);
+  // Vertical más corto que el horizontal: en una lista apilada el aire que
+  // separa una entrada de la siguiente es el hueco de la rejilla, no el
+  // relleno. Con `--sp-3` arriba y abajo cada entrada medía 88 px y tres
+  // enlaces ocupaban 264: más que el destacado que tienen al lado.
+  padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-md);
   color: inherit;
   text-decoration: none;
@@ -489,16 +547,22 @@
   }
 }
 
-// ---- Tira de álbumes (panel de Medios) --------------------------------
-// El contenido real de la sección dentro del menú. Se desliza, pero **no se
-// mueve sola**: ver `docs/ai/47-design-language.md`.
+// =====================================================================
+// Zona destacada
+// =====================================================================
 
-.nav__strip {
-  padding-block-start: var(--sp-4);
-  border-block-start: 1px solid var(--c-hairline);
+/*
+ * El filete que separa las dos zonas va **en el destacado y como borde**,
+ * no como columna de la rejilla: así mide lo que mide el contenido más
+ * alto de los dos y no hay que reservarle un ancho.
+ */
+.nav__aside {
+  min-width: 0;
+  padding-inline-start: clamp(var(--sp-5), 3vw, var(--sp-8));
+  border-inline-start: 1px solid var(--c-hairline);
 }
 
-.nav__strip-head {
+.nav__aside-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -506,120 +570,128 @@
   margin-block-end: var(--sp-3);
 }
 
-.nav__strip-title {
+// Rótulo de sección en versalitas: el mismo recurso que en la portada para
+// nombrar un bloque sin que compita con los enlaces, que son lo que se ha
+// venido a pulsar.
+.nav__aside-title {
+  margin: 0;
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: var(--ls-caps);
   text-transform: uppercase;
   color: var(--c-muted);
 }
 
-.nav__strip-all {
+.nav__aside-all {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--c-primary);
   text-decoration: none;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;
   }
 }
 
-.nav__strip-list {
-  display: flex;
-  gap: var(--sp-3);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  margin: 0;
-  padding: 0 0 0.25rem;
-  list-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
+// ---- Tira de álbumes (panel de Medios) --------------------------------
 /*
- * El elemento flexible es el `li`, no el enlace (con el ancho en el `<a>` las
- * miniaturas se encogían al ancho de su rótulo).
+ * Rejilla, no tira con scroll horizontal.
  *
- * Dos cosas que hacen que todas las tarjetas midan **exactamente lo mismo**:
+ * Apilado, la tira medía 1.411 px y las fichas salían a 272 px con una foto
+ * de **272×153**: eso ya no es una miniatura, es la galería metida en el
+ * menú. En la columna del destacado (~1.000 px) las mismas cinco caen a
+ * ~190 px y la foto a ~107, que es lo que debe medir una miniatura de
+ * reconocimiento.
  *
- *  · `min-width: 0` — sin él manda `min-width: auto`, y como el nombre va en
- *    `nowrap` su ancho mínimo es la cadena entera: «Concert de Colinde ·
- *    Copii» ensanchaba su tarjeta a 213 px frente a los 162 de las demás, y
- *    con ella crecía la foto (120 px de alto contra 91). De ahí que nada
- *    quedara alineado.
- *  · `flex: 1 0 9.5rem` — **crece pero no encoge**. Si los álbumes caben,
- *    reparten el ancho del panel entre todos por igual; si no caben, se
- *    quedan en 9,5 rem y la tira se desplaza. Eso es lo que hace que se
- *    autoajuste sin que haya que tocar nada al añadir álbumes.
+ * `auto-fit` + `minmax(0, 1fr)` reparte el ancho entre las que haya: con
+ * cinco álbumes llenan la fila, con tres también. Si mañana hay ocho, la
+ * segunda fila aparece sola. El tope de ancho no hace falta porque la
+ * columna del destacado ya lo acota.
  */
-.nav__strip-list > li {
-  flex: 1 0 9.5rem;
-  min-width: 0;
-  /* Tope para que con dos o tres álbumes las tarjetas no se vayan a medio
-     panel. 18 rem está calculado para que los cinco de hoy **llenen** la fila
-     sin chocar con el límite: por debajo, sobraban 117 px a la derecha. */
-  max-width: 18rem;
-  scroll-snap-align: start;
+.nav__albums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .nav__album {
   display: block;
-  width: 100%;
-  /* Ocupa el alto del `li` para que el realce al apuntar sea igual en todas. */
-  height: 100%;
-  border-radius: var(--r-md);
-  overflow: hidden;
+  min-width: 0;
   text-decoration: none;
+
+  @include focus-ring(3px);
+}
+
+/*
+ * El marco recorta: al apuntar se acerca **la foto dentro del marco**, no se
+ * mueve la tarjeta. Mover la tarjeta desplaza el objetivo justo cuando el
+ * usuario va a pulsarlo; acercar la foto no mueve nada.
+ */
+.nav__album-frame {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--r-md);
   background: var(--c-surface-2);
-  transition: transform var(--mo-fast) var(--ea-standard);
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  @include focus-ring(2px);
 }
 
 .nav__album-img {
   display: block;
   width: 100%;
-  // 16:9 y sólo 5,3 rem de alto: es una miniatura para reconocer el álbum,
-  // no para mirarlo. El menú tiene que seguir siendo un menú.
   aspect-ratio: 16 / 9;
   object-fit: cover;
+  transition: transform var(--mo-base) var(--ea-standard);
 }
 
+.nav__album:hover .nav__album-img {
+  transform: scale(1.06);
+}
+
+/*
+ * Dos líneas fijas, no una con puntos suspensivos.
+ *
+ * Con una línea y `ellipsis`, «Concert de Colinde · Copii» quedaba cortado.
+ * Con dos líneas libres, los nombres de una línea dejaban su ficha más baja
+ * que las demás y la fila se descuadraba. La altura fija en dos líneas
+ * resuelve las dos cosas: se lee el nombre entero y todas miden igual.
+ */
 .nav__album-name {
-  display: block;
-  padding: 0.4rem 0.5rem 0.5rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(2 * 1.3em);
+  padding-block-start: 0.45rem;
   font-size: 0.75rem;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
   color: var(--c-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.nav__album:hover .nav__album-name {
+  color: var(--c-primary-deep);
 }
 
 @include motion-reduce {
-  .nav__album:hover {
+  .nav__album-img,
+  .nav__album:hover .nav__album-img {
+    transition: none;
     transform: none;
   }
 }
 
 // ---- «Lo próximo» (panel de Programa) ---------------------------------
-// Dos tarjetas planas con el siguiente culto y el siguiente evento. Sin
-// foto: aquí el dato ES el contenido, y una imagen decorativa sólo alargaría
-// el panel.
-
+// Tarjetas planas con el siguiente culto, el siguiente evento y la lectura
+// del día. Sin foto: aquí el dato ES el contenido, y una imagen decorativa
+// sólo alargaría el panel.
 .nav__next {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   gap: var(--sp-3);
   margin: 0;
   padding: 0;
@@ -652,11 +724,262 @@
   color: var(--c-gold-deep);
 }
 
+/*
+ * Dos líneas, no una con puntos suspensivos. Con `nowrap` el título más
+ * largo —«Conferință de tineret "Ancorat"»— se cortaba a media palabra en la
+ * tarjeta de 337 px. El tope en dos líneas deja leer el título entero y
+ * mantiene las tres tarjetas a la misma altura.
+ */
 .nav__next-what {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-height: calc(2 * 1.3em);
   font-size: 0.9375rem;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--c-primary);
+}
+
+// ---- La semana entera (panel de Programa) -----------------------------
+/*
+ * Seis columnas, una por día, sin cajas: es una tabla de horarios, y en una
+ * tabla lo que ordena la lectura es la alineación, no el relleno. Con tarjeta
+ * cada día pedía 16 px de aire por lado y la tira no cabía en una fila.
+ *
+ * `auto-fit` + `minmax(0, 1fr)` reparte el ancho entre los días que haya: si
+ * un día deja de tener culto, los cinco restantes se reparten el sitio solos.
+ */
+.nav__week {
+  margin-block-start: var(--sp-4);
+  padding-block-start: var(--sp-4);
+  border-block-start: 1px solid var(--c-hairline);
+}
+
+.nav__week-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--sp-3);
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__week-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+  // Filete separador a la izquierda en vez de bordes completos: marca la
+  // columna sin dibujar seis cajas. El primero no lo lleva porque la columna
+  // ya empieza donde empieza el destacado.
+  padding-inline-start: var(--sp-3);
+  border-inline-start: 1px solid var(--c-hairline);
+
+  &:first-child {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+}
+
+.nav__week-when {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-faint);
+}
+
+.nav__week-time {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.nav__week-what {
+  // Dos líneas fijas: los títulos van de «Rugăciune» a «Rugăciune și
+  // stăruință după Duhul Sfânt» y sin tope la fila se descuadraba entera.
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(2 * 1.3em);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--c-muted);
+}
+
+// Hoy: el único día con acento. La tira empieza por él, así que el color
+// confirma dónde estás en vez de tener que buscarlo.
+.nav__week-day.is-today {
+  .nav__week-when,
+  .nav__week-time {
+    color: var(--c-gold-deep);
+  }
+
+  .nav__week-what {
+    color: var(--c-text);
+  }
+}
+
+// ---- Tarjeta de invitación (panel de «La iglesia») --------------------
+// Los datos salen de `CHURCH_CONFIG`: hora del culto destacado y dirección.
+// Ninguno de los tres enlaces del grupo los da, y son justo los que le
+// faltan a quien está mirando ese grupo para decidir si viene.
+/*
+ * Caja con superficie propia, no texto suelto.
+ *
+ * Suelta, la invitación medía 86 px frente a los 192 de la columna de
+ * enlaces y se leía como un pie de página del panel. Con superficie y
+ * relleno pasa a ser lo que es —una tarjeta de bienvenida— y el destacado
+ * recupera el peso que le toca.
+ *
+ * En fila y no apilada: a 1.037 px de ancho, tres bloques en vertical dejan
+ * líneas larguísimas; en fila, el texto, los datos y las acciones se
+ * reparten el ancho y la caja no pasa de dos líneas de alto.
+ */
+.nav__visit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4) var(--sp-5);
+  padding: var(--sp-4);
+  border-radius: var(--r-card);
+  background: var(--c-surface-2);
+}
+
+.nav__visit-lead {
+  flex: 1 1 16rem;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.nav__visit-facts {
+  flex: 1 1 18rem;
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__visit-fact {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.nav__visit-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--r-sm);
+  background: var(--c-gold-tint);
+  font-size: 0.95rem;
+  color: var(--c-gold-deep);
+}
+
+.nav__visit-text {
+  min-width: 0;
+}
+
+.nav__visit-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-faint);
+}
+
+.nav__visit-value {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-primary);
+}
+
+.nav__visit-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+// Misma forma de botón que la barra: píldora plana del alto del control.
+.nav__visit-cta {
+  display: inline-flex;
+  align-items: center;
+  height: var(--nav-control-h);
+  padding-inline: var(--sp-4);
+  border-radius: var(--r-pill);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--c-primary-deep);
+  }
+
+  @include focus-ring(2px);
+}
+
+.nav__visit-link {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/*
+ * ---- Panel en pantallas intermedias ----------------------------------
+ * Por debajo de 1280 px el panel vuelve a apilarse.
+ *
+ * El umbral **está medido, no elegido**: la columna de enlaces mide 374 px
+ * fijos, así que a 1100 px al destacado le quedaban 617 y las miniaturas
+ * caían a 106×60 px —un sello— mientras los seis días de la semana se
+ * apretaban en columnas de 87 px. A 1280 el destacado recupera 761 px y a
+ * 1512 llega a 969, que es donde las dos zonas se sostienen.
+ *
+ * Apilado a esos anchos no reabre el problema original: el hueco sobraba
+ * porque había 1.411 px para tres enlaces; con 1.000 ya no sobra.
+ */
+@include until('xl') {
+  .nav__panel-inner.has-aside {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .nav__panel-inner.has-aside .nav__panel-links {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+
+  .nav__aside {
+    padding-inline-start: 0;
+    padding-block-start: var(--sp-4);
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--c-hairline);
+  }
 }

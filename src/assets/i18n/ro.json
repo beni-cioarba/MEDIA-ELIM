@@ -386,7 +386,13 @@
     "announcements": "Anunțuri",
     "announcements_desc": "Avizele bisericii în vigoare",
     "bible": "Citirea Bibliei",
-    "bible_desc": "Săptămâna din planul de citire"
+    "bible_desc": "Săptămâna din planul de citire",
+    "panel_next": "Ce urmează",
+    "panel_visit": "Vrei să ne vizitezi?",
+    "panel_visit_lead": "Te așteptăm la oricare dintre serviciile noastre. Intrarea e liberă și nu trebuie să anunți pe nimeni — vino așa cum ești.",
+    "panel_service": "Următorul serviciu",
+    "panel_address": "Unde ne găsești",
+    "panel_directions": "Cum ajungi"
   },
   "seo": {
     "home": {
@@ -698,7 +704,7 @@
         "name": "Copii",
         "description": "Școala duminicală și activitățile pentru cei mici."
       },
-    "media": {
+      "media": {
         "name": "Media",
         "description": "Transmisiuni, sunet, proiecție, fotografie și rețele sociale."
       },

@@ -347,6 +347,67 @@ sale caro.
     departamentos y visita caen en la **misma vertical** a 375 px (15),
     1512 (45) y 1920 (235).
 
+29. **Un mega-menú se mide en dos zonas, no en dos filas** — el panel de grupo
+    apilaba los enlaces arriba y el contenido abajo. Medido a 1512 px:
+
+    | | Antes | Ahora |
+    | --- | --- | --- |
+    | Alto del panel (Medios) | 390 px (43 % de la pantalla) | 235 px |
+    | Hueco muerto en la fila de enlaces | 568 px (40 %) | 0 |
+    | Miniatura de álbum | 272×153 px | 183×103 px |
+    | Descripción de «Panel completo» | 2 líneas en 275 px | 1 línea en 374 |
+
+    La fila de enlaces usaba `repeat(auto-fill, minmax(15rem, 1fr))`: con
+    `auto-fill` la rejilla **reserva las columnas que caben aunque estén
+    vacías**, así que tres enlaces ocupaban tres de cinco columnas y las otras
+    dos quedaban en blanco. `auto-fit` colapsa las vacías. Es la diferencia
+    entre las dos palabras y se nota en cuanto el número de elementos no
+    coincide con el de columnas.
+
+    Con los enlaces en una columna de 22 rem y el contenido al lado, el hueco
+    pasa a ser el destacado. Y eso obliga a lo segundo: **todos los grupos
+    necesitan destacado**, porque uno sin él vuelve a dejar mil píxeles en
+    blanco. El de «La iglesia» no es relleno —es cuándo y dónde, que es lo que
+    busca quien mira ese grupo y no está en ninguna de sus tres entradas.
+
+    El umbral de apilado está medido, no elegido: la columna de enlaces mide
+    374 px fijos, así que a 1100 px al destacado le quedaban 617 y las
+    miniaturas caían a **106×60 px**. Por debajo de `xl` (1280) se apila.
+
+30. **Un menú que se abre solo tiene que cerrarse solo** — el panel se abría al
+    apuntar el grupo pero sólo se cerraba con `Escape`, pulsando fuera o
+    navegando. Pasar el cursor por encima camino de otro sitio dejaba 390 px
+    tapando media pantalla. Ahora cierra al retirar el ratón de la cabecera y
+    del panel, con **220 ms de gracia**: entre el disparador y el panel hay un
+    hueco de 8 px y sin margen el recorrido en diagonal del botón al primer
+    enlace cerraba el menú a mitad de camino.
+
+31. **Un filete no debe medir** — la barra llevaba `border-bottom: 1px`, así
+    que medía 60,5 px mientras `--nav-height` decía 59,5. La portada calcula
+    `100svh - var(--nav-height)`: ese píxel se arrastraba hasta el pie de la
+    primera pantalla. Dibujado con `box-shadow: inset 0 -1px 0`, el filete se
+    ve igual y ocupa cero. Regla: **el alto real de la cabecera tiene que ser
+    exactamente su token**, porque hay otra pantalla restándolo.
+
+32. **Un texto de una línea con puntos suspensivos es una decisión, casi nunca
+    la correcta** — en el panel había tres: el nombre del álbum cortaba
+    «Concert de Colinde · Copii», el título del evento cortaba «Conferință de
+    tineret "ANCORAT"» a media palabra. Pero dejar que envuelvan libremente
+    descuadra la fila, porque los de una línea dejan su ficha más baja. La
+    salida es el tope en dos líneas **con altura mínima de dos líneas**
+    (`line-clamp: 2` + `min-height: calc(2 * 1.3em)`): se lee entero y todas
+    las fichas miden igual. Verificado: ningún rótulo del panel se corta.
+
+33. **Comprueba que el token existe antes de meterlo en un `clamp`** — la
+    separación entre las dos zonas se escribió `clamp(var(--sp-5), 4vw,
+    var(--sp-7))` y **la escala de espacio no tiene un `--sp-7`** (va 0-6, 8,
+    10, 12, 16, 20, 24). Un `clamp` con un argumento vacío es una declaración
+    inválida entera: el hueco caía a 0 y el filete quedaba pegado a la primera
+    miniatura, sin error en consola y sin que el build dijera nada. Aparecía
+    también en `leadership.component.scss`, donde el hueco reservado para el
+    botón de cerrar nunca se reservó.
+
+
 ## El catálogo (`ui-*`)
 
 Definido en `src/styles/_primitives.scss`, visible en `/stil`:

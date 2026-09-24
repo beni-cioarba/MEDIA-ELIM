@@ -78,10 +78,11 @@ la ruta hija por coincidencia de prefijo.
 - Los grupos llevan `descriptionKey`: se ve en el desplegable y en el drawer.
 - `cta` saca la entrada de la lista de enlaces y la lleva a la zona de acciones
   de la derecha. Hay exactamente dos, y no deben crecer:
-  - `cta: 'live'` → «En directo», píldora dorada rellena (`.nav__live`).
-  - `cta: 'support'` → «Donativos», píldora perfilada (`.nav__donate`), sólo
-    en escritorio; por debajo de `xl` se repliega al icono (el rótulo sigue en
-    `aria-label`/`title`) porque «Donativos» es mucho más ancho que «Doneață».
+  - `cta: 'live'` → «En directo», píldora dorada rellena (`.nav__live`). Es
+    la **única** píldora de la barra: una cabecera tiene una forma de botón.
+  - `cta: 'support'` → «Donativos», plano y sin borde (`.nav__donate`), sólo
+    en escritorio. El rótulo está siempre visible; lo que se aprieta para
+    hacerle sitio por debajo de `xl` es el relleno de los enlaces.
   En móvil ambas siguen dentro del cajón, que recorre `MAIN_NAV` entero.
 - Separar navegación de acciones es lo que mantiene la lista en cinco enlaces:
   las entradas con `cta` **no** cuentan para el límite de ~7.
@@ -103,14 +104,53 @@ El servicio expone `url`, `trail` (`[grupo, hoja]`) y `activeIds`. En plantilla:
    [attr.aria-current]="activeIds().has(item.id) ? 'page' : null">
 ```
 
-Lo consumen la barra, el drawer y los `mat-menu-item`. `trail` es además la
-base de una futura migaja de pan: no dupliques esta lógica.
+Lo consumen la barra, el drawer y los enlaces del panel de grupo. `trail` es
+además la base de una futura migaja de pan: no dupliques esta lógica.
+
+## El panel de grupo (mega-menú)
+
+Un grupo de `MAIN_NAV` abre un panel de ancho completo **dentro de la
+cabecera**. No es un `mat-menu` ni un overlay del CDK: al ocupar toda la
+pantalla no puede salirse de ella, así que no hace falta posicionarlo.
+
+El panel tiene **dos zonas**, no dos filas:
+
+```
+[ enlaces del grupo · 22rem ] │ [ bloque destacado · el resto ]
+```
+
+- **Enlaces**: una columna apilada, uno por hijo del grupo.
+- **Destacado** (`asideKind()` en el componente): contenido real de ese grupo.
+  - `media` → tira de miniaturas de los álbumes de la galería.
+  - `program` → «lo próximo» (culto, evento, lectura) + la semana entera.
+  - `about` → tarjeta de invitación (culto, dirección, cómo llegar).
+
+Por qué en dos zonas y no apilado: medido a 1512 px, con los enlaces arriba y
+el contenido abajo sobraban **568 px a la derecha de la fila de enlaces** y el
+panel medía 390 px —el 43 % de la pantalla— para tres enlaces. En dos zonas el
+hueco es el destacado y el panel baja a 235. El detalle está en la decisión 29
+de `47-design-language.md`.
+
+**Si añades un grupo**: dale destacado o no se lo des, pero sé consciente de
+que sin él el panel se queda con la columna de enlaces y el resto en blanco.
+`has-aside` es lo único que decide el reparto; sin esa clase el panel cae solo
+a una rejilla de enlaces a todo el ancho.
+
+Por debajo de `xl` (1280) el panel vuelve a apilarse: ahí al destacado le
+quedaban 617 px y las miniaturas caían a 106×60.
 
 ## Accesibilidad (ya resuelta, no la rompas)
 
 - `.u-skip-link` → `#main-content` (el `<main>` tiene `tabindex="-1"`).
-- Escritorio: `mat-menu` aporta `role="menu"`, flechas, `Escape`, foco
-  devuelto al disparador y reposicionamiento. No lo sustituyas por un `div`.
+- Escritorio: el panel de grupo es un **disclosure**, no un menú ARIA. El
+  disparador es un `<button>` con `aria-expanded` + `aria-controls`; el panel
+  es un `role="group"` con el nombre del grupo. Cierra con `Escape`, al pulsar
+  fuera, al navegar y al retirar el ratón (con 220 ms de gracia). **No le
+  pongas `role="menu"`**: obliga a que todo lo de dentro sea un `menuitem` y
+  prohíbe justo el contenido que el panel enseña.
+- Dentro del panel, los rótulos de sección son `<span>` con `id`, no
+  encabezados: un `h2` que sólo existe mientras el menú está abierto ensucia
+  el esquema del documento. Las listas se nombran con `aria-labelledby`.
 - Móvil: `role="dialog"` + `aria-modal` + `cdkTrapFocus` + `Escape` +
   bloqueo de scroll del documento (`body.has-drawer-open`).
 - La entrada activa marca `aria-current="page"` (ver `NavActiveService`).

@@ -108,7 +108,7 @@
       role="group"
       [attr.aria-label]="grupo.labelKey | translate"
     >
-      <div class="nav__panel-inner">
+      <div class="nav__panel-inner" [class.has-aside]="asideKind() !== null">
         <ul class="nav__panel-links" role="list">
           @for (child of grupo.children; track child.id) {
             <li>
@@ -136,79 +136,154 @@
           }
         </ul>
 
-        @if (grupo.id === 'program') {
-          <!-- «¿Y ahora qué?»: la respuesta sin entrar en ninguna entrada. Es
-               el único grupo cuyas cuatro secciones son tiempo. -->
-          <section class="nav__strip" [attr.aria-label]="'home.board.title' | translate">
-            <ul class="nav__next" role="list">
-              @if (nextService(); as culto) {
-                <li>
-                  <a class="nav__next-item" [routerLink]="weeklyPath" (click)="ui.closeAll()">
-                    <span class="nav__next-when">{{ culto.dayLabel }} · {{ culto.time }}</span>
-                    <span class="nav__next-what">{{ culto.title }}</span>
+        <!-- ===============================================================
+             Bloque destacado: **la segunda zona del panel**, a la derecha de
+             los enlaces y no debajo. Es lo que convierte los 568 px que
+             sobraban a la derecha de la fila de enlaces en contenido y baja
+             el panel de 390 px a ~250. Ver `asideKind` en el componente.
+             =============================================================== -->
+        @if (asideKind(); as destacado) {
+          <div class="nav__aside">
+            @switch (destacado) {
+              @case ('media') {
+                <!-- Tira de álbumes: el contenido real de la galería dentro
+                     del menú. **No se mueve sola** — ver 47-design-language.md:
+                     en una superficie que se abre para elegir, lo que se mueve
+                     es lo que te quita de delante lo que ibas a pulsar. -->
+                <div class="nav__aside-head">
+                  <span class="nav__aside-title" id="nav-aside-title">
+                    {{ 'nav.gallery' | translate }}
+                  </span>
+                  <a class="nav__aside-all" [routerLink]="galleryPath" (click)="ui.closeAll()">
+                    {{ 'home.board.all' | translate }}
                   </a>
-                </li>
+                </div>
+                <ul class="nav__albums" role="list" aria-labelledby="nav-aside-title">
+                  @for (album of albums; track album.id) {
+                    <li>
+                      <a class="nav__album" [routerLink]="galleryPath" (click)="ui.closeAll()">
+                        <span class="nav__album-frame">
+                          <img
+                            class="nav__album-img"
+                            [src]="album.thumb"
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </span>
+                        <span class="nav__album-name">
+                          {{ 'gallery.events.' + album.i18nKey + '.name' | translate }}
+                        </span>
+                      </a>
+                    </li>
+                  }
+                </ul>
               }
-              @if (nextEvent(); as evento) {
-                <li>
-                  <a class="nav__next-item" [routerLink]="upcomingPath" (click)="ui.closeAll()">
-                    <span class="nav__next-when">
-                      {{ schedule.formatEventDateShort(evento.date) }} · {{ evento.time }}
-                    </span>
-                    <span class="nav__next-what">{{ evento.title }}</span>
-                  </a>
-                </li>
-              }
-              @if (todayReading(); as lectura) {
-                <li>
-                  <a class="nav__next-item" [routerLink]="biblePath" (click)="ui.closeAll()">
-                    <span class="nav__next-when">
-                      {{ lectura.when }} · {{ 'nav.bible' | translate }}
-                    </span>
-                    <span class="nav__next-what">{{ lectura.passage }}</span>
-                  </a>
-                </li>
-              }
-            </ul>
-          </section>
-        }
 
-        @if (grupo.id === 'media' && albums.length > 0) {
-          <!-- Tira de álbumes: el contenido real de la galería dentro del
-               menú. **No se mueve sola** — ver 47-design-language.md: en una
-               superficie que se abre para elegir, lo que se mueve es lo que
-               te quita de delante lo que ibas a pulsar. -->
-          <section class="nav__strip" [attr.aria-label]="'nav.gallery' | translate">
-            <header class="nav__strip-head">
-              <span class="nav__strip-title">{{ 'nav.gallery' | translate }}</span>
-              <a class="nav__strip-all" [routerLink]="galleryPath" (click)="ui.closeAll()">
-                {{ 'home.board.all' | translate }}
-              </a>
-            </header>
-            <ul class="nav__strip-list" role="list">
-              @for (album of albums; track album.id) {
-                <li>
-                  <a
-                    class="nav__album"
-                    [routerLink]="galleryPath"
-                    (click)="ui.closeAll()"
-                    [attr.title]="'gallery.events.' + album.i18nKey + '.name' | translate"
-                  >
-                    <img
-                      class="nav__album-img"
-                      [src]="album.thumb"
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span class="nav__album-name">
-                      {{ 'gallery.events.' + album.i18nKey + '.name' | translate }}
-                    </span>
-                  </a>
-                </li>
+              @case ('program') {
+                <!-- «¿Y ahora qué?»: la respuesta sin entrar en ninguna
+                     entrada. Es el único grupo cuyas cuatro secciones son
+                     tiempo. -->
+                <div class="nav__aside-head">
+                  <span class="nav__aside-title" id="nav-aside-title">
+                    {{ 'nav.panel_next' | translate }}
+                  </span>
+                </div>
+                <ul class="nav__next" role="list" aria-labelledby="nav-aside-title">
+                  @if (nextService(); as culto) {
+                    <li>
+                      <a class="nav__next-item" [routerLink]="weeklyPath" (click)="ui.closeAll()">
+                        <span class="nav__next-when">{{ culto.dayLabel }} · {{ culto.time }}</span>
+                        <span class="nav__next-what">{{ culto.title }}</span>
+                      </a>
+                    </li>
+                  }
+                  @if (nextEvent(); as evento) {
+                    <li>
+                      <a class="nav__next-item" [routerLink]="upcomingPath" (click)="ui.closeAll()">
+                        <span class="nav__next-when">
+                          {{ schedule.formatEventDateShort(evento.date) }} · {{ evento.time }}
+                        </span>
+                        <span class="nav__next-what">{{ evento.title }}</span>
+                      </a>
+                    </li>
+                  }
+                  @if (todayReading(); as lectura) {
+                    <li>
+                      <a class="nav__next-item" [routerLink]="biblePath" (click)="ui.closeAll()">
+                        <span class="nav__next-when">
+                          {{ lectura.when }} · {{ 'nav.bible' | translate }}
+                        </span>
+                        <span class="nav__next-what">{{ lectura.passage }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+
+                <!-- La semana entera. Rotada para empezar por hoy: se lee
+                     hacia delante desde el día en que se está mirando. -->
+                <div class="nav__week">
+                  <span class="nav__aside-title" id="nav-week-title">
+                    {{ 'nav.weekly' | translate }}
+                  </span>
+                  <ul class="nav__week-list" role="list" aria-labelledby="nav-week-title">
+                    @for (dia of week(); track dia.id) {
+                      <li class="nav__week-day" [class.is-today]="dia.id === todayId()">
+                        <span class="nav__week-when">{{ dia.dayLabel }}</span>
+                        <span class="nav__week-time">{{ dia.time }}</span>
+                        <span class="nav__week-what">{{ dia.title }}</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
               }
-            </ul>
-          </section>
+
+              @case ('about') {
+                <!-- Quien mira «La iglesia» está decidiendo si viene. Cuándo y
+                     dónde es exactamente lo que le falta, y no está en ninguna
+                     de las tres entradas del grupo. -->
+                <div class="nav__aside-head">
+                  <span class="nav__aside-title" id="nav-aside-title">
+                    {{ 'nav.panel_visit' | translate }}
+                  </span>
+                </div>
+                <div class="nav__visit" role="group" aria-labelledby="nav-aside-title">
+                  <p class="nav__visit-lead">{{ 'nav.panel_visit_lead' | translate }}</p>
+                  <ul class="nav__visit-facts" role="list">
+                    @if (nextService(); as culto) {
+                      <li class="nav__visit-fact">
+                        <app-icon class="nav__visit-icon" name="clock" />
+                        <span class="nav__visit-text">
+                          <span class="nav__visit-label">{{ 'nav.panel_service' | translate }}</span>
+                          <span class="nav__visit-value">{{ culto.dayLabel }} · {{ culto.time }}</span>
+                        </span>
+                      </li>
+                    }
+                    <li class="nav__visit-fact">
+                      <app-icon class="nav__visit-icon" name="map-pin" />
+                      <span class="nav__visit-text">
+                        <span class="nav__visit-label">{{ 'nav.panel_address' | translate }}</span>
+                        <span class="nav__visit-value">{{ location.address }}</span>
+                      </span>
+                    </li>
+                  </ul>
+                  <div class="nav__visit-actions">
+                    <a
+                      class="nav__visit-cta"
+                      [href]="location.mapsShareUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ 'nav.panel_directions' | translate }}
+                    </a>
+                    <a class="nav__visit-link" [routerLink]="contactPath" (click)="ui.closeAll()">
+                      {{ 'nav.contact' | translate }}
+                    </a>
+                  </div>
+                </div>
+              }
+            }
+          </div>
         }
       </div>
     </div>

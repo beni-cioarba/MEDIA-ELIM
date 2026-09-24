@@ -195,6 +195,33 @@ Estado tras la reestructuración de navegación + design system.
 - Verificado a 375, 1280 y 1440 px sin scroll horizontal; `npm run check` y
   `npm run build` en verde.
 
+### Iteración 11 — el mega-menú, en dos zonas
+
+- **Panel de grupo repartido en dos zonas**: enlaces a la izquierda en una
+  columna de 22 rem, contenido destacado a la derecha. Medido a 1512 px, el
+  panel de Medios baja de **390 px a 235** y los **568 px muertos** que dejaba
+  la fila de enlaces (`auto-fill` reserva las columnas vacías; `auto-fit` no)
+  pasan a ser contenido.
+- **Los tres grupos tienen destacado**, porque uno sin él vuelve a dejar el
+  hueco: Medios enseña las miniaturas de los álbumes, Programa «lo próximo»
+  más la semana entera —rotada para empezar por hoy— y La iglesia una tarjeta
+  de invitación con el culto, la dirección y cómo llegar.
+- **El panel cierra al retirar el ratón** (220 ms de gracia). Antes sólo se
+  cerraba con `Escape`, pulsando fuera o navegando: pasar el cursor por encima
+  de un grupo camino de otro sitio dejaba 390 px tapando media pantalla.
+- **La barra mide exactamente su token**: el filete inferior pasa de `border`
+  a `box-shadow` y el alto real vuelve a ser los 59,5 px que dice
+  `--nav-height`, que es lo que resta la portada.
+- **Sin texto cortado en el panel**: nombres de álbum, títulos de evento y de
+  la semana pasan a dos líneas con altura mínima de dos líneas, así se leen
+  enteros y las fichas siguen midiendo lo mismo.
+- Corregido `var(--sp-7)`, que **no existe** en la escala: invalidaba el
+  `clamp` entero y dejaba la separación en 0 (también en la ficha de
+  liderazgo, donde nunca se reservó el hueco del botón de cerrar).
+- Verificado a 390, 1100, 1280, 1512 y 1920 px: márgenes alineados con la
+  cabecera, sin scroll horizontal, sin texto cortado y sin errores de consola.
+  `npm run check` y `npm run build` en verde (547,87 kB iniciales).
+
 ## Pendiente — prioridad alta
 
 1. **Sin tests.** Vitest (`@angular/build:unit-test`) está configurado pero no hay ni un `.spec.ts`.

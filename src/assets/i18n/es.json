@@ -386,7 +386,13 @@
     "announcements": "Anuncios",
     "announcements_desc": "Avisos de la iglesia en vigor",
     "bible": "Lectura bíblica",
-    "bible_desc": "La semana del plan de lectura"
+    "bible_desc": "La semana del plan de lectura",
+    "panel_next": "Lo próximo",
+    "panel_visit": "¿Quieres visitarnos?",
+    "panel_visit_lead": "Te esperamos en cualquiera de nuestros cultos. La entrada es libre y no hace falta avisar: ven tal y como eres.",
+    "panel_service": "Próximo culto",
+    "panel_address": "Dónde estamos",
+    "panel_directions": "Cómo llegar"
   },
   "seo": {
     "home": {
@@ -698,7 +704,7 @@
         "name": "Niños",
         "description": "Escuela dominical y actividades para los más pequeños."
       },
-    "media": {
+      "media": {
         "name": "Medios",
         "description": "Directos, sonido, proyección, fotografía y redes sociales."
       },

@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { CHURCH_CONFIG } from '../../core/church.config';
-import { blockPath } from '../../core/navigation/app-paths';
+import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { NavItem, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
@@ -100,25 +100,40 @@ export class TopNavComponent {
   /** Álbumes de la galería, para la tira del panel de Medios. */
   protected readonly albums = this.config.mediaEvents;
 
+  /** Dónde está la iglesia, para la tarjeta de invitación de «La iglesia». */
+  protected readonly location = this.config.location;
+
   /** Destino de la tira de álbumes. */
   protected readonly galleryPath = blockPath('gallery');
   protected readonly weeklyPath = blockPath('weekly');
   protected readonly upcomingPath = blockPath('upcoming');
   protected readonly biblePath = blockPath('bible');
+  protected readonly contactPath = `/${APP_PATHS.contact}`;
 
   protected readonly schedule = inject(ScheduleService);
 
   /**
-   * Lo próximo, para el panel de «Programa».
-   *
-   * Auditoría de los tres grupos: *Biserica* son páginas institucionales
-   * (historia, credo, organigrama) —no hay nada que previsualizar y meter
-   * relleno sería peor—; *Medios* tiene la galería, que es visual; y
-   * *Programa* es el único cuyas cuatro entradas son **tiempo**, así que lo
-   * que aporta es la respuesta a «¿y ahora qué?» sin entrar en ninguna.
+   * Lo próximo, para el panel de «Programa»: es el único grupo cuyas cuatro
+   * entradas son **tiempo**, así que lo que aporta es la respuesta a «¿y ahora
+   * qué?» sin entrar en ninguna.
    */
   protected readonly nextService = this.schedule.featuredProgram;
   protected readonly nextEvent = computed(() => this.schedule.upcomingEvents()[0] ?? null);
+
+  /**
+   * La semana entera, en una tira debajo de «lo próximo».
+   *
+   * Es lo que equilibra el panel de Programa: con sólo las tres tarjetas de
+   * «lo próximo», el destacado medía 99 px al lado de una columna de enlaces
+   * de 244 —un rectángulo vacío de 200 px en la esquina—. Y sobre todo es la
+   * respuesta que falta: «¿qué días abrís?» no está en ninguna de las cuatro
+   * entradas sin entrar en ellas.
+   *
+   * `ScheduleService.weeklyProgram` ya viene rotado para empezar por hoy, así
+   * que la tira se lee hacia delante desde el día en que se está mirando.
+   */
+  protected readonly week = this.schedule.weeklyProgram;
+  protected readonly todayId = computed(() => this.schedule.todayProgram()?.id ?? null);
 
   private readonly bible = inject(BibleReadingService);
 
@@ -144,6 +159,39 @@ export class TopNavComponent {
   });
 
   /**
+   * Qué bloque destacado lleva el panel del grupo abierto.
+   *
+   * **Los tres grupos llevan uno, y no por simetría.** Medido a 1512 px, el
+   * panel apilaba los enlaces arriba y el contenido abajo: la fila de enlaces
+   * se repartía en cinco columnas de 275 px de las que sólo se ocupaban tres,
+   * dejando **568 px vacíos a la derecha** mientras la descripción de «Panel
+   * completo» se partía en dos líneas dentro de su columna estrecha. El panel
+   * acababa midiendo 390 px —el 43 % de la pantalla— para tres enlaces.
+   *
+   * Poniéndolo en dos zonas (enlaces a la izquierda, destacado a la derecha)
+   * ese hueco pasa a ser contenido y el panel baja a ~250 px. Pero eso sólo
+   * funciona si **todos** los grupos tienen algo que enseñar; si no, el grupo
+   * sin destacado vuelve a quedarse con mil píxeles en blanco. De ahí que
+   * «La iglesia» —páginas institucionales, nada que previsualizar— lleve la
+   * tarjeta de invitación: no es relleno, es lo que busca quien está mirando
+   * ese grupo (cuándo y dónde). Un grupo futuro sin destacado sigue siendo
+   * válido: el panel cae solo a una rejilla de enlaces a todo el ancho.
+   */
+  protected readonly asideKind = computed<'media' | 'program' | 'about' | null>(() => {
+    const grupo = this.openGroup();
+    switch (grupo?.id) {
+      case 'media':
+        return this.albums.length > 0 ? 'media' : null;
+      case 'program':
+        return 'program';
+      case 'about':
+        return 'about';
+      default:
+        return null;
+    }
+  });
+
+  /**
    * Abre un grupo al apuntarlo. **Sólo con ratón de verdad**: en una tableta
    * el toque dispara `mouseenter` y acto seguido `click`, así que el panel se
    * abría y se cerraba en el mismo gesto — un menú que no se abre. La barra de
@@ -151,7 +199,45 @@ export class TopNavComponent {
    */
   protected hoverGroup(id: string): void {
     if (!apuntaConRaton()) return;
+    this.cancelarCierre();
     if (this.ui.openGroup() !== id) this.ui.toggleGroup(id);
+  }
+
+  /**
+   * Cierre al retirar el ratón de la cabecera **y** del panel (el `:host` los
+   * contiene a los dos, así que basta un manejador).
+   *
+   * Faltaba: el panel se abría al apuntar pero sólo se cerraba con `Escape`,
+   * pulsando fuera o navegando. Pasar el cursor por encima de «Medios» camino
+   * de otro sitio dejaba 390 px de panel tapando media pantalla hasta que el
+   * usuario hacía algo para quitarlo. Un menú que se abre solo tiene que
+   * cerrarse solo.
+   *
+   * El retardo de gracia existe porque entre el botón y el panel hay un hueco
+   * de 8 px: sin él, bajar en diagonal del disparador al primer enlace cierra
+   * el panel a mitad de camino. 220 ms es el margen habitual en los mega-menús
+   * de referencia: suficiente para el recorrido y demasiado corto para
+   * percibirse como retraso.
+   */
+  @HostListener('mouseleave')
+  protected onMouseLeave(): void {
+    if (!apuntaConRaton() || !this.ui.openGroup()) return;
+    this.cancelarCierre();
+    this.cierreDiferido = setTimeout(() => this.ui.closeAll(), MS_GRACIA_CIERRE);
+  }
+
+  /** Volver a entrar dentro del margen de gracia anula el cierre. */
+  @HostListener('mouseenter')
+  protected onMouseEnter(): void {
+    this.cancelarCierre();
+  }
+
+  private cierreDiferido: ReturnType<typeof setTimeout> | null = null;
+
+  private cancelarCierre(): void {
+    if (this.cierreDiferido === null) return;
+    clearTimeout(this.cierreDiferido);
+    this.cierreDiferido = null;
   }
 
   /** `Escape` cierra el panel abierto, esté donde esté el foco. */
@@ -168,6 +254,8 @@ export class TopNavComponent {
   }
 
   constructor() {
+    this.destroyRef.onDestroy(() => this.cancelarCierre());
+
     // Cerrar cualquier panel al navegar: evita que el menú quede abierto
     // sobre la página nueva.
     this.router.events
@@ -187,6 +275,12 @@ export class TopNavComponent {
     this.ui.setScrollY(window.scrollY);
   }
 }
+
+/**
+ * Margen de gracia antes de cerrar el panel al salir con el ratón. Cubre el
+ * hueco de 8 px entre el disparador y el panel.
+ */
+const MS_GRACIA_CIERRE = 220;
 
 /** ¿Hay un puntero fino que pueda «apuntar» sin tocar? */
 function apuntaConRaton(): boolean {
