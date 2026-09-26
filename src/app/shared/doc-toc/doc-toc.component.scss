@@ -1,0 +1,347 @@
+// =====================================================================
+// Índice de documento. Medidas tomadas del «On this page» de angular.dev
+// (ver la cabecera del componente); el color y la tipografía son los de
+// esta app, no los suyos.
+// =====================================================================
+
+@use 'ds' as *;
+
+:host {
+  display: block;
+}
+
+/*
+ * Título, no etiqueta.
+ *
+ * Iba a 11,7 px en versalitas con 1,4 px de tracking: eso es un rótulo de
+ * campo, y encima gritado. En la referencia es un `h2` de 20 px en caja baja
+ * y peso medio. Aquí se queda en medio —15 px, peso 700, caja baja— porque el
+ * índice va comprimido y 20 px se comerían dos entradas de lista.
+ */
+.toc__title {
+  margin: 0 0 var(--sp-2);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary);
+}
+
+/*
+ * **El carril vertical vive aquí, en la lista.**
+ *
+ * Es la diferencia que se veía a simple vista contra la referencia: allí el
+ * hilo es una línea continua de arriba abajo, y aquí salían treinta y cuatro
+ * segmentos sueltos, uno por entrada, cortados en cada hueco y deformados por
+ * el radio del enlace. Medido en `angular.dev`: `border-left` de 0,8 px en el
+ * `<ul>`, y los enlaces sin borde ninguno.
+ */
+.toc__list {
+  margin: 0;
+  padding: 0;
+  border-inline-start: 1px solid var(--c-hairline);
+  list-style: none;
+}
+
+// El escalón de sangrado es lo único que marca la jerarquía: ni número, ni
+// filete, ni viñeta. Es lo que hace que un índice de 34 entradas siga
+// leyéndose como una lista y no como una tabla. 16 px de escalón, como en la
+// referencia.
+.toc__item--sub .toc__link {
+  padding-inline-start: 1.85rem;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
+}
+
+/*
+ * Sin borde y **sin radio**: el radio redondeaba el flanco izquierdo del
+ * enlace y lo separaba del carril, que es recto. Con los dos rectos, el
+ * realce al apuntar queda pegado a la línea, como en la referencia.
+ */
+.toc__link {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  /* 0,85 rem desde el carril: es el escalón de 16 px de la referencia,
+     ajustado a que aquí la letra es algo menor. */
+  padding: 0.28rem 0.5rem 0.28rem 0.85rem;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.8438rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--c-text);
+  text-decoration: none;
+  transition:
+    color var(--mo-fast) var(--ea-standard),
+    background var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+    color: var(--c-primary);
+  }
+
+  @include focus-ring(-2px);
+}
+
+/*
+ * El activo: **el tramo de carril que le toca se enciende**, y el rótulo pasa
+ * a tinta fuerte. Sin pastilla de fondo.
+ *
+ * La pastilla dorada se veía como una etiqueta pegada encima de la lista —en
+ * un índice de 34 entradas, un bloque de color es mucho ruido— y además
+ * rompía el carril justo donde más importa que siga. Un segmento de 2 px
+ * sobre el hilo dice «estás aquí» sin añadir una caja.
+ *
+ * El `::before` se superpone al carril de la lista (de ahí el -1 px): así el
+ * tramo encendido cae exactamente sobre el hilo, sin desplazar nada.
+ */
+.toc__link.is-active {
+  color: var(--c-primary-deep);
+  font-weight: 700;
+}
+
+.toc__link.is-active::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -1px;
+  width: 2px;
+  background: var(--c-gold);
+}
+
+// Número de artículo. Ancho fijo y **alineado a la derecha**: así las
+// unidades caen en la misma vertical del 1 al 30 y los rótulos arrancan
+// todos a la misma altura. Alineado a la izquierda, «1» y «10» empezaban en
+// el mismo sitio pero las cifras quedaban en escalera.
+.toc__badge {
+  flex: none;
+  min-width: 1.15rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  color: var(--c-faint);
+}
+
+.toc__link.is-active .toc__badge {
+  color: var(--c-gold-deep);
+}
+
+.toc__text {
+  min-width: 0;
+}
+
+// ---- Vuelta arriba ---------------------------------------------------
+
+.toc__top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-block-start: var(--sp-3);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include focus-ring(-2px);
+}
+
+.toc__top-arrow {
+  font-size: 0.9rem;
+}
+
+// =====================================================================
+// Escritorio: columna fija
+// =====================================================================
+
+/*
+ * `sticky` con tope de alto y scroll propio.
+ *
+ * Sin el scroll interno, un índice de 34 entradas mide ~1.100 px: en una
+ * pantalla de 900 la mitad de los artículos serían inalcanzables sin bajar
+ * por el documento, que es justo lo que el índice viene a evitar. Es lo
+ * mismo que hace la referencia (`max-height: 100vh; overflow-y: scroll`).
+ */
+.toc--rail {
+  position: sticky;
+  // `relative` lo aporta ya `sticky`: el difuminado del final se posiciona
+  // contra esta caja.
+  top: calc(var(--nav-height) + var(--sp-4));
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100svh - var(--nav-height) - var(--sp-8));
+}
+
+/*
+ * La barra de scroll se esconde y en su lugar el final de la lista **se
+ * desvanece**.
+ *
+ * Medido: la barra ocupaba 10 px de una columna de 16 rem —el 4 %— y dibujaba
+ * un carril gris permanente junto a los rótulos. Pero quitarla sin más deja
+ * el índice sin decir que hay más de 34 entradas debajo. El degradado lo dice
+ * mejor que la barra: el texto que se corta en un difuminado se lee como
+ * «sigue», y no gasta ancho.
+ */
+.toc--rail .toc__list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// El difuminado sólo aparece cuando de verdad sobra lista por debajo: lo
+// activa el componente comparando el alto con el del contenido.
+.toc--rail.hay-mas::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 2.5rem;
+  height: 2.75rem;
+  background: linear-gradient(to bottom, transparent, var(--c-bg));
+  pointer-events: none;
+}
+
+.toc--compact {
+  display: none;
+}
+
+// =====================================================================
+// Por debajo de `xl`: el índice deja de ser columna y pasa a ser una hoja
+// inferior que abre la página desde el dock flotante.
+//
+// **El corte es el mismo en el que desaparece la columna lateral**, y no
+// uno más estrecho. Cuando había dos cortes (columna hasta 1280, hoja
+// inferior sólo por debajo de 720) quedaba una franja intermedia con un
+// tercer diseño —un desplegable pegado bajo la cabecera— que no aportaba
+// nada y que, además, se quedó sin la mitad de sus estilos por un bloque
+// mal cerrado: el resumen salía con el marcador nativo del `<details>` y el
+// rótulo pegado al apartado. Un corte, dos diseños.
+// =====================================================================
+
+@include until('xl') {
+  .toc--rail {
+    display: none;
+  }
+
+  /* La página la esconde mientras su panel está cerrado: en reposo no ocupa
+     ni un píxel. */
+  .toc--compact.esta-oculto {
+    display: none;
+  }
+
+  /*
+   * Hoja anclada abajo que **se abre hacia arriba** (`column-reverse`): el
+   * resumen se queda donde el dedo lo dejó y la lista crece sobre él, en vez
+   * de empujarlo fuera de alcance.
+   *
+   * `--doc-toc-bottom` lo pone la página: es lo que ocupa su propia barra de
+   * herramientas, para que las dos piezas queden apiladas y se lean como un
+   * solo módulo inferior.
+   */
+  .toc--compact {
+    position: fixed;
+    inset-inline: 0;
+    top: auto;
+    bottom: var(--doc-toc-bottom, 0px);
+    z-index: 29;
+    display: flex;
+    flex-direction: column-reverse;
+    margin-block-end: 0;
+    border: 0;
+    border-block-start: 1px solid var(--c-hairline);
+    border-radius: 0;
+    background: var(--c-surface);
+    box-shadow: 0 -6px 20px rgb(9 20 36 / 0.1);
+  }
+
+  .toc__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--page-gutter);
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    @include focus-ring(-2px);
+  }
+
+  .toc__summary-label {
+    flex: none;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: var(--ls-caps);
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  // Dónde estás. Se corta con puntos suspensivos porque es una pista, no un
+  // título: el rótulo completo está dentro, a un toque.
+  .toc__summary-here {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: end;
+    color: var(--c-primary);
+  }
+
+  /* Abierta hacia arriba, el galón apunta al revés que en un desplegable
+     normal: cerrado mira arriba (por donde va a salir) y abierto, abajo. */
+  .toc__summary-caret {
+    flex: none;
+    font-size: 0.75rem;
+    color: var(--c-faint);
+    transform: rotate(180deg);
+    transition: transform var(--mo-fast) var(--ea-standard);
+  }
+
+  .toc--compact[open] .toc__summary-caret {
+    transform: rotate(0deg);
+  }
+
+  .toc--compact .toc__list {
+    // Tope de alto: abierta con 34 entradas tapaba la pantalla entera y había
+    // que cerrarla a ciegas para volver al documento.
+    max-height: min(52svh, 24rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 var(--page-gutter) var(--sp-3);
+    border-block-start: 0;
+    border-block-end: 1px solid var(--c-hairline);
+  }
+}
+
+@include motion-reduce {
+  .toc__link,
+  .toc__summary-caret {
+    transition: none;
+  }
+}
+
+// =====================================================================
+// Impresión: un índice con anclas no sirve en papel.
+// =====================================================================
+
+@media print {
+  :host {
+    display: none;
+  }
+}

@@ -97,7 +97,9 @@ const DEFAULT_LABEL = 'Biserica Elim';
       --brand-navy: #1a365d;
       --brand-navy-deep: #122844;
       --brand-gold: #d4af37;
-      --brand-gold-deep: #9c7a1e;
+      /* Oro accesible: con el anterior (#9c7a1e) la línea «ARGANDA DEL REY»
+         daba 4,03:1 sobre el lienzo y no llegaba al 4,5 de la AA. */
+      --brand-gold-deep: #856618;
       --brand-gold-soft: #e3c766;
       --brand-paper: #faf9f6;
       /* Playfair Display 600 para el nombre, Inter 600 para la localidad. Las carga la app

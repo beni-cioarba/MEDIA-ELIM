@@ -123,10 +123,16 @@ coinciden, salvo dos bloques que `PresentationBlocksService.expand()` pagina:
 
 - `announcements` → **una diapositiva por anuncio vigente y visible**
   (`key = 'announcements:<id>'`).
-- `upcoming` → **páginas de `UPCOMING_PER_SLIDE` (2) eventos**
-  (`key = 'upcoming:<n>'`, con `events` y `page = {index, total}`; el bloque
-  pinta «n/N» junto al título). Así ningún evento se corta y cada página tiene
-  su tiempo. Para paginar otro bloque, sigue el mismo patrón en `expand()`.
+- `upcoming` → **páginas de eventos**, dos sin QR (`UPCOMING_PER_SLIDE`) y
+  **uno con QR** (`UPCOMING_PER_SLIDE_QR`), porque el QR se lleva la columna
+  derecha y el texto baja de 1790 a 1250 px: las mismas dos tarjetas pasan de
+  636 px (caben) a 851 en una caja de 697 y la segunda se corta. Clave
+  `upcoming:<n>`, con `events` y `page = {index, total}`; el bloque pinta
+  «n/N» junto al título. Para paginar otro bloque, sigue el mismo patrón en
+  `expand()`.
+
+  El reparto lo decide `PresentationDisplayService.qrVisible()`, así que
+  encender o apagar el QR **repagina al instante**, también en el panel.
 
 Los dots, los atajos `1…9` y `CarouselService` trabajan sobre diapositivas; el
 panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
@@ -212,6 +218,26 @@ sigue publicado en `/anunturi` y conserva su caducidad. Los ids ocultos se
 guardan en `localStorage['iglesia-redes.presentation.announcements.hidden']`;
 «Restablecer» los limpia. Si se ocultan todos y no hay otro bloque activo, el
 carrusel recurre al primer bloque con contenido: nunca se queda en negro.
+
+## Eventos uno a uno
+
+Lo mismo que los anuncios, para «Evenimente viitoare»
+(`PresentationBlocksService.setEventVisible`, ids en
+`localStorage['iglesia-redes.presentation.events.hidden']`). Dos detalles
+propios:
+
+- **En el panel, una fila por evento y no por página.** La página es un
+  detalle de la proyección —cambia sola al encender el QR— y el operador
+  decide sobre eventos, no sobre páginas. El rótulo de la fila es el título
+  del evento y pulsarla salta a la diapositiva que lo lleva
+  (`PresenterComponent.indexOf` resuelve la correspondencia por id).
+- **Ocultarlos todos no es lo mismo que no tener ninguno**: sin eventos en el
+  calendario sale la diapositiva vacía con su mensaje (el operador entiende
+  la pantalla en blanco); si los ha ocultado a mano, el bloque simplemente no
+  aporta diapositivas.
+
+Ocultar un evento es una decisión **de proyección**: sigue en `/media` y en la
+web pública. «Restablecer» limpia la lista.
 
 ## Duración por bloque
 
@@ -320,9 +346,18 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    apilan a todo el ancho y las listas de personas pasan a texto corrido. Si
    ni a 0,7 cabe, sobra contenido: sección `webOnly` o texto más corto
    (`35-announcements.md`).
-3. **Eventos de dos en dos** (`UPCOMING_PER_SLIDE = 2`): descripción recortada
-   a dos líneas y créditos («CUVÂNT Daniel Popa») en una línea; el detalle
-   está en la web.
+3. **Eventos: dos por diapositiva sin QR, uno con QR**. Con dos, la
+   descripción se recorta a dos líneas y los créditos («CUVÂNT Daniel Popa»)
+   van en una; con uno, el resumen se lee entero (hasta cuatro líneas) y la
+   tarjeta se centra en la diapositiva, que si no deja 253 px de hueco abajo
+   y parece que falta contenido.
+
+   La casilla de la cuenta atrás lleva **una cifra**; cuando el evento es hoy
+   lleva una palabra («ESTE AZI») y por eso tiene su propio tamaño (`lead`, no
+   `display`): a tamaño de cifra medía 298 px en una columna de 216 y se salía
+   por encima del borde de la tarjeta. Las insignias «ESTE AZI» / «URMĂTORUL»
+   de la línea de fecha no se proyectan: la casilla ya lo dice y sólo partían
+   esa línea en dos.
 4. **Programa semanal entero**: fila = DÍA (`lead`) | hora (`lead`) | título
    (`body`), tres columnas de rejilla (`.weekly__body { display: contents }`);
    un título largo parte en dos líneas y la semana sigue cabiendo.

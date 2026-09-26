@@ -9,6 +9,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
+import { citarArticulo } from '../credo/credo.data';
 import {
   Assignment,
   CHURCH_COMMITTEE,
@@ -75,7 +76,15 @@ export class LeadershipComponent {
   protected readonly links = {
     contact: `/${APP_PATHS.contact}`,
     location: blockPath('location'),
+    credo: `/${APP_PATHS.credo}`,
   } as const;
+
+  /**
+   * Artículo de la confesión que sostiene el organigrama: el 17, sobre el
+   * sacerdocio universal y los oficios de gobierno. El número se resuelve
+   * desde `credo.data.ts` para que no pueda quedarse desfasado.
+   */
+  protected readonly sacerdocio = citarArticulo('ministers');
 
   /** Resuelve la referencia a persona. Nunca falla: `PersonId` está tipado. */
   protected profile(assignment: Assignment): PersonProfile {

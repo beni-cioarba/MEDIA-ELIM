@@ -43,7 +43,6 @@
   "streams": {
     "title": "Transmisiones",
     "recent_title": "Últimas transmisiones",
-    "subtitle": "Revive los últimos cultos en directo de nuestro canal de YouTube.",
     "watch_all": "Ver todas las transmisiones",
     "watch_video": "Ver el vídeo en YouTube",
     "watch_now": "Ver ahora",
@@ -114,15 +113,13 @@
     "duration_less": "Menos tiempo (−5 s)",
     "duration_more": "Más tiempo (+5 s)",
     "duration_reset": "Volver al tiempo por defecto",
-    "announcements_summary": "Se proyectan {{shown}} de {{total}} anuncios"
+    "announcements_summary": "Se proyectan {{shown}} de {{total}} anuncios",
+    "events_summary": "Se proyectan {{shown}} de {{total}} eventos"
   },
   "gallery": {
     "title": "Galería Departamento Media",
     "title_pj": "Galería de fotos",
-    "subtitle": "Revive los momentos más especiales de la iglesia: bautismos, conciertos, evangelizaciones y eventos.",
-    "featured_event": "Evento destacado",
     "view_photos": "Ver fotos y vídeos",
-    "open_drive": "Abrir directorio público de fotos",
     "open_event": "Abrir evento",
     "events": {
       "botez_2025_11_30": {
@@ -180,12 +177,10 @@
   },
   "weekly": {
     "title": "Programa semanal",
-    "subtitle": "Servicios fijos de la iglesia. ¡Te esperamos cada día!",
     "today": "HOY"
   },
   "upcoming": {
     "title": "Próximos eventos",
-    "subtitle": "Bautismos, evangelizaciones, conferencias y otros momentos especiales.",
     "empty": "No hay eventos programados por el momento.",
     "next": "PRÓXIMO",
     "today": "ES HOY",
@@ -304,7 +299,7 @@
   "donate": {
     "eyebrow": "Generosidad",
     "title": "Donativos",
-    "lead": "Todo lo que hacemos —los cultos, la ayuda social, los directos— existe porque personas como tú eligen dar.",
+    "lead": "La generosidad es una de las disciplinas que cultivamos: el diezmo y las ofrendas voluntarias sostienen los cultos, la ayuda social y los directos.",
     "verse": {
       "text": "«Cada uno dé como propuso en su corazón: no con tristeza ni por obligación, porque Dios ama al que da con alegría.»",
       "ref": "2 Corintios 9:7"
@@ -312,7 +307,7 @@
     "purposes": {
       "eyebrow": "Transparencia",
       "title": "A dónde va tu donativo",
-      "subtitle": "Cada aportación sostiene una de estas cuatro áreas.",
+      "subtitle": "Todo lo que se recibe se destina a una de estas cuatro áreas.",
       "items": {
         "mission": {
           "title": "La obra de la iglesia",
@@ -467,24 +462,12 @@
     "welcome": {
       "eyebrow": "Quiénes somos",
       "title": "Una casa abierta para todos",
-      "body": "Somos una iglesia evangélica en Arganda del Rey, Madrid. Nos reunimos cada semana para adorar a Dios, estudiar su Palabra y sostenernos como familia.",
+      "body": "Somos una iglesia evangélica pentecostal en Arganda del Rey, Madrid. Cada semana nos reunimos para adorar a Dios, anunciar el Evangelio, crecer como discípulos, servir a quien lo necesita y cuidarnos como familia.",
       "body_2": "No importa de dónde vengas ni en qué punto del camino estés: aquí tienes un sitio. Ven tal y como eres.",
       "cta": "Nuestra historia"
     },
-    "today": {
-      "eyebrow": "Ahora mismo",
-      "title": "Lo próximo",
-      "subtitle": "El programa de hoy y el siguiente evento especial.",
-      "service": "Culto de hoy",
-      "next_service": "Próximo culto",
-      "no_service": "No hay cultos programados.",
-      "next_event": "Próximo evento",
-      "see_program": "Ver el programa completo",
-      "see_events": "Ver todos los eventos"
-    },
     "quick": {
       "title": "Acceso rápido",
-      "subtitle": "Todo lo que necesitas, a un clic.",
       "items": {
         "weekly": {
           "title": "Programa semanal",
@@ -513,14 +496,12 @@
       }
     },
     "ministries": {
-      "eyebrow": "Departamentos",
       "title": "Un servicio para cada edad",
-      "subtitle": "Cada departamento es una puerta abierta para participar.",
+      "subtitle": "Todo creyente recibe dones para el bien común: cada departamento es una puerta abierta para ponerlos a servir.",
       "cta": "Ver toda la estructura"
     },
     "visit": {
       "title": "Ven a visitarnos",
-      "subtitle": "Te esperamos con alegría en cualquiera de nuestros cultos.",
       "cta_map": "Abrir en Google Maps",
       "cta_details": "Ver los detalles de la ubicación"
     }
@@ -540,70 +521,86 @@
       "body_1": "La Iglesia Elim de Arganda del Rey nació del deseo de unas pocas familias de tener un lugar donde adorar en su idioma y crecer juntas en la fe.",
       "body_2": "Con los años la comunidad creció y se diversificó: hoy somos una iglesia multicultural, con cultos en rumano y español y departamentos para todas las edades.",
       "body_3": "Seguimos con el mismo llamado del principio: dar a conocer el amor de Dios en nuestra ciudad, con hechos concretos y las puertas siempre abiertas.",
-      "image_alt": "Momentos de la vida de la comunidad"
+      "image_alt": "Los niños de la iglesia durante el concierto de Navidad"
     },
     "pillars": {
-      "eyebrow": "Lo que nos define",
-      "title": "Nuestros pilares",
-      "subtitle": "Cuatro convicciones que guían todo lo que hacemos.",
+      "eyebrow": "La obra de la Iglesia",
+      "title": "Lo que hacemos",
+      "subtitle": "No son lemas elegidos por nosotros: son las cinco obras que la Declaración de fe encomienda a la Iglesia, en el artículo 16, con su nombre.",
       "items": {
-        "mission": {
-          "title": "Misión",
-          "body": "Llevar el evangelio de Jesucristo a Arganda del Rey y más allá, con la palabra y con los hechos."
+        "worship": {
+          "title": "La adoración",
+          "body": "Los domingos nos reunimos para darle a Dios lo que le corresponde: canto, oración y Palabra."
         },
-        "vision": {
-          "title": "Visión",
-          "body": "Una iglesia sana donde cada persona descubre su llamado y crece en su relación con Dios."
+        "gospel": {
+          "title": "El anuncio del Evangelio",
+          "body": "Transmitimos el llamado del Evangelio: el mismo al que se responde con fe y arrepentimiento."
         },
-        "community": {
-          "title": "Comunidad",
-          "body": "Nadie está solo: llevamos las cargas los unos de los otros y nos alegramos juntos."
+        "discipleship": {
+          "title": "La formación de discípulos",
+          "body": "No bautizamos y nos despedimos: acompañamos a cada persona a crecer en semejanza a Cristo, toda la vida."
         },
         "service": {
-          "title": "Servicio",
-          "body": "La fe se demuestra con obras: apoyamos a las familias del entorno y los proyectos sociales de la ciudad."
+          "title": "El servicio",
+          "body": "Amamos a todas las personas, sin distinción alguna, y servimos a las necesidades de alrededor."
+        },
+        "fellowship": {
+          "title": "La comunión fraterna",
+          "body": "Somos una familia: la Cena del Señor fortalece nuestra unidad y las cargas las llevamos juntos."
         }
-      }
+      },
+      "ref": "Art. {{n}}",
+      "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
     },
     "credo": {
       "eyebrow": "Declaración de fe",
       "title": "En qué creemos",
-      "subtitle": "Compartimos la Declaración de fe del Culto Cristiano Pentecostal: 30 artículos agrupados en cuatro capítulos.",
+      "subtitle": "Compartimos la Declaración de fe del Culto Cristiano Pentecostal. No es un texto de archivo: es lo que creemos y lo que se predica cada domingo.",
       "cta": "Leer la declaración completa ({{count}} artículos)"
     },
     "visit": {
       "title": "Tu primera visita",
-      "subtitle": "Lo que puedes esperar si vienes por primera vez.",
+      "subtitle": "Lo que pasa, por orden, si vienes un domingo — el día que la Declaración señala como día de adoración.",
       "items": {
         "welcome": {
           "title": "Una acogida cercana",
-          "body": "Alguien te recibirá en la entrada y te ayudará a sentirte en casa."
+          "body": "Alguien te recibe en la entrada y te acompaña a un sitio."
         },
         "worship": {
           "title": "Alabanza",
-          "body": "El culto empieza con cantos de alabanza."
+          "body": "El culto empieza con cantos de alabanza, en rumano. No hace falta que te las sepas: la letra se proyecta y nadie te mira."
         },
         "word": {
           "title": "La Palabra",
-          "body": "Después hay un mensaje bíblico, práctico y comprensible, de unos 40 minutos."
+          "body": "Después hay un mensaje bíblico de unos 40 minutos, práctico y comprensible, sin palabras que tengas que buscar luego."
         },
         "family": {
           "title": "Los niños",
-          "body": "Tenemos programa infantil para que los más pequeños aprendan a su medida."
+          "body": "Los niños tienen programa aparte, por edades, durante el mensaje. Los dejas y los recoges a la salida."
         }
       },
       "cta_program": "Ver el programa",
-      "cta_leadership": "Conocer al equipo"
-    }
+      "cta_leadership": "Conocer al equipo",
+      "note": "Al menos una vez al mes se comparte la Cena del Señor. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
+    },
+    "facts_years": "{{count}} años sirviendo",
+    "facts_services": "{{count}} cultos por semana",
+    "facts_departments": "{{count}} departamentos",
+    "visit_when": "Cuándo nos reunimos",
+    "visit_where": "Dónde estamos",
+    "visit_step": "Paso {{n}}"
   },
   "leadership": {
-    "eyebrow": "Liderazgo",
     "title": "Cómo está organizada la iglesia",
-    "lead": "Una estructura de servicio, pensada para que cada área de la iglesia esté cuidada.",
+    "priesthood": {
+      "body": "En la iglesia el sacerdocio es universal: todos los creyentes son sacerdotes de Dios. Para su gobierno espiritual, Dios ha establecido los oficios de pastor, anciano y diácono, a los que se accede por la ordenación.",
+      "ref": "Art. {{n}}",
+      "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
+    },
     "hint": "Pulsa cualquier nombre y verás todo lo que esa persona sirve en la iglesia.",
     "structure": {
       "title": "Estructura de liderazgo",
-      "subtitle": "Los cargos que representan a la iglesia y responden por ella."
+      "subtitle": "Los oficios de gobierno reconocidos por la confesión de fe, a los que se accede por la ordenación."
     },
     "committee": {
       "title": "Comité de la iglesia",
@@ -725,11 +722,6 @@
         "description": "Comunión, estudio bíblico y servicio entre las hermanas."
       }
     },
-    "ministries_section": {
-      "eyebrow": "Departamentos",
-      "title": "Dónde puedes servir",
-      "subtitle": "Cada departamento tiene la puerta abierta a voluntarios."
-    },
     "contact": {
       "title": "¿Quieres hablar con alguien?",
       "subtitle": "Escríbenos o ven a cualquiera de nuestros cultos: te esperamos.",
@@ -745,11 +737,6 @@
     "part_label": "Capítulo",
     "articles_count": "Artículos: {{count}}",
     "refs_label": "Referencias bíblicas:",
-    "summary": {
-      "title": "Índice",
-      "subtitle": "Cuatro capítulos, treinta artículos.",
-      "aria": "Índice de la declaración de fe"
-    },
     "parts": {
       "doctrine": {
         "name": "Afirmaciones doctrinales",
@@ -773,6 +760,25 @@
       "subtitle": "Nos alegra conversar sobre cualquiera de estas convicciones.",
       "cta_about": "Quiénes somos",
       "cta_leadership": "Liderazgo de la iglesia"
+    },
+    "parts_count": "Capítulos: {{count}}",
+    "adopted": "Adoptada en octubre de 2025",
+    "toc": {
+      "label": "En esta página",
+      "compact": "Índice",
+      "top": "Volver arriba"
+    },
+    "tools": {
+      "search_label": "Buscar en la confesión de fe",
+      "search_placeholder": "Busca una palabra: bautismo, Espíritu Santo…",
+      "clear": "Borrar la búsqueda",
+      "expand": "Abrir todo",
+      "collapse": "Cerrar todo",
+      "results": "{{count}} de {{total}} artículos",
+      "no_results": "Ningún artículo contiene «{{query}}».",
+      "permalink": "Enlace al artículo {{n}}",
+      "copied": "Enlace copiado",
+      "panel": "Índice y búsqueda"
     }
   }
 }

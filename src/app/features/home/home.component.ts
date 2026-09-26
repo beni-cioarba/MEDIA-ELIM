@@ -7,6 +7,9 @@ import { AnnouncementsService } from '../../core/services/announcements.service'
 import { BibleReadingService } from '../../core/services/bible-reading.service';
 import { LanguageService } from '../../core/services/language.service';
 import { ScheduleService } from '../../core/services/schedule.service';
+import { YouTubeService } from '../../core/youtube.service';
+import { youtubeThumb, youtubeThumbFallback } from '../../core/youtube-thumb';
+import { partirTitulo } from '../../core/youtube-title';
 import { CardCarouselComponent } from '../../shared/card-carousel/card-carousel.component';
 import { HeroCarouselComponent } from '../../shared/hero-carousel/hero-carousel.component';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -48,6 +51,13 @@ const RUTA_MEDIA = 'assets/drive-media/';
 const MAX_EVENTOS = 4;
 
 /**
+ * Tope de emisiones en la franja de la portada. Cinco llenan la fila a
+ * 1512 px sin que la miniatura baje de los ~190 px en que un fotograma
+ * todavía se reconoce.
+ */
+const MAX_EMISIONES = 5;
+
+/**
  * Una línea de la franja de avisos. Cabe en 40 px de alto y lleva cinco datos:
  * día, mes, título, resumen y hora/lugar. La densidad sale de repartirlos en
  * columnas alineadas, no de encoger la letra.
@@ -58,6 +68,19 @@ interface NoticeRow {
   readonly month: string;
   readonly title: string;
   readonly lead: string;
+  readonly meta: string;
+}
+
+/**
+ * Una emisión ya lista para pintar: el título de YouTube viene en una sola
+ * cadena y aquí sale partido en tipo, titular y fecha (`core/youtube-title`).
+ */
+interface BroadcastCard {
+  readonly id: string;
+  readonly url: string;
+  readonly thumb: string;
+  readonly tipo: string;
+  readonly titulo: string;
   readonly meta: string;
 }
 
@@ -154,6 +177,7 @@ export class HomeComponent {
   /** Rutas usadas en la plantilla — nunca literales sueltos. */
   protected readonly links = {
     about: `/${APP_PATHS.about}`,
+    credo: `/${APP_PATHS.credo}`,
     leadership: `/${APP_PATHS.leadership}`,
     media: `/${APP_PATHS.media}`,
     announcements: `/${APP_PATHS.announcements}`,
@@ -408,4 +432,76 @@ export class HomeComponent {
         this.config.location.mapsQuery,
       )}`,
   );
+
+  // ====================================================================
+  // Emisiones del canal
+  //
+  // Dos bloques distintos con dos vidas distintas, y por eso van en dos
+  // sitios distintos de la página:
+  //
+  //  · **El directo** caduca en horas. Es lo más perecedero de toda la web
+  //    —más que un aviso, que dura días— así que va en una franja pegada al
+  //    hero, por delante de los avisos, y sólo existe mientras se emite.
+  //  · **Las últimas emisiones** no caducan. Van detrás de «quiénes somos»,
+  //    porque responden en imágenes a lo que ese bloque cuenta en prosa:
+  //    cómo es un culto aquí. Además rompen el ritmo entre un bloque de
+  //    texto y uno de cifras.
+  //
+  // Todo el sondeo (JSON estático + comprobación directa del directo cada
+  // dos minutos) vive en `YouTubeService`; aquí sólo se pinta.
+  // ====================================================================
+
+  private readonly youtube = inject(YouTubeService);
+
+  /** El directo, si lo hay ahora mismo. */
+  protected readonly liveStream = this.youtube.liveStream;
+
+  /** Miniatura en 16:9 real y su respaldo. Ver `core/youtube-thumb.ts`. */
+  protected readonly thumb = youtubeThumb;
+  protected readonly onThumbError = youtubeThumbFallback;
+
+  /** El directo, ya partido, para la franja. */
+  protected readonly liveParts = computed(() => {
+    const live = this.liveStream();
+    return live ? partirTitulo(live.title) : null;
+  });
+
+  /**
+   * Las últimas emisiones, con el título ya partido.
+   *
+   * Cinco: es lo que llena la fila a 1512 px sin que las miniaturas bajen de
+   * los ~190 px en que un fotograma todavía se reconoce. El resto está en su
+   * sección, a un clic.
+   */
+  protected readonly broadcasts = computed<readonly BroadcastCard[]>(() =>
+    this.youtube.recentStreams().slice(0, MAX_EMISIONES).map((video) => {
+      const partes = partirTitulo(video.title);
+      return {
+        id: video.id,
+        url: video.url,
+        thumb: youtubeThumb(video.thumbnail),
+        tipo: partes.tipo,
+        titulo: partes.titulo,
+        meta: partes.meta,
+      } satisfies BroadcastCard;
+    }),
+  );
+
+  constructor() {
+    /*
+     * Modo **ligero**: la portada se sirve sólo del JSON estático (el CDN de
+     * GitHub), así que **no gasta ni una unidad** de la cuota de la API de
+     * YouTube.
+     *
+     * Es la página con más visitas y la que la gente deja abierta: con el
+     * sondeo directo puesto aquí, cien personas con la web abierta durante un
+     * culto se comían 6.000 de las 10.000 unidades diarias, y se quedaba sin
+     * cuota justo el domingo por la mañana.
+     *
+     * La tira de emisiones sale igual —viene en ese mismo JSON— y el aviso de
+     * directo también, con el retraso del JSON. La detección al minuto se
+     * reserva para la página de transmisiones, que es donde importa.
+     */
+    this.youtube.start('ligero');
+  }
 }

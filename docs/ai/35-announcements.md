@@ -151,12 +151,21 @@ decide si se proyecta.
 | `sections`   | ≤ 2 para columnas; con 3 pasan a apiladas                      |
 | `items`      | ≤ 6 por sección; `label` ≤ 40 caracteres; personas ≤ 8 por lista |
 | `footnote`   | 1 frase, ≤ 85 caracteres (dos líneas)                          |
+| `verse`      | la oración que dice lo que se pide, ≤ 60 caracteres (una línea); si hay que cortar el versículo, «…» al final |
 
 Cuando un aviso trae más que esto, el orden de decisión es: (1) acortar el
 texto sin perder el dato, (2) marcar `webOnly` la sección que es detalle,
 (3) partir en **dos anuncios** con `id` distintos (uno por tema). Nunca
 apretar: si el autoajuste baja de ~0,85 el cartel se lee mal desde el fondo,
 y el detalle completo siempre está en la web, a un escaneo del QR.
+
+> **El 0,85 está medido sin QR.** Con el QR encendido —que es lo normal— la
+> tarjeta pierde un 30 % de ancho y el mismo texto reparte en más líneas: los
+> cuatro anuncios reales del archivo se quedan hoy entre 0,70 y 1,0. Lo que no
+> se negocia es el suelo: todas las piezas pequeñas se fijan con
+> `max(calc(var(--pj-u) * 3.2), …)`, así que **nada baja de 3,2u** por mucho
+> que encoja el conjunto. Antes de dar por bueno un anuncio, míralo con el QR
+> puesto.
 
 ## Cómo redactar (protocolo para la IA)
 
@@ -168,7 +177,9 @@ Cuando el usuario pase un aviso en bruto (normalmente texto de WhatsApp):
 2. **Estructura** en lugar de transcribir: fecha/hora/lugar a sus campos,
    precios y listas a `sections` **con su `kind`** (`prices`, `people`,
    `schedule`, `list`), la frase que resume el aviso a `lead`, el invitado
-   principal o el matiz importante a `footnote`.
+   principal o el matiz importante a `footnote`. Si el aviso cierra con un
+   versículo, va a `verse` (**no** a `footnote`: el pie es una caja de aviso y
+   una cita no es un aviso — decisión 80 de `47-design-language.md`).
 3. **Acorta** sin perder datos que la persona necesita para actuar (a quién
    acudir, cuánto cuesta, cuándo, dónde). Lo decorativo sobra.
 4. **Deduce `expiresOn`**: normalmente el día del evento; para inscripciones,

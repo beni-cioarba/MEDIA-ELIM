@@ -3,80 +3,202 @@
     <p class="page-hero__eyebrow">{{ 'credo.eyebrow' | translate }}</p>
     <h1 class="page-hero__title">{{ 'credo.title' | translate }}</h1>
     <p class="page-hero__lead">{{ 'credo.lead' | translate }}</p>
+
+    <!-- Qué tienes delante, en tres datos. En un documento largo es lo
+         primero que se pregunta quien llega: cuánto es esto. -->
+    <ul class="page-hero__facts" role="list">
+      <li>{{ 'credo.parts_count' | translate: { count: partCount } }}</li>
+      <li>{{ 'credo.articles_count' | translate: { count: total } }}</li>
+      <li>{{ 'credo.adopted' | translate }}</li>
+    </ul>
   </div>
 </header>
 
-<!-- Sumario navegable -->
-<app-page-section titleKey="credo.summary.title" subtitleKey="credo.summary.subtitle">
-  <nav class="credo-index" [attr.aria-label]="'credo.summary.aria' | translate">
-    <ol class="credo-index__list">
-      @for (part of parts; track part.id) {
-        <li>
-          <a class="credo-index__link" [routerLink]="[]" [fragment]="part.id">
-            <span class="credo-index__numeral" aria-hidden="true">{{ part.numeral }}</span>
-            <span class="credo-index__text">
-              <span class="credo-index__name">
-                {{ 'credo.parts.' + part.id + '.name' | translate }}
-              </span>
-              <span class="credo-index__count">
-                {{
-                  'credo.articles_count'
-                    | translate: { count: part.articles.length }
-                }}
-              </span>
-            </span>
-            <app-icon class="credo-index__arrow" name="arrow-right" />
-          </a>
-        </li>
-      }
-    </ol>
-  </nav>
-</app-page-section>
+<!-- ===================================================================
+     El documento y su índice.
 
-<!-- Una sección por parte -->
-@for (part of parts; track part.id; let odd = $odd) {
-  <app-page-section
-    [tinted]="odd"
-    [anchor]="part.id"
-    [eyebrowKey]="'credo.part_label'"
-    [titleKey]="'credo.parts.' + part.id + '.name'"
-    [subtitleKey]="'credo.parts.' + part.id + '.description'"
-  >
-    <ol class="articles" [start]="part.articles[0].n">
-      @for (article of part.articles; track article.id) {
-        <li class="article">
-          <details class="article__details">
-            <summary class="article__summary">
-              <span class="article__number" aria-hidden="true">{{ article.n }}</span>
-              <span class="article__statement">
-                {{ 'credo.articles.' + article.id + '.title' | translate }}
-              </span>
-              <app-icon class="article__caret" name="chevron-down" />
-            </summary>
-            <div class="article__body">
-              <p>{{ 'credo.articles.' + article.id + '.body' | translate }}</p>
-              <p class="article__refs">
-                <span class="u-sr-only">{{ 'credo.refs_label' | translate }}</span>
-                {{ 'credo.articles.' + article.id + '.refs' | translate }}
-              </p>
-            </div>
-          </details>
-        </li>
-      }
-    </ol>
-  </app-page-section>
-}
+     Dos columnas: el texto a la izquierda y el índice fijo a la derecha.
+     Por debajo de `xl` el índice se convierte solo en un plegable pegado
+     bajo la cabecera (lo resuelve `app-doc-toc`).
+     =================================================================== -->
+<div class="credo">
+  <!-- El índice va **antes** del documento en el marcado, aunque en pantalla
+       salga a la derecha (lo coloca la rejilla con `grid-column`).
 
-<!-- Cierre -->
-<app-page-section titleKey="credo.outro.title" subtitleKey="credo.outro.subtitle">
-  <p class="section-cta">
-    <a class="btn btn--primary" [routerLink]="links.about">
-      {{ 'credo.outro.cta_about' | translate }}
-    </a>
-    <a class="btn btn--ghost-dark" [routerLink]="links.leadership">
-      {{ 'credo.outro.cta_leadership' | translate }}
-    </a>
-  </p>
+       El motivo es el teclado: por debajo de 1280 el panel lo abre un botón
+       del dock, que vive al final del documento. Medido, el botón era el
+       elemento 110 en orden de tabulación y los controles del panel el 11 y
+       el 75 —los dos **antes** que él—, así que al abrirlo y pulsar Tab te
+       ibas fuera del panel en vez de entrar. Con el índice arriba, el
+       recorrido es el natural: índice → herramientas → artículos. -->
+  <app-doc-toc
+    class="credo__toc"
+    [entries]="tocEntries()"
+    [label]="'credo.toc.label' | translate"
+    [compactLabel]="'credo.toc.compact' | translate"
+    [topLabel]="'credo.toc.top' | translate"
+    [compactHidden]="!panelAbierto()"
+    (select)="alElegirDelIndice($event)"
+  />
 
-  <p class="credo-source">{{ 'credo.source' | translate }}</p>
-</app-page-section>
+  <div class="credo__doc">
+    <!-- ---- Controles ------------------------------------------------
+         Un documento de 30 artículos plegados necesita tres cosas para
+         poder trabajarse: encontrar, abrir todo y cerrar todo. -->
+    <div class="tools" role="search" [class.panel-cerrado]="!panelAbierto()">
+      <div class="tools__search">
+        <label class="u-sr-only" for="credo-search">
+          {{ 'credo.tools.search_label' | translate }}
+        </label>
+        <span class="tools__icon" aria-hidden="true">⌕</span>
+        <input
+          #buscador
+          id="credo-search"
+          class="tools__input"
+          type="search"
+          autocomplete="off"
+          [value]="query()"
+          [attr.placeholder]="'credo.tools.search_placeholder' | translate"
+          [attr.aria-describedby]="'credo-search-status'"
+          (input)="alBuscar($event)"
+        />
+        @if (filtrando()) {
+          <button
+            type="button"
+            class="tools__clear"
+            [attr.aria-label]="'credo.tools.clear' | translate"
+            (click)="limpiar()"
+          >
+            ×
+          </button>
+        } @else {
+          <!-- Atajo de teclado. Se anuncia porque si no, no existe. -->
+          <kbd class="tools__kbd" aria-hidden="true">/</kbd>
+        }
+      </div>
+
+      <!-- `aria-live`: al filtrar, el número de resultados es el único
+           cambio que un lector de pantalla no percibiría solo. -->
+      <p id="credo-search-status" class="tools__status" role="status" aria-live="polite">
+        @if (filtrando()) {
+          {{ 'credo.tools.results' | translate: { count: matchCount(), total: total } }}
+        }
+      </p>
+
+      <div class="tools__actions">
+        @if (todoAbierto()) {
+          <button type="button" class="tools__btn" (click)="plegarTodo()">
+            {{ 'credo.tools.collapse' | translate }}
+          </button>
+        } @else {
+          <button type="button" class="tools__btn" (click)="desplegarTodo()">
+            {{ 'credo.tools.expand' | translate }}
+          </button>
+        }
+      </div>
+
+    </div>
+
+    @if (parts().length === 0) {
+      <p class="credo__empty">
+        {{ 'credo.tools.no_results' | translate: { query: query() } }}
+        <button type="button" class="tools__btn" (click)="limpiar()">
+          {{ 'credo.tools.clear' | translate }}
+        </button>
+      </p>
+    }
+
+    <!-- ---- Las partes ----------------------------------------------- -->
+    @for (part of parts(); track part.id) {
+      <section class="part" [id]="part.id">
+        <!-- El numeral sale del antetítulo y pasa a ser el ancla del
+             capítulo, a la izquierda del bloque entero. Es lo que hace que
+             un capítulo nuevo se reconozca de un vistazo mientras se baja
+             por treinta artículos: antes el único aviso eran 54 px de aire,
+             el mismo hueco que hay dentro del propio capítulo. -->
+        <header class="part__head">
+          <span class="part__numeral" aria-hidden="true">{{ part.numeral }}</span>
+          <div class="part__heading">
+            <p class="part__label">{{ 'credo.part_label' | translate }}</p>
+            <h2 class="part__title">{{ part.name }}</h2>
+            <p class="part__desc">{{ part.description }}</p>
+          </div>
+        </header>
+
+        <ol class="articles" role="list">
+          @for (article of part.articles; track article.id) {
+            <li class="article" [id]="article.anchor">
+              <details
+                class="article__details"
+                [open]="estaAbierto(article.anchor)"
+                (toggle)="alAlternar(article.anchor, $event)"
+              >
+                <summary class="article__summary">
+                  <span class="article__number" aria-hidden="true">{{ article.n }}</span>
+                  <span class="article__statement">{{ article.title }}</span>
+                  <app-icon class="article__caret" name="chevron-down" />
+                </summary>
+
+                <div class="article__body">
+                  <p class="article__text">{{ article.body }}</p>
+                  <!-- Referencias y enlace permanente comparten línea: el
+                       «#9» colgaba solo en un renglón propio y se leía como
+                       un resto, no como un control. -->
+                  <p class="article__foot">
+                    <span class="article__refs">
+                      <span class="u-sr-only">{{ 'credo.refs_label' | translate }}</span>
+                      {{ article.refs }}
+                    </span>
+
+                  <!-- Enlace permanente. El documento está numerado para
+                       poder citarlo; esto es lo que hace que un artículo
+                       concreto se pueda pasar por mensaje.
+
+                       Sigue siendo un `<a href="#…">` —el menú contextual del
+                       navegador y la navegación sin JavaScript siguen
+                       funcionando—, pero al pulsarlo **copia la dirección
+                       completa**, que es lo que de verdad se quiere hacer con
+                       un enlace permanente. -->
+                  @if (copiado() === article.anchor) {
+                    <span class="article__copied" role="status">
+                      {{ 'credo.tools.copied' | translate }}
+                    </span>
+                  } @else {
+                    <a
+                      class="article__anchor"
+                      [attr.href]="enlaceA(article.anchor)"
+                      [attr.aria-label]="
+                        'credo.tools.permalink' | translate: { n: article.n }
+                      "
+                      [attr.title]="'credo.tools.permalink' | translate: { n: article.n }"
+                      (click)="copiarEnlace($event, article.anchor)"
+                    >
+                      #{{ article.n }}
+                    </a>
+                  }
+                  </p>
+                </div>
+              </details>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+
+    <!-- ---- Cierre ---------------------------------------------------- -->
+    <section class="outro" id="outro">
+      <h2 class="outro__title">{{ 'credo.outro.title' | translate }}</h2>
+      <p class="outro__sub">{{ 'credo.outro.subtitle' | translate }}</p>
+      <p class="outro__actions">
+        <a class="btn btn--primary" [routerLink]="links.about">
+          {{ 'credo.outro.cta_about' | translate }}
+        </a>
+        <a class="btn btn--ghost-dark" [routerLink]="links.leadership">
+          {{ 'credo.outro.cta_leadership' | translate }}
+        </a>
+      </p>
+      <p class="credo-source">{{ 'credo.source' | translate }}</p>
+    </section>
+  </div>
+
+</div>

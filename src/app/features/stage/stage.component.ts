@@ -138,7 +138,15 @@ export class StageComponent implements OnInit {
   protected readonly qrData = computed<string>(() => this.config.publicUrl);
 
   ngOnInit(): void {
-    this.youtube.start();
+    /*
+     * Modo **completo**: aquí sí se sondea el directo cada dos minutos.
+     *
+     * Es la página de las transmisiones y la que se proyecta en el templo, o
+     * sea donde el «estamos emitiendo» tiene que aparecer al momento. Y es la
+     * que menos gente deja abierta, así que la cuota da de sobra. La portada
+     * va en modo ligero por el motivo contrario (ver `YouTubeService.start`).
+     */
+    this.youtube.start('completo');
   }
 
   /** ¿Debe verse esta diapositiva ahora mismo? */

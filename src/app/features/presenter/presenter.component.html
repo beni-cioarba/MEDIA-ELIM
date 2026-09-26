@@ -179,7 +179,9 @@
                 <li
                   class="slide"
                   [class.is-current]="isCurrent(slide)"
-                  [class.is-hidden]="slide.announcement && !isAnnouncementVisible(slide)"
+                  [class.is-hidden]="
+                    (slide.announcement && !isAnnouncementVisible(slide)) || !isEventVisible(slide)
+                  "
                 >
                   @if (slide.announcement) {
                     <input
@@ -189,6 +191,17 @@
                       [disabled]="!group.state.enabled"
                       (change)="setAnnouncementVisible(slide.announcement.id, $event)"
                       [attr.aria-label]="slide.announcement.title"
+                    />
+                  } @else if (eventId(slide); as eventoId) {
+                    <!-- Igual que un anuncio: cada evento se proyecta o no,
+                         uno a uno. La fila es el evento, no la página. -->
+                    <input
+                      type="checkbox"
+                      class="slide__check"
+                      [checked]="isEventVisible(slide)"
+                      [disabled]="!group.state.enabled"
+                      (change)="setEventVisible(eventoId, $event)"
+                      [attr.aria-label]="label(slide)"
                     />
                   } @else {
                     <span class="slide__check slide__check--spacer" aria-hidden="true"></span>

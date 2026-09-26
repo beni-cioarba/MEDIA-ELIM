@@ -8,6 +8,26 @@ import { ClockService } from './clock.service';
 const UNPARSEABLE_TIME_ORDER = 24 * 60;
 
 /**
+ * La ventana de culto abre 15 minutos antes de la hora anunciada: la
+ * retransmisión se enciende antes de que empiece el servicio.
+ */
+const MINUTOS_ANTES = 15;
+
+/**
+ * Y dura dos horas, que es lo que dura un culto con holgura. Pasadas, si la
+ * emisión sigue, el JSON estático la recoge igual: lo que se pierde es
+ * inmediatez, no la detección.
+ */
+const MINUTOS_VENTANA = 120;
+
+/** `YYYY-MM-DD` de una fecha en hora **local** (no UTC: los cultos son de aquí). */
+function isoDeFecha(f: Date): string {
+  const mes = String(f.getMonth() + 1).padStart(2, '0');
+  const dia = String(f.getDate()).padStart(2, '0');
+  return `${f.getFullYear()}-${mes}-${dia}`;
+}
+
+/**
  * Evento futuro enriquecido con los metadatos que necesita la vista.
  */
 export interface UpcomingEventView extends UpcomingEvent {
@@ -69,6 +89,49 @@ export class ScheduleService {
   readonly featuredProgram = computed<WeeklyProgram | null>(
     () => this.todayProgram() ?? this.weeklyProgram()[0] ?? null,
   );
+
+  /**
+   * Minutos de comienzo de **todo lo que hoy reúne a la iglesia**: los cultos
+   * del programa semanal que caen hoy y los eventos con fecha de hoy.
+   *
+   * Los dos orígenes y no sólo el programa: así, anotar un evento un sábado
+   * —o cualquier otro día— basta para que la app lo trate como lo que es, sin
+   * tocar código. «Cuando se indique» es, literalmente, añadir el evento.
+   */
+  private readonly comienzosDeHoy = computed<readonly number[]>(() => {
+    const ahora = new Date(this.clock.now());
+    const hoyIso = isoDeFecha(ahora);
+    const dia = ahora.getDay();
+
+    const delPrograma = this.config.weeklyProgram
+      .filter((p) => p.day === dia)
+      .flatMap((p) => parseAllTimesToMinutes(p.time));
+
+    const deEventos = this.config.upcomingEvents
+      .filter((e) => e.date === hoyIso)
+      .flatMap((e) => parseAllTimesToMinutes(e.time));
+
+    return [...new Set([...delPrograma, ...deEventos])].sort((a, b) => a - b);
+  });
+
+  /**
+   * ¿Estamos ahora dentro de una ventana de culto o evento?
+   *
+   * Abre `MINUTOS_ANTES` antes de la hora anunciada —la retransmisión se
+   * enciende un poco antes— y dura `MINUTOS_VENTANA`.
+   *
+   * Lo consume `YouTubeService` para dos cosas: apretar el ritmo justo cuando
+   * puede haber directo y, sobre todo, **no llamar a la API el resto del
+   * día**, que es lo que de verdad protege la cuota.
+   */
+  readonly enVentanaDeCulto = computed<boolean>(() => {
+    const ahora = new Date(this.clock.now());
+    const minutoActual = ahora.getHours() * 60 + ahora.getMinutes();
+    return this.comienzosDeHoy().some(
+      (inicio) =>
+        minutoActual >= inicio - MINUTOS_ANTES && minutoActual < inicio + MINUTOS_VENTANA,
+    );
+  });
 
   /**
    * Eventos futuros: descarta los pasados y ordena por día y hora de inicio.
@@ -160,6 +223,24 @@ export class ScheduleService {
 }
 
 /** Convierte "10:00" / "18:30" en minutos desde medianoche (para ordenar). */
+/**
+ * Todas las horas de comienzo que contiene una cadena de hora.
+ *
+ * El domingo figura como «10:00 & 18:00»: son **dos** cultos, no uno, y cada
+ * uno abre su propia ventana. Devolver sólo la primera dejaría la tarde sin
+ * cubrir, que es justo uno de los dos momentos que importan.
+ */
+function parseAllTimesToMinutes(time: string | undefined): readonly number[] {
+  if (!time) return [];
+  const minutos: number[] = [];
+  for (const m of time.matchAll(/(\d{1,2}):(\d{2})/g)) {
+    const h = parseInt(m[1], 10);
+    const min = parseInt(m[2], 10);
+    if (!Number.isNaN(h) && !Number.isNaN(min)) minutos.push(h * 60 + min);
+  }
+  return minutos;
+}
+
 function parseTimeToMinutes(time: string | undefined): number {
   if (!time) return UNPARSEABLE_TIME_ORDER;
   const match = time.match(/(\d{1,2}):(\d{2})/);

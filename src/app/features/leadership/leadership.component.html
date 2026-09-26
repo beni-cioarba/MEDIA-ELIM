@@ -54,6 +54,23 @@
     <app-icon name="sparkles" />
     {{ 'leadership.hint' | translate }}
   </p>
+
+  <!-- Sobre qué se apoya el organigrama.
+       Sin esto la página se lee como una jerarquía de cargos, que es justo lo
+       contrario de lo que dice la confesión: el sacerdocio es universal y los
+       oficios son gobierno espiritual, no rango. La cita enlaza al artículo
+       para que cualquiera pueda comprobarlo. -->
+  <p class="ground">
+    {{ 'leadership.priesthood.body' | translate }}
+    <a
+      class="ground__ref"
+      [routerLink]="links.credo"
+      [fragment]="sacerdocio.fragment"
+      [attr.aria-label]="'leadership.priesthood.ref_long' | translate: { n: sacerdocio.n }"
+    >
+      {{ 'leadership.priesthood.ref' | translate: { n: sacerdocio.n } }}
+    </a>
+  </p>
 </app-page-section>
 
 <!-- ================= Comitetul Bisericii =================

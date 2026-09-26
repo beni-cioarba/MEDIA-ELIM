@@ -1,0 +1,68 @@
+<!-- ===================================================================
+     Índice del documento.
+
+     En escritorio es una columna fija a la derecha; por debajo de `xl` el
+     mismo contenido pasa a ser un plegable pegado bajo la cabecera. Es el
+     mismo marcado en los dos casos —sólo cambia el envoltorio—, así que no
+     hay dos índices que mantener ni contenido duplicado para el lector de
+     pantalla.
+     =================================================================== -->
+
+<!-- Escritorio: columna fija -->
+<nav class="toc toc--rail" [class.hay-mas]="hayMas()" [attr.aria-label]="label()">
+  <p class="toc__title">{{ label() }}</p>
+
+  <ol class="toc__list" #lista>
+    @for (entry of entries(); track entry.id) {
+      <li [class.toc__item--sub]="entry.level === 2">
+        <a
+          class="toc__link"
+          [class.is-active]="esActiva(entry.id)"
+          [attr.href]="enlaceA(entry.id)"
+          [attr.data-toc-id]="entry.id"
+          [attr.aria-current]="esActiva(entry.id) ? 'location' : null"
+          (click)="alPulsar($event, entry.id)"
+        >
+          @if (entry.badge) {
+            <span class="toc__badge" aria-hidden="true">{{ entry.badge }}</span>
+          }
+          <span class="toc__text">{{ entry.label }}</span>
+        </a>
+      </li>
+    }
+  </ol>
+
+  <a class="toc__top" href="#" (click)="alPrincipio($event)">
+    <span class="toc__top-arrow" aria-hidden="true">↑</span>
+    {{ topLabel() }}
+  </a>
+</nav>
+
+<!-- Pantallas estrechas: plegable pegado bajo la cabecera -->
+<details class="toc toc--compact" [class.esta-oculto]="compactHidden()" #plegable>
+  <summary class="toc__summary">
+    <span class="toc__summary-label">{{ compactLabel() }}</span>
+    <!-- El apartado en el que se está: en móvil el índice va cerrado, así
+         que sin esto se pierde la única señal de «por dónde voy». -->
+    <span class="toc__summary-here">{{ activeLabel() }}</span>
+    <span class="toc__summary-caret" aria-hidden="true">▾</span>
+  </summary>
+
+  <ol class="toc__list">
+    @for (entry of entries(); track entry.id) {
+      <li [class.toc__item--sub]="entry.level === 2">
+        <a
+          class="toc__link"
+          [class.is-active]="esActiva(entry.id)"
+          [attr.href]="enlaceA(entry.id)"
+          (click)="alPulsar($event, entry.id)"
+        >
+          @if (entry.badge) {
+            <span class="toc__badge" aria-hidden="true">{{ entry.badge }}</span>
+          }
+          <span class="toc__text">{{ entry.label }}</span>
+        </a>
+      </li>
+    }
+  </ol>
+</details>

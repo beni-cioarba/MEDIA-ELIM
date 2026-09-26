@@ -1,10 +1,29 @@
 <!--
-  Sin cabecera visual: repetía lo que ya dicen el menú y el título de la
-  primera sección. El `<h1>` se queda en el marcado pero oculto: sin él la
-  página no tendría encabezado de nivel 1 y su esquema empezaría en `<h2>`,
-  que es una regresión de SEO y de lectores de pantalla.
+  Cabecera de página.
+
+  Estuvo escondida (`h1` en `u-sr-only`) con el argumento de que repetía el
+  menú. No lo hacía: el menú dice «Cine suntem» y el título dice **quiénes
+  somos de verdad** —«Una familia de fe en Arganda del Rey»—. El resultado era
+  que la página empezaba en seco por «Nuestra historia» y que dos textos ya
+  escritos y traducidos, el antetítulo y la entradilla, **no se enseñaban en
+  ninguna parte**.
+
+  Los tres datos de la línea inferior son los mismos que la portada, pero aquí
+  es donde de verdad pertenecen: en la página que explica quiénes somos.
 -->
-<h1 class="u-sr-only">{{ 'about.title' | translate }}</h1>
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'about.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'about.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'about.lead' | translate }}</p>
+
+    <ul class="page-hero__facts" role="list">
+      <li>{{ 'about.facts_years' | translate: { count: years() } }}</li>
+      <li>{{ 'about.facts_services' | translate: { count: config.stats[0].value } }}</li>
+      <li>{{ 'about.facts_departments' | translate: { count: config.stats[1].value } }}</li>
+    </ul>
+  </div>
+</header>
 
 <!-- Historia -->
 <app-page-section titleKey="about.story.title" subtitleKey="about.story.subtitle">
@@ -14,14 +33,17 @@
       <p>{{ 'about.story.body_2' | translate }}</p>
       <p>{{ 'about.story.body_3' | translate }}</p>
     </div>
+    <!-- Sin pie de foto: repetía palabra por palabra el `alt`, así que un
+         lector de pantalla oía la misma frase dos veces y quien ve la imagen
+         leía debajo lo que ya estaba viendo. El `alt` describe la escena; la
+         foto no necesita nada más. -->
     <figure class="story__figure">
       <img
-        [src]="config.heroSlides[0].image"
+        [src]="config.aboutImage"
         [alt]="'about.story.image_alt' | translate"
         loading="lazy"
         decoding="async"
       />
-      <figcaption>{{ 'about.story.image_alt' | translate }}</figcaption>
     </figure>
   </div>
 </app-page-section>
@@ -33,16 +55,37 @@
   titleKey="about.pillars.title"
   subtitleKey="about.pillars.subtitle"
 >
-  <ul class="pillars">
+  <!-- Filas de lista, no tarjetas.
+
+       Son cinco, y una rejilla de tarjetas con cinco elementos deja siempre
+       una fila coja (3+2 o 4+1). Como fila, la lista aguanta cualquier
+       número y además da al texto el ancho que necesita: en cinco columnas
+       el cuerpo caería en ~28 caracteres por línea.
+
+       Cada fila lleva a la derecha el artículo que la sostiene. Ésa es la
+       diferencia entre decir lo que hacemos y poder demostrarlo. -->
+  <ul class="works">
     @for (pillar of pillars; track pillar.id) {
-      <li class="pillar">
-        <app-icon class="pillar__icon" [name]="pillar.icon" />
-        <h3 class="pillar__title">
-          {{ 'about.pillars.items.' + pillar.id + '.title' | translate }}
-        </h3>
-        <p class="pillar__body">
-          {{ 'about.pillars.items.' + pillar.id + '.body' | translate }}
-        </p>
+      <li class="work">
+        <app-icon class="work__icon" [name]="pillar.icon" />
+
+        <div class="work__body">
+          <h3 class="work__title">
+            {{ 'about.pillars.items.' + pillar.id + '.title' | translate }}
+          </h3>
+          <p class="work__text">
+            {{ 'about.pillars.items.' + pillar.id + '.body' | translate }}
+          </p>
+        </div>
+
+        <a
+          class="pillar__ref work__ref"
+          [routerLink]="links.credo"
+          [fragment]="pillar.fragment"
+          [attr.aria-label]="'about.pillars.ref_long' | translate: { n: pillar.n }"
+        >
+          {{ 'about.pillars.ref' | translate: { n: pillar.n } }}
+        </a>
       </li>
     }
   </ul>
@@ -86,15 +129,58 @@
   titleKey="about.visit.title"
   subtitleKey="about.visit.subtitle"
 >
-  <ul class="expectations">
-    @for (item of expectations; track item.id) {
-      <li class="expectation">
-        <div>
-          <h3>{{ 'about.visit.items.' + item.id + '.title' | translate }}</h3>
-          <p>{{ 'about.visit.items.' + item.id + '.body' | translate }}</p>
+  <!-- Recorrido numerado, no cuatro tarjetas sueltas: lo que describen es
+       **lo que pasa, por orden**, desde que cruzas la puerta. Numerarlo lo
+       dice sin una palabra más, y de paso distingue este bloque de la
+       rejilla de pilares, que en la misma página se leía igual. -->
+  <ol class="steps">
+    @for (item of expectations; track item; let i = $index) {
+      <li class="step">
+        <span class="step__n" aria-hidden="true">{{ i + 1 }}</span>
+        <div class="step__body">
+          <h3 class="step__title">
+            <span class="u-sr-only">{{ 'about.visit_step' | translate: { n: i + 1 } }}. </span>
+            {{ 'about.visit.items.' + item + '.title' | translate }}
+          </h3>
+          <p class="step__text">{{ 'about.visit.items.' + item + '.body' | translate }}</p>
         </div>
       </li>
     }
+  </ol>
+
+  <!-- El dato que más descoloca a quien viene por primera vez, y que la
+       confesión responde con precisión (art. 19): cada cuánto se comparte la
+       Cena y quién participa. Sin esto, el visitante se entera en el momento
+       y tiene que decidir sobre la marcha. -->
+  <p class="visit-note">
+    <span class="visit-note__text">{{ 'about.visit.note' | translate }}</span>
+    <a
+      class="pillar__ref"
+      [routerLink]="links.credo"
+      fragment="art-lords_supper"
+      [attr.aria-label]="'about.pillars.ref_long' | translate: { n: 19 }"
+    >
+      {{ 'about.pillars.ref' | translate: { n: 19 } }}
+    </a>
+  </p>
+
+  <!-- Cuándo y dónde. La sección explicaba qué esperar de una visita y no
+       decía ni la hora ni la calle: los dos datos que hacen falta para
+       decidirse. Salen de `CHURCH_CONFIG`, así que no hay nada que mantener
+       en dos sitios. -->
+  <ul class="visit-facts" role="list">
+    @if (schedule.featuredProgram(); as culto) {
+      <li class="visit-fact">
+        <span class="visit-fact__label">{{ 'about.visit_when' | translate }}</span>
+        <span class="visit-fact__value">{{ culto.dayLabel }} · {{ culto.time }}</span>
+        <span class="visit-fact__extra">{{ culto.title }}</span>
+      </li>
+    }
+    <li class="visit-fact">
+      <span class="visit-fact__label">{{ 'about.visit_where' | translate }}</span>
+      <span class="visit-fact__value">{{ config.location.address }}</span>
+      <span class="visit-fact__extra">{{ config.location.city }}</span>
+    </li>
   </ul>
 
   <p class="section-cta">

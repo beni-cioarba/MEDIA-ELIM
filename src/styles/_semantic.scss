@@ -40,7 +40,13 @@
   // ---- Acento (oro) ---------------------------------------------------
   --c-gold: #{gold(500)};
   --c-gold-soft: #{gold(300)};
-  --c-gold-deep: #{gold(700)};
+  /* El oro **para texto**: es el que se usa en rótulos, antetítulos y en el
+     «Donează» de la cabecera, así que tiene que ser legible, no sólo bonito.
+     Con `gold(700)` los siete usos como texto de la portada se quedaban
+     entre 3,82 y 4,03 —ninguno llegaba al 4,5 de AA—. `gold(750)` pasa en
+     todos, y el único sitio donde es fondo (la insignia de avisos, con tinta
+     blanca) mejora de 4,03 a 5,37. Para rellenos decorativos está `--c-gold`. */
+  --c-gold-deep: #{gold(750)};
   --c-on-gold: #{navy(900)};
 
   // ---- Lienzo y superficies ------------------------------------------

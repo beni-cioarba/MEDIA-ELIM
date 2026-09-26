@@ -337,6 +337,40 @@ app-announcement-card {
 
 // ---- Cierre ----------------------------------------------------------
 
+/* =====================================================================
+ * Versículo de cierre
+ *
+ * Cita, no aviso. El pie (`__footnote`) es una caja dorada con peso 600 para
+ * lo que hay que recordar; un texto bíblico no compite con eso: se aparta,
+ * se pone en la serif que el sistema reserva para marca y Escritura, y se
+ * apoya en un filete en vez de en un fondo. Así los dos pueden convivir al
+ * final de un mismo anuncio sin pelearse.
+ * ===================================================================== */
+
+.announcement__verse {
+  margin: 0;
+  padding-inline-start: var(--sp-4);
+  border-inline-start: 2px solid var(--c-gold);
+}
+
+.announcement__verse-text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--fs-body);
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--c-primary);
+}
+
+.announcement__verse-ref {
+  margin-block-start: 0.3rem;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
 .announcement__footnote {
   margin: 0;
   max-width: none;
@@ -598,6 +632,26 @@ app-announcement-card {
   }
 
   // ---- Cierre ---------------------------------------------------------
+
+  /* En el templo la cita se lee a 15 m como el resto: escala en `--pj-*`,
+     igual que todo lo demás de la tarjeta. */
+  .announcement__verse {
+    padding-inline-start: fit(var(--pj-sp-2));
+    border-inline-start-width: max(3px, fit(calc(var(--pj-u) * 0.5)));
+  }
+
+  .announcement__verse-text {
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-caption)));
+    line-height: 1.24;
+  }
+
+  .announcement__verse-ref {
+    margin-block-start: fit(calc(var(--pj-u) * 0.4));
+    // 3,2u es el mínimo absoluto del presupuesto de legibilidad: la
+    // referencia se quedaba en 2,4u (26 px a 1080p) y no se leía desde el
+    // fondo. Todas las demás etiquetas pequeñas de esta tarjeta usan 3,2u.
+    font-size: max(calc(var(--pj-u) * 3.2), fit(calc(var(--pj-fs-caption) * 0.72)));
+  }
 
   .announcement__footnote {
     padding: fit(calc(var(--pj-u) * 0.8)) fit(var(--pj-sp-2));

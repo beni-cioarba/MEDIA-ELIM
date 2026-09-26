@@ -88,6 +88,16 @@
       <p class="announcement__footnote">{{ announcement.footnote }}</p>
     }
 
+    <!-- El versículo va como cita, no como aviso: marcado semántico
+         (`blockquote` + `cite`) y la serif que el sistema reserva para la
+         marca y la Escritura. Se proyecta igual que el resto de la tarjeta. -->
+    @if (announcement.verse; as verse) {
+      <figure class="announcement__verse">
+        <blockquote class="announcement__verse-text">«{{ verse.text }}»</blockquote>
+        <figcaption class="announcement__verse-ref">{{ verse.reference }}</figcaption>
+      </figure>
+    }
+
     <!-- Acciones de la web pública (compartir, enlace…). En proyección no se proyecta nada. -->
     <ng-content />
   </div>

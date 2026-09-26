@@ -16,7 +16,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     <section class="section" [class.section--tinted]="tinted" [attr.id]="anchor">
       <div class="section__inner">
         @if (titleKey) {
-          <header class="section__head" [class.section__head--start]="align === 'start'">
+          <header class="section__head" [class.section__head--center]="align === 'center'">
             @if (eyebrowKey) {
               <p class="section__eyebrow">{{ eyebrowKey | translate }}</p>
             }
@@ -39,7 +39,8 @@ import { TranslatePipe } from '@ngx-translate/core';
       /* Ritmo vertical de producto: secciones más juntas. Antes cada bloque
          flotaba en aire muerto; ahora la página se recorre, no se pasea. */
       .section {
-        padding: clamp(2rem, 4.5vh, 3.25rem) clamp(1rem, 4vw, 2.5rem);
+        padding-block: clamp(2rem, 4.5vh, 3.25rem);
+        padding-inline: var(--page-gutter);
       }
 
       /* Tinte PLANO, no degradado: las referencias alternan secciones con un
@@ -49,30 +50,46 @@ import { TranslatePipe } from '@ngx-translate/core';
         background: var(--c-bg-cool);
       }
 
+      /*
+       * La misma rejilla que la portada y que la cabecera de página.
+       *
+       * Estaba en --w-content (1.180 px) con un relleno propio, así que el
+       * contenido de cualquier sección caía en x=161 mientras la marca de la
+       * barra caía en 45. Sumado a la cabecera compartida, que se centraba en
+       * 52 rem y caía en 309, había cuatro márgenes izquierdos distintos en la
+       * misma pantalla.
+       *
+       * El ancho de lectura no se pierde: lo pone quien lo necesita —la
+       * cabecera de sección aquí abajo, y cada página en sus párrafos—, que es
+       * donde tiene sentido. Una sección con tarjetas no quiere 1.180 px de
+       * tope; quiere el ancho de la página.
+       */
       .section__inner {
-        max-width: var(--w-content);
-        margin: 0 auto;
-      }
-
-      .section__head {
-        max-width: 46rem;
-        margin: 0 auto clamp(1.25rem, 3vh, 1.75rem);
-        text-align: center;
-      }
-
-      .section__head--start {
-        margin-inline: 0;
-        text-align: start;
-      }
-
-      /* El \`max-width\` de prosa de \`p\` dejaría estos textos pegados a la
-         izquierda dentro de la cabecera centrada: hay que centrar la caja. */
-      .section__head > p {
+        max-width: var(--page-max);
         margin-inline: auto;
       }
 
-      .section__head--start > p {
+      /* Alineada a la izquierda por defecto, como ya estaba decidido: lo que
+         faltaba era quitarle el centrado de la caja, que la empujaba al
+         medio aunque el texto fuera a la izquierda. */
+      .section__head {
+        max-width: 46rem;
+        margin: 0 0 clamp(1.25rem, 3vh, 1.75rem);
+        text-align: start;
+      }
+
+      /* Centrado explícito: lo piden los bloques de cierre. */
+      .section__head--center {
+        margin-inline: auto;
+        text-align: center;
+      }
+
+      .section__head > p {
         margin-inline: 0;
+      }
+
+      .section__head--center > p {
+        margin-inline: auto;
       }
 
       .section__eyebrow {

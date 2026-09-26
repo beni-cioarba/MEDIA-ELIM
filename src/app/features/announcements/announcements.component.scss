@@ -14,7 +14,10 @@
   display: grid;
   gap: clamp(1.5rem, 3.5vw, 2.5rem);
   max-width: 62rem;
-  margin-inline: auto;
+  /* Alineado al borde de la rejilla, no centrado: conserva su medida de
+     lectura pero arranca donde arrancan el título y el resto de la página.
+     Centrado quedaba desplazado respecto al título de su propia sección. */
+  margin-inline: 0;
 }
 
 /* --- Acciones de la tarjeta (compartir, enlace propio) ---------------- */

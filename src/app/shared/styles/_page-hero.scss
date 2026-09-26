@@ -3,8 +3,23 @@
  * Parcial SCSS compartido: @use '../../shared/styles/page-hero' as *;
  * ===================================================================== */
 
+/*
+ * **Una sola rejilla para toda la app.**
+ *
+ * Esta cabecera se centraba en una caja de 52 rem, así que su título caía en
+ * x=309 (medido a 1512) mientras la marca de la barra caía en 45 y el
+ * contenido de las secciones en 161. Con los anuncios, que tienen su propio
+ * ancho, eran **cuatro márgenes izquierdos distintos** en el mismo sitio.
+ *
+ * Ahora usa los tokens de página (`--page-max` / `--page-gutter`), los mismos
+ * que la portada, así que el título de cualquier página interior arranca en
+ * la misma vertical que la marca. Y alineada a la izquierda, no centrada: una
+ * cabecera centrada sobre un contenido alineado a la izquierda son dos ejes
+ * peleándose, y gana el del texto que se va a leer.
+ */
 .page-hero {
-  padding: clamp(2.6rem, 8vh, 4.5rem) clamp(1rem, 4vw, 2.5rem);
+  padding-block: clamp(1.75rem, 4.5vh, 2.75rem);
+  padding-inline: var(--page-gutter);
   background:
     radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.16) 0%, transparent 55%),
     linear-gradient(135deg, var(--c-primary-deep) 0%, var(--c-primary) 60%, var(--c-primary-soft) 100%);
@@ -12,14 +27,13 @@
 }
 
 .page-hero__inner {
-  max-width: 52rem;
-  margin: 0 auto;
-  text-align: center;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  text-align: start;
 }
 
-/* Igual que en `page-section`: el `max-width` de prosa exige centrar la caja. */
 .page-hero__inner > p {
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 .page-hero__eyebrow {
@@ -41,10 +55,35 @@
   color: inherit;
 }
 
+/* La entradilla sí conserva medida de lectura: la caja llega a 1.440 px y un
+   párrafo a ese ancho no se lee. Lo que se alinea es su borde izquierdo. */
 .page-hero__lead {
-  margin: 0.9rem auto 0;
-  max-width: 42rem;
+  margin: 0.9rem 0 0;
+  max-width: 46rem;
   font-size: clamp(0.96rem, 1.5vw, 1.1rem);
   line-height: 1.65;
   color: rgba(247, 250, 252, 0.85);
+}
+
+/* --- Línea de datos bajo la entradilla --------------------------------
+ * Tres datos separados por puntos medios que **pone el CSS**: así ninguna
+ * traducción carga separadores y la línea no se descuadra si un dato falta.
+ * Vive aquí, y no en cada página, porque ya la usan dos.
+ * --------------------------------------------------------------------- */
+
+.page-hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: rgb(247 250 252 / 0.72);
+}
+
+.page-hero__facts > li + li::before {
+  content: '·';
+  margin-inline-end: 0.9rem;
+  color: rgb(247 250 252 / 0.4);
 }

@@ -156,6 +156,19 @@ export interface Announcement {
   readonly sections: readonly AnnouncementSection[];
   /** Nota de cierre (invitado principal, aviso importante…). */
   readonly footnote?: string;
+  /**
+   * Versículo de cierre.
+   *
+   * Campo propio y no `footnote`: el pie es una caja de aviso —fondo dorado,
+   * peso 600— para lo que hay que recordar, y un texto bíblico no es un
+   * aviso, es una cita. Se pinta como tal, en la serif que el sistema de
+   * diseño reserva para la marca y la Escritura. Muchos anuncios de la
+   * congregación terminan con uno, así que el modelo lo contempla.
+   */
+  readonly verse?: {
+    readonly text: string;
+    readonly reference: string;
+  };
   /** Cartel del anuncio, si lo tiene. Mismas reglas que `UpcomingEvent.poster`. */
   readonly poster?: string;
   /** Primer día en que se muestra (`YYYY-MM-DD`, incluido). Sin valor: ya. */
@@ -313,6 +326,12 @@ export interface ChurchConfig {
   /** Año de fundación — se usa para calcular «años de historia». */
   readonly foundedYear: number;
   /** Diapositivas del carrusel de portada. */
+  /**
+   * Foto de «Nuestra historia» en la página Quiénes somos. Entrada propia y
+   * no `heroSlides[0]`: reordenar el carrusel no puede cambiar la
+   * ilustración de un texto que no tiene nada que ver.
+   */
+  readonly aboutImage: string;
   readonly heroSlides: readonly HeroSlide[];
   /** Cifras destacadas de la sección «quiénes somos». */
   readonly stats: readonly ChurchStat[];
@@ -613,6 +632,48 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   //  · Texto en rumano, revisado (diacríticos, «18:00» y no «18;OO»).
   // ---------------------------------------------------------------------
   announcements: [
+    /*
+     * Semana de intercesión por el ministerio de música.
+     *
+     * El texto original llegó con erratas de tecleo (biserici→Bisericii,
+     * jerfa→jertfă, los→lor, todeauna→totdeauna, «pe unul fie care»→«pe
+     * fiecare», y el versículo entero sin diacríticos). Corregido y
+     * estructurado: el aviso en el `lead`, a quién se ora y qué se pide en
+     * dos listas, y el texto bíblico en su campo propio.
+     */
+    {
+      id: 'mijlocire_slujirea_prin_cantare',
+      title: 'Săptămână de rugăciune pentru slujirea prin cântare',
+      lead: 'Săptămâna aceasta, Grupul de Mijlocire și Post stă în rugăciune și jertfă pentru cei ce ne slujesc prin cântare.',
+      sections: [
+        {
+          heading: 'Îi aducem înaintea Domnului',
+          kind: 'list',
+          items: [
+            { label: 'Corul' },
+            { label: 'Fanfara' },
+            { label: 'Grupurile de laudă' },
+            { label: 'Dirijorii de cor și de fanfară' },
+          ],
+        },
+        {
+          heading: 'Ce cerem pentru ei',
+          kind: 'list',
+          items: [
+            { label: 'Mult har în slujire' },
+            { label: 'Duhul Sfânt să fie peste ei' },
+            { label: 'Ungere proaspătă în tot ce slujesc' },
+            { label: 'Binecuvântare peste ei și peste familiile lor' },
+          ],
+        },
+      ],
+      verse: {
+        text: 'Voi înșivă ne veți ajuta cu rugăciunile voastre…',
+        reference: '2 Corinteni 1:11',
+      },
+      publishedOn: '2026-09-26',
+      expiresOn: '2026-10-04',
+    },
     {
       id: 'aniversare_25_ani',
       title: 'Sărbătoare: 25 de ani de la înființarea Bisericii Elim',
@@ -779,14 +840,31 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   // `src/assets/drive-media/`, ejecuta `node scripts/optimize-images.js`
   // y apunta aquí a los `.webp` generados.
   // ---------------------------------------------------------------------
+  /**
+   * Foto de «Nuestra historia» (página Quiénes somos).
+   *
+   * Tiene entrada propia y **no se lee de `heroSlides[0]`**, que es lo que
+   * hacía antes: al reordenar el carrusel de portada, esta página cambiaba de
+   * foto sola y sin que nadie se enterara. Una ilustración elegida para un
+   * texto concreto no puede depender del orden de otra cosa.
+   *
+   * Se escoge la sala llena porque el texto habla de pasar de unas pocas
+   * familias a una comunidad: la foto tiene que enseñar la comunidad.
+   */
+  aboutImage: 'assets/drive-media/concert_copii_2025.webp',
+
   heroSlides: [
+    // El orden es deliberado: abre el concierto de niños (la foto con más
+    // gente y más luz, que es la primera impresión) y cierra la velada de
+    // villancicos. Entre medias, bautismo, Fin de Año y acción social.
+    // Cambiarlo es cambiar lo primero que ve quien entra.
     {
-      id: 'hero_worship',
-      i18nKey: 'worship',
-      image: 'assets/drive-media/concert_colinde_2025.webp',
-      medium: 'assets/drive-media/concert_colinde_2025-960.webp',
-      thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
-      tone: '#777e7e',
+      id: 'hero_children',
+      i18nKey: 'children',
+      image: 'assets/drive-media/concert_copii_2025.webp',
+      medium: 'assets/drive-media/concert_copii_2025-960.webp',
+      thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
+      tone: '#797474',
     },
     {
       id: 'hero_baptism',
@@ -795,14 +873,6 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       medium: 'assets/drive-media/botez_2025-960.webp',
       thumb: 'assets/drive-media/botez_2025-thumb.webp',
       tone: '#91979f',
-    },
-    {
-      id: 'hero_children',
-      i18nKey: 'children',
-      image: 'assets/drive-media/concert_copii_2025.webp',
-      medium: 'assets/drive-media/concert_copii_2025-960.webp',
-      thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
-      tone: '#797474',
     },
     {
       id: 'hero_community',
@@ -822,6 +892,14 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       medium: 'assets/drive-media/zambetul_cutie_2025-960.webp',
       thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
       tone: '#736d74',
+    },
+    {
+      id: 'hero_worship',
+      i18nKey: 'worship',
+      image: 'assets/drive-media/concert_colinde_2025.webp',
+      medium: 'assets/drive-media/concert_colinde_2025-960.webp',
+      thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
+      tone: '#777e7e',
     },
   ],
 

@@ -696,6 +696,13 @@
       display: grid;
       grid-auto-rows: auto;
       align-content: start;
+
+      // Con un solo evento (lienzo estrecho) la tarjeta ocupa 444 px de los
+      // 697 de la caja: anclada arriba, los 253 restantes se leen como si
+      // faltara contenido. Centrada, la diapositiva es un cartel.
+      &:has(> .upcoming__item:only-child) {
+        align-content: center;
+      }
       gap: calc(var(--pj-u) * 1.6);
       padding: 0;
       overflow: hidden;
@@ -714,6 +721,19 @@
     .upcoming__count-num {
       font-size: var(--pj-fs-display);
       line-height: 1;
+    }
+
+    // Cuando el evento es hoy, esta casilla no lleva una cifra sino una
+    // palabra («ESTE AZI»). A tamaño de cifra (11u) medía 298 px dentro de
+    // una columna de 216 y se salía por los dos lados, encima del borde de
+    // la tarjeta. La web ya tenía esta excepción; la proyección no la copió.
+    .is-today .upcoming__count-num {
+      font-size: var(--pj-fs-lead);
+      line-height: 1.05;
+      font-weight: 800;
+      text-align: center;
+      text-wrap: balance;
+      hyphens: none;
     }
 
     .upcoming__count-label {
@@ -737,9 +757,11 @@
       box-shadow: none;
     }
 
-    // La cuenta atrás («4 zile rămase») ya dice que es el próximo; la etiqueta
-    // sólo partía la línea de la fecha en dos.
-    .upcoming__next-badge {
+    // La cuenta atrás («4 zile rămase», «ESTE AZI») ya dice qué es cada
+    // evento; las dos etiquetas sólo partían la línea de la fecha en dos
+    // (medido: 103 px en vez de 47, en una tarjeta que ya iba justa).
+    .upcoming__next-badge,
+    .upcoming__today-badge {
       display: none;
     }
 
@@ -776,6 +798,13 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+
+    // Un solo evento en la diapositiva (lienzo estrecho, con QR): sobra
+    // altura, así que el resumen se lee entero. Recortarlo a dos líneas
+    // dejaría media diapositiva vacía y la frase cortada con puntos.
+    .upcoming__item:only-child .upcoming__item-desc {
+      -webkit-line-clamp: 4;
     }
 
     .upcoming__credit dt {

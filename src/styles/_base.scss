@@ -192,6 +192,34 @@ body.has-drawer-open {
 }
 
 // ---------------------------------------------------------------------
+// Página con barra de documento fija abajo (la confesión de fe en el
+// teléfono). La clase la pone la propia página.
+//
+// Va aquí y no en la hoja de la página porque quien tiene que apartarse es
+// el **dock flotante**, que vive en el layout y no desciende de la página:
+// una variable declarada dentro de la página nunca le llegaría, porque las
+// custom properties sólo heredan hacia abajo. Declarándola en el `body`,
+// que es antecesor de los dos, llega a ambos.
+// ---------------------------------------------------------------------
+@media (max-width: 1279.98px) {
+  body.has-doc-bar {
+    /* Alto de la barra de documento. Es el **único** sitio donde se declara:
+       lo leen la propia barra y la hoja del índice que se apoya encima. */
+    --doc-bar-h: 3.6rem;
+
+    /* El dock se aparta **sólo mientras el panel está abierto**, y lo
+       suficiente para librar el módulo entero: la barra más el resumen del
+       índice que va encima (~2,9 rem). Con el panel cerrado no hay nada
+       abajo, así que el dock vuelve a su sitio de siempre. */
+    --dock-offset: 0px;
+  }
+
+  body.has-doc-bar.has-doc-panel {
+    --dock-offset: calc(var(--doc-bar-h) + 2.9rem);
+  }
+}
+
+// ---------------------------------------------------------------------
 // Modo "fullscreen simulado": respaldo CSS cuando el navegador no permite
 // la Fullscreen API (móviles, iframes, permiso denegado…). Lo activa
 // `PresentationService` añadiendo la clase al <body>.

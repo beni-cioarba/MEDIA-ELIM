@@ -37,6 +37,42 @@
 </app-hero-carousel>
 
 <!-- ===================================================================
+     EN DIRECTO. Es lo más perecedero de toda la web: un aviso dura días, una
+     emisión en directo dura una hora. Por eso va por delante incluso de los
+     avisos, pegada al hero, y **sólo existe mientras se emite** —cuando no
+     hay directo no queda ni el hueco—. `YouTubeService` lo comprueba cada
+     dos minutos contra `liveStreamingDetails`, así que aparece sola.
+     =================================================================== -->
+@if (liveStream(); as live) {
+  <aside class="onair">
+    <a
+      class="onair__inner"
+      [href]="live.url"
+      target="_blank"
+      rel="noopener noreferrer"
+      [attr.aria-label]="('streams.live_now' | translate) + ': ' + live.title"
+    >
+      <span class="onair__badge">
+        <span class="onair__dot" aria-hidden="true"></span>
+        {{ 'streams.live_now' | translate }}
+      </span>
+
+      <span class="onair__text">
+        @if (liveParts()?.tipo; as tipo) {
+          <span class="onair__kind">{{ tipo }}</span>
+        }
+        <span class="onair__title">{{ liveParts()?.titulo || live.title }}</span>
+      </span>
+
+      <span class="onair__cta">
+        <app-icon name="play" />
+        {{ 'streams.watch_now' | translate }}
+      </span>
+    </a>
+  </aside>
+}
+
+<!-- ===================================================================
      Franja de avisos. Va ANTES del carrusel y pegada al hero a propósito:
      un anuncio es lo único de la portada con fecha de caducidad —el programa
      y el plan de lectura siguen ahí la semana que viene; un aviso o se ve hoy
@@ -99,6 +135,16 @@
      Detalle y medidas: docs/ai/48-carousel-cards.md.
      =================================================================== -->
 <section class="board">
+  <!-- Cabecera. El carrusel llevaba sólo `aria-label`, así que el bloque más
+       grande de la portada —512 px y cinco tarjetas— llegaba **sin un solo
+       rótulo**: el visitante pasaba de los anuncios a una fila de tarjetas de
+       colores sin saber qué está mirando. Y la tira de transmisiones, que
+       pesa menos, sí tenía su título: dos bloques vecinos con dos criterios.
+       Sin «ver todo»: cada tarjeta ya lleva el suyo. -->
+  <div class="board__head">
+    <h2 class="board__title">{{ 'home.board.title' | translate }}</h2>
+  </div>
+
   <app-card-carousel
     labelKey="home.board.title"
     gutter="var(--board-gutter)"
@@ -200,6 +246,72 @@
      a la derecha; así ocupa el ancho, baja a ~290 px y el versículo pasa
      de ser un recuadro más a ser el contrapunto del texto.
      =================================================================== -->
+<!-- ===================================================================
+     Últimas emisiones. Va **justo detrás del carrusel**, formando pareja con
+     él: el carrusel enseña lo que viene y esta tira lo que ya se emitió, así
+     que juntos responden «qué pasa en esta iglesia» antes de que la página
+     pase a contar quiénes somos. Además los dos son filas de tarjetas
+     horizontales, así que riman: el ojo sigue el mismo recorrido dos veces
+     en vez de cambiar de formato en cada bloque.
+
+     El título de YouTube llega en una sola cadena («Slujbă de seară - (Pilda
+     robului nemilos) Duminică 20 Septembrie 2026») y se pinta partido en
+     tres: tipo, tema y fecha. En crudo ocupaba cuatro líneas o se cortaba a
+     media palabra. Ver `core/youtube-title.ts`.
+
+     Si el canal no responde, la sección no se pinta: en una portada pública
+     un hueco vacío es peor que no tener la sección.
+     =================================================================== -->
+@if (broadcasts().length > 0) {
+  <section class="airings" [attr.aria-label]="'streams.recent_title' | translate">
+    <div class="airings__inner">
+      <div class="airings__head">
+        <h2 class="airings__title">{{ 'streams.recent_title' | translate }}</h2>
+        <a class="airings__all" [routerLink]="links.streams">
+          {{ 'streams.watch_all' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+      </div>
+
+      <ul class="airings__list" role="list">
+        @for (emision of broadcasts(); track emision.id) {
+          <li>
+            <a
+              class="airing"
+              [href]="emision.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="('streams.watch_video' | translate) + ': ' + emision.titulo"
+            >
+              <span class="airing__frame">
+                <img
+                  class="airing__thumb"
+                  [src]="emision.thumb"
+                  (error)="onThumbError($event)"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="airing__play" aria-hidden="true">
+                  <app-icon name="play" />
+                </span>
+              </span>
+
+              @if (emision.tipo) {
+                <span class="airing__kind">{{ emision.tipo }}</span>
+              }
+              <span class="airing__title">{{ emision.titulo }}</span>
+              <!-- Siempre presente aunque venga vacía: es lo que mantiene los
+                   cinco pies de tarjeta a la misma altura. -->
+              <span class="airing__meta">{{ emision.meta }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+}
+
 <section class="welcome" id="bienvenida">
   <div class="welcome__inner">
     <div class="welcome__text">
@@ -208,10 +320,20 @@
       <p class="welcome__body">{{ 'home.welcome.body' | translate }}</p>
       <p class="welcome__body">{{ 'home.welcome.body_2' | translate }}</p>
 
-      <a class="btn btn--primary welcome__cta" [routerLink]="links.about">
-        {{ 'home.welcome.cta' | translate }}
-        <app-icon name="arrow-right" />
-      </a>
+      <!-- Dos puertas, no una. «Quiénes somos» responde de dónde venimos y
+           la confesión de fe responde qué creemos, que es la otra pregunta
+           que se hace quien está mirando una iglesia por primera vez. Ese
+           documento existe, está completo y **no se enlazaba desde la
+           portada**: no había forma de llegar a él sin abrir el menú. -->
+      <p class="welcome__actions">
+        <a class="btn btn--primary" [routerLink]="links.about">
+          {{ 'home.welcome.cta' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+        <a class="btn btn--ghost btn--ghost-dark" [routerLink]="links.credo">
+          {{ 'nav.credo' | translate }}
+        </a>
+      </p>
     </div>
 
     <figure class="welcome__verse">
@@ -321,15 +443,50 @@
      250 px para una dirección. Ahora es una banda de una fila: el dato a la
      izquierda y las dos acciones a la derecha.
      =================================================================== -->
+<!-- ===================================================================
+     Cierre de la página.
+
+     Era una dirección suelta sin título: la última impresión de la portada
+     de una iglesia y lo único que decía era una calle. En una web de iglesia
+     el final es el sitio donde se convierte —«ven»—, así que ahora lleva la
+     invitación, **cuándo** (el dato que faltaba y que es el que decide si
+     alguien viene) y dónde, con las dos acciones a la derecha.
+
+     Repetir aquí el próximo culto no sobra aunque esté en la portada: arriba
+     orienta y abajo invita. Es el mismo dato haciendo dos trabajos distintos.
+     =================================================================== -->
 <section class="visit" [attr.aria-label]="'home.visit.title' | translate">
   <div class="visit__inner">
-    <p class="visit__address">
-      <app-icon class="visit__pin" name="map-pin" />
-      <span class="visit__text">
-        <span class="visit__street">{{ config.location.address }}</span>
-        <span class="visit__city">{{ config.location.city }}</span>
-      </span>
-    </p>
+    <div class="visit__body">
+      <h2 class="visit__title">{{ 'home.visit.title' | translate }}</h2>
+
+      <ul class="visit__facts" role="list">
+        @if (schedule.featuredProgram(); as culto) {
+          <li class="visit__fact">
+            <app-icon class="visit__pin" name="clock" />
+            <span class="visit__text">
+              <span class="visit__street">
+                @if (schedule.todayProgram()) {
+                  {{ 'weekly.today' | translate }}
+                } @else {
+                  {{ culto.dayLabel }}
+                }
+                · {{ culto.time }}
+              </span>
+              <span class="visit__city">{{ culto.title }}</span>
+            </span>
+          </li>
+        }
+
+        <li class="visit__fact">
+          <app-icon class="visit__pin" name="map-pin" />
+          <span class="visit__text">
+            <span class="visit__street">{{ config.location.address }}</span>
+            <span class="visit__city">{{ config.location.city }}</span>
+          </span>
+        </li>
+      </ul>
+    </div>
 
     <div class="visit__actions">
       <a

@@ -94,3 +94,23 @@ export const CREDO_ARTICLE_COUNT = CREDO_PARTS.reduce(
   (total, part) => total + part.articles.length,
   0,
 );
+
+/**
+ * Prefijo de las anclas de artículo dentro de la página del credo
+ * (`/marturisirea-de-credinta#art-church`).
+ */
+export const CREDO_ANCHOR = 'art-';
+
+/**
+ * Cita a un artículo desde otra página: su número oficial y el fragmento de
+ * URL que lo abre.
+ *
+ * El número **se busca, no se escribe a mano**: si mañana se reordena la
+ * confesión, la referencia sigue apuntando al artículo correcto en vez de
+ * quedarse mintiendo. Devuelve `n: 0` si el id no existe, que es visible al
+ * instante en pantalla y no rompe la página.
+ */
+export function citarArticulo(id: string): { readonly n: number; readonly fragment: string } {
+  const articulo = CREDO_PARTS.flatMap((parte) => parte.articles).find((a) => a.id === id);
+  return { n: articulo?.n ?? 0, fragment: CREDO_ANCHOR + id };
+}

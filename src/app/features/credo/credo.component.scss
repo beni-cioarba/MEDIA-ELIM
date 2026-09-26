@@ -1,194 +1,752 @@
 @use 'ds' as *;
 @use '../../shared/styles/buttons' as *;
 @use '../../shared/styles/page-hero' as *;
-@use '../../shared/styles/section-cta' as *;
 
-/* Estilos encapsulados de la confesión de fe. */
+/* =======================================================================
+ * Confesión de fe.
+ *
+ * Diseño de **documento**, no de página de folleto: dos columnas (texto e
+ * índice fijo), un ritmo tipográfico largo y ancho de lectura acotado. Los
+ * valores van explícitos donde el documento pide algo distinto de la app.
+ * ===================================================================== */
 
 :host {
   display: block;
 }
 
-/* --- Sumario ---------------------------------------------------------- */
+/* La cabecera de página (fondo, rejilla, alineación y línea de datos) la
+   resuelve entera `shared/styles/page-hero`: aquí ya no hay nada que
+   ajustar. Lo que estaba escrito aquí se subió a ese parcial cuando se
+   unificó la rejilla, porque lo mismo hacía falta en «Quiénes somos». */
 
-.credo-index__list {
+/* =======================================================================
+ * Las dos columnas
+ *
+ * El índice mide 16 rem fijos y el texto se queda con el resto, acotado a
+ * 54 rem de ancho de lectura. Columna fija y no proporcional: un índice que
+ * crece con la pantalla acaba con los rótulos nadando en blanco.
+ * ===================================================================== */
+
+.credo {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-  gap: var(--sp-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  counter-reset: none;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  gap: clamp(2rem, 5vw, 4rem);
+  /* El tope **incluye los dos márgenes**. Con `max-width: var(--page-max)` a
+     secas, el relleno se suma por fuera del tope y el documento caía en
+     x=76 mientras la cabecera y el resto de la app caen en x=45: la misma
+     trampa del mixin `container` que ya documenta la decisión 28 de
+     `47-design-language.md`. */
+  max-width: calc(var(--page-max) + 2 * var(--page-gutter));
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+  padding-block: clamp(1.5rem, 4vh, 2.75rem) clamp(2.5rem, 6vh, 4rem);
 }
 
-.credo-index__link {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  height: 100%;
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-lg);
-  background: var(--c-surface);
-  box-shadow: var(--shadow-sm);
-  text-decoration: none;
-  transition:
-    box-shadow var(--mo-fast) var(--ea-standard),
-    border-color var(--mo-fast) var(--ea-standard);
-}
-
-/* Sin salto al apuntar: las referencias mueven el filete, no la caja. Con
-   una rejilla de tarjetas, el salto hace que la retícula «baile». */
-.credo-index__link:hover,
-.credo-index__link:focus-visible {
-  border-color: var(--c-gold);
-  box-shadow: var(--shadow-card);
-}
-
-.credo-index__numeral {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--c-primary-deep), var(--c-primary));
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--c-text-inverse);
-}
-
-.credo-index__text {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 0.15rem;
+/*
+ * La columna del documento **llena su pista**; lo que se acota es la prosa,
+ * no la columna.
+ *
+ * Con `max-width: 54rem` en la columna, el texto terminaba en x=963 y el
+ * índice empezaba en 1184: **221 px de nada** entre los dos, que hacían que
+ * el índice pareciera desgajado y flotando solo contra el borde. El hueco
+ * real entre columnas tiene que ser el de la rejilla (4 rem), no el sobrante
+ * de un tope mal puesto.
+ *
+ * Las filas de artículo ocupan la columna entera —que es lo que las hace
+ * leerse como una tabla de contenidos— y el párrafo se acota aparte, abajo,
+ * donde sí importa la medida de lectura.
+ */
+/* Columnas fijadas a mano: el índice va primero en el marcado (por el orden
+   de tabulación, ver la plantilla) pero se pinta a la derecha. */
+.credo__doc {
+  grid-column: 1;
+  grid-row: 1;
   min-width: 0;
 }
 
-.credo-index__name {
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--c-primary);
+.credo__toc {
+  grid-column: 2;
+  grid-row: 1;
 }
 
-.credo-index__count {
-  font-size: 0.8rem;
+/* Por debajo de `xl` el índice se convierte en un plegable pegado bajo la
+   cabecera —lo decide el propio componente—, así que aquí sólo hay que
+   deshacer la segunda columna y ponerlo **antes** del texto. */
+@include until('xl') {
+  .credo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .credo__doc,
+  .credo__toc {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  /* Tope al perder la columna lateral.
+     Sin él la fila de artículo se ensanchaba **al estrechar la ventana**:
+     1.071 px a 1512 (con índice al lado) contra 1.207 a 1.279 (sin él). Un
+     documento que crece cuando la pantalla mengua se lee como un fallo. */
+  .credo__doc {
+    /* En píxeles y no en `rem` a propósito: la raíz de esta app es fluida
+       (15,4 px en el móvil, 17 en escritorio), así que un tope en `rem`
+       valdría distinto en cada pantalla —justo lo contrario de lo que se
+       busca aquí, que es un ancho de documento estable. */
+    max-width: 1120px;
+    margin-inline: auto;
+  }
+}
+
+/* =======================================================================
+ * Barra de herramientas
+ * ===================================================================== */
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-block-end: clamp(1.25rem, 3vh, 2rem);
+  padding-block-end: var(--sp-4);
+  border-block-end: 1px solid var(--c-hairline);
+}
+
+/* Tope de 26 rem. Medido a 1543 px, el campo se estiraba a **786 px**: un
+   buscador tan ancho como un párrafo promete resultados largos que aquí no
+   existen —se teclean dos palabras— y desequilibra la fila frente al botón
+   de 120. 26 rem es lo que miden los buscadores de documentación. */
+.tools__search {
+  position: relative;
+  display: flex;
+  flex: 1 1 16rem;
+  align-items: center;
+  min-width: 0;
+  max-width: 26rem;
+}
+
+.tools__icon {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--c-faint);
+  pointer-events: none;
+}
+
+.tools__input {
+  width: 100%;
+  height: 2.5rem;
+  padding-inline: 2.25rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--c-text);
+
+  &::placeholder {
+    color: var(--c-faint);
+  }
+
+  /* El `type="search"` trae su propia aspa en los navegadores WebKit, así que
+     aparecían dos: la del navegador y la de la app, pegadas. Se quita la del
+     navegador porque la nuestra también limpia el filtro y devuelve el foco. */
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration {
+    appearance: none;
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 1px;
+    border-color: var(--c-gold);
+  }
+}
+
+/* La `x` de limpiar y el atajo ocupan el mismo sitio: sólo hay uno de los
+   dos a la vez y así el campo no cambia de tamaño al escribir. */
+.tools__clear,
+.tools__kbd {
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  display: grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+}
+
+.tools__clear {
+  border: 0;
+  border-radius: 50%;
+  background: var(--c-veil);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--c-muted);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-veil-strong);
+    color: var(--c-primary);
+  }
+
+  @include focus-ring(1px);
+}
+
+.tools__kbd {
+  padding-inline: 0.4rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-faint);
+  pointer-events: none;
+}
+
+/* `margin-inline-start: auto` las empuja al extremo derecho, de modo que el
+   recuento pueda aparecer y desaparecer sin mover el botón. */
+.tools__actions {
+  display: flex;
+  flex: none;
+  gap: var(--sp-2);
+  margin-inline-start: auto;
+}
+
+.tools__btn {
+  height: 2.5rem;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    border-color: var(--c-gold);
+    background: var(--c-gold-tint);
+  }
+
+  @include focus-ring(2px);
+}
+
+/* En la misma fila, pegado al buscador y **antes** del hueco elástico: así
+   el recuento aparece y desaparece sin mover el botón de la derecha. Antes
+   ocupaba una fila entera para sí solo y la barra medía 88 px —el doble de
+   lo que mide ahora— aun estando vacía. */
+.tools__status {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.credo__empty {
+  margin: 0 0 var(--sp-8);
+  padding: var(--sp-6);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--r-card);
+  text-align: center;
   color: var(--c-muted);
 }
 
-.credo-index__arrow {
-  flex: 0 0 auto;
-  font-size: 1.1rem;
+.credo__empty .tools__btn {
+  margin-inline-start: var(--sp-3);
+}
+
+/* =======================================================================
+ * Sin columna lateral: los controles del documento se van abajo
+ *
+ * Arriba estaban mal por dos motivos medidos, no por gusto:
+ *
+ *  1. **La barra se iba con el scroll.** El índice era pegajoso, pero el
+ *     buscador y «abrir todo» no: en el artículo 20 había que subir 2.000 px
+ *     para buscar una palabra. Un control que sólo existe al principio de un
+ *     documento de consulta no sirve.
+ *  2. **Arriba no llega el pulgar**, y encima ya hay 101 px de cromo
+ *     —cabecera 56 + índice 45— en una pantalla de 844.
+ *
+ * Abajo quedan las tres cosas apiladas como un solo módulo: la lista del
+ * índice (que se abre hacia arriba), su resumen, y esta barra. El dock de
+ * compartir se aparta solo con `--dock-offset`.
+ *
+ * **El corte es `xl`, el mismo en el que desaparece la columna lateral.** No
+ * uno más estrecho: en cuanto el índice deja de estar a la vista hacen falta
+ * los controles en otro sitio, y tener un tercer diseño para la franja
+ * intermedia sólo añadía una variante más que mantener.
+ * ===================================================================== */
+
+@include until('xl') {
+  /* Alto real de la barra. Lo consumen tres cosas: la hoja del índice (para
+     apilarse justo encima), el dock flotante (para apartarse) y el propio
+     documento (para no esconder el final detrás). */
+  /* Un solo número para las tres piezas que se apilan abajo. El mismo valor
+     lo lee `body.has-doc-bar` para apartar el dock (ver `_base.scss`). */
+  /* Un solo número para las tres piezas que se apilan abajo: esta barra, la
+     hoja del índice que se apoya encima y el dock que se aparta.
+
+     Se **lee** de `--doc-bar-h` (declarada en `_base.scss` junto a la regla
+     del dock) en vez de declararse aquí: los estilos de este componente están
+     encapsulados y no pueden escribir en el `body`, que es el único antecesor
+     común con el dock. Así el valor vive en un sitio y lo usan los tres. */
+  .credo {
+    --credo-bar-h: var(--doc-bar-h, 3.6rem);
+    --doc-toc-bottom: var(--credo-bar-h);
+  }
+
+  /* Cerrada por defecto: en reposo el documento no pierde ni un píxel. */
+  .tools.panel-cerrado {
+    display: none;
+  }
+
+  .tools {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 30;
+    flex-wrap: nowrap;
+    gap: var(--sp-2);
+    /* Alto **exacto**, no mínimo: la hoja del índice se apoya justo encima
+       usando este mismo valor, y con `min-height` la barra crecía 1 px por el
+       filete y las dos se solapaban. */
+    height: var(--credo-bar-h);
+    margin-block-end: 0;
+    padding: 0.5rem var(--page-gutter);
+    /* Respeta la barra de gestos del teléfono. */
+    padding-block-end: max(0.5rem, env(safe-area-inset-bottom));
+    border-block-end: 0;
+    border-block-start: 1px solid var(--c-hairline);
+    background: var(--c-surface);
+    box-shadow: 0 -6px 20px rgb(9 20 36 / 0.1);
+  }
+
+  /* El buscador se queda con el sitio que sobra y el botón con el suyo. */
+  .tools__search {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+
+  /* 2,375 rem para que quepan dentro del alto exacto de la barra junto con
+     su relleno y el filete. */
+  .tools__input {
+    height: 2.375rem;
+  }
+
+  .tools__btn {
+    height: 2.375rem;
+    padding-inline: var(--sp-3);
+  }
+
+  /* El recuento no cabe en la fila; se queda para el lector de pantalla,
+     que es quien de verdad lo necesita (el vidente ya ve la lista filtrada). */
+  .tools__status {
+    @include visually-hidden;
+  }
+
+  /* Un respiro al final, sin reservar el alto de la barra: con el panel
+     cerrado —que es el estado normal— abajo no hay nada que tape. */
+  .credo__doc {
+    padding-block-end: 2.5rem;
+  }
+}
+
+/* =======================================================================
+ * Una parte
+ * ===================================================================== */
+
+.part {
+  /* Hueco para la cabecera fija al llegar con un ancla. Es la forma
+     declarativa de compensarla: vale igual para el índice que para un
+     enlace pegado en la barra de direcciones. */
+  scroll-margin-top: calc(var(--nav-height) + 1.5rem);
+}
+
+/* Aire de capítulo: el doble que el de dentro. Con 54 px —lo mismo que
+   separa la cabecera de su primer artículo— el cambio de capítulo no se
+   notaba al bajar. */
+.part + .part {
+  margin-block-start: clamp(3.5rem, 8vh, 5.5rem);
+}
+
+/* El numeral a la izquierda y el texto a su derecha. */
+.part__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+  margin-block-end: var(--sp-5);
+}
+
+.part__heading {
+  min-width: 0;
+}
+
+.part__label {
+  margin: 0 0 0.25rem;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
   color: var(--c-gold-deep);
 }
 
-/* --- Artículos -------------------------------------------------------- */
+/* El numeral romano: la señal de «empieza un capítulo».
+   Cuadrado con esquina suave y no disco, porque con dos cifras («III») un
+   círculo obliga a encoger la letra hasta que deja de leerse. */
+.part__numeral {
+  display: grid;
+  place-items: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding-inline: 0.5rem;
+  border-radius: var(--r-md);
+  background: var(--c-primary);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--c-on-primary);
+}
+
+.part__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: var(--ls-h2);
+  color: var(--c-primary);
+}
+
+.part__desc {
+  max-width: 44rem;
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+/* =======================================================================
+ * Un artículo
+ *
+ * Sin caja ni tarjeta: filete entre artículos y nada más. Treinta tarjetas
+ * seguidas convierten un documento en un listado y multiplican el alto por
+ * el relleno de cada una.
+ * ===================================================================== */
 
 .articles {
-  max-width: 54rem;
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  background: var(--c-surface);
+  border-block-start: 1px solid var(--c-hairline);
   list-style: none;
 }
 
-.article + .article {
-  border-top: 1px solid var(--c-hairline);
+.article {
+  border-block-end: 1px solid var(--c-hairline);
+  scroll-margin-top: calc(var(--nav-height) + 1.5rem);
+  transition: background var(--mo-fast) var(--ea-standard);
+}
+
+/*
+ * El artículo abierto se marca con filete dorado a la izquierda y una
+ * superficie muy tenue.
+ *
+ * Con «abrir todo» hay treinta artículos desplegados seguidos y, sin esto,
+ * el texto de uno y el enunciado del siguiente se leían como un solo bloque
+ * corrido: no se veía dónde acaba cada artículo. El filete da el límite
+ * izquierdo y el tono, el bloque.
+ */
+.article:has(> .article__details[open]) {
+  background: var(--c-surface-2);
+  box-shadow: inset 3px 0 0 var(--c-gold);
+}
+
+/*
+ * Destello al llegar desde el índice.
+ *
+ * Responde a «he pulsado ahí, ¿dónde estoy?»: en una lista de treinta
+ * artículos iguales, el salto por sí solo no dice cuál es el tuyo. Dura lo
+ * justo para verlo y se va; un resaltado permanente ensuciaría el documento.
+ */
+@keyframes credo-destello {
+  from {
+    background: var(--c-gold-tint);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+.article.is-targeted {
+  animation: credo-destello 1.6s var(--ea-standard) both;
 }
 
 .article__summary {
   display: flex;
   align-items: flex-start;
   gap: 0.9rem;
-  padding: 1rem 1.15rem;
+  padding: 0.9rem 0.75rem;
   cursor: pointer;
   list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(-2px);
 }
 
-.article__summary::-webkit-details-marker {
-  display: none;
-}
-
-.article__summary:hover {
-  background: var(--c-veil);
-}
-
+/* Número tabular y **alineado a la derecha**: es el identificador oficial
+   del artículo y por el que se cita, así que del 1 al 30 las unidades tienen
+   que caer en la misma vertical. Alineado a la izquierda, el «1» quedaba
+   suelto en su caja y la columna salía en escalera. */
 .article__number {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 50%;
-  background: var(--c-veil-strong);
-  font-size: 0.8rem;
+  flex: none;
+  min-width: 1.6rem;
+  text-align: end;
+  padding-block-start: 0.1rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--c-primary);
   font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
 }
 
 .article__statement {
   flex: 1 1 auto;
+  /* Ancho de lectura: sin tope, el enunciado se estiraba los 918 px de la
+     columna y una afirmación de 80 caracteres salía en una sola línea
+     larguísima. */
+  max-width: 46rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1.5;
   color: var(--c-primary);
 }
 
+/*
+ * Indicador de plegado: un galón, y nada más.
+ *
+ * Pasó por dos errores antes de esto. Primero era un carácter «▾» de 11 px en
+ * gris al 46 %: una mota. Después se metió en un disco de 1,75 rem que se
+ * rellenaba al apuntar, y el resultado era peor —un botón gris suelto contra
+ * el borde derecho, desgajado de la fila, que además prometía ser un objetivo
+ * distinto del resto—. **Toda la fila ya es el objetivo**, así que esto no es
+ * un botón: es una señal de estado, y como señal sobra el disco.
+ *
+ * Lo que sí hacía falta era que se viera: ahora es el icono de la app (trazo
+ * SVG, no un glifo tipográfico, que se renderizaba a tamaños distintos según
+ * la fuente) a 1,15 rem, y se oscurece cuando se apunta la fila.
+ */
 .article__caret {
-  flex: 0 0 auto;
-  margin-top: 0.25rem;
-  font-size: 1.1rem;
-  color: var(--c-gold-deep);
-  transition: transform 0.2s ease;
+  flex: none;
+  /* Al borde derecho de la fila. Con el enunciado acotado a 46 rem y la
+     columna en 1.071, el galón se quedaba pegado al final del texto —a media
+     fila— y parecía puesto ahí sin criterio. En una fila desplegable el
+     indicador va al extremo: es donde se busca. */
+  margin-inline-start: auto;
+  margin-block-start: 0.1rem;
+  font-size: 1.15rem;
+  color: var(--c-faint);
+  transition:
+    transform var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
+}
+
+.article__summary:hover .article__caret {
+  color: var(--c-primary);
 }
 
 .article__details[open] .article__caret {
   transform: rotate(180deg);
+  color: var(--c-gold-deep);
 }
 
+.article__details[open] .article__summary {
+  padding-block-end: 0.4rem;
+}
+
+/* El cuerpo se alinea con la afirmación, no con el número: el texto del
+   artículo cuelga de su enunciado. */
 .article__body {
-  padding: 0 1.15rem 1.2rem calc(1.15rem + 1.9rem + 0.9rem);
+  padding: 0 0.75rem 1.15rem calc(0.75rem + 1.6rem + 0.9rem);
 }
 
-.article__body > p {
+/* Medida de lectura: ~44 rem son unos 90 caracteres por línea con esta
+   fuente. Sin tope, el párrafo se estiraba a los 1.000 px de la columna y
+   pasaba de 130, que es donde el ojo ya pierde el renglón al volver. */
+.article__text {
   margin: 0;
-  font-size: 0.94rem;
+  max-width: 44rem;
+  font-size: 0.9375rem;
   line-height: 1.75;
   color: var(--c-text);
 }
 
-.article__body > .article__refs {
-  margin-top: 0.6rem;
-  font-size: 0.8rem;
+/* Una sola línea para las dos cosas: referencias a la izquierda y enlace
+   permanente al final. Así el pie del artículo es un renglón, no dos. */
+.article__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1.5rem;
+  max-width: 44rem;
+  margin: 0.7rem 0 0;
+}
+
+.article__refs {
+  min-width: 0;
+  font-size: 0.8125rem;
   font-style: italic;
-  color: var(--c-muted);
-}
-
-/* --- Nota de procedencia (pie del documento) -------------------------- */
-
-.credo-source {
-  max-width: none;
-  margin: var(--sp-8) 0 0;
-  font-size: 0.82rem;
   line-height: 1.6;
-  text-align: center;
   color: var(--c-muted);
 }
 
-@include until(sm) {
-  .article__body {
-    padding-inline-start: 1.15rem;
+/* Confirmación de copiado. Reemplaza al `#N` en su sitio, así que no
+   desplaza nada y desaparece sola. */
+.article__copied {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--c-success);
+}
+
+/* Enlace permanente: discreto en reposo, legible al apuntar el artículo. */
+.article__anchor {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-faint);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    color: var(--c-gold-deep);
+    text-decoration: underline;
+  }
+
+  @include focus-ring(2px);
+}
+
+.article:hover .article__anchor,
+.article__anchor:focus-visible {
+  opacity: 1;
+}
+
+/* En táctil no hay «apuntar», así que un enlace que sólo aparece al apuntar
+   no existe. Ahí se queda siempre visible. */
+@media (hover: none) {
+  .article__anchor {
+    opacity: 1;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .credo-index__link,
-  .article__caret {
+@include until('sm') {
+  .article__body {
+    padding-inline-start: 0.75rem;
+  }
+}
+
+/* =======================================================================
+ * Cierre
+ * ===================================================================== */
+
+.outro {
+  margin-block-start: clamp(2.5rem, 6vh, 4rem);
+  padding-block-start: clamp(1.5rem, 4vh, 2.5rem);
+  border-block-start: 1px solid var(--c-hairline);
+  scroll-margin-top: calc(var(--nav-height) + 1.5rem);
+}
+
+.outro__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary);
+}
+
+.outro__sub {
+  margin: 0.4rem 0 var(--sp-5);
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.outro__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.credo-source {
+  margin: var(--sp-6) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--c-faint);
+}
+
+@include motion-reduce {
+  .article__caret,
+  .article__anchor,
+  .tools__btn {
     transition: none;
+  }
+
+  .article.is-targeted {
+    animation: none;
+  }
+}
+
+/* =======================================================================
+ * Impresión
+ *
+ * En papel el documento tiene que salir **entero**: un `<details>` plegado
+ * imprime sólo el enunciado, así que se fuerza la apertura de todos. Es la
+ * diferencia entre imprimir la confesión de fe y imprimir su índice.
+ * ===================================================================== */
+
+@media print {
+  .tools,
+  .article__caret,
+  .article__anchor,
+  .outro__actions {
+    display: none;
+  }
+
+  .credo {
+    display: block;
+    padding: 0;
+  }
+
+  .credo__doc {
+    max-width: none;
+  }
+
+  .article__details > .article__body {
+    display: block !important;
+  }
+
+  .article {
+    break-inside: avoid;
   }
 }

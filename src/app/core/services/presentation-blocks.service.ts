@@ -2,6 +2,7 @@ import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angul
 import { Announcement, CHURCH_CONFIG } from '../church.config';
 import { AnnouncementsService } from './announcements.service';
 import { BibleReadingService } from './bible-reading.service';
+import { PresentationDisplayService } from './presentation-display.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
 
 /** Identificador estable de cada bloque proyectable del carrusel. */
@@ -72,14 +73,38 @@ export interface AnnouncementSlideState {
   readonly visible: boolean;
 }
 
+/** Un evento próximo con su interruptor de proyección, para el panel. */
+export interface UpcomingSlideState {
+  readonly event: UpcomingEventView;
+  readonly visible: boolean;
+}
+
 /**
- * Eventos por diapositiva: dos caben grandes y legibles con la escala de cartel
- * (descripción recortada a dos líneas en proyección; el detalle está en la web).
+ * Eventos por diapositiva **sin QR**: dos caben grandes y legibles con la
+ * escala de cartel (descripción recortada a dos líneas; el detalle, en la web).
  */
 export const UPCOMING_PER_SLIDE = 2;
 
+/**
+ * Eventos por diapositiva **con QR**: uno.
+ *
+ * El QR se lleva la columna derecha y el texto baja de 1790 a 1250 px de
+ * ancho —un 30 % menos—, así que las mismas tarjetas reparten su texto en más
+ * líneas: medido con la semana real, dos tarjetas pasaban de 636 px (caben,
+ * con 61 de margen) a 851 px en una caja de 697, y la segunda se cortaba a
+ * media línea.
+ *
+ * La salida no es apretar rellenos —ganaba 150 px y volvía a cortarse con un
+ * título una línea más largo— sino proyectar un evento por diapositiva cuando
+ * el lienzo es estrecho: cada uno se lee entero y con su propio tiempo. Es la
+ * misma idea que la sección «sin QR» de `_projection.scss`, donde los bloques
+ * se recolocan según el ancho disponible.
+ */
+export const UPCOMING_PER_SLIDE_QR = 1;
+
 const STORAGE_KEY = 'iglesia-redes.presentation.blocks';
 const HIDDEN_ANNOUNCEMENTS_KEY = 'iglesia-redes.presentation.announcements.hidden';
+const HIDDEN_EVENTS_KEY = 'iglesia-redes.presentation.events.hidden';
 const ORDER_KEY = 'iglesia-redes.presentation.order';
 
 /**
@@ -123,6 +148,7 @@ export class PresentationBlocksService {
   private readonly schedule = inject(ScheduleService);
   private readonly announcements = inject(AnnouncementsService);
   private readonly bible = inject(BibleReadingService);
+  private readonly display = inject(PresentationDisplayService);
 
   /** Preferencias manuales persistidas (ausente ⇒ modo automático). */
   private readonly overrides = signal<Partial<Record<PresentationBlockId, boolean>>>(
@@ -131,6 +157,9 @@ export class PresentationBlocksService {
 
   /** Anuncios que el operador ha decidido no proyectar (por id). */
   private readonly hiddenAnnouncementIds = signal<ReadonlySet<string>>(readHiddenAnnouncements());
+
+  /** Eventos que el operador ha decidido no proyectar (por id). */
+  private readonly hiddenEventIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_EVENTS_KEY));
 
   /** Orden elegido por el operador (ids). Vacío ⇒ el orden de `BLOCK_DEFS`. */
   private readonly customOrder = signal<readonly PresentationBlockId[]>(readStoredOrder());
@@ -164,6 +193,9 @@ export class PresentationBlocksService {
       }
       if (event.key === null || event.key === HIDDEN_ANNOUNCEMENTS_KEY) {
         this.hiddenAnnouncementIds.set(readHiddenAnnouncements());
+      }
+      if (event.key === null || event.key === HIDDEN_EVENTS_KEY) {
+        this.hiddenEventIds.set(readHiddenIds(HIDDEN_EVENTS_KEY));
       }
       if (event.key === null || event.key === ORDER_KEY) {
         this.customOrder.set(readStoredOrder());
@@ -230,6 +262,19 @@ export class PresentationBlocksService {
       .map((s) => s.announcement),
   );
 
+  /** Eventos próximos con su interruptor, para el panel de ajustes. */
+  readonly upcomingStates = computed<readonly UpcomingSlideState[]>(() => {
+    const hidden = this.hiddenEventIds();
+    return this.schedule.upcomingEvents().map((event) => ({ event, visible: !hidden.has(event.id) }));
+  });
+
+  /** Eventos próximos que sí se proyectan. */
+  readonly visibleEvents = computed<readonly UpcomingEventView[]>(() =>
+    this.upcomingStates()
+      .filter((s) => s.visible)
+      .map((s) => s.event),
+  );
+
   /**
    * Diapositivas del carrusel, en orden: los bloques activos expandidos
    * (`announcements` → una por anuncio visible; `upcoming` → páginas).
@@ -255,7 +300,10 @@ export class PresentationBlocksService {
 
   /** `true` si alguna preferencia manual difiere del automático. */
   readonly hasManualOverrides = computed<boolean>(
-    () => this.states().some((s) => !s.isAuto) || this.hiddenAnnouncementIds().size > 0,
+    () =>
+      this.states().some((s) => !s.isAuto) ||
+      this.hiddenAnnouncementIds().size > 0 ||
+      this.hiddenEventIds().size > 0,
   );
 
   /**
@@ -291,15 +339,43 @@ export class PresentationBlocksService {
     }
 
     if (id === 'upcoming') {
-      const events = this.schedule.upcomingEvents();
-      if (events.length === 0) return this.emptySlide(id);
+      // Igual que con los anuncios: el panel los lista todos (para poder
+      // volver a marcarlos) y la proyección sólo pinta los elegidos.
+      const todos = this.schedule.upcomingEvents();
+      // Sin eventos en el calendario: diapositiva vacía con su mensaje, para
+      // que el operador entienda por qué la pantalla está en blanco.
+      if (todos.length === 0) return this.emptySlide(id);
+      const events = projection ? this.visibleEvents() : todos;
+      // Los ha ocultado todos a mano: eso no es «no hay nada que contar»,
+      // es «hoy no los proyectes», así que el bloque no aporta diapositivas.
+      if (events.length === 0) return [];
       if (!paginate) return [{ key: id, block: id, titleKey, events }];
-      const total = Math.ceil(events.length / UPCOMING_PER_SLIDE);
+
+      /*
+       * En el panel, **una fila por evento** y no por página.
+       *
+       * La página es un detalle de la proyección —cambia sola al encender el
+       * QR, que reparte los eventos de otra forma— y el operador no decide
+       * sobre páginas: decide sobre eventos. Con una fila por evento, la
+       * casilla corresponde a uno concreto, el rótulo es su título y pulsar
+       * la fila salta a la diapositiva donde ese evento se proyecta
+       * (`PresenterComponent.indexOf` resuelve la correspondencia).
+       */
+      if (view === 'panel') {
+        return events.map((event) => ({
+          key: `${id}:${event.id}`,
+          block: id,
+          titleKey,
+          events: [event],
+        }));
+      }
+      const perSlide = this.display.qrVisible() ? UPCOMING_PER_SLIDE_QR : UPCOMING_PER_SLIDE;
+      const total = Math.ceil(events.length / perSlide);
       return Array.from({ length: total }, (_, index) => ({
         key: `${id}:${index}`,
         block: id,
         titleKey,
-        events: events.slice(index * UPCOMING_PER_SLIDE, (index + 1) * UPCOMING_PER_SLIDE),
+        events: events.slice(index * perSlide, (index + 1) * perSlide),
         page: { index, total },
       }));
     }
@@ -339,6 +415,8 @@ export class PresentationBlocksService {
     this.overrides.set({});
     this.hiddenAnnouncementIds.set(new Set());
     persistHiddenAnnouncements(new Set());
+    this.hiddenEventIds.set(new Set());
+    persistHiddenIds(HIDDEN_EVENTS_KEY, new Set());
   }
 
   /**
@@ -378,6 +456,17 @@ export class PresentationBlocksService {
       if (visible) next.delete(id);
       else next.add(id);
       persistHiddenAnnouncements(next);
+      return next;
+    });
+  }
+
+  /** Muestra u oculta un evento concreto en la proyección. */
+  setEventVisible(id: string, visible: boolean): void {
+    this.hiddenEventIds.update((current) => {
+      const next = new Set(current);
+      if (visible) next.delete(id);
+      else next.add(id);
+      persistHiddenIds(HIDDEN_EVENTS_KEY, next);
       return next;
     });
   }
@@ -425,9 +514,14 @@ function persistOverrides(overrides: Partial<Record<PresentationBlockId, boolean
  * consecuencias (no coinciden con nada) y se limpian con «Restablecer».
  */
 function readHiddenAnnouncements(): ReadonlySet<string> {
+  return readHiddenIds(HIDDEN_ANNOUNCEMENTS_KEY);
+}
+
+/** Ids ocultos guardados bajo una clave. Mismo trato para anuncios y eventos. */
+function readHiddenIds(key: string): ReadonlySet<string> {
   if (typeof localStorage === 'undefined') return new Set();
   try {
-    const raw = localStorage.getItem(HIDDEN_ANNOUNCEMENTS_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return new Set();
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return new Set();
@@ -466,9 +560,13 @@ function persistOrder(ids: readonly PresentationBlockId[]): void {
 }
 
 function persistHiddenAnnouncements(ids: ReadonlySet<string>): void {
+  persistHiddenIds(HIDDEN_ANNOUNCEMENTS_KEY, ids);
+}
+
+function persistHiddenIds(key: string, ids: ReadonlySet<string>): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(HIDDEN_ANNOUNCEMENTS_KEY, JSON.stringify([...ids]));
+    localStorage.setItem(key, JSON.stringify([...ids]));
   } catch {
     /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
   }

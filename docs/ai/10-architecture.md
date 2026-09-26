@@ -75,7 +75,7 @@ Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
 | Servicio                       | Expone                                                                  |
 | ------------------------------ | ----------------------------------------------------------------------- |
 | `ClockService`                 | `now` (tick 1 min), `pageVisible`. **Única** fuente de tiempo/visibilidad |
-| `ScheduleService`              | `currentWeekDay`, `weeklyProgram`, `todayProgram`, `upcomingEvents`, `hasUpcomingEvents`, `formatEventDate()` |
+| `ScheduleService`              | `currentWeekDay`, `weeklyProgram`, `todayProgram`, `upcomingEvents`, `hasUpcomingEvents`, `formatEventDate()`, `enVentanaDeCulto` |
 | `AnnouncementsService`         | `active`, `hasActive`, `byId()` — anuncios vigentes por fecha (`35-announcements.md`) |
 | `BibleReadingService`          | `announcedWeek` (la que contiene mañana), `hasReading`, `formatRange()`, `formatWeekday()` |
 | `PresentationDisplayService`   | `qrVisible`, `qrSize`, `toggleQr()`, `setQrSize()`, `durations`, `durationFor()`, `stepDuration()`, `resetDurations()` + persistencia |
@@ -84,7 +84,7 @@ Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
 | `ProjectionWindowService`      | `open()`, `close()`, `focus()`, `isOpen`, `canPlaceOnOtherScreen`, `projectionUrl()` |
 | `PresentationBlocksService`    | `states`, `activeBlockIds`, `activeSlides`, `expand()`, `announcementStates`, `setAnnouncementVisible()`, `setEnabled()`, `resetToAuto()`, `resetAll()` |
 | `CarouselService`              | `slides`, `currentIndex`, `currentSlide`, `currentDurationMs`, `isActive(key)`, `isBlockActive(id)`, `progress`, `isPaused`, `next/prev/setIndex/togglePause` |
-| `YouTubeService`               | `liveStream`, `recentStreams`, `start()`                                 |
+| `YouTubeService`               | `liveStream`, `recentStreams`, `start('ligero' \| 'completo')`            |
 | `youtube-thumb.ts`             | `youtubeThumb()` / `youtubeThumbFallback()`: miniatura en **16:9 real** (`hq720`, respaldo `mqdefault`). La API da `hqdefault`, que es 4:3 y ya viene recortada de lado |
 | `CalendarService`              | `.ics`, `webcal://`, URL de Google Calendar, portapapeles                |
 | `LanguageService`              | `current`, `use()`, `toggle()` + persistencia                            |

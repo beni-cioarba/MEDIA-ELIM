@@ -12,7 +12,7 @@
 /* --- Versículo del hero ----------------------------------------------- */
 
 .verse {
-  margin: clamp(1.6rem, 4vh, 2.4rem) auto 0;
+  margin: clamp(1.6rem, 4vh, 2.4rem) 0 0;
   max-width: 40rem;
   padding-block-start: var(--sp-5);
   border-block-start: 1px solid rgba(247, 250, 252, 0.25);
@@ -91,7 +91,7 @@
 
 .demo {
   max-width: 46rem;
-  margin: 0 auto var(--sp-6);
+  margin: 0 0 var(--sp-6);
   padding: var(--sp-4) var(--sp-5);
   font-size: 0.88rem;
   line-height: 1.6;
@@ -110,7 +110,7 @@
 
 .bank {
   max-width: 46rem;
-  margin: 0 auto;
+  margin: 0;
   padding: clamp(1.4rem, 3vw, 2.25rem);
   background: var(--c-surface);
   border: 1px solid var(--c-hairline);

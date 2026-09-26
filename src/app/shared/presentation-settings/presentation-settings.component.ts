@@ -163,6 +163,29 @@ import {
                   }
                 </div>
 
+                <!-- Eventos próximos, uno a uno, bajo el bloque «Evenimente». -->
+                @if (state.id === 'upcoming' && blocks.upcomingStates().length > 0) {
+                  <ul class="items" role="list" [attr.aria-label]="'upcoming.title' | translate">
+                    @for (item of blocks.upcomingStates(); track item.event.id) {
+                      <li class="items__row" [class.is-off]="!item.visible">
+                        <label class="items__switch">
+                          <input
+                            type="checkbox"
+                            [checked]="item.visible"
+                            [disabled]="!state.enabled"
+                            (change)="setEventVisible(item.event.id, $event)"
+                          />
+                          <span class="items__box" aria-hidden="true"></span>
+                          <span class="items__name">{{ item.event.title }}</span>
+                        </label>
+                      </li>
+                    }
+                    <li class="items__summary">
+                      {{ 'blocks.events_summary' | translate: { shown: blocks.visibleEvents().length, total: blocks.upcomingStates().length } }}
+                    </li>
+                  </ul>
+                }
+
                 <!-- Anuncios vigentes, uno a uno, bajo el bloque «Anunțuri». -->
                 @if (state.id === 'announcements' && blocks.announcementStates().length > 0) {
                   <ul class="items" role="list" [attr.aria-label]="'announcements.title' | translate">
@@ -811,6 +834,11 @@ export class PresentationSettingsComponent {
   protected setEnabled(id: PresentationBlockId, event: Event): void {
     const input = event.target as HTMLInputElement;
     this.blocks.setEnabled(id, input.checked);
+  }
+
+  protected setEventVisible(id: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.blocks.setEventVisible(id, input.checked);
   }
 
   protected setAnnouncementVisible(id: string, event: Event): void {

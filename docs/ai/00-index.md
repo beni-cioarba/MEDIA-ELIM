@@ -77,7 +77,8 @@ src/app/
     ineb-logo/              ⭐ Marca INEB en SVG, carpeta autocontenida + README (hoja de marca)
     icon/ social-icon/ lang-switcher/ qr-panel/ footer/ share-button/
     floating-actions/ calendar-sync-button/ presentation-settings/
-    page-section/ hero-carousel/
+    page-section/ hero-carousel/ card-carousel/
+    doc-toc/                ⭐ Índice lateral con seguimiento del apartado activo (documentos largos)
     styles/                 Parciales SCSS compartidos (botones, page-hero)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
 src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
@@ -110,6 +111,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Color, espaciado, tipografía, componente Material» | `docs/ai/45-design-system.md`                           |
 | «¿Qué clase uso?» · «Necesito una tarjeta / fila / barra» | Abre **`/stil`** y usa la primitiva `ui-*`; catálogo y reglas en `docs/ai/47-design-language.md` |
 | «Monto un carrusel o un bloque de escaparate» | `docs/ai/48-carousel-cards.md` — **línea nueva**, calcada de la referencia medida; manda sobre el catálogo dentro de un carrusel o una tarjeta de promoción |
+| «Una página larga que hay que poder recorrer» · «Índice / cuprins» | `<app-doc-toc>` (`shared/doc-toc/`): le pasas las entradas ya traducidas y él pone la columna fija, el seguimiento del apartado activo y el plegable de móvil. El anfitrión escucha `(select)` para preparar el destino. Decisiones 34-38 de `docs/ai/47-design-language.md` |
 | «Módulo de gestión nuevo (consola)»                 | `host: { class: 'ui-dense ui-dark' }` + `ui-toolbar` + `ui-panel` — `docs/ai/47-design-language.md` |
 | «¿Qué logo pongo aquí?» · «Cambia el icono de la app» · «Logo de INEB» | `docs/ai/45-design-system.md` → «Marca» (wordmark `app-brand-logo` / emblema → `npm run pwa:icons` / `app-ineb-logo`; hoja de marca INEB en `shared/ineb-logo/README.md`) |
 | «Pantalla completa de la proyección desde el panel» | Botón «Pantalla completa» del panel (`ProjectionWindowService.toggleFullscreen`, gesto delegado) — `docs/ai/30-presentation.md` |

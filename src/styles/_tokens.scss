@@ -47,6 +47,12 @@ $gold: (
   // ← acento de marca
   600: #bf9a2b,
   700: #9c7a1e,
+  // Escalón intermedio que existe por una razón concreta: es el oro más
+  // claro que **pasa AA (4.5:1) como texto pequeño** sobre los cuatro fondos
+  // reales de la app —lienzo 5,1 · blanco 5,37 · franja de avisos 5,1 · velo
+  // dorado 4,64—. Con el 700 los siete rótulos dorados de la portada se
+  // quedaban entre 3,82 y 4,03: ninguno llegaba.
+  750: #856618,
   800: #7a5e15,
   900: #55400c,
 );

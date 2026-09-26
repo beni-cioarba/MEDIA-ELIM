@@ -94,6 +94,180 @@
   margin-top: clamp(1.5rem, 3vh, 2.25rem);
 }
 
+/* =======================================================================
+ * EN DIRECTO — franja de estado
+ *
+ * No es una sección: es una **tira de estado**, como la barra de «última
+ * hora» de un informativo. De ahí que mida 3 rem y no las 6-8 de un bloque,
+ * que vaya pegada al hero y que desaparezca entera —sin dejar hueco— en
+ * cuanto termina la emisión.
+ *
+ * Fondo navy profundo con el punto en rojo de directo: el navy la ata a la
+ * marca y evita una franja roja de alarma, que es lo que parecería si el
+ * color de estado ocupara todo el fondo. La banda de cifras también es
+ * oscura, pero están a media página de distancia y pesan distinto —ésta es
+ * una línea, aquélla un bloque—.
+ * ===================================================================== */
+
+.onair {
+  padding-inline: var(--page-gutter);
+  background: var(--c-primary-darkest);
+  color: var(--c-text-inverse);
+}
+
+.onair__inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  max-width: var(--page-max);
+  min-height: 3rem;
+  margin-inline: auto;
+  padding-block: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.onair__inner:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: -3px;
+}
+
+/* --- Insignia ----------------------------------------------------------- */
+
+.onair__badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--r-pill);
+  background: var(--c-live);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* El punto que late. Es el símbolo universal de «emitiendo» y se reconoce
+   antes que cualquier palabra, en cualquiera de los dos idiomas. */
+.onair__dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.onair__dot::after {
+  content: '';
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  opacity: 0;
+  animation: onair-pulse 2s var(--ea-standard) infinite;
+}
+
+@keyframes onair-pulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.6);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* --- Texto -------------------------------------------------------------- */
+
+/* En una línea: el tipo de culto y el tema separados por un punto medio.
+   Apilados, la franja pasaría de 48 px a 70 y dejaría de ser una tira. */
+.onair__text {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.onair__kind {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.onair__kind::after {
+  content: '·';
+  margin-inline-start: 0.5rem;
+  color: rgb(255 255 255 / 0.4);
+}
+
+/* Aquí sí se corta con puntos suspensivos, y es lo correcto: la franja mide
+   una línea por definición y el título completo está a un clic. */
+.onair__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* --- Llamada ------------------------------------------------------------ */
+
+.onair__cta {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2rem;
+  padding-inline: 0.85rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--c-on-gold);
+  transition: background var(--mo-fast) var(--ea-standard);
+}
+
+.onair__cta app-icon {
+  font-size: 0.95rem;
+}
+
+.onair__inner:hover .onair__cta,
+.onair__inner:focus-visible .onair__cta {
+  background: var(--c-gold-soft);
+}
+
+/* Por debajo de `sm` el tema no cabe junto a la insignia y la llamada. Se
+   queda la insignia (el dato: estamos emitiendo) y el botón (la acción); el
+   título se recupera al abrir el vídeo. */
+@media (max-width: 719.98px) {
+  .onair__text {
+    display: none;
+  }
+
+  .onair__inner {
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onair__dot::after {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .onair__cta {
+    transition: none;
+  }
+}
+
 /* =====================================================================
  * Franja de avisos — lo único de la portada con fecha de caducidad.
  *
@@ -137,7 +311,7 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #9c7a1e;
+  color: var(--c-gold-deep);
 }
 
 .notice__label app-icon {
@@ -151,7 +325,7 @@
   height: 1.05rem;
   padding-inline: 0.25rem;
   border-radius: 999px;
-  background: #9c7a1e;
+  background: var(--c-gold-deep);
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -287,7 +461,7 @@
   text-align: right;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #9c7a1e;
+  color: var(--c-gold-deep);
   font-variant-numeric: tabular-nums;
 }
 
@@ -319,10 +493,28 @@
     line-height: 1.25;
   }
 
+  /*
+   * `width: 100%`, **nunca `justify-self` + `width: auto`**.
+   *
+   * Medido a 390 px: este `span` salía con 400 px de ancho y arrastraba a
+   * toda la página 74 px de scroll horizontal —la web entera se descolocaba
+   * al arrastrar de lado—.
+   *
+   * El porqué: con una alineación propia distinta de `stretch`, la rejilla
+   * dimensiona el elemento a `fit-content`, que es
+   * `min(max-content, max(min-content, disponible))`. Y como el texto va en
+   * `nowrap`, su `min-content` es la cadena entera («10:00 · Biserica Elim ·
+   * masă festivă la restaurant»): el `max()` se queda con los 400 px y se
+   * come el ancho disponible. `min-width: 0` no salva de esto, porque la
+   * fórmula usa el tamaño mínimo del contenido, no la propiedad.
+   *
+   * Con `width: 100%` el elemento mide lo que su columna y los puntos
+   * suspensivos pueden hacer su trabajo. Es el mismo fallo que ya se
+   * corrigió en la versión de escritorio de esta misma fila.
+   */
   .notice__meta {
     grid-column: 2;
-    justify-self: start;
-    width: auto;
+    width: 100%;
     text-align: start;
     font-size: 0.6875rem;
     line-height: 1.2;
@@ -355,6 +547,304 @@
      presenta sola en su pie. */
   padding-block: clamp(0.85rem, 2vh, 1.35rem);
   background: var(--c-bg);
+}
+
+/* El título se alinea con la primera tarjeta usando el mismo sangrado que la
+   pista, que es lo que la hoja ya preveía («el título queda alineado con la
+   primera tarjeta») pero no llegó a pintarse. Mismo tamaño y peso que el de
+   las emisiones: son dos tiras vecinas y tienen que leerse como hermanas. */
+.board__head {
+  padding-inline: var(--board-gutter);
+  margin-block-end: clamp(0.5rem, 1.4vh, 0.85rem);
+}
+
+.board__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary);
+}
+
+/* =======================================================================
+ * ÚLTIMAS EMISIONES
+ *
+ * Una fila de cinco fotogramas con su ficha debajo. Comprimida de verdad:
+ * cabecera de una línea y tarjetas sin caja —el fotograma ES la tarjeta—,
+ * que es como lo resuelve cualquier catálogo de vídeo. Dibujarles un marco
+ * con filete y relleno sumaría 40 px por tarjeta sin añadir un solo dato.
+ *
+ * La jerarquía del texto sale de partir el título de YouTube en tres
+ * (`core/youtube-title.ts`): tipo de culto arriba en versalitas, tema como
+ * titular y fecha debajo. Sin partirlo, las cinco fichas eran cinco párrafos
+ * iguales que empezaban por «Slujbă de…» y había que leerlos enteros para
+ * distinguirlos.
+ * ===================================================================== */
+
+.airings {
+  padding-block: clamp(1.5rem, 3.5vh, 2.5rem);
+  padding-inline: var(--page-gutter);
+  background: var(--c-bg);
+}
+
+.airings__inner {
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+
+/* --- Cabecera ----------------------------------------------------------- */
+
+.airings__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: clamp(0.75rem, 2vh, 1.1rem);
+}
+
+.airings__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary);
+}
+
+.airings__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.airings__all app-icon {
+  font-size: 0.95rem;
+}
+
+/* --- Rejilla ------------------------------------------------------------ */
+
+/* `minmax(0, 1fr)`: las cinco reparten el ancho por igual y siempre en una
+   fila. A 1512 px salen a ~272 px, que es donde un fotograma con el nombre
+   del predicador en la banda lateral todavía se reconoce. */
+.airings__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* --- Tarjeta ------------------------------------------------------------ */
+
+.airing {
+  display: block;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.airing:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 3px;
+  border-radius: var(--r-card);
+}
+
+/* El marco recorta para que al apuntar se acerque la imagen y no se mueva la
+   tarjeta: desplazar el objetivo justo cuando se va a pulsar es el error que
+   ya se corrigió en la tira de álbumes de la cabecera. */
+.airing__frame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--r-card);
+  background: var(--c-surface-3);
+}
+
+.airing__thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  transition: transform var(--mo-base) var(--ea-standard);
+}
+
+.airing:hover .airing__thumb {
+  transform: scale(1.05);
+}
+
+/* Botón de reproducción: aparece al apuntar y confirma que esto es un vídeo
+   y no una foto. En reposo no está, para que la fila se lea como una fila de
+   imágenes y no como cinco botones. */
+.airing__play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(9 20 36 / 0.32);
+  opacity: 0;
+  transition: opacity var(--mo-fast) var(--ea-standard);
+}
+
+.airing__play app-icon {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.94);
+  font-size: 1.15rem;
+  color: var(--c-primary-deep);
+}
+
+.airing:hover .airing__play,
+.airing:focus-visible .airing__play {
+  opacity: 1;
+}
+
+/* --- Ficha -------------------------------------------------------------- */
+
+.airing__kind {
+  display: block;
+  margin-block-start: 0.55rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+/* Dos líneas con altura mínima de dos: los temas van de «Dragostea» a
+   «Ascultă vocea care încă îți mai vorbește» y sin tope la fila se
+   descuadraba; con puntos suspensivos se cortaban a media palabra. */
+.airing__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(2 * 1.35em);
+  margin-block-start: 0.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-primary);
+}
+
+.airing:hover .airing__title {
+  color: var(--c-primary-deep);
+}
+
+/* La línea de fecha **se reserva siempre**, tenga texto o no.
+   Sólo dos de las cinco emisiones traen tema, así que las otras tres se
+   quedaban sin tercera línea y la fila terminaba con los bordes inferiores
+   a dos alturas distintas (240 px contra 217). En una rejilla de cinco eso
+   se ve como si faltara algo. */
+.airing__meta {
+  display: block;
+  min-height: 1.15em;
+  margin-block-start: 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1.15;
+  color: var(--c-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Por debajo de `lg` cinco en fila dejarían fotogramas de 130 px. Se pasa a
+   envolver con un mínimo de 11 rem, que mantiene la miniatura legible. */
+@media (max-width: 1023.98px) {
+  .airings__list {
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  }
+}
+
+/*
+ * En el móvil la tarjeta se tumba: miniatura a la izquierda y ficha a la
+ * derecha.
+ *
+ * Medido a 320 px: en tarjetas sólo cabía **una columna**, así que las cinco
+ * emisiones apiladas ocupaban ~1.200 px de página para un bloque secundario.
+ * Y bajarlas a dos columnas tampoco servía: cada miniatura quedaba en 139 px
+ * y el título se cortaba a media palabra.
+ *
+ * En fila, cada emisión mide ~85 px —las cinco caben en 425— y el título
+ * dispone del ancho entero de la pantalla. Es el formato que usa cualquier
+ * lista de vídeo en el móvil, y por este motivo.
+ */
+@media (max-width: 719.98px) {
+  .airings__list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .airing {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  /* El botón de reproducción sobra: en táctil no hay «apuntar», así que no
+     llegaba a verse nunca. */
+  .airing__play {
+    display: none;
+  }
+
+  .airing__kind {
+    margin-block-start: 0;
+  }
+
+  /* Los tres textos van en la segunda columna, uno debajo de otro. */
+  .airing__kind,
+  .airing__title,
+  .airing__meta {
+    grid-column: 2;
+  }
+
+  .airing__frame {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+
+  /* Sin altura reservada: en fila, el hueco de la fecha que falta no
+     descuadra nada porque no hay tarjetas vecinas con las que alinearse.
+     Y sin `nowrap`: en la columna de texto del móvil «Duminică 20 Septembrie
+     2026» no cabe de una línea y salía cortada con puntos suspensivos. En
+     fila hay sitio de sobra para que baje. */
+  .airing__meta {
+    min-height: 0;
+    white-space: normal;
+  }
+
+  /* La cabecera se parte: a 320 px el título ocupa dos líneas y el «ver
+     todas» se le echaba encima. */
+  .airings__head {
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .airing__thumb,
+  .airing:hover .airing__thumb {
+    transition: none;
+    transform: none;
+  }
+
+  .airing__play {
+    transition: none;
+  }
 }
 
 /* =====================================================================
@@ -395,7 +885,7 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #9c7a1e;
+  color: var(--c-gold-deep);
 }
 
 .welcome__title {
@@ -418,8 +908,14 @@
   color: var(--c-text);
 }
 
-.welcome__cta {
-  margin-top: 0.9rem;
+/* Dos botones en fila, con la acción principal rellena y la secundaria
+   perfilada: el peso dice cuál es cuál sin que haya que leerlos. */
+.welcome__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.1rem 0 0;
+  max-width: none;
 }
 
 /*
@@ -461,7 +957,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9c7a1e;
+  color: var(--c-gold-deep);
 }
 
 /* Por debajo de md la cita va detrás del texto, no al lado. */
@@ -708,13 +1204,21 @@
   min-width: 0;
 }
 
-.depts__title,
-.visit__street {
+.depts__title {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.05rem, 1.4vw, 1.25rem);
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: var(--c-primary);
+}
+
+/* La dirección y la hora dejan de ir a cuerpo de titular: ese papel lo ocupa
+   ahora el título de la banda, y dos datos a 20 px competían con él. */
+.visit__street {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
   color: var(--c-primary);
 }
 
@@ -781,14 +1285,43 @@
   }
 }
 
-/* --- Visita ------------------------------------------------------------ */
+/* --- Visita: el cierre de la página ------------------------------------ */
 
-.visit__address {
+.visit__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem clamp(1rem, 3vw, 2.25rem);
+  min-width: 0;
+}
+
+/* El único título de esta banda. Mismo peso que el de departamentos, que es
+   su vecina: las dos son bandas de una fila y tienen que pesar igual. */
+.visit__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--c-primary);
+}
+
+/* Los dos datos en fila, no apilados: la banda mide una línea y apilarlos la
+   convertiría en un bloque. Con poco ancho envuelven solos. */
+.visit__facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem clamp(1rem, 2.5vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.visit__fact {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  margin: 0;
-  max-width: none;
   min-width: 0;
 }
 

@@ -15,6 +15,7 @@ import { PresentationService } from '../../core/presentation.service';
 import { Router } from '@angular/router';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { APP_PATHS } from '../../core/navigation/app-paths';
+import { DockActionsService } from './dock-actions.service';
 
 /**
  * Dock flotante fijo en la esquina inferior derecha con los controles de
@@ -88,6 +89,30 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
         </button>
       }
 
+      @for (accion of dockActions.actions(); track accion.id) {
+        <button
+          type="button"
+          class="dock__btn dock__btn--page"
+          [class.dock__btn--compact]="accion.compactOnly"
+          [class.is-pressed]="accion.pressed?.()"
+          [attr.aria-pressed]="accion.pressed ? accion.pressed() : null"
+          [attr.aria-label]="accion.labelKey | translate"
+          [title]="accion.labelKey | translate"
+          (click)="accion.run()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              [attr.d]="accion.svgPath"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      }
+
       <app-share-button class="dock__share" />
 
       @if (showTop()) {
@@ -120,7 +145,16 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
 
       .dock {
         position: fixed;
-        bottom: clamp(0.85rem, 2.5vh, 1.5rem);
+        /*
+         * La variable --dock-offset es el contrato con las páginas que ponen
+         * una barra fija abajo (la confesión de fe en el móvil): la página
+         * declara cuánto ocupa y el dock se aparta esa cantidad. Sin él, el
+         * dock se sentaba encima de la barra y tapaba sus controles.
+         *
+         * OJO: estos estilos van en una plantilla literal, así que aquí no
+         * puede haber acentos graves ni siquiera dentro de un comentario.
+         */
+        bottom: calc(var(--dock-offset, 0px) + clamp(0.85rem, 2.5vh, 1.5rem));
         right: clamp(0.85rem, 2.5vw, 1.5rem);
         z-index: 900;
         display: inline-flex;
@@ -180,6 +214,14 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
         }
       }
 
+      /* Conmutador activo: relleno de acento, para que se vea de un vistazo
+         si el panel de la página está abierto. */
+      .dock__btn--page.is-pressed {
+        background: var(--c-primary);
+        border-color: var(--c-primary);
+        color: var(--c-on-primary);
+      }
+
       .dock__btn {
         display: inline-flex;
         align-items: center;
@@ -232,6 +274,21 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
       .dock__share ::ng-deep .share-btn__label {
         display: none;
       }
+
+      /* Acción aportada por la página, sólo mientras la página no puede
+         enseñar sus propios controles. El corte (1280) es aquel en el que la
+         confesión de fe pierde su columna lateral: por encima, sus controles
+         están a la vista y un botón más aquí sería ruido.
+
+         **Va al final del bloque a propósito**: con la encapsulación, este
+         selector y el de .dock__btn acaban con la misma especificidad
+         (una clase + el atributo del componente), así que gana el último que
+         se declara. Puesto arriba, el display de .dock__btn lo pisaba. */
+      @media (min-width: 1280px) {
+        .dock__btn--compact {
+          display: none;
+        }
+      }
     `,
     ]
 })
@@ -240,6 +297,7 @@ export class FloatingActionsComponent implements AfterViewInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly navActive = inject(NavActiveService);
   private readonly router = inject(Router);
+  protected readonly dockActions = inject(DockActionsService);
   protected readonly presentation = inject(PresentationService);
 
   /**

@@ -192,3 +192,45 @@ vuelve a fusionar al cambiar de idioma). Referencia:
   `*.title_pj` corta (una línea a 6,2u); el bloque elige con `fullscreen()`.
 - «Elim» y «Arganda del Rey» no son claves i18n: son constantes de marca del
   componente `app-brand-logo` (`brand.name` sigue siendo traducible).
+
+## El texto público sale de la confesión
+
+La iglesia tiene un documento adoptado —la *Mărturisirea de credință* del Culto
+Cristiano Pentecostal, 30 artículos— y el sitio lo publica entero. Por tanto
+**ninguna descripción de lo que creemos o hacemos se redacta de cero**: se
+resume un artículo y, cuando es un bloque, se cita con enlace
+(`citarArticulo()` en `credo.data.ts` da el número y el ancla).
+
+Lo que está anclado hoy, por si hay que revisarlo cuando cambie el documento:
+
+| Texto | Artículo |
+| --- | --- |
+| `about.pillars.*` (las cinco obras) | 16 · la Iglesia, + 9, 11, 29, 19 en cada cuerpo |
+| `about.visit.note` | 19 (Cena) y 25 (el domingo) |
+| `home.welcome.body` | 16 · las cinco obras, en lenguaje llano |
+| `home.ministries.subtitle` | 13 · dones «para el bien común… no para provecho propio» |
+| `donate.lead` | 25 · la generosidad, el diezmo y las ofrendas voluntarias |
+| `leadership.priesthood.body` | 17 · sacerdocio universal; pastor, anciano y diácono |
+| `leadership.structure.subtitle` | 17 · oficios reconocidos, se accede por ordenación |
+
+Al traducir, el **vocabulario del documento manda**: si la confesión dice
+`prezbiter`, el texto de la web no dice `bătrân`.
+
+## Claves huérfanas: cómo se barren
+
+`npm run i18n:check` comprueba **paridad** entre idiomas, no uso: una clave que
+ya no pinta nadie pasa el control y se sigue traduciendo y descargando. Cuando
+se rediseña una pantalla hay que barrer a mano.
+
+El barrido no es un `grep` por clave: la mitad se construyen en marcha
+(`'credo.articles.' + id + '.title'`, `` `home.hero.slides.${id}` ``). Una
+clave está **usada** si su ruta completa aparece en el código **o si algún
+literal es un prefijo suyo terminado en punto**. Con ese criterio, de 658 hojas
+salieron 153 candidatas y sólo 23 eran huérfanas de verdad; el resto eran
+claves dinámicas.
+
+Borradas en el barrido del rediseño (portada, galería, conducere): el bloque
+`home.today.*` completo, `leadership.ministries_section.*`,
+`leadership.eyebrow`, `leadership.lead`, `gallery.featured_event`,
+`gallery.open_drive` y los `*.subtitle` de `gallery`, `streams`, `upcoming`,
+`weekly`, `home.quick` y `home.visit`.

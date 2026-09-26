@@ -1,12 +1,15 @@
 @use 'ds' as *;
 @use '../../shared/styles/buttons' as *;
 @use '../../shared/styles/section-cta' as *;
+@use '../../shared/styles/page-hero' as *;
 
 /* Estilos encapsulados de la página «Quiénes somos». */
 
 :host {
   display: block;
 }
+
+/* La cabecera de página la resuelve `shared/styles/page-hero`. */
 
 /* --- Historia -------------------------------------------------------- */
 
@@ -45,54 +48,109 @@
   color: var(--c-muted);
 }
 
-/* --- Pilares --------------------------------------------------------- */
+/* =======================================================================
+ * Las obras de la Iglesia (art. 16)
+ *
+ * Filas, no tarjetas: son cinco y cualquier rejilla de tarjetas deja una
+ * fila coja (3+2 o 4+1). En fila, el texto tiene medida de lectura de verdad
+ * —en cinco columnas el cuerpo caería en ~28 caracteres por línea— y la
+ * referencia al artículo queda alineada a la derecha, que es donde se busca.
+ * ===================================================================== */
 
-.pillars {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap: 1rem;
+.works {
   margin: 0;
   padding: 0;
+  border-block-start: 1px solid var(--c-hairline);
   list-style: none;
 }
 
-.pillar {
-  padding: 1.4rem 1.3rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  background: var(--c-surface);
-  box-shadow: var(--shadow-sm);
+.work {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  gap: 0 1rem;
+  align-items: start;
+  padding-block: 1rem;
+  border-block-end: 1px solid var(--c-hairline);
 }
 
-.pillar__icon {
-  font-size: 1.7rem;
+.work__icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--r-md);
+  background: var(--c-gold-tint);
+  font-size: 1.15rem;
   color: var(--c-gold-deep);
 }
 
-.pillar__title {
-  margin: 0.7rem 0 0.4rem;
+.work__body {
+  min-width: 0;
+  padding-block-start: 0.15rem;
+}
+
+.work__title {
+  margin: 0 0 0.15rem;
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--c-primary);
 }
 
-.pillar__body {
+.work__text {
+  /* Medida de lectura: la fila llega al ancho de la página y un párrafo a
+     1.400 px no se lee. */
+  max-width: 46rem;
   margin: 0;
-  font-size: 0.92rem;
+  font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--c-muted);
 }
 
+.work__ref {
+  align-self: center;
+}
+
+/* Por debajo de `sm` la referencia no cabe junto al texto: baja bajo el
+   cuerpo, alineada con él. */
+@include until('sm') {
+  .work {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    row-gap: 0.6rem;
+  }
+
+  .work__ref {
+    grid-column: 2;
+    justify-self: start;
+    align-self: start;
+  }
+}
+
 /* --- Confesión de fe (avance) ---------------------------------------- */
 
+/* Los capítulos de la confesión también son cuatro: mismo reparto y mismo
+   motivo que los pilares. Medido a 956 px salían 3+1, con la cuarta tarjeta
+   además más baja que las otras tres por estar sola en su fila. */
 .credo-parts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@include until('lg') {
+  .credo-parts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@include until('sm') {
+  .credo-parts {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .credo-part__link {
@@ -153,33 +211,154 @@
 
 /* --- Primera visita --------------------------------------------------- */
 
-.expectations {
+/* =======================================================================
+ * Primera visita — un recorrido, no cuatro tarjetas
+ *
+ * Los cuatro puntos describen **lo que pasa por orden** desde que cruzas la
+ * puerta, así que se pintan numerados y unidos por un hilo vertical. Antes
+ * eran cuatro tarjetas con filete, idénticas a la rejilla de pilares que hay
+ * más arriba en la misma página: dos bloques distintos que se leían igual y
+ * ninguno de los dos decía que uno era una secuencia.
+ * ===================================================================== */
+
+.steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-  gap: 1rem;
+  gap: 0;
+  max-width: 44rem;
   margin: 0;
   padding: 0;
   list-style: none;
+  counter-reset: none;
 }
 
-.expectation {
-  padding: 1.2rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  background: var(--c-surface);
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding-block: 0.9rem;
 }
 
-.expectation h3 {
-  margin: 0 0 0.3rem;
+/* El hilo que une los pasos: arranca bajo el número y llega al siguiente.
+   El último no lo lleva, o la secuencia parecería continuar. */
+.step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 2.6rem;
+  inset-block-end: -0.35rem;
+  inset-inline-start: 1.1rem;
+  width: 1px;
+  background: var(--c-hairline-strong);
+}
+
+.step__n {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--c-primary);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-on-primary);
+}
+
+.step__body {
+  min-width: 0;
+  padding-block-start: 0.2rem;
+}
+
+.step__title {
+  margin: 0 0 0.2rem;
   font-size: 1rem;
   font-weight: 600;
   color: var(--c-primary);
 }
 
-.expectation p {
+.step__text {
   margin: 0;
-  font-size: 0.9rem;
+  max-width: none;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--c-muted);
+}
+
+/* --- Nota de la Cena del Señor ----------------------------------------- */
+
+/* Va tras el recorrido y antes de los datos prácticos: no es un paso del
+   servicio, es una aclaración. Tono de aviso amable, no de advertencia. */
+.visit-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  max-width: 44rem;
+  margin: clamp(1rem, 2.5vh, 1.4rem) 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--r-card);
+  background: var(--c-surface-2);
+  font-size: 0.875rem;
   line-height: 1.6;
+  color: var(--c-text);
+}
+
+.visit-note__text {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.visit-note .pillar__ref {
+  margin-block-start: 0;
+}
+
+/* --- Cuándo y dónde ---------------------------------------------------- */
+
+/* Los dos datos que la sección no daba y que son los que deciden si alguien
+   viene. En fila y con filete a la izquierda: son datos, no tarjetas. */
+.visit-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem clamp(1.5rem, 4vw, 3rem);
+  max-width: 44rem;
+  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
+  /* `padding-inline: 0` explícito: sin él manda el relleno de lista del
+     navegador (40 px) y el bloque caía en x=201 mientras todo lo demás de la
+     página cae en 161. */
+  padding-inline: 0;
+  padding-block: clamp(1rem, 2.5vh, 1.4rem) 0;
+  border-block-start: 1px solid var(--c-hairline);
+  list-style: none;
+}
+
+.visit-fact {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  padding-inline-start: 0.85rem;
+  border-inline-start: 2px solid var(--c-gold);
+}
+
+.visit-fact__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.visit-fact__value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-primary);
+}
+
+.visit-fact__extra {
+  font-size: 0.8125rem;
   color: var(--c-muted);
 }
 
@@ -193,4 +372,33 @@
   .credo-part__link {
     transition: none;
   }
+}
+
+/* --- Referencia al artículo de la confesión ---------------------------- */
+
+/* Discreta pero siempre visible: es la prueba de que el pilar no es una
+   frase de folleto. No se esconde tras el `hover` porque en táctil no
+   existiría y porque aquí el dato importa tanto como el texto. */
+.pillar__ref {
+  margin-block-start: 0.9rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-gold-tint);
+    border-color: var(--c-gold);
+  }
+
+  @include focus-ring(2px);
 }

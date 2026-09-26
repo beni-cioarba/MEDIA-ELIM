@@ -171,7 +171,20 @@ export class PresenterComponent implements OnInit {
 
   /** Índice en la rotación de la diapositiva de la lista (`-1` si no está activa). */
   private indexOf(slide: PresentationSlide): number {
-    return this.slides().findIndex((s) => s.key === slide.key);
+    const exacto = this.slides().findIndex((s) => s.key === slide.key);
+    if (exacto >= 0) return exacto;
+
+    // Las filas de evento del panel son una por evento; en la rotación, en
+    // cambio, un evento viaja dentro de una página (una o dos por
+    // diapositiva, según el QR). La fila apunta a la página que lo lleva.
+    const id = this.eventIdOf(slide);
+    if (id === null) return -1;
+    return this.slides().findIndex((s) => s.events?.some((e) => e.id === id) ?? false);
+  }
+
+  /** Id del evento de una fila del panel (`null` si la fila no es de evento). */
+  private eventIdOf(slide: PresentationSlide): string | null {
+    return slide.block === 'upcoming' && slide.events?.length === 1 ? slide.events[0].id : null;
   }
 
   /** Ir a una diapositiva por su clave (sólo si está activa). */
@@ -181,7 +194,11 @@ export class PresenterComponent implements OnInit {
   }
 
   protected isCurrent(slide: PresentationSlide): boolean {
-    return this.currentSlide()?.key === slide.key;
+    if (this.currentSlide()?.key === slide.key) return true;
+    // Fila de evento: está «en pantalla» si la diapositiva en curso es la
+    // página que lo contiene.
+    const index = this.indexOf(slide);
+    return index >= 0 && index === this.currentIndex();
   }
 
   /** Posición 1-based de una diapositiva en la rotación, o `null` si no entra. */
@@ -193,8 +210,23 @@ export class PresenterComponent implements OnInit {
   /** Rótulo humano de una diapositiva: anuncio, página o nombre del bloque. */
   protected label(slide: PresentationSlide): string {
     if (slide.announcement) return slide.announcement.title;
+    if (this.eventIdOf(slide) !== null) return slide.events![0].title;
     const base = this.translate.instant(slide.titleKey);
     return slide.page ? `${base} · ${slide.page.index + 1}/${slide.page.total}` : base;
+  }
+
+  /** ¿Es una fila de evento? (para pintar su casilla). */
+  protected eventId(slide: PresentationSlide): string | null {
+    return this.eventIdOf(slide);
+  }
+
+  protected isEventVisible(slide: PresentationSlide): boolean {
+    const id = this.eventIdOf(slide);
+    return id === null || this.blocks.visibleEvents().some((e) => e.id === id);
+  }
+
+  protected setEventVisible(id: string, event: Event): void {
+    this.blocks.setEventVisible(id, (event.target as HTMLInputElement).checked);
   }
 
   protected isAnnouncementVisible(slide: PresentationSlide): boolean {
