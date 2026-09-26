@@ -519,7 +519,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       time: '18:00',
       title: 'Conferință de tineret "ANCORAT"',
       description:
-        'Organizată de Departamentul de tineret. Participă tineri din cel puțin 12 biserici; după mesaj, întrebări și răspunsuri.',
+        'Organizată de Departamentul de tineret. După mesaj, întrebări și răspunsuri.',
       verse: '',
       preacher: 'Daniel Popa (Timișoara)',
       worshipLead: '',
@@ -735,8 +735,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       date: '2026-09-26',
       time: '18:00',
       place: 'Biserica Elim',
-      lead:
-        'Departamentul de tineret al Bisericii Elim organizează o conferință la care participă tineri din cel puțin 12 biserici.',
+      lead: '',
       sections: [
         {
           heading: 'Invitat',
