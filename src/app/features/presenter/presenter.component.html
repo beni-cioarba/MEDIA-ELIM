@@ -304,22 +304,46 @@
 
       <!-- Pantalla: QR y atajos -->
       <div class="screen">
-        <label class="switch">
-          <input type="checkbox" [checked]="display.qrVisible()" (change)="setQrVisible($event)" />
-          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
-          <span class="screen__label">{{ 'blocks.qr_show' | translate }}</span>
-        </label>
-        <div class="segments" role="radiogroup" [attr.aria-label]="'blocks.qr_size' | translate">
-          @for (size of qrSizes; track size) {
-            <button
-              type="button"
-              role="radio"
-              class="segments__btn"
-              [class.is-active]="display.qrSize() === size"
-              [attr.aria-checked]="display.qrSize() === size"
-              [disabled]="!display.qrVisible()"
-              (click)="display.setQrSize(size)"
-            >{{ 'blocks.qr_size_' + size | translate }}</button>
+        <div class="screen__group">
+          <label class="switch">
+            <input type="checkbox" [checked]="display.qrVisible()" (change)="setQrVisible($event)" />
+            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+            <span class="screen__label">{{ 'blocks.qr_show' | translate }}</span>
+          </label>
+          <div class="segments" role="radiogroup" [attr.aria-label]="'blocks.qr_size' | translate">
+            @for (size of qrSizes; track size) {
+              <button
+                type="button"
+                role="radio"
+                class="segments__btn"
+                [class.is-active]="display.qrSize() === size"
+                [attr.aria-checked]="display.qrSize() === size"
+                [disabled]="!display.qrVisible()"
+                (click)="display.setQrSize(size)"
+              >{{ 'blocks.qr_size_' + size | translate }}</button>
+            }
+          </div>
+        </div>
+        <!-- Aviso de directo: convierte el QR de la proyección en una
+             invitación a compartir la emisión. Caduca solo a medianoche. -->
+        <div class="screen__group">
+          <label class="switch">
+            <input
+              type="checkbox"
+              [checked]="display.liveNotice()"
+              [attr.aria-describedby]="display.liveNotice() ? 'live-notice-hint' : null"
+              (change)="setLiveNotice($event)"
+            />
+            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+            <span class="screen__label">
+              @if (display.liveNotice()) {
+                <span class="screen__live-dot" aria-hidden="true"></span>
+              }
+              {{ 'live_notice.toggle' | translate }}
+            </span>
+          </label>
+          @if (display.liveNotice()) {
+            <span id="live-notice-hint" class="screen__note">{{ 'live_notice.hint' | translate }}</span>
           }
         </div>
         <p class="screen__hint">{{ 'presenter.shortcuts' | translate }}</p>

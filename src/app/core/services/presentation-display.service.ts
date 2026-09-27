@@ -1,4 +1,6 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { toIsoDate } from '../util/iso-date';
+import { ClockService } from './clock.service';
 import type { PresentationBlockId } from './presentation-blocks.service';
 
 /** Tamaño del código QR proyectado (columna del lienzo que ocupa). */
@@ -31,11 +33,20 @@ interface DisplayPrefs {
   readonly qrSize: QrSize;
   /** Duraciones fijadas a mano (segundos). Ausente ⇒ valor por defecto. */
   readonly durations: Partial<Record<PresentationBlockId, number>>;
+  /**
+   * Día (`YYYY-MM-DD`) para el que el operador activó el aviso «hoy también
+   * en directo», o `null`. Se guarda el día y no un sí/no para que el aviso
+   * caduque solo a medianoche: si se olvida encendido el domingo, el lunes ya
+   * no se proyecta (invariante 5: nunca contenido caducado).
+   */
+  readonly liveNoticeDate: string | null;
 }
 
 const STORAGE_KEY = 'iglesia-redes.presentation.display';
 
-const DEFAULTS: DisplayPrefs = { qrVisible: true, qrSize: 'm', durations: {} };
+const DEFAULTS: DisplayPrefs = { qrVisible: true, qrSize: 'm', durations: {}, liveNoticeDate: null };
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
  * Preferencias de **pantalla y ritmo** de la proyección (no de contenido): si
@@ -55,9 +66,14 @@ const DEFAULTS: DisplayPrefs = { qrVisible: true, qrSize: 'm', durations: {} };
  * Las duraciones vienen con un valor por defecto por bloque y el operador
  * puede ajustarlas desde el panel de controles; se recuerdan en
  * `localStorage`, como el resto de ajustes.
+ *
+ * El aviso de emisión en directo también es de pantalla: no añade una
+ * diapositiva, sino que convierte el QR en una invitación a compartir la
+ * transmisión del día (ver `docs/ai/30-presentation.md` → «Aviso de directo»).
  */
 @Injectable({ providedIn: 'root' })
 export class PresentationDisplayService {
+  private readonly clock = inject(ClockService);
   private readonly prefs = signal<DisplayPrefs>(readStoredPrefs());
 
   constructor() {
@@ -72,6 +88,12 @@ export class PresentationDisplayService {
 
   readonly qrVisible = computed<boolean>(() => this.prefs().qrVisible);
   readonly qrSize = computed<QrSize>(() => this.prefs().qrSize);
+
+  /** Día de hoy según el reloj compartido: cambia solo al pasar la medianoche. */
+  private readonly today = computed<string>(() => toIsoDate(new Date(this.clock.now())));
+
+  /** `true` si hoy se anuncia que el programa también se emite en directo. */
+  readonly liveNotice = computed<boolean>(() => this.prefs().liveNoticeDate === this.today());
 
   /** Duración efectiva por bloque (segundos), ya resuelta con los defectos. */
   readonly durations = computed<Readonly<Record<PresentationBlockId, number>>>(() => ({
@@ -128,6 +150,11 @@ export class PresentationDisplayService {
     this.update({ qrSize: size });
   }
 
+  /** Enciende el aviso de directo para hoy (caduca a medianoche) o lo apaga. */
+  setLiveNotice(on: boolean): void {
+    this.update({ liveNoticeDate: on ? this.today() : null });
+  }
+
   private update(patch: Partial<DisplayPrefs>): void {
     this.prefs.update((current) => {
       const next = { ...current, ...patch };
@@ -144,11 +171,13 @@ function readStoredPrefs(): DisplayPrefs {
     if (!raw) return DEFAULTS;
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return DEFAULTS;
-    const { qrVisible, qrSize, durations } = parsed as Record<string, unknown>;
+    const { qrVisible, qrSize, durations, liveNoticeDate } = parsed as Record<string, unknown>;
     return {
       qrVisible: typeof qrVisible === 'boolean' ? qrVisible : DEFAULTS.qrVisible,
       qrSize: isQrSize(qrSize) ? qrSize : DEFAULTS.qrSize,
       durations: readDurations(durations),
+      liveNoticeDate:
+        typeof liveNoticeDate === 'string' && ISO_DATE.test(liveNoticeDate) ? liveNoticeDate : null,
     };
   } catch {
     return DEFAULTS;

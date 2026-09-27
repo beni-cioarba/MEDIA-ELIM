@@ -297,6 +297,12 @@ export interface DonationInfo {
 export interface ChurchConfig {
   readonly youtubeChannelUrl: string;
   readonly youtubeStreamsUrl: string;
+  /**
+   * Enlace estable a la emisión en directo del canal: YouTube lo redirige al
+   * directo en curso (o al programado). Es lo que codifica el QR cuando el
+   * operador activa el aviso «hoy también en directo».
+   */
+  readonly youtubeLiveUrl: string;
   /** YouTube channel ID (UC...). Necesario para llamadas a YouTube Data API. */
   readonly youtubeChannelId: string;
   /** API Key restringida por HTTP referrer; segura para uso en cliente. */
@@ -348,6 +354,7 @@ export const CHURCH_CONFIG = new InjectionToken<ChurchConfig>('CHURCH_CONFIG');
 export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   youtubeChannelUrl: 'https://www.youtube.com/@ElimArganda',
   youtubeStreamsUrl: 'https://www.youtube.com/@ElimArganda/streams',
+  youtubeLiveUrl: 'https://www.youtube.com/@ElimArganda/live',
   youtubeChannelId: 'UCJqLlk6CS6uNtJWS5r-7P9g',
   youtubeApiKey: 'AIzaSyCliQqAiyf0qZuKoOi76MbU-NOrQrDcCoA',
   publicUrl: 'https://beni-cioarba.github.io/MEDIA-ELIM/',

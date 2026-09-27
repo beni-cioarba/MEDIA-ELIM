@@ -102,6 +102,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Proyectar en la pantalla del templo»               | `/media/control` → «Abrir proyección» (nada de código; `docs/ai/30-presentation.md`) |
 | «Que tal bloque no salga al presentar»              | Panel de control (o popover de la ventana), nada de código |
 | «Quitar / achicar el QR al proyectar»               | Panel de ajustes (tecla `Q`, tamaño S/M/L) — `PresentationDisplayService` |
+| «Avisar de que hoy también hay directo» · «que compartan la transmisión» | Panel de control → «Anunță transmisiunea live de azi» (caduca a medianoche; nada de código). Diseño en `docs/ai/30-presentation.md` → «Aviso de directo» |
 | «Que tal bloque dure más / menos» · «hoy no leáis este anuncio» | Panel de ajustes (−/+ segundos por bloque; casilla por anuncio). Defectos en `DEFAULT_DURATIONS_S` |
 | «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |

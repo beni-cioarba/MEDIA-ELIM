@@ -38,7 +38,15 @@
   },
   "qr": {
     "caption": "Escanea para visitar nuestras redes",
-    "aria": "Código QR para acceder a esta página"
+    "aria": "Código QR para acceder a esta página",
+    "live_aria": "Código QR a la emisión en directo"
+  },
+  "live_notice": {
+    "badge": "En directo",
+    "qr_caption": "Escanea y comparte el culto de hoy con los tuyos",
+    "bar_text": "Comparte el culto de hoy con los tuyos · YouTube {{handle}}",
+    "toggle": "Anunciar el directo de hoy",
+    "hint": "Se apaga solo a medianoche"
   },
   "streams": {
     "title": "Transmisiones",

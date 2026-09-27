@@ -280,6 +280,34 @@ Misma barra de controles, debajo de los bloques (`PresentationSettingsComponent`
   el navegador estuviera ocioso, que con el reloj del carrusel podía tardar
   segundos.
 
+## Aviso de directo («hoy también en directo»)
+
+Interruptor del panel de control, en la fila «Pantalla» junto al QR
+(`PresentationDisplayService.setLiveNotice` / `liveNotice`). No es una
+diapositiva: es un **estado de la pantalla** que acompaña a todas, porque la
+invitación tiene que estar a la vista durante todo el culto y no 30 s de cada
+vuelta del carrusel.
+
+- **Con QR** (lo normal): la columna del QR pasa a ser un solo módulo que se
+  lee de arriba abajo: insignia «ÎN DIRECT» (qué pasa) → QR (a dónde) →
+  leyenda «Scanează și trimite slujba de azi celor dragi» (qué hacer). El QR
+  deja de apuntar a la web y codifica `config.youtubeLiveUrl`
+  (`…/@ElimArganda/live`): YouTube lo redirige al directo en curso y es el
+  enlace que la gente reenvía por WhatsApp.
+- **Sin QR** (tecla `Q`): el aviso ocupa el sitio del versículo en el pie, en
+  una línea, con el canal (`@ElimArganda`) para que se pueda buscar a mano.
+- **Diseño**: insignia blanca con texto navy y sólo el punto en `--c-live`,
+  como el marco del QR que tiene debajo (se leen como una pieza y no compite
+  con la diapositiva). Sin pulso: en proyección no se mueve nada salvo el
+  carrusel. La insignia dice sólo el estado; el «hoy» va en la leyenda (con
+  «EN DIRECTO HOY» la insignia medía 37,7u y no cabía en la columna «S», de 34u).
+- **Caduca sola**: se guarda el **día** en que se activó (`liveNoticeDate`) y
+  sólo está activo mientras coincide con hoy según `ClockService`. Si se queda
+  encendido el domingo, el lunes ya no se proyecta (invariante 5).
+- Presupuesto medido (960×540, 27/09/2026): la columna del QR mide 75,2u; con
+  el aviso ocupa 58u en «S», 63u en «M» y 75u en «L» (justo). Sin QR el pie
+  sigue en una línea (6,8u).
+
 ## Carrusel
 
 - Avance automático **por diapositiva**, con la duración de su bloque (ver
@@ -448,7 +476,8 @@ Reglas fijas del lienzo proyectado:
 
 `shared/qr-panel`, cargado con `@defer (on idle)`. Codifica siempre
 `config.publicUrl` (no la URL del navegador) para que apunte a producción
-aunque se esté proyectando desde `localhost`.
+aunque se esté proyectando desde `localhost`. Con el aviso de directo
+activo codifica `config.youtubeLiveUrl` (ver «Aviso de directo»).
 
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
   corregir y `H` sólo añade módulos (41×41 → 33×33 con esta URL). A igual

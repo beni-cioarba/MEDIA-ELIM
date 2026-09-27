@@ -134,8 +134,20 @@ export class StageComponent implements OnInit {
     return ids.flatMap((id) => this.expand(id));
   });
 
-  /** URL codificada en el QR (siempre la pública, aunque se sirva en local). */
-  protected readonly qrData = computed<string>(() => this.config.publicUrl);
+  /** Aviso «hoy también en directo» activo y proyectando. */
+  protected readonly liveNotice = computed<boolean>(() => this.fullscreen() && this.display.liveNotice());
+
+  /**
+   * URL codificada en el QR: la pública (aunque se sirva en local) o, con el
+   * aviso de directo, el enlace al directo del canal, que es lo que la gente
+   * reenvía por WhatsApp a quien no ha podido venir.
+   */
+  protected readonly qrData = computed<string>(() =>
+    this.liveNotice() ? this.config.youtubeLiveUrl : this.config.publicUrl,
+  );
+
+  /** `@ElimArganda`: sin QR, el aviso de directo dice dónde buscarlo. */
+  protected readonly youtubeHandle = this.config.youtubeChannelUrl.split('/').pop() ?? '';
 
   ngOnInit(): void {
     /*

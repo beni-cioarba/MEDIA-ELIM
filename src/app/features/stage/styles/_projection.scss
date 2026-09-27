@@ -385,6 +385,52 @@
     --qr-caption-size: var(--pj-fs-caption);
     --qr-caption-weight: 600;
     --qr-caption-color: #{$color-primary};
+
+    // Con el aviso de directo la columna se lee de arriba abajo como un solo
+    // módulo: insignia (qué pasa) → QR (a dónde) → leyenda (qué hacer). El
+    // panel deja de ocupar el 100 % para hacer sitio a la insignia y, si no
+    // cabe (QR «L»), es el QR el que cede unas unidades, nunca el texto.
+    &.qr--live {
+      --qr-caption-weight: 700;
+      gap: var(--pj-sp-2);
+
+      app-qr-panel {
+        flex: 0 1 auto;
+        height: auto;
+      }
+    }
+  }
+
+  // Insignia «EN DIRECTO HOY». Superficie blanca y texto navy, como el marco
+  // del QR que tiene debajo (se leen como una pieza); el rojo `--c-live` va
+  // sólo en el punto: señala el estado sin gritar ni competir con la
+  // diapositiva. Sin pulso: en proyección nada se mueve salvo el carrusel.
+  .stage.is-fullscreen .live-badge {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: calc(var(--pj-u) * 1.2);
+    margin: 0;
+    padding: calc(var(--pj-u) * 1) calc(var(--pj-u) * 2.2);
+    border-radius: 999px;
+    background: $color-card;
+    box-shadow: 0 0 0 var(--pj-stroke) $color-border;
+    color: $color-primary;
+    font-family: var(--font-display);
+    font-size: var(--pj-fs-eyebrow);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .stage.is-fullscreen .live-badge__dot {
+    flex: 0 0 auto;
+    width: calc(var(--pj-u) * 1.6);
+    height: calc(var(--pj-u) * 1.6);
+    border-radius: 50%;
+    background: var(--c-live);
   }
 
   // -------------------------------------------------------------------
@@ -412,6 +458,21 @@
       font-weight: 600;
       line-height: 1.35;
       color: var(--c-muted);
+    }
+
+    // Aviso de directo sin QR: ocupa el sitio del versículo, en una línea.
+    .bar__live {
+      flex: 1 1 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--pj-sp-1) var(--pj-sp-2);
+      margin: 0;
+      max-width: none;
+      font-size: var(--pj-fs-caption);
+      font-weight: 700;
+      line-height: 1.3;
+      color: $color-primary;
     }
 
     .bar__verse-ref {

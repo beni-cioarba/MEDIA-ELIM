@@ -38,7 +38,15 @@
   },
   "qr": {
     "caption": "Scanează pentru a vizita rețelele noastre",
-    "aria": "Cod QR pentru a accesa această pagină"
+    "aria": "Cod QR pentru a accesa această pagină",
+    "live_aria": "Cod QR către transmisiunea în direct"
+  },
+  "live_notice": {
+    "badge": "În direct",
+    "qr_caption": "Scanează și trimite slujba de azi celor dragi",
+    "bar_text": "Trimite slujba de azi celor dragi · YouTube {{handle}}",
+    "toggle": "Anunță transmisiunea live de azi",
+    "hint": "Se oprește singur la miezul nopții"
   },
   "streams": {
     "title": "Transmisiuni",

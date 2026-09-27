@@ -48,7 +48,7 @@ import { TranslatePipe } from '@ngx-translate/core';
         [elementType]="'svg'"
       ></qrcode>
     </div>
-    <p class="qr-panel__caption">{{ 'qr.caption' | translate }}</p>
+    <p class="qr-panel__caption">{{ captionKey | translate }}</p>
   `,
     styles: [
         `
@@ -108,6 +108,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class QrPanelComponent {
   @Input({ required: true }) data!: string;
+  /** Clave i18n de la leyenda: cambia cuando el QR lleva a otro destino. */
+  @Input() captionKey = 'qr.caption';
 
   /**
    * Colores del QR. La librería los necesita como literales (los pinta en el

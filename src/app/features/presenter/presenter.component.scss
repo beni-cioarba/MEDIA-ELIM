@@ -871,6 +871,9 @@
 }
 
 .screen__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: var(--fs-sm);
   font-weight: 700;
 }
@@ -906,6 +909,31 @@
     outline: 2px solid var(--c-gold);
     outline-offset: 2px;
   }
+}
+
+/* Cada ajuste con sus controles (QR: mostrar + tamaño · aviso de directo:
+   interruptor + caducidad) salta de línea entero, nunca partido. */
+.screen__group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  min-width: 0;
+}
+
+/* El rojo de «en directo» es un estado: sólo aparece con el aviso encendido,
+   el mismo que lleva la insignia en la proyección. */
+.screen__live-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-live);
+}
+
+.screen__note {
+  font-size: 0.7rem;
+  color: var(--ink-faint);
 }
 
 .screen__hint {

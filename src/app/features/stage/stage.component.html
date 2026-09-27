@@ -59,11 +59,20 @@
       <aside
         id="qr-section"
         class="qr"
+        [class.qr--live]="liveNotice()"
         [hidden]="!display.qrVisible()"
-        [attr.aria-label]="'qr.aria' | translate"
+        [attr.aria-label]="(liveNotice() ? 'qr.live_aria' : 'qr.aria') | translate"
       >
+        <!-- Aviso de directo: la insignia corona el QR y la leyenda pasa a
+             ser la invitación. Un solo módulo que se lee de arriba abajo
+             (qué pasa → código → qué hacer), sin robar sitio al contenido. -->
+        @if (liveNotice()) {
+          <p class="live-badge">
+            <span class="live-badge__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
+          </p>
+        }
         @defer (on immediate) {
-          <app-qr-panel [data]="qrData()" />
+          <app-qr-panel [data]="qrData()" [captionKey]="liveNotice() ? 'live_notice.qr_caption' : 'qr.caption'" />
         } @placeholder {
           <div class="qr__placeholder" aria-hidden="true"></div>
         }
@@ -166,10 +175,21 @@
   }
 
   <!-- Versículo propio del panel (la portada tiene el suyo: `verse.*`). -->
+  <!-- Con el aviso de directo y sin QR, el aviso ocupa el sitio del
+       versículo: no desaparece aunque el operador oculte el código. -->
   <footer class="bar">
-    <p class="bar__verse">
-      <span class="bar__verse-text">«{{ 'verse.stage_text' | translate }}»</span>
-      <span class="bar__verse-ref">— {{ 'verse.stage_reference' | translate }}</span>
-    </p>
+    @if (liveNotice() && !display.qrVisible()) {
+      <p class="bar__live">
+        <span class="live-badge">
+          <span class="live-badge__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
+        </span>
+        <span class="bar__live-text">{{ 'live_notice.bar_text' | translate: { handle: youtubeHandle } }}</span>
+      </p>
+    } @else {
+      <p class="bar__verse">
+        <span class="bar__verse-text">«{{ 'verse.stage_text' | translate }}»</span>
+        <span class="bar__verse-ref">— {{ 'verse.stage_reference' | translate }}</span>
+      </p>
+    }
   </footer>
 </main>

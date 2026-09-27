@@ -302,6 +302,10 @@ export class PresenterComponent implements OnInit {
     this.display.setQrVisible((event.target as HTMLInputElement).checked);
   }
 
+  protected setLiveNotice(event: Event): void {
+    this.display.setLiveNotice((event.target as HTMLInputElement).checked);
+  }
+
   protected resetAll(): void {
     this.blocks.resetAll();
     this.display.resetDurations();
