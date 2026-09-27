@@ -1416,8 +1416,9 @@ app-stage {
     color: $color-gold-deep;
     letter-spacing: -0.02em;
 
+    // «AZI» / «HOY»: una palabra corta, casi del cuerpo de la cifra.
     .is-today & {
-      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      font-size: clamp(1.8rem, 3.4vw, 2.5rem);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #d11f33;

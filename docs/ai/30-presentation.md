@@ -381,7 +381,8 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    y parece que falta contenido.
 
    La casilla de la cuenta atrás lleva **una cifra**; cuando el evento es hoy
-   lleva una palabra («ESTE AZI») y por eso tiene su propio tamaño (`lead`, no
+   lleva una palabra («AZI» / «HOY», clave `upcoming.today_short`; la insignia
+   de la línea de fecha en la web sigue diciendo «ESTE AZI») y por eso tiene su propio tamaño (`lead`, no
    `display`): a tamaño de cifra medía 298 px en una columna de 216 y se salía
    por encima del borde de la tarjeta. Las insignias «ESTE AZI» / «URMĂTORUL»
    de la línea de fecha no se proyectan: la casilla ya lo dice y sólo partían

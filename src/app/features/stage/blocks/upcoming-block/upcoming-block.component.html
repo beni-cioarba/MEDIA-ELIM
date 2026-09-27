@@ -27,7 +27,7 @@
         >
           <div class="upcoming__countdown" aria-hidden="true">
             @if (ev.isToday) {
-              <span class="upcoming__count-num">{{ 'upcoming.today' | translate }}</span>
+              <span class="upcoming__count-num">{{ 'upcoming.today_short' | translate }}</span>
             } @else {
               <span class="upcoming__count-num">{{ ev.daysLeft }}</span>
               <span class="upcoming__count-label">

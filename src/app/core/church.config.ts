@@ -758,7 +758,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
           ],
         },
       ],
-      expiresOn: '2026-09-27',
+      expiresOn: '2026-09-26',
     },
     {
       id: 'talantul_in_negot_2026',

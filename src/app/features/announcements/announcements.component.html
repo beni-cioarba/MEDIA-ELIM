@@ -7,7 +7,20 @@
 </header>
 
 <app-page-section>
-  @if (notFound()) {
+  @if (archived(); as past) {
+    <!-- Enlace a un anuncio del archivo: se lee entero, avisando de que ya pasó. -->
+    <div class="list">
+      <p class="expired" role="status">{{ 'announcements.not_found' | translate }}</p>
+      <app-announcement-card [announcement]="past">
+        <div class="actions">
+          <a class="actions__link" [routerLink]="links.all">
+            <app-icon name="arrow-right" class="actions__icon--back" />
+            {{ 'announcements.all' | translate }}
+          </a>
+        </div>
+      </app-announcement-card>
+    </div>
+  } @else if (notFound()) {
     <!-- Enlace compartido a un anuncio que ya ha caducado: decirlo y ofrecer el resto. -->
     <div class="empty">
       <app-icon name="megaphone" />
@@ -47,5 +60,30 @@
         </app-announcement-card>
       }
     </div>
+  }
+
+  <!-- Archivo: cerrado por defecto y al final. Filas de una línea (fecha +
+       título), no tarjetas: se consulta, no compite con lo vigente. -->
+  @if (requestedId() === null && announcements.past().length > 0) {
+    <details class="past">
+      <summary class="past__summary">
+        <span class="past__label">{{ 'announcements.past_title' | translate }}</span>
+        <span class="past__count">{{ announcements.past().length }}</span>
+        <svg class="past__chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </summary>
+      <ul class="past__list" role="list">
+        @for (item of announcements.past(); track item.id) {
+          <li>
+            <a class="past__row" [routerLink]="detailLink(item)">
+              <span class="past__date">{{ pastDate(item) }}</span>
+              <span class="past__title">{{ item.title }}</span>
+              <app-icon name="arrow-right" class="past__arrow" />
+            </a>
+          </li>
+        }
+      </ul>
+    </details>
   }
 </app-page-section>

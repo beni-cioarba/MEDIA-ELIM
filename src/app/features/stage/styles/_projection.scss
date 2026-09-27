@@ -785,7 +785,7 @@
     }
 
     // Cuando el evento es hoy, esta casilla no lleva una cifra sino una
-    // palabra («ESTE AZI»). A tamaño de cifra (11u) medía 298 px dentro de
+    // palabra («AZI»; antes «ESTE AZI»). A tamaño de cifra (11u) medía 298 px dentro de
     // una columna de 216 y se salía por los dos lados, encima del borde de
     // la tarjeta. La web ya tenía esta excepción; la proyección no la copió.
     .is-today .upcoming__count-num {

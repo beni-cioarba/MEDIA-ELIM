@@ -28,8 +28,15 @@ siguiente a `expiresOn`. Si se quiere retirar antes, se adelanta `expiresOn`.
 
 Cuando no queda ningún anuncio vigente el bloque se autoexcluye de la
 proyección (regla automática de `PresentationBlocksService`), la web muestra
-el estado vacío y un enlace compartido a un anuncio caducado muestra «ya no
-está en vigor» con acceso a los demás.
+el estado vacío.
+
+**Archivo («Anunțuri trecute», 27/09/2026).** Los caducados en los últimos
+90 días (`AnnouncementsService.past`, `PAST_WINDOW_DAYS`) aparecen al pie de
+`/anunturi` en un `<details>` cerrado: filas de una línea (fecha + título), no
+tarjetas, para consultar sin competir con lo vigente. Un enlace compartido a
+un anuncio del archivo lo muestra entero con el aviso «ya no está en vigor» y
+**sin botón de compartir**; pasados los 90 días, el enlace muestra sólo el
+aviso con acceso a los demás. La proyección nunca ve el archivo.
 
 ## El modelo
 
@@ -184,7 +191,11 @@ Cuando el usuario pase un aviso en bruto (normalmente texto de WhatsApp):
    acudir, cuánto cuesta, cuándo, dónde). Lo decorativo sobra.
 4. **Deduce `expiresOn`**: normalmente el día del evento; para inscripciones,
    el último día del plazo («până duminica viitoare» = el domingo siguiente a
-   la fecha de hoy). Si no hay fecha, pregunta.
+   la fecha de hoy). Si no hay fecha, pregunta. Si el anuncio abarca varios
+   días y los siguientes tienen **su propio evento** en `upcomingEvents`, caduca
+   con el día principal: ese día ya lo anuncia el evento («AZI»), y dejar el
+   anuncio duplicaba el aviso de algo que la gente da por pasado (ANCORAT, 26/09:
+   el domingo lo cubre «Evanghelizare»).
 5. Si el aviso implica un evento (conferencia, bautizo, aniversario…), añade
    **también** la entrada en `upcomingEvents` (ver `20-content-i18n.md`): el
    anuncio caduca, el evento sigue en el calendario.
@@ -196,7 +207,7 @@ Cuando el usuario pase un aviso en bruto (normalmente texto de WhatsApp):
 | Fichero                                                       | Papel                                                  |
 | ------------------------------------------------------------- | ------------------------------------------------------ |
 | `core/church.config.ts`                                       | Tipos `Announcement*` y datos                           |
-| `core/services/announcements.service.ts`                      | `active`, `hasActive`, `byId()`                          |
+| `core/services/announcements.service.ts`                      | `active`, `hasActive`, `byId()`, archivo `past` / `pastById()` |
 | `core/util/iso-date.ts`                                       | `parseIsoDate`, `startOfDay` (compartido con la agenda)  |
 | `core/services/presentation-blocks.service.ts`                | Bloque `announcements` + `expand()` → una diapositiva por anuncio |
 | `features/announcements/announcement-card/`                   | **El renderizador** (web + proyección, `ViewEncapsulation.None`) |

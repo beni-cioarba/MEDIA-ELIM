@@ -192,6 +192,7 @@
     "empty": "No hay eventos programados por el momento.",
     "next": "PRÓXIMO",
     "today": "ES HOY",
+    "today_short": "HOY",
     "day_left": "día restante",
     "days_left": "días restantes",
     "preacher": "Predica",
@@ -205,7 +206,8 @@
     "empty": "No hay anuncios en este momento.",
     "not_found": "Este anuncio ya no está en vigor.",
     "all": "Todos los anuncios",
-    "open_link": "Abrir este anuncio"
+    "open_link": "Abrir este anuncio",
+    "past_title": "Anuncios pasados"
   },
   "bible": {
     "title": "Lectura bíblica",

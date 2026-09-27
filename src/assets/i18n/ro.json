@@ -192,6 +192,7 @@
     "empty": "Nu sunt evenimente programate în momentul de față.",
     "next": "URMĂTORUL",
     "today": "ESTE AZI",
+    "today_short": "AZI",
     "day_left": "zi rămasă",
     "days_left": "zile rămase",
     "preacher": "Cuvânt",
@@ -205,7 +206,8 @@
     "empty": "Nu sunt anunțuri în acest moment.",
     "not_found": "Acest anunț nu mai este în vigoare.",
     "all": "Toate anunțurile",
-    "open_link": "Deschide acest anunț"
+    "open_link": "Deschide acest anunț",
+    "past_title": "Anunțuri trecute"
   },
   "bible": {
     "title": "Citirea Bibliei",
