@@ -1,0 +1,74 @@
+@use 'ds' as *;
+
+/* =====================================================================
+ * Archivo plegable al pie de una página («Anunțuri trecute»,
+ * «Săptămânile anterioare»). Parcial compartido:
+ *   @use '../../shared/styles/past-archive' as *;
+ * Emite el contenedor `.past`, su cabecera y la lista; la **fila**
+ * (`.past__row` y sus columnas) la define cada página, porque cada archivo
+ * enseña datos distintos.
+ * ===================================================================== */
+
+/* Desplegable nativo (`<details>`): accesible por teclado y lector de
+   pantalla sin JS. Cerrado, es una sola línea gris al pie de la lista; la
+   medida de lectura es la misma que la de las tarjetas. */
+.past {
+  max-width: 62rem;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.past__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-block: var(--sp-3);
+  list-style: none;
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-muted);
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.past__count {
+  min-width: 1.6em;
+  padding: 0.1em 0.5em;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.past__chevron {
+  width: 1.1em;
+  height: 1.1em;
+  transition: transform var(--mo-fast) var(--ea-standard);
+
+  .past[open] & {
+    transform: rotate(180deg);
+  }
+
+  @include motion-reduce {
+    transition: none;
+  }
+}
+
+.past__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

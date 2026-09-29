@@ -124,6 +124,7 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
 | `fetch-youtube.js`       | Genera `youtube.json` (usado por el cron)                    |
 | `check-i18n-parity.mjs`  | Verifica que ES y RO tengan las mismas claves                 |
 | `import-bible-plan.py`   | Excel del plan de lectura → `src/app/core/bible-reading.config.ts` (Python + `openpyxl`) |
+| `import-family-photos.mjs` | Fotos de una semana de familias → `src/assets/family-prayer/<domingo>/<id>.webp` (1280) + `-480.webp`, sin metadatos; imprime `id` y medidas (`36-family-prayer.md`) |
 
 Ejecuta `optimize-images.js` **siempre** antes de añadir un `MediaEvent`: las
 imágenes originales de Drive pesan decenas de MB.

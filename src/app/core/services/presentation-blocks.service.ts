@@ -1,7 +1,11 @@
-import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
 import { Announcement, CHURCH_CONFIG } from '../church.config';
 import { AnnouncementsService } from './announcements.service';
 import { BibleReadingService } from './bible-reading.service';
+import { FamilyPrayerService, PrayerFamilyView, PrayerWeekView } from './family-prayer.service';
+import { ClockService } from './clock.service';
+import { PrayerCausesService } from './prayer-causes.service';
+import { toIsoDate } from '../util/iso-date';
 import { PresentationDisplayService } from './presentation-display.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
 
@@ -13,7 +17,10 @@ export type PresentationBlockId =
   | 'gallery'
   | 'weekly'
   | 'upcoming'
-  | 'bible';
+  | 'bible'
+  | 'families'
+  | 'causes'
+  | 'website';
 
 /** Preferencia manual del operador. `null` ⇒ decide la regla automática. */
 export type PresentationBlockOverride = boolean | null;
@@ -49,6 +56,8 @@ export interface SlidePage {
  *  - `announcements` → una diapositiva por anuncio vigente (y visible).
  *  - `upcoming`      → páginas de `UPCOMING_PER_SLIDE` eventos, para que
  *                      ninguno se corte y cada página tenga su tiempo.
+ *  - `families`      → el resumen de la semana y, detrás, una ficha por
+ *                      familia (como el PowerPoint del domingo).
  */
 export interface PresentationSlide {
   /** Clave estable: el id del bloque, `announcements:<id>` o `upcoming:<n>`. */
@@ -62,6 +71,21 @@ export interface PresentationSlide {
   readonly events?: readonly UpcomingEventView[];
   /** Sólo en bloques paginados. */
   readonly page?: SlidePage;
+  /** Sólo en `families`: la semana (resumen y fichas). */
+  readonly prayerWeek?: PrayerWeekView;
+  /** Sólo en las fichas de `families`: la familia de la diapositiva. */
+  readonly family?: PrayerFamilyView;
+  /**
+   * Ficha de una familia de una **semana anterior**, añadida a mano para
+   * hoy (ver `PresentationBlocksService.setPastFamilyShown`).
+   */
+  readonly pastFamily?: boolean;
+}
+
+/** Una familia de una semana anterior, para el desplegable del panel. */
+export interface PastFamilyOption {
+  readonly week: PrayerWeekView;
+  readonly family: PrayerFamilyView;
 }
 
 /** Quién va a pintar las diapositivas que devuelve `expand()`. */
@@ -80,31 +104,36 @@ export interface UpcomingSlideState {
 }
 
 /**
- * Eventos por diapositiva **sin QR**: dos caben grandes y legibles con la
- * escala de cartel (descripción recortada a dos líneas; el detalle, en la web).
+ * Eventos por diapositiva: dos caben grandes y legibles con la escala de
+ * cartel (descripción recortada a dos líneas; el detalle, en la web). El
+ * lienzo es siempre entero: el QR ya no le quita una columna.
  */
 export const UPCOMING_PER_SLIDE = 2;
-
-/**
- * Eventos por diapositiva **con QR**: uno.
- *
- * El QR se lleva la columna derecha y el texto baja de 1790 a 1250 px de
- * ancho —un 30 % menos—, así que las mismas tarjetas reparten su texto en más
- * líneas: medido con la semana real, dos tarjetas pasaban de 636 px (caben,
- * con 61 de margen) a 851 px en una caja de 697, y la segunda se cortaba a
- * media línea.
- *
- * La salida no es apretar rellenos —ganaba 150 px y volvía a cortarse con un
- * título una línea más largo— sino proyectar un evento por diapositiva cuando
- * el lienzo es estrecho: cada uno se lee entero y con su propio tiempo. Es la
- * misma idea que la sección «sin QR» de `_projection.scss`, donde los bloques
- * se recolocan según el ancho disponible.
- */
-export const UPCOMING_PER_SLIDE_QR = 1;
 
 const STORAGE_KEY = 'iglesia-redes.presentation.blocks';
 const HIDDEN_ANNOUNCEMENTS_KEY = 'iglesia-redes.presentation.announcements.hidden';
 const HIDDEN_EVENTS_KEY = 'iglesia-redes.presentation.events.hidden';
+const HIDDEN_FAMILIES_KEY = 'iglesia-redes.presentation.families.hidden';
+const PAST_FAMILIES_KEY = 'iglesia-redes.presentation.families.past';
+
+/** Id de la diapositiva de resumen dentro de la selección de `families`. */
+export const FAMILY_SUMMARY_ID = 'summary';
+
+/** Bloques cuyas diapositivas se eligen una a una en el panel. */
+export type SelectableBlockId = 'announcements' | 'upcoming' | 'families';
+
+/** Estado de la selección de un bloque, para los atajos «Doar primul» / «Toate». */
+export interface BlockSelection {
+  /** Elementos elegibles (anuncios, eventos, resumen + fichas). */
+  readonly total: number;
+  /** Cuántos se proyectan. */
+  readonly visible: number;
+  /** Sólo el primero está marcado. */
+  readonly onlyFirst: boolean;
+}
+
+/** Bloques con selección elemento a elemento, en el orden del panel. */
+const SELECTABLE_BLOCKS: readonly SelectableBlockId[] = ['announcements', 'upcoming', 'families'];
 const ORDER_KEY = 'iglesia-redes.presentation.order';
 
 /**
@@ -114,12 +143,16 @@ const ORDER_KEY = 'iglesia-redes.presentation.order';
  */
 const BLOCK_DEFS: readonly PresentationBlockDef[] = [
   { id: 'announcements', titleKey: 'announcements.title' },
+  { id: 'families', titleKey: 'family_prayer.title' },
+  { id: 'causes', titleKey: 'prayer_causes.title' },
   { id: 'bible', titleKey: 'bible.title' },
   { id: 'socials', titleKey: 'socials.section_title' },
   { id: 'streams', titleKey: 'streams.title' },
   { id: 'gallery', titleKey: 'gallery.title' },
   { id: 'weekly', titleKey: 'weekly.title' },
   { id: 'upcoming', titleKey: 'upcoming.title' },
+  // El QR, al final de la vuelta: «todo esto está en la web».
+  { id: 'website', titleKey: 'website_slide.block' },
 ];
 
 /**
@@ -148,7 +181,10 @@ export class PresentationBlocksService {
   private readonly schedule = inject(ScheduleService);
   private readonly announcements = inject(AnnouncementsService);
   private readonly bible = inject(BibleReadingService);
+  private readonly familyPrayer = inject(FamilyPrayerService);
+  private readonly prayerCauses = inject(PrayerCausesService);
   private readonly display = inject(PresentationDisplayService);
+  private readonly clock = inject(ClockService);
 
   /** Preferencias manuales persistidas (ausente ⇒ modo automático). */
   private readonly overrides = signal<Partial<Record<PresentationBlockId, boolean>>>(
@@ -160,6 +196,53 @@ export class PresentationBlocksService {
 
   /** Eventos que el operador ha decidido no proyectar (por id). */
   private readonly hiddenEventIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_EVENTS_KEY));
+
+  /**
+   * Diapositivas de familias que no se proyectan: el resumen
+   * (`FAMILY_SUMMARY_ID`) o una ficha (id de la familia). Con cinco o seis
+   * familias por semana no siempre se proyectan todas.
+   */
+  private readonly hiddenFamilyIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_FAMILIES_KEY));
+
+  /**
+   * Familias de semanas anteriores que el operador ha añadido **para hoy**.
+   * Es la excepción (una familia que pidió oración otra vez, un domingo con
+   * pocas fichas): por eso se añade a mano, nunca entra con «Toate» y caduca
+   * sola a medianoche, como el aviso de directo.
+   */
+  private readonly pastFamilyPick = signal<PastFamilyPick>(readPastFamilyPick());
+
+  private readonly today = computed<string>(() => toIsoDate(new Date(this.clock.now())));
+
+  /** Ids de las familias anteriores añadidas hoy (vacío si la marca es de otro día). */
+  private readonly pastFamilyIds = computed<ReadonlySet<string>>(() => {
+    const pick = this.pastFamilyPick();
+    return pick.date === this.today() ? new Set(pick.ids) : new Set();
+  });
+
+  /**
+   * Familias de las semanas anteriores (la más reciente primero), sin las
+   * que también están en la semana en curso.
+   */
+  readonly pastFamilies = computed<readonly PastFamilyOption[]>(() => {
+    // Una familia que se repite en varias semanas sale una vez: la más reciente.
+    const seen = new Set(this.familyPrayer.current()?.families.map((f) => f.id) ?? []);
+    const options: PastFamilyOption[] = [];
+    for (const week of this.familyPrayer.past()) {
+      for (const family of week.families) {
+        if (seen.has(family.id)) continue;
+        seen.add(family.id);
+        options.push({ week, family });
+      }
+    }
+    return options;
+  });
+
+  /** Las que todavía no se proyectan: el contenido del desplegable. */
+  readonly pastFamilyOptions = computed<readonly PastFamilyOption[]>(() => {
+    const picked = this.pastFamilyIds();
+    return this.pastFamilies().filter((option) => !picked.has(option.family.id));
+  });
 
   /** Orden elegido por el operador (ids). Vacío ⇒ el orden de `BLOCK_DEFS`. */
   private readonly customOrder = signal<readonly PresentationBlockId[]>(readStoredOrder());
@@ -197,6 +280,12 @@ export class PresentationBlocksService {
       if (event.key === null || event.key === HIDDEN_EVENTS_KEY) {
         this.hiddenEventIds.set(readHiddenIds(HIDDEN_EVENTS_KEY));
       }
+      if (event.key === null || event.key === HIDDEN_FAMILIES_KEY) {
+        this.hiddenFamilyIds.set(readHiddenIds(HIDDEN_FAMILIES_KEY));
+      }
+      if (event.key === null || event.key === PAST_FAMILIES_KEY) {
+        this.pastFamilyPick.set(readPastFamilyPick());
+      }
       if (event.key === null || event.key === ORDER_KEY) {
         this.customOrder.set(readStoredOrder());
       }
@@ -214,6 +303,9 @@ export class PresentationBlocksService {
     weekly: this.config.weeklyProgram.length > 0,
     upcoming: this.schedule.hasUpcomingEvents(),
     bible: this.bible.hasReading(),
+    families: this.familyPrayer.hasCurrent(),
+    causes: this.prayerCauses.hasCauses,
+    website: true,
   }));
 
   /** Estado resuelto de todos los bloques (para el panel de ajustes). */
@@ -303,7 +395,9 @@ export class PresentationBlocksService {
     () =>
       this.states().some((s) => !s.isAuto) ||
       this.hiddenAnnouncementIds().size > 0 ||
-      this.hiddenEventIds().size > 0,
+      this.hiddenEventIds().size > 0 ||
+      this.hiddenFamilyIds().size > 0 ||
+      this.pastFamilyIds().size > 0,
   );
 
   /**
@@ -369,15 +463,52 @@ export class PresentationBlocksService {
           events: [event],
         }));
       }
-      const perSlide = this.display.qrVisible() ? UPCOMING_PER_SLIDE_QR : UPCOMING_PER_SLIDE;
-      const total = Math.ceil(events.length / perSlide);
+      const total = Math.ceil(events.length / UPCOMING_PER_SLIDE);
       return Array.from({ length: total }, (_, index) => ({
         key: `${id}:${index}`,
         block: id,
         titleKey,
-        events: events.slice(index * perSlide, (index + 1) * perSlide),
+        events: events.slice(index * UPCOMING_PER_SLIDE, (index + 1) * UPCOMING_PER_SLIDE),
         page: { index, total },
       }));
+    }
+
+    if (id === 'families') {
+      // Resumen primero y, detrás, una ficha por familia en el orden del
+      // resumen: se proyecta igual que el PowerPoint del domingo. En la web
+      // no pasa por aquí (tiene página propia).
+      const week = this.familyPrayer.current();
+      if (!week) return this.emptySlide(id);
+      // Familias anteriores añadidas hoy: detrás de las de la semana, en el
+      // orden del desplegable. Se listan en el panel (para quitarlas o darles
+      // tiempo) y se proyectan; no cuentan en la selección de la semana.
+      const picked = this.pastFamilyIds();
+      const past: PresentationSlide[] = this.pastFamilies()
+        .filter((option) => picked.has(option.family.id))
+        .map(({ week: pastWeek, family }) => ({
+          key: `${id}:past:${family.id}`,
+          block: id,
+          titleKey,
+          prayerWeek: pastWeek,
+          family,
+          pastFamily: true,
+        }));
+      const all: PresentationSlide[] = [
+        { key: id, block: id, titleKey, prayerWeek: week },
+        ...week.families.map((family) => ({
+          key: `${id}:${family.id}`,
+          block: id,
+          titleKey,
+          prayerWeek: week,
+          family,
+        })),
+      ];
+      // El panel las lista todas (para poder volver a marcarlas); la
+      // proyección, sólo las elegidas. Si se desmarcan todas, el bloque no
+      // aporta diapositivas (como los eventos).
+      if (!projection) return [...all, ...past];
+      const hidden = this.hiddenFamilyIds();
+      return [...all.filter((slide) => !hidden.has(familySelectionId(slide))), ...past];
     }
 
     return [{ key: id, block: id, titleKey }];
@@ -417,6 +548,9 @@ export class PresentationBlocksService {
     persistHiddenAnnouncements(new Set());
     this.hiddenEventIds.set(new Set());
     persistHiddenIds(HIDDEN_EVENTS_KEY, new Set());
+    this.hiddenFamilyIds.set(new Set());
+    persistHiddenIds(HIDDEN_FAMILIES_KEY, new Set());
+    this.clearPastFamilies();
   }
 
   /**
@@ -456,6 +590,163 @@ export class PresentationBlocksService {
       if (visible) next.delete(id);
       else next.add(id);
       persistHiddenAnnouncements(next);
+      return next;
+    });
+  }
+
+  /** Muestra u oculta una diapositiva de familias (resumen o ficha). */
+  setFamilyVisible(id: string, visible: boolean): void {
+    this.updateHidden(this.hiddenFamilyIds, HIDDEN_FAMILIES_KEY, id, visible);
+  }
+
+  /** ¿Se proyecta esta diapositiva de familias? */
+  isFamilyVisible(id: string): boolean {
+    return !this.hiddenFamilyIds().has(id);
+  }
+
+  /** Añade (para hoy) o quita una familia de una semana anterior. */
+  setPastFamilyShown(id: string, shown: boolean): void {
+    const ids = new Set(this.pastFamilyIds());
+    if (shown) ids.add(id);
+    else ids.delete(id);
+    const next: PastFamilyPick = { date: this.today(), ids: [...ids] };
+    this.pastFamilyPick.set(next);
+    persistPastFamilyPick(next);
+  }
+
+  private clearPastFamilies(): void {
+    const empty: PastFamilyPick = { date: null, ids: [] };
+    this.pastFamilyPick.set(empty);
+    persistPastFamilyPick(empty);
+  }
+
+  // ---- Selección rápida ---------------------------------------------------
+  //
+  // Con muchos anuncios, eventos o familias no siempre se proyectan todos:
+  // «Doar primul» deja marcado sólo el primero (para ir marcando después los
+  // que se quieran) y «Toate» los vuelve a marcar todos. Un solo mecanismo
+  // para los tres bloques: la lista de ids elegibles y su conjunto de ocultos.
+
+  /** Estado de la selección de un bloque (para pintar los atajos). */
+  selection(block: SelectableBlockId): BlockSelection {
+    const { ids, hidden } = this.selectable(block);
+    const set = hidden();
+    const visible = ids.filter((id) => !set.has(id)).length;
+    return {
+      total: ids.length,
+      visible,
+      onlyFirst: ids.length > 0 && visible === 1 && !set.has(ids[0]),
+    };
+  }
+
+  /**
+   * Deja marcado sólo el primer elemento del bloque. En familias también
+   * retira las de semanas anteriores: «todo menos el primero» es todo.
+   */
+  selectOnlyFirst(block: SelectableBlockId): void {
+    const { ids, hidden, key } = this.selectable(block);
+    const next = new Set(ids.slice(1));
+    hidden.set(next);
+    persistHiddenIds(key, next);
+    if (block === 'families') this.clearPastFamilies();
+  }
+
+  /**
+   * Vuelve a marcar todos los elementos del bloque. Las familias de semanas
+   * anteriores **no**: son una excepción que se añade a mano, una a una.
+   */
+  selectAll(block: SelectableBlockId): void {
+    const { hidden, key } = this.selectable(block);
+    hidden.set(new Set());
+    persistHiddenIds(key, new Set());
+  }
+
+  // ---- Selección global (bloques) -----------------------------------------
+  //
+  // Los mismos dos atajos, un nivel más arriba: sobre los **bloques**.
+  //  - «Doar primul»: sólo el primer bloque con contenido (en el orden de
+  //    proyección) queda encendido; el resto, apagados a mano.
+  //  - «Toate»: todos los bloques con contenido encendidos (vuelven a su
+  //    modo automático) y, dentro, todos sus elementos marcados. Las
+  //    familias de semanas anteriores, no: son una excepción a mano.
+  // Un bloque sin contenido no se enciende: sólo proyectaría una pantalla
+  // vacía.
+
+  /** Bloques con contenido y cuántos se proyectan (para el contador global). */
+  readonly globalSelection = computed<BlockSelection & { readonly allSelected: boolean }>(() => {
+    const conContenido = this.states().filter((s) => s.autoAvailable);
+    const visible = conContenido.filter((s) => s.enabled).length;
+    const primero = conContenido[0];
+    const elementosCompletos = SELECTABLE_BLOCKS.every((block) => {
+      const sel = this.selection(block);
+      return sel.visible === sel.total;
+    });
+    return {
+      total: conContenido.length,
+      visible,
+      onlyFirst: !!primero && primero.enabled && this.states().every((s) => s === primero || !s.enabled),
+      allSelected: visible === conContenido.length && elementosCompletos,
+    };
+  });
+
+  /** Sólo el primer bloque con contenido queda encendido. */
+  selectOnlyFirstBlock(): void {
+    const primero = this.states().find((s) => s.autoAvailable);
+    if (!primero) return;
+    const next: Partial<Record<PresentationBlockId, boolean>> = {};
+    for (const state of this.states()) next[state.id] = state.id === primero.id;
+    this.overrides.set(next);
+    persistOverrides(next);
+  }
+
+  /** Todos los bloques con contenido encendidos y todos sus elementos marcados. */
+  selectAllBlocks(): void {
+    this.overrides.set({});
+    persistOverrides({});
+    for (const block of SELECTABLE_BLOCKS) this.selectAll(block);
+  }
+
+  /** Ids elegibles de un bloque, en orden de proyección, y dónde se guardan. */
+  private selectable(block: SelectableBlockId): {
+    readonly ids: readonly string[];
+    readonly hidden: WritableSignal<ReadonlySet<string>>;
+    readonly key: string;
+  } {
+    switch (block) {
+      case 'announcements':
+        return {
+          ids: this.announcements.active().map((a) => a.id),
+          hidden: this.hiddenAnnouncementIds,
+          key: HIDDEN_ANNOUNCEMENTS_KEY,
+        };
+      case 'upcoming':
+        return {
+          ids: this.schedule.upcomingEvents().map((e) => e.id),
+          hidden: this.hiddenEventIds,
+          key: HIDDEN_EVENTS_KEY,
+        };
+      case 'families': {
+        const week = this.familyPrayer.current();
+        return {
+          ids: week ? [FAMILY_SUMMARY_ID, ...week.families.map((f) => f.id)] : [],
+          hidden: this.hiddenFamilyIds,
+          key: HIDDEN_FAMILIES_KEY,
+        };
+      }
+    }
+  }
+
+  private updateHidden(
+    hidden: WritableSignal<ReadonlySet<string>>,
+    key: string,
+    id: string,
+    visible: boolean,
+  ): void {
+    hidden.update((current) => {
+      const next = new Set(current);
+      if (visible) next.delete(id);
+      else next.add(id);
+      persistHiddenIds(key, next);
       return next;
     });
   }
@@ -570,4 +861,40 @@ function persistHiddenIds(key: string, ids: ReadonlySet<string>): void {
   } catch {
     /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
   }
+}
+
+/** Familias anteriores añadidas: el día en que se añadieron y sus ids. */
+interface PastFamilyPick {
+  readonly date: string | null;
+  readonly ids: readonly string[];
+}
+
+function readPastFamilyPick(): PastFamilyPick {
+  const empty: PastFamilyPick = { date: null, ids: [] };
+  if (typeof localStorage === 'undefined') return empty;
+  try {
+    const raw = localStorage.getItem(PAST_FAMILIES_KEY);
+    if (!raw) return empty;
+    const parsed = JSON.parse(raw) as Partial<Record<keyof PastFamilyPick, unknown>>;
+    const date = typeof parsed.date === 'string' ? parsed.date : null;
+    const ids = Array.isArray(parsed.ids) ? parsed.ids.filter((v): v is string => typeof v === 'string') : [];
+    return { date, ids };
+  } catch {
+    return empty;
+  }
+}
+
+function persistPastFamilyPick(pick: PastFamilyPick): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    if (pick.ids.length === 0) localStorage.removeItem(PAST_FAMILIES_KEY);
+    else localStorage.setItem(PAST_FAMILIES_KEY, JSON.stringify(pick));
+  } catch {
+    /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
+  }
+}
+
+/** Id de selección de una diapositiva de familias: el resumen o la familia. */
+export function familySelectionId(slide: PresentationSlide): string {
+  return slide.family?.id ?? FAMILY_SUMMARY_ID;
 }

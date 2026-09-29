@@ -1,0 +1,50 @@
+<!--
+  Dos zonas, sólo tipografía (sin iconos, viñetas, contadores ni cajas):
+    · Por nombre: título, epígrafes en versalitas y los nombres en columnas
+      limpias.
+    · Por intención: las causas de toda la iglesia, título en oro +
+      intención, en un panel de tono más profundo.
+  `appFitToBox` va en la sección y mide `.causes__inner` (las dos zonas):
+  una sola escala para todo, así la jerarquía no cambia entre zonas.
+-->
+<section class="causes" aria-labelledby="causes-title" appFitToBox [appFitToBoxMax]="1.2">
+  <div class="causes__inner">
+    <div class="causes__named">
+      <!-- En la web el título lo pone la cabecera de la página. -->
+      <h2 id="causes-title" class="causes__title" [class.u-sr-only]="!fullscreen()">
+        {{ 'prayer_causes.title' | translate }}
+      </h2>
+
+      <!-- 1 · Por nombre -->
+      @for (cause of causes.named; track cause.id) {
+        <section
+          class="cause cause--named"
+          [class.cause--many]="cause.people.length > 3"
+          [attr.id]="cause.id"
+          [attr.aria-labelledby]="cause.id + '-title'"
+        >
+          <h3 class="cause__heading" [attr.id]="cause.id + '-title'">{{ cause.title }}</h3>
+          <ul class="cause__people" role="list">
+            @for (person of cause.people; track person) {
+              <li class="cause__person">{{ person }}</li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+
+    <!-- 2 · Por intención -->
+    @if (causes.general.length > 0) {
+      <ul class="causes__general" role="list">
+        @for (cause of causes.general; track cause.id) {
+          <li class="cause cause--general" [attr.id]="cause.id">
+            <span class="cause__title">{{ cause.title }}</span>
+            @if (cause.intent) {
+              <span class="cause__intent">{{ cause.intent }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

@@ -1,0 +1,501 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Ficha de familia — hoja GLOBAL (`ViewEncapsulation.None`, BEM `.fcard__*`).
+//
+//   Web ≥ md                Proyección retrato        Proyección apaisada
+//   ┌──────┬────────┐       ┌────────┬──────────┐     ┌──────────┬───────┐
+//   │      │ panel  │       │        │          │     │  media   │       │
+//   │media │ (id +  │       │ media  │  panel   │     ├──────────┤ body  │
+//   │      │  body) │       │        │  arriba  │     │  id      │       │
+//   └──────┴────────┘       └────────┴──────────┘     └──────────┴───────┘
+//
+// Principios (revisión del 28/09/2026, «parece descontrolado»):
+//   · Una escala tipográfica fija; el panel se ajusta ENTERO (`--fit`), así
+//     la jerarquía nunca cambia (el mensaje no puede crecer hasta competir
+//     con el nombre).
+//   · El bloque arranca arriba (como una página, no flota) y se adapta al
+//     sitio disponible: encoge si no cabe y crece hasta 1,4 si sobra.
+//   · El rótulo «Rugăciune pentru familii» es una firma pegada a la esquina
+//     inferior derecha: dice qué es sin competir con la familia.
+//   · Sin filetes, iconos ni bordes: separa el espacio.
+// =====================================================================
+
+/// Medida de proyección que sigue al autoajuste del panel.
+@function fit($value) {
+  @return calc(#{$value} * var(--fit, 1));
+}
+
+/// Nunca por debajo del mínimo legible (3,2u), por mucho que encoja.
+@function floor-fit($value) {
+  @return max(calc(var(--pj-u) * 3.2), fit($value));
+}
+
+/// Texto corrido (mensaje, versículo): encoge con el panel pero crece como
+/// mucho × 1,15. Si el mensaje es corto el panel crece hasta 1,4 y, sin este
+/// tope, el mensaje llegaba casi al tamaño del apellido: el sitio sobrante va
+/// al aire (espaciados, que sí siguen a `--fit`), no a la letra.
+@function text-fit($value) {
+  @return max(calc(var(--pj-u) * 3.2), min(fit($value), calc(#{$value} * 1.15)));
+}
+
+// ---------------------------------------------------------------------
+// 1 · Web
+// ---------------------------------------------------------------------
+app-family-card {
+  display: block;
+}
+
+.fcard {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas: 'media panel';
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--e-1);
+}
+
+// El marco toma la proporción de la foto (recortada a medida por la
+// iglesia), nunca más estrecho que 4:5 (`--frame`). Si el texto es más alto,
+// la columna crece con él y el fondo difuminado rellena (la foto sigue entera).
+.fcard__media {
+  grid-area: media;
+  position: relative;
+  align-self: stretch;
+  // Ancho fijado a la columna: si no, al estirarse en alto (texto largo) la
+  // rejilla deriva el ancho de la proporción y la foto invadía el texto.
+  width: 100%;
+  aspect-ratio: var(--frame, 0.8);
+}
+
+// Doble clase a propósito: el `:host` del componente de foto (que en el
+// resumen necesita `position: relative`) tiene la misma especificidad que una
+// clase y se carga después; sin esto la foto quedaba en flujo y medía 0.
+.fcard__media > .fcard__photo {
+  position: absolute;
+  inset: 0;
+}
+
+.fcard__panel {
+  grid-area: panel;
+  min-width: 0;
+}
+
+.fcard__panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+}
+
+.fcard__id {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+// En la web la página ya dice qué es: el rótulo sólo existe proyectado.
+.fcard__eyebrow {
+  display: none;
+}
+
+.fcard__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 1.2rem + 1.5vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--c-primary);
+}
+
+// «Familia» es contexto: más ligero que el apellido, que es lo que se busca.
+.fcard__prefix {
+  font-weight: 500;
+  color: var(--c-muted);
+}
+
+.fcard__names {
+  margin: 0;
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+  font-weight: 600;
+  color: var(--c-gold-deep);
+}
+
+.fcard__children {
+  margin: var(--sp-1) 0 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+// «Copiii:» es contexto (como «Familia»); se destacan los nombres.
+.fcard__children-label {
+  font-weight: 500;
+
+  &::after {
+    content: ':';
+  }
+}
+
+.fcard__children-names {
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.fcard__body {
+  min-width: 0;
+}
+
+.fcard__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.fcard__message {
+  margin: 0;
+  text-wrap: pretty;
+  max-width: 62ch;
+  font-size: var(--fs-body-lg);
+  line-height: 1.65;
+  color: var(--c-text);
+}
+
+// Cita: serif (el único sitio junto al wordmark donde va Playfair) y la
+// referencia en versalitas. En la web conserva el filete de cita.
+.fcard__verse {
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-4);
+  border-left: 3px solid var(--c-gold);
+}
+
+.fcard__verse-text {
+  margin: 0;
+  max-width: 58ch;
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--c-primary);
+}
+
+.fcard__verse--solo .fcard__verse-text {
+  font-size: clamp(1.15rem, 1rem + 0.6vw, 1.4rem);
+}
+
+.fcard__verse-ref {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--c-muted);
+}
+
+.fcard__prompt {
+  margin: 0;
+  max-width: 50ch;
+  font-size: var(--fs-body-lg);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+// Foto apaisada (web, ≥ md): arriba a todo el ancho, con su proporción y un
+// tope de alto; el panel debajo.
+@include from('md') {
+  .fcard--landscape {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'media'
+      'panel';
+
+    // `width` explícito: con `aspect-ratio` + `max-height` la rejilla encogía
+    // el ancho en vez de llenar la ficha. Si el tope recorta la proporción,
+    // el fondo difuminado rellena.
+    .fcard__media {
+      width: 100%;
+      aspect-ratio: var(--ar, 1.5);
+      max-height: 30rem;
+    }
+  }
+}
+
+// Móvil y tableta estrecha: foto arriba con su proporción (mínimo 4:5).
+@include until('md') {
+  .fcard {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'media'
+      'panel';
+  }
+
+  .fcard__media {
+    aspect-ratio: var(--frame, 0.8);
+    max-height: 78vh;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 2 · Proyección — a sangre, foto + panel navy, todo en `--pj-*`
+// ---------------------------------------------------------------------
+.stage.is-fullscreen {
+  app-family-card {
+    display: contents;
+  }
+
+  // La diapositiva es el contenedor: el ancho de la foto se calcula con el
+  // alto real (`cqh`) y la proporción de la foto.
+  .slide--families {
+    container-type: size;
+  }
+
+  // La pantalla entera (la diapositiva va a sangre, `.stage--bleed`): foto
+  // pegada al borde izquierdo y a todo el alto, panel navy al lado.
+  // Ancho de la foto = alto × proporción → la foto llena su columna sin
+  // bandas. Topes: entre el 30 % y el 58 % del ancho (50 % si el texto es
+  // largo); si un tope actúa, el hueco lo rellena la foto difuminada.
+  .fcard {
+    --fcard-photo-max: 58cqw;
+    // Márgenes del texto: junto a la foto, justo el aire que separa; arriba
+    // empieza el contenido; abajo queda la franja del rótulo.
+    --fcard-pad-left: calc(var(--pj-u) * 4.5);
+    --fcard-pad-x: calc(var(--pj-u) * 4.5);
+    --fcard-pad-top: calc(var(--pj-u) * 5);
+    --fcard-pad-bottom: calc(var(--pj-u) * 8);
+    --fcard-photo-w: clamp(30cqw, calc(100cqh * var(--ar, 0.8)), var(--fcard-photo-max));
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: var(--fcard-photo-w) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: 'media panel';
+    border: 0;
+    border-radius: 0;
+    background: var(--c-primary);
+    box-shadow: none;
+    overflow: hidden;
+    color: var(--c-on-primary);
+    // Contenedor del rótulo (firma en la esquina).
+    position: relative;
+  }
+
+  .fcard--long {
+    --fcard-photo-max: 50cqw;
+  }
+
+  // `max-height: none`: la regla web de las apaisadas (`30rem`) no debe
+  // colarse aquí (en pantallas grandes encogía la foto y dejaba bandas).
+  .fcard__media {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+
+  // El panel recorta y se autoajusta ENTERO (0,7 → 1,4). Bloque, no flex:
+  // un contenedor flex encogería al hijo medido y el desborde no se vería.
+  .fcard__panel {
+    display: block;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    --fit: 1;
+  }
+
+  // El relleno va en el hijo medido (lo que mide `appFitToBox`); el de abajo
+  // reserva la franja del rótulo, así el texto crecido nunca lo pisa.
+  .fcard__panel-inner {
+    box-sizing: border-box;
+    gap: fit(var(--pj-sp-4));
+    padding: var(--fcard-pad-top) var(--fcard-pad-x) var(--fcard-pad-bottom) var(--fcard-pad-left);
+  }
+
+  .fcard__id {
+    gap: fit(var(--pj-u));
+  }
+
+  // ---- Escala tipográfica fija ------------------------------------------
+  //   rótulo 3,2 · nombre 8 · nombres 5,6 · hijos 3,8 · mensaje 4,6 ·
+  //   versículo 3,8 · referencia 3,2  (× `--fit`, con suelo de 3,2u)
+
+  // Firma de la diapositiva: fuera del flujo, pegada al rincón inferior
+  // derecho (siempre navy, en retrato y en apaisada), en el tamaño mínimo y
+  // atenuada. No sigue a `--fit`: es un sello, no parte del texto.
+  .fcard__eyebrow {
+    display: block;
+    position: absolute;
+    // Pegado al rincón: el mismo aire mínimo a la derecha y abajo.
+    right: calc(var(--pj-u) * 1.6);
+    bottom: calc(var(--pj-u) * 1.4);
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: calc(var(--pj-u) * 3.2);
+    // 3,2u es el suelo legible (no se baja): se compacta con interletra
+    // corta y peso medio.
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--c-gold-soft);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .fcard__title {
+    font-size: fit(var(--pj-fs-title));
+    // 1,08 y no menos: la coma de «ș»/«ț» baja de la línea.
+    line-height: 1.08;
+    color: var(--c-on-primary);
+  }
+
+  .fcard__prefix {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .fcard__names {
+    font-size: fit(var(--pj-fs-lead));
+    line-height: 1.15;
+    color: var(--c-gold-soft);
+  }
+
+  // Mismo criterio que «Familia Bena»: la etiqueta es contexto (atenuada,
+  // peso normal) y lo que se busca, los nombres, en blanco y con peso.
+  .fcard__children {
+    margin-top: fit(calc(var(--pj-u) * 0.6));
+    font-size: floor-fit(var(--pj-fs-caption));
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  .fcard__children-label {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .fcard__children-names {
+    font-weight: 600;
+    color: var(--c-on-primary);
+  }
+
+  .fcard__inner {
+    gap: fit(var(--pj-sp-2));
+  }
+
+  // ---- Mensaje y versículo ----------------------------------------------
+  // Dos voces, dos tipografías: el mensaje (la familia) en sans blanco suave
+  // —el blanco puro queda para el apellido— y el versículo (la Escritura) en
+  // serif cursiva oro. Sin comillas, firmas ni filetes: la separación es
+  // aire y el cambio de voz. Todo al mismo borde izquierdo.
+  .fcard__message {
+    max-width: 34em;
+    font-size: text-fit(var(--pj-fs-body));
+    line-height: 1.42;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  // Con mensaje, el versículo es el cierre: un escalón por debajo del
+  // mensaje y separado por una pausa clara (≈ una línea de texto), no pegado.
+  .fcard__verse {
+    margin: fit(var(--pj-sp-3)) 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .fcard__verse-text {
+    max-width: 36em;
+    font-size: text-fit(var(--pj-fs-caption));
+    line-height: 1.4;
+    text-wrap: pretty;
+    color: var(--c-gold-soft);
+  }
+
+  // Referencia: una nota al pie de la cita, nunca un titular. Caja baja
+  // («1 Corinteni 15:57», las mayúsculas espaciadas la hacían parecer más
+  // grande que el versículo), peso normal, sin interletra y en blanco
+  // atenuado: el oro queda para el versículo. Siempre al mínimo legible
+  // (3,2u), también con el panel crecido.
+  .fcard__verse-ref {
+    margin-top: fit(var(--pj-u));
+    font-family: var(--font-sans);
+    font-size: calc(var(--pj-u) * 3.2);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  // Sólo versículo: ES el mensaje de la familia → sube a `lead` (por debajo
+  // de los nombres, que también son `lead` pero crecen con el panel). La
+  // referencia sigue al mínimo: cuanto más grande el versículo, más debe
+  // retirarse ella. Sin margen: ya lo separa el hueco del panel.
+  .fcard__verse--solo {
+    margin-top: 0;
+  }
+
+  .fcard__verse--solo .fcard__verse-text {
+    font-size: text-fit(var(--pj-fs-lead));
+    line-height: 1.35;
+  }
+
+  .fcard__prompt {
+    max-width: 34em;
+    font-size: text-fit(var(--pj-fs-body));
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  // ---- Apaisada -----------------------------------------------------------
+  // Como la ficha de los Bena del PowerPoint: foto arriba a la izquierda (lo
+  // más grande posible: ≤ 62 % del ancho, ≤ 64 % del alto, alto por
+  // `aspect-ratio` → sin bandas), quiénes son justo debajo y el mensaje a la
+  // derecha, centrado. El panel se «abre» (`display: contents`) para que sus
+  // piezas ocupen su área; el mensaje se ajusta en su columna.
+  .fcard--landscape {
+    --fcard-photo-w: min(62cqw, calc(64cqh * var(--ar, 1.5)));
+    grid-template-columns: var(--fcard-photo-w) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'media body'
+      'id body';
+
+    .fcard__media {
+      height: auto;
+      aspect-ratio: var(--ar, 1.5);
+    }
+
+    .fcard__panel,
+    .fcard__panel-inner {
+      display: contents;
+      overflow: visible;
+    }
+
+    .fcard__id {
+      grid-area: id;
+      justify-content: flex-start;
+      padding: calc(var(--pj-u) * 3) var(--fcard-pad-x) calc(var(--pj-u) * 3) var(--fcard-pad-left);
+    }
+
+    // El mensaje arranca arriba, a la altura de la foto, y se ajusta en su
+    // columna. Relleno en el hijo medido (`.fcard__inner`), como en retrato.
+    .fcard__body {
+      grid-area: body;
+      display: block;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      padding: 0;
+      --fit: 1;
+    }
+
+    .fcard__inner {
+      box-sizing: border-box;
+      padding: var(--fcard-pad-top) var(--fcard-pad-x) var(--fcard-pad-bottom) var(--fcard-pad-left);
+    }
+  }
+}

@@ -37,14 +37,11 @@
     }
   },
   "qr": {
-    "caption": "Escanea para visitar nuestras redes",
-    "aria": "Código QR para acceder a esta página",
-    "live_aria": "Código QR a la emisión en directo"
+    "caption": "Escanea para visitar nuestras redes"
   },
   "live_notice": {
     "badge": "En directo",
     "qr_caption": "Escanea y comparte el culto de hoy con los tuyos",
-    "bar_text": "Comparte el culto de hoy con los tuyos · YouTube {{handle}}",
     "toggle": "Anunciar el directo de hoy",
     "hint": "Se apaga solo a medianoche"
   },
@@ -84,11 +81,24 @@
     "preview_only": "Vista previa",
     "now": "Ahora",
     "next": "Siguiente",
-    "shortcuts": "Teclas: ← → cambian · Espacio pausa · Q código QR · 1-9 ir a",
+    "shortcuts": "Teclas: ← → cambian · Espacio pausa · 1-9 ir a",
     "hint_fullscreen": "Pantalla completa: el botón de arriba, o F en la propia ventana de proyección.",
     "reorder": "Mover «{{name}}»: arrastra o usa ↑ ↓",
     "reorder_hint": "Arrastra los bloques para cambiar el orden de la proyección.",
-    "reset_order": "Orden por defecto"
+    "reset_order": "Orden por defecto",
+    "select_label": "Selección rápida",
+    "select_count": "{{n}} de {{total}} en proyección",
+    "select_first": "Solo el primero",
+    "select_all": "Todos",
+    "global_label": "Bloques",
+    "global_count": "{{n}} de {{total}} en proyección",
+    "slide_time": "Tiempo de esta diapositiva",
+    "slide_time_inherit": "Tiempo del bloque (se puede cambiar solo para esta)",
+    "slide_time_custom": "Tiempo propio (ya no sigue al bloque)",
+    "slide_time_reset": "Volver al tiempo del bloque",
+    "past_families": "Familias de semanas anteriores ({{n}})",
+    "past_hint": "Solo para hoy. No entran con «Todos».",
+    "past_tag": "anterior"
   },
   "carousel": {
     "label": "Carrusel de contenido",
@@ -110,13 +120,6 @@
     "reset": "Restablecer automático",
     "reset_one": "Volver al modo automático",
     "min_one": "Debe quedar al menos un bloque activo.",
-    "qr_title": "Código QR",
-    "qr_show": "Mostrar el QR en la proyección",
-    "qr_shortcut": "Tecla Q para alternarlo",
-    "qr_size": "Tamaño",
-    "qr_size_s": "S",
-    "qr_size_m": "M",
-    "qr_size_l": "L",
     "duration": "Segundos por diapositiva",
     "duration_less": "Menos tiempo (−5 s)",
     "duration_more": "Más tiempo (+5 s)",
@@ -220,7 +223,42 @@
     "plan_toggle": "Ver toda la programación",
     "plan_range": "{{range}} · {{weeks}} semanas",
     "week_short": "Sem.",
-    "current": "En curso"
+    "current": "En curso",
+    "progress": "Día {{day}} de {{total}}"
+  },
+  "family_prayer": {
+    "title": "Oración por las familias",
+    "eyebrow": "Programa",
+    "lead": "Cada semana oramos, por turnos, por algunas familias de la iglesia. Aquí están las familias de la semana y sus motivos de oración.",
+    "week_title": "Las familias de la semana",
+    "week_label": "Semana {{n}}",
+    "family": "Familia",
+    "children_one": "Hijo/a",
+    "children_other": "Hijos",
+    "pray_prompt": "Oremos juntos por {{name}}.",
+    "photo_alt": "Foto: {{name}}",
+    "summary": "resumen",
+    "empty": "La lista de familias de esta semana se publicará pronto.",
+    "not_found": "No hemos encontrado esa semana de oración.",
+    "to_current": "Las familias de esta semana",
+    "past_notice": "Esta semana de oración ya terminó.",
+    "past_title": "Semanas anteriores",
+    "teaser_eyebrow": "Esta semana",
+    "teaser_title": "Oramos por: {{names}}",
+    "teaser_cta": "Ver las familias y sus motivos de oración"
+  },
+  "prayer_causes": {
+    "title": "Causas de la Iglesia Elim",
+    "eyebrow": "Programa",
+    "lead": "Por qué oramos como iglesia: por nombre, por quienes atraviesan pruebas, y por las causas que llevamos juntos delante de Dios.",
+    "updated": "Lista actualizada el {{date}}"
+  },
+  "website_slide": {
+    "block": "Web de la iglesia",
+    "eyebrow": "Toda la información",
+    "title": "Todo lo que ves aquí, en la web de la iglesia",
+    "lead": "Los anuncios, el programa y las familias por las que oramos, siempre a mano en tu móvil.",
+    "qr_caption": "Escanea el código con el móvil"
   },
   "location": {
     "title": "Cómo llegar",
@@ -392,6 +430,10 @@
     "announcements_desc": "Avisos de la iglesia en vigor",
     "bible": "Lectura bíblica",
     "bible_desc": "La semana del plan de lectura",
+    "family_prayer": "Oración por las familias",
+    "family_prayer_desc": "Las familias de la semana y sus motivos",
+    "prayer_causes": "Motivos de oración",
+    "prayer_causes_desc": "Por qué oramos como iglesia",
     "panel_next": "Lo próximo",
     "panel_visit": "¿Quieres visitarnos?",
     "panel_visit_lead": "Te esperamos en cualquiera de nuestros cultos. La entrada es libre y no hace falta avisar: ven tal y como eres.",
@@ -431,6 +473,14 @@
     "announcements": {
       "title": "Anuncios",
       "description": "Avisos en vigor de la Iglesia Elim de Arganda del Rey: inscripciones, celebraciones, conferencias y comunicados."
+    },
+    "family_prayer": {
+      "title": "Oración por las familias",
+      "description": "Las familias de la Iglesia Elim por las que oramos esta semana y sus motivos de oración."
+    },
+    "prayer_causes": {
+      "title": "Causas de la Iglesia Elim",
+      "description": "Las causas por las que ora la Iglesia Elim de Arganda del Rey."
     },
     "styleguide": {
       "title": "Guía de estilos",

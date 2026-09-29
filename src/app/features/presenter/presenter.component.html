@@ -76,6 +76,32 @@
         <span class="slides__count">{{ slides().length }}</span>
       </h2>
 
+      <!-- Selección global, sobre los BLOQUES: «Doar primul» deja encendido
+           sólo el primero (en el orden de la lista); «Toate» enciende todos
+           los que tienen contenido y marca todos sus elementos. Las familias
+           de semanas anteriores nunca entran con «Toate». -->
+      @let todo = blocks.globalSelection();
+      @if (todo.total > 1) {
+        <div class="bulk bulk--global" role="group" [attr.aria-label]="'presenter.global_label' | translate">
+          <span class="bulk__count">
+            <span class="bulk__scope">{{ 'presenter.global_label' | translate }}</span>
+            {{ 'presenter.global_count' | translate: { n: todo.visible, total: todo.total } }}
+          </span>
+          <button
+            type="button"
+            class="bulk__btn"
+            [disabled]="todo.onlyFirst"
+            (click)="blocks.selectOnlyFirstBlock()"
+          >{{ 'presenter.select_first' | translate }}</button>
+          <button
+            type="button"
+            class="bulk__btn"
+            [disabled]="todo.allSelected"
+            (click)="blocks.selectAllBlocks()"
+          >{{ 'presenter.select_all' | translate }}</button>
+        </div>
+      }
+
       <!-- Bloques arrastrables (CDK): el orden es el de la proyección. -->
       <ol
         class="slides__groups"
@@ -173,6 +199,30 @@
               </div>
             </div>
 
+            <!-- Selección rápida (bloques con varios elementos elegibles):
+                 «sólo el primero» para ir marcando después los que se quieran,
+                 y «todos». El contador dice cuántos se proyectan. -->
+            @if (selectable(group.state.id); as blockId) {
+              @let sel = blocks.selection(blockId);
+              @if (sel.total > 1) {
+                <div class="bulk" role="group" [attr.aria-label]="'presenter.select_label' | translate">
+                  <span class="bulk__count">{{ 'presenter.select_count' | translate: { n: sel.visible, total: sel.total } }}</span>
+                  <button
+                    type="button"
+                    class="bulk__btn"
+                    [disabled]="sel.onlyFirst || !group.state.enabled"
+                    (click)="blocks.selectOnlyFirst(blockId)"
+                  >{{ 'presenter.select_first' | translate }}</button>
+                  <button
+                    type="button"
+                    class="bulk__btn"
+                    [disabled]="sel.visible === sel.total || !group.state.enabled"
+                    (click)="blocks.selectAll(blockId)"
+                  >{{ 'presenter.select_all' | translate }}</button>
+                </div>
+              }
+            }
+
             <!-- Diapositivas del bloque -->
             <ol class="group__slides" role="list">
               @for (slide of group.slides; track slide.key) {
@@ -180,7 +230,9 @@
                   class="slide"
                   [class.is-current]="isCurrent(slide)"
                   [class.is-hidden]="
-                    (slide.announcement && !isAnnouncementVisible(slide)) || !isEventVisible(slide)
+                    (slide.announcement && !isAnnouncementVisible(slide)) ||
+                    !isEventVisible(slide) ||
+                    (!slide.pastFamily && familyId(slide) !== null && !blocks.isFamilyVisible(familyId(slide)!))
                   "
                 >
                   @if (slide.announcement) {
@@ -203,6 +255,27 @@
                       (change)="setEventVisible(eventoId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
+                  } @else if (slide.pastFamily && slide.family) {
+                    <!-- Familia de una semana anterior, añadida para hoy:
+                         desmarcarla la devuelve al desplegable. -->
+                    <input
+                      type="checkbox"
+                      class="slide__check"
+                      [checked]="true"
+                      [disabled]="!group.state.enabled"
+                      (change)="blocks.setPastFamilyShown(slide.family.id, false)"
+                      [attr.aria-label]="label(slide)"
+                    />
+                  } @else if (familyId(slide); as famId) {
+                    <!-- Resumen o ficha de una familia: se proyecta o no. -->
+                    <input
+                      type="checkbox"
+                      class="slide__check"
+                      [checked]="blocks.isFamilyVisible(famId)"
+                      [disabled]="!group.state.enabled"
+                      (change)="setFamilyVisible(famId, $event)"
+                      [attr.aria-label]="label(slide)"
+                    />
                   } @else {
                     <span class="slide__check slide__check--spacer" aria-hidden="true"></span>
                   }
@@ -214,16 +287,99 @@
                     [attr.aria-current]="isCurrent(slide) ? 'true' : null"
                   >
                     <span class="slide__num">{{ position(slide) ?? '–' }}</span>
-                    <span class="slide__label">{{ label(slide) }}</span>
+                    <span class="slide__label">
+                      {{ label(slide) }}
+                      @if (slide.pastFamily) {
+                        <span class="slide__tag">{{ 'presenter.past_tag' | translate }}</span>
+                      }
+                    </span>
                     @if (isCurrent(slide)) {
                       <span class="slide__bar" aria-hidden="true">
                         <span class="slide__bar-fill" [style.width.%]="progress()"></span>
                       </span>
                     }
                   </button>
+
+                  <!-- Tiempo propio de esta diapositiva (hereda el del bloque). -->
+                  @if (timeKey(slide); as tKey) {
+                    @let propio = display.slideOverride(tKey) !== null;
+                    @let segundos = display.itemDuration(tKey, slide.block);
+                    <div
+                      class="stime"
+                      [class.is-custom]="propio"
+                      role="group"
+                      [attr.aria-label]="'presenter.slide_time' | translate"
+                    >
+                      <button
+                        type="button"
+                        class="stime__btn"
+                        [disabled]="segundos <= durationMin"
+                        (click)="display.stepSlideDuration(tKey, slide.block, -1)"
+                        [attr.aria-label]="'blocks.duration_less' | translate"
+                      >−</button>
+                      <input
+                        class="stime__input"
+                        type="number"
+                        inputmode="numeric"
+                        [min]="durationMin"
+                        [max]="durationMax"
+                        step="1"
+                        [value]="segundos"
+                        (change)="setItemDuration(tKey, slide.block, $event)"
+                        (keydown.enter)="commitDuration($event)"
+                        [attr.aria-label]="'presenter.slide_time' | translate"
+                        [title]="(propio ? 'presenter.slide_time_custom' : 'presenter.slide_time_inherit') | translate"
+                      />
+                      <span class="stime__unit" aria-hidden="true">s</span>
+                      <button
+                        type="button"
+                        class="stime__btn"
+                        [disabled]="segundos >= durationMax"
+                        (click)="display.stepSlideDuration(tKey, slide.block, 1)"
+                        [attr.aria-label]="'blocks.duration_more' | translate"
+                      >+</button>
+                      @if (propio) {
+                        <button
+                          type="button"
+                          class="stime__btn stime__reset"
+                          (click)="display.resetSlideDuration(tKey)"
+                          [attr.aria-label]="'presenter.slide_time_reset' | translate"
+                          [title]="'presenter.slide_time_reset' | translate"
+                        >↺</button>
+                      }
+                    </div>
+                  }
                 </li>
               }
             </ol>
+
+            <!-- Familias de semanas anteriores: plegado y discreto, para el
+                 caso excepcional. Nunca vienen marcadas; al marcar una pasa a
+                 la lista de arriba (sólo hoy: caduca a medianoche). -->
+            @if (group.state.id === 'families' && blocks.pastFamilyOptions().length > 0) {
+              <details class="past">
+                <summary class="past__summary">
+                  {{ 'presenter.past_families' | translate: { n: blocks.pastFamilyOptions().length } }}
+                </summary>
+                <p class="past__hint">{{ 'presenter.past_hint' | translate }}</p>
+                <ul class="past__list" role="list">
+                  @for (option of blocks.pastFamilyOptions(); track option.family.id) {
+                    <li>
+                      <label class="past__item">
+                        <input
+                          type="checkbox"
+                          class="slide__check"
+                          [disabled]="!group.state.enabled"
+                          (change)="addPastFamily(option.family.id, $event)"
+                        />
+                        <span class="past__name">{{ option.family.fullName }}</span>
+                        <span class="past__week">{{ weekShort(option) }}</span>
+                      </label>
+                    </li>
+                  }
+                </ul>
+              </details>
+            }
           </li>
         }
       </ol>
@@ -302,30 +458,10 @@
         </div>
       </dl>
 
-      <!-- Pantalla: QR y atajos -->
+      <!-- Pantalla: aviso de directo -->
       <div class="screen">
-        <div class="screen__group">
-          <label class="switch">
-            <input type="checkbox" [checked]="display.qrVisible()" (change)="setQrVisible($event)" />
-            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
-            <span class="screen__label">{{ 'blocks.qr_show' | translate }}</span>
-          </label>
-          <div class="segments" role="radiogroup" [attr.aria-label]="'blocks.qr_size' | translate">
-            @for (size of qrSizes; track size) {
-              <button
-                type="button"
-                role="radio"
-                class="segments__btn"
-                [class.is-active]="display.qrSize() === size"
-                [attr.aria-checked]="display.qrSize() === size"
-                [disabled]="!display.qrVisible()"
-                (click)="display.setQrSize(size)"
-              >{{ 'blocks.qr_size_' + size | translate }}</button>
-            }
-          </div>
-        </div>
-        <!-- Aviso de directo: convierte el QR de la proyección en una
-             invitación a compartir la emisión. Caduca solo a medianoche. -->
+        <!-- Aviso de directo: «ÎN DIRECT» en la esquina de la proyección y el
+             código del directo en la diapositiva del QR. Caduca a medianoche. -->
         <div class="screen__group">
           <label class="switch">
             <input

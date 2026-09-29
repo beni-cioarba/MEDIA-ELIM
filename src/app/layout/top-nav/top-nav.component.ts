@@ -18,11 +18,14 @@ import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { NavItem, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { BibleReadingService } from '../../core/services/bible-reading.service';
+import { FamilyPrayerService } from '../../core/services/family-prayer.service';
 import { ScheduleService } from '../../core/services/schedule.service';
 import { UiStore } from '../../core/state/ui.store';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
 import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
+import { CardCarouselComponent } from '../../shared/card-carousel/card-carousel.component';
+import { FamilyPhotoComponent } from '../../features/family-prayer/family-photo/family-photo.component';
 
 /**
  * Barra de navegación principal.
@@ -64,6 +67,8 @@ import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component
         IconComponent,
         LangSwitcherComponent,
         BrandLogoComponent,
+        CardCarouselComponent,
+        FamilyPhotoComponent,
     ],
     templateUrl: './top-nav.component.html',
     styleUrl: './top-nav.component.scss'
@@ -109,6 +114,7 @@ export class TopNavComponent {
   protected readonly upcomingPath = blockPath('upcoming');
   protected readonly biblePath = blockPath('bible');
   protected readonly contactPath = `/${APP_PATHS.contact}`;
+  protected readonly familyPrayerPath = `/${APP_PATHS.familyPrayer}`;
 
   protected readonly schedule = inject(ScheduleService);
 
@@ -147,8 +153,20 @@ export class TopNavComponent {
     const week = this.bible.announcedWeek();
     if (!week) return null;
     const day = week.days.find((d) => d.isToday) ?? week.days[0];
-    return day ? { passage: day.passage, when: this.schedule.formatWeekdayShort(day.date) } : null;
+    return day ? { passage: day.passage, when: this.schedule.formatWeekdayLong(day.date) } : null;
   });
+
+  protected readonly prayer = inject(FamilyPrayerService);
+
+  /**
+   * Familias por las que se ora esta semana, en carrusel bajo la semana.
+   *
+   * Es contenido que cambia cada domingo y que hasta ahora sólo se veía
+   * entrando en su página. Y resuelve el hueco que dejaba el panel: la
+   * columna de seis enlaces medía ~400 px y el destacado ~270, con 130 px en
+   * blanco bajo la semana. Si no hay semana vigente, la fila no se pinta.
+   */
+  protected readonly prayerWeek = this.prayer.current;
 
   /** El grupo abierto, ya resuelto: la plantilla no tiene que buscarlo. */
   protected readonly openGroup = computed<(NavItem & { readonly children: readonly NavItem[] }) | null>(() => {

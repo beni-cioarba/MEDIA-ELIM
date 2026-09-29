@@ -20,7 +20,6 @@ import {
   PresentationSlide,
 } from '../../core/services/presentation-blocks.service';
 import { StageBlockId, blockIdFromSlug } from '../../core/navigation/app-paths';
-import { QrPanelComponent } from '../../shared/qr-panel/qr-panel.component';
 import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 import { PresentationSettingsComponent } from '../../shared/presentation-settings/presentation-settings.component';
 import { AnnouncementBlockComponent } from './blocks/announcement-block/announcement-block.component';
@@ -31,13 +30,24 @@ import { WeeklyBlockComponent } from './blocks/weekly-block/weekly-block.compone
 import { UpcomingBlockComponent } from './blocks/upcoming-block/upcoming-block.component';
 import { BibleBlockComponent } from './blocks/bible-block/bible-block.component';
 import { LocationBlockComponent } from './blocks/location-block/location-block.component';
+import { FamilyBlockComponent } from './blocks/family-block/family-block.component';
+import { CausesBlockComponent } from './blocks/causes-block/causes-block.component';
+import { WebsiteBlockComponent } from './blocks/website-block/website-block.component';
 
 /**
  * Bloques que en la web tienen sección propia y por eso **no** entran en el
- * panel completo (`/media`): los anuncios viven en `/anunturi` y la lectura
- * bíblica en `/media/citirea-bibliei`. En la proyección siguen entrando.
+ * panel completo (`/media`): los anuncios viven en `/anunturi`, la oración por
+ * las familias en `/rugaciune-pentru-familii`, las causas en
+ * `/cauze-de-rugaciune` y la lectura bíblica en
+ * `/media/citirea-bibliei`. En la proyección siguen entrando.
  */
-const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>(['announcements', 'bible']);
+const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>([
+  'announcements',
+  'families',
+  'causes',
+  'bible',
+  'website',
+]);
 
 /**
  * Diapositiva del escenario: las del carrusel más `location`, que sólo
@@ -72,7 +82,6 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
     imports: [
         TranslatePipe,
         BrandLogoComponent,
-        QrPanelComponent,
         PresentationSettingsComponent,
         AnnouncementBlockComponent,
         SocialsBlockComponent,
@@ -81,6 +90,9 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
         WeeklyBlockComponent,
         UpcomingBlockComponent,
         BibleBlockComponent,
+        FamilyBlockComponent,
+        CausesBlockComponent,
+        WebsiteBlockComponent,
         LocationBlockComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -99,9 +111,6 @@ export class StageComponent implements OnInit {
   protected readonly display = inject(PresentationDisplayService);
 
   protected readonly fullscreen = this.presentation.isFullscreen;
-
-  /** ¿Se pinta la columna del QR? Sólo proyectando y si el operador lo quiere. */
-  protected readonly showQr = computed<boolean>(() => this.fullscreen() && this.display.qrVisible());
 
   /**
    * Bloques del panel completo de la web (`/media`): los proyectables en su
@@ -134,20 +143,22 @@ export class StageComponent implements OnInit {
     return ids.flatMap((id) => this.expand(id));
   });
 
+  /**
+   * Diapositiva **a sangre**: sin margen de área segura, a toda la pantalla.
+   * Los bloques de oración, que se proyectan mientras se ora:
+   *   · `families` (collage y fichas): como el PowerPoint de la iglesia, la
+   *     foto llega al borde.
+   *   · `causes`: navy entero, para que la pantalla no ilumine la sala
+   *     mientras se ora.
+   * El texto conserva su propio aire dentro de cada panel.
+   */
+  protected readonly bleed = computed<boolean>(() => {
+    const block = this.carousel.currentSlide()?.block;
+    return this.fullscreen() && (block === 'families' || block === 'causes');
+  });
+
   /** Aviso «hoy también en directo» activo y proyectando. */
   protected readonly liveNotice = computed<boolean>(() => this.fullscreen() && this.display.liveNotice());
-
-  /**
-   * URL codificada en el QR: la pública (aunque se sirva en local) o, con el
-   * aviso de directo, el enlace al directo del canal, que es lo que la gente
-   * reenvía por WhatsApp a quien no ha podido venir.
-   */
-  protected readonly qrData = computed<string>(() =>
-    this.liveNotice() ? this.config.youtubeLiveUrl : this.config.publicUrl,
-  );
-
-  /** `@ElimArganda`: sin QR, el aviso de directo dice dónde buscarlo. */
-  protected readonly youtubeHandle = this.config.youtubeChannelUrl.split('/').pop() ?? '';
 
   ngOnInit(): void {
     /*
@@ -215,12 +226,6 @@ export class StageComponent implements OnInit {
       case 'Spacebar':
         event.preventDefault();
         this.carousel.togglePause();
-        break;
-      case 'q':
-      case 'Q':
-        if (event.ctrlKey || event.metaKey || event.altKey) return;
-        event.preventDefault();
-        this.display.toggleQr();
         break;
     }
   }

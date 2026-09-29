@@ -4,7 +4,7 @@
   el título QUÉ PASA, la línea de lugar DÓNDE, el resumen lo esencial y las
   columnas el detalle. La nota final cierra con lo que no debe olvidarse.
 -->
-<article class="announcement" [attr.id]="'anunt-' + announcement.id" appFitToBox>
+<article class="announcement" [attr.id]="'anunt-' + announcement.id" appFitToBox [appFitToBoxMax]="1.2">
   <div class="announcement__inner">
     <header class="announcement__head" [class.announcement__head--dated]="!!announcement.date">
       @if (announcement.date) {

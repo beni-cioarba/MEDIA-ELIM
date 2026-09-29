@@ -23,6 +23,13 @@ export const APP_PATHS = {
   projection: 'ecran',
   /** Anunțuri vigentes; admite `/anunturi/:id` como enlace propio de cada uno. */
   announcements: 'anunturi',
+  /**
+   * Rugăciune pentru familii: la semana en curso; admite
+   * `/rugaciune-pentru-familii/<domingo>` para una semana concreta.
+   */
+  familyPrayer: 'rugaciune-pentru-familii',
+  /** Cauzele Bisericii Elim: la lista vigente de causas de oración. */
+  prayerCauses: 'cauze-de-rugaciune',
   /** Página de contacto: formulario, datos directos y cómo llegar. */
   contact: 'contact',
   /** Donativos: transferencia bancaria y por qué se dona. */
@@ -56,6 +63,10 @@ export const STAGE_BLOCK_SLUGS = {
   weekly: 'program',
   upcoming: 'evenimente',
   bible: 'citirea-bibliei',
+  families: 'rugaciune-pentru-familii',
+  causes: 'cauze-de-rugaciune',
+  // Sólo proyección (en la web ya se está en el sitio): `/media/site` → portada.
+  website: 'site',
   location: 'locatie',
 } as const satisfies Record<StageBlockId, string>;
 

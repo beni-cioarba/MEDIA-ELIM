@@ -32,6 +32,10 @@ const FILES = [
   'src/app/features/stage/styles/_projection.scss',
   'src/app/features/stage/blocks/bible-block/bible-block.component.scss',
   'src/app/features/announcements/announcement-card/announcement-card.component.scss',
+  'src/app/features/family-prayer/family-card/family-card.component.scss',
+  'src/app/features/family-prayer/family-collage/family-collage.component.scss',
+  'src/app/features/prayer-causes/causes-board/causes-board.component.scss',
+  'src/app/features/stage/blocks/website-block/website-block.component.scss',
 ];
 
 const errors = [];

@@ -37,19 +37,6 @@
     }
   }
 
-  // --- Proyección en un dispositivo en vertical --------------------------
-  // Sólo en vertical: un proyector XGA (1024×768) es apaisado y debe
-  // conservar las dos columnas y el QR.
-  @media (max-width: 1024px) and (orientation: portrait) {
-    .stage.is-fullscreen {
-      .content {
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr auto;
-      }
-      .qr { display: none; }
-    }
-  }
-
   // --- Móvil grande -----------------------------------------------------
   @media (max-width: 768px) {
     .stage {

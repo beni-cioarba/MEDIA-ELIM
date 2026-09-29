@@ -73,7 +73,9 @@ export const MAIN_NAV: readonly NavItem[] = [
         labelKey: 'nav.upcoming',
         descriptionKey: 'nav.upcoming_desc',
         path: blockPath('upcoming'),
-        icon: 'calendar',
+        // No `calendar`: ya lo lleva el programa semanal y dos entradas
+        // seguidas con el mismo icono parecían la misma cosa.
+        icon: 'sparkles',
       },
       {
         id: 'bible',
@@ -81,6 +83,20 @@ export const MAIN_NAV: readonly NavItem[] = [
         descriptionKey: 'nav.bible_desc',
         path: blockPath('bible'),
         icon: 'book',
+      },
+      {
+        id: 'family-prayer',
+        labelKey: 'nav.family_prayer',
+        descriptionKey: 'nav.family_prayer_desc',
+        path: `/${APP_PATHS.familyPrayer}`,
+        icon: 'family',
+      },
+      {
+        id: 'prayer-causes',
+        labelKey: 'nav.prayer_causes',
+        descriptionKey: 'nav.prayer_causes_desc',
+        path: `/${APP_PATHS.prayerCauses}`,
+        icon: 'pray',
       },
     ],
   },

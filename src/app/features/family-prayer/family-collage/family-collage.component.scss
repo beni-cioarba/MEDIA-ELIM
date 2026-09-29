@@ -1,0 +1,144 @@
+@use '../../stage/styles/projection' as pj;
+
+// =====================================================================
+// Collage de la semana (sólo proyección, todo en `--pj-*`).
+// [lista en panel navy] [fotos en filas justificadas]. La lista se lleva
+// el ancho que el collage no usa (`1fr` + collage con ancho calculado).
+// =====================================================================
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+// A sangre (la diapositiva ocupa la pantalla): el panel de la lista llega al
+// borde izquierdo y abajo, y las fotos al derecho y abajo, como el collage del
+// PowerPoint. El rótulo y la lista conservan su propio aire.
+.collage {
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--gap, calc(var(--pj-u) * 1.2));
+}
+
+.collage__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pj-sp-1);
+}
+
+.collage__title {
+  @include pj.pj-section-title;
+  color: var(--c-on-primary);
+}
+
+.collage__range {
+  margin: 0;
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+  color: var(--c-gold-soft);
+}
+
+// Lista (1fr: todo el ancho que el collage no usa) | collage (ancho calculado).
+// `display: contents`: sus dos hijos son las columnas de `.collage`.
+.collage__stage {
+  display: contents;
+}
+
+// ---- Lista --------------------------------------------------------------
+
+// El primer hijo es lo que mide el autoajuste: rótulo + lista a todo el alto.
+// El relleno va aquí y no en el panel: `appFitToBox` compara el alto de este
+// hijo con el del panel, y con el relleno fuera no veía desbordes menores que
+// él (la última familia se cortaba abajo).
+.collage__side-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pj-sp-3);
+  box-sizing: border-box;
+  min-height: 100%;
+  // Mismos márgenes que la ficha (arriba 5u, lados 4,5u).
+  padding: calc(var(--pj-u) * 5) calc(var(--pj-u) * 4.5) var(--pj-sp-4);
+}
+
+// Panel navy (el cuadro negro del PowerPoint, con la marca). Recorta y se
+// autoajusta (`appFitToBox`) si la semana trae más familias. Bloque, no
+// flex: un contenedor flex encogía a su hijo hasta el 100 % y lo que no
+// cabía pisaba el relleno inferior sin contar como desborde.
+.collage__side {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  --fit: 1;
+}
+
+// La lista se lleva el alto que deja el rótulo y reparte las familias.
+// `flex: 1 0 auto` (nunca por debajo de su contenido): si encogía, lo que
+// no cabía se derramaba en el relleno inferior —donde el autoajuste no lo
+// ve— y la última familia tocaba el borde.
+.collage__list {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: calc(var(--pj-sp-2) * var(--fit, 1));
+  margin: 0;
+  padding: var(--pj-sp-2) 0 0;
+  list-style: none;
+}
+
+.collage__item {
+  min-width: 0;
+}
+
+.collage__name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.collage__surname {
+  font-family: var(--font-display);
+  font-size: max(calc(var(--pj-u) * 3.2), calc(var(--pj-fs-lead) * var(--fit, 1)));
+  font-weight: 700;
+}
+
+.collage__given {
+  font-size: max(calc(var(--pj-u) * 3.2), calc(var(--pj-fs-body) * var(--fit, 1)));
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+// ---- Fotos --------------------------------------------------------------
+
+.collage__photos {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--gap, calc(var(--pj-u) * 1.2));
+  height: 100%;
+}
+
+.collage__row {
+  display: flex;
+  gap: var(--gap, calc(var(--pj-u) * 1.2));
+}
+
+.collage__tile {
+  position: relative;
+  flex: 0 0 auto;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.collage__photo {
+  width: 100%;
+  height: 100%;
+}

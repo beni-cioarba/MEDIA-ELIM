@@ -404,6 +404,12 @@
   inset-inline: 0;
   top: 100%;
   z-index: 1;
+  // Nunca más alto que la ventana: en un portátil bajo (o apilado, por
+  // debajo de `xl`) el panel de Programa con familias no cabía y su parte
+  // inferior quedaba inalcanzable. Así se desplaza dentro de sí mismo.
+  max-height: calc(100dvh - 100% - var(--sp-4));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-block-end: 1px solid var(--c-hairline);
   background: var(--c-bg-2);
   box-shadow: 0 16px 32px -20px rgb(9 20 36 / 0.35);
@@ -823,6 +829,110 @@
 
   .nav__week-what {
     color: var(--c-text);
+  }
+}
+
+// ---- Familias de la semana (panel de Programa) ------------------------
+/*
+ * Carrusel (`app-card-carousel`) y no rejilla, a diferencia de los álbumes:
+ * el número de familias cambia cada semana. Con cinco caben y se reparten el
+ * ancho (la pista no se mueve); con más, avanza solo cada 4 s y se para en
+ * cuanto el puntero o el foco entran, o el usuario lo mueve.
+ *
+ * Marco 4:3 con la foto **entera** (`app-family-photo`: contain + la misma
+ * foto difuminada detrás), nunca recortada: son fotos de grupo y en una
+ * miniatura recortada se pierden cabezas. Al apuntar se acerca la foto dentro
+ * del marco (como los álbumes): la tarjeta no se mueve bajo el cursor.
+ */
+.nav__families {
+  margin-block-start: var(--sp-4);
+  padding-block-start: var(--sp-4);
+  border-block-start: 1px solid var(--c-hairline);
+}
+
+.nav__families-range {
+  margin-inline-start: 0.25rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--c-faint);
+}
+
+// El carrusel del catálogo, a la medida del panel: sin sangrado, degradados
+// del color del panel y flechas más pequeñas (el marco mide ~7 rem de alto).
+.nav__families-carousel {
+  --c-carousel-fade: var(--c-bg-2);
+  margin-inline: -0.25rem;
+
+  .ui-carousel__track {
+    padding-inline: 0.25rem;
+  }
+
+  .ui-carousel__nav {
+    top: calc(50% - 1.3rem);
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-top: -1.125rem;
+  }
+}
+
+.nav__family {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+
+  @include focus-ring(3px);
+}
+
+.nav__family-photo {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-md);
+
+  ::ng-deep .photo {
+    transition: transform var(--mo-base) var(--ea-standard);
+  }
+}
+
+.nav__family:hover .nav__family-photo ::ng-deep .photo {
+  transform: scale(1.05);
+}
+
+// Apellido y nombres en dos líneas fijas: todas las tarjetas miden igual y
+// ningún nombre se corta a media palabra.
+.nav__family-name {
+  display: flex;
+  flex-direction: column;
+  padding-block-start: 0.45rem;
+  line-height: 1.3;
+}
+
+.nav__family-surname {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav__family-given {
+  overflow: hidden;
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav__family:hover .nav__family-surname {
+  color: var(--c-primary-deep);
+}
+
+@include motion-reduce {
+  .nav__family-photo ::ng-deep .photo,
+  .nav__family:hover .nav__family-photo ::ng-deep .photo {
+    transition: none;
+    transform: none;
   }
 }
 

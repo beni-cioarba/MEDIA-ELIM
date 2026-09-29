@@ -15,7 +15,6 @@ import {
   DURATION_MAX_S,
   DURATION_MIN_S,
   PresentationDisplayService,
-  QR_SIZES,
 } from '../../core/services/presentation-display.service';
 
 /**
@@ -221,44 +220,6 @@ import {
             }
           </footer>
 
-          <!-- Cómo se reparte el lienzo: QR sí/no y a qué tamaño. Sin QR el
-               contenido ocupa toda la anchura; el tamaño sigue la regla 1:10
-               (lado del QR ≈ distancia de escaneo / 10). -->
-          <section class="qr" aria-labelledby="qr-settings-title">
-            <h3 id="qr-settings-title" class="blocks__title">{{ 'blocks.qr_title' | translate }}</h3>
-
-            <label class="blocks__switch qr__switch">
-              <input
-                type="checkbox"
-                [checked]="display.qrVisible()"
-                (change)="setQrVisible($event)"
-              />
-              <span class="blocks__track" aria-hidden="true"><span class="blocks__thumb"></span></span>
-              <span class="blocks__label">
-                <span class="blocks__name">{{ 'blocks.qr_show' | translate }}</span>
-                <span class="blocks__hint">{{ 'blocks.qr_shortcut' | translate }}</span>
-              </span>
-            </label>
-
-            <div class="qr__size" role="radiogroup" [attr.aria-label]="'blocks.qr_size' | translate">
-              <span class="qr__size-label">{{ 'blocks.qr_size' | translate }}</span>
-              <div class="qr__segments">
-                @for (size of qrSizes; track size) {
-                  <button
-                    type="button"
-                    role="radio"
-                    class="qr__segment"
-                    [class.is-active]="display.qrSize() === size"
-                    [attr.aria-checked]="display.qrSize() === size"
-                    [disabled]="!display.qrVisible()"
-                    (click)="display.setQrSize(size)"
-                  >
-                    {{ 'blocks.qr_size_' + size | translate }}
-                  </button>
-                }
-              </div>
-            </div>
-          </section>
         </div>
       }
     </div>
@@ -703,81 +664,12 @@ import {
         font-size: 0.72rem;
       }
 
-      /* --- Ajustes del QR ---------------------------------------------- */
-
-      .qr {
-        display: grid;
-        gap: 0.55rem;
-        margin-top: 0.8rem;
-        padding-top: 0.7rem;
-        border-top: 1px solid rgba(26, 54, 93, 0.1);
-      }
-
-      .qr__switch {
-        padding: 0.35rem 0.4rem;
-        border-radius: 10px;
-
-        &:hover {
-          background: rgba(26, 54, 93, 0.05);
-        }
-      }
-
-      .qr__size {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.6rem;
-        padding: 0 0.4rem;
-      }
-
-      .qr__size-label {
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: #1a365d;
-      }
-
-      .qr__segments {
-        display: inline-flex;
-        padding: 2px;
-        border-radius: 999px;
-        border: 1px solid rgba(26, 54, 93, 0.16);
-        background: rgba(26, 54, 93, 0.05);
-      }
-
-      .qr__segment {
-        padding: 0.25rem 0.65rem;
-        border: 0;
-        border-radius: 999px;
-        background: transparent;
-        color: #1a365d;
-        font-size: 0.72rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.2s ease, color 0.2s ease;
-
-        &.is-active {
-          background: #1a365d;
-          color: #fff;
-        }
-
-        &:disabled {
-          cursor: not-allowed;
-          opacity: 0.45;
-        }
-
-        &:focus-visible {
-          outline: 2px solid #c9a227;
-          outline-offset: 2px;
-        }
-      }
-
       @media (prefers-reduced-motion: reduce) {
         .blocks__trigger,
         .blocks__track,
         .blocks__thumb,
         .blocks__item,
-        .items__box,
-        .qr__segment {
+        .items__box {
           transition: none;
         }
       }
@@ -787,7 +679,6 @@ import {
 export class PresentationSettingsComponent {
   protected readonly blocks = inject(PresentationBlocksService);
   protected readonly display = inject(PresentationDisplayService);
-  protected readonly qrSizes = QR_SIZES;
   protected readonly durationMin = DURATION_MIN_S;
   protected readonly durationMax = DURATION_MAX_S;
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
@@ -824,11 +715,6 @@ export class PresentationSettingsComponent {
   /** Intro en el campo de segundos: confirmar y soltar el foco. */
   protected commitDuration(event: Event): void {
     (event.target as HTMLInputElement).blur();
-  }
-
-  protected setQrVisible(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.display.setQrVisible(input.checked);
   }
 
   protected setEnabled(id: PresentationBlockId, event: Event): void {

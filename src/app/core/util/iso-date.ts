@@ -37,3 +37,22 @@ export function toIsoDate(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${date.getFullYear()}-${month}-${day}`;
 }
+
+/**
+ * Tramo de fechas localizado, sin repetir lo común:
+ * «21 – 27 septembrie 2026» · «28 septembrie – 4 octombrie 2026».
+ * Lo comparten el plan de lectura y la oración por las familias.
+ */
+export function formatIsoRange(lang: string, startIso: string, endIso: string): string {
+  const start = parseIsoDate(startIso);
+  const end = parseIsoDate(endIso);
+  try {
+    const day = new Intl.DateTimeFormat(lang, { day: 'numeric' });
+    const dayMonth = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long' });
+    const full = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+    const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+    return `${sameMonth ? day.format(start) : dayMonth.format(start)} – ${full.format(end)}`;
+  } catch {
+    return `${startIso} – ${endIso}`;
+  }
+}

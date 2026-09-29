@@ -23,6 +23,8 @@ export type IconName =
   | 'share'
   | 'book'
   | 'heart'
+  | 'family'
+  | 'pray'
   | 'music'
   | 'church'
   | 'sparkles'

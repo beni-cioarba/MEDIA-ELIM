@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, NgZone, OnDestroy, inject } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, NgZone, OnDestroy, inject } from '@angular/core';
 
 /**
  * Escala mínima. Es la **red de seguridad** para un anuncio cargado, no la
@@ -25,6 +25,11 @@ const SEARCH_STEPS = 7;
  * como multiplicador de cuerpos y espaciados: **todo se encoge a la vez**,
  * conservando las proporciones del diseño.
  *
+ * También **crece** hasta `appFitToBoxMax` (por defecto 1, sin crecer) cuando
+ * sobra sitio: en el lienzo entero de la proyección un anuncio corto dejaba
+ * la cuarta parte de abajo vacía; con un máximo de 1,2 el mismo anuncio se
+ * lee más grande y ocupa la diapositiva.
+ *
  * Sólo actúa cuando el host recorta de verdad: en la web pública la tarjeta
  * crece con su contenido y la directiva no hace nada. Así la misma tarjeta
  * sirve para la página `/anunturi` y para la diapositiva proyectada.
@@ -41,6 +46,9 @@ export class FitToBoxDirective implements AfterViewInit, OnDestroy {
   private readonly host: HTMLElement = inject(ElementRef).nativeElement;
   private readonly zone = inject(NgZone);
   private observer: ResizeObserver | null = null;
+
+  /** Escala máxima: 1 = sólo encoge; > 1 = también crece si sobra sitio. */
+  @Input() appFitToBoxMax = 1;
 
   ngAfterViewInit(): void {
     if (typeof ResizeObserver === 'undefined') return;
@@ -74,14 +82,17 @@ export class FitToBoxDirective implements AfterViewInit, OnDestroy {
       return inner.scrollHeight <= box;
     };
 
-    // A escala natural cabe: nada que hacer.
-    if (fits(1)) return;
+    const max = Math.max(1, this.appFitToBoxMax);
 
-    // El texto refluye al encoger, así que la relación tamaño ↔ altura no es
-    // lineal: una búsqueda binaria encuentra la mayor escala que cabe (sin
-    // dejar hueco) en pocas pasadas y sin depender de márgenes a ojo.
-    let low = MIN_FIT; // cabe (o es el mínimo admisible)
-    let high = 1; // no cabe
+    // A la escala máxima cabe: nada que buscar.
+    if (fits(max)) return;
+
+    // El texto refluye al cambiar de escala, así que la relación tamaño ↔
+    // altura no es lineal: una búsqueda binaria encuentra la mayor escala que
+    // cabe (sin dejar hueco) en pocas pasadas y sin márgenes a ojo. Si crece,
+    // se parte de 1 (siempre admisible si cabe); si no, del mínimo.
+    let low = max > 1 && fits(1) ? 1 : MIN_FIT; // cabe (o es el mínimo admisible)
+    let high = max; // no cabe
     for (let step = 0; step < SEARCH_STEPS; step++) {
       const mid = (low + high) / 2;
       if (fits(mid)) low = mid;

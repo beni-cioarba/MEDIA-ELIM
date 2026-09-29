@@ -68,6 +68,8 @@ La **marca** (navy y oro), la **accesibilidad** (contraste, foco,
 | `docs/ai/20-content-i18n.md` | Eventos, redes, programa semanal, traducciones             |
 | `docs/ai/30-presentation.md` | Fullscreen, carrusel, bloques a proyectar, atajos, QR, escala `--pj-u` |
 | `docs/ai/35-announcements.md`| **Anunțuri**: modelo, vigencia, límites de proyección, protocolo de redacción |
+| `docs/ai/37-prayer-causes.md`| **Cauzele Bisericii Elim**: lista vigente de causas (por nombre / por intención), web + una diapositiva |
+| `docs/ai/36-family-prayer.md`| **Rugăciune pentru familii**: semana por fecha, añadir una semana (script de fotos), diseño de resumen y fichas |
 | `docs/ai/40-styling.md`      | SCSS del escenario, responsive, encapsulación              |
 | `docs/ai/45-design-system.md`| Tokens, tema, Angular Material, iconos, tipografía         |
 | `docs/ai/47-design-language.md` | **Lenguaje visual**: superficies (web / consola / proyección), decisiones y catálogo `ui-*`. Referencia viva: `/stil` |

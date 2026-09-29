@@ -7,6 +7,12 @@
 </header>
 
 <app-page-section>
+  <!-- La oración por las familias de la semana: se busca junto a los avisos,
+       pero es su propio módulo (no un anuncio). Sólo en la lista completa. -->
+  @if (requestedId() === null) {
+    <app-family-prayer-teaser class="teaser" />
+  }
+
   @if (archived(); as past) {
     <!-- Enlace a un anuncio del archivo: se lee entero, avisando de que ya pasó. -->
     <div class="list">

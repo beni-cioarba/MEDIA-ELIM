@@ -95,6 +95,30 @@ const ICON_PATHS: Record<IconName, readonly string[]> = {
   heart: [
     'M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z',
   ],
+  // Familia: dos adultos y un niño entre ellos (dibujo propio, mismo trazo y
+  // rejilla que Lucide). Sustituye a «hand-heart» en «Rugăciune pentru
+  // familii»: la mano con corazón decía «cuidar», no «familia», y `users`
+  // ya es «La iglesia».
+  // Manos en oración (🙏, dibujo propio con el trazo de Lucide): dos palmas
+  // anchas unidas con la costura en medio, los pulgares a los lados y las
+  // mangas abajo. Para «Cauze de rugăciune»: el corazón decía «amor», no
+  // «orar». Probado a 20 px: con palmas estrechas no se leía como manos.
+  pray: [
+    'M12 2.5c-1.3 0-2.2 1-2.5 2.2L8 11.5l-2.2 2.7',
+    'M12 2.5c1.3 0 2.2 1 2.5 2.2l1.5 6.8 2.2 2.7',
+    'M12 5.5v10.5',
+    'M10.2 14.6c-.8-1-1-2.4-.6-3.6',
+    'M13.8 14.6c.8-1 1-2.4.6-3.6',
+    'M5.8 14.2 3 17.5l3 3.5 6-5 6 5 3-3.5-2.8-3.3',
+  ],
+  family: [
+    'M8 4.5a2 2 0 1 1-4 0a2 2 0 1 1 4 0',
+    'M2.5 21v-5.5A3.5 3.5 0 0 1 6 12a3.5 3.5 0 0 1 3 1.7',
+    'M20 4.5a2 2 0 1 1-4 0a2 2 0 1 1 4 0',
+    'M21.5 21v-5.5A3.5 3.5 0 0 0 18 12a3.5 3.5 0 0 0-3 1.7',
+    'M13.7 12.6a1.7 1.7 0 1 1-3.4 0a1.7 1.7 0 1 1 3.4 0',
+    'M9 21v-2.5a3 3 0 0 1 6 0V21',
+  ],
   music: [
     'M9 18V6l10-2v12',
     'M9 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0',

@@ -26,9 +26,32 @@
           {{ w.summary }}
         </p>
       </div>
+
+      <!-- Avance de la semana (sólo web): siete segmentos, uno por día. -->
+      @if (!fullscreen() && progress(); as p) {
+        <div class="bible__progress">
+          <span class="bible__progress-label">
+            {{ 'bible.progress' | translate: { day: p.day, total: p.total } }}
+          </span>
+          <span class="bible__progress-track" aria-hidden="true">
+            @for (day of w.days; track day.date) {
+              <span
+                class="bible__progress-seg"
+                [class.is-done]="day.isPast"
+                [class.is-today]="day.isToday"
+              ></span>
+            }
+          </span>
+        </div>
+      }
     </div>
 
-    <!-- Lecturas diarias. -->
+    <!--
+      Lecturas diarias: una lista agrupada (una superficie, filetes entre filas)
+      con la fecha en pastilla de ancho fijo → todos los pasajes arrancan en la
+      misma vertical. La pastilla es visual; el lector de pantalla oye la fecha
+      completa.
+    -->
     <ol class="bible__days">
       @for (day of w.days; track day.date) {
         <li
@@ -37,11 +60,12 @@
           [class.is-past]="day.isPast"
           [attr.aria-current]="day.isToday ? 'date' : null"
         >
-          <span class="bible__day-date">
-            <span class="bible__day-name">{{ bible.formatWeekday(day.date, fullscreen() ? 'short' : 'long') }}</span>
+          <span class="bible__day-date" aria-hidden="true">
+            <span class="bible__day-weekday">{{ bible.formatWeekday(day.date, 'short') }}</span>
             <span class="bible__day-num">{{ bible.formatDayNumber(day.date) }}</span>
           </span>
           <span class="bible__day-passages">
+            <span class="u-sr-only">{{ bible.formatDayLabel(day.date) }}: </span>
             <span class="bible__day-passage">{{ day.passage }}</span>
             @if (day.newTestament) {
               <span class="bible__day-passage bible__day-passage--nt">{{ day.newTestament }}</span>
@@ -55,6 +79,7 @@
     </ol>
 
     <p class="bible__meta">
+      <app-icon name="book" class="bible__meta-icon" />
       <span class="bible__plan">{{ bible.plan.title }}</span>
       <span class="bible__scope">
         {{ 'bible.month_scope' | translate: { month: w.month.label, scope: w.month.scope } }}

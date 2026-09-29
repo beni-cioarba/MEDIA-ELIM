@@ -10,6 +10,7 @@ import { PageSectionComponent } from '../../shared/page-section/page-section.com
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { AnnouncementCardComponent } from './announcement-card/announcement-card.component';
+import { FamilyPrayerTeaserComponent } from '../family-prayer/family-prayer-teaser/family-prayer-teaser.component';
 
 /**
  * «Anunțuri» — los avisos vigentes de la congregación.
@@ -39,6 +40,7 @@ import { AnnouncementCardComponent } from './announcement-card/announcement-card
         ShareButtonComponent,
         IconComponent,
         AnnouncementCardComponent,
+        FamilyPrayerTeaserComponent,
     ],
     templateUrl: './announcements.component.html',
     styleUrl: './announcements.component.scss'

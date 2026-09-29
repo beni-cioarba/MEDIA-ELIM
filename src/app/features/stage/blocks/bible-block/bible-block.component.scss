@@ -56,8 +56,8 @@ app-bible-block {
 
 .bible__week {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--sp-5);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--sp-5) var(--sp-6);
   align-items: center;
   padding: var(--sp-5) var(--sp-6);
   border-radius: var(--r-lg);
@@ -129,39 +129,145 @@ app-bible-block {
   margin: 0;
   max-width: none;
   font-family: var(--font-display);
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.2;
+  // Es el titular de la página: lo que hay que leer esta semana.
+  font-size: clamp(1.45rem, 1.1rem + 1.2vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
   color: var(--c-on-primary);
 }
 
+// ---- Avance de la semana (sólo web) -----------------------------------
+// Siete segmentos: hechos en oro apagado, hoy en oro pleno, por venir en
+// blanco translúcido. Ocupa la mitad derecha del panel, que antes quedaba
+// vacía, con un dato útil («vas por el día 3»).
+
+.bible__progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  min-width: 12rem;
+}
+
+.bible__progress-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.bible__progress-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+  width: 100%;
+}
+
+.bible__progress-seg {
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.18);
+
+  &.is-done {
+    background: rgba(227, 199, 102, 0.55);
+  }
+
+  &.is-today {
+    background: var(--c-gold);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.28);
+  }
+}
+
+// Móvil y tableta: el avance baja a su propia fila, a todo el ancho.
+@include until('md') {
+  .bible__week {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  // El icono se quedaba solo en una línea encima de la fecha partida; en
+  // oro y sobre navy, la fecha se reconoce sin él.
+  .bible__range app-icon {
+    display: none;
+  }
+
+  .bible__progress {
+    grid-column: 1 / -1;
+    align-items: stretch;
+    padding-top: var(--sp-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+}
+
 // ---- Lecturas diarias -----------------------------------------------
+// Lista agrupada, no siete tarjetas: una sola superficie con filetes entre
+// filas (el filete separa; la sombra sería ruido). La fecha va en una
+// pastilla de ancho fijo —día abreviado sobre el número, como una agenda—,
+// así que todos los pasajes arrancan en la misma vertical sea cual sea el
+// nombre del día o el número de cifras.
 
 .bible__days {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--sp-2);
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
 }
 
 .bible__day {
   display: grid;
-  grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr) auto;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--sp-4);
-  padding: var(--sp-2) var(--sp-4);
-  border-radius: var(--r-md);
-  background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
+  padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+
+  & + & {
+    border-top: 1px solid var(--c-hairline);
+  }
 
   &.is-past {
     color: var(--c-muted);
   }
 
+  // Hoy: fondo dorado suave y barra a la izquierda (la insignia lo nombra).
   &.is-today {
     background: var(--c-gold-tint);
-    border-color: var(--c-gold);
+    box-shadow: inset 3px 0 0 var(--c-gold);
+  }
+}
+
+.bible__day-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.bible__day-weekday {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.bible__day-num {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--c-primary);
+}
+
+.is-past {
+  .bible__day-weekday,
+  .bible__day-num {
+    color: inherit;
   }
 }
 
@@ -169,51 +275,34 @@ app-bible-block {
 .bible__day-passages {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 0.2rem var(--sp-4);
   min-width: 0;
 }
 
-.bible__day-date {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-  font-variant-numeric: tabular-nums;
+.bible__day-passage {
+  min-width: 0;
+  font-size: var(--fs-body-lg);
+  font-weight: 600;
+  color: var(--c-text);
+
+  .is-past & {
+    color: inherit;
+  }
+
+  &--nt {
+    font-weight: 500;
+    color: var(--c-muted);
+  }
 }
 
-// Intl devuelve el día en minúscula («luni»); sólo la inicial en mayúscula.
+// Día de la semana en el desplegable del plan (forma larga, en minúscula
+// desde Intl): sólo la inicial en mayúscula.
 .bible__day-name {
   display: inline-block;
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  color: var(--c-primary);
 
   &::first-letter {
     text-transform: uppercase;
-  }
-
-  .is-past & {
-    color: inherit;
-  }
-}
-
-.bible__day-num {
-  font-size: var(--fs-body);
-  font-weight: 800;
-  color: var(--c-primary);
-
-  .is-past & {
-    color: inherit;
-  }
-}
-
-.bible__day-passage {
-  font-size: var(--fs-body);
-  font-weight: 700;
-  min-width: 0;
-
-  &--nt {
-    font-weight: 600;
-    color: var(--c-muted);
   }
 }
 
@@ -228,21 +317,90 @@ app-bible-block {
   text-transform: uppercase;
 }
 
+// ---- Tira semanal (escritorio, sólo web) ------------------------------
+// Desde 1024 px la lista vertical desperdiciaba el 90 % del ancho (pasajes de
+// ~110 px en filas de 1.140). La semana se pinta como lo que es: siete
+// columnas, como la vista semanal de un calendario. Cada ficha apila fecha y
+// pasaje; «Azi» vive dentro de su ficha, no a 1.000 px de su texto.
+// Acotada a la web (`:not(.is-fullscreen)`): la proyección tiene su propia
+// subrejilla y no debe heredar nada de aquí.
+
+@include from('lg') {
+  .stage:not(.is-fullscreen) {
+    .bible__days {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+
+    .bible__day {
+      position: relative;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: start;
+      gap: var(--sp-3);
+      padding: var(--sp-4) var(--sp-4) var(--sp-5);
+
+      & + & {
+        border-top: 0;
+        border-left: 1px solid var(--c-hairline);
+      }
+
+      &.is-today {
+        box-shadow: inset 0 3px 0 var(--c-gold);
+      }
+    }
+
+    .bible__day-date {
+      align-items: flex-start;
+    }
+
+    .bible__day-num {
+      font-size: 1.75rem;
+    }
+
+    .bible__day-passages {
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .bible__today {
+      position: absolute;
+      top: var(--sp-4);
+      right: var(--sp-3);
+    }
+  }
+}
+
 // ---- Pie --------------------------------------------------------------
+// Firma del plan: icono · nombre · tramo del mes, en una línea discreta.
 
 .bible__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2) var(--sp-5);
+  align-items: center;
+  gap: var(--sp-1) var(--sp-2);
   margin: 0;
   max-width: none;
   font-size: var(--fs-sm);
   color: var(--c-muted);
 }
 
+.bible__meta-icon {
+  flex: 0 0 auto;
+  color: var(--c-gold-deep);
+}
+
 .bible__plan {
   font-weight: 700;
   color: var(--c-primary);
+}
+
+// Separador sólo cuando van en la misma línea; en móvil el tramo baja solo.
+@include from('sm') {
+  .bible__scope::before {
+    content: '·';
+    margin-right: var(--sp-2);
+    color: var(--c-faint);
+  }
 }
 
 .bible__empty {
@@ -479,9 +637,7 @@ app-bible-block {
   color: var(--c-muted);
 
   .bible__day-name {
-    font-size: inherit;
     font-weight: 600;
-    color: inherit;
   }
 }
 
@@ -521,10 +677,10 @@ app-bible-block {
 // ---------------------------------------------------------------------
 .stage.is-fullscreen {
   // Contrato de bloque (ver `_projection.scss` § 3).
-  // Presupuesto vertical (75u útiles): título 12 · panel de semana 16 · días
-  // 4 filas × 8 = 32 · pie 4 · huecos 6 = 70u. Por eso los días van siempre
-  // en dos columnas (4 + 3) y el panel de semana usa `hero`/`lead`, no
-  // `display`/`title`.
+  // Presupuesto vertical (medido a 1080p, con y sin QR): título 12 · panel
+  // de semana 18 (tramo a `title`) · días 4 filas × 7,8 = 31 + huecos · pie 4
+  // → sobran ~3u. Por eso los días van siempre en dos columnas (4 + 3) con el
+  // pasaje a `body`: a `lead` partía línea en columnas de ~57u.
   .bible {
     height: 100%;
     min-height: 0;
@@ -540,7 +696,9 @@ app-bible-block {
 
   // ---- Panel de la semana ---------------------------------------------
 
+  // Sin la columna del avance (sólo web).
   .bible__week {
+    grid-template-columns: auto minmax(0, 1fr);
     gap: var(--pj-sp-3);
     padding: calc(var(--pj-u) * 2.2) var(--pj-sp-3);
     border-radius: var(--pj-r);
@@ -578,68 +736,92 @@ app-bible-block {
     font-size: calc(var(--pj-u) * 3.2);
   }
 
+  // El dato que se anuncia en voz alta: el mayor texto de la diapositiva.
   .bible__summary {
-    font-size: var(--pj-fs-lead);
+    font-size: var(--pj-fs-title);
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
   }
 
   // ---- Lecturas diarias -----------------------------------------------
 
   // Dos columnas rellenadas por columnas (lunes→jueves | viernes→domingo):
-  // se lee como una lista. Las filas miden lo que mide su texto: nunca se
-  // aplastan ni se solapan.
+  // se lee como una lista. Cada columna tiene tres pistas —día · número ·
+  // pasaje— que las cuatro fichas comparten por `subgrid`: el ancho de la
+  // fecha lo marca la más ancha («MAR 29») y todos los pasajes arrancan en la
+  // misma vertical, sin anchos adivinados. Las filas miden lo que mide su
+  // texto: nunca se aplastan ni se solapan.
+  // Las filas se reparten el alto libre (lienzo entero, sin columna de QR).
   .bible__days {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     min-height: 0;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(4, auto);
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    grid-template-columns: repeat(2, auto auto minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
     grid-auto-flow: column;
-    gap: calc(var(--pj-u) * 0.8) var(--pj-sp-3);
+    gap: calc(var(--pj-u) * 1.2) var(--pj-sp-4);
   }
 
-  // Fila de un día: «Luni 21 · Isaia 57-58» en una línea de cuerpo (5,5u).
-  // La fecha mide lo que mide; el pasaje se lleva el resto y sólo parte si
-  // de verdad no cabe (nunca se recorta).
+  // Ficha de un día: «LUN 28 · Ieremia 5–6» en una línea. La fecha va en
+  // línea (apilada no cabe en el presupuesto vertical).
   .bible__day {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: var(--pj-sp-2);
+    grid-column: span 3;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    column-gap: var(--pj-sp-1);
     min-height: 0;
-    padding: calc(var(--pj-u) * 0.5) var(--pj-sp-2);
+    padding: calc(var(--pj-u) * 1.3) var(--pj-sp-2);
+    border: var(--pj-stroke) solid var(--c-hairline);
     border-radius: var(--pj-r-sm);
-    border-width: var(--pj-stroke);
-    box-shadow: var(--e-1);
+    background: var(--c-surface);
 
-    // Hoy: la única fila con color; el resto son planas.
-    &.is-today {
-      border-left: calc(var(--pj-u) * 0.6) solid var(--c-gold);
+    & + & {
+      border-top: var(--pj-stroke) solid var(--c-hairline);
     }
+
+    // Hoy: la única ficha con color; el resto son planas.
+    &.is-today {
+      border-color: var(--c-gold);
+      background: var(--c-gold-tint);
+      box-shadow: inset calc(var(--pj-u) * 0.7) 0 0 var(--c-gold);
+    }
+  }
+
+  // La pastilla se disuelve: día y número pasan a ser celdas de la subrejilla.
+  .bible__day-date {
+    display: contents;
+  }
+
+  .bible__day-weekday {
+    font-size: var(--pj-fs-caption);
+    letter-spacing: 0.1em;
+  }
+
+  .bible__day-num {
+    margin-right: var(--pj-sp-1);
+    text-align: right;
+    font-size: var(--pj-fs-lead);
+    line-height: 1.15;
   }
 
   .bible__day-passages {
     gap: 0 var(--pj-sp-2);
   }
 
-  .bible__day-date {
-    gap: var(--pj-sp-1);
-  }
-
-  .bible__day-name {
-    font-size: var(--pj-fs-eyebrow);
-    font-weight: 700;
-  }
-
-  .bible__day-num {
-    font-size: var(--pj-fs-body);
-  }
-
+  // `lead`: con el lienzo entero cada columna mide ~80u y el pasaje cabe en
+  // una línea (con la columna del QR, ~57u, había que bajarlo a `body`). El
+  // tramo de la semana (8u) sigue siendo el mayor: la jerarquía se mantiene.
   .bible__day-passage {
     font-size: var(--pj-fs-lead);
     font-weight: 700;
     line-height: 1.15;
 
     &--nt {
-      font-size: var(--pj-fs-body);
+      font-size: var(--pj-fs-caption);
     }
   }
 
@@ -662,7 +844,9 @@ app-bible-block {
     text-overflow: ellipsis;
   }
 
-  .bible__plan {
+  .bible__plan,
+  .bible__meta-icon,
+  .bible__scope::before {
     display: none;
   }
 

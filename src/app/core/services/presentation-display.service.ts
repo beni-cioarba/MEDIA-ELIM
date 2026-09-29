@@ -3,11 +3,6 @@ import { toIsoDate } from '../util/iso-date';
 import { ClockService } from './clock.service';
 import type { PresentationBlockId } from './presentation-blocks.service';
 
-/** Tamaño del código QR proyectado (columna del lienzo que ocupa). */
-export type QrSize = 's' | 'm' | 'l';
-
-export const QR_SIZES: readonly QrSize[] = ['s', 'm', 'l'];
-
 /** Límites del tiempo por diapositiva que puede fijar el operador (segundos). */
 export const DURATION_MIN_S = 5;
 export const DURATION_MAX_S = 120;
@@ -26,13 +21,56 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   weekly: 12,
   upcoming: 15,
   bible: 20,
+  // Resumen y fichas comparten tiempo: una ficha lleva foto y uno o dos
+  // párrafos que se leen en voz alta mientras se ve la familia.
+  families: 20,
+  // Una sola diapositiva con toda la lista: da tiempo a leer los nombres.
+  causes: 25,
+  // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
+  website: 15,
 };
 
+/**
+ * Lo mínimo de una diapositiva que hace falta para saber su tiempo propio.
+ * Estructural a propósito: este servicio no depende de
+ * `PresentationBlocksService` (que sí depende de él).
+ */
+export interface TimedSlide {
+  readonly block: PresentationBlockId;
+  readonly announcement?: { readonly id: string };
+  readonly events?: readonly { readonly id: string }[];
+  readonly family?: { readonly id: string };
+  readonly prayerWeek?: unknown;
+}
+
+/**
+ * Claves de tiempo propio de una diapositiva. Van por **elemento** (anuncio,
+ * evento, familia) y no por posición: el tiempo de un anuncio le sigue aunque
+ * cambie el orden o se oculten otros. Una página de eventos lleva dos
+ * eventos: dura lo que el más largo de los dos.
+ *
+ *  - `a:<id>` anuncio · `e:<id>` evento · `f:<id>` ficha · `f:summary` resumen
+ *  - Bloques de una sola diapositiva: ninguna (su tiempo es el del bloque).
+ *
+ * Un bloque nuevo con varias diapositivas sólo tiene que añadir aquí cómo se
+ * nombran sus elementos: el panel le pinta el control y el carrusel lo usa.
+ */
+export function slideTimeKeys(slide: TimedSlide): readonly string[] {
+  if (slide.announcement) return [`a:${slide.announcement.id}`];
+  if (slide.block === 'upcoming' && slide.events) return slide.events.map((e) => `e:${e.id}`);
+  if (slide.block === 'families' && slide.prayerWeek) return [`f:${slide.family?.id ?? 'summary'}`];
+  return [];
+}
+
 interface DisplayPrefs {
-  readonly qrVisible: boolean;
-  readonly qrSize: QrSize;
   /** Duraciones fijadas a mano (segundos). Ausente ⇒ valor por defecto. */
   readonly durations: Partial<Record<PresentationBlockId, number>>;
+  /**
+   * Tiempo propio de una diapositiva concreta (segundos), por clave de
+   * `slideTimeKeys`. Ausente ⇒ el del bloque. Es la excepción («este anuncio
+   * hoy necesita más»), no la norma.
+   */
+  readonly slideDurations: Readonly<Record<string, number>>;
   /**
    * Día (`YYYY-MM-DD`) para el que el operador activó el aviso «hoy también
    * en directo», o `null`. Se guarda el día y no un sí/no para que el aviso
@@ -44,32 +82,28 @@ interface DisplayPrefs {
 
 const STORAGE_KEY = 'iglesia-redes.presentation.display';
 
-const DEFAULTS: DisplayPrefs = { qrVisible: true, qrSize: 'm', durations: {}, liveNoticeDate: null };
+const DEFAULTS: DisplayPrefs = { durations: {}, slideDurations: {}, liveNoticeDate: null };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Preferencias de **pantalla y ritmo** de la proyección (no de contenido): si
- * se muestra el QR y a qué tamaño, y cuánto dura cada diapositiva de cada
- * bloque.
+ * Preferencias de **pantalla y ritmo** de la proyección (no de contenido):
+ * cuánto dura cada diapositiva de cada bloque y el aviso de directo.
  *
  * Van aparte de `PresentationBlocksService` porque responden a otra pregunta:
- * aquél decide *qué* se proyecta; éste, *cómo se reparte el lienzo y el
- * tiempo*. Sin QR el contenido ocupa toda la anchura y los bloques se
- * recolocan (`.stage--no-qr`, ver `styles/_projection.scss`).
+ * aquél decide *qué* se proyecta; éste, *cómo y cuánto tiempo*.
  *
- * El tamaño del QR se elige con la regla 1:10 (lado del QR ≈ distancia de
- * escaneo ÷ 10): en una pantalla de ~3 m, «M» (44 u) mide ~0,75 m y se
- * escanea desde ~7 m; «L» llega al fondo de un templo grande; «S» deja casi
- * todo el lienzo al contenido cuando el QR es secundario.
+ * El QR ya no es un ajuste de pantalla: es un bloque propio (`website`) que
+ * se enciende y apaga como los demás, y cada diapositiva tiene el lienzo
+ * entero (`docs/ai/30-presentation.md` → «Lienzo»).
  *
  * Las duraciones vienen con un valor por defecto por bloque y el operador
  * puede ajustarlas desde el panel de controles; se recuerdan en
  * `localStorage`, como el resto de ajustes.
  *
- * El aviso de emisión en directo también es de pantalla: no añade una
- * diapositiva, sino que convierte el QR en una invitación a compartir la
- * transmisión del día (ver `docs/ai/30-presentation.md` → «Aviso de directo»).
+ * El aviso de emisión en directo también es de pantalla: marca «ÎN DIRECT»
+ * junto a la firma de la esquina y suma el código del directo a la
+ * diapositiva del QR (ver `docs/ai/30-presentation.md` → «Aviso de directo»).
  */
 @Injectable({ providedIn: 'root' })
 export class PresentationDisplayService {
@@ -86,9 +120,6 @@ export class PresentationDisplayService {
     inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', onStorage));
   }
 
-  readonly qrVisible = computed<boolean>(() => this.prefs().qrVisible);
-  readonly qrSize = computed<QrSize>(() => this.prefs().qrSize);
-
   /** Día de hoy según el reloj compartido: cambia solo al pasar la medianoche. */
   private readonly today = computed<string>(() => toIsoDate(new Date(this.clock.now())));
 
@@ -101,9 +132,11 @@ export class PresentationDisplayService {
     ...this.prefs().durations,
   }));
 
-  /** `true` si el operador ha cambiado alguna duración. */
+  /** `true` si el operador ha cambiado alguna duración (de bloque o de diapositiva). */
   readonly hasCustomDurations = computed<boolean>(
-    () => Object.keys(this.prefs().durations).length > 0,
+    () =>
+      Object.keys(this.prefs().durations).length > 0 ||
+      Object.keys(this.prefs().slideDurations).length > 0,
   );
 
   /** Segundos que dura cada diapositiva de este bloque. */
@@ -133,21 +166,60 @@ export class PresentationDisplayService {
     this.update({ durations });
   }
 
-  /** Devuelve todos los bloques a su duración por defecto. */
+  /** Devuelve todos los bloques y diapositivas a su duración por defecto. */
   resetDurations(): void {
-    this.update({ durations: {} });
+    this.update({ durations: {}, slideDurations: {} });
   }
 
-  setQrVisible(visible: boolean): void {
-    this.update({ qrVisible: visible });
+  // ---- Tiempo propio por diapositiva -------------------------------------
+  //
+  // Por defecto cada diapositiva dura lo de su bloque (el valor de su
+  // cabecera en el panel). Sólo si hace falta —un anuncio largo, la ficha de
+  // una familia por la que hoy se ora más despacio— se le fija uno propio,
+  // que manda sobre el del bloque hasta que se restablece.
+
+  /** Segundos que dura esta diapositiva en la proyección. */
+  durationForSlide(slide: TimedSlide): number {
+    const own = slideTimeKeys(slide)
+      .map((key) => this.prefs().slideDurations[key])
+      .filter((seconds): seconds is number => seconds !== undefined);
+    return own.length > 0 ? Math.max(...own) : this.durationFor(slide.block);
   }
 
-  toggleQr(): void {
-    this.update({ qrVisible: !this.prefs().qrVisible });
+  /** Tiempo propio de un elemento, o `null` si hereda el del bloque. */
+  slideOverride(key: string): number | null {
+    return this.prefs().slideDurations[key] ?? null;
   }
 
-  setQrSize(size: QrSize): void {
-    this.update({ qrSize: size });
+  /** Tiempo efectivo de un elemento: el propio o el de su bloque. */
+  itemDuration(key: string, block: PresentationBlockId): number {
+    return this.slideOverride(key) ?? this.durationFor(block);
+  }
+
+  /** Suma o resta un paso al tiempo de un elemento (parte del de su bloque). */
+  stepSlideDuration(key: string, block: PresentationBlockId, direction: 1 | -1): void {
+    this.setSlideDuration(key, block, this.itemDuration(key, block) + direction * DURATION_STEP_S);
+  }
+
+  /**
+   * Fija el tiempo de un elemento. Si coincide con el del bloque no se
+   * guarda: seguir heredando es mejor que una copia que no seguiría al bloque.
+   */
+  setSlideDuration(key: string, block: PresentationBlockId, seconds: number): void {
+    const clamped = Math.min(DURATION_MAX_S, Math.max(DURATION_MIN_S, Math.round(seconds)));
+    if (clamped === this.durationFor(block)) {
+      this.resetSlideDuration(key);
+      return;
+    }
+    this.update({ slideDurations: { ...this.prefs().slideDurations, [key]: clamped } });
+  }
+
+  /** El elemento vuelve a durar lo de su bloque. */
+  resetSlideDuration(key: string): void {
+    if (!(key in this.prefs().slideDurations)) return;
+    const slideDurations = { ...this.prefs().slideDurations };
+    delete slideDurations[key];
+    this.update({ slideDurations });
   }
 
   /** Enciende el aviso de directo para hoy (caduca a medianoche) o lo apaga. */
@@ -171,11 +243,12 @@ function readStoredPrefs(): DisplayPrefs {
     if (!raw) return DEFAULTS;
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return DEFAULTS;
-    const { qrVisible, qrSize, durations, liveNoticeDate } = parsed as Record<string, unknown>;
+    // Las claves antiguas (`qrVisible`, `qrSize`) se ignoran y desaparecen al
+    // guardar la próxima preferencia.
+    const { durations, slideDurations, liveNoticeDate } = parsed as Record<string, unknown>;
     return {
-      qrVisible: typeof qrVisible === 'boolean' ? qrVisible : DEFAULTS.qrVisible,
-      qrSize: isQrSize(qrSize) ? qrSize : DEFAULTS.qrSize,
       durations: readDurations(durations),
+      slideDurations: readSlideDurations(slideDurations),
       liveNoticeDate:
         typeof liveNoticeDate === 'string' && ISO_DATE.test(liveNoticeDate) ? liveNoticeDate : null,
     };
@@ -196,6 +269,18 @@ function readDurations(value: unknown): Partial<Record<PresentationBlockId, numb
   return out;
 }
 
+/** Tiempos por diapositiva: claves con prefijo conocido y segundos en rango. */
+function readSlideDurations(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object') return {};
+  const out: Record<string, number> = {};
+  for (const [key, seconds] of Object.entries(value as Record<string, unknown>)) {
+    if (!/^[aef]:.+/.test(key) || typeof seconds !== 'number') continue;
+    if (seconds < DURATION_MIN_S || seconds > DURATION_MAX_S) continue;
+    out[key] = seconds;
+  }
+  return out;
+}
+
 function persistPrefs(prefs: DisplayPrefs): void {
   if (typeof localStorage === 'undefined') return;
   try {
@@ -203,8 +288,4 @@ function persistPrefs(prefs: DisplayPrefs): void {
   } catch {
     /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
   }
-}
-
-function isQrSize(value: unknown): value is QrSize {
-  return typeof value === 'string' && (QR_SIZES as readonly string[]).includes(value);
 }

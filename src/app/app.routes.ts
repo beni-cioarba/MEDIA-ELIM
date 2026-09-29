@@ -107,6 +107,20 @@ export const APP_ROUTES: Routes = [
         redirectTo: APP_PATHS.announcements,
       },
       {
+        // Igual que los anuncios: la oración por las familias tiene página propia.
+        path: `${APP_PATHS.media}/${APP_PATHS.familyPrayer}`,
+        redirectTo: APP_PATHS.familyPrayer,
+      },
+      {
+        // La diapositiva del QR sólo tiene sentido proyectada.
+        path: `${APP_PATHS.media}/site`,
+        redirectTo: APP_PATHS.home,
+      },
+      {
+        path: `${APP_PATHS.media}/${APP_PATHS.prayerCauses}`,
+        redirectTo: APP_PATHS.prayerCauses,
+      },
+      {
         // Un bloque como página propia (`/media/galerie`, `/media/program`…).
         // Reutiliza el mismo componente: un único chunk y una única hoja de
         // estilos para los seis bloques.
@@ -142,6 +156,55 @@ export const APP_ROUTES: Routes = [
           seo: {
             titleKey: 'seo.announcements.title',
             descriptionKey: 'seo.announcements.description',
+          },
+        },
+      },
+      {
+        // Rugăciune pentru familii: la semana en curso; `:week` (el domingo,
+        // `YYYY-MM-DD`) abre una semana del archivo. Mismo componente y chunk.
+        path: APP_PATHS.familyPrayer,
+        loadComponent: () =>
+          import('./features/family-prayer/family-prayer.component').then(
+            (m) => m.FamilyPrayerComponent,
+          ),
+        data: {
+          seo: {
+            titleKey: 'seo.family_prayer.title',
+            descriptionKey: 'seo.family_prayer.description',
+            // Fotos y nombres de familias con menores: se comparten por
+            // enlace, pero no deben aparecer en buscadores.
+            noindex: true,
+          },
+        },
+      },
+      {
+        path: `${APP_PATHS.familyPrayer}/:week`,
+        loadComponent: () =>
+          import('./features/family-prayer/family-prayer.component').then(
+            (m) => m.FamilyPrayerComponent,
+          ),
+        data: {
+          seo: {
+            titleKey: 'seo.family_prayer.title',
+            descriptionKey: 'seo.family_prayer.description',
+            // Fotos y nombres de familias con menores: se comparten por
+            // enlace, pero no deben aparecer en buscadores.
+            noindex: true,
+          },
+        },
+      },
+      {
+        // Cauzele Bisericii Elim: lista vigente (nombres de enfermos → noindex).
+        path: APP_PATHS.prayerCauses,
+        loadComponent: () =>
+          import('./features/prayer-causes/prayer-causes.component').then(
+            (m) => m.PrayerCausesComponent,
+          ),
+        data: {
+          seo: {
+            titleKey: 'seo.prayer_causes.title',
+            descriptionKey: 'seo.prayer_causes.description',
+            noindex: true,
           },
         },
       },

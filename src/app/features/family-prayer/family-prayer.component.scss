@@ -1,0 +1,163 @@
+@use 'ds' as *;
+@use '../../shared/styles/buttons' as *;
+@use '../../shared/styles/page-hero' as *;
+@use '../../shared/styles/past-archive' as *;
+
+/* Página «Rugăciune pentru familii». El resumen y la ficha son globales (se
+   comparten con la proyección); aquí sólo el ritmo de la página, el aviso de
+   semana pasada, las acciones de cada ficha, los vacíos y la fila del archivo. */
+
+:host {
+  display: block;
+}
+
+/* Medida de lectura de la página: la ficha a dos columnas no gana nada por
+   encima de ~68 rem (el texto ya va a 62ch) y alineada a la izquierda, como
+   el resto de páginas. */
+.fp {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  max-width: 68rem;
+}
+
+.fp__cards {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.fp__actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: auto;
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--c-hairline);
+}
+
+/* --- Semana pasada abierta por enlace --------------------------------- */
+
+.fp__notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  justify-self: start;
+  margin: 0;
+  max-width: none;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--c-hairline-strong);
+  background: var(--c-surface-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+.fp__notice-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--c-gold-deep);
+  }
+}
+
+/* --- Estados vacíos ---------------------------------------------------- */
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-4);
+  max-width: 34rem;
+  padding: clamp(2rem, 6vw, 3.5rem) var(--sp-4);
+  text-align: center;
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+
+  app-icon {
+    font-size: 2.4rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+.empty__text {
+  margin: 0;
+  font-size: var(--fs-body-lg);
+  color: var(--c-muted);
+}
+
+/* --- Archivo: fila de una semana --------------------------------------- */
+
+.past {
+  max-width: 68rem;
+}
+
+/* semana | fechas | apellidos | flecha. Número y fechas en columnas fijas
+   para que los apellidos arranquen alineados; en móvil los apellidos bajan
+   a su propia línea. */
+.past__row {
+  display: grid;
+  grid-template-columns: 6.5rem 15rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--sp-3);
+  min-height: 44px;
+  padding-block: var(--sp-3);
+  border-top: 1px solid var(--c-hairline);
+  text-decoration: none;
+  color: var(--c-text);
+
+  &:hover .past__names,
+  &:focus-visible .past__names {
+    color: var(--c-primary);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.past__week {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-gold-deep);
+}
+
+.past__dates {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+}
+
+.past__names {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.past__arrow {
+  align-self: center;
+  color: var(--c-faint);
+}
+
+@include until('md') {
+  .past__row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .past__names {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+
+  .past__arrow {
+    grid-row: 1 / 3;
+    grid-column: 3;
+  }
+}

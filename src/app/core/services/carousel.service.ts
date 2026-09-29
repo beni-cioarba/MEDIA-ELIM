@@ -71,10 +71,13 @@ export class CarouselService {
     this.sync.isLeader() ? this._progress() : this.sync.remoteProgress(),
   );
 
-  /** Duración (ms) de la diapositiva actual, según su bloque. */
+  /**
+   * Duración (ms) de la diapositiva actual: la suya si el operador le ha
+   * fijado una, si no la de su bloque.
+   */
   readonly currentDurationMs = computed<number>(() => {
-    const block = this.currentSlide()?.block;
-    return block ? this.display.durationFor(block) * 1000 : 0;
+    const slide = this.currentSlide();
+    return slide ? this.display.durationForSlide(slide) * 1000 : 0;
   });
 
   constructor() {

@@ -37,14 +37,11 @@
     }
   },
   "qr": {
-    "caption": "Scanează pentru a vizita rețelele noastre",
-    "aria": "Cod QR pentru a accesa această pagină",
-    "live_aria": "Cod QR către transmisiunea în direct"
+    "caption": "Scanează pentru a vizita rețelele noastre"
   },
   "live_notice": {
     "badge": "În direct",
     "qr_caption": "Scanează și trimite slujba de azi celor dragi",
-    "bar_text": "Trimite slujba de azi celor dragi · YouTube {{handle}}",
     "toggle": "Anunță transmisiunea live de azi",
     "hint": "Se oprește singur la miezul nopții"
   },
@@ -84,11 +81,24 @@
     "preview_only": "Previzualizare",
     "now": "Acum",
     "next": "Următorul",
-    "shortcuts": "Taste: ← → schimbă · Spațiu pauză · Q cod QR · 1-9 salt la",
+    "shortcuts": "Taste: ← → schimbă · Spațiu pauză · 1-9 salt la",
     "hint_fullscreen": "Ecran complet: butonul de sus, sau F în fereastra de proiecție.",
     "reorder": "Mută „{{name}}”: trage sau folosește ↑ ↓",
     "reorder_hint": "Trage blocurile pentru a schimba ordinea proiecției.",
-    "reset_order": "Ordinea implicită"
+    "reset_order": "Ordinea implicită",
+    "select_label": "Selecție rapidă",
+    "select_count": "{{n}} din {{total}} în proiecție",
+    "select_first": "Doar primul",
+    "select_all": "Toate",
+    "global_label": "Blocuri",
+    "global_count": "{{n}} din {{total}} în proiecție",
+    "slide_time": "Timpul acestei diapozitive",
+    "slide_time_inherit": "Timpul blocului (se poate schimba doar pentru aceasta)",
+    "slide_time_custom": "Timp propriu (nu mai urmează blocul)",
+    "slide_time_reset": "Revine la timpul blocului",
+    "past_families": "Familii din săptămânile trecute ({{n}})",
+    "past_hint": "Doar pentru azi. Nu intră cu «Toate».",
+    "past_tag": "anterior"
   },
   "carousel": {
     "label": "Carusel de conținut",
@@ -110,13 +120,6 @@
     "reset": "Revino la automat",
     "reset_one": "Revino la modul automat",
     "min_one": "Trebuie să rămână cel puțin un bloc activ.",
-    "qr_title": "Cod QR",
-    "qr_show": "Afișează codul QR în proiecție",
-    "qr_shortcut": "Tasta Q pentru a-l comuta",
-    "qr_size": "Mărime",
-    "qr_size_s": "S",
-    "qr_size_m": "M",
-    "qr_size_l": "L",
     "duration": "Secunde pe diapozitiv",
     "duration_less": "Mai puțin timp (−5 s)",
     "duration_more": "Mai mult timp (+5 s)",
@@ -220,7 +223,42 @@
     "plan_toggle": "Vezi toată programarea",
     "plan_range": "{{range}} · {{weeks}} săptămâni",
     "week_short": "Săpt.",
-    "current": "În curs"
+    "current": "În curs",
+    "progress": "Ziua {{day}} din {{total}}"
+  },
+  "family_prayer": {
+    "title": "Rugăciune pentru familii",
+    "eyebrow": "Program",
+    "lead": "În fiecare săptămână ne rugăm, pe rând, pentru câteva familii din biserică. Aici găsești familiile săptămânii, cu motivele lor de rugăciune.",
+    "week_title": "Familiile săptămânii",
+    "week_label": "Săptămâna {{n}}",
+    "family": "Familia",
+    "children_one": "Copil",
+    "children_other": "Copiii",
+    "pray_prompt": "Să ne rugăm împreună pentru {{name}}.",
+    "photo_alt": "Fotografie: {{name}}",
+    "summary": "rezumat",
+    "empty": "Lista familiilor pentru această săptămână va fi publicată în curând.",
+    "not_found": "Nu am găsit această săptămână de rugăciune.",
+    "to_current": "Familiile de săptămâna aceasta",
+    "past_notice": "Această săptămână de rugăciune s-a încheiat.",
+    "past_title": "Săptămânile anterioare",
+    "teaser_eyebrow": "În această săptămână",
+    "teaser_title": "Ne rugăm pentru: {{names}}",
+    "teaser_cta": "Vezi familiile și motivele lor de rugăciune"
+  },
+  "prayer_causes": {
+    "title": "Cauzele Bisericii Elim",
+    "eyebrow": "Program",
+    "lead": "Pentru ce ne rugăm ca biserică: pe nume, pentru cei care trec prin încercări, și pentru cauzele pe care le purtăm împreună înaintea lui Dumnezeu.",
+    "updated": "Listă actualizată la {{date}}"
+  },
+  "website_slide": {
+    "block": "Site-ul bisericii",
+    "eyebrow": "Toate informațiile",
+    "title": "Tot ce vezi aici, pe site-ul bisericii",
+    "lead": "Anunțurile, programul și familiile pentru care ne rugăm, mereu la îndemână în telefonul tău.",
+    "qr_caption": "Scanează codul cu telefonul"
   },
   "location": {
     "title": "Cum ajungi la noi",
@@ -392,6 +430,10 @@
     "announcements_desc": "Avizele bisericii în vigoare",
     "bible": "Citirea Bibliei",
     "bible_desc": "Săptămâna din planul de citire",
+    "family_prayer": "Rugăciune pentru familii",
+    "family_prayer_desc": "Familiile săptămânii și motivele lor",
+    "prayer_causes": "Cauze de rugăciune",
+    "prayer_causes_desc": "Pentru ce ne rugăm ca biserică",
     "panel_next": "Ce urmează",
     "panel_visit": "Vrei să ne vizitezi?",
     "panel_visit_lead": "Te așteptăm la oricare dintre serviciile noastre. Intrarea e liberă și nu trebuie să anunți pe nimeni — vino așa cum ești.",
@@ -431,6 +473,14 @@
     "announcements": {
       "title": "Anunțuri",
       "description": "Anunțurile în vigoare ale Bisericii Elim din Arganda del Rey: înscrieri, sărbători, conferințe și comunicate."
+    },
+    "family_prayer": {
+      "title": "Rugăciune pentru familii",
+      "description": "Familiile Bisericii Elim pentru care ne rugăm în această săptămână și motivele lor de rugăciune."
+    },
+    "prayer_causes": {
+      "title": "Cauzele Bisericii Elim",
+      "description": "Cauzele pentru care se roagă Biserica Elim din Arganda del Rey."
     },
     "styleguide": {
       "title": "Ghid de stiluri",

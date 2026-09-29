@@ -1,0 +1,82 @@
+<!--
+  Foto + panel. El panel es UN bloque (rótulo → nombre → nombres → hijos →
+  mensaje → versículo) con una escala tipográfica fija: se ajusta entero
+  (`appFitToBox`), nunca una pieza por separado, y arranca arriba. El rótulo
+  es una firma en la esquina inferior derecha (fuera del flujo).
+    · Web: foto | panel (móvil y apaisada web: apilados).
+    · Proyección retrato: foto a todo el alto | panel.
+    · Proyección apaisada: el panel se «abre» (`display: contents`) para que
+      quiénes son vaya bajo la foto y el mensaje a la derecha.
+-->
+<article
+  class="fcard"
+  [class.fcard--landscape]="landscape"
+  [class.fcard--long]="longText"
+  [attr.id]="family.id"
+  [attr.aria-labelledby]="family.id + '-title'"
+  [style.--ar]="family.photo?.ratio ?? 0.8"
+  [style.--frame]="family.photo?.frameRatio ?? 0.8"
+>
+  <!-- Foto entera, a su proporción; si el marco no coincide, el hueco lo
+       rellena ella misma difuminada. -->
+  <div class="fcard__media">
+    <app-family-photo class="fcard__photo" [family]="family" [sizes]="sizes()" [detail]="true" [eager]="eager" />
+  </div>
+
+  <div class="fcard__panel" appFitToBox [appFitToBoxMax]="1.4">
+    <div class="fcard__panel-inner">
+      <header class="fcard__id">
+        <!-- Rótulo de la diapositiva (sólo proyección: firma en la esquina). -->
+        <p class="fcard__eyebrow">{{ 'family_prayer.title' | translate }}</p>
+
+        <h3 class="fcard__title" [attr.id]="family.id + '-title'">
+          @if (family.single) {
+            <span class="fcard__surname">{{ family.surname }}</span> {{ family.names }}
+          } @else {
+            <!-- `&ngsp;`: Angular borra el espacio entre dos elementos; éste
+                 debe quedarse («Familia Bindea», también al copiar o leer). -->
+            <span class="fcard__prefix">{{ 'family_prayer.family' | translate }}</span>&ngsp;<span class="fcard__surname">{{ family.surname }}</span>
+          }
+        </h3>
+
+        @if (!family.single) {
+          <p class="fcard__names">{{ family.names }}</p>
+        }
+
+        @if (family.children.length > 0) {
+          <p class="fcard__children">
+            <!-- `&ngsp;`: como en el título, Angular borra el espacio entre dos
+                 elementos y quedaba «Copiii:Roxana». -->
+            <span class="fcard__children-label">{{ (family.children.length === 1 ? 'family_prayer.children_one' : 'family_prayer.children_other') | translate }}</span>&ngsp;<span class="fcard__children-names">{{ prayer.formatList(family.children) }}</span>
+          </p>
+        }
+      </header>
+
+      <!-- En apaisadas el mensaje es su propia columna y se ajusta aparte;
+           en el resto este `appFitToBox` no actúa (no recorta) y manda el
+           del panel. -->
+      <div class="fcard__body" appFitToBox [appFitToBoxMax]="1.4">
+        <div class="fcard__inner">
+          @for (paragraph of family.message; track $index) {
+            <p class="fcard__message">{{ paragraph }}</p>
+          }
+
+          @if (family.verse; as verse) {
+            <!-- Sin mensaje, el versículo ES el contenido: sube a cuerpo de texto. -->
+            <figure class="fcard__verse" [class.fcard__verse--solo]="family.message.length === 0">
+              <blockquote class="fcard__verse-text">{{ verse.text }}</blockquote>
+              <figcaption class="fcard__verse-ref">{{ verse.reference }}</figcaption>
+            </figure>
+          }
+
+          <!-- Aún sin mensaje: una invitación a orar, no un hueco. -->
+          @if (family.message.length === 0 && !family.verse) {
+            <p class="fcard__prompt">{{ 'family_prayer.pray_prompt' | translate: { name: family.fullName } }}</p>
+          }
+
+          <ng-content />
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

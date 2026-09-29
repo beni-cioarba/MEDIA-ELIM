@@ -38,6 +38,11 @@ un anuncio del archivo lo muestra entero con el aviso «ya no está en vigor» y
 **sin botón de compartir**; pasados los 90 días, el enlace muestra sólo el
 aviso con acceso a los demás. La proyección nunca ve el archivo.
 
+**Oración por las familias.** Encima de la lista de `/anunturi` va el acceso a
+la semana de «Rugăciune pentru familii» (`FamilyPrayerTeaserComponent`). No es
+un anuncio (no se redacta ni caduca aquí): es su propio módulo
+(`36-family-prayer.md`). No lo conviertas en un `Announcement`.
+
 ## El modelo
 
 ```ts
@@ -166,13 +171,11 @@ texto sin perder el dato, (2) marcar `webOnly` la sección que es detalle,
 apretar: si el autoajuste baja de ~0,85 el cartel se lee mal desde el fondo,
 y el detalle completo siempre está en la web, a un escaneo del QR.
 
-> **El 0,85 está medido sin QR.** Con el QR encendido —que es lo normal— la
-> tarjeta pierde un 30 % de ancho y el mismo texto reparte en más líneas: los
-> cuatro anuncios reales del archivo se quedan hoy entre 0,70 y 1,0. Lo que no
-> se negocia es el suelo: todas las piezas pequeñas se fijan con
-> `max(calc(var(--pj-u) * 3.2), …)`, así que **nada baja de 3,2u** por mucho
-> que encoja el conjunto. Antes de dar por bueno un anuncio, míralo con el QR
-> puesto.
+> **Lienzo entero (28/09/2026).** Sin la columna del QR la tarjeta tiene
+> ~169 × 91u y el autoajuste también **crece** hasta 1,2 (`appFitToBoxMax`): un
+> anuncio corto se lee más grande. Lo que no se negocia es el suelo: todas las
+> piezas pequeñas se fijan con `max(calc(var(--pj-u) * 3.2), …)`, así que
+> **nada baja de 3,2u** por mucho que encoja el conjunto.
 
 ## Cómo redactar (protocolo para la IA)
 
@@ -199,8 +202,8 @@ Cuando el usuario pase un aviso en bruto (normalmente texto de WhatsApp):
 5. Si el aviso implica un evento (conferencia, bautizo, aniversario…), añade
    **también** la entrada en `upcomingEvents` (ver `20-content-i18n.md`): el
    anuncio caduca, el evento sigue en el calendario.
-6. Comprueba en la proyección (`/media` → Presentar) que la diapositiva cabe
-   con QR «M»; si `--fit` baja de 0,8, recorta.
+6. Comprueba en la proyección (`/media` → Presentar) que la diapositiva cabe;
+   si `--fit` baja de 0,8, recorta.
 
 ## Ficheros implicados
 

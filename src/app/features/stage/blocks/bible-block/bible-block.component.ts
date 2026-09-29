@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BibleReadingService } from '../../../../core/services/bible-reading.service';
 import { PresentationService } from '../../../../core/presentation.service';
@@ -36,4 +36,16 @@ export class BibleBlockComponent {
 
   protected readonly fullscreen = this.presentation.isFullscreen;
   protected readonly week = this.bible.announcedWeek;
+
+  /**
+   * Avance de la semana en curso («Ziua 3 din 7»), para el panel de la web.
+   * `null` el domingo (la semana anunciada aún no ha empezado: lo dice la
+   * insignia «Începe mâine») o si hoy no cae dentro de la semana.
+   */
+  protected readonly progress = computed(() => {
+    const week = this.week();
+    if (!week || week.startsTomorrow) return null;
+    const index = week.days.findIndex((day) => day.isToday);
+    return index < 0 ? null : { day: index + 1, total: week.days.length };
+  });
 }

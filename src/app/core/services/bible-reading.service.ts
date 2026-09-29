@@ -1,7 +1,7 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BIBLE_READING_PLAN, BibleReadingMonth, BibleReadingWeek } from '../bible-reading.config';
-import { addDays, parseIsoDate, startOfDay, toIsoDate } from '../util/iso-date';
+import { addDays, formatIsoRange, parseIsoDate, startOfDay, toIsoDate } from '../util/iso-date';
 import { ClockService } from './clock.service';
 
 /** Lectura de un día, ya resuelta con su fecha y su estado. */
@@ -65,8 +65,14 @@ export class BibleReadingService {
 
   readonly plan = BIBLE_READING_PLAN;
 
+  /** Meses del plan con los tramos ya compuestos tipográficamente (ver `typesetPassage`). */
+  private readonly months: readonly BibleReadingMonth[] = BIBLE_READING_PLAN.months.map((month) => ({
+    ...month,
+    scope: typesetPassage(month.scope),
+  }));
+
   /** Todas las semanas del plan, en orden, con el mes al que pertenecen. */
-  private readonly weeks: readonly PlannedWeek[] = BIBLE_READING_PLAN.months.flatMap((month) =>
+  private readonly weeks: readonly PlannedWeek[] = this.months.flatMap((month) =>
     month.weeks.map((week) => ({ ...week, month })),
   );
 
@@ -94,7 +100,7 @@ export class BibleReadingService {
    * o futura: para la vista «toda la programación» de la web.
    */
   readonly planOverview = computed<readonly BibleReadingMonthView[]>(() =>
-    BIBLE_READING_PLAN.months.map((month) => ({
+    this.months.map((month) => ({
       id: month.id,
       label: month.label,
       scope: month.scope,
@@ -124,8 +130,8 @@ export class BibleReadingService {
       const date = toIsoDate(addDays(start, index));
       return {
         date,
-        passage,
-        newTestament: week.newTestament?.[index] ?? null,
+        passage: typesetPassage(passage),
+        newTestament: typesetPassage(week.newTestament?.[index] ?? null),
         isToday: date === todayIso,
         isPast: date < todayIso,
       };
@@ -138,7 +144,7 @@ export class BibleReadingService {
 
     return {
       number: week.number,
-      summary: week.summary,
+      summary: typesetPassage(week.summary),
       start: week.start,
       end,
       days,
@@ -150,31 +156,33 @@ export class BibleReadingService {
 
   /** «21 – 27 septembrie 2026» / «28 septembrie – 4 octombrie 2026», localizado. */
   formatRange(startIso: string, endIso: string): string {
-    const lang = this.lang();
-    const start = parseIsoDate(startIso);
-    const end = parseIsoDate(endIso);
-    try {
-      const day = new Intl.DateTimeFormat(lang, { day: 'numeric' });
-      const dayMonth = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long' });
-      const full = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long', year: 'numeric' });
-      const sameMonth =
-        start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-      return `${sameMonth ? day.format(start) : dayMonth.format(start)} – ${full.format(end)}`;
-    } catch {
-      return `${startIso} – ${endIso}`;
-    }
+    return formatIsoRange(this.lang(), startIso, endIso);
   }
 
-  /** Día de la semana completo («luni»), localizado. */
   /**
-   * Día de la semana («luni» / «lun»). La forma corta es para la proyección,
-   * donde «miercuri» o «duminică» partían la fila en dos líneas.
+   * Día de la semana («luni» / «lun»), localizado. La forma corta es la de la
+   * pastilla de fecha (web y proyección), donde el nombre largo descuadraba
+   * la columna.
+   *
+   * Intl abrevia con punto en rumano («lun.», «mie.») pero no siempre («joi»):
+   * se quita **sólo un punto final**, nunca el último carácter a ciegas (eso
+   * dejaba «Marț», «Miercur» o «Jo»).
    */
   formatWeekday(iso: string, form: 'long' | 'short' = 'long'): string {
     try {
       return new Intl.DateTimeFormat(this.lang(), { weekday: form })
         .format(parseIsoDate(iso))
-        .replace(/.$/, '');
+        .replace(/\.$/, '');
+    } catch {
+      return iso;
+    }
+  }
+
+  /** Fecha completa para lectores de pantalla («luni, 28 septembrie»). */
+  formatDayLabel(iso: string): string {
+    try {
+      return new Intl.DateTimeFormat(this.lang(), { weekday: 'long', day: 'numeric', month: 'long' })
+        .format(parseIsoDate(iso));
     } catch {
       return iso;
     }
@@ -188,6 +196,19 @@ export class BibleReadingService {
   private lang(): string {
     return this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
   }
+}
+
+/**
+ * Composición tipográfica de un pasaje: los intervalos van con **raya corta**
+ * («Ieremia 5–6»), no con guion. El Excel trae guiones y, como el tramo de la
+ * semana y el de cada día se pintan en familias distintas, el mismo `-` se
+ * veía de dos anchos. Sólo se toca el guion entre cifras (nunca un nombre
+ * compuesto).
+ */
+function typesetPassage<T extends string | null>(text: T): T {
+  // La raya permite partir línea detrás de ella («Ieremia 13–» / «14»); el
+  // WORD JOINER (U+2060) lo impide: el pasaje sólo parte por los espacios.
+  return (text === null ? text : text.replace(/(\d)\s*-\s*(\d)/g, '$1\u2013\u2060$2')) as T;
 }
 
 /** Último día con lectura de la semana (`YYYY-MM-DD`). */

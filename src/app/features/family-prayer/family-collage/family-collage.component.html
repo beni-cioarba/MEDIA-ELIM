@@ -1,0 +1,44 @@
+<section class="collage" aria-labelledby="collage-title" #stage [style.--gap.px]="gapPx()">
+  <!-- Panel navy a sangre (el cuadro del PowerPoint): rótulo, semana y los
+       nombres, en el orden de lectura de las fotos. Se autoajusta si una
+       semana trae más familias o nombres largos. -->
+  <aside class="collage__side" appFitToBox>
+    <div class="collage__side-inner">
+      <header class="collage__head">
+        <h2 id="collage-title" class="collage__title">{{ 'family_prayer.title' | translate }}</h2>
+        <p class="collage__range">{{ prayer.formatRange(week) }}</p>
+      </header>
+      <ol class="collage__list" role="list">
+        @for (family of week.families; track family.id) {
+          <li class="collage__item">
+            <span class="collage__name">
+              <span class="collage__surname">{{ family.surname }}</span>
+              <span class="collage__given">{{ family.names }}</span>
+            </span>
+          </li>
+        }
+      </ol>
+    </div>
+  </aside>
+
+  <!-- Collage: filas justificadas con las fotos enteras, hasta el borde. -->
+  @if (layout(); as layout) {
+    <div class="collage__photos" [style.width.px]="layout.width">
+      @for (row of layout.rows; track $index) {
+        <div class="collage__row" [style.height.px]="row.height">
+          @for (tile of row.tiles; track tile.index) {
+            <figure class="collage__tile" [style.width.px]="tile.width">
+              <app-family-photo
+                class="collage__photo"
+                [family]="week.families[tile.index]"
+                [sizes]="tile.width + 'px'"
+                [detail]="true"
+                [eager]="true"
+              />
+            </figure>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>

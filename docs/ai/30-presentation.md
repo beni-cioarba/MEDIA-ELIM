@@ -14,7 +14,7 @@ sigue sola si el panel se cierra.
 │ · diapositivas por bloque     │ ◀──── state ──── │ · <app-stage> presentando  │
 │ · ◀ ⏸ ▶  7/10  ━━━░  0:12     │ ──── órdenes ──▶ │ · controles al pasar el    │
 │ · vista previa (iframe)       │                  │   ratón · F pantalla compl.│
-│ · bloques · duraciones · QR   │                  │                            │
+│ · bloques · duraciones        │                  │                            │
 └───────────────────────────────┘                  └────────────────────────────┘
         localStorage compartido (ajustes) → evento `storage` sincroniza las dos
 ```
@@ -55,7 +55,7 @@ de `startedAt` (nadie retransmite 60 mensajes por segundo).
 - **Órdenes** (`next`, `prev`, `goto`, `pause`, `play`, `toggle`): cualquier
   ventana las envía, el líder las ejecuta. `CarouselService.next()` y compañía
   ya pasan por ahí, así que teclado, controles y panel se comportan igual.
-- Los **ajustes** (bloques, anuncios ocultos, duraciones, QR) no viajan por el
+- Los **ajustes** (bloques, anuncios ocultos, duraciones, directo) no viajan por el
   canal: viven en `localStorage` y `PresentationBlocksService` /
   `PresentationDisplayService` releen al recibir `storage`.
 - El reloj sólo corre con la página **visible** (`ClockService.pageVisible`):
@@ -102,14 +102,14 @@ botón de los controles flotantes de la propia ventana siguen funcionando.
 | `PresentationSyncService`       | Canal entre ventanas, elección de líder, estado remoto y órdenes |
 | `ProjectionWindowService`       | Abrir / vigilar / cerrar / recuperar la ventana; pantalla completa a distancia (`toggleFullscreen`, `fullscreenDenied`); URL de proyección con `base href` |
 | `PresentationBlocksService`     | Qué bloques entran en la rotación y cómo se **expanden en diapositivas** (`activeSlides`, `expand(id, view)` con `view` = `projection` (sólo anuncios visibles, eventos de dos en dos) · `panel` (todos los anuncios, páginas de eventos) · `web` (todo entero, sin páginas)); relee `storage` |
-| `PresentationDisplayService`    | QR visible sí/no y tamaño; duración por bloque; relee `storage` |
+| `PresentationDisplayService`    | Duración por bloque y aviso de directo; relee `storage` |
 | `AnnouncementsService`          | Anuncios vigentes (alimenta el bloque `announcements`) — ver `35-announcements.md` |
 | `BibleReadingService`           | Semana del plan de lectura que toca anunciar                  |
 | `CarouselService`               | Diapositiva activa, pausa, progreso; reloj sólo si es líder; órdenes vía canal |
 | `PresenterComponent`            | Panel de control (`features/presenter/`)                      |
 | `ProjectionComponent`           | Ventana / vista previa (`features/projection/`)               |
-| `PresentationSettingsComponent` | Popover de bloques + QR en los controles flotantes de la proyección (respaldo) |
-| `StageComponent`                 | Escenario, atajos de teclado, QR, controles                   |
+| `PresentationSettingsComponent` | Popover de bloques en los controles flotantes de la proyección (respaldo) |
+| `StageComponent`                 | Escenario, atajos de teclado, firma de la esquina, controles  |
 | `features/stage/blocks/*`        | Contenido de cada bloque                                      |
 
 ## Bloques y diapositivas
@@ -123,16 +123,11 @@ coinciden, salvo dos bloques que `PresentationBlocksService.expand()` pagina:
 
 - `announcements` → **una diapositiva por anuncio vigente y visible**
   (`key = 'announcements:<id>'`).
-- `upcoming` → **páginas de eventos**, dos sin QR (`UPCOMING_PER_SLIDE`) y
-  **uno con QR** (`UPCOMING_PER_SLIDE_QR`), porque el QR se lleva la columna
-  derecha y el texto baja de 1790 a 1250 px: las mismas dos tarjetas pasan de
-  636 px (caben) a 851 en una caja de 697 y la segunda se corta. Clave
+- `upcoming` → **páginas de dos eventos** (`UPCOMING_PER_SLIDE`). Clave
   `upcoming:<n>`, con `events` y `page = {index, total}`; el bloque pinta
   «n/N» junto al título. Para paginar otro bloque, sigue el mismo patrón en
   `expand()`.
-
-  El reparto lo decide `PresentationDisplayService.qrVisible()`, así que
-  encender o apagar el QR **repagina al instante**, también en el panel.
+- `families` → resumen + una diapositiva por familia (`36-family-prayer.md`).
 
 Los dots, los atajos `1…9` y `CarouselService` trabajan sobre diapositivas; el
 panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
@@ -141,6 +136,9 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 | --------------- | ---------------------------- | ------------------------------------ |
 | `announcements` | `AnnouncementBlockComponent` | `AnnouncementsService.hasActive()`   |
 | `bible`         | `BibleBlockComponent`        | `BibleReadingService.hasReading()`   |
+| `website`       | `WebsiteBlockComponent`      | siempre — «Toate informațiile, pe site»: el QR grande, al final de la vuelta (ver «Lienzo») |
+| `causes`        | `CausesBlockComponent`       | lista no vacía — toda la lista en una diapositiva (`docs/ai/37-prayer-causes.md`) |
+| `families`      | `FamilyBlockComponent`       | `FamilyPrayerService.hasCurrent()` — resumen (mosaico de fotos) + una diapositiva por familia, detrás de los anuncios (`docs/ai/36-family-prayer.md`) |
 | `socials`  | `SocialsBlockComponent`  | `socials.length > 0`               |
 | `streams`  | `StreamsBlockComponent`  | siempre                            |
 | `gallery`  | `GalleryBlockComponent`  | `mediaEvents.length > 0`           |
@@ -165,6 +163,33 @@ cada semana. Datos: `core/bible-reading.config.ts`, **generado** desde el
 Excel de la iglesia (receta en `20-content-i18n.md`). Duración por defecto
 20 s. Lleva su hoja propia (`bible-block.component.scss`, web + proyección),
 igual que la tarjeta de anuncio.
+
+Composición (2026-09-28):
+
+- **Fecha en pastilla**: día abreviado (`formatWeekday(…, 'short')`, que sólo
+  quita el punto final de Intl —«lun.»→«lun», «joi» intacto—) + número. En la
+  web va apilada, de ancho fijo, dentro de una **lista agrupada** (una
+  superficie con filetes, no siete tarjetas); en proyección la pastilla se
+  disuelve (`display: contents`) en una **subrejilla** día · número · pasaje
+  compartida por las cuatro fichas de cada columna, así que los pasajes
+  arrancan todos en la misma vertical sin anchos a mano.
+- **Jerarquía en proyección**: el tramo de la semana a `title` (8u) es lo
+  mayor; los pasajes diarios a `lead` y las filas se reparten el alto (con la
+  antigua columna del QR había que bajarlos a `body`).
+- **Tipografía de pasajes**: `typesetPassage` (servicio) cambia el guion entre
+  cifras por raya corta + WORD JOINER («5–6» sin partir tras la raya). Se aplica
+  a tramo, lecturas, NT y alcance del mes; el Excel sigue trayendo guiones.
+- La fecha completa («luni, 28 septembrie») va en `u-sr-only` para lectores
+  de pantalla (`formatDayLabel`).
+- **Web, escritorio (≥ lg)**: la lista pasa a **tira semanal** de 7 columnas
+  (vista semanal de calendario; la lista desperdiciaba el 90 % del ancho), con
+  «Azi» dentro de su ficha. Acotada con `.stage:not(.is-fullscreen)` para que
+  la proyección no herede nada. Por debajo de lg sigue siendo lista agrupada.
+- **Panel de semana (web)**: el tramo es el titular (≈2 rem) y a la derecha va
+  el **avance** «Ziua N din 7» con siete segmentos (`progress` en el
+  componente; `null` el domingo, cuando manda «Începe mâine»). En móvil el
+  avance baja a su fila y el icono del calendario se oculta. En proyección no
+  se pinta.
 
 Sólo en la web, debajo, un `<details>` «Vezi toată programarea» muestra el
 plan completo (`BibleReadingService.planOverview`): mes a mes, cada semana con
@@ -209,6 +234,19 @@ proyección: `WEB_PANEL_EXCLUDED` en `StageComponent`). Un bloque nuevo en el c�
 lista guardada se añade al final en su orden por defecto. «Orden por defecto»
 borra la preferencia; `BLOCK_DEFS` sigue siendo el orden inicial.
 
+## Selección por elemento y atajos (28/09/2026)
+
+Anuncios, eventos y **familias** (resumen + cada ficha) se eligen uno a uno
+en el panel (casilla por fila). Sobre cada uno de esos bloques, una línea
+compacta: «n din N în proiecție» y dos acciones de texto, **«Doar primul»**
+(deja marcado sólo el primero, para ir marcando después los que se quieran)
+y **«Toate»**. Un solo mecanismo en `PresentationBlocksService`:
+`selection(block)`, `selectOnlyFirst(block)`, `selectAll(block)` sobre la lista
+de ids elegibles y su conjunto de ocultos (`localStorage`
+`…announcements.hidden`, `…events.hidden`, `…families.hidden`; el resumen de
+familias es `FAMILY_SUMMARY_ID`). Si se desmarcan todas, el bloque no aporta
+diapositivas. «Restablecer» limpia también estas selecciones.
+
 ## Anuncios uno a uno
 
 Bajo el bloque «Anunțuri» del panel, cada anuncio vigente tiene su propia
@@ -227,7 +265,7 @@ Lo mismo que los anuncios, para «Evenimente viitoare»
 propios:
 
 - **En el panel, una fila por evento y no por página.** La página es un
-  detalle de la proyección —cambia sola al encender el QR— y el operador
+  detalle de la proyección y el operador
   decide sobre eventos, no sobre páginas. El rótulo de la fila es el título
   del evento y pulsarla salta a la diapositiva que lo lleva
   (`PresenterComponent.indexOf` resuelve la correspondencia por id).
@@ -256,57 +294,62 @@ o **escribiendo los segundos** en el campo central (Intro o salir del campo
 confirma; fuera de límites se acota); el ↺ que aparece al personalizar
 devuelve el defecto y «Restablecer» devuelve todos. Cambiar la duración de la diapositiva en pantalla **reinicia su
 temporizador** (la duración es una signal que lee el `effect` del carrusel).
-Persistencia: mismo `localStorage['iglesia-redes.presentation.display']` que
-el QR. Los defectos viven en `DEFAULT_DURATIONS_S`; un bloque nuevo **debe**
+Persistencia: `localStorage['iglesia-redes.presentation.display']` (junto al
+aviso de directo). Los defectos viven en `DEFAULT_DURATIONS_S`; un bloque nuevo **debe**
 añadirse ahí (el tipo lo exige).
 
-## Ajustes del QR (mostrar / tamaño)
+## Lienzo: todo para el contenido (28/09/2026)
 
-Misma barra de controles, debajo de los bloques (`PresentationSettingsComponent`
-→ `PresentationDisplayService`):
+Decisión del usuario: **el contenido manda** y los espacios sin uso se reducen
+al mínimo. Medido a 960×540 (miniatura fiel del 1080p):
 
-- **Mostrar el QR**: interruptor o tecla `Q`. Sin QR, `.stage` lleva
-  `stage--no-qr`: el contenido ocupa todo el lienzo y los bloques se recolocan
-  (redes 2×2, transmisiones en 3 columnas con miniatura arriba, programa en 2
-  columnas; anuncios y galería escalan solos). Ver `_projection.scss` § 11.
-- **Tamaño**: `S` / `M` / `L` → `data-qr-size` en `.stage` → `--pj-qr-col`
-  (34u / 44u / 56u). Regla 1:10 (lado ≈ distancia de escaneo ÷ 10): en una
-  pantalla de ~3 m, «M» se escanea desde ~7 m y «L» desde ~10 m. Por defecto
-  «M»: el contenido es el protagonista.
-- Todo lo que cambia el lienzo (QR sí/no, tamaño) reajusta las diapositivas de
-  anuncio automáticamente (`appFitToBox`, ver `35-announcements.md`).
-- El panel del QR se **monta una vez** (`@defer (on immediate)`) y al ocultarlo
-  sólo se esconde (`[hidden]`): recrearlo con `on idle` obligaba a esperar a que
-  el navegador estuviera ocioso, que con el reloj del carrusel podía tardar
-  segundos.
+| | Antes | Ahora |
+| --- | --- | --- |
+| Diapositiva | 115,8 × 75,2u (49 % del lienzo) | **168,8 × 91,5u** (1,76× el área) |
+| Marca | fila arriba, 12,6u de alto | firma de ~3u en el margen inferior derecho |
+| QR | columna fija de 44u (S/M/L, tecla `Q`) | **diapositiva propia** (`website`) |
+| Versículo | pie de ~10u en cada diapositiva | sólo en la web |
+
+- **Área segura**: 3u arriba, 4,5u a los lados, 5,5u abajo (donde vive la
+  firma). `_projection.scss` § 2.
+- **Firma** (`.stage-bug`): `app-brand-logo` a 2,2u de cuerpo, al 90 %,
+  `pointer-events: none`. Con el aviso de directo lleva «● ÎN DIRECT» delante.
+  No se pinta en las diapositivas a sangre (familias y causas: bloques de
+  oración, `StageComponent.bleed()`).
+- **QR** = bloque `website` («Toate informațiile, pe site»): QR de 64u (≈ 70 cm
+  en una pantalla de 3 m, se escanea desde el fondo por la regla 1:10), la
+  dirección y lo que hay en la web. Se enciende o apaga como cualquier bloque
+  y va al final de la vuelta. En la web no existe (`/media/site` → portada).
+- **Los bloques llenan la diapositiva** (§ 11 «Lienzo ancho»): redes en una
+  columna de filas que se reparten el alto (@handle a `hero`, nunca cortado);
+  programa semanal en subrejilla DÍA | hora | título con filas a `1fr`;
+  eventos que se reparten el alto (uno solo = cartel, titular a 8u); lectura
+  bíblica con filas a `1fr` y pasajes a `lead`; resumen de familias en
+  collage justificado (`36-family-prayer.md`).
+- **Autoajuste que crece**: `appFitToBox` acepta `appFitToBoxMax` (anuncio y
+  causas: 1,2; mensaje de la ficha de familia: 1,5). Un anuncio corto se proyecta más grande en
+  lugar de dejar la parte de abajo vacía; uno largo sigue encogiendo hasta 0,7.
+- Prueba de banco del cambio (todas las diapositivas): cero desbordes, texto
+  visible ≥ 3,2u; ocupación en alto: anuncios 100 %, familias 83-100 %, causas
+  98 %, QR 98 %, galería 100 %.
 
 ## Aviso de directo («hoy también en directo»)
 
-Interruptor del panel de control, en la fila «Pantalla» junto al QR
+Interruptor del panel de control, fila «Pantalla»
 (`PresentationDisplayService.setLiveNotice` / `liveNotice`). No es una
-diapositiva: es un **estado de la pantalla** que acompaña a todas, porque la
-invitación tiene que estar a la vista durante todo el culto y no 30 s de cada
-vuelta del carrusel.
+diapositiva: es un **estado de la pantalla**, porque la invitación tiene que
+estar a la vista durante todo el culto.
 
-- **Con QR** (lo normal): la columna del QR pasa a ser un solo módulo que se
-  lee de arriba abajo: insignia «ÎN DIRECT» (qué pasa) → QR (a dónde) →
-  leyenda «Scanează și trimite slujba de azi celor dragi» (qué hacer). El QR
-  deja de apuntar a la web y codifica `config.youtubeLiveUrl`
-  (`…/@ElimArganda/live`): YouTube lo redirige al directo en curso y es el
-  enlace que la gente reenvía por WhatsApp.
-- **Sin QR** (tecla `Q`): el aviso ocupa el sitio del versículo en el pie, en
-  una línea, con el canal (`@ElimArganda`) para que se pueda buscar a mano.
-- **Diseño**: insignia blanca con texto navy y sólo el punto en `--c-live`,
-  como el marco del QR que tiene debajo (se leen como una pieza y no compite
-  con la diapositiva). Sin pulso: en proyección no se mueve nada salvo el
-  carrusel. La insignia dice sólo el estado; el «hoy» va en la leyenda (con
-  «EN DIRECTO HOY» la insignia medía 37,7u y no cabía en la columna «S», de 34u).
+- **En todas las diapositivas**: «● ÎN DIRECT» junto a la firma de la
+  esquina (versalitas navy sobre blanco; el rojo `--c-live` sólo en el punto;
+  sin pulso: en proyección no se mueve nada salvo el carrusel).
+- **En la diapositiva del QR** (`website`): además del QR de la web, un
+  segundo QR a `config.youtubeLiveUrl` (`…/@ElimArganda/live`, YouTube lo
+  redirige al directo en curso) con la leyenda «Scanează și trimite slujba de
+  azi celor dragi». Los dos códigos pasan de 64u a 46u.
 - **Caduca sola**: se guarda el **día** en que se activó (`liveNoticeDate`) y
   sólo está activo mientras coincide con hoy según `ClockService`. Si se queda
   encendido el domingo, el lunes ya no se proyecta (invariante 5).
-- Presupuesto medido (960×540, 27/09/2026): la columna del QR mide 75,2u; con
-  el aviso ocupa 58u en «S», 63u en «M» y 75u en «L» (justo). Sin QR el pie
-  sigue en una línea (6,8u).
 
 ## Carrusel
 
@@ -328,13 +371,12 @@ vuelta del carrusel.
 | `←` `→`      | Diapositiva anterior / siguiente           |
 | `PageUp/Down`| Igual que las flechas                      |
 | `Espacio`    | Pausar / reanudar                          |
-| `Q`          | Mostrar / ocultar el código QR             |
 | `1`…`9`      | Ir a la diapositiva n-ésima **de las activas** |
 
 Salvo `F` y `Esc`, sólo actúan en modo presentación. El panel de bloques hace
 `stopPropagation()` mientras está abierto para no disparar estos atajos.
 El **panel de control** (`PresenterComponent.handleKey`) responde a las mismas
-teclas de transporte y `Q`, enviándolas como órdenes al líder; se ignoran con
+teclas de transporte, enviándolas como órdenes al líder; se ignoran con
 el foco en un control (un botón enfocado ya reacciona a Espacio).
 
 ## Legibilidad a distancia: el presupuesto (obligatorio)
@@ -374,11 +416,10 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    apilan a todo el ancho y las listas de personas pasan a texto corrido. Si
    ni a 0,7 cabe, sobra contenido: sección `webOnly` o texto más corto
    (`35-announcements.md`).
-3. **Eventos: dos por diapositiva sin QR, uno con QR**. Con dos, la
+3. **Eventos: dos por diapositiva**, que se reparten el alto. Con dos, la
    descripción se recorta a dos líneas y los créditos («CUVÂNT Daniel Popa»)
-   van en una; con uno, el resumen se lee entero (hasta cuatro líneas) y la
-   tarjeta se centra en la diapositiva, que si no deja 253 px de hueco abajo
-   y parece que falta contenido.
+   van en una; con uno, la tarjeta es un cartel (titular a 8u, fecha a `lead`,
+   resumen entero hasta cuatro líneas).
 
    La casilla de la cuenta atrás lleva **una cifra**; cuando el evento es hoy
    lleva una palabra («AZI» / «HOY», clave `upcoming.today_short`; la insignia
@@ -387,9 +428,8 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    por encima del borde de la tarjeta. Las insignias «ESTE AZI» / «URMĂTORUL»
    de la línea de fecha no se proyectan: la casilla ya lo dice y sólo partían
    esa línea en dos.
-4. **Programa semanal entero**: fila = DÍA (`lead`) | hora (`lead`) | título
-   (`body`), tres columnas de rejilla (`.weekly__body { display: contents }`);
-   un título largo parte en dos líneas y la semana sigue cabiendo.
+4. **Programa semanal entero**: fila = DÍA | hora (6,6u) | título (`lead`)
+   en una subrejilla (la columna del día mide «Duminică»), filas a `1fr`.
 5. **Las imágenes se ven enteras**: las miniaturas de YouTube se piden en 16:9
    real (`core/youtube-thumb.ts`: `hq720`, respaldo `mqdefault`) y la caja es
    16:9 gobernada por el **ancho** de su columna (`width: 100%; height: auto`),
@@ -399,11 +439,13 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    redes y del programa, etiqueta «hoy» (la fila ya va resaltada), «Următorul»
    (la cuenta atrás lo dice), nombre del plan de lectura.
 7. **Prueba de banco**: en `/media/ecran` a 960×540 (miniatura fiel del 1080p)
-   recorrer todas las diapositivas **con y sin QR** y comprobar por JS que
-   ningún elemento sobresale de `.slide--active` y que el texto mínimo es
-   ≥ 3,2u. Estado (22/09/2026): 10 diapositivas, cero desbordes en ambos modos,
-   mínimo 3,2u; autoajuste de los anuncios: 1,00 · 0,82 · 0,70 con QR (1,00 ·
-   1,00 · 0,86 sin QR).
+   recorrer todas las diapositivas y comprobar por JS que ningún elemento
+   sobresale de `.slide--active`, que el texto visible mínimo es ≥ 3,2u y
+   cuánto alto ocupa el contenido (un bloque por debajo de ~75 % tiene hueco
+   que aprovechar). Estado (28/09/2026, lienzo entero): 16 diapositivas, cero
+   desbordes, mínimo 3,2u. El navegador integrado en segundo plano no pinta:
+   una captura mínima antes de medir fuerza el render (y el `ResizeObserver`
+   del autoajuste).
 
 ## Sistema de proyección (`features/stage/styles/_projection.scss`)
 
@@ -475,22 +517,21 @@ Reglas fijas del lienzo proyectado:
 
 ## QR
 
-`shared/qr-panel`, cargado con `@defer (on idle)`. Codifica siempre
-`config.publicUrl` (no la URL del navegador) para que apunte a producción
-aunque se esté proyectando desde `localhost`. Con el aviso de directo
-activo codifica `config.youtubeLiveUrl` (ver «Aviso de directo»).
+`shared/qr-panel`, en la diapositiva `website` (ver «Lienzo»). Codifica
+siempre `config.publicUrl` (no la URL del navegador) para que apunte a
+producción aunque se esté proyectando desde `localhost`; con el aviso de
+directo, un segundo panel codifica `config.youtubeLiveUrl`.
 
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
   corregir y `H` sólo añade módulos (41×41 → 33×33 con esta URL). A igual
   tamaño, módulos un 24 % mayores = se escanea desde más lejos.
-- El componente está encapsulado: la proyección lo escala por variables
-  (`--qr-frame-pad`, `--qr-frame-radius`, `--qr-gap`, `--qr-caption-size`,
-  `--qr-caption-weight`, `--qr-caption-color`), fijadas en `.stage.is-fullscreen .qr`.
-- Su anchura la decide el operador (ver «Ajustes del QR»); el marco es siempre
-  cuadrado y nunca supera la altura disponible.
+- El componente está encapsulado: se escala por variables (`--qr-frame-pad`,
+  `--qr-frame-radius`, `--qr-gap`, `--qr-caption-size`, `--qr-caption-weight`,
+  `--qr-caption-color`), fijadas en `website-block.component.scss`.
 
 ## Versículo del panel
 
-El pie del escenario usa `verse.stage_text` / `verse.stage_reference`
-(Psalmul 84:10). La portada tiene el suyo propio (`verse.text` /
+El pie del escenario **en la web** usa `verse.stage_text` /
+`verse.stage_reference` (Psalmul 84:10); proyectado no se pinta (el sitio es
+del contenido). La portada tiene el suyo propio (`verse.text` /
 `verse.reference`): cambiar uno no cambia el otro.

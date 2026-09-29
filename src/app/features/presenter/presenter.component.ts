@@ -15,16 +15,19 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import {
+  PastFamilyOption,
   PresentationBlockId,
   PresentationBlockState,
   PresentationBlocksService,
   PresentationSlide,
+  SelectableBlockId,
+  familySelectionId,
 } from '../../core/services/presentation-blocks.service';
 import {
   DURATION_MAX_S,
   DURATION_MIN_S,
   PresentationDisplayService,
-  QR_SIZES,
+  slideTimeKeys,
 } from '../../core/services/presentation-display.service';
 import { PresentationSyncService } from '../../core/services/presentation-sync.service';
 import { ProjectionWindowService } from '../../core/services/projection-window.service';
@@ -77,7 +80,6 @@ export class PresenterComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly document = inject(DOCUMENT);
 
-  protected readonly qrSizes = QR_SIZES;
   protected readonly durationMin = DURATION_MIN_S;
   protected readonly durationMax = DURATION_MAX_S;
   protected readonly mediaLink = `/${APP_PATHS.media}`;
@@ -210,6 +212,10 @@ export class PresenterComponent implements OnInit {
   /** Rótulo humano de una diapositiva: anuncio, página o nombre del bloque. */
   protected label(slide: PresentationSlide): string {
     if (slide.announcement) return slide.announcement.title;
+    if (slide.family) return slide.family.fullName;
+    if (slide.prayerWeek) {
+      return `${this.translate.instant(slide.titleKey)} · ${this.translate.instant('family_prayer.summary')}`;
+    }
     if (this.eventIdOf(slide) !== null) return slide.events![0].title;
     const base = this.translate.instant(slide.titleKey);
     return slide.page ? `${base} · ${slide.page.index + 1}/${slide.page.total}` : base;
@@ -229,8 +235,69 @@ export class PresenterComponent implements OnInit {
     this.blocks.setEventVisible(id, (event.target as HTMLInputElement).checked);
   }
 
+  /**
+   * Bloque con selección elemento a elemento (y atajos «sólo el primero» /
+   * «todos»), o `null` si el bloque es una sola diapositiva.
+   */
+  protected selectable(id: PresentationBlockId): SelectableBlockId | null {
+    return id === 'announcements' || id === 'upcoming' || id === 'families' ? id : null;
+  }
+
+  /** Id de selección de una diapositiva de familias (resumen o ficha), o `null`. */
+  protected familyId(slide: PresentationSlide): string | null {
+    return slide.block === 'families' && slide.prayerWeek ? familySelectionId(slide) : null;
+  }
+
+  protected setFamilyVisible(id: string, event: Event): void {
+    this.blocks.setFamilyVisible(id, (event.target as HTMLInputElement).checked);
+  }
+
   protected isAnnouncementVisible(slide: PresentationSlide): boolean {
     return this.blocks.visibleAnnouncements().some((a) => a.id === slide.announcement?.id);
+  }
+
+  // ---- Tiempo propio de cada elemento ----------------------------------------
+  //
+  // Cada fila con elemento propio (anuncio, evento, ficha de familia) puede
+  // durar distinto que su bloque. Por defecto hereda el de la cabecera; el
+  // control sólo se ve al apuntar la fila, y si se cambia queda a la vista en
+  // oro con su ↺. Un bloque nuevo con varias diapositivas entra solo en cuanto
+  // `slideTimeKeys` sepa nombrar sus elementos.
+
+  /** Clave de tiempo de la fila, o `null` si la fila no tiene tiempo propio. */
+  protected timeKey(slide: PresentationSlide): string | null {
+    return slideTimeKeys(slide)[0] ?? null;
+  }
+
+  /** Segundos escritos a mano en una fila: se acotan y se guardan al salir. */
+  protected setItemDuration(key: string, block: PresentationBlockId, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const seconds = Number(input.value);
+    if (Number.isFinite(seconds) && input.value.trim() !== '') {
+      this.display.setSlideDuration(key, block, seconds);
+    }
+    input.value = String(this.display.itemDuration(key, block));
+  }
+
+  // ---- Familias de semanas anteriores ------------------------------------
+
+  /** Domingo de la semana de una familia anterior, corto («14 sept.»). */
+  protected weekShort(option: PastFamilyOption): string {
+    const lang = this.translate.getCurrentLang() ?? 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short' }).format(
+        new Date(`${option.week.presentedOn}T12:00:00`),
+      );
+    } catch {
+      return option.week.presentedOn;
+    }
+  }
+
+  /** Marcar en el desplegable: la familia pasa (para hoy) a la lista del bloque. */
+  protected addPastFamily(id: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.blocks.setPastFamilyShown(id, input.checked);
+    input.checked = false;
   }
 
   // ---- Orden de los bloques -----------------------------------------------
@@ -298,10 +365,6 @@ export class PresenterComponent implements OnInit {
     this.blocks.setAnnouncementVisible(id, (event.target as HTMLInputElement).checked);
   }
 
-  protected setQrVisible(event: Event): void {
-    this.display.setQrVisible((event.target as HTMLInputElement).checked);
-  }
-
   protected setLiveNotice(event: Event): void {
     this.display.setLiveNotice((event.target as HTMLInputElement).checked);
   }
@@ -346,11 +409,6 @@ export class PresenterComponent implements OnInit {
       case ' ':
         event.preventDefault();
         this.togglePause();
-        break;
-      case 'q':
-      case 'Q':
-        event.preventDefault();
-        this.display.toggleQr();
         break;
     }
   }

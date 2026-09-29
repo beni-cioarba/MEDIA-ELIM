@@ -10,6 +10,11 @@ export interface RouteSeo {
   readonly titleKey: string;
   /** Clave i18n de la meta descripción. */
   readonly descriptionKey?: string;
+  /**
+   * Página accesible por enlace pero fuera de los buscadores (`noindex`):
+   * contenido personal, como las fotos de las familias por las que se ora.
+   */
+  readonly noindex?: boolean;
 }
 
 /**
@@ -62,5 +67,13 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: this.config.publicUrl });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+
+    // Se pone y se quita en cada navegación: en una SPA la etiqueta se
+    // quedaría puesta al salir de la página que la pidió.
+    if (seo?.noindex) {
+      this.meta.updateTag({ name: 'robots', content: 'noindex, noimageindex' });
+    } else {
+      this.meta.removeTag('name="robots"');
+    }
   }
 }

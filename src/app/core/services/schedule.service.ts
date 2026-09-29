@@ -204,6 +204,20 @@ export class ScheduleService {
   }
 
   /**
+   * Día de la semana completo (ej: «marți»). Para rótulos que conviven con
+   * los del programa semanal, que escriben el día entero: «MARȚI · 20:30» al
+   * lado de «MAR. · CITIREA BIBLIEI» parecían dos sistemas distintos.
+   */
+  formatWeekdayLong(iso: string): string {
+    const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, { weekday: 'long' }).format(parseIsoDate(iso));
+    } catch {
+      return iso;
+    }
+  }
+
+  /**
    * Fecha corta localizada (ej: «26 sept.»). Para listas de columna estrecha,
    * donde la fecha larga se come el ancho del título y lo deja truncado a
    * tres letras: ahí el dato que importa es el título, y la fecha sólo tiene

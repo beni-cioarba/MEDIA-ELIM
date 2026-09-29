@@ -1,0 +1,74 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'family_prayer.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'family_prayer.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'family_prayer.lead' | translate }}</p>
+  </div>
+</header>
+
+<app-page-section>
+  @if (notFound()) {
+    <div class="empty">
+      <app-icon name="family" />
+      <p class="empty__text">{{ 'family_prayer.not_found' | translate }}</p>
+      <a class="btn btn--primary" [routerLink]="currentLink">{{ 'family_prayer.to_current' | translate }}</a>
+    </div>
+  } @else if (week(); as w) {
+    <div class="fp">
+      @if (w.status === 'past') {
+        <p class="fp__notice" role="status">
+          {{ 'family_prayer.past_notice' | translate }}
+          <a class="fp__notice-link" [routerLink]="currentLink">
+            {{ 'family_prayer.to_current' | translate }}
+            <app-icon name="arrow-right" />
+          </a>
+        </p>
+      }
+
+      <app-family-summary [week]="w">
+        <app-share-button fsumActions [url]="weekUrl(w)" [title]="'family_prayer.title' | translate" />
+      </app-family-summary>
+
+      <div class="fp__cards">
+        @for (family of w.families; track family.id) {
+          <app-family-card [family]="family" [eager]="$first">
+            <div class="fp__actions">
+              <app-share-button [url]="familyUrl(w, family)" [title]="family.fullName" />
+            </div>
+          </app-family-card>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty">
+      <app-icon name="family" />
+      <p class="empty__text">{{ 'family_prayer.empty' | translate }}</p>
+    </div>
+  }
+
+  <!-- Archivo: cerrado por defecto y al pie. Una fila por semana (número,
+       fechas y apellidos), no fichas: se consulta, no compite con la actual. -->
+  @if (archive().length > 0) {
+    <details class="past">
+      <summary class="past__summary">
+        <span class="past__label">{{ 'family_prayer.past_title' | translate }}</span>
+        <span class="past__count">{{ archive().length }}</span>
+        <svg class="past__chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </summary>
+      <ul class="past__list" role="list">
+        @for (item of archive(); track item.presentedOn) {
+          <li>
+            <a class="past__row" [routerLink]="weekLink(item)">
+              <span class="past__week">{{ 'family_prayer.week_label' | translate: { n: item.number } }}</span>
+              <span class="past__dates">{{ prayer.formatRange(item) }}</span>
+              <span class="past__names">{{ surnames(item) }}</span>
+              <app-icon name="arrow-right" class="past__arrow" />
+            </a>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+</app-page-section>

@@ -1,0 +1,155 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Resumen de la semana — hoja GLOBAL (`ViewEncapsulation.None`, `.fsum__*`).
+//   Web: mosaico de fotos 4:5 con el nombre debajo; filas en móvil.
+//   (La proyección usa `family-collage`: collage justificado + lista.)
+// El apellido va en negrita y el resto en regular en los dos: es por lo que
+// se busca a una familia en la lista.
+// =====================================================================
+
+app-family-summary {
+  display: block;
+}
+
+// ---------------------------------------------------------------------
+// 1 · Web
+// ---------------------------------------------------------------------
+.fsum {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.fsum__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+}
+
+.fsum__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.fsum__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--c-primary);
+}
+
+.fsum__range {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-gold-deep);
+}
+
+.fsum__range-icon {
+  flex: 0 0 auto;
+}
+
+.fsum__list {
+  display: grid;
+  // `auto-fit`: con 5 familias las 5 columnas llenan el ancho (auto-fill dejaba
+  // una sexta vacía a la derecha).
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: var(--sp-5) var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fsum__link {
+  display: grid;
+  gap: var(--sp-3);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--r-md);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.fsum__photo {
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-md);
+  box-shadow: var(--e-1);
+  transition:
+    transform var(--mo-base) var(--ea-standard),
+    box-shadow var(--mo-base) var(--ea-standard);
+
+  .fsum__link:hover & {
+    transform: translateY(-2px);
+    box-shadow: var(--e-2);
+  }
+
+  @include motion-reduce {
+    transition: none;
+
+    .fsum__link:hover & {
+      transform: none;
+    }
+  }
+}
+
+.fsum__text {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.fsum__name {
+  min-width: 0;
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  color: var(--c-text);
+}
+
+.fsum__surname {
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+// Móvil: el mosaico de 2 columnas dejaba fotos de sello; una lista de filas
+// (foto · número · nombre) se recorre con el pulgar y se lee entera.
+@include until('sm') {
+  .fsum__list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--r-lg);
+    background: var(--c-surface);
+  }
+
+  .fsum__item + .fsum__item {
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  .fsum__link {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: 0;
+  }
+
+  .fsum__photo {
+    aspect-ratio: 1;
+    border-radius: var(--r-sm);
+    box-shadow: none;
+  }
+}

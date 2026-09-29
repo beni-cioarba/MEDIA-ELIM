@@ -14,7 +14,7 @@ import { PresentationService } from '../../../core/presentation.service';
 import { ScheduleService } from '../../../core/services/schedule.service';
 import { parseIsoDate } from '../../../core/util/iso-date';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { FitToBoxDirective } from '../fit-to-box.directive';
+import { FitToBoxDirective } from '../../../shared/fit-to-box/fit-to-box.directive';
 
 /**
  * Tarjeta de anuncio — **el único renderizador** de un `Announcement`.

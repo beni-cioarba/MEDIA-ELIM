@@ -123,7 +123,7 @@ const UMBRAL_ARRASTRE_PX = 6;
       <div #viewport class="ui-carousel__viewport" tabindex="0">
         <ul class="ui-carousel__track" role="list">
           <ng-container [ngTemplateOutlet]="items()" />
-          @if (loop()) {
+          @if (duplicated()) {
             <!-- Segunda copia para el bucle sin costura. Se marca como
                  decorativa después de pintar: para un lector de pantalla la
                  lista tiene los elementos que tiene, no el doble. -->
@@ -203,10 +203,27 @@ export class CardCarouselComponent {
    * alternativa —volver al principio al llegar al final— se ve como un
    * rebobinado y parece un fallo.
    *
-   * Úsalo sólo cuando haya más elementos de los que caben: si caben todos,
-   * duplicarlos sólo crea un scroll que no debería existir.
+   * **Se activa sólo si hace falta**: si caben todos, la lista se pinta una
+   * vez y el carrusel se queda quieto (duplicarlos crearía un scroll que no
+   * debería existir). Así el mismo carrusel sirve para cinco familias que
+   * caben y para ocho que no, sin que quien lo usa tenga que medir nada.
    */
   readonly loop = input(false);
+
+  /**
+   * La segunda copia está pintada. Es un `signal` (y no un `computed` de
+   * `loop() && desborda`) porque cómo se mide el desbordamiento depende de
+   * si ya está pintada: con dos copias, una sola mide la mitad.
+   */
+  protected readonly duplicated = signal(false);
+
+  /**
+   * Ancho de la ventana cuando se pintó la copia. Con **histéresis**: la copia
+   * sólo se retira si la ventana se ha ensanchado desde entonces. Sin esto el
+   * carrusel oscilaba sin fin —se pintaba la copia, se medía antes de que el
+   * DOM la tuviera, «ya no desborda», se quitaba…— y colgaba la página.
+   */
+  private duplicatedAtWidth = 0;
 
   /** Las tarjetas, como plantilla, para poder pintarlas dos veces. */
   readonly items = contentChild.required(TemplateRef);
@@ -243,13 +260,13 @@ export class CardCarouselComponent {
   );
 
   protected readonly canPrev = computed(() => {
-    if (this.loop() && this.overflows()) return true;
+    if (this.duplicated() && this.overflows()) return true;
     return this.scrollLeft() > CardCarouselComponent.EDGE_TOLERANCE_PX;
   });
 
   protected readonly canNext = computed(() => {
     // Con bucle nunca se acaba: siempre hay siguiente y siempre hay anterior.
-    if (this.loop() && this.overflows()) return true;
+    if (this.duplicated() && this.overflows()) return true;
     return (
       this.scrollLeft() + this.clientWidth() <
       this.scrollWidth() - CardCarouselComponent.EDGE_TOLERANCE_PX
@@ -318,6 +335,28 @@ export class CardCarouselComponent {
     });
 
     this.startAutoplay();
+
+    // Bucle bajo demanda: se pinta la segunda copia cuando la lista no cabe
+    // y se retira sólo si la ventana se ensancha y una copia ya cabe.
+    effect(() => {
+      const tolerancia = CardCarouselComponent.EDGE_TOLERANCE_PX;
+      if (!this.loop() || this.viewportEl() === null) {
+        if (this.duplicated()) this.duplicated.set(false);
+        return;
+      }
+      const ventana = this.clientWidth();
+      if (!this.duplicated()) {
+        if (this.scrollWidth() - ventana > tolerancia) {
+          this.duplicatedAtWidth = ventana;
+          this.duplicated.set(true);
+        }
+        return;
+      }
+      const seHaEnsanchado = ventana > this.duplicatedAtWidth + tolerancia;
+      if (seHaEnsanchado && this.scrollWidth() / 2 - ventana <= tolerancia) {
+        this.duplicated.set(false);
+      }
+    });
   }
 
   /**
@@ -384,7 +423,7 @@ export class CardCarouselComponent {
    * bucle, y sólo funciona si no se ve.
    */
   private recolocarBucle(el: HTMLElement): void {
-    if (!this.loop()) return;
+    if (!this.duplicated()) return;
     const unaCopia = el.scrollWidth / 2;
     if (unaCopia > 0 && el.scrollLeft >= unaCopia) {
       el.scrollLeft -= unaCopia;
@@ -397,7 +436,7 @@ export class CardCarouselComponent {
    * diez tarjetas donde hay cinco.
    */
   private marcarCopia(el: HTMLElement): void {
-    if (!this.loop()) return;
+    if (!this.duplicated()) return;
     const hijos = Array.from(el.firstElementChild?.children ?? []) as HTMLElement[];
     const mitad = hijos.length / 2;
     hijos.forEach((hijo, i) => {
@@ -527,7 +566,7 @@ export class CardCarouselComponent {
     const el = this.viewport().nativeElement;
     // Hacia atrás desde el principio: se salta a la copia y se retrocede desde
     // allí, para que el bucle también funcione hacia el otro lado.
-    if (this.loop() && direction === -1 && el.scrollLeft <= 2) {
+    if (this.duplicated() && direction === -1 && el.scrollLeft <= 2) {
       el.scrollLeft = el.scrollWidth / 2;
     }
     this.recolocarBucle(el);

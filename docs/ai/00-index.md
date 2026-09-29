@@ -27,6 +27,8 @@ src/app/
     church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
     leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
+    family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
+    prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -47,6 +49,8 @@ src/app/
       schedule.service.ts            Programa semanal + eventos futuros derivados
       announcements.service.ts       ⭐ Anuncios vigentes (por fecha de caducidad)
       bible-reading.service.ts       Semana del plan de lectura que toca anunciar (la que contiene mañana)
+      family-prayer.service.ts       Semana de familias que toca (misma regla), archivo y vistas
+      prayer-causes.service.ts       Causas por nombre / por intención
       presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual) y sus diapositivas
       presentation-display.service.ts QR visible / tamaño del QR / duración por bloque
       presentation-sync.service.ts   ⭐ Canal entre ventanas: elección de líder, estado, órdenes
@@ -62,7 +66,9 @@ src/app/
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Estructura de liderazgo y departamentos
-    announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección) + autoajuste
+    announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección)
+    family-prayer/          ⭐ Rugăciune pentru familii: página, resumen, ficha, foto entera, acceso desde anuncios
+    prayer-causes/          ⭐ Cauzele Bisericii Elim: página + tablero (web y proyección)
     presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
     styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
     projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)
@@ -93,6 +99,8 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | --------------------------------------------------- | ------------------------------------------------------- |
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
+| «Cambia la lista de enfermos / causas» | `docs/ai/37-prayer-causes.md` → `core/prayer-causes.config.ts` (+ `updatedOn`) |
+| «Familias de esta semana» · «nuevas fotos de familias» | `docs/ai/36-family-prayer.md` → `scripts/import-family-photos.mjs` + `core/family-prayer.config.ts` |
 | «Nuevo Excel del plan de lectura bíblica»           | `python scripts/import-bible-plan.py <xlsx>` → regenera `core/bible-reading.config.ts` (`20-content-i18n.md`) |
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
@@ -101,8 +109,8 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
 | «Proyectar en la pantalla del templo»               | `/media/control` → «Abrir proyección» (nada de código; `docs/ai/30-presentation.md`) |
 | «Que tal bloque no salga al presentar»              | Panel de control (o popover de la ventana), nada de código |
-| «Quitar / achicar el QR al proyectar»               | Panel de ajustes (tecla `Q`, tamaño S/M/L) — `PresentationDisplayService` |
-| «Avisar de que hoy también hay directo» · «que compartan la transmisión» | Panel de control → «Anunță transmisiunea live de azi» (caduca a medianoche; nada de código). Diseño en `docs/ai/30-presentation.md` → «Aviso de directo» |
+| «Quitar / poner el QR al proyectar»                 | Es la diapositiva «Site-ul bisericii» (bloque `website`): se enciende o apaga como cualquier bloque, sin código — `30-presentation.md` → «Lienzo» |
+| «Avisar de que hoy también hay directo» · «que compartan la transmisión» | Panel de control → «Anunță transmisiunea live de azi» (caduca a medianoche; nada de código): «ÎN DIRECT» en la esquina + QR del directo en la diapositiva del QR. `docs/ai/30-presentation.md` → «Aviso de directo» |
 | «Que tal bloque dure más / menos» · «hoy no leáis este anuncio» | Panel de ajustes (−/+ segundos por bloque; casilla por anuncio). Defectos en `DEFAULT_DURATIONS_S` |
 | «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |

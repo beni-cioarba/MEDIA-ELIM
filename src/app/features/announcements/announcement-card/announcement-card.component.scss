@@ -362,13 +362,14 @@ app-announcement-card {
   color: var(--c-primary);
 }
 
+// Referencia = nota al pie de la cita, no un titular: caja baja, peso
+// normal y color atenuado (las mayúsculas espaciadas la hacían destacar más
+// que el versículo). Mismo criterio que la ficha de familia.
 .announcement__verse-ref {
   margin-block-start: 0.3rem;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: var(--ls-caps);
-  text-transform: uppercase;
-  color: var(--c-gold-deep);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--c-muted);
 }
 
 .announcement__footnote {
@@ -422,9 +423,12 @@ app-announcement-card {
 
   // ---- Cabecera -------------------------------------------------------
 
+  // Ficha de fecha anclada arriba, a la altura de la insignia: centrada
+  // frente a un titular de dos líneas quedaba ~6u por debajo de la fila
+  // «ANUNȚ» y las dos piezas principales no compartían línea superior.
   .announcement__head {
     gap: fit(var(--pj-sp-3));
-    align-items: center;
+    align-items: start;
   }
 
   .announcement__datebox {

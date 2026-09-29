@@ -1,0 +1,39 @@
+<section class="fsum" [attr.aria-labelledby]="'fsum-' + week.presentedOn">
+  <header class="fsum__head">
+    <div class="fsum__heading">
+      <h2 class="fsum__title" [attr.id]="'fsum-' + week.presentedOn">
+        {{ 'family_prayer.week_title' | translate }}
+      </h2>
+      <p class="fsum__range">
+        <app-icon name="calendar" class="fsum__range-icon" />
+        <span>{{ prayer.formatRange(week) }}</span>
+      </p>
+    </div>
+    <!-- Acciones de la web (compartir la semana). -->
+    <ng-content select="[fsumActions]" />
+  </header>
+
+  <ol class="fsum__list">
+    @for (family of week.families; track family.id) {
+      <li class="fsum__item">
+        <a
+          class="fsum__link"
+          [routerLink]="[]"
+          [fragment]="family.id"
+        >
+          <app-family-photo
+            class="fsum__photo"
+            [family]="family"
+            sizes="(max-width: 720px) 3.5rem, 14rem"
+            [eager]="true"
+          />
+          <span class="fsum__text">
+            <span class="fsum__name">
+              <span class="fsum__surname">{{ family.surname }}</span> {{ family.names }}
+            </span>
+          </span>
+        </a>
+      </li>
+    }
+  </ol>
+</section>

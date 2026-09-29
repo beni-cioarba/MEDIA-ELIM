@@ -1,8 +1,7 @@
 <main
   class="stage"
   [class.is-fullscreen]="fullscreen()"
-  [class.stage--no-qr]="fullscreen() && !display.qrVisible()"
-  [attr.data-qr-size]="fullscreen() ? display.qrSize() : null"
+  [class.stage--bleed]="bleed()"
 >
   <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
   <div class="backdrop" aria-hidden="true">
@@ -11,15 +10,6 @@
     <div class="grain"></div>
   </div>
 
-  <!-- En la web pública la marca ya está en la barra de navegación; aquí
-       sólo se muestra proyectada, donde no hay menú. Es el mismo componente
-       que la cabecera y el pie: una sola marca para toda la app. -->
-  @if (fullscreen()) {
-    <header class="stage-brand">
-      <app-brand-logo class="stage-brand__logo" size="context" tone="light" [link]="null" />
-      <div class="stage-brand__spacer"></div>
-    </header>
-  }
 
   <section class="content" [class.content--carousel]="fullscreen()">
     <!-- Carrusel de diapositivas. En proyección sólo se renderizan las
@@ -41,43 +31,15 @@
             @case ('weekly') { <app-weekly-block /> }
             @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
             @case ('bible') { <app-bible-block /> }
+            @case ('causes') { <app-causes-block /> }
+            @case ('website') { <app-website-block /> }
+            @case ('families') { <app-family-block [week]="slide.prayerWeek ?? null" [family]="slide.family ?? null" /> }
             @case ('location') { <app-location-block /> }
           }
         </div>
       }
     </div>
 
-    <!-- El QR solo tiene sentido proyectado en la pantalla de la iglesia
-         para que la gente lo escanee; en la web normal de visionado no se
-         muestra (la página ya está abierta en su dispositivo). El operador
-         puede ocultarlo (tecla Q / panel de ajustes) para dar todo el lienzo
-         al contenido. -->
-    @if (fullscreen()) {
-      <!-- Se monta una sola vez y se esconde con `hidden`: recrearlo al volver
-           a mostrarlo obligaba a esperar a que el navegador estuviera «idle»,
-           algo que con el reloj del carrusel puede tardar segundos. -->
-      <aside
-        id="qr-section"
-        class="qr"
-        [class.qr--live]="liveNotice()"
-        [hidden]="!display.qrVisible()"
-        [attr.aria-label]="(liveNotice() ? 'qr.live_aria' : 'qr.aria') | translate"
-      >
-        <!-- Aviso de directo: la insignia corona el QR y la leyenda pasa a
-             ser la invitación. Un solo módulo que se lee de arriba abajo
-             (qué pasa → código → qué hacer), sin robar sitio al contenido. -->
-        @if (liveNotice()) {
-          <p class="live-badge">
-            <span class="live-badge__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
-          </p>
-        }
-        @defer (on immediate) {
-          <app-qr-panel [data]="qrData()" [captionKey]="liveNotice() ? 'live_notice.qr_caption' : 'qr.caption'" />
-        } @placeholder {
-          <div class="qr__placeholder" aria-hidden="true"></div>
-        }
-      </aside>
-    }
   </section>
 
   <!-- Zona caliente invisible que revela los controles al acercar el ratón.
@@ -174,22 +136,28 @@
     </div>
   }
 
-  <!-- Versículo propio del panel (la portada tiene el suyo: `verse.*`). -->
-  <!-- Con el aviso de directo y sin QR, el aviso ocupa el sitio del
-       versículo: no desaparece aunque el operador oculte el código. -->
-  <footer class="bar">
-    @if (liveNotice() && !display.qrVisible()) {
-      <p class="bar__live">
-        <span class="live-badge">
-          <span class="live-badge__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
-        </span>
-        <span class="bar__live-text">{{ 'live_notice.bar_text' | translate: { handle: youtubeHandle } }}</span>
-      </p>
-    } @else {
+  <!-- Pie con versículo: sólo en la web. Proyectado ocupaba ~10u de alto
+       en cada diapositiva; ese sitio es del contenido. -->
+  @if (!fullscreen()) {
+    <footer class="bar">
       <p class="bar__verse">
         <span class="bar__verse-text">«{{ 'verse.stage_text' | translate }}»</span>
         <span class="bar__verse-ref">— {{ 'verse.stage_reference' | translate }}</span>
       </p>
-    }
-  </footer>
+    </footer>
+  }
+
+  <!-- Firma de la proyección: la marca, pequeña, en la esquina inferior
+       derecha (en el margen, como la mosca de una cadena de televisión). Con
+       el aviso de directo, «ÎN DIRECT» a su lado en todas las diapositivas. -->
+  @if (fullscreen()) {
+    <div class="stage-bug">
+      @if (liveNotice()) {
+        <span class="stage-bug__live">
+          <span class="stage-bug__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
+        </span>
+      }
+      <app-brand-logo class="stage-bug__logo" size="context" tone="light" [link]="null" />
+    </div>
+  }
 </main>
