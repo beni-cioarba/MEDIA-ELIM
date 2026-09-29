@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { LanguageService } from '../../core/services/language.service';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { CopyButtonComponent } from '../../shared/copy-button/copy-button.component';
 import { IconName } from '../../core/ui/icon-name';
 
@@ -27,8 +27,13 @@ interface Purpose {
  *  4. **Nada de presión.** El versículo de 2 Corintios 9:7 marca el tono:
  *     donación voluntaria y alegre, no cuota.
  *
- * Los datos bancarios viven en `church.config.ts` y hoy son **de
- * demostración**; la propia página lo advierte mientras sigan siéndolo.
+ * Maquetación (29/09/2026): todo en una pantalla — el porqué a la
+ * izquierda y la **tarjeta de donación** a la derecha (Bizum primero, cuentas
+ * por divisa con copiar, titular/banco/BIC en pequeño). Ver la plantilla.
+ *
+ * Los datos bancarios viven en `church.config.ts` (reales desde el
+ * 29/09/2026: una cuenta en euros en BBVA). Lo que falte va a `null` y la
+ * tarjeta no lo pinta.
  */
 @Component({
     selector: 'app-donate',
@@ -36,7 +41,6 @@ interface Purpose {
     imports: [
         RouterLink,
         TranslatePipe,
-        PageSectionComponent,
         IconComponent,
         CopyButtonComponent,
     ],
@@ -50,8 +54,21 @@ export class DonateComponent {
 
   protected readonly links = {
     contact: `/${APP_PATHS.contact}`,
-    about: `/${APP_PATHS.about}`,
+    leadership: `/${APP_PATHS.leadership}`,
   } as const;
+
+  private readonly translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
+
+  /**
+   * Ejemplos de concepto para la transferencia (lista en i18n,
+   * `donate.bank.concepts`). Relee el idioma activo para cambiar con él.
+   */
+  protected readonly concepts = computed<readonly string[]>(() => {
+    this.language.current();
+    const list: unknown = this.translate.instant('donate.bank.concepts');
+    return Array.isArray(list) ? (list as string[]) : [];
+  });
 
   protected readonly purposes: readonly Purpose[] = [
     { id: 'mission', icon: 'church' },
@@ -66,5 +83,10 @@ export class DonateComponent {
    */
   protected plain(iban: string): string {
     return iban.replace(/\s+/g, '');
+  }
+
+  /** Teléfono de Bizum agrupado de tres en tres para leerlo («600 000 000»). */
+  protected grouped(phone: string): string {
+    return phone.replace(/\D/g, '').replace(/(\d{3})(?=\d)/g, '$1 ');
   }
 }

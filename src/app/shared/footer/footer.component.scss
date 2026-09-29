@@ -13,9 +13,14 @@
   display: block;
 }
 
+// Revisión del 29/09/2026 («más profesional y más comprimido»): el pie medía
+// ~520 px por una columna de identidad con misión de cinco líneas, rótulo y
+// redes de 40 px, y una franja legal con cuatro piezas repartidas. Ahora:
+// identidad = logo + lema + redes; enlaces más juntos; herramientas como
+// texto pequeño agrupado a la derecha.
 .footer {
   position: relative;
-  padding-block: clamp(var(--sp-8), 6vw, 4rem) var(--sp-6);
+  padding-block: clamp(var(--sp-5), 2.5vw, 2rem) var(--sp-3);
   background:
     radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 62%),
     linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
@@ -42,37 +47,33 @@
 // ---------------------------------------------------------------------
 // Rejilla principal
 // ---------------------------------------------------------------------
-// La identidad y el contacto piden más aire que las columnas de enlaces,
-// de ahí el reparto asimétrico. Se degrada en tres pasos en vez de
-// saltar de cinco columnas a una.
+// Revisión del 29/09/2026 («más comprimido»): las columnas de enlaces miden
+// lo que su contenido (`auto`) y el espacio sobrante va a identidad y
+// contacto; todas las columnas tienen tres filas (Program se parte en dos
+// subcolumnas y las llamadas a la acción suben bajo las redes). Así ningún
+// grupo largo fija el alto del pie.
 .footer__main {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1.6fr)
-    repeat(3, minmax(0, 1fr))
-    minmax(0, 1.4fr);
-  gap: clamp(var(--sp-6), 4vw, var(--sp-8));
-  padding-block-end: clamp(var(--sp-6), 4vw, var(--sp-8));
+  grid-template-columns: minmax(14.5rem, 1fr) auto auto auto minmax(0, 1.25fr);
+  gap: var(--sp-5) clamp(1.25rem, 2.5vw, 3.5rem);
+  padding-block-end: var(--sp-4);
 }
 
 @include until('xl') {
   .footer__main {
-    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
 
-    // El contacto pasa a ocupar la fila entera: sus datos son largos y
-    // partidos en una columna estrecha se leen fatal.
+    // El contacto pasa a la fila de abajo, a todo el ancho y con sus datos
+    // en dos columnas: partidos en una columna estrecha se leían fatal.
     .footer__contact {
       grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: start;
-      gap: var(--sp-4) var(--sp-8);
-      padding-block-start: var(--sp-6);
+      padding-block-start: var(--sp-4);
       border-block-start: 1px solid rgba(247, 250, 252, 0.1);
     }
 
-    .footer__title {
-      grid-column: 1 / -1;
+    .footer__data {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--sp-6);
     }
   }
 }
@@ -85,15 +86,19 @@
       grid-column: 1 / -1;
     }
 
-    .footer__contact {
+    .footer__data {
       grid-template-columns: minmax(0, 1fr);
     }
   }
 }
 
-@include until('xs') {
+// Móvil: los grupos de enlaces siguen en dos columnas (una sola columna
+// hacía un pie de casi 1.000 px de enlaces apilados) y con un hueco claro
+// entre grupo y grupo: el `clamp` en `vw` se quedaba en nada y el rótulo de
+// un grupo tocaba el último enlace del anterior.
+@include until('md') {
   .footer__main {
-    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-6) var(--sp-5);
   }
 }
 
@@ -107,27 +112,11 @@
   align-content: start;
 }
 
-.footer__tagline {
-  margin: 0;
-  max-width: 28ch;
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  color: var(--c-gold-soft);
-}
-
-.footer__mission {
-  margin: 0;
-  max-width: 40ch;
-  font-size: 0.9rem;
-  line-height: 1.65;
-  color: rgba(247, 250, 252, 0.62);
-}
-
 .footer__socials {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
-  margin: 0;
+  margin: var(--sp-1) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -139,8 +128,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border: 1px solid rgba(247, 250, 252, 0.16);
   border-radius: 50%;
   color: rgba(247, 250, 252, 0.85);
@@ -151,8 +140,8 @@
     transform var(--mo-base) var(--ea-standard);
 
   svg {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1rem;
+    height: 1rem;
     fill: currentColor;
   }
 
@@ -177,7 +166,7 @@
 }
 
 .footer__title {
-  margin: 0 0 var(--sp-3);
+  margin: 0 0 var(--sp-2);
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 700;
@@ -186,19 +175,36 @@
   color: var(--c-gold);
 }
 
+// `li` flex: sin él, el enlace (`inline-block`) se asentaba sobre el «strut»
+// de la línea del `li` —el interlineado del cuerpo, 1,65 × 17 px— y cada
+// enlace ocupaba 31 px para 21 de texto. Era el grueso del alto sobrante.
 .footer__links {
   display: grid;
-  gap: var(--sp-2);
+  gap: 0.3rem;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  > li {
+    display: flex;
+  }
+}
+
+// Grupo largo en dos subcolumnas (≥ md), llenando por columnas: se sigue
+// leyendo de arriba abajo y luego a la derecha.
+@include from('md') {
+  .footer__links--split {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(var(--rows, 3), auto);
+    column-gap: var(--sp-6);
+  }
 }
 
 .footer__link {
   display: inline-block;
   color: rgba(247, 250, 252, 0.74);
-  font-size: 0.92rem;
-  line-height: 1.45;
+  font-size: 0.875rem;
+  line-height: 1.4;
   text-decoration: none;
   // Subrayado que crece desde la izquierda: da respuesta al puntero sin
   // desplazar el texto ni cambiar la altura de la línea.
@@ -226,23 +232,23 @@
 // ---------------------------------------------------------------------
 .footer__data {
   display: grid;
-  gap: var(--sp-3);
-  margin: 0 0 var(--sp-5);
+  gap: 0.3rem;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .footer__datum {
   display: grid;
-  grid-template-columns: 1.5rem minmax(0, 1fr);
+  grid-template-columns: 1.25rem minmax(0, 1fr);
   align-items: start;
   gap: var(--sp-2);
-  font-size: 0.92rem;
+  font-size: 0.875rem;
 }
 
 .footer__datum-icon {
   margin-block-start: 0.15rem;
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--c-gold);
 }
 
@@ -259,12 +265,12 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  min-height: 2.5rem;
-  padding-inline: var(--sp-4);
+  min-height: 2.125rem;
+  padding-inline: var(--sp-3);
   border: 1px solid rgba(247, 250, 252, 0.28);
   border-radius: var(--r-pill);
   color: var(--c-on-primary);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -301,45 +307,82 @@
 // ---------------------------------------------------------------------
 // Franja legal
 // ---------------------------------------------------------------------
+// Dos grupos, no cuatro piezas sueltas: a la izquierda lo legal (© y
+// versión); a la derecha las herramientas y la marca del colaborador.
 .footer__legal {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3) var(--sp-6);
-  padding-block-start: var(--sp-5);
+  gap: var(--sp-2) var(--sp-5);
+  padding-block-start: var(--sp-3);
   border-block-start: 1px solid rgba(247, 250, 252, 0.12);
   font-size: 0.8rem;
   color: rgba(247, 250, 252, 0.55);
 }
 
 .footer__copy {
-  margin: 0;
+  margin: 0 auto 0 0;
 }
 
-// Herramienta del operador: píldora tenue como la de la versión, visible
-// siempre pero sin competir con la navegación.
-.footer__operator {
-  display: inline-flex;
+// Acciones compactas: círculos de 34 px, tenues en reposo y dorados al
+// apuntar. Iconos y no texto: son herramientas conocidas (volver arriba,
+// compartir, proyección, guía) y con nombre en el tooltip; como texto
+// competían con el aviso legal. El dock flotante se retira mientras se ven.
+.footer__actions-bar {
+  display: flex;
   align-items: center;
-  gap: 0.4em;
-  padding: 0.3em 0.8em;
+  gap: var(--sp-2);
+}
+
+.footer__icon-btn,
+.footer__share ::ng-deep .share-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  padding: 0;
   border: 1px solid rgba(247, 250, 252, 0.16);
-  border-radius: var(--r-pill);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: rgba(247, 250, 252, 0.6);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(247, 250, 252, 0.72);
+  font-size: 1rem;
+  cursor: pointer;
   text-decoration: none;
-  white-space: nowrap;
-  transition: color var(--mo-base) var(--ea-standard),
-    border-color var(--mo-base) var(--ea-standard);
+  transition:
+    color var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard),
+    background var(--mo-base) var(--ea-standard);
 
   &:hover,
   &:focus-visible {
-    color: var(--c-gold-soft);
     border-color: rgba(212, 175, 55, 0.6);
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--c-gold-soft);
   }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+.footer__share {
+  display: contents;
+}
+
+.footer__share ::ng-deep .share-btn__icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.footer__share ::ng-deep .share-btn__label {
+  display: none;
+}
+
+// Separa las acciones de la marca del colaborador.
+.footer__sep {
+  width: 1px;
+  height: 1.5rem;
+  background: rgba(247, 250, 252, 0.16);
 }
 
 // Dato técnico, no editorial: se marca como tal con una píldora tenue para
@@ -472,7 +515,7 @@
   .footer__cta,
   .footer__partner,
   .footer__version,
-  .footer__operator,
+  .footer__icon-btn,
   .footer__build {
     transition: none;
   }

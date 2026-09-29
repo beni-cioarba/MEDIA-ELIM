@@ -45,6 +45,27 @@ export interface PrayerFamily {
   /** Motivo de oración o mensaje, un párrafo por elemento. */
   readonly message?: readonly string[];
   readonly verse?: PrayerVerse;
+  /**
+   * Ajustes manuales de la foto. **Sólo para una foto que se sale de lo
+   * normal**; lo demás lo resuelve la ficha sola con la proporción real.
+   */
+  readonly photo?: PrayerPhotoOverride;
+}
+
+/** Tamaño de la foto en la ficha web: `compact` si el texto es largo, `large` si la foto manda. */
+export type PrayerPhotoSize = 'compact' | 'normal' | 'large';
+
+/** Ajustes manuales de la foto de una familia (ver `PrayerFamily.photo`). */
+export interface PrayerPhotoOverride {
+  /**
+   * Proporción del marco (ancho / alto), p. ej. `0.8` para 4:5. Para una
+   * foto con dimensiones imposibles (una tira panorámica, una captura de
+   * móvil muy alargada): la foto se ve entera dentro del marco y el hueco lo
+   * rellena ella misma difuminada.
+   */
+  readonly frame?: number;
+  /** Tamaño de la foto en la ficha web. */
+  readonly size?: PrayerPhotoSize;
 }
 
 /** Las familias de una semana, tal como se presentan el domingo. */

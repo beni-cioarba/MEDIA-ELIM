@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
@@ -11,6 +19,11 @@ import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
 import { IconComponent } from '../icon/icon.component';
 import { InebLogoComponent } from '../ineb-logo/ineb-logo.component';
 import { SocialIconComponent } from '../social-icon/social-icon.component';
+import { ShareButtonComponent } from '../share-button/share-button.component';
+import { DockOverlapService } from '../floating-actions/dock-overlap.service';
+
+/** Parte del pie a la vista a partir de la cual el dock flotante se retira. */
+const VISIBLE_RATIO = 0.3;
 
 /** Grupo de enlaces del pie, derivado de la navegación principal. */
 interface FooterColumn {
@@ -52,6 +65,7 @@ interface FooterColumn {
         IconComponent,
         InebLogoComponent,
         SocialIconComponent,
+        ShareButtonComponent,
     ],
     templateUrl: './footer.component.html',
     styleUrl: './footer.component.scss'
@@ -69,6 +83,18 @@ export class FooterComponent {
     (group) => ({ id: group.id, titleKey: group.labelKey, links: group.children }),
   );
 
+  /**
+   * Un grupo con más enlaces que estos se parte en dos subcolumnas (≥ md).
+   * Hoy Program (6) pasa a 3 + 3: todos los grupos miden tres filas y el
+   * más largo ya no fija el alto del pie.
+   */
+  protected readonly splitAfter = 4;
+
+  /** Filas de un grupo partido en dos subcolumnas (para `grid-template-rows`). */
+  protected rowsOf(column: FooterColumn): number {
+    return column.links.length > this.splitAfter ? Math.ceil(column.links.length / 2) : column.links.length;
+  }
+
   /** Accesos que no cuelgan de ningún grupo. */
   protected readonly links = {
     home: `/${APP_PATHS.home}`,
@@ -79,6 +105,11 @@ export class FooterComponent {
     /** Panel de control de la proyección (herramienta del operador). */
     control: `/${APP_PATHS.media}/${APP_PATHS.control}`,
     styleguide: `/${APP_PATHS.styleguide}`,
+    /**
+     * Crédito del pie (logo de INEB): perfil de LinkedIn del desarrollador
+     * hasta que exista la web de la consultora. Mismo enlace que Administrativ.
+     */
+    partner: 'https://www.linkedin.com/in/natanael-beniamin-cioarba/',
   } as const;
 
   protected readonly mailto = `mailto:${this.config.contact.email}`;
@@ -93,6 +124,37 @@ export class FooterComponent {
   protected readonly appVersion = APP_VERSION;
 
   private readonly language = inject(LanguageService);
+
+  constructor() {
+    // El pie repite las acciones del dock flotante: mientras está a la vista
+    // (un 30 % basta) el dock se retira para no duplicarlas ni tapar el pie.
+    const overlap = inject(DockOverlapService);
+    const host: HTMLElement = inject(ElementRef).nativeElement;
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      if (typeof IntersectionObserver === 'undefined') return;
+      const observer = new IntersectionObserver(
+        // Por proporción y no por `isIntersecting`: con un solo umbral, al
+        // subir de nuevo el aviso llega aún «intersecando» (un 29 % visible)
+        // y el dock no volvía a aparecer.
+        (entries) =>
+          entries.forEach((entry) =>
+            overlap.report('footer', entry.intersectionRatio >= VISIBLE_RATIO),
+          ),
+        { threshold: [0, VISIBLE_RATIO] },
+      );
+      observer.observe(host);
+      destroyRef.onDestroy(() => {
+        observer.disconnect();
+        overlap.report('footer', false);
+      });
+    });
+  }
+
+  /** Quien llega al pie ya ha recorrido la página entera. */
+  protected backToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   /** Fecha de compilación en el formato del idioma activo. */
   protected readonly builtAt = computed(() =>

@@ -34,6 +34,9 @@ export class SeoService {
 
   private readonly current = signal<RouteSeo | null>(null);
 
+  /** Ruta de la página activa (`/rugaciune-pentru-familii/2026-09-27`), sin ancla ni query. */
+  private readonly path = signal('/');
+
   /** Se dispara al cambiar de idioma para volver a traducir los metadatos. */
   private readonly langChange = toSignal(this.translate.onLangChange, {
     initialValue: null,
@@ -46,9 +49,15 @@ export class SeoService {
     });
   }
 
-  /** Llamado por `AppTitleStrategy` en cada navegación. */
-  update(seo: RouteSeo | null): void {
+  /** Llamado por `AppTitleStrategy` en cada navegación, con la URL nueva. */
+  update(seo: RouteSeo | null, url = '/'): void {
+    this.path.set(url.split(/[?#]/)[0] || '/');
     this.current.set(seo);
+  }
+
+  /** URL pública absoluta de la página activa (sin ancla: el ancla es del enlace). */
+  private pageUrl(): string {
+    return `${this.config.publicUrl.replace(/\/$/, '')}${this.path()}`;
   }
 
   private apply(seo: RouteSeo | null): void {
@@ -65,7 +74,11 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
-    this.meta.updateTag({ property: 'og:url', content: this.config.publicUrl });
+    // La URL de ESTA página, no la portada. Con la portada, Facebook /
+    // Messenger / WhatsApp tomaban `og:url` como la dirección «canónica» y
+    // reescribían el enlace compartido a `…/MEDIA-ELIM/#<familia>`: se
+    // perdía la ruta, se abría la portada y el ancla no encontraba nada.
+    this.meta.updateTag({ property: 'og:url', content: this.pageUrl() });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
 
     // Se pone y se quita en cada navegación: en una SPA la etiqueta se

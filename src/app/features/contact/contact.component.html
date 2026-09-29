@@ -1,16 +1,49 @@
-<header class="page-hero">
-  <div class="page-hero__inner">
-    <p class="page-hero__eyebrow">{{ 'contact.eyebrow' | translate }}</p>
-    <h1 class="page-hero__title">{{ 'contact.title' | translate }}</h1>
-    <p class="page-hero__lead">{{ 'contact.lead' | translate }}</p>
-  </div>
-</header>
+<!--
+  Contact (revisión del 29/09/2026, «profesional y futurista»).
+  · Cabecera compacta con las tres acciones directas al lado del título
+    (llamar, escribir, cómo llegar): es lo que se viene a hacer aquí.
+  · Dos columnas: el formulario | la tarjeta de contacto navy (mismo lenguaje
+    que la de donativos) con los datos, copiar y el MAPA dentro; debajo, el
+    horario compacto.
+  · Cierre en una línea.
+  Antes: hero de 245 px, tres tarjetas sueltas para tres datos, el mapa solo
+  al final a todo lo ancho y una sección entera para dos botones.
+-->
+<div class="ct">
+  <!-- ============ Cabecera + acciones directas ============ -->
+  <header class="ct__head">
+    <div class="ct__intro">
+      <p class="ct__eyebrow">{{ 'contact.eyebrow' | translate }}</p>
+      <h1 class="ct__title">{{ 'contact.title' | translate }}</h1>
+      <p class="ct__lead">{{ 'contact.lead' | translate }}</p>
+    </div>
+    <nav class="quick" [attr.aria-label]="'contact.quick.label' | translate">
+      <a class="quick__btn quick__btn--primary" [href]="links.tel">
+        <app-icon name="phone" />
+        {{ 'contact.quick.call' | translate }}
+      </a>
+      @if (whatsappUrl) {
+        <a class="quick__btn quick__btn--whatsapp" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">
+          <app-icon name="whatsapp" />
+          WhatsApp
+        </a>
+      }
+      <a class="quick__btn" [href]="links.mailto">
+        <app-icon name="mail" />
+        {{ 'contact.quick.email' | translate }}
+      </a>
+      <a class="quick__btn" [href]="links.maps" target="_blank" rel="noopener noreferrer">
+        <app-icon name="map-pin" />
+        {{ 'contact.quick.directions' | translate }}
+      </a>
+    </nav>
+  </header>
 
-<app-page-section>
-  <div class="contact">
-    <!-- Formulario. No hay servidor: compone un `mailto:` (ver el componente). -->
-    <div class="form-card">
-      <h2 class="form-card__title">{{ 'contact.form.title' | translate }}</h2>
+  <div class="ct__grid">
+    <!-- ============ Formulario ============
+         No hay servidor: compone un `mailto:` (ver el componente). -->
+    <section class="form-card" aria-labelledby="form-title">
+      <h2 class="form-card__title" id="form-title">{{ 'contact.form.title' | translate }}</h2>
       <p class="form-card__subtitle">{{ 'contact.form.subtitle' | translate }}</p>
 
       <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
@@ -25,11 +58,8 @@
               [attr.aria-invalid]="invalid('name')"
               [placeholder]="'contact.form.name_ph' | translate"
             />
-            <!--
-              El hueco existe siempre y sólo se rellena: si el `<span>`
-              apareciera y desapareciera, el formulario daría un salto cada
-              vez que se valida un campo.
-            -->
+            <!-- El hueco del error existe siempre (pequeño): si apareciera y
+                 desapareciera, el formulario saltaría al validar. -->
             <span class="field__error" role="alert">
               @if (invalid('name')) {
                 {{ 'contact.form.error_name' | translate }}
@@ -72,7 +102,7 @@
           <span class="field__label">{{ 'contact.form.message' | translate }}</span>
           <textarea
             class="field__input field__input--area"
-            rows="6"
+            rows="5"
             formControlName="message"
             [attr.aria-invalid]="invalid('message')"
             [placeholder]="'contact.form.message_ph' | translate"
@@ -85,7 +115,7 @@
         </label>
 
         <div class="form__foot">
-          <button class="btn btn--primary form__submit" type="submit">
+          <button class="form__submit" type="submit">
             <app-icon name="send" />
             {{ 'contact.form.submit' | translate }}
           </button>
@@ -99,21 +129,19 @@
           </p>
         }
       </form>
-    </div>
+    </section>
 
-    <!-- Datos directos y horario -->
-    <aside class="aside">
-      <ul class="channels">
-        @for (channel of channels; track channel.id) {
-          <li class="channel">
-            <span class="channel__badge" aria-hidden="true">
-              <app-icon [name]="channel.icon" />
-            </span>
-            <div class="channel__body">
-              <p class="channel__label">
-                {{ 'contact.channels.' + channel.id | translate }}
-              </p>
-              @if (channel.href) {
+    <div class="ct__side">
+      <!-- ============ Tarjeta de contacto (navy) + mapa ============ -->
+      <section class="card" aria-labelledby="card-title">
+        <h2 class="card__title" id="card-title">{{ 'contact.card.title' | translate }}</h2>
+
+        <ul class="channels" role="list">
+          @for (channel of channels; track channel.id) {
+            <li class="channel">
+              <span class="channel__icon" aria-hidden="true"><app-icon [name]="channel.icon" /></span>
+              <span class="channel__body">
+                <span class="channel__label">{{ 'contact.channels.' + channel.id | translate }}</span>
                 <a
                   class="channel__value"
                   [href]="channel.href"
@@ -122,35 +150,44 @@
                 >
                   {{ channel.value }}
                 </a>
-              } @else {
-                <p class="channel__value">{{ channel.value }}</p>
+              </span>
+              @if (channel.copy) {
+                <app-copy-button
+                  class="channel__copy"
+                  [value]="channel.copy"
+                  [label]="'contact.channels.' + channel.id | translate"
+                />
               }
-            </div>
-            @if (channel.copy) {
-              <app-copy-button
-                class="channel__copy"
-                [value]="channel.copy"
-                [label]="'contact.channels.' + channel.id | translate"
-              />
-            }
-          </li>
-        }
-      </ul>
+            </li>
+          }
+        </ul>
 
-      @if (whatsappUrl) {
-        <a
-          class="aside__whatsapp"
-          [href]="whatsappUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ 'contact.channels.whatsapp' | translate }}
-        </a>
-      }
 
-      <div class="schedule">
-        <h2 class="schedule__title">{{ 'contact.schedule.title' | translate }}</h2>
-        <ul class="schedule__list">
+        <!-- El mapa, junto a la dirección (antes, solo al final de la página).
+             Sin botón propio: el mapa ya trae «Abrir en Maps» y la cabecera,
+             «Cum ajungi»; uno más tapaba los avisos legales de Google. -->
+        <div class="card__map">
+          <iframe
+            class="card__map-frame"
+            [src]="mapEmbedUrl"
+            [title]="'contact.map.title' | translate"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- ============ Horario compacto ============ -->
+      <section class="schedule" aria-labelledby="schedule-title">
+        <div class="schedule__head">
+          <h2 class="schedule__title" id="schedule-title">{{ 'contact.schedule.title' | translate }}</h2>
+          <a class="schedule__more" [routerLink]="links.weekly">
+            {{ 'contact.schedule.all' | translate }}
+            <app-icon name="arrow-right" />
+          </a>
+        </div>
+        <ul class="schedule__list" role="list">
           @for (item of weeklyProgram; track item.id) {
             <li class="schedule__item">
               <span class="schedule__day">{{ item.dayLabel }}</span>
@@ -159,39 +196,25 @@
             </li>
           }
         </ul>
-        <a class="schedule__more" [routerLink]="links.weekly">
-          {{ 'contact.schedule.all' | translate }}
-          <app-icon name="arrow-right" />
-        </a>
-      </div>
-    </aside>
+      </section>
+    </div>
   </div>
-</app-page-section>
+</div>
 
-<!-- Mapa a ancho completo: es lo último porque sólo interesa cuando ya se ha
-     decidido venir, y así no compite con el formulario. -->
-<section class="map" [attr.aria-label]="'contact.map.title' | translate">
-  <iframe
-    class="map__frame"
-    [src]="mapEmbedUrl"
-    [title]="'contact.map.title' | translate"
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade"
-    allowfullscreen
-  ></iframe>
-</section>
-
-<app-page-section
-  tinted
-  titleKey="contact.cta.title"
-  subtitleKey="contact.cta.subtitle"
->
-  <div class="section-cta">
-    <a class="btn btn--primary" [routerLink]="links.donate">
+<!-- Cierre en una línea (antes, una sección entera para dos botones). -->
+<aside class="ct-end">
+  <p class="ct-end__text">
+    <strong>{{ 'contact.cta.title' | translate }}</strong>
+    {{ 'contact.cta.subtitle' | translate }}
+  </p>
+  <div class="ct-end__links">
+    <a class="ct-end__link" [routerLink]="links.donate">
       {{ 'contact.cta.donate' | translate }}
+      <app-icon name="arrow-right" />
     </a>
-    <a class="btn btn--ghost-dark" [routerLink]="links.about">
+    <a class="ct-end__link" [routerLink]="links.about">
       {{ 'contact.cta.about' | translate }}
+      <app-icon name="arrow-right" />
     </a>
   </div>
-</app-page-section>
+</aside>

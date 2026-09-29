@@ -5,6 +5,7 @@ import {
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import {
   PreloadAllModules,
@@ -62,6 +63,16 @@ export const appConfig: ApplicationConfig = {
     // promesa de carga del JSON del idioma activo (ver LanguageService).
     provideAppInitializer(() => inject(LanguageService).init()),
     provideAppInitializer(() => inject(PwaUpdateService).init()),
+    // Anclas (`/rugaciune-pentru-familii/<domingo>#<familia>`, credo…): el
+    // `ViewportScroller` del router hace `scrollTo` con desplazamiento 0 e
+    // ignora el `scroll-padding-top` del CSS, así que la ficha quedaba debajo
+    // de la cabecera fija. Se le da el alto real de la cabecera más un respiro.
+    provideAppInitializer(() =>
+      inject(ViewportScroller).setOffset(() => [
+        0,
+        (document.querySelector('.nav')?.getBoundingClientRect().bottom ?? 64) + 16,
+      ]),
+    ),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Comprueba actualizaciones en cuanto la app se estabiliza (≈30s).

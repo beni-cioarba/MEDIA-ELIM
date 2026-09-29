@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   FAMILY_PRAYER_WEEKS,
   PrayerFamily,
+  PrayerPhotoSize,
   PrayerVerse,
   PrayerWeek,
 } from '../family-prayer.config';
@@ -14,11 +15,13 @@ import { ClockService } from './clock.service';
 const PHOTO_ROOT = 'assets/family-prayer';
 
 /**
- * Proporción mínima del marco en la ficha web: 4:5. Una foto más estrecha
- * (vertical de móvil, 9:16) se centra con el fondo difuminado a los lados en
- * vez de estirar la ficha hasta el doble de alta.
+ * Proporciones que la ficha web pinta tal cual (marco = foto, sin bandas):
+ * de 9:16 (vertical de móvil) a 2:1 (panorámica). Una foto fuera de ese rango
+ * es la «incontrolable»: el marco se queda en el tope y el hueco lo rellena
+ * la misma foto difuminada. Para casos concretos, `PrayerFamily.photo.frame`.
  */
-const MIN_FRAME_RATIO = 0.8;
+const MIN_FRAME_RATIO = 9 / 16;
+const MAX_FRAME_RATIO = 2;
 
 /** Foto lista para `<img>`: variantes (`srcset`) y proporciones. */
 export interface PrayerPhotoView {
@@ -39,8 +42,13 @@ export interface PrayerPhotoView {
   readonly height: number;
   /** Ancho / alto de la foto. */
   readonly ratio: number;
-  /** Proporción del marco en la web: la de la foto, sin bajar de 4:5. */
+  /**
+   * Proporción del marco en la web: la de la foto (acotada a 9:16 – 2:1) o
+   * la fijada a mano en la configuración de la familia.
+   */
   readonly frameRatio: number;
+  /** Tamaño de la foto en la ficha web (ajuste manual; por defecto `normal`). */
+  readonly size: PrayerPhotoSize;
 }
 
 /** Una familia resuelta para pintar (web, panel y proyección). */
@@ -201,7 +209,10 @@ function toFamilyView(
         width: entry.width,
         height: entry.height,
         ratio: entry.width / entry.height,
-        frameRatio: Math.max(entry.width / entry.height, MIN_FRAME_RATIO),
+        frameRatio:
+          family.photo?.frame ??
+          Math.min(MAX_FRAME_RATIO, Math.max(MIN_FRAME_RATIO, entry.width / entry.height)),
+        size: family.photo?.size ?? 'normal',
       }
     : null;
 

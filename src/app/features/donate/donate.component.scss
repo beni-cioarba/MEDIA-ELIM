@@ -1,235 +1,545 @@
 @use 'ds' as *;
-@use '../../shared/styles/buttons' as *;
-@use '../../shared/styles/page-hero' as *;
-@use '../../shared/styles/section-cta' as *;
 
-/* Estilos encapsulados de la página «Donativos». */
+// =====================================================================
+// Donează — una pantalla, dos columnas (revisión del 29/09/2026).
+// Diseño propio, fuera del catálogo a propósito: el porqué a la izquierda y
+// la tarjeta de donación (cartera digital navy con brillo dorado) a la
+// derecha. De 1.870 px a ~700 en escritorio.
+// =====================================================================
 
 :host {
   display: block;
 }
 
-/* --- Versículo del hero ----------------------------------------------- */
+.give {
+  @include container(var(--w-wide));
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
+  align-items: start;
+  gap: clamp(1.75rem, 4vw, 4rem);
+  padding-block: clamp(1.75rem, 5vh, 3rem) clamp(1.25rem, 3vh, 2rem);
+}
+
+// ---------------------------------------------------------------------
+// El porqué
+// ---------------------------------------------------------------------
+.give__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.give__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.4rem + 2vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--c-primary);
+}
+
+.give__lead {
+  max-width: 58ch;
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--c-text);
+  text-wrap: pretty;
+}
 
 .verse {
-  margin: clamp(1.6rem, 4vh, 2.4rem) 0 0;
-  max-width: 40rem;
-  padding-block-start: var(--sp-5);
-  border-block-start: 1px solid rgba(247, 250, 252, 0.25);
+  max-width: 58ch;
+  margin: 1.1rem 0 0;
+  padding-inline-start: 0.9rem;
+  border-inline-start: 2px solid var(--c-gold);
 }
 
 .verse__text {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(1rem, 1.9vw, 1.25rem);
+  font-size: 1.05rem;
   font-style: italic;
-  line-height: 1.65;
-  color: rgba(247, 250, 252, 0.92);
+  line-height: 1.5;
+  color: var(--c-primary);
+  text-wrap: pretty;
 }
 
 .verse__ref {
-  margin-block-start: var(--sp-3);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--c-gold-soft);
-}
-
-/* --- Destinos del donativo -------------------------------------------- */
-
-.purposes {
-  @include auto-grid(15rem);
-
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.purpose {
-  padding: var(--sp-5);
-  background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  transition: border-color var(--mo-fast) var(--ea-standard);
-
-  /* Reacción por filete, sin salto (ver 47-design-language.md). */
-  &:hover {
-    border-color: var(--c-gold);
-  }
-}
-
-.purpose__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1.2rem;
-  color: var(--c-gold-deep);
-  background: var(--c-gold-tint);
-  border-radius: 50%;
-}
-
-.purpose__title {
-  margin: var(--sp-4) 0 var(--sp-2);
-  font-size: 1.05rem;
-}
-
-.purpose__body {
-  margin: 0;
-  max-width: none;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--c-muted);
 }
 
-/* --- Aviso de datos provisionales -------------------------------------
- * Visible a propósito: publicar un IBAN falso sin advertirlo sería peor
- * que no publicarlo. Se retira junto con los datos de demostración.
- * -------------------------------------------------------------------- */
+// «De ce dăruim»: la invitación, en un bloque tonal breve.
+.why {
+  max-width: 62ch;
+  margin-top: 1.1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: rgb(212 175 55 / 0.1);
+}
 
-.demo {
-  max-width: 46rem;
-  margin: 0 0 var(--sp-6);
-  padding: var(--sp-4) var(--sp-5);
-  font-size: 0.88rem;
+.why__title {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.why__body {
+  margin: 0;
+  font-size: 0.875rem;
   line-height: 1.6;
-  color: var(--c-primary-deep);
-  background: var(--c-gold-tint);
-  border: 1px dashed var(--c-gold);
-  border-radius: var(--r-md);
-
-  strong {
-    display: block;
-    margin-block-end: 0.2rem;
-  }
+  color: var(--c-text);
+  text-wrap: pretty;
 }
 
-/* --- Tarjeta bancaria -------------------------------------------------- */
+.give__sub {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
 
-.bank {
-  max-width: 46rem;
+// Destinos en 2 × 2: icono + título + una frase. Sin tarjetas altas.
+.purposes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
   margin: 0;
-  padding: clamp(1.4rem, 3vw, 2.25rem);
+  padding: 0;
+  list-style: none;
+}
+
+.purpose {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgb(26 54 93 / 0.09);
+  border-radius: 14px;
   background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  box-shadow: var(--e-1);
 }
 
-.bank__meta {
+.purpose__icon {
   display: grid;
-  gap: var(--sp-3);
-  margin: 0;
+  flex: none;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  background: rgb(212 175 55 / 0.14);
+  color: var(--c-gold-deep);
+  font-size: 1.05rem;
 }
 
-.bank__row {
+.purpose__text {
   display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr);
-  gap: var(--sp-4);
-  align-items: baseline;
+  gap: 0.15rem;
+  min-width: 0;
+}
 
-  @include until('xs') {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.15rem;
+.purpose__title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.purpose__body {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+// Transparencia: una línea bajo los destinos.
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
+
+  app-icon {
+    font-size: 0.95rem;
+    color: var(--c-gold-deep);
   }
+}
+
+.trust__link {
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: underline;
+  text-decoration-color: rgb(212 175 55 / 0.6);
+  text-underline-offset: 3px;
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Tarjeta de donación — «cartera» navy con brillo dorado
+// ---------------------------------------------------------------------
+.wallet {
+  position: sticky;
+  top: calc(var(--nav-height, 4rem) + 1rem);
+  display: grid;
+  gap: 0.7rem;
+  padding: 1.25rem;
+  overflow: hidden;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgb(212 175 55 / 0.22), transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, rgb(59 130 246 / 0.14), transparent 60%),
+    linear-gradient(145deg, #1d3d68 0%, #12284a 100%);
+  box-shadow:
+    0 24px 48px -28px rgb(9 20 36 / 0.7),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+  color: rgb(247 250 252 / 0.8);
+}
+
+// Retícula muy tenue: textura de tarjeta, no decoración.
+.wallet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(160deg, #000 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.wallet > * {
+  position: relative;
+}
+
+.wallet__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.wallet__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.wallet__section {
+  margin: 0.4rem 0 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(247 250 252 / 0.55);
+}
+
+.accounts {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Un método: etiqueta, dato grande y copiar. Vidrio sobre el navy.
+.method {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'label value copy';
+  align-items: center;
+  gap: 0.2rem 0.75rem;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(6px);
+}
+
+.method__label {
+  grid-area: label;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.12);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.method__value {
+  grid-area: value;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// El IBAN nunca se corta con «…»: un número de cuenta se ve entero. Si no
+// cabe (móvil), baja de línea entre sus grupos de cuatro.
+.method__value--iban {
+  overflow: visible;
+  font-size: 0.9375rem;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  white-space: normal;
+  text-overflow: clip;
+  // Si baja de línea, en dos mitades (3 + 3 grupos), no un grupo suelto.
+  text-wrap: balance;
+}
+
+.method__copy {
+  grid-area: copy;
+}
+
+// Bizum, destacado: dorado y con una línea de ayuda.
+.method--bizum {
+  grid-template-areas:
+    'label value copy'
+    '.     hint  hint';
+  border-color: rgb(212 175 55 / 0.45);
+  background: linear-gradient(135deg, rgb(212 175 55 / 0.2), rgb(212 175 55 / 0.06));
+
+  .method__label {
+    background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+    color: #12284a;
+  }
+
+  .method__value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+}
+
+.method__hint {
+  grid-area: hint;
+  font-size: 0.75rem;
+  color: rgb(247 250 252 / 0.65);
+}
+
+// El botón de copiar, en versión clara sobre el navy.
+.method__copy ::ng-deep .copy {
+  border-color: rgb(255 255 255 / 0.22);
+  color: rgb(247 250 252 / 0.85);
+
+  &:hover {
+    border-color: rgb(212 175 55 / 0.7);
+    background: rgb(212 175 55 / 0.14);
+    color: #fff;
+  }
+}
+
+.method__copy ::ng-deep .copy--done {
+  border-color: var(--c-gold);
+  background: rgb(212 175 55 / 0.2);
+  color: var(--c-gold-soft);
+}
+
+// Titular, banco y BIC: en pequeño, en tres columnas.
+.wallet__meta {
+  display: grid;
+  // Titular a lo que quede; banco y BIC a su contenido: con tercios, el
+  // titular se partía en dos líneas al añadir su botón de copiar.
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  column-gap: 1.25rem;
+  row-gap: 0.5rem;
+  margin: 0.3rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
 
   dt {
-    font-size: 0.72rem;
+    margin-bottom: 0.15rem;
+    font-size: 0.625rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-gold-deep);
+    color: rgb(247 250 252 / 0.5);
   }
 
   dd {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
     margin: 0;
-    font-size: 0.95rem;
-    overflow-wrap: anywhere;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: rgb(247 250 252 / 0.9);
   }
 }
 
-.bank__code {
+// Dato + botón de copiar (titular, banco, BIC), centrados en su línea. Un
+// titular largo puede partirse: el texto encoge (`min-width: 0`), no el botón.
+.wallet__copyable {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  > span {
+    min-width: 0;
+  }
+
+  ::ng-deep .copy {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+.wallet__copyable--code > span {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
 }
 
-/* --- Cuentas ----------------------------------------------------------
- * El IBAN es lo único que el visitante viene a buscar: se muestra en
- * cuerpo grande, con cifras tabulares (así los grupos de cuatro se alinean)
- * y con el botón de copiar siempre a la vista.
- * -------------------------------------------------------------------- */
-
-.accounts {
-  display: grid;
-  gap: var(--sp-3);
-  list-style: none;
-  padding: 0;
-  margin: var(--sp-6) 0 0;
+// Ejemplos de concepto de la transferencia, como etiquetas.
+.concept {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
 }
 
-.account {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+.concept__label {
+  font-size: 0.75rem;
+  color: rgb(247 250 252 / 0.7);
+}
+
+.concept__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.concept__chip {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid rgb(212 175 55 / 0.45);
+  border-radius: 999px;
+  background: rgb(212 175 55 / 0.12);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-gold-soft);
+}
+
+.wallet__note {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: rgb(247 250 252 / 0.6);
+}
+
+// ---------------------------------------------------------------------
+// Cierre en una línea
+// ---------------------------------------------------------------------
+.thanks {
+  @include container(var(--w-wide));
+
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--sp-4);
-  padding: var(--sp-4);
-  background: var(--c-bg);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-md);
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: clamp(1.75rem, 5vh, 3rem);
+  padding-top: 1rem;
+  border-top: 1px solid rgb(26 54 93 / 0.1);
+}
 
-  @include until('xs') {
-    grid-template-columns: minmax(0, 1fr) auto;
+.thanks__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--c-muted);
 
-    .account__currency {
-      grid-column: 1 / -1;
-    }
+  strong {
+    color: var(--c-primary);
   }
 }
 
-.account__currency {
-  padding: 0.2rem 0.55rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--c-on-primary);
-  background: var(--c-primary);
-  border-radius: var(--r-pill);
-}
-
-.account__iban {
-  font-size: clamp(0.92rem, 1.6vw, 1.05rem);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.05em;
-  color: var(--c-text);
-  overflow-wrap: anywhere;
-}
-
-.bank__bizum {
-  display: flex;
+.thanks__link {
+  display: inline-flex;
   align-items: center;
-  gap: var(--sp-3);
-  margin: var(--sp-5) 0 0;
-  max-width: none;
-  font-size: 0.95rem;
-  color: var(--c-text);
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 
   app-icon {
-    font-size: 1.2rem;
-    color: var(--c-gold-deep);
+    font-size: 0.95rem;
   }
 }
 
-.bank__note {
-  margin: var(--sp-5) 0 0;
-  max-width: none;
-  padding-block-start: var(--sp-4);
-  font-size: 0.82rem;
-  line-height: 1.6;
-  color: var(--c-faint);
-  border-block-start: 1px solid var(--c-hairline);
+// ---------------------------------------------------------------------
+// Anchos estrechos: la tarjeta sube justo debajo del lema (la acción no
+// puede quedar al final de la página) y los destinos bajan detrás.
+// ---------------------------------------------------------------------
+// La columna del porqué se «abre» (`display: contents`) para poder colocar
+// la tarjeta entre el versículo y los destinos con `order`; sin hueco de
+// rejilla, cada pieza lleva su propio margen.
+@include until('lg') {
+  .give {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .give__why {
+    display: contents;
+  }
+
+  .wallet {
+    position: static;
+    order: 1;
+    margin-top: 1.25rem;
+  }
+
+  .give__sub,
+  .purposes {
+    order: 2;
+  }
+}
+
+@include until('sm') {
+  .purposes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wallet__meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .method__value--iban {
+    font-size: 0.8125rem;
+    letter-spacing: 0.03em;
+  }
 }

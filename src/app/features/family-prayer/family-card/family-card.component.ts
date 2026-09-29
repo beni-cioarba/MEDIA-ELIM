@@ -39,7 +39,8 @@ const LONG_TEXT_CHARS = 260;
 })
 export class FamilyCardComponent {
   protected readonly prayer = inject(FamilyPrayerService);
-  private readonly fullscreen = inject(PresentationService).isFullscreen;
+  /** Proyectando: la ficha usa la hoja de proyección, no la web (`.fcard--web`). */
+  protected readonly fullscreen = inject(PresentationService).isFullscreen;
 
   @Input({ required: true }) family!: PrayerFamilyView;
   /** Primera ficha visible al abrir: su foto no se difiere. */

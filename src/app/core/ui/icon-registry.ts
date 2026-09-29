@@ -35,11 +35,22 @@ import { IconName } from './icon-name';
 export const ELIM_ICON_NAMESPACE = 'elim';
 
 /**
- * Todos comparten `viewBox 0 0 24 24` y se dibujan con trazo (`stroke`)
- * para que se vean coherentes a cualquier escala, incluida la proyección.
- * El grosor se controla con `--elim-icon-stroke` desde CSS.
+ * Icono de **relleno** copiado tal cual de un set de referencia (Material
+ * Symbols), con su propio `viewBox`. Para lo figurativo que no tiene Lucide:
+ * se toma de un set profesional en vez de dibujarlo a mano.
  */
-const ICON_PATHS: Record<IconName, readonly string[]> = {
+interface FilledIcon {
+  readonly viewBox: string;
+  readonly d: string;
+}
+
+/**
+ * Casi todos comparten `viewBox 0 0 24 24` y se dibujan con trazo (`stroke`)
+ * para que se vean coherentes a cualquier escala, incluida la proyección.
+ * El grosor se controla con `--elim-icon-stroke` desde CSS. Los `FilledIcon`
+ * son la excepción (estilo «outlined» de Material, de grosor equivalente).
+ */
+const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   home: ['M3 10.5 12 3l9 7.5', 'M5 9.5V21h14V9.5'],
   users: [
     'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2',
@@ -99,18 +110,32 @@ const ICON_PATHS: Record<IconName, readonly string[]> = {
   // rejilla que Lucide). Sustituye a «hand-heart» en «Rugăciune pentru
   // familii»: la mano con corazón decía «cuidar», no «familia», y `users`
   // ya es «La iglesia».
-  // Manos en oración (🙏, dibujo propio con el trazo de Lucide): dos palmas
-  // anchas unidas con la costura en medio, los pulgares a los lados y las
-  // mangas abajo. Para «Cauze de rugăciune»: el corazón decía «amor», no
-  // «orar». Probado a 20 px: con palmas estrechas no se leía como manos.
-  pray: [
-    'M12 2.5c-1.3 0-2.2 1-2.5 2.2L8 11.5l-2.2 2.7',
-    'M12 2.5c1.3 0 2.2 1 2.5 2.2l1.5 6.8 2.2 2.7',
-    'M12 5.5v10.5',
-    'M10.2 14.6c-.8-1-1-2.4-.6-3.6',
-    'M13.8 14.6c.8-1 1-2.4.6-3.6',
-    'M5.8 14.2 3 17.5l3 3.5 6-5 6 5 3-3.5-2.8-3.3',
-  ],
+  // Manos en oración: «folded_hands» de Material Symbols Outlined (Google,
+  // Apache 2.0), copiado tal cual. Para «Cauze de rugăciune»: el corazón
+  // decía «amor», no «orar». Un icono figurativo así se toma de un set
+  // profesional, no se dibuja a mano (se probó y no daba la talla).
+  pray: {
+    viewBox: '0 -960 960 960',
+    d: 'M620-320v-109l-45-81q-7 5-11 13t-4 17v229L663-80h-93l-90-148v-252q0-31 15-57t41-43l-56-99q-20-38-17.5-80.5T495-832l68-68 276 324 41 496h-80l-39-464-203-238-6 6q-10 10-11.5 23t4.5 25l155 278v130h-80Zm-360 0v-130l155-278q6-12 4.5-25T408-776l-6-6-203 238-39 464H80l41-496 276-324 68 68q30 30 32.5 72.5T480-679l-56 99q26 17 41 43t15 57v252L390-80h-93l103-171v-229q0-9-4-17t-11-13l-45 81v109h-80Z',
+  },
+  // Material Symbols «slideshow» y «palette» (Google, Apache 2.0), copiados
+  // tal cual: accesos del pie al panel de proyección y a la guía de estilos.
+  slideshow: {
+    viewBox: '0 -960 960 960',
+    d: 'm380-300 280-180-280-180v360ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z',
+  },
+  palette: {
+    viewBox: '0 -960 960 960',
+    d: 'M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80Zm0-400Zm-177 23q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm120-160q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm200 0q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm120 160q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17ZM480-160q9 0 14.5-5t5.5-13q0-14-15-33t-15-57q0-42 29-67t71-25h70q66 0 113-38.5T800-518q0-121-92.5-201.5T488-800q-136 0-232 93t-96 227q0 133 93.5 226.5T480-160Z',
+  },
+  // WhatsApp: logo oficial de Simple Icons (CC0), copiado tal cual. Marca
+  // reconocible al instante: en «Contact» abre el chat con la iglesia.
+  whatsapp: {
+    viewBox: '0 0 24 24',
+    d: 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z',
+  },
+  // Lucide «arrow-up»: volver arriba (pie).
+  'arrow-up': ['M12 19V5', 'm5 12 7-7 7 7'],
   family: [
     'M8 4.5a2 2 0 1 1-4 0a2 2 0 1 1 4 0',
     'M2.5 21v-5.5A3.5 3.5 0 0 1 6 12a3.5 3.5 0 0 1 3 1.7',
@@ -151,7 +176,12 @@ const ICON_PATHS: Record<IconName, readonly string[]> = {
   'fullscreen-exit': ['M9 4v5H4', 'M15 4v5h5', 'M9 20v-5H4', 'M15 20v-5h5'],
 };
 
-function toSvg(paths: readonly string[]): string {
+function toSvg(icon: readonly string[] | FilledIcon): string {
+  if (!Array.isArray(icon)) {
+    const filled = icon as FilledIcon;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${filled.viewBox}" fill="currentColor" data-filled=""><path d="${filled.d}"/></svg>`;
+  }
+  const paths = icon as readonly string[];
   const body = paths.map((d) => `<path d="${d}"/>`).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
 }

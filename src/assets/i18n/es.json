@@ -283,11 +283,11 @@
   "footer": {
     "church": "Iglesia ELIM Arganda",
     "rights": "Todos los derechos reservados.",
-    "mission": "Una comunidad cristiana evangélica en Arganda del Rey. Nos reunimos cada semana para adorar a Dios, estudiar su Palabra y servir a nuestro barrio. Ven como eres: aquí hay sitio para ti.",
+    "tools": "Herramientas",
     "follow": "Síguenos",
     "visit": "Visítanos",
     "schedule": "Horarios y cómo llegar",
-    "partner": "Instituto Nacional Evangélico Betel",
+    "partner": "Desarrollado por INEB · LinkedIn",
     "version": "Versión de la aplicación",
     "build": "Compilación",
     "commit": "Revisión",
@@ -327,8 +327,7 @@
     "channels": {
       "address": "Dirección",
       "email": "Correo",
-      "phone": "Teléfono",
-      "whatsapp": "Escríbenos por WhatsApp"
+      "phone": "Teléfono"
     },
     "schedule": {
       "title": "Cuándo nos reunimos",
@@ -342,27 +341,34 @@
       "subtitle": "Puedes sostener la obra de la iglesia o conocer primero quiénes somos.",
       "donate": "Apoyar a la iglesia",
       "about": "Quiénes somos"
+    },
+    "quick": {
+      "label": "Contacto directo",
+      "call": "Llamar",
+      "email": "Escribir un e-mail",
+      "directions": "Cómo llegar"
+    },
+    "card": {
+      "title": "Datos de contacto"
     }
   },
   "donate": {
     "eyebrow": "Generosidad",
     "title": "Donativos",
-    "lead": "La generosidad es una de las disciplinas que cultivamos: el diezmo y las ofrendas voluntarias sostienen los cultos, la ayuda social y los directos.",
+    "lead": "La Iglesia Elim vive de la generosidad de quienes la forman. Cada diezmo y cada ofrenda mantiene abiertas las puertas de la casa de oración, sostiene a las familias que pasan necesidad y lleva el Evangelio más lejos.",
     "verse": {
       "text": "«Cada uno dé como propuso en su corazón: no con tristeza ni por obligación, porque Dios ama al que da con alegría.»",
       "ref": "2 Corintios 9:7"
     },
     "purposes": {
-      "eyebrow": "Transparencia",
-      "title": "A dónde va tu donativo",
-      "subtitle": "Todo lo que se recibe se destina a una de estas cuatro áreas.",
+      "title": "A dónde llegan tus ofrendas",
       "items": {
         "mission": {
           "title": "La obra de la iglesia",
-          "body": "Los cultos semanales, los materiales de estudio bíblico y la formación de quienes sirven."
+          "body": "Los cultos de adoración, el estudio de la Palabra y la formación de quienes sirven."
         },
         "building": {
-          "title": "El local",
+          "title": "La casa de oración",
           "body": "El alquiler, los suministros y el mantenimiento del lugar donde nos reunimos cada semana."
         },
         "outreach": {
@@ -370,31 +376,39 @@
           "body": "Apoyo concreto a las familias de la comunidad que atraviesan dificultades."
         },
         "media": {
-          "title": "Medios",
-          "body": "Las retransmisiones en directo y el equipo que lleva el culto a quien no puede venir."
+          "title": "Retransmisiones y medios",
+          "body": "Las emisiones en directo y el equipo que lleva el culto a quienes no pueden venir."
         }
-      }
-    },
-    "demo": {
-      "title": "Datos provisionales",
-      "body": "Las cuentas que aparecen abajo son un ejemplo de demostración, no son reales. No hagas ninguna transferencia hasta que se sustituyan por los datos bancarios oficiales de la iglesia."
+      },
+      "trust": "Las ofrendas las administra el tesorero de la iglesia, bajo la supervisión de los censores.",
+      "trust_link": "Ver la dirección"
     },
     "bank": {
-      "eyebrow": "Cómo donar",
       "title": "Transferencia bancaria",
-      "subtitle": "Copia el IBAN con un clic y haz la transferencia desde la aplicación de tu banco.",
       "holder": "Titular",
       "entity": "Banco",
       "bic": "Código SWIFT / BIC",
       "account": "Cuenta",
-      "bizum": "Bizum al número",
-      "note": "En el concepto puedes indicar el destino del donativo (por ejemplo: ayuda social). Si necesitas un justificante, escríbenos y te lo enviamos."
+      "note": "¿Necesitas un justificante de tu donativo? Escríbenos y te lo enviamos.",
+      "concept": "En «Concepto» puedes poner, por ejemplo:",
+      "concepts": [
+        "Diezmo",
+        "Ofrenda",
+        "Ayuda social"
+      ]
     },
     "thanks": {
       "title": "Gracias",
-      "subtitle": "Cada donativo, por pequeño que sea, mantiene la obra en pie.",
-      "contact": "¿Tienes alguna duda?",
-      "about": "Quiénes somos"
+      "subtitle": "Cada ofrenda, por pequeña que sea, es semilla para la obra de Dios.",
+      "contact": "¿Tienes alguna duda?"
+    },
+    "card": {
+      "title": "Cómo dar",
+      "bizum_hint": "Lo más rápido, desde la app de tu banco."
+    },
+    "why": {
+      "title": "Por qué damos",
+      "body": "Dar no es una cuota, sino un acto de adoración: devolvemos a Dios parte de lo que Él nos ha confiado. Te invitamos a formar parte de la obra, con fidelidad, según tus posibilidades y con alegría."
     }
   },
   "nav": {
@@ -641,7 +655,7 @@
       },
       "cta_program": "Ver el programa",
       "cta_leadership": "Conocer al equipo",
-      "note": "Al menos una vez al mes se comparte la Cena del Señor. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
+      "note": "La Cena del Señor se celebra el primer domingo de cada mes, en el culto de la mañana. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
     },
     "facts_years": "{{count}} años sirviendo",
     "facts_services": "{{count}} cultos por semana",
@@ -746,7 +760,7 @@
     },
     "sheet": {
       "serves": "Dónde sirve",
-      "governance": "Estructura de liderazgo"
+      "link": "Enlace a esta ficha"
     },
     "ministries": {
       "worship": {
@@ -787,7 +801,17 @@
       "subtitle": "Escríbenos o ven a cualquiera de nuestros cultos: te esperamos.",
       "cta_contact": "Escríbenos",
       "cta_visit": "Cómo llegar"
-    }
+    },
+    "directory": {
+      "title": "Quién sirve y dónde",
+      "subtitle": "{{areas}} áreas de servicio · {{people}} personas sirviendo",
+      "search": "Busca una persona o un departamento",
+      "empty": "Ningún resultado para «{{q}}».",
+      "results_one": "Un departamento encontrado",
+      "results_other": "{{n}} departamentos encontrados"
+    },
+    "serves_one": "un servicio",
+    "serves_other": "{{n}} servicios"
   },
   "credo": {
     "eyebrow": "En qué creemos",

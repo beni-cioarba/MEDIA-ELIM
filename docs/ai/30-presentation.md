@@ -247,6 +247,37 @@ de ids elegibles y su conjunto de ocultos (`localStorage`
 familias es `FAMILY_SUMMARY_ID`). Si se desmarcan todas, el bloque no aporta
 diapositivas. «Restablecer» limpia también estas selecciones.
 
+**Global, sobre los bloques** (fila «BLOCURI · n din N» bajo el título de la
+lista): «Doar primul» deja encendido sólo el primer bloque con contenido (en
+el orden de la lista) y apaga el resto; «Toate» devuelve todos los bloques a
+automático (se encienden los que tienen contenido) y marca todos sus
+elementos. `globalSelection`, `selectOnlyFirstBlock()`, `selectAllBlocks()`.
+
+**Familias de semanas anteriores**: desplegable cerrado al pie del bloque de
+familias (`<details>`, una línea). Nunca vienen marcadas y **ningún «Toate»
+las añade** (ni el del bloque ni el global); «Doar primul» del bloque sí las
+retira. Al marcar una pasa a la lista del bloque (etiqueta «anterior»,
+detrás de las de la semana) y se proyecta; la marca es **sólo para hoy**
+(`…families.past` guarda `{date, ids}` y caduca a medianoche, como el aviso
+de directo). `pastFamilies`, `pastFamilyOptions`, `setPastFamilyShown`.
+
+## Tiempo por diapositiva
+
+Cada bloque tiene su tiempo (cabecera del grupo) y **cada elemento puede
+tener el suyo**: anuncio, evento o ficha de familia. Por defecto hereda el
+del bloque y el control (− · segundos · +) sólo aparece al apuntar la fila;
+si se cambia, la cifra queda a la vista en oro con su ↺. Guardar el mismo
+valor que el bloque borra la excepción (sigue heredando).
+
+- Claves por **elemento**, no por posición (`slideTimeKeys` en
+  `PresentationDisplayService`): `a:<id>` · `e:<id>` · `f:<id>` ·
+  `f:summary`. Una página de eventos dura lo que su evento más largo.
+- `CarouselService.currentDurationMs` usa `durationForSlide(slide)`.
+- **Bloque nuevo con varias diapositivas**: basta con enseñar a
+  `slideTimeKeys` cómo se nombran sus elementos; el panel pinta el control
+  en sus filas y el carrusel lo respeta.
+- «Restablecer» borra también los tiempos por elemento.
+
 ## Anuncios uno a uno
 
 Bajo el bloque «Anunțuri» del panel, cada anuncio vigente tiene su propia

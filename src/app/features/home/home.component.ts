@@ -14,6 +14,8 @@ import { CardCarouselComponent } from '../../shared/card-carousel/card-carousel.
 import { HeroCarouselComponent } from '../../shared/hero-carousel/hero-carousel.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { IconName } from '../../core/ui/icon-name';
+import { FamilyPrayerService, PrayerFamilyView } from '../../core/services/family-prayer.service';
+import { FamilyPhotoComponent } from '../family-prayer/family-photo/family-photo.component';
 
 
 
@@ -67,8 +69,10 @@ interface NoticeRow {
   readonly day: string;
   readonly month: string;
   readonly title: string;
-  readonly lead: string;
-  readonly meta: string;
+  /** Segunda línea de la ficha: hora y lugar o, si el aviso no los tiene, su resumen. */
+  readonly detail: string;
+  /** `detail` es hora/lugar (va en oro) y no el resumen. */
+  readonly isWhen: boolean;
 }
 
 /**
@@ -162,6 +166,7 @@ interface QuickLink {
         CardCarouselComponent,
         HeroCarouselComponent,
         IconComponent,
+        FamilyPhotoComponent,
     ],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'
@@ -188,7 +193,25 @@ export class HomeComponent {
     streams: blockPath('streams'),
     socials: blockPath('socials'),
     location: blockPath('location'),
+    familyPrayer: `/${APP_PATHS.familyPrayer}`,
   } as const;
+
+  protected readonly prayer = inject(FamilyPrayerService);
+
+  /**
+   * Familias por las que se ora esta semana (sección de la portada, sólo si
+   * hay semana vigente). Mismo dato que la página y el menú.
+   */
+  protected readonly prayerWeek = this.prayer.current;
+
+  /**
+   * Motivo de oración en una frase para la tarjeta: el primer párrafo del
+   * mensaje o, si la familia sólo dejó un versículo, el versículo. La ficha
+   * completa está a un clic.
+   */
+  protected prayerExcerpt(family: PrayerFamilyView): string {
+    return family.message[0] ?? family.verse?.text ?? '';
+  }
 
   /** Accesos rápidos de la portada (orden = prioridad para el visitante). */
   protected readonly quickLinks: readonly QuickLink[] = [
@@ -363,33 +386,27 @@ export class HomeComponent {
    * lectura) sigue ahí la semana que viene; un aviso o se ve hoy o no sirve.
    * Dentro del carrusel se podía pasar de largo sin verlo.
    *
-   * Tres como mucho: a partir de ahí deja de ser una franja y se convierte en
-   * una lista, y el resto está a un clic en su sección.
+   * Todos los vigentes: la franja es un carrusel (dos a la vista) que avanza
+   * solo cuando hay más de los que caben, así que no hace falta recortar.
    */
   protected readonly noticeItems = computed<readonly NoticeRow[]>(() =>
     this.announcements
       .active()
-      .slice(0, 3)
       .map((aviso) => {
         const fecha = aviso.date ? this.schedule.formatDayParts(aviso.date) : null;
+        // Un solo dato bajo el título: cuándo y dónde (lo que se viene a
+        // buscar) o, si el aviso no tiene hora ni lugar, su resumen. Antes
+        // iban los dos en columnas y los tres textos salían cortados.
+        const when = [aviso.time ?? null, aviso.place ?? null].filter(Boolean).join(' · ');
         return {
           id: aviso.id,
           day: fecha?.day ?? '',
           month: fecha?.month ?? '',
           title: aviso.title,
-          // El resumen que ya traía el modelo: es lo que convierte una lista
-          // de títulos en algo que de verdad informa.
-          lead: aviso.lead,
-          // Hora y lugar a la derecha, sólo lo que exista: un «·» suelto
-          // delata el dato que falta.
-          meta: [aviso.time ?? null, aviso.place ?? null].filter(Boolean).join(' · '),
+          detail: when || aviso.lead,
+          isWhen: when !== '',
         };
       }),
-  );
-
-  /** Cuántos quedan fuera de la franja. */
-  protected readonly noticeMore = computed(() =>
-    Math.max(0, this.announcements.active().length - this.noticeItems().length),
   );
 
   /**

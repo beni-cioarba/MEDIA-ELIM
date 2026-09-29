@@ -272,12 +272,15 @@
  * Franja de avisos — lo único de la portada con fecha de caducidad.
  *
  * Diseño propio, NO derivado del catálogo (valores explícitos a propósito).
- * La densidad sale de **columnas alineadas**, no de letra pequeña: cada fila
- * cabe en 38 px y lleva cinco datos —día, mes, título, resumen y hora/lugar—.
+ * Revisión del 29/09/2026 («más profesional, innovador y comprimido»):
+ * antes eran filas con título, resumen y hora en columnas y los tres textos
+ * salían cortados con «…», más una línea entera para la cabecera. Ahora es
+ * UNA fila: rótulo · fichas lado a lado · «Toate». Cada ficha lleva el
+ * título entero (hasta dos líneas) y un solo dato debajo. ~64 px de alto.
  * ===================================================================== */
 
 .notice {
-  padding-block: clamp(0.55rem, 1.2vh, 0.85rem);
+  padding-block: 0.6rem;
   padding-inline: var(--page-gutter);
   /* Tinte cálido muy bajo: distingue la franja del lienzo sin convertirla en
      un aviso de error. */
@@ -286,22 +289,19 @@
 }
 
 .notice__inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'label list all';
+  align-items: center;
+  gap: 1.25rem;
   max-width: var(--page-max);
   margin-inline: auto;
 }
 
-/* --- Cabecera ----------------------------------------------------------- */
-
-.notice__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.15rem;
-  padding-inline-end: 0.5rem;
-}
+/* --- Rótulo y enlace ------------------------------------------------------ */
 
 .notice__label {
+  grid-area: label;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -333,6 +333,7 @@
 }
 
 .notice__all {
+  grid-area: all;
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
@@ -357,63 +358,80 @@
   border-radius: 4px;
 }
 
-/* --- Filas --------------------------------------------------------------- */
+/* --- Fichas --------------------------------------------------------------- */
 
-.notice__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* Carrusel (`app-card-carousel`): dos fichas a la vista, cada una la mitad
+   del ancho, con un filete vertical entre ellas; un solo aviso ocupa todo
+   el ancho (`--carousel-item-max: 100%`). Con más avisos avanza solo.
+   Las flechas del carrusel, más pequeñas: la franja mide ~64 px. */
+.notice {
+  --notice-item-w: 50%;
 }
 
-/*
- * Cuatro columnas con anchos fijos: fecha · título · resumen · dato. Con un
- * `flex` que se repartía solo, los resúmenes de las tres filas empezaban en
- * verticales distintas y la lista no se podía barrer con la vista.
- */
-.notice__row {
+.notice__list {
+  grid-area: list;
+  min-width: 0;
+  --carousel-item-max: 100%;
+  --c-carousel-fade: #fdf9ee;
+
+  ::ng-deep .ui-carousel__track {
+    padding-block: 0;
+  }
+
+  ::ng-deep .ui-carousel__nav {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin-top: -0.95rem;
+  }
+}
+
+.notice__cell + .notice__cell {
+  border-left: 1px solid rgb(26 54 93 / 0.1);
+}
+
+.notice__item {
   display: grid;
-  grid-template-columns: 2.4rem minmax(0, 21rem) minmax(0, 1fr) minmax(0, 17rem);
-  gap: 0.75rem;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
   align-items: center;
-  min-height: 2.25rem;
-  padding: 0.15rem 0.5rem 0.15rem 0;
-  border-radius: 6px;
+  gap: 0.65rem;
+  height: 100%;
+  padding: 0.3rem 0.85rem;
+  border-radius: 8px;
   color: #1a365d;
   text-decoration: none;
   transition: background 140ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.notice__list li + li .notice__row {
-  border-top: 1px solid rgb(26 54 93 / 0.08);
-}
-
-.notice__row:hover {
+.notice__item:hover {
   background: rgb(26 54 93 / 0.05);
 }
 
-.notice__row:focus-visible {
+.notice__item:focus-visible {
   outline: 2px solid #d4af37;
-  outline-offset: 1px;
+  outline-offset: -2px;
 }
 
-/* Pastilla de fecha. Ocupa su hueco aunque el aviso no tenga fecha, para que
-   los títulos de todas las filas empiecen en la misma vertical. */
+/* Pastilla de fecha (navy) o, si el aviso no tiene fecha, el megáfono en un
+   cuadro tonal: todas las fichas empiezan igual, ninguna con un hueco. */
 .notice__date {
   display: grid;
   place-items: center;
-  padding: 0.1rem 0;
-  border-radius: 5px;
+  align-content: center;
+  height: 2.4rem;
+  border-radius: 7px;
   background: #1a365d;
   color: #ffffff;
   line-height: 1.05;
 }
 
-.notice__date.is-empty {
-  background: transparent;
+.notice__date.is-plain {
+  background: rgb(212 175 55 / 0.16);
+  color: var(--c-gold-deep);
+  font-size: 1.05rem;
 }
 
 .notice__day {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -422,102 +440,77 @@
   font-size: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: rgb(255 255 255 / 0.78);
 }
 
-/* Las tres columnas de texto se recortan, nunca empujan: una fila mide una
-   línea y punto. */
-.notice__title,
-.notice__lead,
-.notice__meta {
+.notice__text {
+  display: grid;
+  gap: 0.1rem;
   min-width: 0;
+}
+
+/* Título entero en hasta dos líneas: se lee el aviso, no «Săptămână de
+   rugăciune pentru slujirea prin…». */
+.notice__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+/* El dato: en oro si es cuándo/dónde; en gris si es el resumen. */
+.notice__detail {
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: rgb(26 54 93 / 0.62);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.notice__title {
-  font-size: 0.9375rem;
+.notice__detail.is-when {
   font-weight: 600;
-}
-
-.notice__lead {
-  font-size: 0.8125rem;
-  color: rgb(26 54 93 / 0.6);
-}
-
-.notice__lead::before {
-  content: '— ';
-}
-
-/*
- * Hora y lugar, a la derecha y **con tope**: `width: 100%` y NO
- * `justify-self: end`, porque con `justify-self` la celda se dimensiona al
- * contenido y se sale de su columna (un lugar largo llegó a medir 523 px y se
- * comía el resumen de su propia fila).
- */
-.notice__meta {
-  width: 100%;
-  text-align: right;
-  font-size: 0.8125rem;
-  font-weight: 500;
   color: var(--c-gold-deep);
   font-variant-numeric: tabular-nums;
 }
 
 /*
- * El sitio se recorta por orden de importancia, no todo a la vez: bajo
- * 1200 px se va el resumen (el título ya identifica el aviso) y bajo 720 px
- * el dato baja a una segunda línea. La pastilla de fecha no se va nunca.
+ * Menos de 1100 px: el rótulo y «Toate» arriba, en la misma línea, y las
+ * fichas debajo a todo el ancho. Menos de 720 px: las fichas se deslizan de
+ * lado (una y media a la vista, para que se note que hay más) en vez de
+ * apilarse y empujar la portada hacia abajo.
  */
-@media (max-width: 1199.98px) {
-  .notice__row {
-    grid-template-columns: 2.4rem minmax(0, 1fr) minmax(0, 15rem);
+@media (max-width: 1099.98px) {
+  .notice__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'label all'
+      'list list';
+    row-gap: 0.3rem;
   }
 
-  .notice__lead {
-    display: none;
+  .notice__item {
+    padding-inline: 0.5rem 0.75rem;
   }
 }
 
+// Móvil: una ficha y media a la vista (se nota que hay más) y deslizamiento
+// nativo; el carrusel sigue avanzando solo si nadie lo toca.
 @media (max-width: 719.98px) {
-  .notice__row {
-    grid-template-columns: 2.4rem minmax(0, 1fr);
-    align-items: center;
-    row-gap: 0;
-    padding-block: 0.2rem;
+  .notice {
+    --notice-item-w: 82%;
   }
+}
 
-  .notice__title {
-    font-size: 0.875rem;
-    line-height: 1.25;
-  }
-
-  /*
-   * `width: 100%`, **nunca `justify-self` + `width: auto`**.
-   *
-   * Medido a 390 px: este `span` salía con 400 px de ancho y arrastraba a
-   * toda la página 74 px de scroll horizontal —la web entera se descolocaba
-   * al arrastrar de lado—.
-   *
-   * El porqué: con una alineación propia distinta de `stretch`, la rejilla
-   * dimensiona el elemento a `fit-content`, que es
-   * `min(max-content, max(min-content, disponible))`. Y como el texto va en
-   * `nowrap`, su `min-content` es la cadena entera («10:00 · Biserica Elim ·
-   * masă festivă la restaurant»): el `max()` se queda con los 400 px y se
-   * come el ancho disponible. `min-width: 0` no salva de esto, porque la
-   * fórmula usa el tamaño mínimo del contenido, no la propiedad.
-   *
-   * Con `width: 100%` el elemento mide lo que su columna y los puntos
-   * suspensivos pueden hacer su trabajo. Es el mismo fallo que ya se
-   * corrigió en la versión de escritorio de esta misma fila.
-   */
-  .notice__meta {
-    grid-column: 2;
-    width: 100%;
-    text-align: start;
-    font-size: 0.6875rem;
-    line-height: 1.2;
+@media (prefers-reduced-motion: reduce) {
+  .notice__item {
+    transition: none;
   }
 }
 
@@ -549,24 +542,6 @@
   background: var(--c-bg);
 }
 
-/* El título se alinea con la primera tarjeta usando el mismo sangrado que la
-   pista, que es lo que la hoja ya preveía («el título queda alineado con la
-   primera tarjeta») pero no llegó a pintarse. Mismo tamaño y peso que el de
-   las emisiones: son dos tiras vecinas y tienen que leerse como hermanas. */
-.board__head {
-  padding-inline: var(--board-gutter);
-  margin-block-end: clamp(0.5rem, 1.4vh, 0.85rem);
-}
-
-.board__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: var(--ls-h3);
-  color: var(--c-primary);
-}
-
 /* =======================================================================
  * ÚLTIMAS EMISIONES
  *
@@ -581,6 +556,169 @@
  * iguales que empezaban por «Slujbă de…» y había que leerlos enteros para
  * distinguirlos.
  * ===================================================================== */
+
+/* =====================================================================
+ * Rugăciune pentru familii — familias de la semana (sólo con semana vigente).
+ * Misma cabecera que «Últimas emisiones» (las dos tiras forman serie) y
+ * tarjeta propia: foto entera 4:3 sobre su fondo difuminado, nombre y el
+ * motivo de oración en dos líneas. Valores explícitos, fuera del catálogo.
+ * ===================================================================== */
+
+.fam {
+  padding-block: clamp(1.5rem, 3.5vh, 2.5rem) 0;
+  padding-inline: var(--page-gutter);
+  background: var(--c-bg);
+}
+
+.fam__inner {
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+
+.fam__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: clamp(0.75rem, 2vh, 1.1rem);
+}
+
+.fam__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary);
+}
+
+.fam__range {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--c-muted);
+}
+
+.fam__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.fam__all app-icon {
+  font-size: 0.95rem;
+}
+
+/* Tarjeta: la foto se acerca dentro de su marco al apuntar (la tarjeta no se
+   mueve bajo el cursor), igual que las emisiones. */
+.fam-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgb(26 54 93 / 0.1);
+  border-radius: 14px;
+  background: var(--c-surface);
+  color: var(--c-text);
+  text-decoration: none;
+  transition:
+    border-color 160ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 160ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover {
+    border-color: rgb(212 175 55 / 0.55);
+    box-shadow: 0 10px 24px -14px rgb(26 54 93 / 0.35);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+  }
+}
+
+/* Cuadrada: casi todas las fotos de familia van de 4:5 a 5:4, así que el
+   marco 1:1 las enseña casi sin fondo difuminado (con 4:3 salían bandas a
+   los lados en todas). La apaisada ancha es la excepción. */
+// Sin radio propio: `app-family-photo` hereda el de la tarjeta
+// (`border-radius: inherit`) y redondeaba también las esquinas de abajo,
+// así que la foto parecía flotar dentro de la tarjeta. Las de arriba las
+// recorta la propia tarjeta; abajo, borde recto contra el texto.
+.fam-card__photo {
+  border-radius: 0;
+  aspect-ratio: 1;
+
+  ::ng-deep .photo {
+    transition: transform 240ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+.fam-card:hover .fam-card__photo ::ng-deep .photo {
+  transform: scale(1.04);
+}
+
+.fam-card__body {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.75rem 0.9rem 0.9rem;
+}
+
+.fam-card__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--c-muted);
+
+  b {
+    font-weight: 700;
+    color: var(--c-primary);
+  }
+}
+
+.fam-card__names {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-gold-deep);
+}
+
+/* El motivo: dos líneas en cursiva suave; el resto, en su ficha. */
+.fam-card__excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fam-card,
+  .fam-card__photo ::ng-deep .photo {
+    transition: none;
+  }
+
+  .fam-card:hover .fam-card__photo ::ng-deep .photo {
+    transform: none;
+  }
+}
 
 .airings {
   padding-block: clamp(1.5rem, 3.5vh, 2.5rem);

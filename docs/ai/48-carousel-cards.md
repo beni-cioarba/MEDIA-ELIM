@@ -181,6 +181,18 @@ Dos consecuencias que hay que respetar:
    un lector de pantalla anunciaría diez tarjetas donde hay cinco, y el
    tabulador pasaría dos veces por los mismos enlaces.
 
+**Bucle bajo demanda** (29/09/2026): `[loop]="true"` ya no duplica siempre.
+La copia se pinta sólo si una lista **no cabe** y se retira sólo si la
+ventana se **ensancha** y ya cabe (histéresis, `duplicatedAtWidth`). Sin la
+histéresis oscilaba sin fin (copia → medición antes de que el DOM la tuviera →
+«ya cabe» → quitar…) y colgaba la portada. Así el mismo carrusel sirve para
+cinco elementos que caben (quieto) y para ocho que no (bucle + avance).
+
+Carruseles que lo usan con `loop` + avance: tablero de la portada (5 s),
+**franja de avisos** de la portada (6 s; dos a la vista, uno y medio en
+móvil, `--notice-item-w`), **familias de la semana** en la portada (5 s,
+tarjeta con foto entera 1:1) y en el menú Programa (4 s).
+
 ## Arrastre con el ratón
 
 **Por qué no hay librería.** Se comprobó antes de escribir nada: Angular
@@ -198,7 +210,10 @@ secuestrarlo sería empeorarlo. El gesto se implementa para
 Los cinco detalles que separan esto de un arrastre a medias:
 
 1. **Captura del puntero**, para que el gesto siga aunque el ratón salga del
-   carrusel o de la ventana.
+   carrusel o de la ventana. **Sólo al pasar el umbral de arrastre** (6 px):
+   capturando ya en `pointerdown`, el `click` de un toque simple iba a la
+   ventana del carrusel y la tarjeta-enlace no navegaba (se vio en el menú
+   Programa a 1280 px, 29/09/2026).
 2. **Se apaga el anclaje mientras se arrastra.** Con
    `scroll-snap-type: mandatory`, cada asignación de `scrollLeft` vuelve al
    punto de anclaje más cercano: el carrusel se queda pegado y no se mueve.

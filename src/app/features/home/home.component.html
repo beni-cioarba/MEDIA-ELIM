@@ -77,49 +77,60 @@
      un anuncio es lo único de la portada con fecha de caducidad —el programa
      y el plan de lectura siguen ahí la semana que viene; un aviso o se ve hoy
      o no sirve—. Dentro del carrusel se podía pasar de largo.
-     Formato comprimido al máximo: una línea por aviso, sin tarjeta.
+     Revisión del 29/09/2026: UNA fila. Rótulo · avisos como fichas lado a
+     lado · «Toate». Cada ficha: pastilla de fecha (o megáfono si el aviso
+     no tiene fecha) + título en hasta dos líneas (entero, no cortado a media
+     frase) + un dato (hora y lugar o, si no hay, el resumen). En móvil las
+     fichas se deslizan de lado.
      =================================================================== -->
 @if (noticeItems().length > 0) {
-  <section class="notice" [attr.aria-label]="'nav.announcements' | translate">
+  <section class="notice" aria-labelledby="notice-label">
     <div class="notice__inner">
-      <!-- Cabecera en su propia línea: el rótulo a la izquierda y el enlace a
-           la derecha. Antes el rótulo ocupaba una columna entera y dejaba un
-           hueco muerto de 370 px; así el ancho completo queda para el dato. -->
-      <header class="notice__head">
-        <p class="notice__label">
-          <app-icon name="megaphone" />
-          <span>{{ 'nav.announcements' | translate }}</span>
-          <span class="notice__count">{{ announcements.active().length }}</span>
-        </p>
-        <a class="notice__all" [routerLink]="links.announcements">
-          {{ 'home.board.all' | translate }}
-          <app-icon name="chevron-right" />
-        </a>
-      </header>
+      <p class="notice__label" id="notice-label">
+        <app-icon name="megaphone" />
+        <span class="notice__label-text">{{ 'nav.announcements' | translate }}</span>
+        <span class="notice__count">{{ announcements.active().length }}</span>
+      </p>
 
-      <ul class="notice__list" role="list">
+      <!-- Carrusel: dos avisos a la vista (uno y medio en móvil). Si hay más,
+           avanza solo cada 6 s en bucle y se para al apuntar, con foco, con
+           `prefers-reduced-motion` o en cuanto se toca. Si caben, no se mueve. -->
+      <app-card-carousel
+        class="notice__list"
+        labelKey="nav.announcements"
+        itemWidth="var(--notice-item-w)"
+        gap="0px"
+        [autoplayMs]="6000"
+        [loop]="true"
+      >
+        <ng-template>
         @for (item of noticeItems(); track item.id) {
-          <li>
-            <a class="notice__row" [routerLink]="[links.announcements, item.id]">
-              <!-- Pastilla de fecha: el número y el mes alinean todas las
-                   filas y se leen antes que una fecha corrida. -->
-              <span class="notice__date" [class.is-empty]="!item.day">
+          <li class="ui-carousel__item notice__cell">
+            <a class="notice__item" [routerLink]="[links.announcements, item.id]" draggable="false">
+              <span class="notice__date" [class.is-plain]="!item.day" aria-hidden="true">
                 @if (item.day) {
                   <span class="notice__day">{{ item.day }}</span>
                   <span class="notice__month">{{ item.month }}</span>
+                } @else {
+                  <app-icon name="megaphone" />
                 }
               </span>
-
-              <!-- Cuatro columnas fijas, no un flex que se reparte solo: es lo
-                   que hace que el resumen de todas las filas empiece en la
-                   misma vertical y se puedan barrer con la vista. -->
-              <span class="notice__title">{{ item.title }}</span>
-              <span class="notice__lead">{{ item.lead }}</span>
-              <span class="notice__meta">{{ item.meta }}</span>
+              <span class="notice__text">
+                <span class="notice__title">{{ item.title }}</span>
+                @if (item.detail) {
+                  <span class="notice__detail" [class.is-when]="item.isWhen">{{ item.detail }}</span>
+                }
+              </span>
             </a>
           </li>
         }
-      </ul>
+        </ng-template>
+      </app-card-carousel>
+
+      <a class="notice__all" [routerLink]="links.announcements">
+        {{ 'home.board.all' | translate }}
+        <app-icon name="chevron-right" />
+      </a>
     </div>
   </section>
 }
@@ -134,16 +145,12 @@
      que tiene; debajo, las dos siguientes.
      Detalle y medidas: docs/ai/48-carousel-cards.md.
      =================================================================== -->
-<section class="board">
-  <!-- Cabecera. El carrusel llevaba sólo `aria-label`, así que el bloque más
-       grande de la portada —512 px y cinco tarjetas— llegaba **sin un solo
-       rótulo**: el visitante pasaba de los anuncios a una fila de tarjetas de
-       colores sin saber qué está mirando. Y la tira de transmisiones, que
-       pesa menos, sí tenía su título: dos bloques vecinos con dos criterios.
-       Sin «ver todo»: cada tarjeta ya lleva el suyo. -->
-  <div class="board__head">
-    <h2 class="board__title">{{ 'home.board.title' | translate }}</h2>
-  </div>
+<section class="board" aria-labelledby="board-title">
+  <!-- Rótulo «Ce urmează» sólo para el lector de pantalla (29/09/2026, a
+       petición del usuario): a la vista sobraba —cada tarjeta ya dice qué es
+       con su insignia— y el carrusel sube pegado a la franja de avisos. El
+       `h2` se mantiene para que el esquema de la página no pierda el bloque. -->
+  <h2 class="u-sr-only" id="board-title">{{ 'home.board.title' | translate }}</h2>
 
   <app-card-carousel
     labelKey="home.board.title"
@@ -262,6 +269,72 @@
      Si el canal no responde, la sección no se pinta: en una portada pública
      un hueco vacío es peor que no tener la sección.
      =================================================================== -->
+<!-- ===================================================================
+     Rugăciune pentru familii: las familias por las que se ora esta semana.
+     Sólo con semana vigente. Encima de las emisiones y con su misma cabecera
+     (título + «ver todo»), para que las dos tiras se lean como una serie.
+     Carrusel: si caben todas no se mueve; si la semana trae más, avanza solo
+     cada 5 s y se para al apuntar, con foco o en cuanto se toca.
+     Tarjeta: foto ENTERA (contain + fondo difuminado, nunca recortada),
+     familia, nombres y el motivo en dos líneas; enlaza a su ficha.
+     =================================================================== -->
+@if (prayerWeek(); as semana) {
+  @if (semana.families.length > 0) {
+    <section class="fam" aria-labelledby="fam-title">
+      <div class="fam__inner">
+        <div class="fam__head">
+          <h2 class="fam__title" id="fam-title">
+            {{ 'family_prayer.title' | translate }}
+            <span class="fam__range">{{ prayer.formatRange(semana) }}</span>
+          </h2>
+          <a class="fam__all" [routerLink]="links.familyPrayer">
+            {{ 'home.board.all' | translate }}
+            <app-icon name="arrow-right" />
+          </a>
+        </div>
+
+        <app-card-carousel
+          labelKey="family_prayer.week_title"
+          itemWidth="clamp(13.5rem, 17vw, 15rem)"
+          gap="1rem"
+          [autoplayMs]="5000"
+          [loop]="true"
+        >
+          <ng-template>
+            @for (familia of semana.families; track familia.id) {
+              <li class="ui-carousel__item">
+                <a
+                  class="fam-card"
+                  [routerLink]="links.familyPrayer"
+                  [fragment]="familia.id"
+                  draggable="false"
+                >
+                  <app-family-photo class="fam-card__photo" [family]="familia" sizes="18rem" />
+                  <span class="fam-card__body">
+                    <span class="fam-card__name">
+                      @if (familia.single) {
+                        {{ familia.fullName }}
+                      } @else {
+                        {{ 'family_prayer.family' | translate }} <b>{{ familia.surname }}</b>
+                      }
+                    </span>
+                    @if (!familia.single) {
+                      <span class="fam-card__names">{{ familia.names }}</span>
+                    }
+                    @if (prayerExcerpt(familia); as motivo) {
+                      <span class="fam-card__excerpt">{{ motivo }}</span>
+                    }
+                  </span>
+                </a>
+              </li>
+            }
+          </ng-template>
+        </app-card-carousel>
+      </div>
+    </section>
+  }
+}
+
 @if (broadcasts().length > 0) {
   <section class="airings" [attr.aria-label]="'streams.recent_title' | translate">
     <div class="airings__inner">

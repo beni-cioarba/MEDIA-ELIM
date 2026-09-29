@@ -18,7 +18,7 @@ export class AppTitleStrategy extends TitleStrategy {
   private readonly seo = inject(SeoService);
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
-    this.seo.update(deepestSeo(snapshot.root));
+    this.seo.update(deepestSeo(snapshot.root), snapshot.url);
   }
 }
 

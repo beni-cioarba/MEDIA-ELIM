@@ -1,7 +1,5 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   NgZone,
@@ -16,6 +14,7 @@ import { Router } from '@angular/router';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { DockActionsService } from './dock-actions.service';
+import { DockOverlapService } from './dock-overlap.service';
 
 /**
  * Dock flotante fijo en la esquina inferior derecha con los controles de
@@ -31,8 +30,8 @@ import { DockActionsService } from './dock-actions.service';
  *
  * En modo presentación el dock se oculta y se revela al pasar el ratón o
  * enfocarlo, para no ensuciar la proyección pero seguir a mano. Fuera de
- * presentación se oculta si el footer institucional entra en el viewport,
- * para no taparlo (IntersectionObserver sobre `app-footer`).
+ * presentación se retira entero mientras el pie está en pantalla: el pie
+ * repite estas acciones en su franja inferior (`DockOverlapService`).
  */
 @Component({
     selector: 'app-floating-actions',
@@ -41,10 +40,10 @@ import { DockActionsService } from './dock-actions.service';
     template: `
     <div
       class="dock"
-      [class.dock--visible]="isVisible() && (!footerVisible() || showTop())"
+      [class.dock--visible]="isVisible() && !footerVisible()"
       [class.dock--present]="presentation.isFullscreen()"
       role="complementary"
-      [attr.aria-hidden]="footerVisible() && !showTop()"
+      [attr.aria-hidden]="footerVisible()"
     >
       @if (canPresent()) {
         <button
@@ -292,9 +291,8 @@ import { DockActionsService } from './dock-actions.service';
     `,
     ]
 })
-export class FloatingActionsComponent implements AfterViewInit {
+export class FloatingActionsComponent {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly navActive = inject(NavActiveService);
   private readonly router = inject(Router);
   protected readonly dockActions = inject(DockActionsService);
@@ -312,7 +310,13 @@ export class FloatingActionsComponent implements AfterViewInit {
 
   /** El dock está siempre disponible; solo se oculta si tapa el footer. */
   protected readonly isVisible = signal(true);
-  protected readonly footerVisible = signal(false);
+
+  /**
+   * El pie está en pantalla: repite estas acciones en su franja inferior,
+   * así que el dock se retira entero (antes se quedaba «volver arriba»
+   * flotando encima del pie).
+   */
+  protected readonly footerVisible = inject(DockOverlapService).duplicateVisible;
 
   /**
    * «Volver arriba» sólo aparece cuando el usuario ya se ha alejado del
@@ -342,36 +346,6 @@ export class FloatingActionsComponent implements AfterViewInit {
 
     zone.runOutsideAngular(() => window.addEventListener('scroll', onScroll, { passive: true }));
     this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
-  }
-
-  ngAfterViewInit(): void {
-    if (typeof IntersectionObserver === 'undefined') return;
-
-    // Localiza el footer cuando esté en el DOM (puede no estar al instante
-    // si está dentro de un @defer o lazy block).
-    const tryAttach = () => {
-      const footer =
-        document.querySelector('app-footer') ?? document.querySelector('footer');
-      if (!footer) return false;
-
-      const obs = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            this.footerVisible.set(e.isIntersecting);
-            this.cdr.markForCheck();
-          }
-        },
-        { rootMargin: '0px 0px -10% 0px', threshold: 0.01 },
-      );
-      obs.observe(footer);
-      this.destroyRef.onDestroy(() => obs.disconnect());
-      return true;
-    };
-
-    if (!tryAttach()) {
-      const id = window.setTimeout(() => tryAttach(), 800);
-      this.destroyRef.onDestroy(() => window.clearTimeout(id));
-    }
   }
 
   /**

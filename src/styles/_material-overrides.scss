@@ -46,6 +46,12 @@
   vector-effect: non-scaling-stroke;
 }
 
+/** Icono de relleno tomado de Material Symbols (`FilledIcon` del catálogo). */
+.mat-icon.elim-icon svg[data-filled] {
+  fill: currentColor;
+  stroke: none;
+}
+
 /**
  * Google Material Symbols (fuente variable). Se cargan de forma no
  * bloqueante; hasta que llega la fuente, el ligature se oculta para

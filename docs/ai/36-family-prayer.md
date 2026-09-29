@@ -72,10 +72,20 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
 - **La foto va siempre entera** (`FamilyPhotoComponent`): son fotos de grupo en
   cualquier formato (0,56 → 1,78). Se encaja con `contain` y el hueco lo rellena
   la misma foto difuminada y oscurecida. Nunca `object-fit: cover`.
-- **Ficha web**: dos columnas (marco con la proporción de la foto, nunca más
-  estrecho que 4:5 · texto a 62ch). Foto apaisada
-  (≥ 6:5) → arriba a todo el ancho con tope de 30 rem. Móvil: foto arriba con
-  su proporción (mínimo 4:5).
+- **Ficha web** (revisión del 29/09/2026: bandas difuminadas en los Biriș):
+  el marco tiene **la proporción exacta de la foto** (`frameRatio`, acotada
+  a 9:16 – 2:1), así que nunca hay bandas. ≥ md la foto **flota** a la
+  izquierda con un alto de referencia (24 rem → ancho = alto × proporción,
+  tope 55 %) y el texto la rodea: al lado y, si es largo, por debajo. Por
+  eso los contenedores del texto son bloques (no flex) y la cita y la barra
+  de compartir son `flow-root` (su filete no pasa bajo la foto); sin
+  `max-width` en `ch` (se cuenta desde el borde, bajo la foto). Todo va bajo
+  `.fcard--web` (la ficha sin proyectar): la pantalla del templo también es
+  ≥ md. Móvil: foto arriba a su proporción, con alto máximo de 70 vh.
+- **Controles para una foto incontrolable** (`PrayerFamily.photo` en la
+  configuración, sólo si hace falta): `size: 'compact' | 'large'` (alto de
+  referencia 18 / 30 rem) y `frame: <ancho/alto>` (fuerza el marco; la foto
+  va entera dentro y el hueco lo rellena ella misma difuminada).
 - **Resumen web**: mosaico 4:5 (`auto-fit`, llena el ancho); en móvil, filas
   (foto · número · nombre). El número anticipa el orden de las fichas.
 - **Proyección, a sangre** (decisión del usuario, 28/09/2026): las

@@ -283,11 +283,11 @@
   "footer": {
     "church": "Biserica ELIM Arganda",
     "rights": "Toate drepturile rezervate.",
-    "mission": "O comunitate creștină evanghelică din Arganda del Rey. Ne adunăm săptămânal ca să ne închinăm lui Dumnezeu, să-I studiem Cuvântul și să slujim cartierului nostru. Vino așa cum ești: aici este loc și pentru tine.",
+    "tools": "Instrumente",
     "follow": "Urmărește-ne",
     "visit": "Vizitează-ne",
     "schedule": "Program și cum ajungi",
-    "partner": "Institutul Național Evanghelic Betel",
+    "partner": "Dezvoltat de INEB · LinkedIn",
     "version": "Versiunea aplicației",
     "build": "Compilare",
     "commit": "Revizie",
@@ -327,8 +327,7 @@
     "channels": {
       "address": "Adresă",
       "email": "E-mail",
-      "phone": "Telefon",
-      "whatsapp": "Scrie-ne pe WhatsApp"
+      "phone": "Telefon"
     },
     "schedule": {
       "title": "Când ne întâlnim",
@@ -342,59 +341,74 @@
       "subtitle": "Poți susține lucrarea bisericii sau poți afla mai întâi cine suntem.",
       "donate": "Susține biserica",
       "about": "Cine suntem"
+    },
+    "quick": {
+      "label": "Contact direct",
+      "call": "Sună",
+      "email": "Scrie un e-mail",
+      "directions": "Cum ajungi"
+    },
+    "card": {
+      "title": "Date de contact"
     }
   },
   "donate": {
     "eyebrow": "Dărnicie",
     "title": "Donează",
-    "lead": "Dărnicia este una dintre disciplinele pe care le cultivăm: zeciuiala și darurile de bunăvoie susțin slujbele, ajutorul social și transmisiunile.",
+    "lead": "Biserica Elim trăiește din dărnicia celor care o formează. Fiecare zeciuială și fiecare dar ține deschise ușile casei de rugăciune, sprijină familiile aflate în nevoie și duce Evanghelia mai departe.",
     "verse": {
       "text": "„Fiecare să dea după cum a hotărât în inima lui: nu cu părere de rău sau de silă, căci pe cine dă cu bucurie îl iubește Dumnezeu.”",
       "ref": "2 Corinteni 9:7"
     },
     "purposes": {
-      "eyebrow": "Transparență",
       "title": "Unde ajung darurile tale",
-      "subtitle": "Tot ce se primește merge într-una dintre aceste patru direcții.",
       "items": {
         "mission": {
           "title": "Lucrarea bisericii",
-          "body": "Slujbele săptămânale, materialele pentru studiu biblic și pregătirea celor care slujesc."
+          "body": "Serviciile de închinare, studiul Cuvântului și pregătirea celor care slujesc."
         },
         "building": {
-          "title": "Clădirea",
-          "body": "Chiria, utilitățile și întreținerea locului unde ne adunăm în fiecare săptămână."
+          "title": "Casa de rugăciune",
+          "body": "Chiria, utilitățile și întreținerea locului în care ne adunăm în fiecare săptămână."
         },
         "outreach": {
           "title": "Ajutor social",
-          "body": "Sprijin concret pentru familiile din comunitate care trec prin greutăți."
+          "body": "Sprijin concret pentru familiile din comunitate care trec prin încercări."
         },
         "media": {
-          "title": "Media",
-          "body": "Transmisiunile în direct și echipamentul care duce slujba la cei care nu pot veni."
+          "title": "Transmisiuni și media",
+          "body": "Transmisiunile în direct și echipamentul care duce slujba la cei care nu pot fi prezenți."
         }
-      }
-    },
-    "demo": {
-      "title": "Date provizorii",
-      "body": "Conturile de mai jos sunt un exemplu de demonstrație, nu sunt reale. Nu face nicio transferare până când nu sunt înlocuite cu datele bancare oficiale ale bisericii."
+      },
+      "trust": "Darurile sunt administrate de casierul bisericii, sub verificarea cenzorilor.",
+      "trust_link": "Vezi conducerea"
     },
     "bank": {
-      "eyebrow": "Cum donezi",
       "title": "Transfer bancar",
-      "subtitle": "Copiază IBAN-ul cu un clic și fă transferul din aplicația băncii tale.",
       "holder": "Titular",
       "entity": "Bancă",
       "bic": "Cod SWIFT / BIC",
       "account": "Cont",
-      "bizum": "Bizum la numărul",
-      "note": "La rubrica „detalii” poți scrie destinația darului (de exemplu: ajutor social). Dacă ai nevoie de o dovadă a donației, scrie-ne și ți-o trimitem."
+      "note": "Ai nevoie de o dovadă a donației? Scrie-ne și ți-o trimitem.",
+      "concept": "La „Concept” poți scrie, de exemplu:",
+      "concepts": [
+        "Zeciuială",
+        "Dar",
+        "Ajutor social"
+      ]
     },
     "thanks": {
       "title": "Mulțumim",
-      "subtitle": "Fiecare dar, oricât de mic, ține lucrarea în picioare.",
-      "contact": "Ai o întrebare?",
-      "about": "Cine suntem"
+      "subtitle": "Fiecare dar, oricât de mic, este sămânță pentru lucrarea lui Dumnezeu.",
+      "contact": "Ai o întrebare?"
+    },
+    "card": {
+      "title": "Cum poți dărui",
+      "bizum_hint": "Cel mai rapid, din aplicația băncii tale."
+    },
+    "why": {
+      "title": "De ce dăruim",
+      "body": "Dărnicia nu este o taxă, ci un act de închinare: îi dăm înapoi lui Dumnezeu din ceea ce El ne-a încredințat. Te invităm să fii parte din lucrare — cu credincioșie, după putința ta și cu bucurie."
     }
   },
   "nav": {
@@ -641,7 +655,7 @@
       },
       "cta_program": "Vezi programul",
       "cta_leadership": "Cunoaște echipa",
-      "note": "Cel puțin o dată pe lună se ține Cina Domnului. Se împărtășesc credincioșii botezați; dacă ești în vizită, poți rămâne liniștit pe locul tău."
+      "note": "Cina Domnului se ține în prima duminică a fiecărei luni, la serviciul de dimineață. Se împărtășesc credincioșii botezați; dacă ești în vizită, poți rămâne liniștit pe locul tău."
     },
     "facts_years": "{{count}} ani de slujire",
     "facts_services": "{{count}} servicii pe săptămână",
@@ -746,7 +760,7 @@
     },
     "sheet": {
       "serves": "Unde slujește",
-      "governance": "Structura de conducere"
+      "link": "Link către această fișă"
     },
     "ministries": {
       "worship": {
@@ -787,7 +801,17 @@
       "subtitle": "Scrie-ne sau vino la oricare dintre serviciile noastre: te așteptăm.",
       "cta_contact": "Scrie-ne",
       "cta_visit": "Cum ajungi la noi"
-    }
+    },
+    "directory": {
+      "title": "Cine slujește și unde",
+      "subtitle": "{{areas}} arii de slujire · {{people}} de slujitori",
+      "search": "Caută o persoană sau un departament",
+      "empty": "Niciun rezultat pentru „{{q}}”.",
+      "results_one": "Un departament găsit",
+      "results_other": "{{n}} departamente găsite"
+    },
+    "serves_one": "o slujire",
+    "serves_other": "{{n}} slujiri"
   },
   "credo": {
     "eyebrow": "Ce credem",

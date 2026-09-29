@@ -9,9 +9,9 @@ import {
 } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { LanguageService } from '../../core/services/language.service';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { CopyButtonComponent } from '../../shared/copy-button/copy-button.component';
 import { IconName } from '../../core/ui/icon-name';
 
@@ -49,7 +49,6 @@ interface Channel {
         RouterLink,
         ReactiveFormsModule,
         TranslatePipe,
-        PageSectionComponent,
         IconComponent,
         CopyButtonComponent,
     ],
@@ -65,6 +64,10 @@ export class ContactComponent {
     weekly: blockPath('weekly'),
     donate: `/${APP_PATHS.donate}`,
     about: `/${APP_PATHS.about}`,
+    /** Acciones directas de la cabecera. */
+    tel: `tel:${this.config.contact.phone}`,
+    mailto: `mailto:${this.config.contact.email}`,
+    maps: this.config.location.mapsShareUrl,
   } as const;
 
   protected readonly weeklyProgram = this.config.weeklyProgram;
@@ -114,7 +117,7 @@ export class ContactComponent {
     this.sanitizer.bypassSecurityTrustResourceUrl(
       `https://www.google.com/maps?q=${encodeURIComponent(
         this.config.location.mapsQuery,
-      )}&hl=es&z=16&output=embed`,
+      )}&hl=${inject(LanguageService).current()}&z=16&output=embed`,
     );
 
   protected readonly form = this.fb.nonNullable.group({

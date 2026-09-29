@@ -122,7 +122,13 @@ El panel tiene **dos zonas**, no dos filas:
 - **Enlaces**: una columna apilada, uno por hijo del grupo.
 - **Destacado** (`asideKind()` en el componente): contenido real de ese grupo.
   - `media` → tira de miniaturas de los álbumes de la galería.
-  - `program` → «lo próximo» (culto, evento, lectura) + la semana entera.
+  - `program` → «lo próximo» (culto, evento, lectura) + la semana entera +
+    **las familias de la semana** en carrusel (`app-card-carousel`, tarjetas
+    de 9,5 rem con la foto entera en 4:3 y «Apellido / nombres»; enlaza a
+    `#<id>` de su ficha). Con cinco caben y no se mueve; si la semana trae
+    más, avanza solo cada 4 s (pausa al apuntar, con foco, con
+    `prefers-reduced-motion` o en cuanto se toca). Equilibra el panel: la
+    columna de seis enlaces medía ~390 px y el destacado ~270.
   - `about` → tarjeta de invitación (culto, dirección, cómo llegar).
 
 Por qué en dos zonas y no apilado: medido a 1512 px, con los enlaces arriba y
@@ -137,7 +143,15 @@ que sin él el panel se queda con la columna de enlaces y el resto en blanco.
 a una rejilla de enlaces a todo el ancho.
 
 Por debajo de `xl` (1280) el panel vuelve a apilarse: ahí al destacado le
-quedaban 617 px y las miniaturas caían a 106×60.
+quedaban 617 px y las miniaturas caían a 106×60. El panel nunca pasa del alto
+de la ventana (`max-height` + scroll propio): apilado, el de Programa con
+familias no cabía en un portátil bajo.
+
+**Iconos del grupo Programa**: cada entrada el suyo (antes «Evenimente» y
+«Program săptămânal» compartían `calendar`): `sparkles` para eventos,
+`family` para las familias y `pray` («folded_hands» de Material Symbols,
+copiado como `FilledIcon` en `icon-registry.ts`) para las causas. Un icono
+figurativo se toma de un set profesional, no se dibuja a mano.
 
 ## Accesibilidad (ya resuelta, no la rompas)
 
@@ -161,5 +175,32 @@ quedaban 617 px y las miniaturas caían a 106×60.
 - `mobile-nav` se descarga la primera vez que se abre el menú; en la pantalla
   del templo eso no pasa nunca.
 - El pie usa `@defer (on viewport(footerAnchor))` con un `@placeholder` que
-  **reserva altura** para no provocar CLS.
+  **reserva altura** para no provocar CLS (17 rem escritorio / 48 rem móvil:
+  si cambia el alto del pie, se vuelve a medir y se ajusta).
+
+## El pie (compacto, 29/09/2026)
+
+Columnas derivadas de `MAIN_NAV` (un grupo nuevo aparece solo). Identidad =
+logo + redes (sin lema, misión ni rótulo visible «Síguenos»: el `h2` queda
+`u-sr-only`). Franja inferior en **dos grupos**: © + versión a la izquierda;
+a la derecha acciones en iconos de 34 px (volver arriba, compartir, panel de
+control, guía de estilos; nombre en `title`/`aria-label`), separador y marca
+INEB. «Donează» sin icono. ~280 px en escritorio (1600) y ~300 (1280):
+columnas de enlaces a su contenido (`auto`), grupos largos en dos
+subcolumnas (`splitAfter` = 4 → Program 3 + 3), «Donează / În direct» bajo
+las redes y `li` en flex (el enlace `inline-block` sobre el interlineado del
+cuerpo inflaba cada fila de 21 a 31 px). El logo de INEB enlaza al
+LinkedIn del desarrollador («Desarrollado por INEB · LinkedIn») hasta que
+exista la web de la consultora (`FooterComponent.links.partner`).
+
+**El dock flotante se retira mientras el pie está a la vista** (≥ 30 %):
+el pie repite sus acciones. Lo coordina `DockOverlapService`
+(`shared/floating-actions/`): el bloque que duplica acciones informa de su
+visibilidad (`report('footer', …)`) y el dock lee `duplicateVisible`. El
+pie informa él mismo porque entra con `@defer`: buscarlo desde el dock con un
+temporizador fallaba. Se usa la proporción (`intersectionRatio`), no
+`isIntersecting`, o al subir el dock no volvía. Mismo patrón que
+Administrativ.
+
+Email y teléfono del pie: los reales de `church.config.ts → contact`.
 - El dock flotante usa `@defer (on idle)`.

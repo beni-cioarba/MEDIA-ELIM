@@ -6,10 +6,9 @@
       <section class="footer__identity">
         <app-brand-logo tone="dark" size="lg" [link]="links.home" />
 
-        <p class="footer__tagline">{{ 'brand.tagline' | translate }}</p>
-        <p class="footer__mission">{{ 'footer.mission' | translate }}</p>
-
-        <h2 class="footer__title" id="footer-social">{{ 'footer.follow' | translate }}</h2>
+        <!-- Redes justo bajo la marca, sin rótulo visible: los iconos ya dicen
+             qué son. El rótulo queda para el lector de pantalla. -->
+        <h2 class="u-sr-only" id="footer-social">{{ 'footer.follow' | translate }}</h2>
         <ul class="footer__socials" aria-labelledby="footer-social">
           @for (social of config.socials; track social.id) {
             <li>
@@ -27,6 +26,18 @@
             </li>
           }
         </ul>
+
+        <!-- Llamadas a la acción bajo las redes: la columna de identidad tenía
+             sitio de sobra y en «Visítanos» alargaban el pie una fila entera. -->
+        <div class="footer__actions">
+          <a class="footer__cta footer__cta--gold" [routerLink]="links.donate">
+            <span>{{ 'nav.donate' | translate }}</span>
+          </a>
+          <a class="footer__cta" [routerLink]="links.live">
+            <app-icon name="play" />
+            <span>{{ 'nav.live' | translate }}</span>
+          </a>
+        </div>
       </section>
 
       <!-- Mapa del sitio. Las columnas salen de MAIN_NAV: no hay lista
@@ -36,7 +47,14 @@
           <h2 class="footer__title" [id]="'footer-nav-' + column.id">
             {{ column.titleKey | translate }}
           </h2>
-          <ul class="footer__links">
+          <!-- Un grupo largo (Program: 6) se reparte en dos subcolumnas, así
+               todas las columnas miden lo mismo (3 filas) y el pie no crece
+               con el grupo más largo. -->
+          <ul
+            class="footer__links"
+            [class.footer__links--split]="column.links.length > splitAfter"
+            [style.--rows]="rowsOf(column)"
+          >
             @for (link of column.links; track link.id) {
               <li>
                 <a class="footer__link" [routerLink]="link.path">
@@ -80,16 +98,6 @@
           </li>
         </ul>
 
-        <div class="footer__actions">
-          <a class="footer__cta footer__cta--gold" [routerLink]="links.donate">
-            <app-icon name="gift" />
-            <span>{{ 'nav.donate' | translate }}</span>
-          </a>
-          <a class="footer__cta" [routerLink]="links.live">
-            <app-icon name="play" />
-            <span>{{ 'nav.live' | translate }}</span>
-          </a>
-        </div>
       </section>
     </div>
 
@@ -113,7 +121,9 @@
           aria-describedby="footer-build"
           [attr.aria-label]="'footer.version' | translate"
         >
-          v{{ appVersion.release }}
+          <!-- «+»: compilado con cambios sin commitear (como en Administrativ):
+               de un vistazo se sabe que no es una versión reproducible. -->
+          v{{ appVersion.release }}{{ appVersion.dirty ? '+' : '' }}
 
           <span class="footer__build" id="footer-build" role="tooltip">
             <span class="footer__build-row">
@@ -132,28 +142,52 @@
         </span>
       </p>
 
-      <!-- Acceso del operador al panel de control de la proyección. Siempre
-           presente, en la franja legal: es una herramienta, no navegación. -->
-      <a class="footer__operator" [routerLink]="links.control">
-        <app-icon name="play" />
-        {{ 'footer.control' | translate }}
-      </a>
+      <!-- Acciones compactas (iconos, con nombre en tooltip y para el lector
+           de pantalla): las mismas del dock flotante —volver arriba,
+           compartir—, que se retira mientras el pie está a la vista, y las
+           herramientas (panel de control, guía de estilos). Mismo patrón que
+           el pie de Administrativ. -->
+      <div class="footer__actions-bar" role="group" [attr.aria-label]="'footer.tools' | translate">
+        <button
+          type="button"
+          class="footer__icon-btn"
+          (click)="backToTop()"
+          [attr.aria-label]="'common.back_to_top' | translate"
+          [title]="'common.back_to_top' | translate"
+        >
+          <app-icon name="arrow-up" />
+        </button>
+        <app-share-button class="footer__share" />
+        <a
+          class="footer__icon-btn"
+          [routerLink]="links.control"
+          [attr.aria-label]="'footer.control' | translate"
+          [title]="'footer.control' | translate"
+        >
+          <app-icon name="slideshow" />
+        </a>
+        <a
+          class="footer__icon-btn"
+          [routerLink]="links.styleguide"
+          [attr.aria-label]="'footer.styleguide' | translate"
+          [title]="'footer.styleguide' | translate"
+        >
+          <app-icon name="palette" />
+        </a>
+      </div>
 
-      <!-- Herramienta de construcción, no navegación: junto al panel del
-           operador y con el mismo peso visual (ver docs/ai/47-design-language). -->
-      <a class="footer__operator" [routerLink]="links.styleguide">
-        {{ 'footer.styleguide' | translate }}
-      </a>
+      <span class="footer__sep" aria-hidden="true"></span>
 
       <!-- Marca de INEB en SVG (componente autocontenido, hoja de marca en su
            README): forma completa, mínimo 32 px, nombre en blanco sobre el
            navy del pie. El enlace lleva el nombre accesible; el SVG es decorativo. -->
       <a
         class="footer__partner"
-        href="https://ineb.es"
+        [href]="links.partner"
         target="_blank"
         rel="noopener noreferrer"
         [attr.aria-label]="'footer.partner' | translate"
+        [title]="'footer.partner' | translate"
       >
         <app-ineb-logo tone="dark" />
       </a>

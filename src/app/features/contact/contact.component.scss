@@ -1,128 +1,235 @@
 @use 'ds' as *;
-@use '../../shared/styles/buttons' as *;
-@use '../../shared/styles/page-hero' as *;
-@use '../../shared/styles/section-cta' as *;
 
-/* Estilos encapsulados de la página «Contacto». */
+// =====================================================================
+// Contact (revisión del 29/09/2026, «profesional y futurista»).
+// Diseño propio, fuera del catálogo a propósito: cabecera compacta con las
+// acciones directas, formulario | tarjeta de contacto navy con el mapa
+// dentro (mismo lenguaje que la de donativos) + horario, y cierre en una
+// línea.
+// =====================================================================
 
 :host {
   display: block;
 }
 
-/* --- Rejilla principal ------------------------------------------------
- * El formulario manda (es la acción) y ocupa la columna ancha; los datos
- * directos van a la derecha porque quien ya sabe a dónde escribir no
- * necesita el formulario. En móvil se apila con los datos primero:
- * llamar o abrir el mapa es lo más frecuente desde el teléfono.
- * -------------------------------------------------------------------- */
+.ct {
+  @include container(var(--w-wide));
 
-.contact {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: clamp(1.5rem, 3.5vw, 2.75rem);
-  align-items: start;
+  padding-block: clamp(1.75rem, 5vh, 3rem) clamp(1.25rem, 3vh, 2rem);
 }
 
-@include until('md') {
-  .contact {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .aside {
-    order: -1;
-  }
+// ---------------------------------------------------------------------
+// Cabecera + acciones directas
+// ---------------------------------------------------------------------
+.ct__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2.5rem;
+  margin-bottom: clamp(1.25rem, 3vh, 1.75rem);
 }
 
-/* --- Tarjeta del formulario ------------------------------------------ */
+.ct__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
 
-.form-card {
-  padding: clamp(1.4rem, 3vw, 2.25rem);
+.ct__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.4rem + 2vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--c-primary);
+}
+
+.ct__lead {
+  max-width: 60ch;
+  margin: 0.6rem 0 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--c-text);
+  text-wrap: pretty;
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quick__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.6rem;
+  padding-inline: 1.05rem;
+  border: 1px solid rgb(26 54 93 / 0.18);
+  border-radius: 999px;
   background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  box-shadow: var(--e-1);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color 140ms cubic-bezier(0.2, 0, 0, 1),
+    background 140ms cubic-bezier(0.2, 0, 0, 1);
+
+  app-icon {
+    font-size: 1rem;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    border-color: var(--c-gold);
+    background: rgb(212 175 55 / 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+  }
+}
+
+.quick__btn--primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, #1d3d68 0%, #12284a 100%);
+  color: #fff;
+
+  app-icon {
+    color: var(--c-gold-soft);
+  }
+
+  &:hover {
+    border-color: transparent;
+    background: linear-gradient(135deg, #24497a 0%, #173257 100%);
+  }
+}
+
+// WhatsApp, con su verde de marca: se reconoce antes de leerlo.
+.quick__btn--whatsapp {
+  border-color: transparent;
+  background: #25d366;
+  color: #073b1c;
+
+  app-icon {
+    color: #073b1c;
+  }
+
+  &:hover {
+    border-color: transparent;
+    background: #20bd5a;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Rejilla principal
+// ---------------------------------------------------------------------
+.ct__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(21rem, 0.85fr);
+  align-items: start;
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.ct__side {
+  display: grid;
+  gap: 1rem;
+}
+
+// ---------------------------------------------------------------------
+// Formulario
+// ---------------------------------------------------------------------
+.form-card {
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border: 1px solid rgb(26 54 93 / 0.1);
+  border-radius: 20px;
+  background: var(--c-surface);
+  box-shadow: 0 18px 40px -32px rgb(26 54 93 / 0.45);
 }
 
 .form-card__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-primary);
 }
 
 .form-card__subtitle {
-  margin: 0.4rem 0 0;
+  margin: 0.2rem 0 0;
+  font-size: 0.875rem;
   color: var(--c-muted);
-  font-size: 0.95rem;
 }
 
 .form {
   display: grid;
-  gap: var(--sp-4);
-  margin-block-start: var(--sp-6);
+  gap: 0.35rem;
+  margin-top: 1.1rem;
 }
 
 .form__row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-4);
+  gap: 0 1rem;
 
   @include until('sm') {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* --- Campos ----------------------------------------------------------- */
-
 .field {
   display: grid;
-  // `start` y no el `stretch` por defecto.
-  //
-  // `.field` es un ítem de `.form__row`, así que se estira al alto de la
-  // fila. Sus filas son automáticas, y con `stretch` la rejilla REPARTE el
-  // sobrante entre ellas: cuando el campo vecino mostraba un error, éste
-  // separaba su etiqueta de su caja y los dos dejaban de estar alineados.
+  // `start`: en `.form__row`, un error en el campo vecino no separa la
+  // etiqueta de su caja (la rejilla no reparte el sobrante).
   align-content: start;
-  gap: var(--sp-2);
+  gap: 0.35rem;
 }
 
 .field__label {
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
   color: var(--c-text);
 }
 
 .field__optional {
-  margin-inline-start: var(--sp-1);
+  margin-inline-start: 0.25rem;
   font-weight: 400;
   color: var(--c-faint);
 }
 
 .field__input {
   width: 100%;
-  padding: 0.7rem 0.9rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgb(26 54 93 / 0.16);
+  border-radius: 12px;
+  background: var(--c-surface);
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   color: var(--c-text);
-  background: var(--c-bg);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-md);
   transition:
-    border-color var(--mo-base) var(--ea-standard),
-    box-shadow var(--mo-base) var(--ea-standard);
+    border-color 140ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 140ms cubic-bezier(0.2, 0, 0, 1);
 
   &::placeholder {
     color: var(--c-faint);
   }
 
   &:hover {
-    border-color: var(--c-primary-soft);
+    border-color: rgb(26 54 93 / 0.3);
   }
 
   &:focus {
     outline: none;
-    border-color: var(--c-primary);
-    box-shadow: 0 0 0 3px var(--c-veil);
+    border-color: var(--c-gold);
+    box-shadow: 0 0 0 3px rgb(212 175 55 / 0.2);
   }
 
   &[aria-invalid='true'] {
@@ -131,264 +238,371 @@
 }
 
 .field__input--area {
+  min-height: 7rem;
+  line-height: 1.55;
   resize: vertical;
-  min-height: 8rem;
-  line-height: 1.6;
 }
 
+// El hueco del error se reserva siempre (una línea de 0,75 rem, no 1,4 em
+// de cuerpo grande): el mensaje aparece sin empujar nada y, sin error, la
+// separación entre campos es la justa.
 .field__error {
-  font-size: 0.8rem;
+  min-height: 1.1rem;
+  font-size: 0.75rem;
   line-height: 1.4;
-  // El hueco se reserva siempre, haya error o no: así el mensaje aparece y
-  // desaparece sin empujar nada de lo que viene debajo. `1.4em` es una
-  // línea exacta con este cuerpo, sin números mágicos.
-  min-height: 1.4em;
   color: var(--c-danger);
 }
 
-/* --- Pie del formulario ----------------------------------------------
- * La nota va debajo del botón, no al lado: es una aclaración que hay que
- * leer entera, y en una columna estrecha quedaba partida en cinco líneas.
- * -------------------------------------------------------------------- */
-
 .form__foot {
-  display: grid;
-  justify-items: start;
-  gap: var(--sp-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.35rem;
 }
 
 .form__submit {
-  gap: var(--sp-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-inline: 1.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #12284a;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -14px rgb(138 109 29 / 0.8);
+  transition: filter 140ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover {
+    filter: brightness(1.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
 }
 
 .form__note {
+  flex: 1 1 16rem;
   margin: 0;
-  max-width: none;
-  font-size: 0.8rem;
-  line-height: 1.55;
+  font-size: 0.75rem;
+  line-height: 1.5;
   color: var(--c-faint);
 }
 
 .form__sent {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
-  margin: 0;
-  max-width: none;
-  padding: var(--sp-3) var(--sp-4);
-  font-size: 0.88rem;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: rgb(212 175 55 / 0.14);
+  font-size: 0.875rem;
   color: var(--c-primary-deep);
-  background: var(--c-gold-tint);
-  border-radius: var(--r-md);
 }
 
-/* --- Columna lateral -------------------------------------------------- */
-
-.aside {
+// ---------------------------------------------------------------------
+// Tarjeta de contacto navy (mismo lenguaje que la de donativos)
+// ---------------------------------------------------------------------
+.card {
   display: grid;
-  gap: var(--sp-4);
+  gap: 0.75rem;
+  padding: 1.1rem;
+  overflow: hidden;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgb(212 175 55 / 0.22), transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, rgb(59 130 246 / 0.14), transparent 60%),
+    linear-gradient(145deg, #1d3d68 0%, #12284a 100%);
+  box-shadow:
+    0 24px 48px -28px rgb(9 20 36 / 0.7),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+  color: rgb(247 250 252 / 0.8);
+}
+
+.card__title {
+  margin: 0 0 0.1rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 .channels {
   display: grid;
-  gap: var(--sp-3);
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .channel {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--sp-4);
-  padding: var(--sp-4);
-  background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  transition: border-color var(--mo-base) var(--ea-standard);
+  gap: 0.75rem;
+  padding-block: 0.6rem;
 
-  &:hover {
-    border-color: var(--c-primary-soft);
+  & + & {
+    border-top: 1px solid rgb(255 255 255 / 0.09);
   }
 }
 
-/* Disco de color: es lo que convierte una lista de datos en una ficha de
-   contacto reconocible de un vistazo. */
-.channel__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1.15rem;
-  color: var(--c-primary);
-  background: var(--c-veil);
-  border-radius: 50%;
+.channel__icon {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  background: rgb(212 175 55 / 0.16);
+  color: var(--c-gold-soft);
+  font-size: 1rem;
 }
 
 .channel__body {
+  display: grid;
+  gap: 0.05rem;
   min-width: 0;
 }
 
 .channel__label {
-  margin: 0;
-  max-width: none;
-  font-size: 0.72rem;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--c-gold-deep);
+  color: rgb(247 250 252 / 0.5);
 }
 
 .channel__value {
-  display: block;
-  margin: 0.2rem 0 0;
-  max-width: none;
-  font-size: 0.95rem;
-  color: var(--c-text);
   overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
 
-  &:is(a):hover {
-    color: var(--c-primary);
+  &:hover {
     text-decoration: underline;
+    text-decoration-color: var(--c-gold);
     text-underline-offset: 3px;
   }
 
-  &:is(a):focus-visible {
-    @include focus-ring;
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-/* --- Canal de WhatsApp ------------------------------------------------
- * Deja de ser un `.btn--ghost-dark` genérico. Era una píldora perfilada
- * indistinguible de cualquier acción secundaria: nada decía que abre otra
- * aplicación, y flotaba sin peso entre la lista de datos y el horario.
- *
- * Ahora es sólido, del ancho de la columna y con el verde del propio
- * WhatsApp. El color hace el trabajo que haría el logotipo, sin meter otro
- * icono en una página de la que ya los hemos quitado.
- * --------------------------------------------------------------------- */
-
-.aside__whatsapp {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  /* Cómodo de pulsar con el pulgar sin depender del cuerpo del texto. */
-  min-height: 2.75rem;
-  padding: 0.75rem 1.25rem;
-  border: 0;
-  border-radius: var(--r-pill);
-  background: var(--c-whatsapp);
-  color: var(--c-on-whatsapp);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  transition: background var(--mo-fast) var(--ea-standard);
+// Botón de copiar, en versión clara sobre el navy.
+.channel__copy ::ng-deep .copy {
+  border-color: rgb(255 255 255 / 0.22);
+  color: rgb(247 250 252 / 0.85);
 
   &:hover {
-    background: var(--c-whatsapp-deep);
+    border-color: rgb(212 175 55 / 0.7);
+    background: rgb(212 175 55 / 0.14);
+    color: #fff;
   }
-
-  @include focus-ring;
 }
 
-/* --- Horario ---------------------------------------------------------- */
+.channel__copy ::ng-deep .copy--done {
+  border-color: var(--c-gold);
+  background: rgb(212 175 55 / 0.2);
+  color: var(--c-gold-soft);
+}
 
+// Mapa dentro de la tarjeta.
+.card__map {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.card__map-frame {
+  display: block;
+  width: 100%;
+  height: 12.5rem;
+  border: 0;
+  // Un punto más apagado para que no desentone con el navy.
+  filter: saturate(0.85);
+}
+
+// ---------------------------------------------------------------------
+// Horario compacto
+// ---------------------------------------------------------------------
 .schedule {
-  padding: var(--sp-5);
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgb(26 54 93 / 0.1);
+  border-radius: 18px;
   background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
+}
+
+.schedule__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 .schedule__title {
-  margin: 0 0 var(--sp-4);
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.schedule__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  app-icon {
+    font-size: 0.9rem;
+  }
 }
 
 .schedule__list {
-  display: grid;
-  gap: var(--sp-2);
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-/* Día y hora en columnas fijas para que se lean en vertical como una
-   tabla, sin usar una `<table>` que en móvil habría que desmontar. */
 .schedule__item {
   display: grid;
-  grid-template-columns: 5.5rem 3.5rem minmax(0, 1fr);
-  gap: var(--sp-2);
-  padding-block: var(--sp-2);
-  font-size: 0.86rem;
-  border-block-end: 1px solid var(--c-hairline);
+  grid-template-columns: 5.25rem 6.25rem minmax(0, 1fr);
+  gap: 0.5rem;
+  padding-block: 0.4rem;
+  font-size: 0.8125rem;
 
-  &:last-child {
-    border-block-end: 0;
-  }
-
-  @include until('xs') {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.1rem;
+  & + & {
+    border-top: 1px solid rgb(26 54 93 / 0.07);
   }
 }
 
 .schedule__day {
-  font-weight: 600;
-  color: var(--c-primary-deep);
+  font-weight: 700;
+  color: var(--c-primary);
 }
 
 .schedule__time {
-  color: var(--c-gold-deep);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--c-gold-deep);
 }
 
 .schedule__what {
   color: var(--c-muted);
 }
 
-.schedule__more {
+// ---------------------------------------------------------------------
+// Cierre en una línea
+// ---------------------------------------------------------------------
+.ct-end {
+  @include container(var(--w-wide));
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: clamp(1.75rem, 5vh, 3rem);
+  padding-top: 1rem;
+  border-top: 1px solid rgb(26 54 93 / 0.1);
+}
+
+.ct-end__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--c-muted);
+
+  strong {
+    margin-inline-end: 0.3rem;
+    color: var(--c-primary);
+  }
+}
+
+.ct-end__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.ct-end__link {
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
-  margin-block-start: var(--sp-4);
-  font-size: 0.86rem;
+  gap: 0.3rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--c-primary);
+  text-decoration: none;
 
   &:hover {
-    color: var(--c-primary-deep);
     text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
   &:focus-visible {
-    @include focus-ring;
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  app-icon {
+    font-size: 0.9rem;
   }
 }
 
-/* --- Mapa -------------------------------------------------------------
- * `aspect-ratio` reserva el hueco antes de que cargue el iframe: sin él,
- * el `loading="lazy"` provocaría un salto de layout (CLS).
- * -------------------------------------------------------------------- */
+// ---------------------------------------------------------------------
+// Anchos estrechos
+// ---------------------------------------------------------------------
+@include until('lg') {
+  .ct__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
-.map {
-  border-block: 1px solid var(--c-hairline);
+  // En móvil lo primero son los datos y las acciones; el formulario, después.
+  .ct__side {
+    order: -1;
+  }
 }
 
-.map__frame {
-  display: block;
-  width: 100%;
-  aspect-ratio: 21 / 6;
-  min-height: 18rem;
-  border: 0;
+@include until('sm') {
+  .quick {
+    width: 100%;
+  }
 
-  @include until('md') {
-    aspect-ratio: 4 / 3;
+  .quick__btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .schedule__item {
+    grid-template-columns: 4.75rem 5.5rem minmax(0, 1fr);
+  }
+}
+
+@include motion-reduce {
+  .quick__btn,
+  .field__input,
+  .form__submit {
+    transition: none;
   }
 }

@@ -453,7 +453,9 @@ export class CardCarouselComponent {
    *
    *  1. **Sólo ratón.** En táctil el deslizamiento nativo ya está, y es mejor.
    *  2. **Captura del puntero**, para que el gesto siga aunque el ratón salga
-   *     del carrusel o de la ventana.
+   *     del carrusel o de la ventana. **Sólo al pasar el umbral**: capturando
+   *     en `pointerdown`, el `click` de un toque simple iba a la ventana y el
+   *     enlace de la tarjeta no navegaba.
    *  3. **Se apaga el anclaje mientras se arrastra.** Con
    *     `scroll-snap-type: mandatory`, cada asignación de `scrollLeft` vuelve
    *     al punto de anclaje más cercano: el carrusel se queda pegado y no se
@@ -483,15 +485,20 @@ export class CardCarouselComponent {
       recorrido = 0;
       inicioX = evento.clientX;
       inicioScroll = el.scrollLeft;
-      el.setPointerCapture(evento.pointerId);
-      el.classList.add('is-dragging');
     };
 
     const alMover = (evento: PointerEvent): void => {
       if (!arrastrando) return;
       const avance = evento.clientX - inicioX;
       recorrido = Math.max(recorrido, Math.abs(avance));
-      el.scrollLeft = inicioScroll - avance;
+      // La captura del puntero, sólo cuando el gesto ya es un arrastre: si se
+      // capturaba en `pointerdown`, el `click` de un simple toque iba a la
+      // ventana del carrusel y no al enlace de la tarjeta (no navegaba).
+      if (recorrido > UMBRAL_ARRASTRE_PX && !el.hasPointerCapture(evento.pointerId)) {
+        el.setPointerCapture(evento.pointerId);
+        el.classList.add('is-dragging');
+      }
+      if (recorrido > UMBRAL_ARRASTRE_PX) el.scrollLeft = inicioScroll - avance;
     };
 
     let liberar: ReturnType<typeof setTimeout> | null = null;

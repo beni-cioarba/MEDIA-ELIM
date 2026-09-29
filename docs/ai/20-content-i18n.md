@@ -27,11 +27,20 @@ ChurchConfig {
 }
 ```
 
-> ⚠️ `contact` y `donations` llevan hoy **datos de demostración** (correo
-> `@example.org`, IBAN de ceros). Están marcados con `TODO(iglesia)` y la
-> página de donativos muestra un aviso visible (`donate.demo.*`) mientras sigan
-> así. Al poner los reales, borra también ese aviso de
-> `donate.component.html` y sus claves de los dos JSON.
+> `contact` es **real** desde el 29/09/2026 (correo y teléfono del pastor);
+> `whatsapp` está en `null` hasta que se confirme si ese número se atiende por
+> WhatsApp (sin él, la página de contacto no pinta el botón). `donations` ya es
+> **real** (29/09/2026): una cuenta en euros en BBVA a nombre de «IGLESIA
+> APOSTOLICA ELIM», IBAN comprobado, sin Bizum. `bank`, `bic` y `bizum`
+> admiten `null`: lo que no exista no se pinta.
+
+**Página «Donează»** (29/09/2026, de 1.870 a ~680 px en escritorio): una
+pantalla en dos columnas — el porqué (lema, versículo, destinos 2 × 2) y la
+**tarjeta de donación** (Bizum primero y agrupado «600 000 000»; IBAN por
+divisa, nunca cortado con «…»; titular/banco/BIC en pequeño; el aviso de
+datos de ejemplo es una píldora dentro de la tarjeta). En móvil la tarjeta
+va justo tras el versículo, antes de los destinos. Una cuenta que no exista
+se borra de `accounts` y la tarjeta se adapta; sin Bizum (`null`), no sale.
 
 > `youtubeApiKey` está restringida por HTTP referrer, por eso puede vivir en el
 > repositorio. **No añadas secretos reales** aquí; los del cron viven en
@@ -64,6 +73,24 @@ calcula solo recorriendo la estructura.
 | Añadir un departamento         | Meterlo en su `ServiceArea` + clave `leadership.departments.<id>` en es/ro |
 | Añadir un cargo permanente     | Valor en `PersonTitle` + clave `leadership.titles.*`                       |
 | Añadir una función interna     | Valor en `ServiceRole` + clave `leadership.roles.*`                        |
+| Poner la foto de alguien       | Fichero cuadrado (≥ 400 px, cara centrada, WebP) en `src/assets/leadership/<id>.webp` + `photo: '<id>.webp'` en su entrada de `PEOPLE` |
+
+**Página «Conducere»** (rediseño del 29/09/2026, de 4.200 a ~1.850 px en
+escritorio): tres bloques — conducerea **por personas** (cada una una vez,
+avatar + todos sus `titles`; el pastor destacado), comité en tira de
+avatares y **directorio** de las siete áreas en paneles en columnas con
+buscador (persona o departamento, sin distinguir diacríticos). El avatar
+(`features/leadership/person-avatar`) pinta la foto si la hay (`cover`,
+circular) y, si no, las iniciales sobre un tono de marca estable por nombre:
+las fotos pueden llegar de una en una.
+
+Segunda revisión (29/09/2026): **enlace por persona** (`/conducere#<id>` abre
+su ficha; abrir/cerrar la ficha pone/quita el ancla con `replaceState`; la
+ficha trae «copiar enlace»); la ficha lista **sólo dónde sirve** (los cargos
+de gobierno ya van en sus etiquetas, antes se repetían en plural); cada
+tarjeta de conducerea dice cuántas slujiri tiene; la búsqueda resalta a las
+personas que coinciden, anuncia el resultado (`aria-live`) y se recalcula al
+cambiar de idioma; contador de departamentos por área.
 
 `Assignment.roles` es una lista: alguien puede ser responsable **y** director
 del mismo departamento sin aparecer dos veces en la tarjeta. Y un cargo de

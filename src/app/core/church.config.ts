@@ -285,10 +285,10 @@ export interface DonationAccount {
 export interface DonationInfo {
   /** Titular de las cuentas, tal y como figura en el banco. */
   readonly holder: string;
-  /** Nombre comercial del banco. */
-  readonly bank: string;
-  /** BIC / SWIFT, necesario para transferencias internacionales. */
-  readonly bic: string;
+  /** Nombre comercial del banco, o `null` si no se ha facilitado (no se pinta). */
+  readonly bank: string | null;
+  /** BIC / SWIFT (transferencias internacionales), o `null` si no se ha facilitado. */
+  readonly bic: string | null;
   /** Teléfono asociado a Bizum, o `null` si no está dado de alta. */
   readonly bizum: string | null;
   readonly accounts: readonly DonationAccount[];
@@ -793,8 +793,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   // Están puestos para que la página de contacto se vea terminada y para
   // mostrar el formato exacto que espera cada campo.
   //
-  // TODO(iglesia): sustituir `email`, `phone`, `phoneDisplay` y `whatsapp`
-  // por los datos reales. Reglas:
+  // Datos REALES desde el 29/09/2026 (correo y teléfono del pastor, facilitados
+  // por la iglesia). El mismo número atiende WhatsApp (confirmado). Reglas:
   //   · `phone`     → formato internacional, sin espacios ni guiones
   //                   (es lo que se pone en `tel:`).
   //   · `whatsapp`  → sólo dígitos, con prefijo de país y sin «+»
@@ -803,35 +803,32 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   //                   como se dicta en voz alta.
   // ---------------------------------------------------------------------
   contact: {
-    email: 'contacto@example.org',
-    phone: '+34600000000',
-    phoneDisplay: '+34 600 00 00 00',
-    whatsapp: '34600000000',
+    email: 'pavelnegrusier@gmail.com',
+    phone: '+34678668977',
+    phoneDisplay: '+34 678 66 89 77',
+    whatsapp: '34678668977',
     officeHoursKey: 'contact.office.hours',
   },
 
   // ---------------------------------------------------------------------
-  // ⚠️ DATOS BANCARIOS DE DEMOSTRACIÓN — NO SON REALES
+  // Datos para donar — REALES (facilitados por la iglesia el 29/09/2026).
   //
-  // Los IBAN son todo ceros a propósito: así es imposible confundirlos con
-  // los verdaderos ni hacer una transferencia por error.
-  //
-  // TODO(iglesia): sustituir por las cuentas reales. Reglas:
+  // Es todo lo que hay de momento: una cuenta en euros y el titular tal y
+  // como figura en el banco. IBAN comprobado (dígitos de control correctos).
+  // Lo que falte va a `null` y la tarjeta de donación no lo pinta.
   //   · `iban`     → agrupado de cuatro en cuatro; el botón de copiar quita
   //                  los espacios automáticamente.
-  //   · `currency` → código ISO 4217 (EUR, RON, USD…). Se muestra tal cual.
+  //   · `currency` → código ISO 4217 (EUR, RON…). Se muestra tal cual.
+  //   · `bank`/`bic` → BBVA (confirmado por la iglesia; es la entidad 0182
+  //                  del IBAN). BIC único de BBVA en España: BBVAESMMXXX.
   //   · `bizum`    → sólo dígitos, o `null` si la iglesia no lo tiene.
-  //   · Borra las cuentas que no existan: la página se adapta sola.
   // ---------------------------------------------------------------------
   donations: {
-    holder: 'Iglesia Evangélica Elim Arganda del Rey',
-    bank: 'Banco Ejemplo, S.A.',
-    bic: 'XXXXESMMXXX',
-    bizum: '600000000',
-    accounts: [
-      { id: 'eur', currency: 'EUR', iban: 'ES00 0000 0000 0000 0000 0000' },
-      { id: 'ron', currency: 'RON', iban: 'RO00 XXXX 0000 0000 0000 0000' },
-    ],
+    holder: 'IGLESIA APOSTOLICA ELIM',
+    bank: 'BBVA',
+    bic: 'BBVAESMMXXX',
+    bizum: null,
+    accounts: [{ id: 'eur', currency: 'EUR', iban: 'ES55 0182 4888 1302 0152 0073' }],
   },
 
   // TODO(iglesia): confirmar el año real de fundación de la congregación.

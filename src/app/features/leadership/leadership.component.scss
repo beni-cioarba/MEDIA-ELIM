@@ -1,265 +1,225 @@
 @use 'ds' as *;
-// La plantilla usa `.btn` y `.section-cta`. Son parciales que cada
-// componente importa por su cuenta: `styles.scss` NO los carga en global.
-// Sin estas dos líneas los botones del final salen sin estilo ninguno.
-@use '../../shared/styles/buttons' as *;
-@use '../../shared/styles/section-cta' as *;
 
 // =====================================================================
-// Conducere — organigrama
+// «Conducere» — página de equipo (revisión del 29/09/2026).
 //
-// Jerarquía visual en tres pesos, de mayor a menor:
-//   1. Cargos de gobierno  → tarjeta con borde dorado, avatar grande.
-//   2. Departamentos       → tarjeta neutra, avatar pequeño.
-//   3. Ficha de persona    → superficie flotante sobre velo.
-// Sin fotos: no existen de las 33 personas y una galería a medias se ve
-// peor que ninguna. El avatar es tipográfico y siempre coherente.
+// Diseño propio, fuera del catálogo a propósito (petición del usuario):
+// tres bloques densos en vez de diez secciones a todo lo ancho. De
+// 4.200 px a ~1.600 en escritorio. Los nombres son botones que abren la
+// ficha; el avatar (`app-person-avatar`) es la foto cuando llegue y las
+// iniciales mientras tanto.
 // =====================================================================
 
-// ---------------------------------------------------------------------
-// Cargos de gobierno
-// ---------------------------------------------------------------------
-.offices {
+:host {
+  display: block;
+}
+
+.lead-page {
+  @include container(var(--w-wide));
+
   display: grid;
-  // Son exactamente cuatro: 13rem deja que quepan en una fila en escritorio,
-  // dos en tableta y una en móvil, sin ninguna media query.
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  gap: var(--sp-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  gap: clamp(1.75rem, 4vh, 2.75rem);
+  padding-block: clamp(1.5rem, 4vh, 2.5rem) clamp(2rem, 5vh, 3rem);
 }
 
-.office {
-  @include surface;
-  display: grid;
-  align-content: start;
-  gap: var(--sp-3);
-  padding: var(--sp-5);
-  // El filo dorado es lo único que distingue estas tarjetas de las de
-  // departamento: mismo lenguaje, distinto peso.
-  border-block-start: 3px solid var(--c-gold);
-}
-
-.office__label {
-  @include eyebrow;
-  margin: 0;
-  color: var(--c-gold-deep);
-}
-
-.office__people {
-  display: grid;
-  gap: var(--sp-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-// ---------------------------------------------------------------------
-// Comitetul Bisericii
-//
-// Nueve nombres sin jerarquía interna: una rejilla de filas `.person`, no
-// nueve tarjetas. Es todo el CSS que necesita el bloque — la fila, el
-// avatar y las etiquetas ya existen y se reutilizan tal cual.
-// ---------------------------------------------------------------------
-.committee {
-  display: grid;
-  // Carriles del ancho del CONTENIDO y grupo centrado, no `1fr`.
-  //
-  // Con `1fr` los carriles se estiraban a todo el ancho de la sección y
-  // cada nombre se quedaba pegado al borde izquierdo del suyo: el bloque
-  // entero se leía desplazado a la izquierda bajo un título que sí está
-  // centrado. Con `max-content` el grupo mide lo que miden los nombres y
-  // `justify-content: center` lo centra de verdad.
-  //
-  // Columnas explícitas por breakpoint en vez de `auto-fit`: `auto-fit`
-  // necesita un tamaño definido para contar repeticiones y no se lleva
-  // bien con carriles intrínsecos.
-  grid-template-columns: 1fr;
-  justify-content: center;
-  gap: var(--sp-2) var(--sp-6);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  @include from('sm') {
-    grid-template-columns: repeat(2, max-content);
-  }
-
-  @include from('lg') {
-    grid-template-columns: repeat(3, max-content);
-  }
-}
-
-// ---------------------------------------------------------------------
-// Áreas y departamentos
-// ---------------------------------------------------------------------
-.depts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: var(--sp-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.dept {
-  @include surface;
-  display: grid;
-  align-content: start;
-  gap: var(--sp-3);
-  padding: var(--sp-4) var(--sp-5) var(--sp-5);
-}
-
-// Sin icono: el de la tarjeta era el del área, así que los mismos siete
-// glifos se repetían en las veintisiete cabeceras y sólo cargaban el
-// diseño. Queda el filete, que es lo que de verdad separa.
-.dept__head {
-  padding-block-end: var(--sp-3);
-  border-block-end: 1px solid var(--c-hairline);
-}
-
-.dept__title {
+// Títulos de bloque: mismos para comité y directorio.
+.block-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.05rem;
-  line-height: 1.3;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--c-primary);
 }
 
-.dept__people {
-  display: grid;
-  gap: var(--sp-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-// ---------------------------------------------------------------------
-// Persona (botón)
-//
-// Es un botón real, no un div con click: se tabula, se activa con Enter y
-// los lectores de pantalla lo anuncian como accionable.
-// ---------------------------------------------------------------------
-.person {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  width: 100%;
-  padding: var(--sp-2);
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  // `_base.scss` sólo le pasa al botón la familia, no el cuerpo: sin esto
-  // los nombres se pintaban al tamaño por defecto del navegador (~13 px) y
-  // no acompañaban al `font-size` fluido de la raíz.
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-  transition: background var(--mo-fast) var(--ea-standard);
-
-  &:hover {
-    background: var(--c-surface-sunken);
-  }
-
-  // El mixin ya se aplica sobre `:focus-visible`; anidarlo lo duplicaba.
-  @include focus-ring;
-}
-
-.person__text {
-  display: grid;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
-.person__name {
-  font-weight: 550;
-  color: var(--c-text);
-}
-
-.person__role {
-  font-size: var(--fs-xs);
+.block-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
   color: var(--c-muted);
 }
 
-.person__titles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.person--lg {
-  padding: 0;
-
-  &:hover {
-    background: transparent;
-  }
-
-  .person__name {
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-    color: var(--c-primary);
-  }
-}
-
-// ---------------------------------------------------------------------
-// Etiquetas de cargo permanente
-// ---------------------------------------------------------------------
-.tag {
+// Etiqueta de cargo (Pastor, Prezbiter, Secretar…).
+.chip {
   display: inline-block;
-  padding: 0.1em 0.55em;
-  border: 1px solid var(--c-hairline-strong);
-  border-radius: var(--r-pill);
-  font-size: 0.68rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(26 54 93 / 0.07);
+  font-size: 0.6875rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--c-muted);
+  color: var(--c-primary);
+  white-space: nowrap;
 }
 
-.tag--gold {
-  border-color: var(--c-gold);
-  background: var(--c-gold-tint);
+.chip--gold {
+  background: rgb(212 175 55 / 0.16);
   color: var(--c-gold-deep);
 }
 
 // ---------------------------------------------------------------------
-// Pista de uso — sin ella nadie descubre que los nombres son pulsables.
+// 1 · Conducerea
 // ---------------------------------------------------------------------
-.hint {
+.lead__head {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--sp-2);
-  // Al borde de la rejilla: cuando esto se escribió, el título de sección
-  // iba centrado y la pista se centraba con él. Ahora el título arranca a la
-  // izquierda, así que centrarla la dejaba descuadrada respecto a él.
-  margin: var(--sp-5) 0 0;
-  font-size: var(--fs-sm);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-bottom: 1rem;
+}
+
+.lead__eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.lead__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--c-primary);
+}
+
+.lead__subtitle {
+  margin: 0.25rem 0 0;
+  max-width: 60ch;
+  font-size: 0.9375rem;
   color: var(--c-muted);
-  text-align: center;
+}
+
+.lead__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
 
   app-icon {
-    flex: none;
-    width: 1.05rem;
-    height: 1.05rem;
+    font-size: 1rem;
     color: var(--c-gold-deep);
   }
 }
 
-// ---------------------------------------------------------------------
-// Nota de fundamento
-//
-// Texto doctrinal, no un aviso de interfaz: va en cuerpo pequeño con filete
-// de oro a la izquierda —igual que las citas del resto de la app— y con la
-// referencia al artículo en línea, como una cita bibliográfica.
-// ---------------------------------------------------------------------
+// Rejilla de personas: tarjetas horizontales compactas (avatar + nombre +
+// cargos). El pastor, primero y a dos columnas: se ve quién guía sin
+// convertir la página en un organigrama de rango.
+.leaders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.leaders__first {
+  grid-column: span 2;
+}
+
+.leader {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgb(26 54 93 / 0.1);
+  border-radius: 14px;
+  background: var(--c-surface);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 160ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 160ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover {
+    border-color: rgb(212 175 55 / 0.6);
+    box-shadow: 0 10px 22px -16px rgb(26 54 93 / 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+  }
+}
+
+.leader__avatar {
+  --avatar-size: 3.25rem;
+}
+
+.leaders__first .leader {
+  padding: 1rem 1.1rem;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(212 175 55 / 0.16), transparent 60%),
+    linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
+  border-color: transparent;
+  color: var(--c-on-primary);
+
+  .leader__avatar {
+    --avatar-size: 4.25rem;
+    box-shadow: 0 0 0 3px rgb(212 175 55 / 0.55);
+  }
+
+  .leader__name {
+    font-size: 1.25rem;
+    color: var(--c-on-primary);
+  }
+
+  .chip {
+    background: rgb(212 175 55 / 0.22);
+    color: var(--c-gold-soft);
+  }
+}
+
+.leader__text {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.leader__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--c-primary);
+}
+
+.leader__titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+// «3 slujiri»: la medida de la persona sin abrir la ficha.
+.leader__serves {
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.leaders__first .leader__serves {
+  color: rgb(247 250 252 / 0.7);
+}
+
+// Fundamento (art. 17): una línea de contexto, no un bloque.
 .ground {
-  max-width: 54ch;
-  margin: var(--sp-5) 0 0;
-  padding-inline-start: var(--sp-3);
+  max-width: 80ch;
+  margin: 0.9rem 0 0;
+  padding-inline-start: 0.75rem;
   border-inline-start: 2px solid var(--c-gold);
-  font-size: var(--fs-sm);
-  line-height: 1.7;
+  font-size: 0.8125rem;
+  line-height: 1.6;
   color: var(--c-muted);
   text-wrap: pretty;
 }
@@ -267,30 +227,392 @@
 .ground__ref {
   display: inline-block;
   margin-inline-start: 0.35rem;
-  padding: 0.1rem 0.45rem;
-  border: 1px solid var(--c-hairline-strong);
-  border-radius: var(--r-pill);
+  padding: 0.05rem 0.45rem;
+  border: 1px solid rgb(26 54 93 / 0.18);
+  border-radius: 999px;
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
   color: var(--c-gold-deep);
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    background var(--mo-fast) var(--ea-standard),
-    border-color var(--mo-fast) var(--ea-standard);
 
   &:hover {
-    background: var(--c-gold-tint);
+    background: rgb(212 175 55 / 0.12);
     border-color: var(--c-gold);
   }
 
-  @include focus-ring(2px);
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+  }
 }
 
 // ---------------------------------------------------------------------
-// Ficha de persona
+// 2 · Comitetul Bisericii — tira de avatares
+// ---------------------------------------------------------------------
+.committee {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem 2rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 16px;
+  background: #f1f4f8;
+}
+
+// `auto-fit`: las columnas vacías se colapsan y los nueve se reparten la
+// fila (con `auto-fill` cabían ocho y el noveno caía solo a otra línea).
+.committee__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.4rem 0.25rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: background 140ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover {
+    background: rgb(255 255 255 / 0.8);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 1px;
+  }
+}
+
+.member__avatar {
+  --avatar-size: 2.75rem;
+}
+
+.member__name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--c-primary);
+  text-wrap: balance;
+}
+
+// ---------------------------------------------------------------------
+// 3 · Directorio de servicio
+// ---------------------------------------------------------------------
+.dir__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-bottom: 1rem;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(100%, 20rem);
+}
+
+.search__icon {
+  position: absolute;
+  left: 0.8rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--c-muted);
+  pointer-events: none;
+}
+
+.search__input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 2.4rem 0 2.3rem;
+  border: 1px solid rgb(26 54 93 / 0.16);
+  border-radius: 999px;
+  background: var(--c-surface);
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--c-text);
+  transition:
+    border-color 140ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 140ms cubic-bezier(0.2, 0, 0, 1);
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-gold);
+    box-shadow: 0 0 0 3px rgb(212 175 55 / 0.2);
+  }
+}
+
+.search__clear {
+  position: absolute;
+  right: 0.35rem;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(26 54 93 / 0.07);
+    color: var(--c-text);
+  }
+
+  app-icon {
+    font-size: 1rem;
+  }
+}
+
+// Paneles en columnas CSS: se empaquetan como mampostería (un área de
+// cinco departamentos junto a una de uno no deja hueco) y se leen de arriba
+// abajo, como un índice.
+.areas {
+  columns: 3 18rem;
+  column-gap: 1rem;
+}
+
+.area {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem 0.6rem;
+  border: 1px solid rgb(26 54 93 / 0.1);
+  border-radius: 14px;
+  background: var(--c-surface);
+}
+
+.area__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.area__name {
+  flex: 1;
+  min-width: 0;
+}
+
+// Número de departamentos del área: se sabe el tamaño antes de leerla.
+.area__count {
+  min-width: 1.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgb(26 54 93 / 0.07);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+}
+
+.area__icon {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 8px;
+  background: rgb(212 175 55 / 0.14);
+  color: var(--c-gold-deep);
+  font-size: 1rem;
+}
+
+.area__depts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Departamento: nombre en versalitas pequeñas y, debajo, quién sirve.
+.dept {
+  padding-block: 0.5rem;
+
+  & + & {
+    border-top: 1px solid rgb(26 54 93 / 0.07);
+  }
+}
+
+.dept__name {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.dept__people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.35rem;
+}
+
+// Persona: píldora con mini avatar. Botón que abre su ficha.
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: rgb(26 54 93 / 0.04);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 140ms cubic-bezier(0.2, 0, 0, 1),
+    border-color 140ms cubic-bezier(0.2, 0, 0, 1);
+
+  &:hover {
+    border-color: rgb(212 175 55 / 0.55);
+    background: rgb(212 175 55 / 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 1px;
+  }
+}
+
+.who.is-match {
+  border-color: var(--c-gold);
+  background: rgb(212 175 55 / 0.16);
+  box-shadow: 0 0 0 2px rgb(212 175 55 / 0.18);
+}
+
+.who__avatar {
+  --avatar-size: 1.6rem;
+}
+
+.who__name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  white-space: nowrap;
+}
+
+.who__role {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--c-gold-deep);
+  white-space: nowrap;
+}
+
+.dir__status {
+  min-height: 1.1rem;
+  margin: -0.5rem 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-gold-deep);
+
+  &:empty {
+    min-height: 0;
+    margin: 0;
+  }
+}
+
+.dir__empty {
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px dashed rgb(26 54 93 / 0.2);
+  border-radius: 14px;
+  text-align: center;
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// Contacto: una franja, no una sección
+// ---------------------------------------------------------------------
+.talk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
+  color: rgb(247 250 252 / 0.78);
+}
+
+.talk__text {
+  margin: 0;
+  font-size: 0.875rem;
+
+  strong {
+    margin-inline-end: 0.35rem;
+    color: var(--c-on-primary);
+  }
+}
+
+.talk__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.talk__btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding-inline: 1rem;
+  border: 1px solid rgb(247 250 252 / 0.3);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--c-on-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgb(247 250 252 / 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+  }
+}
+
+.talk__btn--primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+  color: var(--c-primary-deep);
+
+  &:hover {
+    background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 100%);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Ficha de persona (diálogo)
 // ---------------------------------------------------------------------
 .sheet {
   width: min(100%, 30rem);
@@ -364,16 +686,7 @@
 }
 
 .sheet__avatar {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 3.4rem;
-  height: 3.4rem;
-  border-radius: var(--r-pill);
-  background: linear-gradient(140deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
-  color: var(--c-on-primary);
-  font-size: 1.05rem;
-  font-weight: 600;
+  --avatar-size: 4rem;
 }
 
 .sheet__name {
@@ -421,8 +734,70 @@
   color: var(--c-muted);
 }
 
+// Enlace a la ficha, para compartirla.
+.sheet__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin: 0;
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgb(26 54 93 / 0.08);
+  font-size: 0.8125rem;
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// Anchos estrechos
+// ---------------------------------------------------------------------
+@include until('md') {
+  // El pastor, a lo ancho y horizontal; el resto en dos columnas de
+  // tarjetas verticales (avatar arriba): en una sola columna los nueve
+  // ocupaban ~900 px de pantalla del móvil.
+  .leaders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .leaders__first {
+    grid-column: 1 / -1;
+  }
+
+  .leaders > li:not(.leaders__first) .leader {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+
+    .leader__text {
+      justify-items: center;
+    }
+
+    .leader__titles {
+      justify-content: center;
+    }
+  }
+
+  .committee {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1rem;
+  }
+
+  .committee__list {
+    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  }
+
+  .search {
+    width: 100%;
+  }
+}
+
 @include motion-reduce {
-  .person,
+  .leader,
+  .member,
+  .who,
+  .search__input,
   .sheet__close {
     transition: none;
   }

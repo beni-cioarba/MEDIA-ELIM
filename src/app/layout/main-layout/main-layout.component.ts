@@ -84,9 +84,16 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
 
       /* Reserva la altura aproximada del pie para que no haya salto de
          layout (CLS) cuando entra en el viewport y se hidrata. El pie es
-         mucho más alto en móvil (las columnas se apilan), de ahí el clamp. */
+         mucho más alto en móvil (las columnas se apilan). Medido tras
+         compactarlo (29/09/2026): ~280-300 px en escritorio y ~730 px a 390. */
       .shell__footer-ph {
-        min-height: clamp(26rem, 55vw, 32rem);
+        min-height: 17rem;
+      }
+
+      @media (max-width: 767.98px) {
+        .shell__footer-ph {
+          min-height: 48rem;
+        }
       }
     `,
     ]

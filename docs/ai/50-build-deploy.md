@@ -98,9 +98,27 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
 ## PWA
 
 - `ngsw-config.json` + `provideServiceWorker` (sólo en producción).
-- `PwaUpdateService` comprueba versiones al estabilizarse la app y cada hora;
-  si hay una nueva, la activa y recarga. La pantalla del templo nunca se queda
-  con una versión antigua.
+- `PwaUpdateService` comprueba versiones al estabilizarse la app, cada 15 min
+  y al volver la pestaña a primer plano (como Administrativ); si hay una
+  nueva, la activa y recarga. **Nunca en mitad de una proyección**: con la
+  presentación a pantalla completa o en `/media/control` · `/media/ecran`, la
+  recarga espera a que se salga (29/09/2026).
+- **Enlaces profundos** (auditado el 29/09/2026): GitHub Pages no tiene
+  rutas; `404.html` es copia de `index.html`, así que
+  `…/rugaciune-pentru-familii/<domingo>#<familia>` abre la página y el router
+  baja a la ficha (**pero con estado HTTP 404**, que algunas vistas previas de
+  redes pueden rechazar; pendiente: generar `index.html` por ruta en el
+  despliegue). `og:url` = URL de la página, no la portada (con la portada las
+  redes reescribían el enlace a `…/MEDIA-ELIM/#<familia>`). Las anclas bajan
+  con el desplazamiento del alto de la cabecera (`ViewportScroller.setOffset`
+  en `app.config.ts`: el router ignora `scroll-padding-top`).
+- Versionado: **MAYOR.MENOR manual** en `package.json` (el usuario dice
+  cuándo es 2.1.0 o 3.0.0) y **PARCHE automático** = commits desde el último
+  cambio de `"version"` (`autoRelease` en `scripts/generate-version.mjs`):
+  2.0.0 + 17 commits → v2.0.17. Por commit, no por compilación (mismo código
+  = mismo número, en local y en el CI; el CI clona con `fetch-depth: 0`).
+  Además: build = nº de commits, hash, «dirty», fecha. El chip del pie muestra `v2.0.0` (con «+» si se compiló con cambios
+  sin commitear) y el detalle en su tooltip.
 - `npm run pwa:icons` regenera el icono de la app y sus derivados desde el
   **emblema** (`scripts/assets-src/emblema-elim.png`, máster de 674 px que no se
   publica) con `sharp`: `assets/pwa/icon-512.png` e `icon-192.png` (un PNG para

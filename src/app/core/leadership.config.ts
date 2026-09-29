@@ -63,6 +63,13 @@ export interface Person {
   /** Nombre propio — nunca se traduce. */
   readonly name: string;
   readonly titles?: readonly PersonTitle[];
+  /**
+   * Foto de perfil: nombre del fichero en `assets/leadership/`
+   * (`'pavel-negrusier.webp'`, cuadrada, ≥ 400 px, cara centrada). Sin ella
+   * se pinta el avatar de iniciales. Se añade persona a persona conforme
+   * lleguen las fotos: ninguna pantalla depende de que estén todas.
+   */
+  readonly photo?: string;
 }
 
 // ---------------------------------------------------------------------

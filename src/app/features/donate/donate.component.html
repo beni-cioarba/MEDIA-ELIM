@@ -1,79 +1,79 @@
-<header class="page-hero">
-  <div class="page-hero__inner">
-    <p class="page-hero__eyebrow">{{ 'donate.eyebrow' | translate }}</p>
-    <h1 class="page-hero__title">{{ 'donate.title' | translate }}</h1>
-    <p class="page-hero__lead">{{ 'donate.lead' | translate }}</p>
+<!--
+  Donează (revisión del 29/09/2026, «profesional, futurista y comprimido»).
+  Todo en una pantalla, en dos columnas:
+    · Izquierda, el porqué: lema, versículo y los cuatro destinos (2 × 2).
+    · Derecha, el cómo: la **tarjeta de donación** (navy, como una cartera
+      digital) con Bizum primero —el método más usado en España para
+      importes pequeños— y después las cuentas por divisa, cada una con su
+      botón de copiar. Titular, banco y BIC, en letra pequeña debajo.
+  Antes la acción quedaba a 900 px de la cabecera, tras un hero de 400 px y
+  cuatro tarjetas altas; el bloque bancario sólo usaba media anchura.
+-->
+<div class="give">
+  <!-- ============ El porqué ============ -->
+  <section class="give__why" aria-labelledby="give-title">
+    <p class="give__eyebrow">{{ 'donate.eyebrow' | translate }}</p>
+    <h1 class="give__title" id="give-title">{{ 'donate.title' | translate }}</h1>
+    <p class="give__lead">{{ 'donate.lead' | translate }}</p>
 
     <!-- El versículo marca el tono: donación voluntaria, no cuota. -->
     <figure class="verse">
       <blockquote class="verse__text">{{ 'donate.verse.text' | translate }}</blockquote>
       <figcaption class="verse__ref">{{ 'donate.verse.ref' | translate }}</figcaption>
     </figure>
-  </div>
-</header>
 
-<!-- Primero el porqué: a qué se destina cada donativo. -->
-<app-page-section
-  eyebrowKey="donate.purposes.eyebrow"
-  titleKey="donate.purposes.title"
-  subtitleKey="donate.purposes.subtitle"
->
-  <ul class="purposes">
-    @for (purpose of purposes; track purpose.id) {
-      <li class="purpose">
-        <span class="purpose__badge" aria-hidden="true">
-          <app-icon [name]="purpose.icon" />
-        </span>
-        <h3 class="purpose__title">
-          {{ 'donate.purposes.items.' + purpose.id + '.title' | translate }}
-        </h3>
-        <p class="purpose__body">
-          {{ 'donate.purposes.items.' + purpose.id + '.body' | translate }}
-        </p>
-      </li>
+    <!-- La invitación: dar como acto de adoración, no como cuota. -->
+    <div class="why">
+      <h2 class="why__title">{{ 'donate.why.title' | translate }}</h2>
+      <p class="why__body">{{ 'donate.why.body' | translate }}</p>
+    </div>
+
+    <!-- Transparencia: a qué se destina, en una rejilla compacta. -->
+    <h2 class="give__sub">{{ 'donate.purposes.title' | translate }}</h2>
+    <ul class="purposes" role="list">
+      @for (purpose of purposes; track purpose.id) {
+        <li class="purpose">
+          <span class="purpose__icon" aria-hidden="true"><app-icon [name]="purpose.icon" /></span>
+          <span class="purpose__text">
+            <span class="purpose__title">{{ 'donate.purposes.items.' + purpose.id + '.title' | translate }}</span>
+            <span class="purpose__body">{{ 'donate.purposes.items.' + purpose.id + '.body' | translate }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+
+    <!-- Transparencia: quién administra lo que se da (cargos reales del
+         organigrama: casier y cenzori). -->
+    <p class="trust">
+      <app-icon name="check" />
+      <span>{{ 'donate.purposes.trust' | translate }}</span>
+      <a class="trust__link" [routerLink]="links.leadership">{{ 'donate.purposes.trust_link' | translate }}</a>
+    </p>
+  </section>
+
+  <!-- ============ El cómo: tarjeta de donación ============ -->
+  <section class="wallet" aria-labelledby="wallet-title">
+    <div class="wallet__head">
+      <h2 class="wallet__title" id="wallet-title">{{ 'donate.card.title' | translate }}</h2>
+    </div>
+
+    @if (donations.bizum; as bizum) {
+      <div class="method method--bizum">
+        <span class="method__label">Bizum</span>
+        <span class="method__value">{{ grouped(bizum) }}</span>
+        <span class="method__hint">{{ 'donate.card.bizum_hint' | translate }}</span>
+        <app-copy-button class="method__copy" [value]="bizum" [label]="'Bizum'" />
+      </div>
     }
-  </ul>
-</app-page-section>
 
-<!-- Después el cómo. -->
-<app-page-section
-  tinted
-  eyebrowKey="donate.bank.eyebrow"
-  titleKey="donate.bank.title"
-  subtitleKey="donate.bank.subtitle"
->
-  <!-- TODO(iglesia): quita este aviso cuando los datos de `church.config.ts`
-       sean los reales (junto con las claves `donate.demo.*`). -->
-  <p class="demo" role="note">
-    <strong>{{ 'donate.demo.title' | translate }}</strong>
-    {{ 'donate.demo.body' | translate }}
-  </p>
-
-  <div class="bank">
-    <dl class="bank__meta">
-      <div class="bank__row">
-        <dt>{{ 'donate.bank.holder' | translate }}</dt>
-        <dd>{{ donations.holder }}</dd>
-      </div>
-      <div class="bank__row">
-        <dt>{{ 'donate.bank.entity' | translate }}</dt>
-        <dd>{{ donations.bank }}</dd>
-      </div>
-      <div class="bank__row">
-        <dt>{{ 'donate.bank.bic' | translate }}</dt>
-        <dd>
-          <span class="bank__code">{{ donations.bic }}</span>
-          <app-copy-button [value]="donations.bic" [label]="'donate.bank.bic' | translate" />
-        </dd>
-      </div>
-    </dl>
-
-    <ul class="accounts">
+    <p class="wallet__section">{{ 'donate.bank.title' | translate }}</p>
+    <ul class="accounts" role="list">
       @for (account of donations.accounts; track account.id) {
-        <li class="account">
-          <span class="account__currency">{{ account.currency }}</span>
-          <span class="account__iban">{{ account.iban }}</span>
+        <li class="method">
+          <span class="method__label">{{ account.currency }}</span>
+          <span class="method__value method__value--iban">{{ account.iban }}</span>
           <app-copy-button
+            class="method__copy"
             [value]="plain(account.iban)"
             [label]="('donate.bank.account' | translate) + ' ' + account.currency"
           />
@@ -81,27 +81,59 @@
       }
     </ul>
 
-    @if (donations.bizum) {
-      <p class="bank__bizum">
-        <app-icon name="credit-card" />
-        <span>
-          {{ 'donate.bank.bizum' | translate }}
-          <strong>{{ donations.bizum }}</strong>
-        </span>
-      </p>
-    }
+    <!-- Cada dato con su botón de copiar: el titular es el «beneficiario» que
+         pide la app del banco, y copiarlo evita erratas en el nombre. -->
+    <dl class="wallet__meta">
+      <div>
+        <dt>{{ 'donate.bank.holder' | translate }}</dt>
+        <dd class="wallet__copyable">
+          <span>{{ donations.holder }}</span>
+          <app-copy-button class="method__copy" [value]="donations.holder" [label]="'donate.bank.holder' | translate" />
+        </dd>
+      </div>
+      <!-- Banco y BIC sólo si se conocen (`null` en la configuración → no sale). -->
+      @if (donations.bank; as bank) {
+        <div>
+          <dt>{{ 'donate.bank.entity' | translate }}</dt>
+          <dd class="wallet__copyable">
+            <span>{{ bank }}</span>
+            <app-copy-button class="method__copy" [value]="bank" [label]="'donate.bank.entity' | translate" />
+          </dd>
+        </div>
+      }
+      @if (donations.bic; as bic) {
+        <div>
+          <dt>{{ 'donate.bank.bic' | translate }}</dt>
+          <dd class="wallet__copyable wallet__copyable--code">
+            <span>{{ bic }}</span>
+            <app-copy-button class="method__copy" [value]="bic" [label]="'donate.bank.bic' | translate" />
+          </dd>
+        </div>
+      }
+    </dl>
 
-    <p class="bank__note">{{ 'donate.bank.note' | translate }}</p>
-  </div>
-</app-page-section>
+    <!-- Qué poner en el concepto de la transferencia: ejemplos listos. -->
+    <div class="concept">
+      <span class="concept__label">{{ 'donate.bank.concept' | translate }}</span>
+      <span class="concept__chips">
+        @for (concept of concepts(); track concept) {
+          <span class="concept__chip">{{ concept }}</span>
+        }
+      </span>
+    </div>
 
-<app-page-section titleKey="donate.thanks.title" subtitleKey="donate.thanks.subtitle">
-  <div class="section-cta">
-    <a class="btn btn--primary" [routerLink]="links.contact">
-      {{ 'donate.thanks.contact' | translate }}
-    </a>
-    <a class="btn btn--ghost-dark" [routerLink]="links.about">
-      {{ 'donate.thanks.about' | translate }}
-    </a>
-  </div>
-</app-page-section>
+    <p class="wallet__note">{{ 'donate.bank.note' | translate }}</p>
+  </section>
+</div>
+
+<!-- Cierre en una línea (antes, una sección entera para dos botones). -->
+<aside class="thanks">
+  <p class="thanks__text">
+    <strong>{{ 'donate.thanks.title' | translate }}.</strong>
+    {{ 'donate.thanks.subtitle' | translate }}
+  </p>
+  <a class="thanks__link" [routerLink]="links.contact">
+    {{ 'donate.thanks.contact' | translate }}
+    <app-icon name="arrow-right" />
+  </a>
+</aside>
