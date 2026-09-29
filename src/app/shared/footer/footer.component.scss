@@ -52,9 +52,17 @@
 // contacto; todas las columnas tienen tres filas (Program se parte en dos
 // subcolumnas y las llamadas a la acción suben bajo las redes). Así ningún
 // grupo largo fija el alto del pie.
+//
+// Identidad y contacto con suelo `max-content` (no un ancho fijo ni 0): la
+// identidad reservaba 14,5 rem (246 px) para 205 de contenido y el contacto,
+// con suelo 0, se quedaba en 206 px a 1280 px de ventana; el correo real y la
+// fila del teléfono con sus botones miden 246 y se salían de la columna,
+// recortados por el borde del pie. Así cada columna mide al menos lo que su
+// contenido y el sobrante se reparte 1 : 1,25. A 1280 px suman ~1.191 px de
+// 1.194 disponibles: si el contenido crece, adelantar el apilado de `xl`.
 .footer__main {
   display: grid;
-  grid-template-columns: minmax(14.5rem, 1fr) auto auto auto minmax(0, 1.25fr);
+  grid-template-columns: minmax(max-content, 1fr) auto auto auto minmax(max-content, 1.25fr);
   gap: var(--sp-5) clamp(1.25rem, 2.5vw, 3.5rem);
   padding-block-end: var(--sp-4);
 }
@@ -250,6 +258,102 @@
   margin-block-start: 0.15rem;
   font-size: 1rem;
   color: var(--c-gold);
+}
+
+// Teléfono con acciones: número y botones en una misma línea, pegados
+// (`auto auto`, no `1fr`): mandados al borde de la columna se leían como
+// otra cosa y no como «llamar a este número».
+.footer__datum--phone {
+  grid-template-columns: 1.25rem auto auto;
+  justify-content: start;
+  align-items: center;
+
+  .footer__datum-icon {
+    margin-block-start: 0;
+  }
+}
+
+.footer__phone {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.footer__quick {
+  display: inline-flex;
+  gap: var(--sp-1);
+  margin-inline-start: var(--sp-1);
+}
+
+// Botones de 32 px (≥ 24 px de WCAG 2.5.8) que no inflan la fila: el margen
+// negativo devuelve lo que sobra al hueco entre filas, así el dato mide lo
+// mismo que sus vecinos (21 px) y el área de toque sigue siendo la entera.
+// El icono va a color en reposo —dorado la llamada, verde WhatsApp—: son la
+// acción del dato, no decoración como las redes (neutras en reposo).
+.footer__quick-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-block: -0.3rem;
+  border: 1px solid rgba(247, 250, 252, 0.16);
+  border-radius: 50%;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition:
+    background var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard),
+    color var(--mo-base) var(--ea-standard),
+    transform var(--mo-base) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+// En pantallas táctiles es donde de verdad se llama y se escribe por
+// WhatsApp: el botón sube a ~41 px (cerca de los 44 recomendados) y la fila
+// crece lo que haga falta, sin margen negativo.
+@media (pointer: coarse) {
+  .footer__quick {
+    gap: var(--sp-2);
+  }
+
+  .footer__quick-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-block: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.footer__quick-btn--call {
+  color: var(--c-gold);
+
+  &:hover,
+  &:focus-visible {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+    color: var(--c-primary-deep);
+  }
+}
+
+// Verde oficial de WhatsApp: 7,9:1 sobre el navy del pie en reposo; al
+// apuntar, relleno verde con el icono en navy (mismo contraste invertido).
+.footer__quick-btn--whatsapp {
+  --wa: #25d366;
+  color: var(--wa);
+
+  &:hover,
+  &:focus-visible {
+    border-color: transparent;
+    background: var(--wa);
+    color: var(--c-primary-deep);
+  }
 }
 
 .footer__actions {
@@ -516,8 +620,14 @@
   .footer__partner,
   .footer__version,
   .footer__icon-btn,
+  .footer__quick-btn,
   .footer__build {
     transition: none;
+  }
+
+  .footer__quick-btn:hover,
+  .footer__quick-btn:focus-visible {
+    transform: none;
   }
 
   .footer__build {

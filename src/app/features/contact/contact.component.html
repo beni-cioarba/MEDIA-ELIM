@@ -22,8 +22,13 @@
         <app-icon name="phone" />
         {{ 'contact.quick.call' | translate }}
       </a>
-      @if (whatsappUrl) {
-        <a class="quick__btn quick__btn--whatsapp" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer">
+      @if (whatsapp) {
+        <a
+          class="quick__btn quick__btn--whatsapp"
+          [href]="whatsappLink(whatsapp, 'contact.quick.whatsapp_text' | translate)"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <app-icon name="whatsapp" />
           WhatsApp
         </a>

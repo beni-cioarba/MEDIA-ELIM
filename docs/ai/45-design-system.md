@@ -224,20 +224,31 @@ El emblema es el **disco interior** del sello institucional (el sello completo,
 con el anillo «Departament Administrativ», es de la app administrativa y no se
 usa aquí). Vive como máster en `scripts/assets-src/emblema-elim.png` (674 px,
 recorte al 69,5 % del sello original de 970 px, con máscara circular) y
-`npm run pwa:icons` (`scripts/generate-pwa-icons.mjs`, con `sharp`) lo sirve
-sobre **baldosa navy de marca** (`navy(700)` = `--c-primary` = `#1a365d`, el
-mismo navy que la app administrativa):
+`npm run pwa:icons` (`scripts/generate-pwa-icons.mjs`, con `sharp`) genera
+**una pieza por uso** (revisión del 29/09/2026; antes un solo PNG
+`any maskable`, desaconsejado por Chrome):
 
-| Salida | Tamaño | Emblema | Para |
+| Salida | Tamaño | Qué es | Para |
 | --- | --- | --- | --- |
-| `assets/pwa/icon-512.png`, `icon-192.png` | 512 / 192 | 78 % del lado | manifest, `purpose: "any maskable"` (cabe en el círculo de seguridad del 80 %, así **un PNG sirve para los dos**) |
-| `assets/pwa/icon-180.png` | 180 | 78 % | `apple-touch-icon` |
-| `assets/pwa/favicon-32.png` | 32 | 84 % | `<link rel="icon" sizes="32x32">` |
-| `src/favicon.ico` | 16 / 32 / 48 | 84 % | navegadores antiguos y marcadores |
+| `icon-any-{512,192}.png` | 512 / 192 | Squircle (radio 22 %, esquinas transparentes), degradado navy 600→900 + brillo frío, emblema al 70 % con sombra | manifest `any`: escritorio y diálogo de instalar |
+| `icon-maskable-{512,192}.png` | 512 / 192 | A sangre, emblema al 62 % (dentro del círculo de seguridad del 80 %) | manifest `maskable`: Android recorta con su máscara |
+| `icon-monochrome-512.png` | 512 | Silueta blanca de paloma + cruz + llama, **extraída píxel a píxel** del emblema (lo que no es el disco blanco ni el filete) | manifest `monochrome`: iconos temáticos de Android 13+ |
+| `icon-180.png` | 180 | A sangre, emblema al 72 % | `apple-touch-icon` (iOS redondea solo) |
+| `favicon-32.png`, `src/favicon.ico` (16/32/48) | 16–48 | El emblema a color **a sangre**, esquinas transparentes | pestaña. Probadas: baldosa navy con disco al 84 % (a 16 px, mancha) y silueta blanca (alta y fina, una raya); el disco entero es lo que se reconoce en pestañas claras y oscuras |
+| `shortcut-{announcements,weekly,live,donate}-192.png` | 192 | Squircle navy + icono de trazo blanco (trazados de `icon-registry.ts`) | atajos del manifiesto (pulsación larga) |
+| `og-image.jpg` | 1200×630 | Fondo del icono + emblema + «Biserica Elim · Arganda del Rey» | `og:image` / `twitter:image` en `index.html` |
+
+Manifiesto: `id`, nombre «Biserica Elim Arganda», descripción al día,
+`theme_color` = fondo de la cabecera (`#faf9f6`; en `index.html` también la
+variante oscura por `media`), `background_color` navy (splash), 4 atajos y 2
+capturas (`assets/pwa/screenshots/home-{narrow,wide}.webp`, para el diálogo
+de instalación enriquecido). Chrome lo valida sin errores ni avisos de
+instalabilidad. iOS: `apple-mobile-web-app-status-bar-style: default` (la
+cabecera es clara; con `black-translucent` la barra salía blanco sobre blanco).
 
 Nunca se edita un PNG a mano: si cambia el emblema, se sustituye el máster y se
-regenera. `theme_color` / `background_color` del manifest siguen siendo el fondo
-del escenario (`#060914`); la baldosa navy se ve como icono, no como splash.
+regenera. Las capturas se rehacen a mano cuando cambie la portada (Playwright a
+390×844 y 1280×800, a WebP).
 
 ### Marca INEB: `app-ineb-logo`
 

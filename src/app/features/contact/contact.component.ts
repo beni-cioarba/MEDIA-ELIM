@@ -10,6 +10,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { LanguageService } from '../../core/services/language.service';
+import { telHref, whatsappHref } from '../../core/util/contact-links';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { CopyButtonComponent } from '../../shared/copy-button/copy-button.component';
@@ -65,7 +66,7 @@ export class ContactComponent {
     donate: `/${APP_PATHS.donate}`,
     about: `/${APP_PATHS.about}`,
     /** Acciones directas de la cabecera. */
-    tel: `tel:${this.config.contact.phone}`,
+    tel: telHref(this.config.contact.phone),
     mailto: `mailto:${this.config.contact.email}`,
     maps: this.config.location.mapsShareUrl,
   } as const;
@@ -97,16 +98,19 @@ export class ContactComponent {
       id: 'phone',
       icon: 'phone',
       value: this.config.contact.phoneDisplay,
-      href: `tel:${this.config.contact.phone}`,
+      href: telHref(this.config.contact.phone),
       copy: this.config.contact.phone,
       external: false,
     },
   ];
 
-  /** Enlace de WhatsApp, o `null` si la iglesia no lo tiene dado de alta. */
-  protected readonly whatsappUrl = this.config.contact.whatsapp
-    ? `https://wa.me/${this.config.contact.whatsapp}`
-    : null;
+  /** Número de WhatsApp, o `null` si la iglesia no lo tiene dado de alta. */
+  protected readonly whatsapp = this.config.contact.whatsapp;
+
+  /** Chat de WhatsApp con el saludo ya escrito (el texto llega traducido). */
+  protected whatsappLink(number: string, text: string): string {
+    return whatsappHref(number, text);
+  }
 
   /**
    * Mapa incrustado. Se marca como recurso de confianza porque la consulta

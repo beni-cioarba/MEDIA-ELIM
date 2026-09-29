@@ -293,7 +293,9 @@
     "commit": "Revizie",
     "built_at": "Publicată",
     "styleguide": "Ghid de stiluri",
-    "control": "Panou de control"
+    "control": "Panou de control",
+    "call": "Sună la telefon",
+    "whatsapp": "Scrie pe WhatsApp"
   },
   "common": {
     "copy": "Copiază",
@@ -346,7 +348,8 @@
       "label": "Contact direct",
       "call": "Sună",
       "email": "Scrie un e-mail",
-      "directions": "Cum ajungi"
+      "directions": "Cum ajungi",
+      "whatsapp_text": "Bună ziua, vă scriu de pe site-ul Bisericii Elim Arganda."
     },
     "card": {
       "title": "Date de contact"

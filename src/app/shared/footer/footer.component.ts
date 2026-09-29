@@ -14,6 +14,7 @@ import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
 import { LanguageService } from '../../core/services/language.service';
+import { telHref, whatsappHref } from '../../core/util/contact-links';
 import { APP_VERSION } from '../../../environments/version';
 import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
 import { IconComponent } from '../icon/icon.component';
@@ -113,7 +114,18 @@ export class FooterComponent {
   } as const;
 
   protected readonly mailto = `mailto:${this.config.contact.email}`;
-  protected readonly tel = `tel:${this.config.contact.phone}`;
+  protected readonly tel = telHref(this.config.contact.phone);
+
+  /** Número de WhatsApp de la iglesia; `null` → no se pinta el botón. */
+  protected readonly whatsapp = this.config.contact.whatsapp;
+
+  /**
+   * Chat de WhatsApp con el saludo ya escrito en el idioma activo. Recibe el
+   * texto por el `translate` de la plantilla: así cambia al cambiar de idioma.
+   */
+  protected whatsappLink(number: string, text: string): string {
+    return whatsappHref(number, text);
+  }
 
   /**
    * Versión publicada. El número visible (`release`) lo decide una persona

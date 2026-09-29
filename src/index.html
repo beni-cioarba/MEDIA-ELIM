@@ -2,22 +2,45 @@
 <html lang="ro">
 <head>
   <meta charset="utf-8">
-  <title>Biserica Elim - Rețelele sociale</title>
+  <!-- Título y descripción ESTÁTICOS: son lo que leen WhatsApp, Facebook y los
+       buscadores (no ejecutan JS). `SeoService` los afina por página en el
+       navegador. -->
+  <title>Biserica Elim Arganda</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Conectează-te cu Biserica Elim: Instagram, Facebook, YouTube și cod QR.">
-  <meta name="theme-color" content="#060914">
-  <!-- Icono de la app: el emblema de la iglesia sobre baldosa navy, generado
-       con `npm run pwa:icons` (ver docs/ai/45-design-system.md → Marca).
-       PNG de 32 para las pestañas y favicon.ico (16/32/48) en la raíz. -->
+  <meta name="description" content="Biserica Elim din Arganda del Rey: program, anunțuri, transmisiuni în direct, rugăciune pentru familii și donații.">
+  <!-- Color de la barra del navegador / de la ventana instalada: el del fondo
+       de la cabecera en cada tema, para que se funda con ella. -->
+  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d1f35" media="(prefers-color-scheme: dark)">
+
+  <!-- Iconos (todos generados con `npm run pwa:icons` desde el emblema; ver
+       docs/ai/45-design-system.md → Marca): pestaña (silueta sobre navy),
+       apple-touch a sangre y, en el manifiesto, any / maskable / monochrome y
+       los iconos de los atajos. -->
   <link rel="icon" type="image/png" sizes="32x32" href="assets/pwa/favicon-32.png">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/pwa/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ELIM Arganda">
+  <!-- `default` (texto oscuro): la cabecera es clara; con `black-translucent`
+       la hora y la batería salían en blanco sobre blanco. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Elim Arganda">
   <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Vista previa al compartir un enlace (WhatsApp, Facebook, Telegram…). -->
+  <meta property="og:site_name" content="Biserica Elim Arganda">
+  <meta property="og:locale" content="ro_RO">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Biserica Elim Arganda">
+  <meta property="og:description" content="Program, anunțuri, transmisiuni în direct, rugăciune pentru familii și donații.">
+  <meta property="og:image" content="https://beni-cioarba.github.io/MEDIA-ELIM/assets/pwa/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Emblema Bisericii Elim Arganda">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://beni-cioarba.github.io/MEDIA-ELIM/assets/pwa/og-image.jpg">
 
   <!-- Preconectar al CDN del JSON de YouTube para que el TLS handshake
        no bloquee la primera petición. -->

@@ -86,9 +86,35 @@
             <app-icon class="footer__datum-icon" name="mail" />
             <a class="footer__link" [href]="mailto">{{ config.contact.email }}</a>
           </li>
-          <li class="footer__datum">
+          <!-- Teléfono: el número es enlace, pero un texto subrayado al apuntar
+               no dice «puedes llamar». Dos acciones explícitas pegadas al
+               número (proximidad: son «de este dato»): llamar y WhatsApp, que
+               abre el chat con el saludo ya escrito. -->
+          <li class="footer__datum footer__datum--phone">
             <app-icon class="footer__datum-icon" name="phone" />
-            <a class="footer__link" [href]="tel">{{ config.contact.phoneDisplay }}</a>
+            <a class="footer__link footer__phone" [href]="tel">{{ config.contact.phoneDisplay }}</a>
+            <span class="footer__quick">
+              <a
+                class="footer__quick-btn footer__quick-btn--call"
+                [href]="tel"
+                [attr.aria-label]="('footer.call' | translate) + ' · ' + config.contact.phoneDisplay"
+                [title]="'footer.call' | translate"
+              >
+                <app-icon name="phone" />
+              </a>
+              @if (whatsapp) {
+                <a
+                  class="footer__quick-btn footer__quick-btn--whatsapp"
+                  [href]="whatsappLink(whatsapp, 'contact.quick.whatsapp_text' | translate)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [attr.aria-label]="'footer.whatsapp' | translate"
+                  [title]="'footer.whatsapp' | translate"
+                >
+                  <app-icon name="whatsapp" />
+                </a>
+              }
+            </span>
           </li>
           <li class="footer__datum">
             <app-icon class="footer__datum-icon" name="clock" />

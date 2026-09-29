@@ -203,4 +203,18 @@ temporizador fallaba. Se usa la proporción (`intersectionRatio`), no
 Administrativ.
 
 Email y teléfono del pie: los reales de `church.config.ts → contact`.
+
+**Teléfono con acciones** (29/09/2026): tras el número, dos botones redondos
+pegados a él —llamar (`tel:`) y WhatsApp (`wa.me` con el saludo ya escrito
+en el idioma activo)—. El icono va a color en reposo (oro / verde WhatsApp,
+7,9:1 sobre el navy) porque son la acción del dato; al apuntar se rellenan.
+32 px con ratón (margen negativo: la fila no crece) y ~41 px en táctil
+(`pointer: coarse`). Sin `whatsapp` en la configuración, sólo sale llamar.
+
+**Rejilla ≥ xl**: identidad y contacto con suelo `max-content`
+(`minmax(max-content, 1fr)` / `minmax(max-content, 1.25fr)`). Con suelo fijo
+de 14,5 rem la identidad reservaba 41 px que no usaba y el contacto, con suelo
+0, se quedaba en 206 px a 1280: el correo real y la fila del teléfono (246 px)
+se salían y el borde del pie los recortaba. A 1280 la rejilla suma ~1.191 de
+1.194 px: si crece el contenido, adelantar el apilado de `xl`.
 - El dock flotante usa `@defer (on idle)`.

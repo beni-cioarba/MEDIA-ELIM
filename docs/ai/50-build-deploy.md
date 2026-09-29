@@ -121,9 +121,8 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
   sin commitear) y el detalle en su tooltip.
 - `npm run pwa:icons` regenera el icono de la app y sus derivados desde el
   **emblema** (`scripts/assets-src/emblema-elim.png`, máster de 674 px que no se
-  publica) con `sharp`: `assets/pwa/icon-512.png` e `icon-192.png` (un PNG para
-  `any` **y** `maskable`), `icon-180.png` (Apple), `favicon-32.png` y
-  `src/favicon.ico` (16/32/48). Receta y proporciones en
+  publica) con `sharp`: iconos `any` / `maskable` / `monochrome`, Apple 180,
+  favicon, iconos de los atajos y `og-image.jpg`. Receta y proporciones en
   `docs/ai/45-design-system.md` → «Marca».
 
 > No hay imagen de marca en `assets/`: la iglesia es el wordmark tipográfico

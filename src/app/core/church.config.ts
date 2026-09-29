@@ -252,9 +252,8 @@ export interface Ministry {
 /**
  * Canales de contacto directo.
  *
- * ⚠️ Los valores por defecto son **de demostración**: sirven para ver la
- * página terminada y para saber en qué formato hay que escribir los reales.
- * Antes de publicar, sustitúyelos (ver los `TODO(iglesia)` más abajo).
+ * Datos reales (ver `CHURCH_CONFIG.contact`). Los enlaces `tel:` y de
+ * WhatsApp se componen con `core/util/contact-links.ts`.
  */
 export interface ChurchContact {
   /** Buzón público de la iglesia. Se usa en `mailto:`. */
@@ -788,11 +787,6 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   },
 
   // ---------------------------------------------------------------------
-  // ⚠️ DATOS DE DEMOSTRACIÓN — NO SON REALES
-  //
-  // Están puestos para que la página de contacto se vea terminada y para
-  // mostrar el formato exacto que espera cada campo.
-  //
   // Datos REALES desde el 29/09/2026 (correo y teléfono del pastor, facilitados
   // por la iglesia). El mismo número atiende WhatsApp (confirmado). Reglas:
   //   · `phone`     → formato internacional, sin espacios ni guiones

@@ -1,32 +1,68 @@
 {
-  "name": "Biserica ELIM Arganda",
-  "short_name": "ELIM Arganda",
-  "description": "Conectează-te cu Biserica ELIM Arganda: rețele sociale, transmisiuni live YouTube și galeria foto a Departamentului Media.",
-  "theme_color": "#060914",
-  "background_color": "#060914",
-  "display": "standalone",
-  "scope": "./",
-  "start_url": "./",
+  "id": "./",
+  "name": "Biserica Elim Arganda",
+  "short_name": "Elim Arganda",
+  "description": "Biserica Elim din Arganda del Rey: program, anunțuri, transmisiuni în direct, rugăciune pentru familii și donații.",
   "lang": "ro",
   "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
   "orientation": "any",
-  "categories": [
-    "lifestyle",
-    "social",
-    "music"
-  ],
+  "theme_color": "#faf9f6",
+  "background_color": "#1a365d",
+  "categories": ["lifestyle", "social", "education"],
   "icons": [
+    { "src": "assets/pwa/icon-any-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/pwa/icon-any-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/pwa/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/pwa/icon-monochrome-512.png", "sizes": "512x512", "type": "image/png", "purpose": "monochrome" }
+  ],
+  "shortcuts": [
     {
-      "src": "assets/pwa/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "name": "Anunțuri",
+      "short_name": "Anunțuri",
+      "description": "Avizele bisericii în vigoare",
+      "url": "./anunturi",
+      "icons": [{ "src": "assets/pwa/shortcut-announcements-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "src": "assets/pwa/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "name": "Program săptămânal",
+      "short_name": "Program",
+      "description": "Serviciile fiecărei zile",
+      "url": "./media/program",
+      "icons": [{ "src": "assets/pwa/shortcut-weekly-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "În direct",
+      "short_name": "În direct",
+      "description": "Transmisiunile în direct și cele mai recente",
+      "url": "./media/transmisiuni",
+      "icons": [{ "src": "assets/pwa/shortcut-live-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Donează",
+      "short_name": "Donează",
+      "description": "Susține lucrarea bisericii",
+      "url": "./doneaza",
+      "icons": [{ "src": "assets/pwa/shortcut-donate-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/pwa/screenshots/home-narrow.webp",
+      "sizes": "390x844",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Pagina principală: anunțuri, program și ce urmează"
+    },
+    {
+      "src": "assets/pwa/screenshots/home-wide.webp",
+      "sizes": "1280x800",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Pagina principală pe ecran mare"
     }
   ]
 }

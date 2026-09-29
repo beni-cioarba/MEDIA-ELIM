@@ -293,7 +293,9 @@
     "commit": "Revisión",
     "built_at": "Publicada",
     "styleguide": "Guía de estilos",
-    "control": "Panel de control"
+    "control": "Panel de control",
+    "call": "Llamar por teléfono",
+    "whatsapp": "Escribir por WhatsApp"
   },
   "common": {
     "copy": "Copiar",
@@ -346,7 +348,8 @@
       "label": "Contacto directo",
       "call": "Llamar",
       "email": "Escribir un e-mail",
-      "directions": "Cómo llegar"
+      "directions": "Cómo llegar",
+      "whatsapp_text": "Hola, os escribo desde la web de la Iglesia Elim Arganda."
     },
     "card": {
       "title": "Datos de contacto"

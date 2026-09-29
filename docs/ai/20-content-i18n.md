@@ -28,8 +28,10 @@ ChurchConfig {
 ```
 
 > `contact` es **real** desde el 29/09/2026 (correo y teléfono del pastor);
-> `whatsapp` está en `null` hasta que se confirme si ese número se atiende por
-> WhatsApp (sin él, la página de contacto no pinta el botón). `donations` ya es
+> el mismo número atiende **WhatsApp** (confirmado). Con `whatsapp: null`, ni la
+> página de contacto ni el pie pintan el botón. Los enlaces `tel:` y `wa.me`
+> se componen con `core/util/contact-links.ts`; el chat se abre con el saludo
+> `contact.quick.whatsapp_text` ya escrito (editable antes de enviar). `donations` ya es
 > **real** (29/09/2026): una cuenta en euros en BBVA a nombre de «IGLESIA
 > APOSTOLICA ELIM», IBAN comprobado, sin Bizum. `bank`, `bic` y `bizum`
 > admiten `null`: lo que no exista no se pinta.
