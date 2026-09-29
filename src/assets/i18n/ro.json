@@ -41,7 +41,6 @@
   },
   "live_notice": {
     "badge": "În direct",
-    "qr_caption": "Scanează și trimite slujba de azi celor dragi",
     "toggle": "Anunță transmisiunea live de azi",
     "hint": "Se oprește singur la miezul nopții"
   },
@@ -256,8 +255,9 @@
   "website_slide": {
     "block": "Site-ul bisericii",
     "eyebrow": "Toate informațiile",
-    "title": "Tot ce vezi aici, pe site-ul bisericii",
+    "title": "Tot ce vezi aici, pe site\u2060-\u2060ul bisericii",
     "lead": "Anunțurile, programul și familiile pentru care ne rugăm, mereu la îndemână în telefonul tău.",
+    "lead_live": "Anunțurile, programul și slujba de azi în\u00a0direct, ca s-o trimiți celor dragi.",
     "qr_caption": "Scanează codul cu telefonul"
   },
   "location": {

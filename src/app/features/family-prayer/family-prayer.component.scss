@@ -11,13 +11,13 @@
   display: block;
 }
 
-/* Medida de lectura de la página: la ficha a dos columnas no gana nada por
-   encima de ~68 rem (el texto ya va a 62ch) y alineada a la izquierda, como
-   el resto de páginas. */
+/* La página ocupa la columna común entera, como el resto. Antes llevaba un
+   tope de 68 rem («medida de lectura») y en pantalla ancha dejaba un tercio
+   vacío a la derecha. La medida de lectura la guarda ahora el texto dentro
+   de la ficha (62ch, o dos columnas cuando sobra ancho). */
 .fp {
   display: grid;
   gap: clamp(2rem, 4vw, 3rem);
-  max-width: 68rem;
 }
 
 .fp__cards {
@@ -92,10 +92,6 @@
 }
 
 /* --- Archivo: fila de una semana --------------------------------------- */
-
-.past {
-  max-width: 68rem;
-}
 
 /* semana | fechas | apellidos | flecha. Número y fechas en columnas fijas
    para que los apellidos arranquen alineados; en móvil los apellidos bajan

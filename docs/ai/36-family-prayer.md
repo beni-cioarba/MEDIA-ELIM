@@ -69,19 +69,43 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
 
 ## Diseño (decisiones)
 
-- **La foto va siempre entera** (`FamilyPhotoComponent`): son fotos de grupo en
-  cualquier formato (0,56 → 1,78). Se encaja con `contain` y el hueco lo rellena
-  la misma foto difuminada y oscurecida. Nunca `object-fit: cover`.
-- **Ficha web** (revisión del 29/09/2026: bandas difuminadas en los Biriș):
-  el marco tiene **la proporción exacta de la foto** (`frameRatio`, acotada
-  a 9:16 – 2:1), así que nunca hay bandas. ≥ md la foto **flota** a la
-  izquierda con un alto de referencia (24 rem → ancho = alto × proporción,
-  tope 55 %) y el texto la rodea: al lado y, si es largo, por debajo. Por
-  eso los contenedores del texto son bloques (no flex) y la cita y la barra
-  de compartir son `flow-root` (su filete no pasa bajo la foto); sin
-  `max-width` en `ch` (se cuenta desde el borde, bajo la foto). Todo va bajo
-  `.fcard--web` (la ficha sin proyectar): la pantalla del templo también es
-  ≥ md. Móvil: foto arriba a su proporción, con alto máximo de 70 vh.
+- **La foto va SIEMPRE entera** (`FamilyPhotoComponent`, `contain`; el hueco,
+  si lo hay, lo rellena la misma foto difuminada). Nunca `cover`: son fotos de
+  grupo y el usuario rechazó cualquier recorte (29/09/2026).
+- **Ficha web ≥ lg: foto entera Y de arriba abajo** (29/09/2026). Ambas cosas
+  sólo se cumplen si alto de la foto (ancho ÷ proporción) = alto de la ficha,
+  que depende del texto: dependencia circular que CSS no resuelve. Por eso
+  `FamilyCardComponent.fitPhotoColumn` mide (clase `fcard--measuring`, panel a
+  su alto natural) y fija `--fcard-photo-w` = el MENOR ancho con el que la foto
+  es al menos tan alta como el texto; un espaciador `::before` con la
+  proporción fija el alto de la fila. Barrido en 16 pasos + bisección (no basta
+  bisecar entre extremos: con la columna de texto estrecha el texto crece más
+  deprisa que la foto). Límites: foto ≥ 15 rem y ≥ 34 % (`size` compact 30 %,
+  large 44 %), texto ≥ 20 rem. **Alto mínimo común** de la foto: min(24 rem,
+  55 vh) × proporción, sin pasar del ancho real de la foto (tope de calidad);
+  así una familia con poco texto no sale con una foto la mitad de grande que
+  las demás. Y la vertical no pasa de min(36 rem, 75 vh) sólo por cumplir el
+  mínimo. Se recalcula al cambiar el ancho, al cargar las fuentes y al
+  entrar/salir de proyección. Barra de compartir anclada al pie (columnas flex).
+- **Formato automático ≥ lg** (29/09/2026, noche) — tres formatos:
+  · **Al lado** (arriba): vertical, cuadrada o apaisada suave.
+  · **Banda** (`fcard--banner`, en plantilla: `frameRatio ≥ 1,45`): foto arriba
+    a todo el ancho, entera (tope 90 vh), texto debajo. Al lado, una
+    panorámica quedaba del alto del texto y la gente diminuta.
+  · **Revista** (`fcard--wrap`): ningún ancho «al lado» vale (mucho texto). La
+    foto flota a su alto de referencia (≤ 50 % de la ficha) y el texto la
+    rodea y sigue por debajo. Sin `max-width` en `ch` en el texto: se cuenta
+    desde el borde de la ficha y dejaba 46 px junto a la foto.
+  Sustituye a `fcard--stacked` (foto arriba a todo el ancho: una vertical se
+  comía la pantalla).
+- **Texto en dos columnas cuando sobra ancho**: container query sobre
+  `.fcard__panel` (≥ 46 rem): quiénes son | mensaje. Sirve igual para la banda
+  y para «al lado» en pantalla ancha. La página ya no tiene tope de 68 rem:
+  ocupa la columna común como el resto; la medida de lectura la guarda el texto.
+- **< lg**: foto arriba a todo el ancho a su proporción, tope 70 vh (entonces
+  lados difuminados). Acabado: radio 18 px, sombra en capas, la ficha se eleva
+  al pasar el ratón (la foto no se toca). Sin acento oro sobre el nombre
+  (retirado a petición del usuario). Todo va bajo `.fcard--web`.
 - **Controles para una foto incontrolable** (`PrayerFamily.photo` en la
   configuración, sólo si hace falta): `size: 'compact' | 'large'` (alto de
   referencia 18 / 30 rem) y `frame: <ancho/alto>` (fuerza el marco; la foto

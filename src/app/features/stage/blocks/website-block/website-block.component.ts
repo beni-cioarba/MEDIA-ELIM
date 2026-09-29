@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../../core/church.config';
 import { PresentationDisplayService } from '../../../../core/services/presentation-display.service';
@@ -34,8 +34,10 @@ const SECTIONS: readonly WebsiteSection[] = [
  * cualquier bloque: cuando sale, el código es enorme y se escanea desde el
  * fondo; cuando no, cada diapositiva tiene el lienzo entero.
  *
- * Con el aviso de directo (panel de control) la diapositiva suma un segundo
- * código, al directo del canal, con la invitación a compartirlo.
+ * Un solo código, siempre a la web: dos códigos obligan a elegir cuál escanear
+ * y parten el tamaño a la mitad. Con el aviso de directo cambia sólo la
+ * entradilla (el directo se abre desde la propia web). La dirección no se
+ * escribe en pantalla mientras sea provisional: el QR basta.
  */
 @Component({
   selector: 'app-website-block',
@@ -50,13 +52,5 @@ export class WebsiteBlockComponent {
 
   protected readonly sections = SECTIONS;
   protected readonly siteUrl = this.config.publicUrl;
-  protected readonly liveUrl = this.config.youtubeLiveUrl;
-
-  /** «beni-cioarba.github.io/MEDIA-ELIM»: la dirección legible, sin protocolo. */
-  protected readonly siteLabel = this.config.publicUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-
   protected readonly live = this.display.liveNotice;
-
-  /** `@ElimArganda`, para quien prefiera buscar el canal a escanear. */
-  protected readonly youtubeHandle = computed(() => this.config.youtubeChannelUrl.split('/').pop() ?? '');
 }

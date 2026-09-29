@@ -348,8 +348,8 @@ al mínimo. Medido a 960×540 (miniatura fiel del 1080p):
   No se pinta en las diapositivas a sangre (familias y causas: bloques de
   oración, `StageComponent.bleed()`).
 - **QR** = bloque `website` («Toate informațiile, pe site»): QR de 64u (≈ 70 cm
-  en una pantalla de 3 m, se escanea desde el fondo por la regla 1:10), la
-  dirección y lo que hay en la web. Se enciende o apaga como cualquier bloque
+  en una pantalla de 3 m, se escanea desde el fondo por la regla 1:10) y
+  lo que hay en la web. Se enciende o apaga como cualquier bloque
   y va al final de la vuelta. En la web no existe (`/media/site` → portada).
 - **Los bloques llenan la diapositiva** (§ 11 «Lienzo ancho»): redes en una
   columna de filas que se reparten el alto (@handle a `hero`, nunca cortado);
@@ -374,10 +374,11 @@ estar a la vista durante todo el culto.
 - **En todas las diapositivas**: «● ÎN DIRECT» junto a la firma de la
   esquina (versalitas navy sobre blanco; el rojo `--c-live` sólo en el punto;
   sin pulso: en proyección no se mueve nada salvo el carrusel).
-- **En la diapositiva del QR** (`website`): además del QR de la web, un
-  segundo QR a `config.youtubeLiveUrl` (`…/@ElimArganda/live`, YouTube lo
-  redirige al directo en curso) con la leyenda «Scanează și trimite slujba de
-  azi celor dragi». Los dos códigos pasan de 64u a 46u.
+- **En la diapositiva del QR** (`website`): el QR sigue siendo **uno solo**, a
+  la web; sólo cambia la entradilla (`website_slide.lead_live`: el culto de hoy
+  en directo, para compartirlo). El directo se abre desde la propia web.
+  Decisión (2026-09-29): dos códigos obligaban a elegir cuál escanear, partían
+  el tamaño (64u → 46u) y duplicaban el «● ÎN DIRECT» de la esquina.
 - **Caduca sola**: se guarda el **día** en que se activó (`liveNoticeDate`) y
   sólo está activo mientras coincide con hoy según `ClockService`. Si se queda
   encendido el domingo, el lunes ya no se proyecta (invariante 5).
@@ -550,8 +551,9 @@ Reglas fijas del lienzo proyectado:
 
 `shared/qr-panel`, en la diapositiva `website` (ver «Lienzo»). Codifica
 siempre `config.publicUrl` (no la URL del navegador) para que apunte a
-producción aunque se esté proyectando desde `localhost`; con el aviso de
-directo, un segundo panel codifica `config.youtubeLiveUrl`.
+producción aunque se esté proyectando desde `localhost`. Siempre un único
+código, y **sin la dirección escrita** mientras el dominio sea provisional
+(`github.io`): cuando haya dominio propio se puede volver a rotular.
 
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
   corregir y `H` sólo añade módulos (41×41 → 33×33 con esta URL). A igual

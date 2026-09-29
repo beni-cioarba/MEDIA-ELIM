@@ -1709,4 +1709,38 @@ app-stage {
 // igual especificidad gana la regla que va después.
 // =====================================================================
 @include responsive.stage-responsive;
+
+// ---------------------------------------------------------------------
+// Web pública: la misma columna que la cabecera y el resto de páginas
+// ---------------------------------------------------------------------
+// Auditoría del 29/09/2026: `/media` y sus bloques eran las únicas páginas
+// desalineadas. El escenario centraba su contenido a 1.180 px (con el relleno
+// propio del escenario, 5vw) mientras la cabecera, las migas y todas las demás
+// páginas usan la columna común (`--page-max` = 1.440 + `--page-gutter`): a
+// 1.700 px el contenido empezaba 130 px más adentro que el logo.
+//
+// El escenario ya no pone relleno lateral en la web y el contenido y la barra
+// del versículo se colocan con `--page-inset`, la distancia real del borde a
+// la columna que usa toda la app. Va después de las media queries (a las que
+// sustituye en el eje horizontal) y sólo fuera de la proyección: la pantalla
+// del templo mantiene su maquetación propia.
+.stage:not(.is-fullscreen) {
+  padding-inline: 0;
+
+  > .content,
+  > .bar {
+    width: auto;
+    max-width: none;
+    margin-inline: var(--page-inset);
+  }
+
+  // Con la columna común (hasta 1.440 px) las redes, en una sola columna,
+  // quedaban en filas de 1.440 con la flecha a 1.100 px del nombre. Rejilla
+  // derivada del contenido: dos tarjetas en cuanto caben con 34 rem cada una
+  // (≥ 1.280 px de ventana) y una por debajo; con más redes sigue igual.
+  .socials__list {
+    grid-template-columns: repeat(auto-fit, minmax(min(34rem, 100%), 1fr));
+  }
+}
+
 @include projection.stage-projection;

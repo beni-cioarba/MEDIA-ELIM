@@ -14,19 +14,15 @@
 .list {
   display: grid;
   gap: clamp(1.5rem, 3.5vw, 2.5rem);
-  max-width: 62rem;
-  /* Alineado al borde de la rejilla, no centrado: conserva su medida de
-     lectura pero arranca donde arrancan el título y el resto de la página.
-     Centrado quedaba desplazado respecto al título de su propia sección. */
-  margin-inline: 0;
+  /* Toda la columna común, como el resto de páginas (antes, tope de 62 rem:
+     en pantalla ancha dejaba un tercio vacío). La medida de lectura la
+     guarda el texto dentro de la tarjeta. */
 }
 
-/* Acceso a la oración por las familias: a la medida de la lista, encima.
+/* Acceso a la oración por las familias: al ancho de la lista, encima.
    El margen sólo si hay semana en curso (si no, el componente no pinta nada
    y el hueco quedaría suelto). */
 .teaser {
-  max-width: 62rem;
-
   &:has(a) {
     margin-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
   }

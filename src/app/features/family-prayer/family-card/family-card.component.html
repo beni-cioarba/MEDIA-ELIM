@@ -3,7 +3,9 @@
   mensaje → versículo) con una escala tipográfica fija: se ajusta entero
   (`appFitToBox`), nunca una pieza por separado, y arranca arriba. El rótulo
   es una firma en la esquina inferior derecha (fuera del flujo).
-    · Web: foto | panel (móvil y apaisada web: apilados).
+    · Web ≥ lg, formato automático (ver `fitPhotoColumn`): «al lado» (foto
+      de arriba abajo | panel), «banda» (panorámica arriba, texto debajo) o
+      «revista» (foto flotante, el texto la rodea). Móvil: apilados.
     · Proyección retrato: foto a todo el alto | panel.
     · Proyección apaisada: el panel se «abre» (`display: contents`) para que
       quiénes son vaya bajo la foto y el mensaje a la derecha.
@@ -11,6 +13,7 @@
 <article
   class="fcard"
   [class.fcard--landscape]="landscape"
+  [class.fcard--banner]="panoramic"
   [class.fcard--long]="longText"
   [class.fcard--web]="!fullscreen()"
   [class.fcard--photo-compact]="family.photo?.size === 'compact'"
@@ -20,8 +23,8 @@
   [style.--ar]="family.photo?.ratio ?? 0.8"
   [style.--frame]="family.photo?.frameRatio ?? 0.8"
 >
-  <!-- Foto entera, a su proporción; si el marco no coincide, el hueco lo
-       rellena ella misma difuminada. -->
+  <!-- Web: foto a sangre en su columna, de arriba abajo. Proyección: foto
+       entera; si el marco no coincide, el hueco lo rellena ella difuminada. -->
   <div class="fcard__media">
     <app-family-photo class="fcard__photo" [family]="family" [sizes]="sizes()" [detail]="true" [eager]="eager" />
   </div>

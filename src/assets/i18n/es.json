@@ -41,7 +41,6 @@
   },
   "live_notice": {
     "badge": "En directo",
-    "qr_caption": "Escanea y comparte el culto de hoy con los tuyos",
     "toggle": "Anunciar el directo de hoy",
     "hint": "Se apaga solo a medianoche"
   },
@@ -258,6 +257,7 @@
     "eyebrow": "Toda la información",
     "title": "Todo lo que ves aquí, en la web de la iglesia",
     "lead": "Los anuncios, el programa y las familias por las que oramos, siempre a mano en tu móvil.",
+    "lead_live": "Los anuncios, el programa y el culto de hoy en directo, para compartirlo con los tuyos.",
     "qr_caption": "Escanea el código con el móvil"
   },
   "location": {

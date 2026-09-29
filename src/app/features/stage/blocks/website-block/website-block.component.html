@@ -1,13 +1,10 @@
-<section class="site" [class.site--live]="live()" aria-labelledby="site-title">
+<section class="site" aria-labelledby="site-title">
   <div class="site__text">
-    @if (live()) {
-      <p class="site__live">
-        <span class="site__live-dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
-      </p>
-    }
     <p class="site__eyebrow">{{ 'website_slide.eyebrow' | translate }}</p>
     <h2 id="site-title" class="site__title">{{ 'website_slide.title' | translate }}</h2>
-    <p class="site__lead">{{ 'website_slide.lead' | translate }}</p>
+    <!-- Con el aviso de directo, la misma invitación suma el culto de hoy:
+         un solo código y una sola acción; el directo se abre desde la web. -->
+    <p class="site__lead">{{ (live() ? 'website_slide.lead_live' : 'website_slide.lead') | translate }}</p>
 
     <ul class="site__sections" role="list">
       @for (section of sections; track section.labelKey) {
@@ -19,17 +16,5 @@
     </ul>
   </div>
 
-  <!-- Códigos: la web siempre; el directo, sólo con el aviso encendido. -->
-  <div class="site__codes">
-    <figure class="site__code">
-      <app-qr-panel class="site__qr" [data]="siteUrl" captionKey="website_slide.qr_caption" />
-      <figcaption class="site__url">{{ siteLabel }}</figcaption>
-    </figure>
-    @if (live()) {
-      <figure class="site__code site__code--live">
-        <app-qr-panel class="site__qr" [data]="liveUrl" captionKey="live_notice.qr_caption" />
-        <figcaption class="site__url">YouTube · {{ youtubeHandle() }}</figcaption>
-      </figure>
-    }
-  </div>
+  <app-qr-panel class="site__qr" [data]="siteUrl" captionKey="website_slide.qr_caption" />
 </section>

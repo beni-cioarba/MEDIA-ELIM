@@ -42,10 +42,11 @@ import { CausesBoardComponent } from './causes-board/causes-board.component';
       display: block;
     }
 
+    /* Toda la columna común, como el resto de páginas (antes, tope de
+       68 rem que dejaba vacío el tercio derecho en pantalla ancha). */
     .pc {
       display: grid;
       gap: var(--sp-4);
-      max-width: 68rem;
     }
 
     .pc__updated {

@@ -203,100 +203,122 @@ app-family-card {
   color: var(--c-muted);
 }
 
-// ---- Web ≥ md: la foto manda y el texto se adapta a ella ---------------
+// ---- Web ≥ lg: foto entera, de arriba abajo -----------------------------
 /*
- * Revisión del 29/09/2026 (bandas difuminadas encima y debajo de la foto de
- * los Biriș): la foto iba en una columna que se estiraba hasta el alto del
- * texto, y el hueco lo rellenaba el fondo difuminado. Ahora es al revés:
+ * Revisión del 29/09/2026 (tarde). Dos exigencias a la vez:
  *
- *   · El marco tiene **la proporción exacta de la foto** (`--frame`): nunca
- *     hay bandas. Mide un alto de referencia (`--fcard-photo-h`, 24 rem) y
- *     su ancho sale de la proporción: vertical estrecha, apaisada ancha, con
- *     tope en el 55 % de la ficha para que el texto siempre tenga sitio.
- *   · La foto **flota** a la izquierda y el texto la rodea: al lado mientras
- *     cabe y, si es largo, sigue por debajo a todo el ancho (como una
- *     revista). El texto no queda encajonado en una columna estrecha y larga
- *     ni la foto se estira para acompañarlo.
+ *   1. La foto **siempre entera**, sin recortar a nadie (`contain`).
+ *   2. La foto **llena su columna de arriba abajo**, sin huecos.
  *
- * Controles para una foto que se sale de lo normal (en la configuración de
- * la familia, `photo`): `size` cambia el alto de referencia (`compact` para
- * textos largos, `large` si la foto manda) y `frame` fija la proporción del
- * marco; entonces la foto va entera dentro y el hueco lo rellena ella
- * misma difuminada. Sin ajuste, el marco se acota solo entre 9:16 y 2:1.
+ * Sólo se cumplen las dos si el alto de la foto a su proporción es el alto de
+ * la ficha, y ese alto también depende del texto (que se alarga al estrechar
+ * su columna). CSS no resuelve esa dependencia circular, así que el ancho de
+ * la columna (`--fcard-photo-w`) lo calcula `FamilyCardComponent`: el menor
+ * ancho con el que la foto es al menos tan alta como el texto. Un espaciador
+ * con la proporción de la foto fija entonces el alto de la fila, que es
+ * exactamente el de la foto. Si ni con la columna más ancha la foto alcanza
+ * al texto, la ficha pasa a «revista» (`.fcard--wrap`, ver más abajo), también
+ * entera. Sin el cálculo (antes de medir) la columna va al 40 % y la foto,
+ * entera, se centra sobre su propio fondo difuminado.
  */
-//
-// Todo va bajo `.fcard--web` (la ficha sin proyectar): la pantalla del templo
-// también es ≥ md y la proyección tiene su propia maquetación.
-@include from('md') {
-  .fcard--web {
-    --fcard-photo-h: 24rem;
-    --fcard-pad: clamp(1.5rem, 1rem + 2vw, 2.75rem);
-    display: flow-root;
+@include from('lg') {
+  .fcard--web:not(.fcard--banner, .fcard--wrap) {
+    --fcard-pad: clamp(1.75rem, 1rem + 1.8vw, 2.75rem);
+    grid-template-columns: var(--fcard-photo-w, 40%) minmax(0, 1fr);
   }
 
-  .fcard--web.fcard--photo-compact {
-    --fcard-photo-h: 18rem;
-  }
-
-  .fcard--web.fcard--photo-large {
-    --fcard-photo-h: 30rem;
-  }
-
-  .fcard--web .fcard__media {
-    float: left;
-    width: clamp(13rem, calc(var(--fcard-photo-h) * var(--frame, 0.8)), 55%);
-    aspect-ratio: var(--frame, 0.8);
-    margin: 0 var(--fcard-pad) var(--sp-4) 0;
-    // La esquina que queda dentro de la ficha, redondeada: cuando el texto
-    // sigue por debajo, la foto se lee como una pieza, no como un recorte.
-    border-end-end-radius: var(--r-md);
+  .fcard--web:not(.fcard--banner, .fcard--wrap) .fcard__media {
+    align-self: stretch;
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
     overflow: hidden;
+
+    // Espaciador: da a la fila el alto de la foto a su proporción (el
+    // `padding` en % se mide sobre el ancho de la columna).
+    &::before {
+      content: '';
+      display: block;
+      padding-top: calc(100% / var(--frame, 0.8));
+    }
   }
 
-  // Para que el texto rodee la foto, los contenedores del texto tienen que
-  // ser bloques normales: un flex (como en móvil) crea su propio contexto y
-  // se quedaría entero al lado de la foto, en una columna estrecha y larga.
-  // El relleno izquierdo sólo se nota bajo la foto: al lado manda el margen
-  // derecho de la foto (las líneas empiezan donde acaba ella).
-  .fcard--web .fcard__panel-inner {
-    display: block;
-    padding: var(--fcard-pad);
+  // Medición (la hace el componente, un instante y sin pintar): sin
+  // espaciador y con el panel a su alto natural, el alto del panel es el que
+  // pide el texto con ese ancho de columna.
+  .fcard--measuring {
+    .fcard__media::before {
+      display: none;
+    }
+
+    .fcard__panel {
+      align-self: start;
+    }
   }
 
-  // Piezas con filete (la cita, la barra de compartir): `flow-root` las
-  // encaja al lado de la foto o debajo, enteras. Como bloque normal su
-  // filete pasaba por debajo de la foto y asomaba cortado.
-  .fcard--web .fcard__verse,
-  .fcard--web .fcard__inner > :not(p, figure) {
-    display: flow-root;
+  .fcard--web:not(.fcard--banner, .fcard--wrap) .fcard__panel {
+    display: flex;
+    flex-direction: column;
   }
 
-  .fcard--web .fcard__id {
-    margin-bottom: var(--sp-5);
-  }
+  // Panel, cuerpo y texto en columnas flexibles que llenan el alto: así la
+  // barra de compartir (`margin-top: auto`) cae siempre al pie de la ficha.
+  .fcard--web:not(.fcard--banner, .fcard--wrap) {
+    .fcard__panel-inner,
+    .fcard__body,
+    .fcard__inner {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+    }
 
-  // Sin tope de medida: el `max-width` en `ch` se cuenta desde el borde de
-  // la ficha (por debajo de la foto), no desde donde empieza la línea, y al
-  // lado de la foto dejaba el mensaje en una columna de 20 caracteres. La
-  // medida ya la acota la propia ficha (68 rem) menos la foto.
-  .fcard--web .fcard__message,
-  .fcard--web .fcard__verse-text,
-  .fcard--web .fcard__prompt {
-    max-width: none;
-  }
-
-  .fcard--web .fcard__inner {
-    display: block;
-
-    > * + * {
-      margin-top: var(--sp-3);
+    .fcard__panel-inner {
+      gap: var(--sp-5);
+      padding: var(--fcard-pad);
     }
   }
 }
 
-// ---- Móvil y tableta estrecha: foto arriba, a su proporción ------------
-// Tope de alto para una vertical muy alargada: el marco estrecha y se centra
-// (conserva la proporción: sin bandas), en vez de ocupar pantalla y media.
+// ---- Web: acabado de la ficha (todas las anchuras) ---------------------
+// Superficie limpia con sombra en capas, radio generoso y una respuesta
+// contenida al pasar el ratón (la ficha se eleva). La foto no se toca (ni
+// zoom ni velos): va entera y es la protagonista.
+.fcard--web {
+  border-color: color-mix(in srgb, var(--c-hairline) 80%, transparent);
+  border-radius: 1.125rem;
+  box-shadow:
+    0 1px 2px rgba(15, 30, 60, 0.05),
+    0 8px 24px -12px rgba(15, 30, 60, 0.16);
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease,
+    border-color 0.35s ease;
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--c-gold) 35%, var(--c-hairline));
+      box-shadow:
+        0 2px 4px rgba(15, 30, 60, 0.06),
+        0 22px 44px -18px rgba(15, 30, 60, 0.28);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & {
+      transition: none;
+    }
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// ---- Móvil y tableta: foto arriba, a todo el ancho ---------------------
+// La foto va a sangre por arriba y a los lados, a su proporción. Una vertical
+// muy alargada se acota a 70 % del alto de pantalla y sigue entera: los lados
+// los rellena ella misma difuminada, sin recortar a nadie.
 @include until('md') {
   .fcard {
     grid-template-columns: minmax(0, 1fr);
@@ -304,11 +326,133 @@ app-family-card {
       'media'
       'panel';
   }
+}
+
+// Por debajo de `lg`, o si el texto no cabe junto a la foto: foto arriba.
+@mixin stacked-web-card {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'media'
+    'panel';
 
   .fcard__media {
-    justify-self: center;
-    width: min(100%, calc(70vh * var(--frame, 0.8)));
+    width: 100%;
+    max-height: 70vh;
     aspect-ratio: var(--frame, 0.8);
+  }
+}
+
+@include until('lg') {
+  .fcard--web {
+    @include stacked-web-card;
+  }
+}
+
+// ---- Web ≥ lg: formatos «banda» y «revista» -----------------------------
+/*
+ * Revisión del 29/09/2026 (noche): la ficha elige sola entre tres formatos
+ * según la foto y el texto (ver `FamilyCardComponent.fitPhotoColumn`):
+ *
+ *   · Al lado (arriba): vertical, cuadrada o apaisada suave.
+ *   · Banda (`.fcard--banner`): panorámica (≥ 1,45). Foto arriba a todo el
+ *     ancho, entera, y el texto debajo. Al lado quedaba del alto del texto y
+ *     la gente se veía diminuta; apilada con el texto en una columna, media
+ *     ficha quedaba vacía. Tope de alto (90 vh: a 1600 × 900 una 16:9 cabe
+ *     entera): si actúa, los lados los rellena la propia foto difuminada,
+ *     sin recortar a nadie.
+ *   · Revista (`.fcard--wrap`): el texto no cabe al lado ni con la columna
+ *     más ancha. La foto flota a la izquierda a su alto de referencia
+ *     (`--fcard-photo-w`, lo calcula el componente) y el texto la rodea y
+ *     sigue por debajo a todo el ancho.
+ */
+@include from('lg') {
+  .fcard--web.fcard--banner {
+    @include stacked-web-card;
+
+    .fcard__media {
+      max-height: 90vh;
+    }
+  }
+
+  .fcard--web.fcard--wrap {
+    --fcard-pad: clamp(1.75rem, 1rem + 1.8vw, 2.75rem);
+    display: flow-root;
+
+    .fcard__media {
+      float: left;
+      width: var(--fcard-photo-w, 40%);
+      aspect-ratio: var(--frame, 0.8);
+      margin: 0 var(--fcard-pad) var(--sp-4) 0;
+      // La esquina que queda dentro de la ficha, redondeada: cuando el texto
+      // sigue por debajo, la foto se lee como una pieza, no como un recorte.
+      border-end-end-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    // Para que el texto rodee la foto, sus contenedores tienen que ser
+    // bloques: un flex crea su propio contexto y se quedaría entero al lado
+    // de la foto, en una columna estrecha y larga.
+    .fcard__panel-inner,
+    .fcard__body,
+    .fcard__inner {
+      display: block;
+    }
+
+    .fcard__panel-inner {
+      padding: var(--fcard-pad);
+    }
+
+    .fcard__id {
+      margin-bottom: var(--sp-5);
+    }
+
+    .fcard__inner > * + * {
+      margin-top: var(--sp-3);
+    }
+
+    // Sin medida en `ch`: se cuenta desde el borde de la ficha (bajo la
+    // foto), no desde donde empieza la línea, y junto a la foto dejaba 46 px:
+    // todo el texto caía por debajo. La medida la acota la ficha menos la foto.
+    .fcard__message,
+    .fcard__verse-text,
+    .fcard__prompt {
+      max-width: none;
+    }
+
+    // Piezas con filete (cita, barra de compartir): `flow-root` las encaja
+    // enteras al lado de la foto o debajo; como bloque normal su filete
+    // pasaba por debajo de la foto y asomaba cortado.
+    .fcard__verse,
+    .fcard__inner > :not(p, figure) {
+      display: flow-root;
+    }
+  }
+}
+
+// ---- Web: el texto en dos columnas cuando le sobra ancho -----------------
+// La ficha ocupa todo el ancho de la página (no una medida fija) y la medida
+// de lectura se guarda en el texto: cuando el panel pasa de 46 rem (banda, o
+// «al lado» con una foto vertical en pantalla ancha), quiénes son va a la
+// izquierda y el mensaje a la derecha, en vez de una columna de 62ch con
+// medio panel vacío. Container query: decide el ancho real del panel, no el
+// de la ventana. No en «revista»: ahí el texto rodea la foto.
+.fcard--web:not(.fcard--wrap) .fcard__panel {
+  container-type: inline-size;
+}
+
+// Especificidad (0,4,0) a propósito: gana a la regla «al lado» (0,3,0), que
+// pone el panel en flex.
+@container (min-width: 46rem) {
+  .fcard.fcard--web:not(.fcard--wrap) .fcard__panel-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: clamp(2rem, 4cqi, 4rem);
+    align-items: start;
+  }
+
+  // El cuerpo llena su celda: la barra de compartir sigue cayendo al pie.
+  .fcard.fcard--web:not(.fcard--wrap) .fcard__body {
+    align-self: stretch;
   }
 }
 

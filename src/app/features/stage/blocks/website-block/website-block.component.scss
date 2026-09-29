@@ -4,8 +4,8 @@
 //
 //   [texto: qué es · por qué escanear · qué hay]      [QR grande]
 //
-// El QR mide 64u (≈ 70 cm en una pantalla de 3 m): se escanea desde el fondo
-// del templo (regla 1:10). Con el aviso de directo son dos códigos de 46u.
+// Un solo QR de 64u (≈ 70 cm en una pantalla de 3 m): se escanea desde el
+// fondo del templo (regla 1:10). Con el directo sólo cambia la entradilla.
 // =====================================================================
 
 :host {
@@ -89,29 +89,10 @@
   font-size: calc(var(--pj-u) * 3.8);
 }
 
-// ---- Códigos -----------------------------------------------------------
-
-.site__codes {
-  display: flex;
-  align-items: center;
-  gap: var(--pj-sp-4);
-}
-
-.site__code {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--pj-sp-1);
-  width: calc(var(--pj-u) * 64);
-  margin: 0;
-}
-
-.site--live .site__code {
-  width: calc(var(--pj-u) * 46);
-}
+// ---- Código ------------------------------------------------------------
 
 .site__qr {
-  width: 100%;
+  width: calc(var(--pj-u) * 64);
   height: auto;
   --qr-frame-pad: calc(var(--pj-u) * 2.4);
   --qr-frame-radius: var(--pj-r);
@@ -119,39 +100,4 @@
   --qr-caption-size: var(--pj-fs-body);
   --qr-caption-weight: 700;
   --qr-caption-color: var(--c-primary);
-}
-
-.site__url {
-  font-size: var(--pj-fs-caption);
-  font-weight: 600;
-  color: var(--c-muted);
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
-// ---- Aviso de directo --------------------------------------------------
-
-.site__live {
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  gap: calc(var(--pj-u) * 1.2);
-  margin: 0 0 var(--pj-sp-1);
-  padding: calc(var(--pj-u) * 1) calc(var(--pj-u) * 2.2);
-  border-radius: 999px;
-  background: var(--c-surface);
-  box-shadow: 0 0 0 var(--pj-stroke) var(--c-hairline-strong);
-  font-family: var(--font-display);
-  font-size: var(--pj-fs-caption);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--c-primary);
-}
-
-.site__live-dot {
-  width: calc(var(--pj-u) * 1.8);
-  height: calc(var(--pj-u) * 1.8);
-  border-radius: 50%;
-  background: var(--c-live);
 }

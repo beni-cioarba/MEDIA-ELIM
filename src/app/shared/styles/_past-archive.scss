@@ -10,10 +10,9 @@
  * ===================================================================== */
 
 /* Desplegable nativo (`<details>`): accesible por teclado y lector de
-   pantalla sin JS. Cerrado, es una sola línea gris al pie de la lista; la
-   medida de lectura es la misma que la de las tarjetas. */
+   pantalla sin JS. Cerrado, es una sola línea gris al pie de la lista, al
+   mismo ancho que las tarjetas (la columna común). */
 .past {
-  max-width: 62rem;
   margin-top: clamp(2rem, 5vw, 3rem);
   border-top: 1px solid var(--c-hairline);
 }
