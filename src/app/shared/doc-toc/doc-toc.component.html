@@ -39,7 +39,14 @@
 </nav>
 
 <!-- Pantallas estrechas: plegable pegado bajo la cabecera -->
-<details class="toc toc--compact" [class.esta-oculto]="compactHidden()" #plegable>
+<details
+  class="toc toc--compact"
+  [class.esta-oculto]="compactHidden()"
+  [class.is-retired]="retirado()"
+  [attr.inert]="retirado() ? '' : null"
+  (toggle)="alAlternarCompacto()"
+  #plegable
+>
   <summary class="toc__summary">
     <span class="toc__summary-label">{{ compactLabel() }}</span>
     <!-- El apartado en el que se está: en móvil el índice va cerrado, así

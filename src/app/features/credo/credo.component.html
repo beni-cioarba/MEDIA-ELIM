@@ -45,7 +45,13 @@
     <!-- ---- Controles ------------------------------------------------
          Un documento de 30 artículos plegados necesita tres cosas para
          poder trabajarse: encontrar, abrir todo y cerrar todo. -->
-    <div class="tools" role="search" [class.panel-cerrado]="!panelAbierto()">
+    <div
+      class="tools"
+      role="search"
+      [class.panel-cerrado]="!panelAbierto()"
+      [class.is-retired]="pieVisible()"
+      [attr.inert]="pieVisible() ? '' : null"
+    >
       <div class="tools__search">
         <label class="u-sr-only" for="credo-search">
           {{ 'credo.tools.search_label' | translate }}

@@ -240,11 +240,19 @@
     "empty": "Lista familiilor pentru această săptămână va fi publicată în curând.",
     "not_found": "Nu am găsit această săptămână de rugăciune.",
     "to_current": "Familiile de săptămâna aceasta",
-    "past_notice": "Această săptămână de rugăciune s-a încheiat.",
-    "past_title": "Săptămânile anterioare",
     "teaser_eyebrow": "În această săptămână",
     "teaser_title": "Ne rugăm pentru: {{names}}",
-    "teaser_cta": "Vezi familiile și motivele lor de rugăciune"
+    "teaser_cta": "Vezi familiile și motivele lor de rugăciune",
+    "ago_one": "Săptămâna trecută",
+    "ago_other": "Acum {{n}} săptămâni",
+    "loading": "Se încarcă familiile acestei săptămâni…",
+    "feed_end": "Aici a început rugăciunea pentru familii · {{date}}",
+    "toc": {
+      "label": "Săptămânile de rugăciune",
+      "compact": "Săptămâna",
+      "top": "Înapoi sus",
+      "panel": "Săptămânile de rugăciune"
+    }
   },
   "prayer_causes": {
     "title": "Cauzele Bisericii Elim",
@@ -505,9 +513,9 @@
   "website_slide": {
     "block": "Site-ul bisericii",
     "eyebrow": "Toate informațiile",
-    "title": "Tot ce vezi aici, pe site\u2060-\u2060ul bisericii",
+    "title": "Tot ce vezi aici, pe site⁠-⁠ul bisericii",
     "lead": "Anunțurile, programul și familiile pentru care ne rugăm, mereu la îndemână în telefonul tău.",
-    "lead_live": "Anunțurile, programul și slujba de azi în\u00a0direct, ca s-o trimiți celor dragi.",
+    "lead_live": "Anunțurile, programul și slujba de azi în direct, ca s-o trimiți celor dragi.",
     "qr_caption": "Scanează codul cu telefonul"
   },
   "location": {

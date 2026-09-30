@@ -15,6 +15,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { DocTocComponent, TocEntry } from '../../shared/doc-toc/doc-toc.component';
 import { DockActionsService } from '../../shared/floating-actions/dock-actions.service';
+import { DockOverlapService } from '../../shared/floating-actions/dock-overlap.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { CREDO_ANCHOR as ANCLA, CREDO_ARTICLE_COUNT, CREDO_PARTS, CredoArticle } from './credo.data';
 
@@ -279,6 +280,12 @@ export class CredoComponent {
 
   /** ¿Está abierto el panel inferior (buscador + desplegar + índice)? */
   protected readonly panelAbierto = signal(false);
+
+  /**
+   * El pie está en pantalla: la barra del teléfono se retira, como el dock
+   * flotante y la hoja del índice (misma señal). Pegada abajo, tapaba el pie.
+   */
+  protected readonly pieVisible = inject(DockOverlapService).duplicateVisible;
 
   /**
    * Abre o cierra el panel inferior.

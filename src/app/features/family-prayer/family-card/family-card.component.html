@@ -18,8 +18,8 @@
   [class.fcard--web]="!fullscreen()"
   [class.fcard--photo-compact]="family.photo?.size === 'compact'"
   [class.fcard--photo-large]="family.photo?.size === 'large'"
-  [attr.id]="family.id"
-  [attr.aria-labelledby]="family.id + '-title'"
+  [attr.id]="family.anchor"
+  [attr.aria-labelledby]="family.anchor + '-title'"
   [style.--ar]="family.photo?.ratio ?? 0.8"
   [style.--frame]="family.photo?.frameRatio ?? 0.8"
 >
@@ -35,7 +35,7 @@
         <!-- Rótulo de la diapositiva (sólo proyección: firma en la esquina). -->
         <p class="fcard__eyebrow">{{ 'family_prayer.title' | translate }}</p>
 
-        <h3 class="fcard__title" [attr.id]="family.id + '-title'">
+        <h3 class="fcard__title" [attr.id]="family.anchor + '-title'">
           @if (family.single) {
             <span class="fcard__surname">{{ family.surname }}</span> {{ family.names }}
           } @else {

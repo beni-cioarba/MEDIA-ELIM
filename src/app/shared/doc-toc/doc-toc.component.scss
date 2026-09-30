@@ -263,6 +263,17 @@
     border-radius: 0;
     background: var(--c-surface);
     box-shadow: 0 -6px 20px rgb(9 20 36 / 0.1);
+    /* Mismo gesto que el dock flotante al llegar al pie: se hunde y se
+       desvanece (curva y duración del dock). */
+    transition:
+      opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .toc--compact.is-retired {
+    opacity: 0;
+    transform: translateY(100%);
+    pointer-events: none;
   }
 
   .toc__summary {
@@ -333,6 +344,15 @@
   .toc__link,
   .toc__summary-caret {
     transition: none;
+  }
+
+  // Como el dock con movimiento reducido: sólo el fundido.
+  .toc--compact {
+    transition: opacity 0.2s ease;
+  }
+
+  .toc--compact.is-retired {
+    transform: none;
   }
 }
 

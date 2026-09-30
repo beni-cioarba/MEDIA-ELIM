@@ -12,9 +12,9 @@ un versículo. Antes era un PowerPoint; ahora es un módulo:
 
 | Dónde | Qué se ve |
 | --- | --- |
-| Web `/rugaciune-pentru-familii` | La semana en curso: resumen (mosaico) + fichas + archivo de semanas pasadas |
-| Web `/rugaciune-pentru-familii/<domingo>` | Una semana concreta (enlace para compartir); si ya pasó, aviso + enlace a la actual |
-| `#<id>` sobre esa URL | Salta a la ficha de una familia (botón «Distribuie» de cada ficha) |
+| Web `/rugaciune-pentru-familii` | **Feed de semanas**: la en curso arriba y, al bajar, las anteriores (resumen + fichas de cada una), con índice lateral |
+| Web `/rugaciune-pentru-familii/<domingo>` | El mismo feed, colocado en esa semana (enlace para compartir) |
+| `#<id>-<domingo>` sobre esa URL | Salta a la ficha de una familia (botón «Distribuie»). Se sigue aceptando el formato antiguo `#<id>` |
 | Proyección, bloque `families` | **Resumen (mosaico de fotos) + una diapositiva por familia**, justo detrás de los anuncios |
 | `/anunturi` | Tarjeta de acceso encima de los anuncios (`FamilyPrayerTeaserComponent`) |
 | Menú | Program → «Rugăciune pentru familii» (icono `hand-heart`) |
@@ -30,6 +30,45 @@ presentan ese día (se ora por ellas de lunes a domingo); de lunes a sábado, la
 de la semana en curso. Si el domingo aún no está cargada la siguiente, se
 mantiene la de hoy. Las semanas cargadas por adelantado no se publican hasta su
 turno (`byDate` devuelve `null` para las futuras).
+
+## Feed de semanas, carga progresiva e índice (30/09/2026)
+
+Pedido del usuario: que la semana anterior «se despliegue sola» al bajar, sin
+saturar la página, y un índice como el de la confesión de fe.
+
+- **Todas las semanas están en el documento desde el principio** (`<section
+  id="saptamana-<domingo>">`), pero el contenido de cada una sólo se pinta al
+  acercarse: mientras tanto, un **esqueleto** con el alto aproximado
+  (`--fw-card`: 34 rem por ficha en escritorio, 54 rem < lg; medido). No es
+  el «scroll infinito» que va añadiendo al final: así la barra de scroll dice
+  la verdad, el índice salta a cualquier semana y **el pie sigue alcanzable**.
+- Disparador: `shared/near-viewport` (`appNearViewport`), **un único
+  `IntersectionObserver`** para toda la app con 1,5 pantallas de
+  anticipación; avisa una vez y deja de observar (lo pintado no se despinta).
+  No es `@defer (on viewport)`: `@defer` trocea código (aquí no hay nada que
+  trocear) y no deja anticiparse ni forzar una semana desde fuera.
+- Se pinta de entrada la primera semana y la de la URL. El contenido que
+  llega entra con un fundido que sube (sólo transform/opacidad).
+- **Anclaje de scroll** (que la vista no salte cuando se pinta algo por
+  encima): `overflow-anchor: none` en el esqueleto (desaparece al pintar) **y
+  en el índice** (sticky y antes del feed en el DOM: el navegador lo elegía
+  como ancla y no compensaba nada; los saltos caían 300 px más abajo).
+- Separador entre semanas: «Săptămâna trecută / Acum N săptămâni» + número.
+- **Índice** = `app-doc-toc` (el de la confesión de fe): columna de 16 rem
+  desde `xl`; por debajo, hoja desde el dock (se abre ya desplegada y el dock
+  sube encima de ella, `--doc-toc-sheet-h`). Al llegar al pie la hoja se
+  retira como el dock (`DockOverlapService.duplicateVisible`, misma curva);
+  la barra del teléfono del Credo, también. Una entrada por semana (número +
+  «21–27 sept») y, **sólo bajo la semana activa, sus familias** (el índice no
+  crece con los años). Salto **seco** (`instantJump`): uno suave cruza las
+  semanas de en medio, las manda pintar y acaba descolocado. Ojo: `auto` no
+  vale, hereda el `scroll-behavior: smooth` del `html`; es `instant`.
+- Enlace de entrada (`/<domingo>`, `#…`): la página salta ella (el
+  `anchorScrolling` del router llega antes de pintar) y durante 1,5 s
+  **re-alinea** el destino si el documento cambia de alto (fuentes, fotos),
+  salvo que el usuario ya se haya movido.
+- Ancla de ficha `<id>-<domingo>` (`PrayerFamilyView.anchor`): la rotación
+  repetirá familias y el `id` a secas se duplicaría en el feed.
 
 ## Añadir una semana (receta)
 
@@ -182,7 +221,9 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
 | --- | --- |
 | `core/family-prayer.config.ts` | Tipos y datos (una entrada por semana) |
 | `core/services/family-prayer.service.ts` | Semana actual, archivo, vistas, fechas |
-| `features/family-prayer/family-prayer.component.*` | Página `/rugaciune-pentru-familii[/:week]` |
+| `features/family-prayer/family-prayer.component.*` | Página `/rugaciune-pentru-familii[/:week]`: feed, esqueletos, índice |
+| `shared/near-viewport/` | «Pinta cuando se acerque»: un `IntersectionObserver` compartido |
+| `shared/doc-toc/` | Índice lateral (compartido con la confesión de fe) |
 | `features/family-prayer/family-summary/` | Resumen web (mosaico enlazado) |
 | `features/family-prayer/family-collage/` | Resumen proyectado: collage justificado + lista (`justified-layout.ts`, función pura) |
 | `features/family-prayer/family-card/` | Ficha (web + proyección, hoja global) |
@@ -192,5 +233,4 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
 | `scripts/import-family-photos.mjs` | Fotos → WebP 480/960/1600 sin metadatos + manifiesto |
 | `core/family-photos.generated.ts` | Manifiesto GENERADO (medidas y variantes por `<domingo>/<id>`) |
 | `shared/fit-to-box/` | Autoajuste (compartido con los anuncios) |
-| `shared/styles/_past-archive.scss` | Archivo plegable (compartido con los anuncios) |
 | `assets/i18n/{es,ro}.json → family_prayer.*`, `nav.family_prayer*`, `seo.family_prayer.*` | Textos de interfaz |

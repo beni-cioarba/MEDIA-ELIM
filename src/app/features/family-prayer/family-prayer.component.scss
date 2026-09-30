@@ -1,23 +1,268 @@
 @use 'ds' as *;
 @use '../../shared/styles/buttons' as *;
 @use '../../shared/styles/page-hero' as *;
-@use '../../shared/styles/past-archive' as *;
 
 /* Página «Rugăciune pentru familii». El resumen y la ficha son globales (se
-   comparten con la proyección); aquí sólo el ritmo de la página, el aviso de
-   semana pasada, las acciones de cada ficha, los vacíos y la fila del archivo. */
+   comparten con la proyección); aquí el feed de semanas (separadores,
+   esqueletos, entrada del contenido), el índice lateral, las acciones de cada
+   ficha y los vacíos. */
 
 :host {
   display: block;
 }
 
-/* La página ocupa la columna común entera, como el resto. Antes llevaba un
-   tope de 68 rem («medida de lectura») y en pantalla ancha dejaba un tercio
-   vacío a la derecha. La medida de lectura la guarda ahora el texto dentro
-   de la ficha (62ch, o dos columnas cuando sobra ancho). */
-.fp {
+/* La página ocupa la columna común entera, como el resto. Desde `xl`, con
+   más de una semana, se abre una segunda columna de 16 rem para el índice
+   (las mismas medidas que la confesión de fe). La medida de lectura la guarda
+   el texto dentro de la ficha (62ch, o dos columnas cuando sobra ancho). */
+.fp--toc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.fp__toc {
+  grid-column: 2;
+  grid-row: 1;
+  /* Fuera del anclaje de scroll: va antes del feed en el DOM y está siempre
+     a la vista (sticky), así que el navegador lo elegía como referencia y,
+     como se mueve con el scroll, no compensaba nada al pintarse una semana
+     por encima (el destino de un salto acababa 300 px más abajo). */
+  overflow-anchor: none;
+  /* La columna se estira al alto del feed: así el `sticky` del índice tiene
+     recorrido de arriba abajo de la página. */
+  align-self: stretch;
+}
+
+.fp__feed {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+@include until('xl') {
+  .fp--toc {
+    display: block;
+  }
+}
+
+/* --- Una semana del feed ---------------------------------------------- */
+
+.fw {
   display: grid;
   gap: clamp(2rem, 4vw, 3rem);
+}
+
+.fw + .fw {
+  margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+.fw__body {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+/* Entrada del contenido al pintarse: sube y aparece. Sólo transform y
+   opacidad (no tocan la maquetación: el anclaje de scroll no se entera). */
+@include motion-safe {
+  .fw__body--reveal {
+    animation: fw-reveal 0.6s var(--ea-standard, cubic-bezier(0.2, 0, 0, 1)) both;
+  }
+}
+
+@keyframes fw-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+/* Separador entre semanas: filete — pastilla — filete. La pastilla dice
+   cuánto hace en palabras («Săptămâna trecută») y, al lado, el número. */
+.fw__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.fw__rule {
+  flex: 1 1 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-hairline-strong) 30%, var(--c-hairline-strong) 70%, transparent);
+}
+
+.fw__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0.45rem 0.5rem 0.45rem 1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  box-shadow: 0 6px 18px -12px rgba(15, 30, 60, 0.35);
+  white-space: nowrap;
+}
+
+.fw__ago {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.fw__num {
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--r-pill);
+  background: var(--c-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-on-primary);
+}
+
+/* --- Esqueleto de una semana aún sin pintar ---------------------------- */
+
+/* Alto aproximado de una semana real (cabecera + mosaico + una ficha por
+   familia), para que la barra de desplazamiento y los saltos del índice
+   caigan cerca de su sitio antes de pintar. Medido el 30/09/2026 a 1440 px:
+   semanas de 5 familias entre 3.035 y 3.823 px (≈ 34 rem por ficha). */
+/* `overflow-anchor: none`: el anclaje de scroll del navegador no debe
+   elegir nada de aquí dentro como referencia, porque desaparece al pintar la
+   semana y la vista daría un salto. Así ancla en lo que permanece (el
+   separador, las fichas ya pintadas) y, al pintarse lo de arriba, la vista no
+   se mueve. */
+.fw__skeleton {
+  --fw-card: 34rem;
+  overflow-anchor: none;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  min-height: calc(12rem + var(--fw-n, 5) * (var(--fw-card) + 2rem));
+  align-content: start;
+}
+
+/* En el móvil la foto va arriba a todo el ancho: semanas de 4.224 a
+   4.733 px a 375 px (≈ 54 rem por ficha). */
+@include until('lg') {
+  .fw__skeleton {
+    --fw-card: 54rem;
+  }
+}
+
+.sk {
+  border-radius: 1.125rem;
+}
+
+.sk--head {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.sk--tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--sp-3);
+}
+
+.sk__tile {
+  aspect-ratio: 4 / 5;
+  border-radius: 0.875rem;
+}
+
+.sk--card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--sp-5);
+  min-height: var(--fw-card);
+  padding: var(--sp-5);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+}
+
+@include until('lg') {
+  .sk--card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 60% auto;
+  }
+}
+
+.sk__photo {
+  border-radius: 0.75rem;
+}
+
+.sk__text {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-3);
+  padding-top: var(--sp-2);
+}
+
+.sk__line {
+  display: block;
+  height: 0.85rem;
+  border-radius: var(--r-pill);
+}
+
+.sk__line--title {
+  width: 55%;
+  height: 1.6rem;
+}
+
+.sk__line--sub {
+  width: 30%;
+}
+
+.sk__line--short {
+  width: 40%;
+}
+
+/* El brillo que recorre las piezas: mismo degradado y mismo ritmo en
+   todas, así el esqueleto se lee como una sola superficie que carga. */
+.sk__tile,
+.sk__photo,
+.sk__line {
+  background:
+    linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%) 0 0 / 200% 100%,
+    var(--c-surface-2);
+}
+
+@include motion-safe {
+  .sk__tile,
+  .sk__photo,
+  .sk__line {
+    animation: sk-shine 1.6s linear infinite;
+  }
+}
+
+@keyframes sk-shine {
+  from {
+    background-position: 150% 0, 0 0;
+  }
+  to {
+    background-position: -50% 0, 0 0;
+  }
+}
+
+/* --- Final del feed ---------------------------------------------------- */
+
+.fp__end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin: clamp(3rem, 7vw, 5rem) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-faint);
+}
+
+.fp__end-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--c-gold);
 }
 
 .fp__cards {
@@ -33,7 +278,7 @@
   border-top: 1px solid var(--c-hairline);
 }
 
-/* --- Semana pasada abierta por enlace --------------------------------- */
+/* --- Sin semana vigente: aviso encima de las anteriores ---------------- */
 
 .fp__notice {
   display: flex;
@@ -41,7 +286,7 @@
   align-items: center;
   gap: var(--sp-2) var(--sp-3);
   justify-self: start;
-  margin: 0;
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
   max-width: none;
   padding: var(--sp-2) var(--sp-4);
   border-radius: var(--r-md);
@@ -50,20 +295,6 @@
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--c-muted);
-}
-
-.fp__notice-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35em;
-  font-weight: 700;
-  color: var(--c-primary);
-  text-decoration: none;
-
-  &:hover,
-  &:focus-visible {
-    color: var(--c-gold-deep);
-  }
 }
 
 /* --- Estados vacíos ---------------------------------------------------- */
@@ -89,71 +320,4 @@
   margin: 0;
   font-size: var(--fs-body-lg);
   color: var(--c-muted);
-}
-
-/* --- Archivo: fila de una semana --------------------------------------- */
-
-/* semana | fechas | apellidos | flecha. Número y fechas en columnas fijas
-   para que los apellidos arranquen alineados; en móvil los apellidos bajan
-   a su propia línea. */
-.past__row {
-  display: grid;
-  grid-template-columns: 6.5rem 15rem minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: var(--sp-3);
-  min-height: 44px;
-  padding-block: var(--sp-3);
-  border-top: 1px solid var(--c-hairline);
-  text-decoration: none;
-  color: var(--c-text);
-
-  &:hover .past__names,
-  &:focus-visible .past__names {
-    color: var(--c-primary);
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    @include focus-ring;
-  }
-}
-
-.past__week {
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  color: var(--c-gold-deep);
-}
-
-.past__dates {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--c-muted);
-}
-
-.past__names {
-  font-size: var(--fs-body);
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-
-.past__arrow {
-  align-self: center;
-  color: var(--c-faint);
-}
-
-@include until('md') {
-  .past__row {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .past__names {
-    grid-column: 1 / 3;
-    grid-row: 2;
-  }
-
-  .past__arrow {
-    grid-row: 1 / 3;
-    grid-column: 3;
-  }
 }

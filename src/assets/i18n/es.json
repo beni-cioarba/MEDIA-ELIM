@@ -240,11 +240,19 @@
     "empty": "La lista de familias de esta semana se publicará pronto.",
     "not_found": "No hemos encontrado esa semana de oración.",
     "to_current": "Las familias de esta semana",
-    "past_notice": "Esta semana de oración ya terminó.",
-    "past_title": "Semanas anteriores",
     "teaser_eyebrow": "Esta semana",
     "teaser_title": "Oramos por: {{names}}",
-    "teaser_cta": "Ver las familias y sus motivos de oración"
+    "teaser_cta": "Ver las familias y sus motivos de oración",
+    "ago_one": "La semana pasada",
+    "ago_other": "Hace {{n}} semanas",
+    "loading": "Cargando las familias de esta semana…",
+    "feed_end": "Aquí empezó la oración por las familias · {{date}}",
+    "toc": {
+      "label": "Semanas de oración",
+      "compact": "Semana",
+      "top": "Volver arriba",
+      "panel": "Semanas de oración"
+    }
   },
   "prayer_causes": {
     "title": "Causas de la Iglesia Elim",

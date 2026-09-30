@@ -217,6 +217,19 @@ body.has-drawer-open {
   body.has-doc-bar.has-doc-panel {
     --dock-offset: calc(var(--doc-bar-h) + 2.9rem);
   }
+
+  /* Índice sin barra de documento (la oración por las familias): la hoja
+     se apoya en el borde inferior y el dock sólo libra su resumen. */
+  body.has-doc-panel:not(.has-doc-bar) {
+    --dock-offset: 2.9rem;
+  }
+
+  /* Con la lista del índice desplegada, el dock sube por encima de ella:
+     `--doc-toc-sheet-h` es el alto real de la hoja, lo mide `doc-toc`. Sin
+     esto el dock tapaba las últimas entradas. */
+  body.has-doc-panel.has-doc-toc-open {
+    --dock-offset: calc(var(--doc-bar-h, 0px) + var(--doc-toc-sheet-h, 2.9rem));
+  }
 }
 
 // ---------------------------------------------------------------------

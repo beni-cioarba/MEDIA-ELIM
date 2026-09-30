@@ -54,6 +54,12 @@ export interface PrayerPhotoView {
 /** Una familia resuelta para pintar (web, panel y proyección). */
 export interface PrayerFamilyView {
   readonly id: string;
+  /**
+   * `id` del elemento en la página: `<id>-<domingo>`. La página es un feed de
+   * semanas y una familia vuelve a salir cuando la rotación da la vuelta, así
+   * que el `id` a secas se repetiría en el documento.
+   */
+  readonly anchor: string;
   readonly surname: string;
   readonly names: string;
   readonly single: boolean;
@@ -145,6 +151,27 @@ export class FamilyPrayerService {
     return view.status === 'upcoming' ? null : view;
   }
 
+  /**
+   * Feed de la web: la semana que se anuncia y, debajo, las anteriores de la
+   * más reciente a la más antigua. Sin semana vigente, sólo las pasadas.
+   */
+  readonly feed = computed<readonly PrayerWeekView[]>(() => {
+    const current = this.current();
+    return current ? [current, ...this.past()] : this.past();
+  });
+
+  /** «21 – 27 sept.» / «28 sept. – 4 oct.»: para el índice, sin año. */
+  formatShortRange(week: PrayerWeekView): string {
+    try {
+      return new Intl.DateTimeFormat(this.lang(), { day: 'numeric', month: 'short' }).formatRange(
+        parseIsoDate(week.start),
+        parseIsoDate(week.end),
+      );
+    } catch {
+      return this.formatRange(week);
+    }
+  }
+
   /** «28 septembrie – 4 octombrie 2026», localizado. */
   formatRange(week: PrayerWeekView): string {
     return formatIsoRange(this.lang(), week.start, week.end);
@@ -218,6 +245,7 @@ function toFamilyView(
 
   return {
     id: family.id,
+    anchor: `${family.id}-${presentedOn}`,
     surname: family.surname,
     names: family.names,
     single: family.single ?? false,

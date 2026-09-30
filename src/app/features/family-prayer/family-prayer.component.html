@@ -13,62 +13,124 @@
       <p class="empty__text">{{ 'family_prayer.not_found' | translate }}</p>
       <a class="btn btn--primary" [routerLink]="currentLink">{{ 'family_prayer.to_current' | translate }}</a>
     </div>
-  } @else if (week(); as w) {
-    <div class="fp">
-      @if (w.status === 'past') {
-        <p class="fp__notice" role="status">
-          {{ 'family_prayer.past_notice' | translate }}
-          <a class="fp__notice-link" [routerLink]="currentLink">
-            {{ 'family_prayer.to_current' | translate }}
-            <app-icon name="arrow-right" />
-          </a>
-        </p>
-      }
-
-      <app-family-summary [week]="w">
-        <app-share-button fsumActions [url]="weekUrl(w)" [title]="'family_prayer.title' | translate" />
-      </app-family-summary>
-
-      <div class="fp__cards">
-        @for (family of w.families; track family.id) {
-          <app-family-card [family]="family" [eager]="$first">
-            <div class="fp__actions">
-              <app-share-button [url]="familyUrl(w, family)" [title]="family.fullName" />
-            </div>
-          </app-family-card>
-        }
-      </div>
-    </div>
-  } @else {
+  } @else if (weeks().length === 0) {
     <div class="empty">
       <app-icon name="family" />
       <p class="empty__text">{{ 'family_prayer.empty' | translate }}</p>
     </div>
-  }
+  } @else {
+    <div class="fp" [class.fp--toc]="conIndice()">
+      <!-- El índice va antes del feed en el marcado (orden de tabulación:
+           índice → semanas), aunque la rejilla lo pinte a la derecha. -->
+      @if (conIndice()) {
+        <app-doc-toc
+          class="fp__toc"
+          [entries]="tocEntries()"
+          [label]="'family_prayer.toc.label' | translate"
+          [compactLabel]="'family_prayer.toc.compact' | translate"
+          [topLabel]="'family_prayer.toc.top' | translate"
+          [compactHidden]="!panelAbierto()"
+          [instantJump]="true"
+          (select)="alElegirDelIndice($event)"
+          (activeChange)="alCambiarActivo($event)"
+        />
+      }
 
-  <!-- Archivo: cerrado por defecto y al pie. Una fila por semana (número,
-       fechas y apellidos), no fichas: se consulta, no compite con la actual. -->
-  @if (archive().length > 0) {
-    <details class="past">
-      <summary class="past__summary">
-        <span class="past__label">{{ 'family_prayer.past_title' | translate }}</span>
-        <span class="past__count">{{ archive().length }}</span>
-        <svg class="past__chevron" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </summary>
-      <ul class="past__list" role="list">
-        @for (item of archive(); track item.presentedOn) {
-          <li>
-            <a class="past__row" [routerLink]="weekLink(item)">
-              <span class="past__week">{{ 'family_prayer.week_label' | translate: { n: item.number } }}</span>
-              <span class="past__dates">{{ prayer.formatRange(item) }}</span>
-              <span class="past__names">{{ surnames(item) }}</span>
-              <app-icon name="arrow-right" class="past__arrow" />
-            </a>
-          </li>
+      <!-- El feed: todas las semanas desde el principio; el contenido de cada
+           una se pinta al acercarse a la pantalla (ver el componente). -->
+      <div class="fp__feed">
+        @if (weeks()[0].status === 'past') {
+          <p class="fp__notice" role="status">{{ 'family_prayer.empty' | translate }}</p>
         }
-      </ul>
-    </details>
+
+        @for (w of weeks(); track w.presentedOn; let i = $index) {
+          <section
+            class="fw"
+            [class.fw--past]="w.status === 'past'"
+            [id]="weekAnchor(w)"
+            [attr.aria-label]="('family_prayer.week_label' | translate: { n: w.number }) + ' · ' + prayer.formatRange(w)"
+          >
+            <!-- Separador entre semanas: cuánto hace, en palabras, y el número. -->
+            @if (w.status === 'past') {
+              <div class="fw__divider">
+                <span class="fw__rule" aria-hidden="true"></span>
+                <p class="fw__chip">
+                  <span class="fw__ago">
+                    {{
+                      (weeksAgo(i) === 1 ? 'family_prayer.ago_one' : 'family_prayer.ago_other')
+                        | translate: { n: weeksAgo(i) }
+                    }}
+                  </span>
+                  <span class="fw__num">{{ 'family_prayer.week_label' | translate: { n: w.number } }}</span>
+                </p>
+                <span class="fw__rule" aria-hidden="true"></span>
+              </div>
+            }
+
+            @if (estaPintada(w)) {
+              <div class="fw__body" [class.fw__body--reveal]="i > 0">
+                <ng-container *ngTemplateOutlet="semana; context: { $implicit: w, first: i === 0 }" />
+              </div>
+            } @else {
+              <!-- Esqueleto con el alto aproximado de la semana: la barra de
+                   scroll no miente y el índice puede saltar hasta aquí. -->
+              <div
+                class="fw__skeleton"
+                [style.--fw-n]="w.families.length"
+                (appNearViewport)="pintar(w)"
+                role="status"
+              >
+                <span class="u-sr-only">{{ 'family_prayer.loading' | translate }}</span>
+                <div class="sk sk--head" aria-hidden="true">
+                  <span class="sk__line sk__line--title"></span>
+                  <span class="sk__line sk__line--sub"></span>
+                </div>
+                <div class="sk sk--tiles" aria-hidden="true">
+                  @for (family of w.families; track family.anchor) {
+                    <span class="sk__tile"></span>
+                  }
+                </div>
+                @for (family of w.families; track family.anchor) {
+                  <div class="sk sk--card" aria-hidden="true">
+                    <span class="sk__photo"></span>
+                    <span class="sk__text">
+                      <span class="sk__line sk__line--title"></span>
+                      <span class="sk__line"></span>
+                      <span class="sk__line"></span>
+                      <span class="sk__line sk__line--short"></span>
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Final del feed: dónde empezó todo. -->
+        @if (weeks().length > 1) {
+          <p class="fp__end">
+            <span class="fp__end-dot" aria-hidden="true"></span>
+            {{ 'family_prayer.feed_end' | translate: { date: prayer.formatRange(weeks()[weeks().length - 1]) } }}
+          </p>
+        }
+      </div>
+    </div>
   }
 </app-page-section>
+
+<!-- Una semana: resumen (quiénes) + una ficha por familia. -->
+<ng-template #semana let-w let-first="first">
+  <app-family-summary [week]="w">
+    <app-share-button fsumActions [url]="weekUrl(w)" [title]="'family_prayer.title' | translate" />
+  </app-family-summary>
+
+  <div class="fp__cards">
+    @for (family of w.families; track family.anchor) {
+      <app-family-card [family]="family" [eager]="first && $first">
+        <div class="fp__actions">
+          <app-share-button [url]="familyUrl(w, family)" [title]="family.fullName" />
+        </div>
+      </app-family-card>
+    }
+  </div>
+</ng-template>

@@ -12,6 +12,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { DockOverlapService } from '../floating-actions/dock-overlap.service';
 
 /** Una entrada del índice. El rótulo llega **ya traducido** por el anfitrión. */
 export interface TocEntry {
@@ -93,6 +94,31 @@ export class DocTocComponent {
    * del artículo. Sin esto el índice te dejaría delante de un título plegado.
    */
   readonly select = output<string>();
+
+  /**
+   * Se emite cada vez que cambia el apartado activo (por scroll o por salto).
+   * Lo usa un anfitrión cuyo índice depende de dónde se está: en la oración
+   * por las familias, el índice despliega las familias de la semana activa.
+   */
+  readonly activeChange = output<string>();
+
+  /**
+   * Salta sin animación.
+   *
+   * Para documentos con **carga progresiva** (secciones que se pintan al
+   * acercarse): un desplazamiento suave pasa por encima de todo lo de en
+   * medio y lo manda pintar, y lo que crece por el camino desplaza el destino
+   * y el salto acaba donde no era. El salto seco no cruza nada (y el
+   * contenido que llega se anima al entrar, así que no se nota brusco).
+   */
+  readonly instantJump = input(false);
+
+  /**
+   * El pie está en pantalla: la hoja del teléfono se retira, igual que el
+   * dock flotante (misma señal, misma transición). El pie repite la
+   * navegación y la hoja, pegada abajo, lo tapaba.
+   */
+  protected readonly retirado = inject(DockOverlapService).duplicateVisible;
 
   /** Id del apartado que se está leyendo. */
   protected readonly activeId = signal<string | null>(null);
@@ -201,11 +227,13 @@ export class DocTocComponent {
      * sin ejecutar en cuanto el navegador suspendía los fotogramas (pestaña
      * en segundo plano), y el índice dejaba de desplazar.
      */
+    // `instant` y no `auto`: `auto` hereda el `scroll-behavior: smooth` del
+    // `html` y seguiría animando.
     destino.scrollIntoView({
-      behavior: this.movimientoPermitido() ? 'smooth' : 'auto',
+      behavior: this.instantJump() ? 'instant' : this.movimientoPermitido() ? 'smooth' : 'auto',
       block: 'start',
     });
-    this.activeId.set(id);
+    this.marcarActivo(id);
     this.resaltar(destino);
 
     /*
@@ -242,6 +270,12 @@ export class DocTocComponent {
     setTimeout(quitar, 2000);
   }
 
+  private marcarActivo(id: string): void {
+    if (id === this.activeId()) return;
+    this.activeId.set(id);
+    this.activeChange.emit(id);
+  }
+
   private resolverObjetivos(): void {
     this.objetivos = this.entries()
       .map((entrada) => ({ id: entrada.id, el: document.getElementById(entrada.id) }))
@@ -275,7 +309,16 @@ export class DocTocComponent {
     const ro = new ResizeObserver(alCambiar);
     ro.observe(document.documentElement);
 
+    // La hoja cambia de alto con la lista abierta (la página añade o quita
+    // entradas según dónde se está): el dock la sigue.
+    const plegable = this.plegable()?.nativeElement;
+    const roHoja = new ResizeObserver(() => this.medirHoja());
+    if (plegable) roHoja.observe(plegable);
+
     this.destroyRef.onDestroy(() => {
+      document.body.classList.remove('has-doc-toc-open');
+      document.body.style.removeProperty('--doc-toc-sheet-h');
+      roHoja.disconnect();
       removeEventListener('scroll', alCambiar);
       removeEventListener('resize', alCambiar);
       lista?.removeEventListener('scroll', alCambiar);
@@ -292,6 +335,10 @@ export class DocTocComponent {
    * sin activo, que es el fallo del original.
    */
   private recalcular(): void {
+    // Faltan destinos: el anfitrión los pinta más tarde (carga progresiva).
+    // Se vuelven a buscar cuando algo cambia —el alto del documento avisa
+    // en cuanto se pintan—; son unas pocas búsquedas por id, sin coste.
+    if (this.objetivos.length < this.entries().length) this.resolverObjetivos();
     const objetivos = this.objetivos;
     if (objetivos.length === 0) return;
 
@@ -308,7 +355,7 @@ export class DocTocComponent {
     if (scrollY >= fin) activo = objetivos[objetivos.length - 1].id;
 
     if (activo !== this.activeId()) {
-      this.activeId.set(activo);
+      this.marcarActivo(activo);
       this.mantenerVisible(activo);
     }
 
@@ -380,8 +427,32 @@ export class DocTocComponent {
    * del documento, así que sin esto el usuario de teclado abre el panel y se
    * queda fuera de él.
    */
-  enfocarCompacto(): void {
-    this.plegable()?.nativeElement.querySelector('summary')?.focus();
+  enfocarCompacto(abrir = false): void {
+    const plegable = this.plegable()?.nativeElement;
+    if (!plegable) return;
+    // Una página cuyo panel es sólo el índice lo abre ya desplegado: si no,
+    // hacían falta dos toques (dock → resumen) para ver las entradas.
+    if (abrir) plegable.open = true;
+    plegable.querySelector('summary')?.focus();
+  }
+
+  /**
+   * La lista de la hoja crece hacia arriba y tapaba el dock flotante (y el
+   * dock, las últimas entradas). Mientras está desplegada se avisa por el
+   * `body` —antecesor común de los dos— y el dock sube por encima de ella
+   * (`styles/_base.scss`).
+   */
+  protected alAlternarCompacto(): void {
+    const plegable = this.plegable()?.nativeElement;
+    document.body.classList.toggle('has-doc-toc-open', !!plegable?.open);
+    this.medirHoja();
+  }
+
+  /** Alto real de la hoja abierta, para que el dock se apoye justo encima. */
+  private medirHoja(): void {
+    const plegable = this.plegable()?.nativeElement;
+    if (!plegable?.open) return;
+    document.body.style.setProperty('--doc-toc-sheet-h', `${plegable.offsetHeight}px`);
   }
 
   /** Vuelta al principio del documento. */
