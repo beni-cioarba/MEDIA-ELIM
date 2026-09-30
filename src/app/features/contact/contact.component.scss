@@ -286,6 +286,27 @@
     outline: 2px solid var(--c-primary);
     outline-offset: 2px;
   }
+
+  // Enviando: el botón queda bloqueado (ni doble clic ni doble envío).
+  &:disabled {
+    cursor: progress;
+    filter: saturate(0.7);
+  }
+}
+
+.form__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgb(18 40 74 / 0.25);
+  border-top-color: #12284a;
+  border-radius: 50%;
+  animation: form-spin 0.8s linear infinite;
+}
+
+@keyframes form-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .form__note {
@@ -296,16 +317,124 @@
   color: var(--c-faint);
 }
 
-.form__sent {
+// Campo trampa: fuera de la vista pero en el DOM (con `display: none` muchos
+// bots lo ignoran y deja de servir).
+.form__trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// Consentimiento (RGPD): casilla grande (44 px de área con la etiqueta).
+.consent {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.25rem 0 0.35rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 140ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.consent--invalid {
+  border-color: var(--c-danger, #b3261e);
+  background: rgb(179 38 30 / 0.05);
+}
+
+.consent__box {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.1rem;
+  accent-color: var(--c-primary);
+  cursor: pointer;
+}
+
+.consent__text {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.form__error {
   margin: 0.75rem 0 0;
   padding: 0.7rem 0.9rem;
   border-radius: 12px;
-  background: rgb(212 175 55 / 0.14);
+  background: rgb(179 38 30 / 0.08);
   font-size: 0.875rem;
-  color: var(--c-primary-deep);
+  line-height: 1.5;
+  color: #8c1d18;
+}
+
+.form__error-link {
+  font-weight: 700;
+  color: inherit;
+}
+
+// ---- Confirmación (sustituye al formulario tras enviar) ----------------
+.form-done {
+  display: grid;
+  justify-items: start;
+  gap: 0.6rem;
+  padding-block: 0.5rem;
+}
+
+.form-done__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+  box-shadow: 0 10px 22px -12px rgb(138 109 29 / 0.8);
+  font-size: 1.4rem;
+  color: #12284a;
+}
+
+.form-done__text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+.form-done__email {
+  overflow-wrap: anywhere;
+  color: var(--c-primary);
+}
+
+.form-done__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.form-done__again {
+  margin-top: 0.35rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -602,7 +731,12 @@
 @include motion-reduce {
   .quick__btn,
   .field__input,
-  .form__submit {
+  .form__submit,
+  .consent {
     transition: none;
+  }
+
+  .form__spinner {
+    animation-duration: 2.4s;
   }
 }

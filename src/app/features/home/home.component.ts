@@ -16,6 +16,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { IconName } from '../../core/ui/icon-name';
 import { FamilyPrayerService, PrayerFamilyView } from '../../core/services/family-prayer.service';
 import { FamilyPhotoComponent } from '../family-prayer/family-photo/family-photo.component';
+import { ContestTeaserComponent } from '../talent-contest/contest-teaser/contest-teaser.component';
 
 
 
@@ -167,6 +168,7 @@ interface QuickLink {
         HeroCarouselComponent,
         IconComponent,
         FamilyPhotoComponent,
+        ContestTeaserComponent,
     ],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'

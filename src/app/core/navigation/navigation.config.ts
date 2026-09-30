@@ -98,6 +98,14 @@ export const MAIN_NAV: readonly NavItem[] = [
         path: `/${APP_PATHS.prayerCauses}`,
         icon: 'pray',
       },
+      {
+        // Último: no es semanal sino anual (fases de marzo a agosto).
+        id: 'talent-contest',
+        labelKey: 'nav.talent_contest',
+        descriptionKey: 'nav.talent_contest_desc',
+        path: `/${APP_PATHS.talentContest}`,
+        icon: 'trophy',
+      },
     ],
   },
   {

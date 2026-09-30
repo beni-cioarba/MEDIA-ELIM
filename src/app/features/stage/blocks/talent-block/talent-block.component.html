@@ -1,0 +1,78 @@
+<section class="tb" aria-labelledby="tb-title">
+  <!-- Columna principal: qué es, fases, categorías y quién inscribe. -->
+  <div class="tb__main">
+    <p class="tb__eyebrow">
+      <span class="tb__dot" aria-hidden="true"></span>
+      {{ 'talent_contest.eyebrow' | translate: { edition: config.edition } }}
+    </p>
+    <h2 class="tb__title" id="tb-title">{{ 'talent_contest.title' | translate }}</h2>
+    <!-- Las cinco fases: línea que se enciende hasta la que toca. -->
+    <ol class="tb__phases">
+      @for (phase of phases(); track phase.id) {
+        <li class="tb__phase" [attr.data-status]="phase.status">
+          <span class="tb__node" aria-hidden="true"></span>
+          <span class="tb__phase-name">{{ 'talent_contest.phases.' + phase.id | translate }}</span>
+          <span class="tb__phase-date">{{ phaseDate(phase.start, phase.end) }}</span>
+        </li>
+      }
+    </ol>
+
+    <!-- Categorías: ocho pastillas y la memorización común. -->
+    <div class="tb__cats">
+      <p class="tb__label">{{ 'talent_contest.slide.categories' | translate: { n: categories.length } }}</p>
+      <ul class="tb__chips">
+        @for (id of categories; track id) {
+          <li class="tb__chip">{{ 'talent_contest.categories.' + id + '.name' | translate }}</li>
+        }
+      </ul>
+      <p class="tb__memo">
+        <span class="tb__memo-label">{{ 'talent_contest.slide.memorization' | translate }}</span>
+        {{ config.memorization }}
+      </p>
+    </div>
+
+    <!-- Quién inscribe en la iglesia: nombre y teléfono, legibles desde el fondo.
+         Ocupa el sitio de la entradilla (lo secundario se quita, no se achica). -->
+    <div class="tb__join">
+      <p class="tb__join-label">{{ 'talent_contest.slide.join' | translate }}</p>
+      <ul class="tb__join-list">
+        @for (person of config.enrollers; track person.phone) {
+          <li class="tb__join-person">
+            <span class="tb__join-name">{{ person.name }}</span>
+            <span class="tb__join-phone">{{ person.phoneDisplay }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <!-- Columna lateral: cuenta atrás + QR a la página del concurso. -->
+  <aside class="tb__side">
+    @if (focus(); as phase) {
+      <div class="tb__count">
+        <p class="tb__label">
+          {{ (phase.status === 'live' ? 'talent_contest.countdown.live' : 'talent_contest.countdown.next') | translate }}
+        </p>
+        <p class="tb__count-phase">{{ 'talent_contest.phases.' + phase.id | translate }}</p>
+        <p class="tb__count-date">{{ focusDate() }}</p>
+        <p class="tb__big">
+          @if (phase.status === 'live' || phase.daysLeft === 0) {
+            <span class="tb__num tb__num--word">{{ 'talent_contest.countdown.today' | translate }}</span>
+          } @else {
+            <span class="tb__num">{{ phase.daysLeft }}</span>
+            <span class="tb__unit">
+              {{ (phase.daysLeft === 1 ? 'talent_contest.countdown.days_one' : 'talent_contest.countdown.days_other') | translate }}
+            </span>
+          }
+        </p>
+      </div>
+    }
+
+    <!-- El QR sin leyenda propia: la leyenda va debajo, al ancho de la columna
+         (dentro del componente heredaba el ancho del código y se partía). -->
+    <div class="tb__qr">
+      <app-qr-panel [data]="qrUrl" [captionKey]="null" />
+    </div>
+    <p class="tb__qr-caption">{{ 'talent_contest.slide.qr' | translate }}</p>
+  </aside>
+</section>

@@ -121,6 +121,11 @@ export const APP_ROUTES: Routes = [
         redirectTo: APP_PATHS.prayerCauses,
       },
       {
+        // El bloque proyectable tiene su página propia en la web.
+        path: `${APP_PATHS.media}/${APP_PATHS.talentContest}`,
+        redirectTo: APP_PATHS.talentContest,
+      },
+      {
         // Un bloque como página propia (`/media/galerie`, `/media/program`…).
         // Reutiliza el mismo componente: un único chunk y una única hoja de
         // estilos para los seis bloques.
@@ -205,6 +210,20 @@ export const APP_ROUTES: Routes = [
             titleKey: 'seo.prayer_causes.title',
             descriptionKey: 'seo.prayer_causes.description',
             noindex: true,
+          },
+        },
+      },
+      {
+        // Talantul în Negoț: información para participantes (pública, indexable).
+        path: APP_PATHS.talentContest,
+        loadComponent: () =>
+          import('./features/talent-contest/talent-contest.component').then(
+            (m) => m.TalentContestComponent,
+          ),
+        data: {
+          seo: {
+            titleKey: 'seo.talent_contest.title',
+            descriptionKey: 'seo.talent_contest.description',
           },
         },
       },

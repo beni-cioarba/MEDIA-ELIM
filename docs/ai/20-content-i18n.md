@@ -31,7 +31,14 @@ ChurchConfig {
 > el mismo número atiende **WhatsApp** (confirmado). Con `whatsapp: null`, ni la
 > página de contacto ni el pie pintan el botón. Los enlaces `tel:` y `wa.me`
 > se componen con `core/util/contact-links.ts`; el chat se abre con el saludo
-> `contact.quick.whatsapp_text` ya escrito (editable antes de enviar). `donations` ya es
+> `contact.quick.whatsapp_text` ya escrito (editable antes de enviar).
+> **Formulario de contacto** (30/09/2026): se envía por detrás, sin abrir el
+> gestor de correo (`ContactFormService` → Web3Forms, `contact.form` en
+> `church.config.ts`). La clave es pública por diseño (sólo envía al buzón
+> con el que se creó) y el correo llega con «Responder a» = el visitante.
+> Antispam sin captcha (campo trampa + 3 s mínimos; al bot se le simula el
+> éxito) y casilla RGPD obligatoria. **Mientras `accessKey` sea `null` no
+> envía**: muestra el error con el correo directo. `donations` ya es
 > **real** (29/09/2026): una cuenta en euros en BBVA a nombre de «IGLESIA
 > APOSTOLICA ELIM», IBAN comprobado, sin Bizum. `bank`, `bic` y `bizum`
 > admiten `null`: lo que no exista no se pinta.

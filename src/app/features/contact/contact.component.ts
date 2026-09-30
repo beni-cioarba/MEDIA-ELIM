@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { ContactFormService } from '../../core/services/contact-form.service';
 import { LanguageService } from '../../core/services/language.service';
 import { telHref, whatsappHref } from '../../core/util/contact-links';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
@@ -30,18 +31,23 @@ interface Channel {
   readonly external: boolean;
 }
 
+/** Un humano tarda más que esto en rellenar el formulario; un bot, no. */
+const MIN_FILL_MS = 3000;
+
 /**
  * Página de contacto.
  *
- * ── Por qué el formulario abre el gestor de correo ────────────────────
- * La web es **100 % estática** (GitHub Pages): no hay servidor que reciba un
- * `POST`. Las alternativas serían un servicio externo de formularios (una
- * dependencia más, datos personales en manos de un tercero y una cuenta que
- * mantener) o un `mailto:` compuesto. Se elige lo segundo: cero dependencias,
- * cero tratamiento de datos por nuestra parte y el visitante conserva copia de
- * lo que envía. La plantilla lo dice explícitamente para no engañar a nadie.
+ * ── Envío automático (30/09/2026) ──────────────────────────────────────
+ * Antes el botón componía un `mailto:` y abría el gestor de correo del
+ * visitante. Ahora se envía **por detrás** (`ContactFormService`, Web3Forms):
+ * sin ventanas, con confirmación en la propia página y el aviso de que la
+ * respuesta llegará por correo. La web sigue siendo estática y sin secretos:
+ * la clave del servicio es pública por diseño (sólo envía al buzón de la
+ * iglesia).
  *
- * Por eso tampoco hay captcha: no existe endpoint que proteger.
+ * Antispam sin captcha (fricción cero para una persona): campo trampa
+ * invisible y tiempo mínimo de relleno; a un bot se le simula el éxito.
+ * RGPD: casilla obligatoria de consentimiento con la finalidad explicada.
  */
 @Component({
     selector: 'app-contact',
@@ -60,6 +66,8 @@ export class ContactComponent {
   protected readonly config = inject(CHURCH_CONFIG);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly fb = inject(FormBuilder);
+  private readonly contactForm = inject(ContactFormService);
+  private readonly language = inject(LanguageService);
 
   protected readonly links = {
     weekly: blockPath('weekly'),
@@ -121,52 +129,101 @@ export class ContactComponent {
     this.sanitizer.bypassSecurityTrustResourceUrl(
       `https://www.google.com/maps?q=${encodeURIComponent(
         this.config.location.mapsQuery,
-      )}&hl=${inject(LanguageService).current()}&z=16&output=embed`,
+      )}&hl=${this.language.current()}&z=16&output=embed`,
     );
+
+  /** Longitudes máximas: coinciden con el `maxlength` de la plantilla. */
+  protected readonly max = { name: 100, email: 254, subject: 150, message: 5000 } as const;
 
   protected readonly form = this.fb.nonNullable.group({
     name: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(2)],
+      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(this.max.name)],
     }),
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email],
+      validators: [Validators.required, Validators.email, Validators.maxLength(this.max.email)],
     }),
-    subject: new FormControl('', { nonNullable: true }),
+    subject: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.maxLength(this.max.subject)],
+    }),
     message: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(10)],
+      validators: [Validators.required, Validators.minLength(10), Validators.maxLength(this.max.message)],
     }),
+    /** RGPD: consentimiento explícito para usar los datos sólo para responder. */
+    consent: new FormControl(false, { nonNullable: true, validators: [Validators.requiredTrue] }),
+    /**
+     * Campo trampa: invisible y fuera del tabulador. Una persona no lo ve;
+     * un bot que rellena todo, sí. Si llega con valor, no se envía nada.
+     */
+    website: new FormControl('', { nonNullable: true }),
   });
 
-  /** Se ha lanzado el gestor de correo al menos una vez. */
-  protected readonly sent = signal(false);
+  /**
+   * Estado del envío. `sent` sustituye el formulario por la confirmación;
+   * `error` deja el formulario (con lo escrito) y ofrece reintentar.
+   */
+  protected readonly status = signal<'idle' | 'sending' | 'sent' | 'error' | 'unavailable'>('idle');
 
-  protected submit(): void {
+  /** Nombre y correo del último envío correcto, para la confirmación. */
+  protected readonly sentTo = signal<{ name: string; email: string } | null>(null);
+
+  /** Momento en que se mostró el formulario (ver `MIN_FILL_MS`). */
+  private shownAt = Date.now();
+
+  protected async submit(): Promise<void> {
+    if (this.status() === 'sending') return;
     if (this.form.invalid) {
       // Sin esto, los mensajes de error no aparecen hasta tocar cada campo.
       this.form.markAllAsTouched();
       return;
     }
 
-    const { name, email, subject, message } = this.form.getRawValue();
+    const { name, email, subject, message, website } = this.form.getRawValue();
 
-    // Los saltos de línea en el asunto rompen algunos clientes de correo.
-    const cleanSubject = (subject.trim() || name.trim()).replace(/[\r\n]+/g, ' ');
-    const body = `${message.trim()}\n\n—\n${name.trim()}\n${email.trim()}`;
+    // Bot (campo trampa o formulario rellenado en menos de 3 s): se simula
+    // el éxito sin enviar nada, para no darle pistas de que se le ha pillado.
+    if (website || Date.now() - this.shownAt < MIN_FILL_MS) {
+      this.confirm(name, email);
+      return;
+    }
 
-    const href =
-      `mailto:${this.config.contact.email}` +
-      `?subject=${encodeURIComponent(cleanSubject)}` +
-      `&body=${encodeURIComponent(body)}`;
+    this.status.set('sending');
+    const result = await this.contactForm.send({
+      name,
+      email,
+      subject,
+      message,
+      language: this.language.current(),
+    });
 
-    window.location.href = href;
-    this.sent.set(true);
+    if (result === 'sent') {
+      this.confirm(name, email);
+    } else {
+      // Sin clave no es un fallo de conexión: no se le pide al visitante que
+      // revise su red, se le da el correo directo.
+      this.status.set(result === 'not-configured' ? 'unavailable' : 'error');
+    }
+  }
+
+  /** Vuelve al formulario vacío para escribir otro mensaje. */
+  protected another(): void {
+    this.form.reset();
+    this.sentTo.set(null);
+    this.status.set('idle');
+    this.shownAt = Date.now();
+  }
+
+  private confirm(name: string, email: string): void {
+    this.sentTo.set({ name: name.trim().split(/\s+/)[0], email: email.trim() });
+    this.status.set('sent');
+    this.form.reset();
   }
 
   /** `true` cuando el campo ya se ha tocado y sigue inválido. */
-  protected invalid(field: 'name' | 'email' | 'subject' | 'message'): boolean {
+  protected invalid(field: 'name' | 'email' | 'subject' | 'message' | 'consent'): boolean {
     const control = this.form.controls[field];
     return control.invalid && (control.touched || control.dirty);
   }

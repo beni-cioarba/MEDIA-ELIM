@@ -46,94 +46,134 @@
 
   <div class="ct__grid">
     <!-- ============ Formulario ============
-         No hay servidor: compone un `mailto:` (ver el componente). -->
+         Se envía por detrás (ContactFormService → Web3Forms): sin abrir el
+         gestor de correo. Tras enviar, la tarjeta pasa a la confirmación. -->
     <section class="form-card" aria-labelledby="form-title">
-      <h2 class="form-card__title" id="form-title">{{ 'contact.form.title' | translate }}</h2>
-      <p class="form-card__subtitle">{{ 'contact.form.subtitle' | translate }}</p>
+      @if (status() === 'sent' && sentTo(); as to) {
+        <div class="form-done" role="status" aria-live="polite">
+          <span class="form-done__icon" aria-hidden="true"><app-icon name="check" /></span>
+          <h2 class="form-card__title" id="form-title">{{ 'contact.form.done_title' | translate: { name: to.name } }}</h2>
+          <p class="form-done__text">
+            {{ 'contact.form.done_text' | translate }}
+            <b class="form-done__email">{{ to.email }}</b>
+          </p>
+          <p class="form-done__hint">{{ 'contact.form.done_hint' | translate }}</p>
+          <button type="button" class="form-done__again" (click)="another()">
+            {{ 'contact.form.done_again' | translate }}
+          </button>
+        </div>
+      } @else {
+        <h2 class="form-card__title" id="form-title">{{ 'contact.form.title' | translate }}</h2>
+        <p class="form-card__subtitle">{{ 'contact.form.subtitle' | translate }}</p>
 
-      <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <div class="form__row">
+        <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="status() === 'sending'">
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">{{ 'contact.form.name' | translate }}</span>
+              <input
+                class="field__input"
+                type="text"
+                formControlName="name"
+                autocomplete="name"
+                [attr.maxlength]="max.name"
+                [attr.aria-invalid]="invalid('name')"
+                [placeholder]="'contact.form.name_ph' | translate"
+              />
+              <!-- El hueco del error existe siempre (pequeño): si apareciera y
+                   desapareciera, el formulario saltaría al validar. -->
+              <span class="field__error" role="alert">
+                @if (invalid('name')) {
+                  {{ 'contact.form.error_name' | translate }}
+                }
+              </span>
+            </label>
+
+            <label class="field">
+              <span class="field__label">{{ 'contact.form.email' | translate }}</span>
+              <input
+                class="field__input"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                [attr.maxlength]="max.email"
+                [attr.aria-invalid]="invalid('email')"
+                [placeholder]="'contact.form.email_ph' | translate"
+              />
+              <span class="field__error" role="alert">
+                @if (invalid('email')) {
+                  {{ 'contact.form.error_email' | translate }}
+                }
+              </span>
+            </label>
+          </div>
+
           <label class="field">
-            <span class="field__label">{{ 'contact.form.name' | translate }}</span>
+            <span class="field__label">
+              {{ 'contact.form.subject' | translate }}
+              <span class="field__optional">{{ 'contact.form.optional' | translate }}</span>
+            </span>
             <input
               class="field__input"
               type="text"
-              formControlName="name"
-              autocomplete="name"
-              [attr.aria-invalid]="invalid('name')"
-              [placeholder]="'contact.form.name_ph' | translate"
+              formControlName="subject"
+              [attr.maxlength]="max.subject"
+              [placeholder]="'contact.form.subject_ph' | translate"
             />
-            <!-- El hueco del error existe siempre (pequeño): si apareciera y
-                 desapareciera, el formulario saltaría al validar. -->
-            <span class="field__error" role="alert">
-              @if (invalid('name')) {
-                {{ 'contact.form.error_name' | translate }}
-              }
-            </span>
           </label>
 
           <label class="field">
-            <span class="field__label">{{ 'contact.form.email' | translate }}</span>
-            <input
-              class="field__input"
-              type="email"
-              formControlName="email"
-              autocomplete="email"
-              [attr.aria-invalid]="invalid('email')"
-              [placeholder]="'contact.form.email_ph' | translate"
-            />
+            <span class="field__label">{{ 'contact.form.message' | translate }}</span>
+            <textarea
+              class="field__input field__input--area"
+              rows="5"
+              formControlName="message"
+              [attr.maxlength]="max.message"
+              [attr.aria-invalid]="invalid('message')"
+              [placeholder]="'contact.form.message_ph' | translate"
+            ></textarea>
             <span class="field__error" role="alert">
-              @if (invalid('email')) {
-                {{ 'contact.form.error_email' | translate }}
+              @if (invalid('message')) {
+                {{ 'contact.form.error_message' | translate }}
               }
             </span>
           </label>
-        </div>
 
-        <label class="field">
-          <span class="field__label">
-            {{ 'contact.form.subject' | translate }}
-            <span class="field__optional">{{ 'contact.form.optional' | translate }}</span>
-          </span>
-          <input
-            class="field__input"
-            type="text"
-            formControlName="subject"
-            [placeholder]="'contact.form.subject_ph' | translate"
-          />
-        </label>
+          <!-- Campo trampa (antispam): fuera de la vista, del tabulador y del
+               lector de pantalla. Una persona nunca lo rellena. -->
+          <div class="form__trap" aria-hidden="true">
+            <label>
+              Website
+              <input type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+            </label>
+          </div>
 
-        <label class="field">
-          <span class="field__label">{{ 'contact.form.message' | translate }}</span>
-          <textarea
-            class="field__input field__input--area"
-            rows="5"
-            formControlName="message"
-            [attr.aria-invalid]="invalid('message')"
-            [placeholder]="'contact.form.message_ph' | translate"
-          ></textarea>
-          <span class="field__error" role="alert">
-            @if (invalid('message')) {
-              {{ 'contact.form.error_message' | translate }}
-            }
-          </span>
-        </label>
+          <!-- RGPD: consentimiento explícito y finalidad, antes de enviar. -->
+          <label class="consent" [class.consent--invalid]="invalid('consent')">
+            <input class="consent__box" type="checkbox" formControlName="consent" [attr.aria-invalid]="invalid('consent')" />
+            <span class="consent__text">{{ 'contact.form.consent' | translate }}</span>
+          </label>
 
-        <div class="form__foot">
-          <button class="form__submit" type="submit">
-            <app-icon name="send" />
-            {{ 'contact.form.submit' | translate }}
-          </button>
-          <p class="form__note">{{ 'contact.form.note' | translate }}</p>
-        </div>
+          <div class="form__foot">
+            <button class="form__submit" type="submit" [disabled]="status() === 'sending'">
+              @if (status() === 'sending') {
+                <span class="form__spinner" aria-hidden="true"></span>
+                {{ 'contact.form.sending' | translate }}
+              } @else {
+                <app-icon name="send" />
+                {{ 'contact.form.submit' | translate }}
+              }
+            </button>
+            <p class="form__note">{{ 'contact.form.note' | translate }}</p>
+          </div>
 
-        @if (sent()) {
-          <p class="form__sent" role="status">
-            <app-icon name="check" />
-            {{ 'contact.form.sent' | translate }}
-          </p>
-        }
-      </form>
+          @if (status() === 'error' || status() === 'unavailable') {
+            <p class="form__error" role="alert">
+              {{ (status() === 'unavailable' ? 'contact.form.error_unavailable' : 'contact.form.error_send') | translate }}
+              <a class="form__error-link" [href]="links.mailto">{{ config.contact.email }}</a>
+            </p>
+          }
+        </form>
+      }
     </section>
 
     <div class="ct__side">

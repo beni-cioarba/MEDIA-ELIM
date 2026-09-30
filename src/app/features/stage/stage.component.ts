@@ -32,6 +32,7 @@ import { BibleBlockComponent } from './blocks/bible-block/bible-block.component'
 import { LocationBlockComponent } from './blocks/location-block/location-block.component';
 import { FamilyBlockComponent } from './blocks/family-block/family-block.component';
 import { CausesBlockComponent } from './blocks/causes-block/causes-block.component';
+import { TalentBlockComponent } from './blocks/talent-block/talent-block.component';
 import { WebsiteBlockComponent } from './blocks/website-block/website-block.component';
 
 /**
@@ -45,6 +46,7 @@ const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>([
   'announcements',
   'families',
   'causes',
+  'talent',
   'bible',
   'website',
 ]);
@@ -92,6 +94,7 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
         BibleBlockComponent,
         FamilyBlockComponent,
         CausesBlockComponent,
+        TalentBlockComponent,
         WebsiteBlockComponent,
         LocationBlockComponent,
     ],
@@ -150,11 +153,12 @@ export class StageComponent implements OnInit {
    *     foto llega al borde.
    *   · `causes`: navy entero, para que la pantalla no ilumine la sala
    *     mientras se ora.
+   *   · `talent`: el cartel de Talantul în Negoț, superficie oscura entera.
    * El texto conserva su propio aire dentro de cada panel.
    */
   protected readonly bleed = computed<boolean>(() => {
     const block = this.carousel.currentSlide()?.block;
-    return this.fullscreen() && (block === 'families' || block === 'causes');
+    return this.fullscreen() && (block === 'families' || block === 'causes' || block === 'talent');
   });
 
   /** Aviso «hoy también en directo» activo y proyectando. */

@@ -1,0 +1,62 @@
+<!-- Selector: una pastilla por categoría (nombre + edad orientativa). En móvil
+     es una tira que se desliza; en escritorio, una rejilla de cuatro. -->
+<div class="tcc__picker" role="radiogroup" [attr.aria-label]="'talent_contest.category.picker' | translate">
+  @for (c of categories; track c.id; let i = $index) {
+    <button
+      type="button"
+      role="radio"
+      class="tcc__chip"
+      [class.is-active]="c.id === category().id"
+      [attr.aria-checked]="c.id === category().id"
+      [attr.tabindex]="c.id === category().id ? 0 : -1"
+      (click)="pick(c.id)"
+      (keydown)="onKeydown($event, i)"
+    >
+      <span class="tcc__chip-name">{{ 'talent_contest.categories.' + c.id + '.name' | translate }}</span>
+      <span class="tcc__chip-ages">{{ 'talent_contest.categories.' + c.id + '.ages' | translate: { date: cutoff() } }}</span>
+    </button>
+  }
+</div>
+
+<div class="tcc__panel">
+  <!-- Resumen de la categoría: lo que se estudia y las notas que la enmarcan. -->
+  <aside class="tcc__side">
+    <p class="tcc__kicker">{{ 'talent_contest.categories.' + category().id + '.name' | translate }}</p>
+
+    <h3 class="tcc__label">{{ 'talent_contest.category.books' | translate }}</h3>
+    <ul class="tcc__books">
+      @for (book of category().books; track book) {
+        <li class="tcc__book">{{ book }}</li>
+      }
+    </ul>
+
+    <h3 class="tcc__label">{{ 'talent_contest.category.memorization' | translate }}</h3>
+    <p class="tcc__memo">{{ contest.config.memorization }}</p>
+
+    <p class="tcc__note">{{ 'talent_contest.category.ages_note' | translate }}</p>
+    <p class="tcc__note">{{ 'talent_contest.category.language_note' | translate: { version: contest.config.bibleVersion } }}</p>
+  </aside>
+
+  <!-- Los diez versículos, con su texto oficial: aquí se estudia. -->
+  <div class="tcc__verses">
+    <header class="tcc__verses-head">
+      <h3 class="tcc__label">
+        {{ 'talent_contest.category.verses' | translate }}
+        <span class="tcc__count">{{ category().verses.length }}</span>
+      </h3>
+      <app-copy-button [value]="copyText()" [label]="'talent_contest.category.copy' | translate" />
+    </header>
+
+    <ol class="tcc__list">
+      @for (verse of category().verses; track verse.ref; let i = $index) {
+        <li class="tcc__verse">
+          <span class="tcc__index" aria-hidden="true">{{ i + 1 < 10 ? '0' + (i + 1) : i + 1 }}</span>
+          <div class="tcc__verse-body">
+            <p class="tcc__ref">{{ verse.ref }}</p>
+            <p class="tcc__text" lang="ro">{{ verse.text }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</div>

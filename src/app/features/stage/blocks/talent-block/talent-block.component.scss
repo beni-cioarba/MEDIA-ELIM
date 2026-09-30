@@ -1,0 +1,387 @@
+// =====================================================================
+// Diapositiva «Talantul în Negoț» (sólo proyección, a sangre)
+// ---------------------------------------------------------------------
+// Todo en `--pj-*` (unidad de diapositiva): se ve igual en Full HD y en 4K.
+// Presupuesto de legibilidad (`30-presentation.md`): etiquetas ≥ 3,2u,
+// secundario 3,8u, cuerpo 4,6u, destacado 5,6u; el titular y la cifra son
+// los datos clave. Línea visual del módulo: navy profundo, rejilla técnica,
+// halo oro, cifras tabulares.
+// =====================================================================
+
+// `contents`: el bloque no mete una caja entre la diapositiva y `.tb`.
+:host {
+  display: contents;
+}
+
+.tb {
+  --tb-gap: calc(var(--pj-u) * 7);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 50);
+  gap: var(--tb-gap);
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  padding: calc(var(--pj-u) * 6) calc(var(--pj-u) * 7);
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(ellipse 55% 70% at 88% 0%, rgba(212, 175, 55, 0.24) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 0% 100%, rgba(80, 130, 220, 0.2) 0%, transparent 60%),
+    linear-gradient(160deg, var(--c-primary-darkest) 0%, var(--c-primary-deep) 55%, var(--c-primary) 100%);
+
+  // Rejilla técnica (cada 5u), desvanecida hacia los bordes.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) var(--pj-stroke), transparent var(--pj-stroke)),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) var(--pj-stroke), transparent var(--pj-stroke));
+    background-size: calc(var(--pj-u) * 5) calc(var(--pj-u) * 5);
+    mask-image: radial-gradient(ellipse 80% 75% at 55% 35%, #000 30%, transparent 85%);
+  }
+}
+
+// ---- Columna principal -------------------------------------------------
+// `space-between`: los tres grupos (qué es · fases · categorías) reparten el
+// alto; con poco texto no se amontonan arriba.
+.tb__main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: calc(var(--pj-u) * 2.5);
+  min-width: 0;
+  min-height: 0;
+}
+
+.tb__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--pj-u) * 1.2);
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.tb__dot {
+  width: calc(var(--pj-u) * 1.3);
+  height: calc(var(--pj-u) * 1.3);
+  border-radius: 50%;
+  background: var(--c-gold);
+  box-shadow: 0 0 calc(var(--pj-u) * 2) rgba(212, 175, 55, 0.9);
+}
+
+.tb__title {
+  margin: calc(var(--pj-u) * -2) 0 0;
+  font-family: var(--font-display);
+  font-size: calc(var(--pj-u) * 9.5);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  // Margen para la coma de la «ț» (background-clip recorta a la línea).
+  padding-bottom: 0.1em;
+  background: linear-gradient(100deg, #fff 0%, #fff 45%, var(--c-gold-soft) 80%, var(--c-gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tb__lead {
+  margin: calc(var(--pj-u) * -1.5) 0 0;
+  max-width: 34em;
+  font-size: var(--pj-fs-body);
+  line-height: 1.35;
+  color: rgba(247, 250, 252, 0.85);
+}
+
+// Fases: cinco columnas, nodo sobre la línea y la fecha en oro.
+.tb__phases {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: calc(var(--pj-u) * 2.5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tb__phase {
+  position: relative;
+  display: grid;
+  gap: calc(var(--pj-u) * 0.6);
+  padding-top: calc(var(--pj-u) * 3.6);
+
+  // Conector hacia la siguiente fase.
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--pj-u) * 1);
+    left: calc(var(--pj-u) * 3);
+    right: calc(var(--pj-u) * -2);
+    height: max(2px, calc(var(--pj-u) * 0.25));
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &[data-status='done']:not(:last-child)::before {
+    background: var(--c-gold);
+  }
+}
+
+.tb__node {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--pj-u) * 2.2);
+  height: calc(var(--pj-u) * 2.2);
+  box-sizing: border-box;
+  border: max(2px, calc(var(--pj-u) * 0.35)) solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: var(--c-primary-darkest);
+
+  [data-status='done'] & {
+    border-color: var(--c-gold);
+    background: var(--c-gold);
+  }
+
+  [data-status='next'] &,
+  [data-status='live'] & {
+    border-color: var(--c-gold-soft);
+    background: var(--c-gold);
+    box-shadow:
+      0 0 0 calc(var(--pj-u) * 0.8) rgba(212, 175, 55, 0.25),
+      0 0 calc(var(--pj-u) * 3) rgba(212, 175, 55, 0.7);
+  }
+}
+
+.tb__phase-name {
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+
+  [data-status='done'] & {
+    color: rgba(247, 250, 252, 0.6);
+  }
+}
+
+.tb__phase-date {
+  font-size: var(--pj-fs-body);
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-soft);
+
+  [data-status='done'] & {
+    color: rgba(247, 250, 252, 0.5);
+  }
+}
+
+// Categorías: pastillas a su ancho natural (con rejilla fija el nombre más
+// largo, «Preșcolari – Clasa 1», se partía en dos líneas).
+.tb__cats {
+  display: grid;
+  gap: calc(var(--pj-u) * 1.6);
+}
+
+.tb__label {
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(247, 250, 252, 0.6);
+}
+
+.tb__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--pj-u) * 1.3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tb__chip {
+  padding: calc(var(--pj-u) * 0.8) calc(var(--pj-u) * 1.8);
+  border: var(--pj-stroke) solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.tb__memo {
+  margin: 0;
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+  color: var(--c-gold-soft);
+}
+
+.tb__memo-label {
+  margin-right: calc(var(--pj-u) * 1);
+  font-weight: 600;
+  color: rgba(247, 250, 252, 0.7);
+}
+
+// ---- Columna lateral (cristal) ------------------------------------------
+.tb__side {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: calc(var(--pj-u) * 2);
+  min-height: 0;
+  padding: calc(var(--pj-u) * 3.5);
+  border: var(--pj-stroke) solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--pj-r);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 calc(var(--pj-u) * 3) calc(var(--pj-u) * 6) rgba(0, 0, 0, 0.35);
+
+  // Filete de luz en el borde superior.
+  &::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--pj-stroke) * -1);
+    left: 14%;
+    right: 14%;
+    height: var(--pj-stroke);
+    background: linear-gradient(90deg, transparent, var(--c-gold-soft), transparent);
+  }
+}
+
+.tb__count {
+  display: grid;
+  gap: calc(var(--pj-u) * 0.4);
+}
+
+.tb__count-phase {
+  margin: calc(var(--pj-u) * 0.8) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--pj-fs-lead);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tb__count-date {
+  margin: 0;
+  font-size: var(--pj-fs-caption);
+  color: rgba(247, 250, 252, 0.75);
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.tb__big {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--pj-u) * 1.5);
+  margin: calc(var(--pj-u) * 0.5) 0 0;
+}
+
+.tb__num {
+  font-family: var(--font-display);
+  font-size: calc(var(--pj-u) * 12);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fff 10%, var(--c-gold-soft) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+// «AZI» / «HOY»: palabra, no cifra; a tamaño de titular.
+.tb__num--word {
+  font-size: var(--pj-fs-title);
+}
+
+.tb__unit {
+  font-size: var(--pj-fs-body);
+  font-weight: 700;
+  color: rgba(247, 250, 252, 0.8);
+}
+
+// El QR llena el sitio que queda en la columna. Con la caja como contenedor,
+// el código mide el mínimo entre su ancho y su alto: siempre cuadrado y
+// entero, sin invadir la cifra ni el botón en ninguna resolución.
+.tb__qr {
+  container-type: size;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+
+  app-qr-panel {
+    width: min(100cqw, 100cqh);
+    height: min(100cqw, 100cqh);
+  }
+
+  --qr-frame-pad: calc(var(--pj-u) * 1.6);
+  --qr-frame-radius: var(--pj-r-sm);
+}
+
+.tb__qr-caption {
+  margin: calc(var(--pj-u) * -0.6) 0 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  color: rgba(247, 250, 252, 0.9);
+}
+
+// Quién inscribe: franja oro al pie de la columna principal, una columna por
+// persona. El teléfono es el dato que se copia desde el banco: a tamaño de
+// cuerpo y en cifras tabulares.
+.tb__join {
+  display: grid;
+  gap: calc(var(--pj-u) * 1.2);
+  padding: calc(var(--pj-u) * 2) calc(var(--pj-u) * 3);
+  border-radius: var(--pj-r-sm);
+  background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 45%, var(--c-gold-deep) 100%);
+  color: var(--c-primary-darkest);
+}
+
+.tb__join-label {
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.tb__join-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--pj-u) * 4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tb__join-person {
+  display: grid;
+  gap: calc(var(--pj-u) * 0.3);
+  line-height: 1.15;
+}
+
+.tb__join-name {
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+}
+
+.tb__join-phone {
+  font-size: var(--pj-fs-body);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

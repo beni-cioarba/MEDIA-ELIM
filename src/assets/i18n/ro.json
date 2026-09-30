@@ -252,6 +252,256 @@
     "lead": "Pentru ce ne rugăm ca biserică: pe nume, pentru cei care trec prin încercări, și pentru cauzele pe care le purtăm împreună înaintea lui Dumnezeu.",
     "updated": "Listă actualizată la {{date}}"
   },
+  "talent_contest": {
+    "eyebrow": "Concurs biblic · Ediția {{edition}}",
+    "title": "Talantul în Negoț",
+    "lead": "Concursul care îi provoacă pe copii, adolescenți, tineri și adulți să studieze Scriptura cu seriozitate, să o păstreze în inimă și să o trăiască. Începe în biserica noastră și te poate duce până la faza internațională.",
+    "cta_join": "Vreau să particip",
+    "cta_study": "Vezi categoria mea",
+    "join_message": "Bună ziua, vreau să particip la Talantul în Negoț {{edition}}. Categoria: {{category}}.",
+    "parable": "Inspirat din pilda talanților · {{ref}}",
+    "stats": {
+      "countries": "țări",
+      "churches": "biserici",
+      "participants": "participanți în {{year}}"
+    },
+    "countdown": {
+      "next": "Următoarea fază",
+      "live": "Are loc astăzi",
+      "days_one": "zi",
+      "days_other": "zile",
+      "today": "Azi",
+      "closed": "Ediția {{edition}} s-a încheiat. În curând, următoarea."
+    },
+    "phases": {
+      "title": "Cinci etape, un singur drum",
+      "church": "Biserică",
+      "county": "Județeană",
+      "regional": "Regională",
+      "national": "Națională",
+      "international": "Internațională",
+      "church_desc": "Aici începe totul: în biserica noastră.",
+      "county_desc": "Cu cei calificați din bisericile din zonă.",
+      "regional_desc": "Cei mai buni din fiecare zonă, pe regiuni.",
+      "national_desc": "Cei mai buni din fiecare regiune.",
+      "international_desc": "România și diaspora, împreună, la finală.",
+      "status_done": "Încheiată",
+      "status_live": "Azi",
+      "status_next": "Urmează",
+      "add_calendar": "Adaugă fazele în calendarul meu",
+      "diaspora_note": "În diaspora, fazele le coordonează liderul național: locul și ora fiecăreia ți le confirmăm la înscriere."
+    },
+    "calendar": {
+      "name": "Talantul în Negoț {{edition}}",
+      "event": "Talantul în Negoț · {{phase}}",
+      "description": "Concursul biblic Talantul în Negoț {{edition}}. Categoria ta, cărțile și versetele: {{url}}"
+    },
+    "category": {
+      "eyebrow": "Pregătirea ta",
+      "title": "Ce ai de studiat",
+      "picker": "Alege categoria ta",
+      "books": "Cărți de studiat",
+      "verses": "Versete de memorat",
+      "memorization": "Memorare · toate",
+      "ages_note": "Vârsta este orientativă: categoria o dă clasa, iar liderul îți confirmă care este a ta.",
+      "copy": "Copiază versetele",
+      "language_note": "Concursul se desfășoară după versiunea {{version}}."
+    },
+    "categories": {
+      "p-1": {
+        "name": "Preșcolari – Clasa 1",
+        "ages": "până la 7 ani"
+      },
+      "2-3": {
+        "name": "Clasele 2 – 3",
+        "ages": "8 – 9 ani"
+      },
+      "4-5": {
+        "name": "Clasele 4 – 5",
+        "ages": "10 – 11 ani"
+      },
+      "6-7": {
+        "name": "Clasele 6 – 7",
+        "ages": "12 – 13 ani"
+      },
+      "8-9": {
+        "name": "Clasele 8 – 9",
+        "ages": "14 – 15 ani"
+      },
+      "10-11": {
+        "name": "Clasele 10 – 11",
+        "ages": "16 – 17 ani"
+      },
+      "18-35": {
+        "name": "18 – 35 ani",
+        "ages": "tineri și adulți"
+      },
+      "35-plus": {
+        "name": "35+ ani",
+        "ages": "împliniți înainte de {{date}}"
+      }
+    },
+    "exam": {
+      "eyebrow": "În ziua concursului",
+      "title": "Două secțiuni, un test clar",
+      "classic": "Clasic",
+      "classic_desc": "Test scris din cărțile și versetele categoriei tale.",
+      "memorization": "Memorarea Scripturii",
+      "memorization_desc": "Scrii din memorie {{passage}}, același pasaj pentru toate categoriile. Se corectează verset cu verset, cuvânt cu cuvânt.",
+      "points": "{{points}} de puncte",
+      "parts": {
+        "true_false": "Adevărat / fals",
+        "single": "Alege o variantă",
+        "match": "Asociere",
+        "multiple": "Alegere multiplă",
+        "order": "Ordinea versetelor"
+      },
+      "parts_desc": {
+        "true_false": "{{n}} afirmații",
+        "single": "{{n}} întrebări, 3 variante",
+        "match": "{{n}} perechi",
+        "multiple": "{{n}} întrebări: una, mai multe sau niciuna",
+        "order": "3 versete în 5 fragmente"
+      },
+      "per_item": "câte {{p}} p",
+      "sheet_title": "Foaia cu răspunsuri",
+      "sheet_tips": [
+        "Colorează doar în interiorul cercurilor, fără să depășești conturul.",
+        "Scrie datele din antet complet și citeț.",
+        "Pentru corectare, doar radiera: șterge complet răspunsul greșit.",
+        "Nu face alte însemnări: foaia se corectează prin scanare."
+      ]
+    },
+    "benefits": {
+      "eyebrow": "De ce merită",
+      "title": "Ce câștigi",
+      "items": [
+        {
+          "title": "Cunoașterea Bibliei",
+          "text": "Înveți învățăturile ei și principiile morale și etice."
+        },
+        {
+          "title": "O credință mai tare",
+          "text": "Cunoașterea Cuvântului adâncește relația cu Dumnezeu."
+        },
+        {
+          "title": "Comunitate",
+          "text": "Te pregătești și concurezi alături de alții: se leagă prietenii."
+        },
+        {
+          "title": "Memorie mai bună",
+          "text": "Memorarea versetelor antrenează memoria și atenția."
+        },
+        {
+          "title": "Învățare prin provocări",
+          "text": "Competiția face studiul interactiv și captivant."
+        },
+        {
+          "title": "Premii și recunoaștere",
+          "text": "Câștigătorii primesc premii și recunoașterea comunității."
+        },
+        {
+          "title": "Gândire critică",
+          "text": "Întrebările te învață să gândești și să analizezi."
+        },
+        {
+          "title": "Împărtășirea credinței",
+          "text": "Ce înveți te ajută să vorbești despre Dumnezeu cu alții."
+        }
+      ]
+    },
+    "how": {
+      "eyebrow": "Pas cu pas",
+      "title": "Cum participi",
+      "steps": [
+        {
+          "title": "Spune-ne că participi",
+          "text": "Sună sau scrie-le pe WhatsApp Simonei Pintilei sau lui Mari Dobre: te înscriu ele pe platforma oficială a concursului."
+        },
+        {
+          "title": "Studiază categoria ta",
+          "text": "Cărțile și versetele categoriei tale; dacă vrei, și memorarea. Puțin în fiecare zi."
+        },
+        {
+          "title": "Prima fază: {{date}}",
+          "text": "Primul test este în biserică, cu foaia ta de răspunsuri."
+        },
+        {
+          "title": "Mergi mai departe",
+          "text": "Dacă te califici, treci la faza următoare, până la finala internațională."
+        }
+      ],
+      "mindset": [
+        "Concentrează-te pe proces, nu pe rezultat.",
+        "Nu te califici? În fiecare an ai o nouă șansă.",
+        "Întotdeauna câștigul este de partea concurentului: Cuvântul învățat rodește."
+      ]
+    },
+    "resources": {
+      "eyebrow": "Pentru studiu",
+      "title": "Materiale oficiale",
+      "bibliography": "Bibliografie {{edition}}",
+      "bibliography_desc": "Cărțile și versetele tuturor categoriilor.",
+      "brochure": "Pliant {{edition}}",
+      "brochure_desc": "Faze, categorii și beneficii, pe o singură foaie.",
+      "answer_sheet": "Foaia cu răspunsuri",
+      "answer_sheet_desc": "Modelul oficial, ca să exersezi acasă.",
+      "memorization_key": "Barem memorare",
+      "memorization_key_desc": "{{passage}}, cu cuvintele care contează la corectare.",
+      "exam_keys": "Testele 2026 cu bareme",
+      "exam_keys_desc": "Cele de la faza internațională: cel mai bun antrenament.",
+      "kind_drive": "Google Drive",
+      "kind_pdf": "PDF",
+      "website": "Site oficial",
+      "rules_soon": "Regulamentul {{edition}} va fi publicat în curând pe site-ul oficial."
+    },
+    "videos": {
+      "eyebrow": "Faza internațională {{year}}",
+      "title": "Așa se trăiește",
+      "all": "Toate videoclipurile",
+      "watch": "Vezi pe YouTube: {{title}}"
+    },
+    "enroll": {
+      "label": "Înscrierile se fac la",
+      "call": "Sună-o pe {{name}}",
+      "whatsapp": "Scrie-i pe WhatsApp lui {{name}}"
+    },
+    "final": {
+      "title": "Participi?",
+      "text": "Sună sau scrie pe WhatsApp uneia dintre educatoarele de mai jos și te înscrie în categoria ta. Studiul Cuvântului merită întotdeauna.",
+      "verse": "„Strâng Cuvântul Tău în inima mea, ca să nu păcătuiesc împotriva Ta!”",
+      "verse_ref": "Psalmii 119:11"
+    },
+    "official": {
+      "eyebrow": "Site oficial",
+      "title": "Vrei să afli mai multe?",
+      "text": "Toate informațiile despre concurs, noutățile și materialele fiecărei ediții sunt pe site-ul oficial Talantul în Negoț.",
+      "cta": "Mergi pe site-ul oficial",
+      "external": "Se deschide într-o filă nouă",
+      "links": {
+        "about": "Despre proiect",
+        "about_desc": "Ce este, din ce se inspiră și cum se organizează.",
+        "resources": "Resurse",
+        "resources_desc": "Bibliografie, pliante, foaia cu răspunsuri și bareme.",
+        "news": "Noutăți",
+        "news_desc": "Anunțurile organizatorilor pe parcursul ediției.",
+        "videos": "Videoclipuri",
+        "videos_desc": "Fazele internaționale, în imagini.",
+        "contact": "Contact",
+        "contact_desc": "Scrie organizatorilor concursului."
+      }
+    },
+    "teaser": {
+      "lead": "Studiază Biblia, memorează și concurează: din biserica noastră până la finala internațională.",
+      "cta": "Totul despre concurs"
+    },
+    "slide": {
+      "categories": "{{n}} categorii",
+      "memorization": "Memorare · toate:",
+      "qr": "Scanează: înscriere, categoria ta și versetele",
+      "join": "Înscrieri la"
+    }
+  },
   "website_slide": {
     "block": "Site-ul bisericii",
     "eyebrow": "Toate informațiile",
@@ -320,8 +570,15 @@
       "message": "Mesaj",
       "message_ph": "Scrie aici mesajul tău…",
       "submit": "Trimite mesajul",
-      "note": "Site-ul nu stochează nimic: butonul deschide aplicația ta de e-mail cu mesajul deja scris, ca să rămâi cu o copie a ceea ce trimiți.",
-      "sent": "Ți-am deschis aplicația de e-mail. Dacă nu s-a deschis, scrie-ne direct la adresa de mai jos.",
+      "sending": "Se trimite…",
+      "consent": "Sunt de acord ca Biserica Elim să folosească datele mele doar pentru a răspunde acestui mesaj. Se trimit pe e-mail bisericii printr-un serviciu securizat (Web3Forms) și nu se folosesc în alt scop.",
+      "error_send": "Nu am putut trimite mesajul. Verifică conexiunea și încearcă din nou sau scrie-ne direct la",
+      "error_unavailable": "Trimiterea de pe site nu este disponibilă momentan. Scrie-ne direct la",
+      "done_title": "Mulțumim, {{name}}! Mesajul tău a fost trimis.",
+      "done_text": "L-am primit și îți vom răspunde cât mai curând pe e-mail la",
+      "done_hint": "Dacă în câteva zile nu vezi răspunsul nostru, verifică și dosarul spam sau mesaje nedorite.",
+      "done_again": "Trimite alt mesaj",
+      "note": "Mesajul tău ajunge direct în e-mailul bisericii. Îți răspundem pe e-mail.",
       "error_name": "Spune-ne cum te numești.",
       "error_email": "Verifică adresa de e-mail.",
       "error_message": "Scrie cel puțin câteva cuvinte."
@@ -451,6 +708,8 @@
     "family_prayer_desc": "Familiile săptămânii și motivele lor",
     "prayer_causes": "Cauze de rugăciune",
     "prayer_causes_desc": "Pentru ce ne rugăm ca biserică",
+    "talent_contest": "Talantul în Negoț",
+    "talent_contest_desc": "Concursul biblic: faze, categorii și materiale",
     "panel_next": "Ce urmează",
     "panel_visit": "Vrei să ne vizitezi?",
     "panel_visit_lead": "Te așteptăm la oricare dintre serviciile noastre. Intrarea e liberă și nu trebuie să anunți pe nimeni — vino așa cum ești.",
@@ -510,6 +769,10 @@
     "projection": {
       "title": "Proiecție",
       "description": "Fereastra de proiecție pentru ecranul bisericii."
+    },
+    "talent_contest": {
+      "title": "Talantul în Negoț 2027 · Concurs biblic",
+      "description": "Tot ce trebuie ca să participi la concursul biblic Talantul în Negoț 2027 cu Biserica Elim Arganda: faze și date, categorii, cărți și versete, testul și materialele oficiale."
     }
   },
   "home": {

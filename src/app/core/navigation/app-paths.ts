@@ -30,6 +30,8 @@ export const APP_PATHS = {
   familyPrayer: 'rugaciune-pentru-familii',
   /** Cauzele Bisericii Elim: la lista vigente de causas de oración. */
   prayerCauses: 'cauze-de-rugaciune',
+  /** Talantul în Negoț: el concurso bíblico, contado para quien quiera participar. */
+  talentContest: 'talantul-in-negot',
   /** Página de contacto: formulario, datos directos y cómo llegar. */
   contact: 'contact',
   /** Donativos: transferencia bancaria y por qué se dona. */
@@ -65,6 +67,8 @@ export const STAGE_BLOCK_SLUGS = {
   bible: 'citirea-bibliei',
   families: 'rugaciune-pentru-familii',
   causes: 'cauze-de-rugaciune',
+  // Web: `/media/talantul-in-negot` redirige a la página del concurso.
+  talent: 'talantul-in-negot',
   // Sólo proyección (en la web ya se está en el sitio): `/media/site` → portada.
   website: 'site',
   location: 'locatie',

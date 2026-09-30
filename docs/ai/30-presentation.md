@@ -138,6 +138,7 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 | `bible`         | `BibleBlockComponent`        | `BibleReadingService.hasReading()`   |
 | `website`       | `WebsiteBlockComponent`      | siempre — «Toate informațiile, pe site»: el QR grande, al final de la vuelta (ver «Lienzo») |
 | `causes`        | `CausesBlockComponent`       | lista no vacía — toda la lista en una diapositiva (`docs/ai/37-prayer-causes.md`) |
+| `talent`        | `TalentBlockComponent`       | queda alguna fase por delante (`TalentContestService.focusPhase`) — cartel de Talantul în Negoț a sangre: fases, categorías, cuenta atrás y QR a `/talantul-in-negot` (`docs/ai/38-talent-contest.md`) |
 | `families`      | `FamilyBlockComponent`       | `FamilyPrayerService.hasCurrent()` — resumen (mosaico de fotos) + una diapositiva por familia, detrás de los anuncios (`docs/ai/36-family-prayer.md`) |
 | `socials`  | `SocialsBlockComponent`  | `socials.length > 0`               |
 | `streams`  | `StreamsBlockComponent`  | siempre                            |

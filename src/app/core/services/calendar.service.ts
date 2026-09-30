@@ -2,6 +2,19 @@ import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent } from '../church.config';
 import { LoggerService } from './logger.service';
+import { addDays, parseIsoDate, toIsoDate } from '../util/iso-date';
+
+/** Evento de día completo para `CalendarService.downloadAllDay`. */
+export interface AllDayEntry {
+  readonly id: string;
+  /** Primer día (`YYYY-MM-DD`). */
+  readonly start: string;
+  /** Último día (inclusivo), si dura más de uno. */
+  readonly end?: string;
+  readonly title: string;
+  readonly description: string;
+  readonly url?: string;
+}
 
 /**
  * `CalendarService` — generación de archivos `.ics` (RFC 5545) y URLs
@@ -42,6 +55,47 @@ export class CalendarService {
       this.t('calendar.calendar_name', 'Biserica Elim Arganda · Evenimente')
     );
     this.triggerDownload(ics, 'elim-arganda-evenimente.ics');
+  }
+
+  /**
+   * Descarga eventos **de día completo** (sin hora ni sitio fijo) como un
+   * único `.ics`: p. ej. las fases de «Talantul în Negoț», cuya sede decide
+   * cada organización. `end` (inclusivo) sólo si dura más de un día. Cada
+   * evento avisa el día anterior a las 18:00.
+   */
+  downloadAllDay(entries: readonly AllDayEntry[], calendarName: string, fileName: string): void {
+    const now = this.formatUtc(new Date());
+    const lines: string[] = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      `PRODID:${CalendarService.PRODID}`,
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      `X-WR-CALNAME:${this.escape(calendarName)}`,
+    ];
+    for (const entry of entries) {
+      // DTEND de un evento de día completo es EXCLUSIVO (RFC 5545 §3.6.1).
+      const endExclusive = addDays(parseIsoDate(entry.end ?? entry.start), 1);
+      lines.push(
+        'BEGIN:VEVENT',
+        `UID:${this.slug(entry.id)}-${entry.start.replace(/-/g, '')}@elim-arganda`,
+        `DTSTAMP:${now}`,
+        `DTSTART;VALUE=DATE:${entry.start.replace(/-/g, '')}`,
+        `DTEND;VALUE=DATE:${toIsoDate(endExclusive).replace(/-/g, '')}`,
+        `SUMMARY:${this.escape(entry.title)}`,
+        `DESCRIPTION:${this.escape(entry.description)}`,
+        ...(entry.url ? [`URL:${this.escape(entry.url)}`] : []),
+        'TRANSP:TRANSPARENT',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        `DESCRIPTION:${this.escape(entry.title)}`,
+        'TRIGGER:-PT6H',
+        'END:VALARM',
+        'END:VEVENT',
+      );
+    }
+    lines.push('END:VCALENDAR');
+    this.triggerDownload(this.foldLines(lines).join('\r\n') + '\r\n', fileName);
   }
 
   /**

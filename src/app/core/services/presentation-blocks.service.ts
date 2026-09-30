@@ -5,6 +5,7 @@ import { BibleReadingService } from './bible-reading.service';
 import { FamilyPrayerService, PrayerFamilyView, PrayerWeekView } from './family-prayer.service';
 import { ClockService } from './clock.service';
 import { PrayerCausesService } from './prayer-causes.service';
+import { TalentContestService } from './talent-contest.service';
 import { toIsoDate } from '../util/iso-date';
 import { PresentationDisplayService } from './presentation-display.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
@@ -20,6 +21,7 @@ export type PresentationBlockId =
   | 'bible'
   | 'families'
   | 'causes'
+  | 'talent'
   | 'website';
 
 /** Preferencia manual del operador. `null` ⇒ decide la regla automática. */
@@ -151,6 +153,8 @@ const BLOCK_DEFS: readonly PresentationBlockDef[] = [
   { id: 'gallery', titleKey: 'gallery.title' },
   { id: 'weekly', titleKey: 'weekly.title' },
   { id: 'upcoming', titleKey: 'upcoming.title' },
+  // Talantul în Negoț: tras los eventos (es otro «lo que viene») y antes del QR.
+  { id: 'talent', titleKey: 'talent_contest.title' },
   // El QR, al final de la vuelta: «todo esto está en la web».
   { id: 'website', titleKey: 'website_slide.block' },
 ];
@@ -183,6 +187,7 @@ export class PresentationBlocksService {
   private readonly bible = inject(BibleReadingService);
   private readonly familyPrayer = inject(FamilyPrayerService);
   private readonly prayerCauses = inject(PrayerCausesService);
+  private readonly talentContest = inject(TalentContestService);
   private readonly display = inject(PresentationDisplayService);
   private readonly clock = inject(ClockService);
 
@@ -305,6 +310,8 @@ export class PresentationBlocksService {
     bible: this.bible.hasReading(),
     families: this.familyPrayer.hasCurrent(),
     causes: this.prayerCauses.hasCauses,
+    // Mientras quede alguna fase por delante (o se esté celebrando).
+    talent: this.talentContest.focusPhase() !== null,
     website: true,
   }));
 

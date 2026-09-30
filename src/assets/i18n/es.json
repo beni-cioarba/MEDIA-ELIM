@@ -252,6 +252,256 @@
     "lead": "Por qué oramos como iglesia: por nombre, por quienes atraviesan pruebas, y por las causas que llevamos juntos delante de Dios.",
     "updated": "Lista actualizada el {{date}}"
   },
+  "talent_contest": {
+    "eyebrow": "Concurso bíblico · Edición {{edition}}",
+    "title": "Talantul în Negoț",
+    "lead": "El concurso que reta a niños, adolescentes, jóvenes y adultos a estudiar la Biblia en serio, guardarla en el corazón y vivirla. Empieza en nuestra iglesia y puede llevarte hasta la final internacional.",
+    "cta_join": "Quiero participar",
+    "cta_study": "Ver mi categoría",
+    "join_message": "Hola, quiero participar en Talantul în Negoț {{edition}}. Categoría: {{category}}.",
+    "parable": "Inspirado en la parábola de los talentos · {{ref}}",
+    "stats": {
+      "countries": "países",
+      "churches": "iglesias",
+      "participants": "participantes en {{year}}"
+    },
+    "countdown": {
+      "next": "Próxima fase",
+      "live": "Se celebra hoy",
+      "days_one": "día",
+      "days_other": "días",
+      "today": "Hoy",
+      "closed": "La edición {{edition}} ha terminado. Pronto, la siguiente."
+    },
+    "phases": {
+      "title": "Cinco fases, un solo camino",
+      "church": "Iglesia",
+      "county": "Provincial",
+      "regional": "Regional",
+      "national": "Nacional",
+      "international": "Internacional",
+      "church_desc": "Aquí empieza todo: en nuestra iglesia.",
+      "county_desc": "Con los clasificados de las iglesias de la zona.",
+      "regional_desc": "Los mejores de cada zona, por regiones.",
+      "national_desc": "Los mejores de cada región.",
+      "international_desc": "Rumanía y la diáspora, juntos, en la final.",
+      "status_done": "Hecha",
+      "status_live": "Hoy",
+      "status_next": "Siguiente",
+      "add_calendar": "Añadir las fases a mi calendario",
+      "diaspora_note": "En la diáspora, las fases las coordina el líder nacional: la sede y la hora de cada una te las confirmamos al inscribirte."
+    },
+    "calendar": {
+      "name": "Talantul în Negoț {{edition}}",
+      "event": "Talantul în Negoț · {{phase}}",
+      "description": "Concurso bíblico Talantul în Negoț {{edition}}. Tu categoría, libros y versículos: {{url}}"
+    },
+    "category": {
+      "eyebrow": "Tu preparación",
+      "title": "Qué tienes que estudiar",
+      "picker": "Elige tu categoría",
+      "books": "Libros para estudiar",
+      "verses": "Versículos para memorizar",
+      "memorization": "Memorización · todas",
+      "ages_note": "La edad es orientativa: la categoría la marca el curso escolar y el líder te confirma cuál te corresponde.",
+      "copy": "Copiar los versículos",
+      "language_note": "El concurso es en rumano, con la Biblia {{version}}: los textos se estudian así."
+    },
+    "categories": {
+      "p-1": {
+        "name": "Preescolar – 1.º",
+        "ages": "hasta 7 años"
+      },
+      "2-3": {
+        "name": "2.º – 3.º curso",
+        "ages": "8 – 9 años"
+      },
+      "4-5": {
+        "name": "4.º – 5.º curso",
+        "ages": "10 – 11 años"
+      },
+      "6-7": {
+        "name": "6.º – 7.º curso",
+        "ages": "12 – 13 años"
+      },
+      "8-9": {
+        "name": "8.º – 9.º curso",
+        "ages": "14 – 15 años"
+      },
+      "10-11": {
+        "name": "10.º – 11.º curso",
+        "ages": "16 – 17 años"
+      },
+      "18-35": {
+        "name": "18 – 35 años",
+        "ages": "jóvenes y adultos"
+      },
+      "35-plus": {
+        "name": "35+ años",
+        "ages": "cumplidos antes del {{date}}"
+      }
+    },
+    "exam": {
+      "eyebrow": "El día del concurso",
+      "title": "Dos secciones, un examen claro",
+      "classic": "Clásico",
+      "classic_desc": "Examen escrito sobre los libros y los versículos de tu categoría.",
+      "memorization": "Memorización de la Escritura",
+      "memorization_desc": "Escribes de memoria {{passage}}, el mismo pasaje para todas las categorías. Se corrige versículo a versículo, palabra a palabra.",
+      "points": "{{points}} puntos",
+      "parts": {
+        "true_false": "Verdadero / falso",
+        "single": "Una respuesta",
+        "match": "Relacionar",
+        "multiple": "Respuesta múltiple",
+        "order": "Ordenar versículos"
+      },
+      "parts_desc": {
+        "true_false": "{{n}} afirmaciones",
+        "single": "{{n}} preguntas, 3 opciones",
+        "match": "{{n}} parejas",
+        "multiple": "{{n}} preguntas: una, varias o ninguna",
+        "order": "3 versículos en 5 fragmentos"
+      },
+      "per_item": "{{p}} p c/u",
+      "sheet_title": "La hoja de respuestas",
+      "sheet_tips": [
+        "Rellena solo el interior de los círculos, sin salirte.",
+        "Escribe los datos de la cabecera completos y con letra clara.",
+        "Para corregir, solo goma: borra del todo la respuesta equivocada.",
+        "No hagas otras marcas: la hoja se corrige con escáner."
+      ]
+    },
+    "benefits": {
+      "eyebrow": "Por qué merece la pena",
+      "title": "Lo que te llevas",
+      "items": [
+        {
+          "title": "Conocer la Biblia",
+          "text": "Aprendes sus enseñanzas y sus principios morales y éticos."
+        },
+        {
+          "title": "Una fe más firme",
+          "text": "Conocer la Palabra ahonda tu relación con Dios."
+        },
+        {
+          "title": "Comunidad",
+          "text": "Te preparas y compites junto a otros: se crean lazos."
+        },
+        {
+          "title": "Mejor memoria",
+          "text": "Memorizar versículos entrena la memoria y la atención."
+        },
+        {
+          "title": "Aprender con retos",
+          "text": "La competición hace el estudio interactivo y apasionante."
+        },
+        {
+          "title": "Premios y reconocimiento",
+          "text": "Los ganadores reciben premios y el reconocimiento de la comunidad."
+        },
+        {
+          "title": "Pensamiento crítico",
+          "text": "Las preguntas te enseñan a pensar y a analizar."
+        },
+        {
+          "title": "Compartir la fe",
+          "text": "Lo que aprendes te sirve para hablar de Dios con otros."
+        }
+      ]
+    },
+    "how": {
+      "eyebrow": "Paso a paso",
+      "title": "Cómo participar",
+      "steps": [
+        {
+          "title": "Dinos que te apuntas",
+          "text": "Llama o escribe por WhatsApp a Simona Pintilei o a Mari Dobre: ellas te inscriben en la plataforma oficial del concurso."
+        },
+        {
+          "title": "Estudia tu categoría",
+          "text": "Libros y versículos de tu categoría; si quieres, también la memorización. Un poco cada día."
+        },
+        {
+          "title": "Primera fase: {{date}}",
+          "text": "El primer examen es en la iglesia, con tu hoja de respuestas."
+        },
+        {
+          "title": "Sigue avanzando",
+          "text": "Si te clasificas, pasas a la siguiente fase, hasta la final internacional."
+        }
+      ],
+      "mindset": [
+        "Céntrate en el proceso, no en el resultado.",
+        "¿No te clasificas? Cada año tienes una nueva oportunidad.",
+        "Siempre gana quien participa: la Palabra aprendida da fruto."
+      ]
+    },
+    "resources": {
+      "eyebrow": "Para estudiar",
+      "title": "Materiales oficiales",
+      "bibliography": "Bibliografía {{edition}}",
+      "bibliography_desc": "Libros y versículos de todas las categorías.",
+      "brochure": "Folleto {{edition}}",
+      "brochure_desc": "Fases, categorías y beneficios en una hoja.",
+      "answer_sheet": "Hoja de respuestas",
+      "answer_sheet_desc": "El modelo oficial, para practicar en casa.",
+      "memorization_key": "Baremo de memorización",
+      "memorization_key_desc": "{{passage}}, con las palabras que cuentan en la corrección.",
+      "exam_keys": "Exámenes 2026 con soluciones",
+      "exam_keys_desc": "Los de la fase internacional: el mejor entrenamiento.",
+      "kind_drive": "Google Drive",
+      "kind_pdf": "PDF",
+      "website": "Web oficial",
+      "rules_soon": "El reglamento {{edition}} se publicará próximamente en la web oficial."
+    },
+    "videos": {
+      "eyebrow": "Fase internacional {{year}}",
+      "title": "Así se vive",
+      "all": "Todos los vídeos",
+      "watch": "Ver en YouTube: {{title}}"
+    },
+    "enroll": {
+      "label": "Las inscripciones las hacen",
+      "call": "Llamar a {{name}}",
+      "whatsapp": "Escribir por WhatsApp a {{name}}"
+    },
+    "final": {
+      "title": "¿Te apuntas?",
+      "text": "Llama o escribe por WhatsApp a una de las educadoras y te inscribe en tu categoría. Estudiar la Palabra siempre merece la pena.",
+      "verse": "«En mi corazón he guardado tus dichos, para no pecar contra ti.»",
+      "verse_ref": "Salmo 119:11"
+    },
+    "official": {
+      "eyebrow": "Web oficial",
+      "title": "¿Quieres saber más?",
+      "text": "Toda la información del concurso, las novedades y los materiales de cada edición están en la web oficial de Talantul în Negoț.",
+      "cta": "Ir a la web oficial",
+      "external": "Se abre en una pestaña nueva",
+      "links": {
+        "about": "Sobre el proyecto",
+        "about_desc": "Qué es, en qué se inspira y cómo se organiza.",
+        "resources": "Recursos",
+        "resources_desc": "Bibliografía, folletos, hoja de respuestas y baremos.",
+        "news": "Novedades",
+        "news_desc": "Avisos de la organización durante la edición.",
+        "videos": "Vídeos",
+        "videos_desc": "Las fases internacionales, en imágenes.",
+        "contact": "Contacto",
+        "contact_desc": "Escribe a la organización del concurso."
+      }
+    },
+    "teaser": {
+      "lead": "Estudia la Biblia, memoriza y compite: de nuestra iglesia a la final internacional.",
+      "cta": "Todo sobre el concurso"
+    },
+    "slide": {
+      "categories": "{{n}} categorías",
+      "memorization": "Memorización · todas:",
+      "qr": "Escanea: inscripción, tu categoría y los versículos",
+      "join": "Inscripciones con"
+    }
+  },
   "website_slide": {
     "block": "Web de la iglesia",
     "eyebrow": "Toda la información",
@@ -320,8 +570,15 @@
       "message": "Mensaje",
       "message_ph": "Escribe aquí tu mensaje…",
       "submit": "Enviar el mensaje",
-      "note": "La web no guarda nada: el botón abre tu aplicación de correo con el mensaje ya escrito, así te queda copia de lo que envías.",
-      "sent": "Hemos abierto tu aplicación de correo. Si no se ha abierto, escríbenos directamente a la dirección de abajo.",
+      "sending": "Enviando…",
+      "consent": "Acepto que la Iglesia Elim use mis datos solo para responder a este mensaje. Se envían por correo a la iglesia mediante un servicio seguro (Web3Forms) y no se usan para nada más.",
+      "error_send": "No hemos podido enviar tu mensaje. Revisa tu conexión e inténtalo de nuevo, o escríbenos directamente a",
+      "error_unavailable": "El envío desde la web no está disponible en este momento. Escríbenos directamente a",
+      "done_title": "¡Gracias, {{name}}! Tu mensaje está enviado.",
+      "done_text": "Lo hemos recibido y te responderemos lo antes posible por correo electrónico a",
+      "done_hint": "Si en unos días no ves nuestra respuesta, revisa también la carpeta de spam o correo no deseado.",
+      "done_again": "Enviar otro mensaje",
+      "note": "Tu mensaje llega directamente al correo de la iglesia. Te contestaremos por email.",
       "error_name": "Dinos cómo te llamas.",
       "error_email": "Revisa la dirección de correo.",
       "error_message": "Escribe al menos unas palabras."
@@ -451,6 +708,8 @@
     "family_prayer_desc": "Las familias de la semana y sus motivos",
     "prayer_causes": "Motivos de oración",
     "prayer_causes_desc": "Por qué oramos como iglesia",
+    "talent_contest": "Talantul în Negoț",
+    "talent_contest_desc": "Concurso bíblico: fases, categorías y material",
     "panel_next": "Lo próximo",
     "panel_visit": "¿Quieres visitarnos?",
     "panel_visit_lead": "Te esperamos en cualquiera de nuestros cultos. La entrada es libre y no hace falta avisar: ven tal y como eres.",
@@ -510,6 +769,10 @@
     "projection": {
       "title": "Proyección",
       "description": "Ventana de proyección para la pantalla del templo."
+    },
+    "talent_contest": {
+      "title": "Talantul în Negoț 2027 · Concurso bíblico",
+      "description": "Todo para participar en el concurso bíblico Talantul în Negoț 2027 desde la Iglesia Elim Arganda: fases y fechas, categorías, libros y versículos, examen y materiales oficiales."
     }
   },
   "home": {

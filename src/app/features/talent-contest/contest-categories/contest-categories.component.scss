@@ -1,0 +1,276 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Talantul în Negoț · categorías
+// ---------------------------------------------------------------------
+// Selector de mosaico (nombre + edad) y panel «qué estudio»: resumen a la
+// izquierda, los diez versículos a la derecha. Densidad por columnas, no
+// por letra pequeña: el texto de los versículos se lee a tamaño de cuerpo.
+// =====================================================================
+
+:host {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+// ---- Selector --------------------------------------------------------
+// Siempre las ocho a la vista: 2 columnas en móvil (4 filas compactas) y 4
+// desde `sm` (2 filas). Antes, en móvil era una tira deslizable con la barra
+// oculta: con ratón no se podía mover, en táctil no se intuía que hubiera más
+// y el ajuste de desplazamiento dejaba la primera cortada contra el borde.
+.tcc__picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+
+@include from('sm') {
+  .tcc__picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.tcc__chip {
+  position: relative;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.9rem 0.75rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  // Arriba: si un nombre ocupa dos líneas («Preșcolari – Clasa 1»), las
+  // demás de su fila no se centran en vertical y todas arrancan alineadas.
+  align-content: start;
+  text-align: start;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color var(--mo-base) var(--ea-standard),
+    background var(--mo-base) var(--ea-standard),
+    box-shadow var(--mo-base) var(--ea-standard);
+
+  // Filete dorado a la izquierda: marca la elegida sin cambiar el tamaño.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--c-gold-soft), var(--c-gold-deep));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--mo-base) var(--ea-standard);
+  }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--c-gold) 45%, var(--c-hairline));
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+
+  &.is-active {
+    border-color: var(--c-primary);
+    background: var(--c-primary);
+    box-shadow: 0 10px 24px -14px rgba(15, 30, 60, 0.55);
+
+    &::before {
+      transform: scaleY(1);
+    }
+
+    .tcc__chip-name {
+      color: var(--c-on-primary);
+    }
+
+    .tcc__chip-ages {
+      color: var(--c-gold-soft);
+    }
+  }
+}
+
+.tcc__chip-name {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--c-primary);
+}
+
+.tcc__chip-ages {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--c-muted);
+}
+
+// ---- Panel -----------------------------------------------------------
+.tcc__panel {
+  display: grid;
+  gap: var(--sp-5);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: 0 1px 2px rgba(15, 30, 60, 0.05), 0 18px 40px -28px rgba(15, 30, 60, 0.3);
+}
+
+@include from('lg') {
+  .tcc__panel {
+    grid-template-columns: minmax(15rem, 19rem) minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .tcc__side {
+    padding-inline-end: clamp(1.5rem, 3vw, 3rem);
+    border-inline-end: 1px solid var(--c-hairline);
+  }
+}
+
+.tcc__side {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-2);
+}
+
+.tcc__kicker {
+  margin: 0 0 var(--sp-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--c-primary);
+}
+
+.tcc__label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.tcc__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.25rem;
+  padding-inline: 0.35rem;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--c-gold) 16%, transparent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.tcc__books {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tcc__book {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--c-primary) 18%, transparent);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--c-primary) 5%, transparent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.tcc__memo {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.tcc__note {
+  margin: var(--sp-2) 0 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+// ---- Versículos --------------------------------------------------------
+.tcc__verses {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.tcc__verses-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+
+  .tcc__label {
+    margin: 0;
+  }
+}
+
+// Dos columnas cuando hay sitio (≥ 40 rem de columna): diez versículos en
+// cinco filas en vez de diez. Rejilla derivada, no por punto de corte.
+.tcc__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+  gap: 0 clamp(1.25rem, 2.5vw, 2.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tcc__verse {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: var(--sp-2);
+  padding-block: var(--sp-3);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.tcc__index {
+  padding-top: 0.15rem;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--c-gold-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.tcc__verse-body {
+  min-width: 0;
+}
+
+.tcc__ref {
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.tcc__text {
+  margin: 0;
+  max-width: none;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--c-text);
+  text-wrap: pretty;
+}
+
+@include motion-reduce {
+  .tcc__chip,
+  .tcc__chip::before {
+    transition: none;
+  }
+}

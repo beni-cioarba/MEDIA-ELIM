@@ -26,6 +26,7 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   families: 20,
   // Una sola diapositiva con toda la lista: da tiempo a leer los nombres.
   causes: 25,
+  talent: 25,
   // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
   website: 15,
 };

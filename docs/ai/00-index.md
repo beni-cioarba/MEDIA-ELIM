@@ -29,6 +29,8 @@ src/app/
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
     family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
+    talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
+    talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -51,6 +53,7 @@ src/app/
       bible-reading.service.ts       Semana del plan de lectura que toca anunciar (la que contiene mañana)
       family-prayer.service.ts       Semana de familias que toca (misma regla), archivo y vistas
       prayer-causes.service.ts       Causas por nombre / por intención
+      talent-contest.service.ts      Talantul în Negoț: fases con estado y cuenta atrás
       presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual) y sus diapositivas
       presentation-display.service.ts QR visible / tamaño del QR / duración por bloque
       presentation-sync.service.ts   ⭐ Canal entre ventanas: elección de líder, estado, órdenes
@@ -69,6 +72,7 @@ src/app/
     announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección)
     family-prayer/          ⭐ Rugăciune pentru familii: página, resumen, ficha, foto entera, acceso desde anuncios
     prayer-causes/          ⭐ Cauzele Bisericii Elim: página + tablero (web y proyección)
+    talent-contest/         ⭐ Talantul în Negoț: página para participantes + selector de categoría
     presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
     styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
     projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)

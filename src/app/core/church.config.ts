@@ -266,6 +266,28 @@ export interface ChurchContact {
   readonly whatsapp: string | null;
   /** Horario de atención, en clave i18n bajo `contact.office.*`. */
   readonly officeHoursKey: string;
+  /** Envío automático del formulario de contacto (ver `ContactFormConfig`). */
+  readonly form: ContactFormConfig;
+}
+
+/**
+ * Envío del formulario de contacto **sin abrir el gestor de correo**.
+ *
+ * La web es estática (GitHub Pages): no hay servidor propio que mande
+ * correos, y una contraseña o clave privada en el bundle sería pública. Se usa
+ * Web3Forms, un servicio de envío para webs estáticas:
+ *  · `accessKey` es **pública por diseño**: sólo permite enviar al buzón con
+ *    el que se creó (el de la iglesia); no da acceso a nada más.
+ *  · El correo llega con «Responder a» = el visitante: se contesta desde el
+ *    propio Gmail, sin copiar direcciones.
+ *
+ * Cómo obtener la clave (una vez): en https://web3forms.com, «Create Access
+ * Key» con el correo de `contact.email`; llega por email y se pega aquí.
+ * Mientras sea `null`, el formulario no envía y ofrece escribir directamente.
+ */
+export interface ContactFormConfig {
+  readonly endpoint: string;
+  readonly accessKey: string | null;
 }
 
 /** Una cuenta bancaria de la iglesia para donativos. */
@@ -759,20 +781,6 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       ],
       expiresOn: '2026-09-26',
     },
-    {
-      id: 'talantul_in_negot_2026',
-      title: 'Înscrieri la "Talantul în negoț"',
-      lead:
-        'De astăzi și până duminica viitoare, educatoarele de copii țin deschisă lista de înscrieri. Încurajați copiii, adolescenții și tinerii să participe!',
-      sections: [
-        {
-          heading: 'Înscrierile se fac la educatoarele',
-          kind: 'people',
-          items: [{ label: 'Mari Dobre' }, { label: 'Simona Pintilei' }],
-        },
-      ],
-      expiresOn: '2026-09-27',
-    },
   ],
   // ---------------------------------------------------------------------
   // Ubicación de la iglesia. `mapsQuery` se usa tanto para el mapa
@@ -802,6 +810,12 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     phoneDisplay: '+34 678 66 89 77',
     whatsapp: '34678668977',
     officeHoursKey: 'contact.office.hours',
+    form: {
+      endpoint: 'https://api.web3forms.com/submit',
+      // TODO(iglesia): pegar la clave de Web3Forms creada con `email` (ver
+      // `ContactFormConfig`). Sin ella, el formulario no puede enviar.
+      accessKey: null,
+    },
   },
 
   // ---------------------------------------------------------------------
