@@ -33,7 +33,7 @@ export interface PrayerCausesList {
 }
 
 export const PRAYER_CAUSES: PrayerCausesList = {
-  updatedOn: '2026-09-28',
+  updatedOn: '2026-10-01',
   causes: [
     {
       id: 'familii',
@@ -51,6 +51,7 @@ export const PRAYER_CAUSES: PrayerCausesList = {
         'Alex Popițan',
         'Marcos Zăgrean',
         'Raúl García',
+        'Marius Răduț',
       ],
     },
     {
