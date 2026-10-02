@@ -411,21 +411,54 @@
 // ---------------------------------------------------------------------
 // Franja legal
 // ---------------------------------------------------------------------
-// Dos grupos, no cuatro piezas sueltas: a la izquierda lo legal (© y
-// versión); a la derecha las herramientas y la marca del colaborador.
+// Rejilla con áreas, no flex que envuelve: con el botón «Instalar» y el
+// sello «100 %» las piezas ya no caben en una fila, y dejar que el flex
+// decida partía el © por la mitad y colgaba el separador en móvil (medido
+// el 01/10/2026). Así cada pieza tiene su sitio fijo en cada ancho:
+//
+//   ≥ lg   © ……………………………   [acciones] │ INEB
+//          v2.0 · ▭▯▯ 100%
+//
+//   < lg   © ……………………………………………………
+//          v2.0 · ▭▯▯ 100%            INEB
+//          [Instalar] ↑ ⇪ ▶ 🎨
 .footer__legal {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'copy copy'
+    'meta partner'
+    'actions actions';
   align-items: center;
-  gap: var(--sp-2) var(--sp-5);
+  gap: var(--sp-2) var(--sp-4);
   padding-block-start: var(--sp-3);
   border-block-start: 1px solid rgba(247, 250, 252, 0.12);
   font-size: 0.8rem;
   color: rgba(247, 250, 252, 0.55);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas:
+      'copy actions sep partner'
+      'meta actions sep partner';
+    row-gap: var(--sp-1);
+    column-gap: var(--sp-5);
+  }
 }
 
 .footer__copy {
-  margin: 0 auto 0 0;
+  grid-area: copy;
+  margin: 0;
+  text-wrap: balance;
+}
+
+// Metadatos técnicos: píldoras tenues en fila, alineadas al borde del ©.
+.footer__meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
 }
 
 // Acciones compactas: círculos de 34 px, tenues en reposo y dorados al
@@ -433,7 +466,9 @@
 // compartir, proyección, guía) y con nombre en el tooltip; como texto
 // competían con el aviso legal. El dock flotante se retira mientras se ven.
 .footer__actions-bar {
+  grid-area: actions;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2);
 }
@@ -484,9 +519,15 @@
 
 // Separa las acciones de la marca del colaborador.
 .footer__sep {
+  grid-area: sep;
+  display: none;
   width: 1px;
   height: 1.5rem;
   background: rgba(247, 250, 252, 0.16);
+
+  @include from('lg') {
+    display: block;
+  }
 }
 
 // Dato técnico, no editorial: se marca como tal con una píldora tenue para
@@ -495,7 +536,6 @@
 .footer__version {
   position: relative;
   display: inline-block;
-  margin-inline-start: var(--sp-2);
   padding: 0.1em 0.5em;
   border: 1px solid rgba(247, 250, 252, 0.16);
   border-radius: var(--r-pill);
@@ -582,6 +622,8 @@
 }
 
 .footer__partner {
+  grid-area: partner;
+  justify-self: end;
   display: inline-flex;
   align-items: center;
   border-radius: var(--r-xs);
@@ -604,12 +646,6 @@
 
   &:focus-visible {
     @include focus-ring(3px);
-  }
-}
-
-@include until('md') {
-  .footer__legal {
-    justify-content: flex-start;
   }
 }
 

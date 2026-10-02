@@ -1,0 +1,29 @@
+<span
+  class="fit"
+  tabindex="0"
+  role="img"
+  aria-describedby="device-fit-detail"
+  [attr.aria-label]="'device_fit.label' | translate"
+>
+  <span class="fit__devices" aria-hidden="true">
+    @for (device of devices; track device.id) {
+      <app-icon
+        class="fit__device"
+        [class.fit__device--on]="current() === device.id"
+        [name]="device.icon"
+      />
+    }
+  </span>
+  <span class="fit__value" aria-hidden="true">100%</span>
+
+  <span class="fit__tip" id="device-fit-detail" role="tooltip">
+    <b class="fit__tip-title">{{ 'device_fit.title' | translate }}</b>
+    <span class="fit__tip-row">{{ 'device_fit.devices' | translate }}</span>
+    @if (current(); as now) {
+      <span class="fit__tip-row fit__tip-row--now">
+        {{ 'device_fit.now' | translate }}
+        <b>{{ 'device_fit.' + now | translate }} · {{ width() }} px</b>
+      </span>
+    }
+  </span>
+</span>

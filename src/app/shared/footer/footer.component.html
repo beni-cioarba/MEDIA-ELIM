@@ -132,6 +132,11 @@
       <p class="footer__copy">
         © {{ year }} {{ 'footer.church' | translate }} ·
         {{ 'footer.rights' | translate }}
+      </p>
+
+      <!-- Metadatos técnicos (versión y sello «100 % adaptable») en su propia
+           fila: así el © no se parte por ellos y la rejilla los coloca. -->
+      <div class="footer__meta">
 
         <!--
           Versión visible = semver manual (package.json). El detalle técnico
@@ -166,7 +171,11 @@
             </span>
           </span>
         </span>
-      </p>
+
+        <!-- Sello «100 % adaptable»: ordenador · tableta · teléfono, con la
+             maqueta que se está viendo encendida en vivo. -->
+        <app-device-fit />
+      </div>
 
       <!-- Acciones compactas (iconos, con nombre en tooltip y para el lector
            de pantalla): las mismas del dock flotante —volver arriba,
@@ -174,6 +183,9 @@
            herramientas (panel de control, guía de estilos). Mismo patrón que
            el pie de Administrativ. -->
       <div class="footer__actions-bar" role="group" [attr.aria-label]="'footer.tools' | translate">
+        <!-- «Instalar»: sólo existe si la web no está instalada y la
+             plataforma lo permite (se pinta vacío en el resto de casos). -->
+        <app-install-app />
         <button
           type="button"
           class="footer__icon-btn"

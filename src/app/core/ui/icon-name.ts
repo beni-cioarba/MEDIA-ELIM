@@ -44,4 +44,12 @@ export type IconName =
   | 'menu'
   | 'close'
   | 'fullscreen'
-  | 'fullscreen-exit';
+  | 'fullscreen-exit'
+  | 'install-app'
+  | 'device-desktop'
+  | 'device-tablet'
+  | 'device-phone'
+  | 'share-ios'
+  | 'more-vert'
+  | 'more-horiz'
+  | 'add-box';

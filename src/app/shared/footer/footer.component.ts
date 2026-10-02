@@ -22,6 +22,8 @@ import { InebLogoComponent } from '../ineb-logo/ineb-logo.component';
 import { SocialIconComponent } from '../social-icon/social-icon.component';
 import { ShareButtonComponent } from '../share-button/share-button.component';
 import { DockOverlapService } from '../floating-actions/dock-overlap.service';
+import { DeviceFitComponent } from '../device-fit/device-fit.component';
+import { InstallAppComponent } from '../install-app/install-app.component';
 
 /** Parte del pie a la vista a partir de la cual el dock flotante se retira. */
 const VISIBLE_RATIO = 0.3;
@@ -67,6 +69,8 @@ interface FooterColumn {
         InebLogoComponent,
         SocialIconComponent,
         ShareButtonComponent,
+        DeviceFitComponent,
+        InstallAppComponent,
     ],
     templateUrl: './footer.component.html',
     styleUrl: './footer.component.scss'

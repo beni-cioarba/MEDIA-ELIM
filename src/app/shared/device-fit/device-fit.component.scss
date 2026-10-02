@@ -1,0 +1,155 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Sello «100 % adaptable»
+// ---------------------------------------------------------------------
+// Píldora gemela de la de versión (mismo alto, filete y tono) para que la
+// franja legal lea como una sola fila de metadatos. Lo único que brilla es
+// el glifo de la maqueta activa: oro con halo, como un indicador encendido.
+// =====================================================================
+
+$gold: #d4af37;
+
+:host {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.fit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.18em 0.55em 0.18em 0.5em;
+  border: 1px solid rgba(247, 250, 252, 0.16);
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: rgba(247, 250, 252, 0.45);
+  white-space: nowrap;
+  cursor: help;
+  transition:
+    color var(--mo-base) var(--ea-standard),
+    border-color var(--mo-base) var(--ea-standard);
+
+  &:hover,
+  &:focus-visible {
+    color: rgba(247, 250, 252, 0.85);
+    border-color: rgba(247, 250, 252, 0.32);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.fit__devices {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  font-size: 1.15em; // glifos a ~13 px: el mínimo en que se distinguen
+}
+
+.fit__device {
+  --elim-icon-stroke: 2;
+  color: rgba(247, 250, 252, 0.38);
+  transition:
+    color var(--mo-slow, 400ms) var(--ea-standard),
+    filter var(--mo-slow, 400ms) var(--ea-standard);
+}
+
+.fit__device--on {
+  color: var(--c-gold-soft);
+  filter: drop-shadow(0 0 3px rgba($gold, 0.75));
+}
+
+.fit__value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+// Tooltip propio (mismo criterio que el de la versión: sin MatTooltip en un
+// chunk diferido). Invisible y sin capturar el puntero mientras está cerrado.
+.fit__tip {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 50%;
+  z-index: var(--z-content);
+  display: grid;
+  gap: 0.2rem;
+  min-width: max-content;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid rgba(247, 250, 252, 0.14);
+  border-radius: var(--r-sm);
+  background: var(--c-primary-darkest);
+  box-shadow: var(--e-3);
+  color: rgba(247, 250, 252, 0.6);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  text-align: start;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 0.25rem);
+  pointer-events: none;
+  transition:
+    opacity var(--mo-fast) var(--ea-standard),
+    transform var(--mo-fast) var(--ea-decelerate),
+    visibility var(--mo-fast);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    border: 0.35rem solid transparent;
+    border-block-end-width: 0;
+    border-block-start-color: var(--c-primary-darkest);
+    transform: translateX(-50%);
+  }
+
+  .fit:hover &,
+  .fit:focus-visible & {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+
+  b {
+    font-weight: 600;
+    color: rgba(247, 250, 252, 0.92);
+  }
+
+  // En pantallas estrechas el sello queda cerca del borde izquierdo: el
+  // tooltip se ancla a su izquierda en vez de centrarse (no se sale).
+  @include until('sm') {
+    left: 0;
+    transform: translate(0, 0.25rem);
+
+    &::after {
+      left: 1.25rem;
+    }
+
+    .fit:hover &,
+    .fit:focus-visible & {
+      transform: translate(0, 0);
+    }
+  }
+}
+
+.fit__tip-title {
+  font-size: 0.74rem;
+}
+
+.fit__tip-row--now b {
+  color: var(--c-gold-soft);
+}
+
+@include motion-reduce {
+  .fit,
+  .fit__device,
+  .fit__tip {
+    transition: none;
+  }
+}

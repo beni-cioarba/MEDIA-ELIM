@@ -186,6 +186,39 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   // de pantalla completa del escenario, para que se reconozca en el panel.
   fullscreen: ['M4 9V4h5', 'M20 9V4h-5', 'M4 15v5h5', 'M20 15v5h-5'],
   'fullscreen-exit': ['M9 4v5H4', 'M15 4v5h5', 'M9 20v-5H4', 'M15 20v-5h5'],
+  // Instalar la web como app: teléfono con flecha de descarga (pie).
+  'install-app': [
+    'M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z',
+    'M12 7v7',
+    'm9 11 3 3 3-3',
+  ],
+  // Familia de dispositivos del chip «100 % adaptable». Proporciones
+  // exageradas a propósito (ancho / medio / estrecho) para que se
+  // distingan a 12 px.
+  'device-desktop': [
+    'M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+    'M8 21h8',
+    'M12 17v4',
+  ],
+  'device-tablet': [
+    'M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+    'M11 18h2',
+  ],
+  'device-phone': [
+    'M9 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+    'M11 18h2',
+  ],
+  // Glifos de los navegadores, para que las instrucciones de instalación
+  // muestren el mismo dibujo que la persona tiene que buscar en pantalla:
+  // «Compartir» de Apple (Lucide «share»), menú ⋮ y «Añadir» (+ en caja).
+  'share-ios': ['M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8', 'M16 6l-4-4-4 4', 'M12 2v13'],
+  'more-vert': ['M12 5.6v.8M12 11.6v.8M12 17.6v.8'],
+  'more-horiz': ['M5.6 12h.8M11.6 12h.8M17.6 12h.8'],
+  'add-box': [
+    'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+    'M12 8v8',
+    'M8 12h8',
+  ],
 };
 
 function toSvg(icon: readonly string[] | FilledIcon): string {

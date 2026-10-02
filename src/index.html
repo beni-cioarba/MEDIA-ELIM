@@ -100,6 +100,15 @@
 <body>
   <app-root></app-root>
   <script>
+    // Aviso de instalación de Chromium: puede llegar antes de que arranque
+    // Angular (y del pie, que es diferido). Se guarda aquí y lo recoge
+    // PwaInstallService; preventDefault = lo lanzamos nosotros desde el pie.
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.__elimInstallPrompt = e;
+    });
+  </script>
+  <script>
     // Si la fuente de símbolos ya estaba en caché, el `onload` de arriba
     // puede haberse disparado antes de que existiera <html>. Reafirmamos.
     if (document.fonts) {

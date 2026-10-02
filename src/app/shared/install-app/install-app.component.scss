@@ -1,0 +1,366 @@
+@use 'ds' as *;
+
+// =====================================================================
+// «Instalar la app» — botón del pie + hoja de instrucciones
+// ---------------------------------------------------------------------
+// Línea propia (no catálogo `ui-*`): es la única llamada a la acción de la
+// franja legal y tiene que distinguirse de los iconos tenues que la rodean
+// sin gritar. Filete degradado oro, texto oro claro y un brillo al apuntar.
+// La hoja es una superficie de cristal navy: en móvil sube desde abajo
+// (donde están el pulgar y los botones del navegador que va a buscar) y en
+// pantallas grandes es una tarjeta centrada.
+// =====================================================================
+
+:host {
+  display: contents;
+}
+
+$gold: #d4af37;
+$ink: rgba(247, 250, 252, 0.92);
+$ink-soft: rgba(247, 250, 252, 0.62);
+$hair: rgba(247, 250, 252, 0.14);
+
+// ---------------------------------------------------------------------
+// Botón
+// ---------------------------------------------------------------------
+.install {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.125rem; // alto de los iconos vecinos: misma línea base visual
+  padding: 0 0.85rem 0 0.7rem;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  // Filete degradado: el fondo del borde es un gradiente y el interior se
+  // repinta con el navy del pie (truco padding-box / border-box).
+  background:
+    linear-gradient(var(--c-primary-deep), var(--c-primary-deep)) padding-box,
+    linear-gradient(120deg, var(--c-gold-soft), rgba($gold, 0.85) 45%, rgba($gold, 0.25))
+      border-box;
+  color: var(--c-gold-soft);
+  font: 600 0.78rem/1 var(--font-sans);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    box-shadow var(--mo-base) var(--ea-standard),
+    color var(--mo-base) var(--ea-standard);
+
+  // Destello que barre el botón al apuntar (sólo con movimiento permitido).
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+    box-shadow:
+      0 0 0 1px rgba($gold, 0.35),
+      0 0 18px -2px rgba($gold, 0.45);
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.7;
+  }
+}
+
+.install__icon {
+  font-size: 1rem;
+}
+
+@include motion-safe {
+  .install:hover::after,
+  .install:focus-visible::after {
+    transition: transform 700ms var(--ea-standard);
+    transform: translateX(110%);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Hoja (dialog nativo)
+// ---------------------------------------------------------------------
+.sheet {
+  // Reset del <dialog>: la caja visible es el panel interior; así el clic en
+  // el propio <dialog> = clic fuera (ver `onDialogClick`).
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $ink;
+  overflow: visible;
+
+  &::backdrop {
+    background: rgba(4, 12, 24, 0.62);
+    backdrop-filter: blur(4px);
+  }
+
+  @include from('sm') {
+    width: min(26rem, calc(100% - 2rem));
+    margin: auto;
+  }
+}
+
+.sheet__panel {
+  position: relative;
+  display: grid;
+  gap: var(--sp-4);
+  max-height: 88dvh;
+  overflow-y: auto;
+  padding: var(--sp-3) var(--sp-4) max(var(--sp-5), calc(env(safe-area-inset-bottom) + var(--sp-3)));
+  border: 1px solid rgba($gold, 0.22);
+  border-block-end: 0;
+  border-radius: 1.25rem 1.25rem 0 0;
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgba($gold, 0.12), transparent 60%),
+    linear-gradient(180deg, rgba(26, 54, 93, 0.97), rgba(10, 24, 42, 0.98));
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 -18px 48px -12px rgba(0, 0, 0, 0.55);
+  font-family: var(--font-sans);
+
+  @include from('sm') {
+    padding: var(--sp-5);
+    border-block-end: 1px solid rgba($gold, 0.22);
+    border-radius: 1.125rem;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06) inset,
+      0 24px 64px -16px rgba(0, 0, 0, 0.6);
+  }
+}
+
+@include motion-safe {
+  .sheet[open] .sheet__panel {
+    animation: sheet-up 280ms var(--ea-decelerate);
+
+    @include from('sm') {
+      animation-name: sheet-pop;
+    }
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-pop {
+  from {
+    transform: translateY(8px) scale(0.97);
+    opacity: 0;
+  }
+}
+
+// Asa: en móvil dice «esto es una hoja» (gesto conocido).
+.sheet__grip {
+  justify-self: center;
+  width: 2.25rem;
+  height: 0.25rem;
+  border-radius: var(--r-pill);
+  background: rgba(247, 250, 252, 0.22);
+
+  @include from('sm') {
+    display: none;
+  }
+}
+
+.sheet__head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+// Icono real de la app: lo mismo que verán en su pantalla de inicio.
+.sheet__app {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 22%;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 6px 16px -6px rgba(0, 0, 0, 0.6);
+}
+
+.sheet__titles {
+  min-width: 0;
+}
+
+.sheet__title {
+  margin: 0;
+  font: 700 1.05rem/1.2 var(--font-display);
+  color: #fff;
+}
+
+.sheet__lead {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: $ink-soft;
+}
+
+.sheet__close {
+  display: inline-grid;
+  place-items: center;
+  align-self: start;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid $hair;
+  border-radius: 50%;
+  background: transparent;
+  color: $ink-soft;
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+    border-color: rgba(247, 250, 252, 0.32);
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+}
+
+// Pasos como línea de tiempo: número oro, texto, y el glifo exacto a buscar
+// (con aspecto de tecla) alineado a la derecha.
+.sheet__steps {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sheet__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 2.5rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.4rem;
+  border: 1px solid rgba(247, 250, 252, 0.07);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.875rem;
+  line-height: 1.35;
+
+  // Hilo que une los números: se lee como una secuencia, no como una lista.
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(50% + 0.75rem);
+    left: calc(0.4rem + 0.75rem - 0.5px);
+    width: 1px;
+    height: calc(100% - 1.5rem + var(--sp-2));
+    background: linear-gradient(rgba($gold, 0.5), rgba($gold, 0.1));
+  }
+}
+
+.sheet__num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-gold-soft), var(--c-gold));
+  color: var(--c-primary-darkest);
+  font: 700 0.75rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 12px -2px rgba($gold, 0.55);
+}
+
+.sheet__text {
+  color: $ink-soft;
+
+  ::ng-deep b {
+    font-weight: 600;
+    color: #fff;
+  }
+}
+
+.sheet__glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border: 1px solid rgba(247, 250, 252, 0.18);
+  border-block-end-width: 2px;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+.sheet__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.sheet__btn {
+  display: inline-flex;
+  flex: 1 1 10rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.75rem; // objetivo táctil
+  padding: 0 var(--sp-4);
+  border: 1px solid rgba(247, 250, 252, 0.2);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font: 600 0.85rem/1 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.09);
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+}
+
+.sheet__btn--primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--c-gold-soft), var(--c-gold));
+  color: var(--c-primary-darkest);
+
+  &:hover {
+    background: linear-gradient(135deg, var(--c-gold-soft), var(--c-gold-soft));
+  }
+}
+
+.sheet__note {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: rgba(247, 250, 252, 0.45);
+  text-align: center;
+}
+
+@include motion-reduce {
+  .install {
+    transition: none;
+  }
+}

@@ -1,0 +1,81 @@
+@if (pwa.available()) {
+  <!-- Control del pie: icono + verbo. Lo justo para entenderse de un vistazo;
+       el nombre completo va al lector de pantalla y al tooltip. -->
+  <button
+    type="button"
+    class="install"
+    [disabled]="busy()"
+    (click)="install()"
+    [attr.aria-label]="'install.cta_long' | translate"
+    [title]="'install.cta_long' | translate"
+    aria-haspopup="dialog"
+  >
+    <app-icon class="install__icon" name="install-app" />
+    <span class="install__label">{{ 'install.cta' | translate }}</span>
+  </button>
+}
+
+<!-- Hoja de instrucciones (sólo cuando no hay diálogo nativo). Siempre en el
+     DOM para que `showModal()` la encuentre; cerrada no ocupa ni se lee. -->
+<dialog
+  #sheet
+  class="sheet"
+  aria-labelledby="install-title"
+  aria-describedby="install-lead"
+  (click)="onDialogClick($event)"
+>
+  <div class="sheet__panel">
+    <span class="sheet__grip" aria-hidden="true"></span>
+
+    <header class="sheet__head">
+      <img class="sheet__app" src="assets/pwa/icon-any-192.png" alt="" width="44" height="44" />
+      <div class="sheet__titles">
+        <h2 class="sheet__title" id="install-title">{{ 'install.title' | translate }}</h2>
+        <p class="sheet__lead" id="install-lead">{{ 'install.lead' | translate }}</p>
+      </div>
+      <button
+        type="button"
+        class="sheet__close"
+        (click)="close()"
+        [attr.aria-label]="'common.close' | translate"
+        [title]="'common.close' | translate"
+      >
+        <app-icon name="close" />
+      </button>
+    </header>
+
+    <ol class="sheet__steps">
+      @for (step of steps(); track step.key; let i = $index) {
+        <li class="sheet__step">
+          <span class="sheet__num" aria-hidden="true">{{ i + 1 }}</span>
+          <span class="sheet__text" [innerHTML]="step.key | translate"></span>
+          @if (step.icon) {
+            <span class="sheet__glyph" aria-hidden="true"><app-icon [name]="step.icon" /></span>
+          }
+        </li>
+      }
+    </ol>
+
+    @if (inApp()) {
+      <div class="sheet__actions">
+        @if (pwa.env.platform === 'android-inapp') {
+          <a class="sheet__btn sheet__btn--primary" [href]="chromeIntent()">
+            <app-icon name="external" />
+            <span>{{ 'install.open_chrome' | translate }}</span>
+          </a>
+        }
+        <button type="button" class="sheet__btn" (click)="copyLink()">
+          <app-icon [name]="copied() ? 'check' : 'copy'" />
+          <span>{{ (copied() ? 'install.link_copied' : 'install.copy_link') | translate }}</span>
+        </button>
+        <span class="u-sr-only" role="status">
+          @if (copied()) {
+            {{ 'install.link_copied' | translate }}
+          }
+        </span>
+      </div>
+    }
+
+    <p class="sheet__note">{{ 'install.note' | translate }}</p>
+  </div>
+</dialog>

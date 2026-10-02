@@ -555,6 +555,45 @@
     "call": "Sună la telefon",
     "whatsapp": "Scrie pe WhatsApp"
   },
+  "install": {
+    "cta": "Instalează",
+    "cta_long": "Instalează aplicația pe dispozitiv",
+    "title": "Instalează Elim Arganda",
+    "lead": "Pe ecranul principal, ca o aplicație: se deschide dintr-o atingere, fără magazin de aplicații.",
+    "note": "Gratuită și fără date personale. O poți șterge oricând, ca pe orice aplicație.",
+    "open_chrome": "Deschide în Chrome",
+    "copy_link": "Copiază linkul",
+    "link_copied": "Link copiat",
+    "step": {
+      "ios26_more": "Atinge <b>⋯</b> în bara Safari",
+      "ios_share": "Alege <b>Partajează</b>",
+      "ios_share_bar": "Atinge <b>Partajează</b> în bara Safari (jos pe iPhone, sus pe iPad)",
+      "add_home": "Alege <b>Adaugă pe ecranul principal</b> (derulează lista dacă nu se vede)",
+      "confirm": "Confirmă cu <b>Adaugă</b> sau <b>Instalează</b>",
+      "ios_chrome_share": "Atinge <b>Partajează</b> în bara de adrese",
+      "ios_firefox_share": "Deschide meniul <b>☰</b> și alege <b>Partajează</b>",
+      "ios_edge_share": "Deschide meniul <b>⋯</b> și alege <b>Partajează</b>",
+      "inapp_open_ios": "Această aplicație nu permite instalarea: deschide meniul ei (<b>⋯</b>) și alege <b>Deschide în Safari</b>, sau copiază linkul și lipește-l în Safari",
+      "inapp_open_android": "Această aplicație nu permite instalarea: deschide pagina în <b>Chrome</b> cu butonul de mai jos",
+      "inapp_then": "Acolo, atinge din nou <b>Instalează</b> din subsolul paginii",
+      "samsung_menu": "Deschide meniul <b>☰</b> din bara de jos",
+      "samsung_add": "Alege <b>Adaugă pagina la</b> → <b>Ecran de pornire</b>",
+      "android_menu": "Deschide meniul browserului <b>⋮</b>",
+      "android_install": "Alege <b>Instalează aplicația</b> sau <b>Adaugă pe ecranul de pornire</b>",
+      "firefox_install": "Alege <b>Instalează</b> (sau <b>Adaugă pe ecranul de pornire</b>)",
+      "mac_dock": "În Safari: <b>Fișier</b> → <b>Adaugă în Dock</b>",
+      "desktop": "Apasă iconul de instalare din bara de adrese sau, în meniul browserului, <b>Instalează aplicația</b>"
+    }
+  },
+  "device_fit": {
+    "label": "Site adaptat 100 %: calculator, tabletă și telefon",
+    "title": "Adaptat 100 %",
+    "devices": "Calculator · Tabletă · Telefon",
+    "now": "Acum:",
+    "desktop": "Calculator",
+    "tablet": "Tabletă",
+    "phone": "Telefon"
+  },
   "common": {
     "copy": "Copiază",
     "copied": "Copiat",
@@ -660,7 +699,7 @@
       "note": "Ai nevoie de o dovadă a donației? Scrie-ne și ți-o trimitem.",
       "concept": "La „Concept” poți scrie, de exemplu:",
       "concepts": [
-        "Zeciuială",
+        "Zeciuială / Cotizație",
         "Dar",
         "Ajutor social"
       ]

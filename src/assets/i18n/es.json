@@ -555,6 +555,45 @@
     "call": "Llamar por teléfono",
     "whatsapp": "Escribir por WhatsApp"
   },
+  "install": {
+    "cta": "Instalar",
+    "cta_long": "Instalar la app en tu dispositivo",
+    "title": "Instala Elim Arganda",
+    "lead": "En tu pantalla de inicio, como una app: se abre con un toque y sin tienda de aplicaciones.",
+    "note": "Gratis y sin datos personales. Se quita cuando quieras, como cualquier app.",
+    "open_chrome": "Abrir en Chrome",
+    "copy_link": "Copiar enlace",
+    "link_copied": "Enlace copiado",
+    "step": {
+      "ios26_more": "Toca <b>⋯</b> en la barra de Safari",
+      "ios_share": "Elige <b>Compartir</b>",
+      "ios_share_bar": "Toca <b>Compartir</b> en la barra de Safari (abajo en iPhone, arriba en iPad)",
+      "add_home": "Elige <b>Añadir a pantalla de inicio</b> (desliza la lista si no aparece)",
+      "confirm": "Confirma con <b>Añadir</b> o <b>Instalar</b>",
+      "ios_chrome_share": "Toca <b>Compartir</b> en la barra de direcciones",
+      "ios_firefox_share": "Abre el menú <b>☰</b> y elige <b>Compartir</b>",
+      "ios_edge_share": "Abre el menú <b>⋯</b> y elige <b>Compartir</b>",
+      "inapp_open_ios": "Esta app no permite instalar: abre su menú (<b>⋯</b>) y elige <b>Abrir en Safari</b>, o copia el enlace y pégalo en Safari",
+      "inapp_open_android": "Esta app no permite instalar: abre la página en <b>Chrome</b> con el botón de abajo",
+      "inapp_then": "Allí, vuelve a tocar <b>Instalar</b> al pie de la página",
+      "samsung_menu": "Abre el menú <b>☰</b> de la barra inferior",
+      "samsung_add": "Elige <b>Añadir página a</b> → <b>Pantalla de inicio</b>",
+      "android_menu": "Abre el menú del navegador <b>⋮</b>",
+      "android_install": "Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>",
+      "firefox_install": "Elige <b>Instalar</b> (o <b>Añadir a pantalla de inicio</b>)",
+      "mac_dock": "En Safari: <b>Archivo</b> → <b>Añadir al Dock</b>",
+      "desktop": "Pulsa el icono de instalar de la barra de direcciones o, en el menú del navegador, <b>Instalar aplicación</b>"
+    }
+  },
+  "device_fit": {
+    "label": "Web 100 % adaptable: ordenador, tableta y teléfono",
+    "title": "100 % adaptable",
+    "devices": "Ordenador · Tableta · Teléfono",
+    "now": "Ahora:",
+    "desktop": "Ordenador",
+    "tablet": "Tableta",
+    "phone": "Teléfono"
+  },
   "common": {
     "copy": "Copiar",
     "copied": "Copiado",

@@ -119,6 +119,25 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
   = mismo número, en local y en el CI; el CI clona con `fetch-depth: 0`).
   Además: build = nº de commits, hash, «dirty», fecha. El chip del pie muestra `v2.0.0` (con «+» si se compiló con cambios
   sin commitear) y el detalle en su tooltip.
+- **Instalar como app** (01/10/2026): botón «Instalar» en la franja legal del
+  pie (`shared/install-app`) gobernado por `PwaInstallService`. Se pinta sólo
+  si la web **no** está abierta como app (`display-mode` standalone/fullscreen/
+  minimal-ui/WCO, `navigator.standalone`, `android-app://`) y la plataforma
+  instala: Chromium con `beforeinstallprompt` guardado (también escritorio) →
+  diálogo nativo; móvil/tableta sin aviso nativo y Safari macOS ≥ 17 → hoja
+  `<dialog>` con los pasos de *ese* navegador (`detectInstallEnvironment` en
+  `core/util/install-platform.ts`: iOS Safari < 26 / ≥ 26 —«⋯» antes de
+  Compartir—, Chrome/Firefox/Edge iOS, Android Chromium/Samsung/Firefox y apps
+  con navegador integrado → «Abrir en Chrome» (intent) + copiar enlace). El
+  evento se captura en un `<script>` de `index.html` porque llega antes que el
+  pie diferido. `appinstalled` deja una marca de 30 días en localStorage.
+  Límite inevitable: desde Safari de iOS no se puede saber si ya está en la
+  pantalla de inicio (allí se sigue ofreciendo; dentro de la app, nunca).
+- **Sello «100 % adaptable»** (`shared/device-fit`): ordenador · tableta ·
+  teléfono, enciende el de la maqueta activa por ancho de ventana (< 720 /
+  < 1024 / resto) y lo cambia en vivo; tooltip con el ancho actual.
+- La franja legal es una **rejilla con áreas** (≥ lg: ©/meta | acciones | INEB;
+  < lg: © / meta + INEB / acciones), no un flex que envuelve.
 - `npm run pwa:icons` regenera el icono de la app y sus derivados desde el
   **emblema** (`scripts/assets-src/emblema-elim.png`, máster de 674 px que no se
   publica) con `sharp`: iconos `any` / `maskable` / `monochrome`, Apple 180,
