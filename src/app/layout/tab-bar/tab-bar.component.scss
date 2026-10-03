@@ -1,0 +1,221 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Barra de pestañas inferior (03/10/2026). Diseño propio, fuera del
+// catálogo a propósito: cápsula flotante de cristal navy, indicador dorado
+// que se desliza y rótulo bajo el icono (patrón de barra de navegación de
+// las apps nativas). Medidas: `--tab-bar-height` y `--tab-bar-gap` se
+// declaran en `_base.scss` (`body.has-tab-bar`), que es quien las comparte
+// con el pie, el dock y las barras de documento.
+// =====================================================================
+
+:host {
+  display: none;
+}
+
+@include until('lg') {
+  :host {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: var(--z-nav);
+    display: block;
+    /* El margen alrededor de la cápsula y la barra de gestos del teléfono.
+       La franja exterior no captura toques: lo de debajo sigue pulsable. */
+    padding: 0 max(var(--tab-bar-gap), env(safe-area-inset-right))
+      calc(var(--tab-bar-gap) + env(safe-area-inset-bottom))
+      max(var(--tab-bar-gap), env(safe-area-inset-left));
+    pointer-events: none;
+    transition:
+      transform var(--mo-base) var(--ea-standard),
+      opacity var(--mo-base) var(--ea-standard);
+  }
+
+  /* Con el teclado virtual fuera (campo de texto con el foco) se hunde. */
+  :host(.is-hidden) {
+    transform: translateY(110%);
+    opacity: 0;
+  }
+}
+
+.tabs {
+  /* Las columnas las deriva la rejilla; `--tab-count` (lo pone la plantilla)
+     sólo lo usa el indicador para medir una columna. */
+  position: relative;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  align-items: stretch;
+  max-width: 36rem;
+  height: var(--tab-bar-height);
+  margin-inline: auto;
+  padding-inline: 0.2rem;
+  border: 1px solid rgb(255 255 255 / 0.09);
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(180deg, rgb(26 54 93 / 0.86), rgb(9 20 36 / 0.92));
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow:
+    0 14px 34px -8px rgb(9 20 36 / 0.45),
+    0 2px 6px rgb(9 20 36 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.07);
+  pointer-events: auto;
+}
+
+/* Filete de luz dorada sobre el borde superior. */
+.tabs::before {
+  content: '';
+  position: absolute;
+  inset-inline: 18%;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(212 175 55 / 0.75), transparent);
+  pointer-events: none;
+}
+
+/* Indicador: ocupa una columna y se desplaza `--i` columnas. La píldora va
+   en su pseudo-elemento, centrada sobre el icono. */
+.tabs__indicator {
+  position: absolute;
+  inset-block: 0;
+  left: 0.2rem;
+  width: calc((100% - 0.4rem) / var(--tab-count, 7));
+  transform: translateX(calc(var(--i, 0) * 100%));
+  transition:
+    transform 380ms cubic-bezier(0.3, 1.25, 0.4, 1),
+    opacity var(--mo-fast) var(--ea-standard);
+  pointer-events: none;
+}
+
+.tabs__indicator::before {
+  content: '';
+  position: absolute;
+  top: 0.4rem;
+  left: 50%;
+  width: min(3rem, calc(100% - 0.4rem));
+  height: 1.6rem;
+  border: 1px solid rgb(212 175 55 / 0.45);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgb(212 175 55 / 0.28), rgb(212 175 55 / 0.12));
+  box-shadow:
+    0 0 18px rgb(212 175 55 / 0.28),
+    inset 0 1px 0 rgb(255 255 255 / 0.12);
+  transform: translateX(-50%);
+}
+
+.tabs__indicator.is-off {
+  opacity: 0;
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.15rem;
+  min-width: 0;
+  padding-top: 0.4rem;
+  border-radius: 1rem;
+  color: rgb(247 250 252 / 0.64);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(-3px);
+}
+
+.tab__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 1.6rem;
+  font-size: 1.2rem;
+  transition: transform var(--mo-base) var(--ea-standard);
+}
+
+.tab__label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab.is-active {
+  color: #fff;
+}
+
+.tab.is-active .tab__icon {
+  color: var(--c-gold);
+}
+
+.tab.is-active .tab__label {
+  font-weight: 700;
+}
+
+/* «În direct»: punto dorado latiendo sobre el icono, el mismo gesto que la
+   píldora de la cabecera. */
+.tab__dot {
+  position: absolute;
+  top: 0.05rem;
+  right: -0.3rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--c-gold);
+  box-shadow: 0 0 0 0 rgb(212 175 55 / 0.6);
+  animation: live 2s var(--ea-standard) infinite;
+}
+
+/* Siete pestañas no caben con rótulo por debajo de 380 px (~43 px cada
+   una a 320): sólo lo lleva la activa; el resto se reconoce por el icono. */
+@media (max-width: 379.98px) {
+  .tab:not(.is-active) .tab__label {
+    visibility: hidden;
+  }
+
+  /* La activa puede ocupar el hueco de los rótulos vecinos (ocultos):
+     «Program» no cabe en 43 px pero sí sin recorte sobre ellos. */
+  .tab.is-active .tab__label {
+    max-width: none;
+    overflow: visible;
+  }
+}
+
+.tab:active .tab__icon {
+  transform: scale(0.9);
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    color: #fff;
+  }
+}
+
+@keyframes live {
+  70% {
+    box-shadow: 0 0 0 0.35rem rgb(212 175 55 / 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(212 175 55 / 0);
+  }
+}
+
+@include motion-reduce {
+  :host,
+  .tabs__indicator,
+  .tab__icon {
+    transition: none;
+  }
+
+  .tab__dot {
+    animation: none;
+  }
+}

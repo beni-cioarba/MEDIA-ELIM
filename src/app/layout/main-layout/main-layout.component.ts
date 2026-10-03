@@ -8,6 +8,8 @@ import { FloatingActionsComponent } from '../../shared/floating-actions/floating
 import { BreadcrumbComponent } from '../../shared/breadcrumb/breadcrumb.component';
 import { TopNavComponent } from '../top-nav/top-nav.component';
 import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
+import { TabBarComponent } from '../tab-bar/tab-bar.component';
+import { SwipeTabsDirective } from '../tab-bar/swipe-tabs.directive';
 
 /**
  * Envoltorio (`shell`) reutilizable de toda la web pública:
@@ -23,9 +25,13 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
  * la primera vez que alguien abre el menú. En la pantalla del templo eso no
  * ocurre nunca y el código nunca se descarga.
  *
- * En **modo presentación** la cabecera y el pie desaparecen para que el
- * escenario ocupe la pantalla completa del proyector; el dock flotante se
- * mantiene porque contiene el botón de salir.
+ * En **modo presentación** la cabecera, la barra de pestañas y el pie
+ * desaparecen para que el escenario ocupe la pantalla completa del
+ * proyector; el dock flotante se mantiene porque contiene el botón de salir.
+ *
+ * La barra de pestañas (teléfono y tableta) es eager pero no pesa: sin
+ * Material, sólo `MAIN_NAV` y el estado activo. Se ve desde el primer
+ * pintado, así que diferirla haría que apareciera de golpe.
  */
 @Component({
     selector: 'app-main-layout',
@@ -34,6 +40,8 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
         RouterOutlet,
         TopNavComponent,
         MobileNavComponent,
+        TabBarComponent,
+        SwipeTabsDirective,
         BreadcrumbComponent,
         FooterComponent,
         FloatingActionsComponent,
@@ -44,7 +52,7 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
       <app-breadcrumb />
     }
 
-    <main id="main-content" class="shell__main" tabindex="-1">
+    <main id="main-content" class="shell__main" tabindex="-1" appSwipeTabs>
       <router-outlet />
     </main>
 
@@ -54,6 +62,10 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
       } @placeholder {
         <div #footerAnchor class="shell__footer-ph" aria-hidden="true"></div>
       }
+    }
+
+    @if (!fullscreen()) {
+      <app-tab-bar />
     }
 
     @defer (on idle) {
@@ -80,6 +92,39 @@ import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
         display: block;
         min-width: 0;
         outline: none;
+      }
+
+      /* Cambio de pestaña con el gesto (SwipeTabsDirective): la página nueva
+         entra desde el lado hacia el que se deslizó. Corto y sin rebote: es
+         orientación, no espectáculo. OJO: plantilla literal, sin acentos
+         graves ni en comentarios. */
+      .shell__main.is-swipe-next {
+        animation: swipe-from-right var(--mo-base) var(--ea-decelerate);
+      }
+
+      .shell__main.is-swipe-prev {
+        animation: swipe-from-left var(--mo-base) var(--ea-decelerate);
+      }
+
+      @keyframes swipe-from-right {
+        from {
+          opacity: 0.4;
+          transform: translateX(14%);
+        }
+      }
+
+      @keyframes swipe-from-left {
+        from {
+          opacity: 0.4;
+          transform: translateX(-14%);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .shell__main.is-swipe-next,
+        .shell__main.is-swipe-prev {
+          animation: none;
+        }
       }
 
       /* Reserva la altura aproximada del pie para que no haya salto de
@@ -110,6 +155,13 @@ export class MainLayoutComponent {
     // en iOS es la única forma fiable de evitar el "scroll chaining".
     effect(() => {
       this.document.body.classList.toggle('has-drawer-open', this.ui.drawerOpen());
+    });
+
+    // Contrato de la barra de pestañas: con la clase en el `body`,
+    // `_base.scss` declara `--app-tab-bar-h` y el pie, el dock y las barras
+    // fijas de documento le dejan su hueco. Fuera de la presentación sólo.
+    effect(() => {
+      this.document.body.classList.toggle('has-tab-bar', !this.fullscreen());
     });
   }
 }

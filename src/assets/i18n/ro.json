@@ -808,7 +808,35 @@
     "panel_visit_lead": "Te așteptăm la oricare dintre serviciile noastre. Intrarea e liberă și nu trebuie să anunți pe nimeni — vino așa cum ești.",
     "panel_service": "Următorul serviciu",
     "panel_address": "Unde ne găsești",
-    "panel_directions": "Cum ajungi"
+    "panel_directions": "Cum ajungi",
+    "sections": "Secțiuni",
+    "about_desc": "Cine suntem, ce credem și cum ne organizăm.",
+    "program_desc": "Anunțuri, serviciile săptămânii, evenimente și rugăciune: tot ce urmează în biserică.",
+    "media_desc": "Panoul complet, fotografiile din viața bisericii și rețelele noastre."
+  },
+  "nav_hub": {
+    "eyebrow": "Secțiune · {{count}} pagini",
+    "today": "Astăzi",
+    "credo_kicker": "Doctrină",
+    "credo_value": "30 de articole, cu explicații",
+    "leadership_kicker": "Structură",
+    "leadership_value": "{{offices}} slujiri de conducere · {{departments}} departamente",
+    "announcements_none": "Niciun anunț în vigoare",
+    "announcements_count": "{{count}} în vigoare",
+    "upcoming_none": "Niciun eveniment programat",
+    "upcoming_next": "Următorul eveniment",
+    "bible_day": "Lectura de {{day}}",
+    "families_week": "Săptămâna {{range}}",
+    "causes_updated": "Actualizată pe {{date}}",
+    "causes_count": "{{count}} cauze",
+    "contest_kicker": "Concurs biblic",
+    "stage_kicker": "Pe o singură pagină",
+    "stage_value": "Program, anunțuri, transmisiuni și galerie",
+    "gallery_count": "{{count}} albume de evenimente",
+    "socials_count": "{{count}} canale oficiale",
+    "gallery_kicker": "Fotografii",
+    "about_kicker": "Din {{year}}",
+    "about_value": "{{years}} de ani în Arganda del Rey"
   },
   "seo": {
     "home": {

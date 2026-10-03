@@ -192,6 +192,36 @@ body.has-drawer-open {
 }
 
 // ---------------------------------------------------------------------
+// Barra de pestañas inferior (teléfono y tableta, `< lg`).
+//
+// La pone `MainLayoutComponent` (`body.has-tab-bar`, fuera de la
+// presentación) y aquí se declaran sus medidas, en el `body`, porque las
+// leen piezas que no descienden unas de otras: la propia barra, el pie (que
+// reserva el hueco para verse entero al llegar abajo), el dock flotante y
+// las barras fijas de documento (que se apoyan encima).
+//
+//   --app-tab-bar-h     Lo que la barra ocupa desde el borde inferior,
+//                       contando su margen y la barra de gestos. 0 sin barra.
+//   --app-bottom-safe   Zona segura inferior que le queda a quien se apoye
+//                       abajo: con la barra puesta la absorbe ella (0).
+// ---------------------------------------------------------------------
+:root {
+  --app-tab-bar-h: 0px;
+  --app-bottom-safe: env(safe-area-inset-bottom, 0px);
+}
+
+@include until('lg') {
+  body.has-tab-bar {
+    --tab-bar-height: 3.4rem;
+    --tab-bar-gap: 0.4rem;
+    --app-tab-bar-h: calc(
+      var(--tab-bar-height) + 2 * var(--tab-bar-gap) + env(safe-area-inset-bottom, 0px)
+    );
+    --app-bottom-safe: 0px;
+  }
+}
+
+// ---------------------------------------------------------------------
 // Página con barra de documento fija abajo (la confesión de fe en el
 // teléfono). La clase la pone la propia página.
 //

@@ -22,7 +22,8 @@ src/app/
   layout/                   ⭐ Envoltorio reutilizable de la web pública
     main-layout/            Shell: nav + <router-outlet> + pie + dock
     top-nav/                Barra superior (mat-menu en escritorio)
-    mobile-nav/             Drawer móvil (diferido, cdkTrapFocus)
+    mobile-nav/             Drawer móvil (diferido, cdkTrapFocus, marcas vivas)
+    tab-bar/                Barra de pestañas inferior (< lg): una pestaña por bloque de MAIN_NAV
   core/
     church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
     leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
@@ -38,7 +39,8 @@ src/app/
     navigation/             ⭐ Rutas con nombre y árbol de menú
       app-paths.ts          APP_PATHS, slugs de bloque, blockPath()
       nav.model.ts          NavItem + type guards
-      navigation.config.ts  MAIN_NAV (única fuente del menú)
+      navigation.config.ts  MAIN_NAV (única fuente del menú; los grupos llevan `path` = su portada)
+      nav-summary.service.ts Resumen vivo de cada entrada (portadas de sección y cajón)
     state/
       ui.store.ts           SignalStore de UI (drawer, menús, scroll)
     ui/
@@ -66,6 +68,7 @@ src/app/
       seo.service.ts / AppTitleStrategy  Título y meta por ruta
   features/
     home/                   Portada pública (hero, bienvenida, accesos, visita)
+    nav-hub/                Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`)
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Estructura de liderazgo y departamentos
@@ -122,6 +125,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |
 | «Nueva página / sección»                            | `docs/ai/10-architecture.md` (receta completa)          |
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
+| «Barra de abajo del móvil» · «portada de una sección» · «algo fijo abajo se solapa» | `docs/ai/15-navigation.md` → «Barra de pestañas y portadas de sección» (`--app-tab-bar-h`) |
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |
 | «Color, espaciado, tipografía, componente Material» | `docs/ai/45-design-system.md`                           |
 | «¿Qué clase uso?» · «Necesito una tarjeta / fila / barra» | Abre **`/stil`** y usa la primitiva `ui-*`; catálogo y reglas en `docs/ai/47-design-language.md` |

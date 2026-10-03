@@ -1,7 +1,24 @@
-import { Routes } from '@angular/router';
+import { Route, Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { APP_PATHS } from './core/navigation/app-paths';
 import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
+
+/**
+ * Portada de sección de un grupo de `MAIN_NAV` (`/biserica`, `/program`,
+ * `/multimedia`). Un solo componente y un solo chunk para todas: lo que
+ * cambia es `data.navGroup` (el `id` del grupo). Ver `NavHubComponent`.
+ */
+function navHubRoute(path: string, group: string): Route {
+  return {
+    path,
+    loadComponent: () =>
+      import('./features/nav-hub/nav-hub.component').then((m) => m.NavHubComponent),
+    data: {
+      navGroup: group,
+      seo: { titleKey: `nav.${group}`, descriptionKey: `nav.${group}_desc` },
+    },
+  };
+}
 
 /**
  * Mapa de rutas de la aplicación.
@@ -50,6 +67,11 @@ export const APP_ROUTES: Routes = [
           seo: { titleKey: 'seo.home.title', descriptionKey: 'seo.home.description' },
         },
       },
+      // Portadas de sección: destino de las pestañas del móvil y de la migaja
+      // de pan de cada grupo.
+      navHubRoute(APP_PATHS.churchHub, 'about'),
+      navHubRoute(APP_PATHS.programHub, 'program'),
+      navHubRoute(APP_PATHS.mediaHub, 'media'),
       {
         path: APP_PATHS.about,
         loadComponent: () =>

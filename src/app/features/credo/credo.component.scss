@@ -314,7 +314,8 @@
   .tools {
     position: fixed;
     inset-inline: 0;
-    bottom: 0;
+    /* Encima de la barra de pestañas del móvil, si la hay (`_base.scss`). */
+    bottom: var(--app-tab-bar-h, 0px);
     z-index: 30;
     flex-wrap: nowrap;
     gap: var(--sp-2);
@@ -324,8 +325,9 @@
     height: var(--credo-bar-h);
     margin-block-end: 0;
     padding: 0.5rem var(--page-gutter);
-    /* Respeta la barra de gestos del teléfono. */
-    padding-block-end: max(0.5rem, env(safe-area-inset-bottom));
+    /* Respeta la barra de gestos del teléfono (salvo que la absorba la
+       barra de pestañas, que entonces queda debajo). */
+    padding-block-end: max(0.5rem, var(--app-bottom-safe, env(safe-area-inset-bottom)));
     border-block-end: 0;
     border-block-start: 1px solid var(--c-hairline);
     background: var(--c-surface);

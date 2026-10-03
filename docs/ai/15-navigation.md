@@ -15,6 +15,9 @@
 | `layout/main-layout/`                   | Shell: nav + `<router-outlet>` + pie + dock flotante.    |
 | `layout/top-nav/`                       | Barra superior (escritorio, `mat-menu`).                 |
 | `layout/mobile-nav/`                    | Drawer móvil, diferido con `@defer (when …)`.            |
+| `layout/tab-bar/`                       | Barra de pestañas inferior (`< lg`), una pestaña por bloque. |
+| `features/nav-hub/`                     | Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`). |
+| `core/navigation/nav-summary.service.ts`| Resumen vivo de cada entrada (portada y marcas del cajón). |
 
 ## Modelo mental
 
@@ -22,6 +25,7 @@
 app.routes.ts
 └── '' → MainLayoutComponent          (eager: hace falta en el primer pintado)
     ├── ''            → HomeComponent        (lazy)
+    ├── 'biserica' · 'program' · 'multimedia' → NavHubComponent (lazy, `data.navGroup`)
     ├── 'despre-noi'  → AboutComponent       (lazy)
     ├── 'marturisirea-de-credinta' → CredoComponent (lazy + resolve i18n)
     ├── 'conducere'   → LeadershipComponent  (lazy)
@@ -218,3 +222,73 @@ de 14,5 rem la identidad reservaba 41 px que no usaba y el contacto, con suelo
 se salían y el borde del pie los recortaba. A 1280 la rejilla suma ~1.191 de
 1.194 px: si crece el contenido, adelantar el apilado de `xl`.
 - El dock flotante usa `@defer (on idle)`.
+
+## Barra de pestañas y portadas de sección (03/10/2026)
+
+**Cuándo**: exactamente cuando la cabecera pasa a la hamburguesa (`< lg`,
+1024 px, el mismo corte que `.u-mobile-only`). La cabecera sigue igual; la
+barra la complementa. Fuera en presentación (`fullscreen`).
+
+**Qué pestañas**: todo el primer nivel de `MAIN_NAV`, también las `cta`
+(hoy siete: Acasă, Biserica, Program, Media, Contact, Donează, În direct),
+resueltas en `TabNavService`. Sin lista propia. Siete es el techo (regla 6 de
+`navigation.config.ts`): a 320 px cada pestaña mide ~43 px, así que por
+debajo de 380 sólo la activa lleva rótulo (patrón de Material 3) y puede
+ocupar el hueco de sus vecinas. «În direct» lleva un punto dorado latiendo.
+Cápsula de 3,4 rem (`--tab-bar-height`) con 0,4 rem de margen.
+
+**Deslizar** (`SwipeTabsDirective`, en el `<main>`): de derecha a izquierda
+pasa a la pestaña siguiente y al revés, sin dar la vuelta; la página nueva
+entra desde ese lado (`is-swipe-next/prev`, 240 ms). Sólo con el dedo y con
+la barra visible. No actúa si el gesto empieza en los 24 px del borde
+(«atrás» del sistema), en algo con gesto horizontal propio (carruseles,
+campos, vídeo, cualquier caja con scroll horizontal o `[data-no-swipe]`),
+con texto seleccionado, si no es claramente horizontal (|dx| > 1,8·|dy|) o
+si es lento (> 700 ms). Marca con `data-no-swipe` cualquier pieza nueva que
+se arrastre en horizontal.
+
+**Adónde lleva cada pestaña**: una hoja, a su página; un grupo, a su
+**portada de sección**. Por eso todo grupo lleva `path` (la portada) y
+`descriptionKey` (su entradilla y su meta descripción). Pulsar la pestaña de
+la página actual sube arriba. Activa = `NavActiveService.trail()[0]`; en
+páginas fuera de las pestañas (Donează) el indicador se apaga.
+
+**Portada de sección** (`NavHubComponent`, una para todos los grupos):
+cabecera navy + una tarjeta por hijo con icono, rótulo, descripción y el
+**dato vivo** de `NavSummaryService` (próximo culto, avisos en vigor, lectura
+de hoy, familias de la semana, fase del concurso, miniaturas de la
+galería…). Debajo, el **destacado** del grupo (`nav-hub/spotlights/`,
+cabecera común `hub-section`): el equivalente a escala de página del bloque
+derecho del panel de escritorio —Program: la semana entera desde hoy + el
+carrusel de familias; Media: los álbumes con foto + las últimas emisiones
+(JSON estático, `youtube.start('ligero')`); Biserica: la invitación (culto,
+dirección, cómo llegar)—. Las tarjetas no repiten lo del destacado (por eso
+«Cine suntem» da los años en Arganda y no la dirección). Ojo: el destacado
+es rejilla de `minmax(0, 1fr)`; sin él el carrusel ensanchaba la página a
+~800 px en el teléfono. Grupo nuevo = `path` + `descriptionKey` en `MAIN_NAV` +
+`navHubRoute()` en `app.routes.ts`. Página nueva dentro de un grupo = sale
+sola; darle dato vivo = un `case` en `NavSummaryService.build()`.
+`/multimedia` y no `/media`: `/media` es el panel completo y circula en QR.
+
+**Contrato de altura** (`_base.scss`): `MainLayoutComponent` pone
+`body.has-tab-bar`; ahí se declaran `--tab-bar-height`, `--tab-bar-gap`,
+`--app-tab-bar-h` (lo que ocupa desde el borde, con margen y barra de
+gestos; 0 sin barra) y `--app-bottom-safe` (0 con barra: la zona segura la
+absorbe ella). Lo consumen:
+
+- el **pie**: lo suma a su relleno inferior → al llegar abajo se ve entero
+  y la cápsula flota sobre su propio navy;
+- el **dock flotante**: se aparta (`bottom: tab-bar + dock-offset + …`);
+- las **barras de documento** (Credo, hoja de `doc-toc`): se apoyan encima.
+
+Cualquier pieza nueva fija abajo debe sumar `var(--app-tab-bar-h, 0px)`.
+
+Con un campo de texto enfocado en táctil la barra se hunde (el teclado
+virtual la subiría encima del campo).
+
+**Cajón** (misma fecha): accesos arriba (próximo culto + «În direct» +
+«Donează»), filas con icono · rótulo · descripción como el panel de
+escritorio, marca viva a la derecha (`NavSummary.badge`: avisos, fecha del
+próximo evento, culto de hoy) y el rótulo de cada grupo enlaza a su portada.
+Sin Material. La marca se reserva para lo que cambia; un recuento estático
+no lleva marca.

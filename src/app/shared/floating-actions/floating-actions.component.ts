@@ -149,11 +149,15 @@ import { DockOverlapService } from './dock-overlap.service';
          * una barra fija abajo (la confesión de fe en el móvil): la página
          * declara cuánto ocupa y el dock se aparta esa cantidad. Sin él, el
          * dock se sentaba encima de la barra y tapaba sus controles.
+         * --app-tab-bar-h es lo mismo para la barra de pestañas del movil
+         * (se declara en el body, ver _base.scss).
          *
          * OJO: estos estilos van en una plantilla literal, así que aquí no
          * puede haber acentos graves ni siquiera dentro de un comentario.
          */
-        bottom: calc(var(--dock-offset, 0px) + clamp(0.85rem, 2.5vh, 1.5rem));
+        bottom: calc(
+          var(--app-tab-bar-h, 0px) + var(--dock-offset, 0px) + clamp(0.85rem, 2.5vh, 1.5rem)
+        );
         right: clamp(0.85rem, 2.5vw, 1.5rem);
         z-index: 900;
         display: inline-flex;

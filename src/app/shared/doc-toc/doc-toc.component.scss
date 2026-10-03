@@ -253,7 +253,8 @@
     position: fixed;
     inset-inline: 0;
     top: auto;
-    bottom: var(--doc-toc-bottom, 0px);
+    /* Sobre la barra de la página y, en el móvil, sobre la de pestañas. */
+    bottom: calc(var(--doc-toc-bottom, 0px) + var(--app-tab-bar-h, 0px));
     z-index: 29;
     display: flex;
     flex-direction: column-reverse;

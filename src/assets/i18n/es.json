@@ -808,7 +808,35 @@
     "panel_visit_lead": "Te esperamos en cualquiera de nuestros cultos. La entrada es libre y no hace falta avisar: ven tal y como eres.",
     "panel_service": "Próximo culto",
     "panel_address": "Dónde estamos",
-    "panel_directions": "Cómo llegar"
+    "panel_directions": "Cómo llegar",
+    "sections": "Secciones",
+    "about_desc": "Quiénes somos, qué creemos y cómo nos organizamos.",
+    "program_desc": "Avisos, cultos de la semana, eventos y oración: todo lo que viene en la iglesia.",
+    "media_desc": "El panel completo, las fotos de la vida de la iglesia y nuestras redes."
+  },
+  "nav_hub": {
+    "eyebrow": "Sección · {{count}} páginas",
+    "today": "Hoy",
+    "credo_kicker": "Doctrina",
+    "credo_value": "30 artículos, con explicaciones",
+    "leadership_kicker": "Estructura",
+    "leadership_value": "{{offices}} órganos de dirección · {{departments}} departamentos",
+    "announcements_none": "Ningún aviso en vigor",
+    "announcements_count": "{{count}} en vigor",
+    "upcoming_none": "Ningún evento programado",
+    "upcoming_next": "Próximo evento",
+    "bible_day": "Lectura del {{day}}",
+    "families_week": "Semana {{range}}",
+    "causes_updated": "Actualizada el {{date}}",
+    "causes_count": "{{count}} causas",
+    "contest_kicker": "Concurso bíblico",
+    "stage_kicker": "En una sola página",
+    "stage_value": "Programa, avisos, emisiones y galería",
+    "gallery_count": "{{count}} álbumes de eventos",
+    "socials_count": "{{count}} canales oficiales",
+    "gallery_kicker": "Fotos",
+    "about_kicker": "Desde {{year}}",
+    "about_value": "{{years}} años en Arganda del Rey"
   },
   "seo": {
     "home": {

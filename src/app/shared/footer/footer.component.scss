@@ -20,7 +20,10 @@
 // texto pequeño agrupado a la derecha.
 .footer {
   position: relative;
-  padding-block: clamp(var(--sp-5), 2.5vw, 2rem) var(--sp-3);
+  /* Abajo, además, el hueco de la barra de pestañas del móvil (0 sin ella):
+     el pie se ve entero al llegar al final, con la barra flotando sobre su
+     propio fondo navy y no sobre el contenido. */
+  padding-block: clamp(var(--sp-5), 2.5vw, 2rem) calc(var(--sp-3) + var(--app-tab-bar-h, 0px));
   background:
     radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 62%),
     linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);

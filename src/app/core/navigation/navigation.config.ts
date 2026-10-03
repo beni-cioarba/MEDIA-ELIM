@@ -12,6 +12,12 @@ import { NavItem } from './nav.model';
  *     escanear el menú y hay que agrupar. Las entradas con `cta` no cuentan:
  *     no viven en la lista de enlaces sino en la zona de acciones.
  *  4. Todo rótulo es una clave i18n bajo `nav.*`, presente en `es` y `ro`.
+ *  5. Todo grupo lleva `path` (su portada de sección, que monta
+ *     `NavHubComponent` desde `app.routes.ts`) y `descriptionKey` (la
+ *     entradilla de esa portada). La barra de pestañas del móvil enlaza ahí.
+ *  6. Todo el primer nivel (también las `cta`) son las pestañas del móvil,
+ *     en este orden. Siete es el techo: a 320 px cada una mide ~43 px y por
+ *     debajo de 380 sólo la activa lleva rótulo.
  */
 export const MAIN_NAV: readonly NavItem[] = [
   {
@@ -23,6 +29,8 @@ export const MAIN_NAV: readonly NavItem[] = [
   {
     id: 'about',
     labelKey: 'nav.about',
+    descriptionKey: 'nav.about_desc',
+    path: `/${APP_PATHS.churchHub}`,
     icon: 'users',
     children: [
       {
@@ -51,6 +59,8 @@ export const MAIN_NAV: readonly NavItem[] = [
   {
     id: 'program',
     labelKey: 'nav.program',
+    descriptionKey: 'nav.program_desc',
+    path: `/${APP_PATHS.programHub}`,
     icon: 'calendar',
     children: [
       {
@@ -111,6 +121,8 @@ export const MAIN_NAV: readonly NavItem[] = [
   {
     id: 'media',
     labelKey: 'nav.media',
+    descriptionKey: 'nav.media_desc',
+    path: `/${APP_PATHS.mediaHub}`,
     icon: 'image',
     children: [
       {

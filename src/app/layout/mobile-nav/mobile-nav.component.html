@@ -1,0 +1,140 @@
+<div class="scrim" (click)="ui.closeDrawer()" aria-hidden="true"></div>
+
+<aside
+  id="mobile-nav"
+  class="drawer"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'nav.primary' | translate"
+  cdkTrapFocus
+  [cdkTrapFocusAutoCapture]="true"
+>
+  <header class="drawer__head">
+    <span class="drawer__title">{{ 'nav.primary' | translate }}</span>
+    <button
+      type="button"
+      class="drawer__close"
+      [attr.aria-label]="'nav.close_menu' | translate"
+      (click)="ui.closeDrawer()"
+    >
+      <app-icon name="close" />
+    </button>
+  </header>
+
+  <div class="drawer__scroll">
+    <!-- Accesos de arriba: el próximo culto y las dos llamadas a la acción. -->
+    <div class="quick">
+      @if (nextService(); as culto) {
+        <a class="quick__next" [routerLink]="weeklyPath" (click)="ui.closeDrawer()">
+          <span class="quick__next-icon" aria-hidden="true"><app-icon name="clock" /></span>
+          <span class="quick__next-text">
+            <span class="quick__next-label">
+              {{ (isToday() ? 'nav_hub.today' : 'nav.panel_service') | translate }}
+            </span>
+            <span class="quick__next-value">{{ culto.dayLabel }} · {{ culto.time }}</span>
+          </span>
+          <app-icon class="quick__next-go" name="chevron-right" />
+        </a>
+      }
+      <div class="quick__ctas">
+        @if (liveCta; as live) {
+          <a
+            class="quick__cta quick__cta--live"
+            [routerLink]="live.path"
+            [attr.aria-current]="activeIds().has(live.id) ? 'page' : null"
+            (click)="ui.closeDrawer()"
+          >
+            <span class="quick__dot" aria-hidden="true"></span>
+            {{ live.labelKey | translate }}
+          </a>
+        }
+        @if (supportCta; as support) {
+          <a
+            class="quick__cta"
+            [routerLink]="support.path"
+            [attr.aria-current]="activeIds().has(support.id) ? 'page' : null"
+            (click)="ui.closeDrawer()"
+          >
+            @if (support.icon; as icono) {
+              <app-icon [name]="icono" />
+            }
+            {{ support.labelKey | translate }}
+          </a>
+        }
+      </div>
+    </div>
+
+    <nav class="drawer__body" [attr.aria-label]="'nav.sections' | translate">
+      @for (block of blocks; track block.item.id) {
+        @if (block.rows.length > 0) {
+          <section class="group" [attr.aria-labelledby]="'drawer-group-' + block.item.id">
+            <!-- El rótulo del grupo lleva a su portada de sección. -->
+            <a
+              class="group__head"
+              [routerLink]="block.item.path"
+              [class.is-active]="isHere(block.item)"
+              [attr.aria-current]="isHere(block.item) ? 'page' : null"
+              (click)="ui.closeDrawer()"
+            >
+              <span class="group__title" [id]="'drawer-group-' + block.item.id">
+                {{ block.item.labelKey | translate }}
+              </span>
+              <span class="group__all">
+                {{ 'home.board.all' | translate }}
+                <app-icon name="arrow-right" />
+              </span>
+            </a>
+            <ul class="rows" role="list">
+              @for (row of block.rows; track row.item.id) {
+                <li>
+                  <ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: row }" />
+                </li>
+              }
+            </ul>
+          </section>
+        } @else {
+          <ul class="rows rows--root" role="list">
+            <li>
+              <ng-container
+                *ngTemplateOutlet="rowTpl; context: { $implicit: { item: block.item, summary: noSummary } }"
+              />
+            </li>
+          </ul>
+        }
+      }
+    </nav>
+  </div>
+
+  <footer class="drawer__foot">
+    <app-share-button />
+    <app-lang-switcher />
+  </footer>
+</aside>
+
+<ng-template #rowTpl let-row>
+  <a
+    class="row"
+    [class.is-active]="activeIds().has(row.item.id)"
+    [attr.aria-current]="activeIds().has(row.item.id) ? 'page' : null"
+    [routerLink]="isExternal(row.item) ? null : row.item.path"
+    [attr.href]="isExternal(row.item) ? row.item.externalUrl : null"
+    [attr.target]="isExternal(row.item) ? '_blank' : null"
+    [attr.rel]="isExternal(row.item) ? 'noopener noreferrer' : null"
+    (click)="ui.closeDrawer()"
+  >
+    <span class="row__tile" aria-hidden="true">
+      <app-icon [name]="row.item.icon ?? 'arrow-right'" />
+    </span>
+    <span class="row__text">
+      <span class="row__label">{{ row.item.labelKey | translate }}</span>
+      @if (row.item.descriptionKey) {
+        <span class="row__desc">{{ row.item.descriptionKey | translate }}</span>
+      }
+    </span>
+    @if (row.summary(); as resumen) {
+      @if (resumen.badge) {
+        <span class="row__badge" [class.is-live]="resumen.live">{{ resumen.badge }}</span>
+      }
+    }
+  </a>
+</ng-template>

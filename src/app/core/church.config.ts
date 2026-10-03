@@ -722,7 +722,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
      */
     {
       id: 'mijlocire_ordine_sunet_proiectie',
-      title: 'Săptămână de rugăciune pentru ordine, sunet și proiecție',
+      title: 'Săptămână de rugăciune pentru frații de la ordine, sunet și proiecție',
       lead: 'În săptămâna care ne stă în față îi aducem în rugăciune pe frații care ne slujesc în aceste lucrări.',
       sections: [
         {

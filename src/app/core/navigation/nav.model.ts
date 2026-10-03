@@ -13,7 +13,13 @@ export interface NavItem {
   readonly id: string;
   /** Clave i18n del rótulo (`nav.*`). */
   readonly labelKey: string;
-  /** Ruta interna **absoluta** (`/despre-noi`). Excluyente con `externalUrl`. */
+  /**
+   * Ruta interna **absoluta** (`/despre-noi`). Excluyente con `externalUrl`.
+   * En un grupo es su **portada de sección** (`/biserica`): la página que
+   * resume a sus hijos. La abren la pestaña del móvil, la migaja de pan y el
+   * rótulo del grupo en el cajón; en escritorio el grupo sigue abriendo su
+   * panel, que ya enseña los hijos.
+   */
   readonly path?: string;
   /** Enlace externo (se abre en pestaña nueva). Excluyente con `path`. */
   readonly externalUrl?: string;
@@ -40,9 +46,12 @@ export function isExternalNavItem(
   return typeof item.externalUrl === 'string' && item.externalUrl.length > 0;
 }
 
+/** Grupo de navegación: una entrada con hijos. */
+export type NavGroup = NavItem & { readonly children: readonly NavItem[] };
+
 /** ¿La entrada agrupa hijos en vez de navegar ella misma? */
 export function isNavGroup(
   item: NavItem,
-): item is NavItem & { readonly children: readonly NavItem[] } {
+): item is NavGroup {
   return Array.isArray(item.children) && item.children.length > 0;
 }

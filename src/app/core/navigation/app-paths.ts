@@ -9,6 +9,17 @@ import type { PresentationBlockId } from '../services/presentation-blocks.servic
  */
 export const APP_PATHS = {
   home: '',
+  /**
+   * Portadas de sección (hubs): la página propia de cada grupo de `MAIN_NAV`.
+   * Resumen vivo de cada entrada del grupo y acceso a todas. Son el destino
+   * de la barra de pestañas del móvil y de la migaja de pan del grupo.
+   * `multimedia` y no `media`: `/media` ya es el panel completo (y la raíz de
+   * los bloques y de las rutas del operador), y no se rompe una URL que ya
+   * circula en QR y enlaces.
+   */
+  churchHub: 'biserica',
+  programHub: 'program',
+  mediaHub: 'multimedia',
   about: 'despre-noi',
   leadership: 'conducere',
   /** Mărturisirea de credință completa (30 artículos). */
