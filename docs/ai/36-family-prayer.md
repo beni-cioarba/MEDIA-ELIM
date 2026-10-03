@@ -162,11 +162,22 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
   - Resumen = `FamilyCollageComponent` (no el mosaico web): panel navy a
     sangre con rótulo, semana y nombres en el orden de lectura de las fotos
     (con `appFitToBox`; el relleno va en el hijo medido, si no el autoajuste
-    no ve desbordes menores que el relleno) y **collage justificado**
-    (`justified-layout.ts`, función pura): prueba todas las particiones en
-    1-3 filas sin cambiar el orden y se queda con la que más área cubre, fotos
-    enteras y a su proporción; la lista se lleva el ancho que el collage no
-    usa, así nunca queda hueco.
+    no ve desbordes menores que el relleno) y **collage en filas de la misma
+    altura** (`even-rows-layout.ts`, función pura; revisión del 03/10/2026).
+    **Todas las familias pesan lo mismo**: misma altura = las personas a la
+    misma escala; una foto es más ancha sólo porque hay más gente. El bloque
+    es un **rectángulo exacto**: la fila que no llega al ancho ensancha sus
+    marcos y el margen lo rellena la foto difuminada; entre filas, como mucho
+    × 1,12 de altura. Filas parejas (3 + 2, nunca 4 + 1), sin cambiar el
+    orden; gana la partición con más foto nítida (penaliza el difuminado).
+    Sobre navy profundo con margen de 3u y 1,6u entre fotos; la lista se lleva
+    el ancho que sobra. Descartados el 03/10/2026, medidos con las semanas
+    reales: justificado libre (una fila de dos salía 2-3 veces mayor), marcos
+    iguales (la apaisada encogía a la mitad y 3 + 2 dejaba huecos) y
+    superficie igual (justo en área pero deshilachado y con aire sin usar:
+    68-74 % de foto nítida frente a 76-87 % ahora). Con fotos enteras y
+    formatos distintos no se puede tener superficie idéntica y bloque sin
+    huecos a la vez.
   - Ficha = foto + **panel** (`.fcard__panel` → `id` + `body`). El panel es
     UN bloque con escala tipográfica fija (rótulo 3,2 · nombre 8 · nombres
     5,6 · hijos 3,8 · mensaje 4,6 · versículo 3,8 · referencia 3,2, × `--fit`)
@@ -225,7 +236,7 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
 | `shared/near-viewport/` | «Pinta cuando se acerque»: un `IntersectionObserver` compartido |
 | `shared/doc-toc/` | Índice lateral (compartido con la confesión de fe) |
 | `features/family-prayer/family-summary/` | Resumen web (mosaico enlazado) |
-| `features/family-prayer/family-collage/` | Resumen proyectado: collage justificado + lista (`justified-layout.ts`, función pura) |
+| `features/family-prayer/family-collage/` | Resumen proyectado: filas de igual altura + lista (`even-rows-layout.ts`, función pura) |
 | `features/family-prayer/family-card/` | Ficha (web + proyección, hoja global) |
 | `features/family-prayer/family-photo/` | Foto entera + fondo difuminado / monograma |
 | `features/family-prayer/family-prayer-teaser/` | Acceso desde `/anunturi` |

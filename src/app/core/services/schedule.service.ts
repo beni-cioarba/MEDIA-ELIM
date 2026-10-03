@@ -115,6 +115,13 @@ export class ScheduleService {
   });
 
   /**
+   * Horas de comienzo de hoy (minutos desde medianoche, ordenadas): las del
+   * programa semanal y las de los eventos con fecha de hoy. Fuente de la
+   * cuenta atrás de la proyección (`ServiceCountdownService`).
+   */
+  readonly todayStarts = this.comienzosDeHoy;
+
+  /**
    * ¿Estamos ahora dentro de una ventana de culto o evento?
    *
    * Abre `MINUTOS_ANTES` antes de la hora anunciada —la retransmisión se

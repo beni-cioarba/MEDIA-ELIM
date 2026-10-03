@@ -4,27 +4,35 @@ import { Router } from '@angular/router';
 import { APP_PATHS } from '../navigation/app-paths';
 import { LoggerService } from './logger.service';
 
-/** Nombre fijo de la ventana: abrir dos veces reutiliza la misma. */
-const WINDOW_NAME = 'elim-proiectie';
+/** Prefijo de los nombres de ventana: `elim-proiectie-<pantalla>`. */
+export const WINDOW_NAME_PREFIX = 'elim-proiectie-';
 
-/** Tamaño de arranque cuando no se puede colocar en otra pantalla (16:9). */
+/** Tamaño de arranque cuando no se puede colocar en una pantalla concreta (16:9). */
 const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;
 
-/** Cadencia con la que se comprueba si el operador ha cerrado la ventana a mano. */
+/** Cadencia con la que se comprueba si el operador ha cerrado una ventana a mano. */
 const WATCH_MS = 1_000;
 
+/** Nombres de las ventanas que abrió este panel (sobreviven a recargarlo). */
+const OPENED_KEY = 'iglesia-redes.projection.windows';
+
 /** Subconjunto de la Window Management API que usamos (Chromium). */
-interface ScreenDetailed {
+interface ScreenDetailed extends EventTarget {
+  readonly left: number;
+  readonly top: number;
+  readonly width: number;
+  readonly height: number;
   readonly availLeft: number;
   readonly availTop: number;
   readonly availWidth: number;
   readonly availHeight: number;
   readonly isPrimary: boolean;
+  readonly isInternal?: boolean;
   readonly label: string;
 }
 
-interface ScreenDetails {
+interface ScreenDetails extends EventTarget {
   readonly screens: readonly ScreenDetailed[];
   readonly currentScreen: ScreenDetailed;
 }
@@ -33,12 +41,34 @@ type WindowWithScreens = Window & {
   getScreenDetails?: () => Promise<ScreenDetails>;
 };
 
-export type ProjectionTarget = 'here' | 'other-screen';
+/** Una pantalla conectada al ordenador, tal como la ve el panel. */
+export interface DisplayScreen {
+  /** Clave estable (su posición en el escritorio): nombra su ventana. */
+  readonly key: string;
+  readonly label: string;
+  readonly width: number;
+  readonly height: number;
+  readonly isPrimary: boolean;
+  /** Es la pantalla en la que está el panel. */
+  readonly isCurrent: boolean;
+  readonly isInternal: boolean;
+}
+
+/**
+ * Estado del acceso a las pantallas:
+ *  - `unsupported` el navegador no tiene la API (Firefox, Safari): se abren
+ *                  ventanas sueltas y el operador las arrastra.
+ *  - `prompt`      hay API pero aún no se ha pedido permiso (hace falta un clic).
+ *  - `granted`     se conocen las pantallas.
+ *  - `denied`      el operador lo rechazó (se puede volver a conceder en el
+ *                  candado de la barra de direcciones).
+ */
+export type ScreensAccess = 'unsupported' | 'prompt' | 'granted' | 'denied';
 
 export type ProjectionOpenResult = 'opened' | 'blocked';
 
 /**
- * Mensajes **directos** entre el panel y su ventana de proyección
+ * Mensajes **directos** entre el panel y una ventana de proyección
  * (`postMessage`, mismo origen). No van por el `BroadcastChannel` porque la
  * pantalla completa necesita la **delegación de capacidades**: el gesto del
  * operador en el panel viaja con el mensaje (`delegate: 'fullscreen'`) y la
@@ -64,27 +94,26 @@ type DelegatingPostMessageOptions = WindowPostMessageOptions & {
 };
 
 /**
- * Abre, vigila y cierra la **ventana de proyección** desde el panel de control.
+ * Abre, vigila y cierra las **ventanas de proyección** desde el panel: tantas
+ * como pantallas haga falta (proyector, televisor del vestíbulo…), todas con
+ * el mismo contenido sincronizado (`PresentationSyncService`).
  *
- * ── Dónde se abre ─────────────────────────────────────────────────────
- * Un navegador no puede mover ventanas a otra pantalla… salvo con la
- * Window Management API (Chrome/Edge). Si está disponible y el operador
- * concede el permiso, la ventana se abre directamente sobre la pantalla que
- * **no** es la actual (el proyector) y, en Chromium reciente, ya a pantalla
- * completa (`fullscreen` en las *features* del popup). Sin la API, se abre
- * como popup 16:9 y el operador la arrastra a la otra pantalla y pulsa `F`.
+ * ── Pantallas ─────────────────────────────────────────────────────────
+ * Con la Window Management API (Chrome/Edge) el panel **detecta las
+ * pantallas conectadas** (nombre, resolución, cuál es la principal) y abre
+ * cada ventana directamente sobre la elegida y a pantalla completa. Si se
+ * conecta o desconecta una pantalla, la lista se actualiza sola. Sin la API
+ * (o sin permiso), «Nueva ventana» abre una ventana suelta 16:9 que el
+ * operador arrastra a la pantalla y pone a pantalla completa con `F`.
  *
- * La ventana tiene nombre fijo: pulsar «Abrir» dos veces trae la misma al
- * frente en vez de crear otra, así nunca hay dos relojes proyectando. Ese
- * nombre también permite **recuperar** la referencia si el panel se recarga
- * (`window.open('', nombre)` devuelve la ventana viva sin navegarla).
+ * Cada ventana tiene nombre propio (`elim-proiectie-<pantalla>`): abrir otra
+ * vez en la misma pantalla la trae al frente en vez de duplicarla. El nombre
+ * también permite **recuperar** la referencia si el panel se recarga.
  *
  * ── Pantalla completa desde el panel ──────────────────────────────────
- * `toggleFullscreen()` manda a la ventana un `postMessage` con el gesto del
- * operador delegado (`delegate: 'fullscreen'`); la ventana alterna su
- * pantalla completa nativa y contesta con el resultado. Donde el navegador no
- * delegue (Firefox, Safari), la petición fracasa allí y el panel lo refleja
- * en `fullscreenDenied` para pedir al operador que pulse `F` en la ventana.
+ * `toggleFullscreen(name)` manda a esa ventana un `postMessage` con el gesto
+ * del operador delegado; la ventana alterna su pantalla completa y contesta.
+ * Donde el navegador no delegue, el panel lo indica (`fullscreenDenied`).
  */
 @Injectable({ providedIn: 'root' })
 export class ProjectionWindowService {
@@ -93,25 +122,26 @@ export class ProjectionWindowService {
   private readonly zone = inject(NgZone);
   private readonly log = inject(LoggerService).prefix('projection-window');
 
-  private handle: Window | null = null;
+  private readonly handles = new Map<string, Window>();
+  private readonly _open = signal<readonly string[]>([]);
+  private readonly _fullscreenDenied = signal<boolean>(false);
+  private readonly _screens = signal<readonly DisplayScreen[]>([]);
+  private readonly _access = signal<ScreensAccess>(
+    typeof window !== 'undefined' && 'getScreenDetails' in window ? 'prompt' : 'unsupported',
+  );
+  private details: ScreenDetails | null = null;
   private watcher: ReturnType<typeof setInterval> | null = null;
 
-  private readonly _isOpen = signal<boolean>(false);
-  private readonly _fullscreenDenied = signal<boolean>(false);
+  /** Nombres de las ventanas abiertas **por este panel** (y vivas). */
+  readonly openNames = this._open.asReadonly();
+  readonly isOpen = computed<boolean>(() => this._open().length > 0);
 
-  /** Hay una ventana abierta **por este panel** (y sigue viva). */
-  readonly isOpen = this._isOpen.asReadonly();
-
-  /**
-   * La última orden de pantalla completa fue rechazada por el navegador de la
-   * ventana (exige un gesto allí). Se limpia al reintentar.
-   */
+  /** La última orden de pantalla completa la rechazó el navegador de la ventana. */
   readonly fullscreenDenied = this._fullscreenDenied.asReadonly();
 
-  /** El navegador sabe colocar ventanas en otras pantallas. */
-  readonly canPlaceOnOtherScreen = computed<boolean>(
-    () => typeof window !== 'undefined' && 'getScreenDetails' in window,
-  );
+  /** Pantallas conectadas (vacío hasta tener permiso). */
+  readonly screens = this._screens.asReadonly();
+  readonly access = this._access.asReadonly();
 
   constructor() {
     const onMessage = (event: MessageEvent<Partial<FullscreenResultMessage> | null>) => {
@@ -124,57 +154,147 @@ export class ProjectionWindowService {
       window.removeEventListener('message', onMessage);
       this.stopWatching();
     });
+
+    this.recoverOpened();
+    void this.detectIfGranted();
   }
 
   /** URL absoluta de la ruta de proyección (respeta el `base href` del despliegue). */
-  projectionUrl(preview = false): string {
+  projectionUrl(params: Record<string, string> = {}): string {
     const tree = this.router.createUrlTree(['/', APP_PATHS.media, APP_PATHS.projection], {
-      queryParams: preview ? { rol: 'preview' } : {},
+      queryParams: params,
     });
     return this.location.prepareExternalUrl(this.router.serializeUrl(tree));
   }
 
+  /** Nombre de la ventana de una pantalla. */
+  nameFor(screen: DisplayScreen): string {
+    return `${WINDOW_NAME_PREFIX}${screen.key}`;
+  }
+
+  // ---- Pantallas ------------------------------------------------------
+
   /**
-   * Abre la ventana (o la trae al frente si ya existe).
-   * `other-screen` intenta colocarla en la pantalla que no es la actual.
+   * Pide acceso a las pantallas (el navegador muestra su diálogo la primera
+   * vez; debe llamarse desde un clic) y las lista.
    */
-  async open(target: ProjectionTarget): Promise<ProjectionOpenResult> {
-    if (this.handle && !this.handle.closed) {
-      this.handle.focus();
+  async detectScreens(): Promise<void> {
+    const win = window as WindowWithScreens;
+    if (!win.getScreenDetails) return;
+    try {
+      const details = await win.getScreenDetails();
+      this.attach(details);
+      this._access.set('granted');
+    } catch (error) {
+      this.log.info('Sin acceso a las pantallas del sistema', error);
+      this._access.set('denied');
+    }
+  }
+
+  /** Si el permiso ya estaba concedido, lista las pantallas sin preguntar. */
+  private async detectIfGranted(): Promise<void> {
+    if (this._access() === 'unsupported' || !navigator.permissions) return;
+    try {
+      const status = await navigator.permissions.query({
+        name: 'window-management' as PermissionName,
+      });
+      if (status.state === 'granted') await this.detectScreens();
+      else if (status.state === 'denied') this._access.set('denied');
+    } catch {
+      /* nombre de permiso desconocido en este navegador: se pedirá al pulsar */
+    }
+  }
+
+  private attach(details: ScreenDetails): void {
+    if (this.details !== details) {
+      this.details = details;
+      // Pantalla conectada / desconectada o el panel cambia de pantalla.
+      const refresh = () => this.zone.run(() => this.readScreens());
+      details.addEventListener('screenschange', refresh);
+      details.addEventListener('currentscreenchange', refresh);
+    }
+    this.readScreens();
+  }
+
+  private readScreens(): void {
+    const details = this.details;
+    if (!details) return;
+    this._screens.set(
+      [...details.screens]
+        .sort((a, b) => a.left - b.left || a.top - b.top)
+        .map((s) => ({
+          key: screenKey(s),
+          label: s.label || `${s.width}×${s.height}`,
+          width: s.width,
+          height: s.height,
+          isPrimary: s.isPrimary,
+          isCurrent: s === details.currentScreen,
+          isInternal: s.isInternal ?? false,
+        })),
+    );
+  }
+
+  // ---- Ventanas -------------------------------------------------------
+
+  /**
+   * Abre la ventana de proyección en una pantalla (o la trae al frente si ya
+   * existe). Sin pantalla: ventana suelta nueva («Nueva ventana»).
+   */
+  async open(screen?: DisplayScreen): Promise<ProjectionOpenResult> {
+    const name = screen ? this.nameFor(screen) : this.nextLooseName();
+    const existing = this.handles.get(name);
+    if (existing && !existing.closed) {
+      existing.focus();
       return 'opened';
     }
 
-    const features = await this.featuresFor(target);
-    const opened = window.open(this.projectionUrl(), WINDOW_NAME, features);
+    const opened = window.open(this.projectionUrl(), name, this.featuresFor(screen));
     if (!opened) {
       this.log.warn('El navegador ha bloqueado la ventana emergente');
       return 'blocked';
     }
-    this.handle = opened;
-    this._isOpen.set(true);
-    this.startWatching();
+    this.remember(name, opened);
     return 'opened';
   }
 
-  close(): void {
-    if (this.handle && !this.handle.closed) this.handle.close();
-    this.forget();
+  /** Abre una vista de prueba (una diapositiva fija) en una ventana suelta. */
+  openSolo(params: Record<string, string>): ProjectionOpenResult {
+    const opened = window.open(
+      this.projectionUrl({ rol: 'solo', ...params }),
+      `${WINDOW_NAME_PREFIX}proba`,
+      `popup=yes,width=${DEFAULT_WIDTH},height=${DEFAULT_HEIGHT}`,
+    );
+    return opened ? 'opened' : 'blocked';
   }
 
-  /** Trae la ventana al frente. Devuelve `false` si no hay ninguna que traer. */
-  focus(): boolean {
-    const target = this.acquire();
+  close(name: string): void {
+    const handle = this.acquire(name);
+    if (handle && !handle.closed) handle.close();
+    this.forget(name);
+  }
+
+  closeAll(): void {
+    for (const name of [...this._open()]) this.close(name);
+  }
+
+  /** Trae una ventana al frente. Devuelve `false` si no se puede alcanzar. */
+  focus(name: string): boolean {
+    const target = this.acquire(name);
     target?.focus();
     return target !== null;
   }
 
+  /** ¿Puede el panel mandar órdenes directas a esta ventana? */
+  canControl(name: string): boolean {
+    return this._open().includes(name);
+  }
+
   /**
-   * Alterna la pantalla completa nativa **de la ventana de proyección** desde
-   * el panel. Debe llamarse desde un gesto del operador (clic): ese gesto es
-   * lo que se delega. Devuelve `false` si no hay ventana a la que mandar.
+   * Alterna la pantalla completa nativa de una ventana desde el panel. Debe
+   * llamarse desde un clic del operador: ese gesto es lo que se delega.
    */
-  toggleFullscreen(): boolean {
-    const target = this.acquire();
+  toggleFullscreen(name: string): boolean {
+    const target = this.acquire(name);
     if (!target) return false;
     this._fullscreenDenied.set(false);
     const options: DelegatingPostMessageOptions = {
@@ -182,83 +302,103 @@ export class ProjectionWindowService {
       delegate: 'fullscreen',
     };
     target.postMessage({ type: PROJECTION_MESSAGE.fullscreen }, options);
-    target.focus();
     return true;
   }
 
   /**
-   * Referencia viva a la ventana. Si este panel no la abrió (se recargó), la
-   * recupera por su nombre: `window.open('', nombre)` devuelve la existente sin
-   * navegarla. Si no existía, el navegador abre una en blanco: se detecta y se
-   * cierra al instante (por eso sólo se llama cuando el canal dice que hay una).
+   * Referencia viva a una ventana de este panel. Si el panel se recargó, la
+   * recupera por su nombre (`window.open('', nombre)` devuelve la existente
+   * sin navegarla). Sólo se intenta con nombres que este panel abrió: con
+   * cualquier otro, el navegador abriría una ventana en blanco.
    */
-  private acquire(): Window | null {
-    if (this.handle && !this.handle.closed) return this.handle;
+  private acquire(name: string): Window | null {
+    const known = this.handles.get(name);
+    if (known && !known.closed) return known;
+    if (!this._open().includes(name)) return null;
 
-    const found = window.open('', WINDOW_NAME);
+    const found = window.open('', name);
     if (!found) return null;
     let blank = false;
     try {
       blank = found.location.href === 'about:blank';
     } catch {
-      // Otro origen: no es nuestra ventana.
       blank = true;
     }
     if (blank) {
       found.close();
+      this.forget(name);
       return null;
     }
-    this.handle = found;
-    this._isOpen.set(true);
-    this.startWatching();
+    this.remember(name, found);
     return found;
   }
 
-  /**
-   * Features del popup. Con la Window Management API se pide permiso al
-   * navegador y se elige la otra pantalla (la no primaria si hay varias).
-   */
-  private async featuresFor(target: ProjectionTarget): Promise<string> {
+  /** «Nueva ventana» sin pantalla concreta: `elim-proiectie-v1`, `-v2`… */
+  private nextLooseName(): string {
+    for (let n = 1; ; n++) {
+      const name = `${WINDOW_NAME_PREFIX}v${n}`;
+      const handle = this.handles.get(name);
+      if (!handle || handle.closed) return name;
+    }
+  }
+
+  private featuresFor(screen?: DisplayScreen): string {
     const base = 'popup=yes';
-    if (target !== 'other-screen') return `${base},width=${DEFAULT_WIDTH},height=${DEFAULT_HEIGHT}`;
-
-    const screen = await this.pickOtherScreen();
-    if (!screen) return `${base},width=${DEFAULT_WIDTH},height=${DEFAULT_HEIGHT}`;
-
+    const target = screen && this.details?.screens.find((s) => screenKey(s) === screen.key);
+    if (!target) return `${base},width=${DEFAULT_WIDTH},height=${DEFAULT_HEIGHT}`;
     return [
       base,
-      `left=${screen.availLeft}`,
-      `top=${screen.availTop}`,
-      `width=${screen.availWidth}`,
-      `height=${screen.availHeight}`,
+      `left=${target.availLeft}`,
+      `top=${target.availTop}`,
+      `width=${target.availWidth}`,
+      `height=${target.availHeight}`,
       // Chromium ≥ 119 con permiso de gestión de ventanas: nace a pantalla
       // completa. Donde no se soporte, la feature se ignora sin error.
       'fullscreen',
     ].join(',');
   }
 
-  private async pickOtherScreen(): Promise<ScreenDetailed | null> {
-    const win = window as WindowWithScreens;
-    if (!win.getScreenDetails) return null;
+  private remember(name: string, handle: Window): void {
+    this.handles.set(name, handle);
+    if (!this._open().includes(name)) this.setOpen([...this._open(), name]);
+    this.startWatching();
+  }
+
+  private forget(name: string): void {
+    this.handles.delete(name);
+    this.setOpen(this._open().filter((n) => n !== name));
+    if (this._open().length === 0) this.stopWatching();
+  }
+
+  private setOpen(names: readonly string[]): void {
+    this._open.set(names);
     try {
-      const details = await win.getScreenDetails();
-      const others = details.screens.filter((s) => s !== details.currentScreen);
-      if (others.length === 0) return null;
-      return others.find((s) => !s.isPrimary) ?? others[0];
-    } catch (error) {
-      // Permiso denegado o API sin soporte real: se abre como popup normal.
-      this.log.info('Sin acceso a las pantallas del sistema', error);
-      return null;
+      sessionStorage.setItem(OPENED_KEY, JSON.stringify(names));
+    } catch {
+      /* almacenamiento no disponible */
     }
   }
 
-  /** Detecta el cierre manual de la ventana (no hay evento entre ventanas). */
+  /** Tras recargar el panel: las ventanas que abrió siguen siendo suyas. */
+  private recoverOpened(): void {
+    try {
+      const raw = sessionStorage.getItem(OPENED_KEY);
+      const names: unknown = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(names)) {
+        this._open.set(names.filter((n): n is string => typeof n === 'string' && n.startsWith(WINDOW_NAME_PREFIX)));
+      }
+    } catch {
+      /* nada que recuperar */
+    }
+  }
+
+  /** Detecta el cierre manual de las ventanas (no hay evento entre ventanas). */
   private startWatching(): void {
-    this.stopWatching();
+    if (this.watcher) return;
     this.zone.runOutsideAngular(() => {
       this.watcher = setInterval(() => {
-        if (this.handle && !this.handle.closed) return;
-        this.zone.run(() => this.forget());
+        const closed = [...this.handles].filter(([, h]) => h.closed).map(([n]) => n);
+        if (closed.length > 0) this.zone.run(() => closed.forEach((n) => this.forget(n)));
       }, WATCH_MS);
     });
   }
@@ -267,10 +407,13 @@ export class ProjectionWindowService {
     if (this.watcher) clearInterval(this.watcher);
     this.watcher = null;
   }
+}
 
-  private forget(): void {
-    this.handle = null;
-    this._isOpen.set(false);
-    this.stopWatching();
-  }
+/**
+ * Clave estable de una pantalla: su posición en el escritorio («1920_0»;
+ * las coordenadas negativas, de una pantalla a la izquierda, con «m»). Vale
+ * como parte del nombre de la ventana.
+ */
+function screenKey(screen: Pick<ScreenDetailed, 'left' | 'top'>): string {
+  return `${screen.left}_${screen.top}`.replace(/-/g, 'm');
 }

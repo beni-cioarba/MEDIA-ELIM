@@ -1,25 +1,25 @@
 <!--
-  Dos zonas, sólo tipografía (sin iconos, viñetas, contadores ni cajas):
-    · Por nombre: título, epígrafes en versalitas y los nombres en columnas
-      limpias.
-    · Por intención: las causas de toda la iglesia, título en oro +
-      intención, en un panel de tono más profundo.
-  `appFitToBox` va en la sección y mide `.causes__inner` (las dos zonas):
-  una sola escala para todo, así la jerarquía no cambia entre zonas.
+  Sólo tipografía (sin iconos, viñetas, contadores ni cajas). Tres piezas:
+    · Cabecera: el título (en la web lo pone la página; aquí queda oculto).
+    · Por nombre: epígrafe en versalitas y los nombres; cada causa ocupa tantas
+      columnas como pidan sus nombres (`--cols`).
+    · Por intención: título + intención, en columnas iguales (`--n`).
+  `appFitToBox` va en la sección y mide `.causes__inner`: una sola escala para
+  todo, así la jerarquía nunca cambia entre zonas.
 -->
-<section class="causes" aria-labelledby="causes-title" appFitToBox [appFitToBoxMax]="1.2">
+<section class="causes" aria-labelledby="causes-title" appFitToBox [appFitToBoxMax]="1.4">
   <div class="causes__inner">
-    <div class="causes__named">
-      <!-- En la web el título lo pone la cabecera de la página. -->
-      <h2 id="causes-title" class="causes__title" [class.u-sr-only]="!fullscreen()">
-        {{ 'prayer_causes.title' | translate }}
-      </h2>
+    <header class="causes__head" [class.u-sr-only]="!fullscreen()">
+      <h2 id="causes-title" class="causes__title">{{ 'prayer_causes.title' | translate }}</h2>
+    </header>
 
-      <!-- 1 · Por nombre -->
+    <!-- 1 · Por nombre -->
+    <div class="causes__named">
       @for (cause of causes.named; track cause.id) {
         <section
           class="cause cause--named"
           [class.cause--many]="cause.people.length > 3"
+          [style.--cols]="cause.people.length > 6 ? 3 : cause.people.length > 3 ? 2 : 1"
           [attr.id]="cause.id"
           [attr.aria-labelledby]="cause.id + '-title'"
         >
@@ -35,7 +35,7 @@
 
     <!-- 2 · Por intención -->
     @if (causes.general.length > 0) {
-      <ul class="causes__general" role="list">
+      <ul class="causes__general" role="list" [style.--n]="causes.general.length">
         @for (cause of causes.general; track cause.id) {
           <li class="cause cause--general" [attr.id]="cause.id">
             <span class="cause__title">{{ cause.title }}</span>

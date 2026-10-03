@@ -1,4 +1,10 @@
-<section class="collage" aria-labelledby="collage-title" #stage [style.--gap.px]="gapPx()">
+<section
+  class="collage"
+  aria-labelledby="collage-title"
+  #stage
+  [style.--gap.px]="gapPx()"
+  [style.--pad.px]="padPx()"
+>
   <!-- Panel navy a sangre (el cuadro del PowerPoint): rótulo, semana y los
        nombres, en el orden de lectura de las fotos. Se autoajusta si una
        semana trae más familias o nombres largos. -->
@@ -21,13 +27,14 @@
     </div>
   </aside>
 
-  <!-- Collage: filas justificadas con las fotos enteras, hasta el borde. -->
+  <!-- Filas de la misma altura en un rectángulo exacto: las personas salen
+       a la misma escala en todas las fotos, enteras y a su proporción. -->
   @if (layout(); as layout) {
-    <div class="collage__photos" [style.width.px]="layout.width">
+    <div class="collage__photos" [style.width.px]="layout.width + 2 * padPx()">
       @for (row of layout.rows; track $index) {
         <div class="collage__row" [style.height.px]="row.height">
           @for (tile of row.tiles; track tile.index) {
-            <figure class="collage__tile" [style.width.px]="tile.width">
+            <figure class="collage__tile" [style.width.px]="tile.width" [style.height.px]="tile.height">
               <app-family-photo
                 class="collage__photo"
                 [family]="week.families[tile.index]"

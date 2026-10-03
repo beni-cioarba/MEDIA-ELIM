@@ -1,6 +1,6 @@
 import { DestroyRef, Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
 import { Announcement, CHURCH_CONFIG } from '../church.config';
-import { AnnouncementsService } from './announcements.service';
+import { AnnouncementsService, announcementParts } from './announcements.service';
 import { BibleReadingService } from './bible-reading.service';
 import { FamilyPrayerService, PrayerFamilyView, PrayerWeekView } from './family-prayer.service';
 import { ClockService } from './clock.service';
@@ -89,6 +89,12 @@ export interface PastFamilyOption {
   readonly week: PrayerWeekView;
   readonly family: PrayerFamilyView;
 }
+
+/**
+ * Bloques del momento de oración (atajo «Rugăciune» del panel): las familias
+ * por las que se ora esta semana y las causas de la iglesia.
+ */
+const PRAYER_BLOCKS: readonly PresentationBlockId[] = ['families', 'causes'];
 
 /** Quién va a pintar las diapositivas que devuelve `expand()`. */
 export type ExpandView = 'projection' | 'panel' | 'web';
@@ -431,12 +437,18 @@ export class PresentationBlocksService {
       const active = this.announcements.active();
       if (active.length === 0) return this.emptySlide(id);
       const shown = projection ? this.visibleAnnouncements() : active;
-      return shown.map((announcement) => ({
-        key: `${id}:${announcement.id}`,
-        block: id,
-        titleKey,
-        announcement,
-      }));
+      // Un anuncio en varias partes (`AnnouncementSection.part`) da una
+      // diapositiva por parte; la primera conserva la clave de siempre.
+      return shown.flatMap((announcement) => {
+        const total = paginate ? announcementParts(announcement) : 1;
+        return Array.from({ length: total }, (_, index) => ({
+          key: index === 0 ? `${id}:${announcement.id}` : `${id}:${announcement.id}:${index + 1}`,
+          block: id,
+          titleKey,
+          announcement,
+          ...(total > 1 ? { page: { index, total } } : {}),
+        }));
+      });
     }
 
     if (id === 'upcoming') {
@@ -694,6 +706,38 @@ export class PresentationBlocksService {
       onlyFirst: !!primero && primero.enabled && this.states().every((s) => s === primero || !s.enabled),
       allSelected: visible === conContenido.length && elementosCompletos,
     };
+  });
+
+  /**
+   * Atajo «Rugăciune»: el momento de oración del culto. Sólo quedan
+   * encendidos los bloques de oración (`PRAYER_BLOCKS`: rugăciune pentru
+   * familii y cauzele bisericii) y, de las familias, **sólo el resumen** (la
+   * primera diapositiva, todas a la vez); las fichas una a una, no.
+   */
+  selectPrayerBlocks(): void {
+    if (!this.hasPrayerBlocks()) return;
+    const next: Partial<Record<PresentationBlockId, boolean>> = {};
+    for (const state of this.states()) {
+      next[state.id] = state.autoAvailable && PRAYER_BLOCKS.includes(state.id);
+    }
+    this.overrides.set(next);
+    persistOverrides(next);
+    this.selectOnlyFirst('families');
+  }
+
+  /** Hay algún bloque de oración con contenido (si no, el atajo no aplica). */
+  readonly hasPrayerBlocks = computed<boolean>(() =>
+    this.states().some((s) => s.autoAvailable && PRAYER_BLOCKS.includes(s.id)),
+  );
+
+  /** Está aplicado el atajo «Rugăciune» (para pintarlo como activo). */
+  readonly prayerOnly = computed<boolean>(() => {
+    if (!this.hasPrayerBlocks()) return false;
+    const ok = this.states().every(
+      (s) => s.enabled === (s.autoAvailable && PRAYER_BLOCKS.includes(s.id)),
+    );
+    const familias = this.states().find((s) => s.id === 'families');
+    return ok && (!familias?.enabled || this.selection('families').onlyFirst);
   });
 
   /** Sólo el primer bloque con contenido queda encendido. */

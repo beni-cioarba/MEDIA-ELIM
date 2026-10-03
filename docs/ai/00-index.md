@@ -57,8 +57,8 @@ src/app/
       presentation-blocks.service.ts ⭐ Qué bloques se proyectan (auto/manual) y sus diapositivas
       presentation-display.service.ts QR visible / tamaño del QR / duración por bloque
       presentation-sync.service.ts   ⭐ Canal entre ventanas: elección de líder, estado, órdenes
-      projection-window.service.ts   Abre/cierra la ventana de proyección (2.ª pantalla si el navegador lo permite)
-      carousel.service.ts            Motor del carrusel (diapositiva, pausa, progreso)
+      projection-window.service.ts   Detecta pantallas y abre/controla una ventana de proyección por pantalla
+      carousel.service.ts            Motor del carrusel: plazos (un setTimeout), pausa; nada por fotograma
       calendar.service.ts            Generación de .ics / webcal / Google Calendar
       language.service.ts            ES/RO + persistencia
       logger.service.ts              Log con ámbito (`.prefix('youtube')`)
@@ -111,7 +111,9 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
-| «Proyectar en la pantalla del templo»               | `/media/control` → «Abrir proyección» (nada de código; `docs/ai/30-presentation.md`) |
+| «Proyectar en la pantalla del templo» · «en dos pantallas a la vez» | `/media/control` → Pantallas → «Detectar pantallas» → «Proyectar» en cada una (nada de código; `docs/ai/30-presentation.md`) |
+| «Ver cómo queda un anuncio antes del día» | `/media/control` → «Anuncios programados» → Ver / Probar en ventana (`publishedOn` futuro) |
+| «La proyección va lenta / se cuelga» | `docs/ai/30-presentation.md` → «Rendimiento» (nada por fotograma, 3 diapositivas montadas) |
 | «Que tal bloque no salga al presentar»              | Panel de control (o popover de la ventana), nada de código |
 | «Quitar / poner el QR al proyectar»                 | Es la diapositiva «Site-ul bisericii» (bloque `website`): se enciende o apaga como cualquier bloque, sin código — `30-presentation.md` → «Lienzo» |
 | «Avisar de que hoy también hay directo» · «que compartan la transmisión» | Panel de control → «Anunță transmisiunea live de azi» (caduca a medianoche; nada de código): «ÎN DIRECT» en la esquina + QR del directo en la diapositiva del QR. `docs/ai/30-presentation.md` → «Aviso de directo» |

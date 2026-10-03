@@ -146,12 +146,17 @@ Maquetación (`announcement-card.component.scss`, bloque `.stage.is-fullscreen`)
   en 5,6u; etiquetas y secundarios no bajan de 3,2u (`max()` en la hoja).
 - **`webOnly: true`** en una sección la deja sólo para la web (`/anunturi`),
   no para el cartel: es la válvula para el detalle que no cabe legible (listas
-  largas de nombres, condiciones). Ejemplo: en el 25.º aniversario la lista de
-  invitados va `webOnly`; el menú y las inscripciones (lo accionable) se
-  proyectan.
+  largas de nombres, condiciones).
+- **`part: 2`** en una sección la proyecta en una **segunda diapositiva**
+  («1/2», «2/2», 03/10/2026): para cuando todo el texto importa y no cabe
+  legible en una. Cada parte repite la cabecera (fecha, título, lugar); la 1
+  lleva el resumen, la última la nota y el versículo; cada parte dura el tiempo
+  del anuncio. Ejemplo: 25.º aniversario → 1/2 menú e inscripciones (lo
+  práctico), 2/2 invitados + «Mesajul de bază». En una lista de personas en dos
+  columnas, el acompañante («cu soția») va en su propia línea, debajo.
 
-En el panel de control cada anuncio es una fila; la casilla de visibilidad
-decide si se proyecta.
+En el panel de control cada diapositiva es una fila («… · 1/2», «… · 2/2»); la
+casilla de visibilidad (en la primera parte) decide si se proyecta el anuncio.
 
 ### Límites de redacción (para que el cartel quepa a escala 1)
 
@@ -166,8 +171,10 @@ decide si se proyecta.
 | `verse`      | la oración que dice lo que se pide, ≤ 60 caracteres (una línea); si hay que cortar el versículo, «…» al final |
 
 Cuando un aviso trae más que esto, el orden de decisión es: (1) acortar el
-texto sin perder el dato, (2) marcar `webOnly` la sección que es detalle,
-(3) partir en **dos anuncios** con `id` distintos (uno por tema). Nunca
+texto sin perder el dato, (2) si todo el texto debe verse, pasar a `part: 2`
+la sección de detalle (dos diapositivas del mismo anuncio); si es detalle
+prescindible, `webOnly`, (3) partir en **dos anuncios** con `id` distintos
+(cuando son dos temas). Nunca
 apretar: si el autoajuste baja de ~0,85 el cartel se lee mal desde el fondo,
 y el detalle completo siempre está en la web, a un escaneo del QR.
 

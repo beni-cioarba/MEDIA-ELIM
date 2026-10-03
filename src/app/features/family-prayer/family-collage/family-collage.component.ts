@@ -18,30 +18,38 @@ import {
 } from '../../../core/services/family-prayer.service';
 import { FitToBoxDirective } from '../../../shared/fit-to-box/fit-to-box.directive';
 import { FamilyPhotoComponent } from '../family-photo/family-photo.component';
-import { JustifiedLayout, justifiedLayout } from './justified-layout';
+import { EvenRowsLayout, evenRowsLayout } from './even-rows-layout';
 
 /** Ancho mínimo de la columna de la lista, en unidades de diapositiva (u). */
 const SIDE_MIN_U = 56;
-/** Separación entre fotos y entre columna y collage (u). */
-const GAP_U = 1.2;
+/** Separación entre fotos (u). */
+const GAP_U = 1.6;
+/**
+ * Margen alrededor del collage (u), igual en los cuatro lados: las fotos
+ * flotan sobre el navy y ninguna toca el borde de la pantalla ni la lista
+ * (si unas tocan el borde y otras no, el conjunto parece descuadrado).
+ */
+const PAD_U = 3;
 
 /**
  * Resumen **proyectado** de la semana: el collage del PowerPoint de la
  * iglesia, hecho a medida.
  *
  *   ┌───────────────┬──────────────────────────────┐
- *   │ RUGĂCIUNE…    │  [foto]      [foto]           │
- *   │ 28 sept–4 oct │  [foto][foto][foto]           │
+ *   │ RUGĂCIUNE…    │ [   foto   ][  foto  ]        │
+ *   │ 28 sept–4 oct │ [ foto ][ foto ][ foto ]       │
  *   │ Bena …        │                               │
- *   │ Bindea …      │   fotos enteras, a su         │
- *   │               │   proporción, sin huecos      │
+ *   │ Bindea …      │  filas de la misma altura,     │
+ *   │               │  bloque rectangular exacto     │
  *   └───────────────┴──────────────────────────────┘   (a sangre: pantalla entera)
  *
- * Las fotos se colocan en filas justificadas (`justifiedLayout`): enteras,
- * a su proporción y cubriendo el máximo de la caja. La columna de la lista
- * se queda con **todo el ancho que el collage no usa**, así no queda hueco
- * ni con fotos muy verticales. Sin numeración: la lista va en el mismo orden
- * en que se leen las fotos (izquierda → derecha, arriba → abajo).
+ * **Todas las familias pesan lo mismo**: todas las fotos tienen la misma
+ * altura (las personas salen a la misma escala) y forman un rectángulo
+ * exacto (`evenRowsLayout`, con el porqué y las alternativas descartadas).
+ * Fotos siempre enteras; si un marco es algo más ancho que su foto, el margen
+ * lo rellena ella misma difuminada. La columna de la lista se queda con
+ * **todo el ancho que el collage no usa**. Sin numeración: la lista va en el mismo
+ * orden en que se leen las fotos (izquierda → derecha, arriba → abajo).
  *
  * Sólo proyección: la web usa `FamilySummaryComponent` (mosaico enlazado).
  */
@@ -81,19 +89,20 @@ export class FamilyCollageComponent {
     });
   }
 
-  /** El collage: filas justificadas en lo que deja la columna mínima de la lista. */
-  protected readonly layout = computed<JustifiedLayout | null>(() => {
+  /** El collage: filas de igual altura en lo que deja la columna mínima de la lista. */
+  protected readonly layout = computed<EvenRowsLayout | null>(() => {
     const box = this.box();
     const week = this.week$();
     if (!box || !week) return null;
     const gap = GAP_U * box.unit;
-    const width = box.width - SIDE_MIN_U * box.unit - gap;
+    const pad = PAD_U * box.unit;
+    const width = box.width - SIDE_MIN_U * box.unit - 2 * pad;
     const ratios = week.families.map((family) => family.photo?.ratio ?? 0.8);
-    return justifiedLayout(ratios, width, box.height, gap);
+    return evenRowsLayout(ratios, width, box.height - 2 * pad, gap);
   });
 
   protected readonly gapPx = computed(() => (this.box()?.unit ?? 0) * GAP_U);
-
+  protected readonly padPx = computed(() => (this.box()?.unit ?? 0) * PAD_U);
 
   private measure(): void {
     const { width, height } = this.stage().nativeElement.getBoundingClientRect();

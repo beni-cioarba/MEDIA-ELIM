@@ -1,22 +1,22 @@
 # 30 · Modo presentación
 
-La web se proyecta en la pantalla del templo desde un **panel de control**
-(`/media/control`), como la vista del presentador de PowerPoint: el operador ve
-la lista de diapositivas, la vista previa, el transporte y los ajustes en su
-portátil, y la **ventana de proyección** (`/media/ecran`) se abre aparte para
-llevarla a la segunda pantalla. Ambas hablan por un canal local y la proyección
-sigue sola si el panel se cierra.
+La web se proyecta en las pantallas del templo desde un **panel de control**
+(`/media/control`), una consola de realización: el operador ve la escaleta, el
+monitor de programa, el transporte, las **salidas** y los ajustes en su
+portátil, y abre una **ventana de proyección** (`/media/ecran`) **por cada
+pantalla** (proyector, televisor…). Todas hablan por un canal local, muestran
+exactamente lo mismo y siguen solas si el panel se cierra.
 
 ```
- Portátil del operador                              Pantalla del templo
-┌───────────────────────────────┐                  ┌────────────────────────────┐
-│ /media/control  (Panou)       │  BroadcastChannel│ /media/ecran  (Proiecție)  │
-│ · diapositivas por bloque     │ ◀──── state ──── │ · <app-stage> presentando  │
-│ · ◀ ⏸ ▶  7/10  ━━━░  0:12     │ ──── órdenes ──▶ │ · controles al pasar el    │
-│ · vista previa (iframe)       │                  │   ratón · F pantalla compl.│
-│ · bloques · duraciones        │                  │                            │
-└───────────────────────────────┘                  └────────────────────────────┘
-        localStorage compartido (ajustes) → evento `storage` sincroniza las dos
+ Portátil del operador                                Pantallas del templo
+┌───────────────────────────────┐                  ┌──────────────────────────┐
+│ /media/control  (Panou)       │  BroadcastChannel│ /media/ecran  · pantalla 1│
+│ · escaleta por bloque         │ ◀──── state ──── │ /media/ecran  · pantalla 2│
+│ · monitor + ◀ ⏸ ▶ 0:12/0:30  │ ──── órdenes ──▶ │ …  (una ventana por      │
+│ · salidas: detectar pantallas,│                  │    pantalla, mismo estado)│
+│   proyectar, identificar…     │                  │                          │
+└───────────────────────────────┘                  └──────────────────────────┘
+        localStorage compartido (ajustes) → evento `storage` sincroniza todas
 ```
 
 > El botón del dock en `/media` **abre el panel de control**. La tecla `F` en
@@ -30,69 +30,143 @@ sigue sola si el panel se cierra.
 | `/media/control`         | `PresenterComponent`   | Panel de control. No proyecta: envía órdenes y refleja estado |
 | `/media/ecran`           | `ProjectionComponent`  | Ventana de proyección: `<app-stage>` ya presentando, sin nav ni pie |
 | `/media/ecran?rol=preview` | `ProjectionComponent` | Vista previa incrustada en el panel (`<iframe>`): sin controles ni pantalla completa |
+| `/media/ecran?rol=solo&anunt=<id>` | `ProjectionComponent` | **Vista de prueba**: UNA diapositiva fija (un anuncio aunque aún no esté publicado). No se sincroniza con nadie |
 
 Se declaran **antes** del `MainLayoutComponent` en `app.routes.ts` (si no,
 `media/:blockId` las capturaría). No van en el menú: el acceso permanente es
 la píldora «Panou de control» de la franja legal del pie (`footer__operator`)
 y el botón del dock en `/media`.
 
-## Un solo reloj: roles y `PresentationSyncService`
+## Un solo reloj, N salidas: `PresentationSyncService` (revisión 03/10/2026)
 
-Puede haber varias instancias de la app presentando a la vez en la misma
-máquina. Cada una se une con la prioridad de su papel (`ROLE_PRIORITY`):
-**ventana 20 · pestaña en pantalla completa 10 · vista previa 1**. La de mayor
-prioridad viva es el **líder**: la única que avanza el carrusel. Publica
-`{index, paused, startedAt, durationMs, count, slideKey, fullscreen}` cuando
-cambia y como latido cada 2 s (`fullscreen` es sólo informativo: el panel lo usa
-para pintar el botón de pantalla completa como pulsado); las demás lo reflejan y calculan el progreso en local a partir
-de `startedAt` (nadie retransmite 60 mensajes por segundo).
+Puede haber varias instancias presentando a la vez en la misma máquina: una
+ventana por pantalla, la vista previa del panel, la pestaña en pantalla
+completa. Cada una se une con la prioridad de su papel (`ROLE_PRIORITY`:
+**ventana 20 · pestaña 10 · vista previa 1**) **+ 100 si está visible**. La de
+mayor prioridad es el **líder**: la única que decide cuándo pasa la diapositiva.
+Así una ventana minimizada (Chrome frena sus temporizadores) nunca lleva el
+reloj si hay otra a la vista.
 
-- Llega una ventana (mejor prioridad) → durante 400 ms escucha y **hereda** la
-  diapositiva del líder anterior; después manda.
-- Se cierra el líder (`bye` en `pagehide`, o 6 s sin latido) → la siguiente
-  instancia toma el relevo. Sin ventana, la vista previa del panel proyecta
-  sola: sirve para ensayar.
-- **Órdenes** (`next`, `prev`, `goto`, `pause`, `play`, `toggle`): cualquier
-  ventana las envía, el líder las ejecuta. `CarouselService.next()` y compañía
-  ya pasan por ahí, así que teclado, controles y panel se comportan igual.
-- Los **ajustes** (bloques, anuncios ocultos, duraciones, directo) no viajan por el
-  canal: viven en `localStorage` y `PresentationBlocksService` /
-  `PresentationDisplayService` releen al recibir `storage`.
-- El reloj sólo corre con la página **visible** (`ClockService.pageVisible`):
-  una ventana minimizada no avanza. En el templo la ventana siempre está a la
-  vista; si el operador esconde la pestaña del panel sin ventana abierta, la
-  vista previa se detiene hasta que vuelva.
+**El tiempo es un plazo, no un progreso.** El líder publica
+`{index, slideKey, paused, startedAt, elapsedAtPause, durationMs, count, fullscreen}`
+al cambiar algo y como latido cada 2 s; nadie manda nada por fotograma. Las
+demás reflejan la diapositiva **por clave** (`slideKey` manda sobre `index`) y
+pintan la barra de progreso como animación CSS desde `startedAt`, así que todas
+las pantallas cambian a la vez y en el mismo punto.
 
-## Ventana de proyección: `ProjectionWindowService`
+- Llega una instancia mejor → durante 400 ms escucha y **hereda** diapositiva y
+  reloj del líder anterior; después manda (`canPublish` = líder y asentado: el
+  efecto que publica lo lee de forma reactiva, para publicar justo al asentarse).
+- Se cierra el líder (`bye` en `pagehide`, o 6,5 s sin latido) → la siguiente
+  toma el relevo con el último estado y sigue donde iba. Sin ventanas, la vista
+  previa del panel proyecta sola: sirve para ensayar.
+- **Órdenes** (`next`, `prev`, `goto`, `pause`, `play`, `toggle`): cualquiera las
+  envía, el líder las ejecuta.
+- **Presencia**: cada saludo lleva `PeerInfo {role, name, visible, fullscreen,
+  screen}`; `outputs` = ventanas vivas, ordenadas por nombre (su número es el de
+  «Identificar»). El panel pregunta `who` al abrirse y la lista aparece al
+  instante. `identify` → cada ventana muestra su número 4 s.
+- Los **ajustes** (bloques, duraciones, modo manual, directo) no viajan por el
+  canal: viven en `localStorage` y cada servicio relee al recibir `storage`.
+- Trampa (03/10/2026): las llamadas al canal desde un `effect` van en
+  `untracked` (`join`, `publishState`); si no, leen y escriben las mismas
+  señales y el efecto entra en bucle infinito (la página se congela).
 
-`window.open` con nombre fijo (`elim-proiectie`): abrir dos veces trae la
-misma. Con la **Window Management API** (Chrome/Edge) el panel pide permiso,
-elige la pantalla que no es la actual y abre la ventana sobre ella, ya a
-pantalla completa donde el navegador lo admite (`fullscreen` en las features).
-Sin la API: popup 16:9 que se arrastra a la otra pantalla y `F`.
+## Rendimiento (auditoría del 03/10/2026)
+
+Medido con Playwright + CDP (`Performance.getMetrics`, 20 s de proyección):
+
+| | antes | después |
+| --- | --- | --- |
+| Ventana de proyección: CPU / maquetaciones | 0,95 s / 1.201 | 0,01 s / 0 |
+| Panel de control: CPU | 2,02 s | 0,08 s |
+| Nodos del DOM en proyección | 899 (17 diapositivas) | 333 |
+
+Causas y remedio (no reintroducir):
+
+1. **Nada por fotograma.** El progreso era una señal escrita 60 veces por
+   segundo (rAF) → detección de cambios de toda la app en cada fotograma, en
+   cada pantalla. Ahora el líder programa **un** `setTimeout` al plazo (fuera
+   de la zona) y la barra es `SlideProgressDirective` (Web Animations sobre
+   `transform`, compositor). El panel sólo tiene un reloj de 1 s para textos.
+2. **Sólo se montan 3 diapositivas** (`StageComponent.isMounted`): la actual,
+   la siguiente (precarga fotos) y la anterior (fundido de salida).
+3. **Halos quietos al proyectar** (`blur(120px)` animado sin fin sobre 60vmax).
+4. La vista previa y la de prueba usan YouTube en modo `ligero` (sin sondeo).
+
+## Ventanas y pantallas: `ProjectionWindowService`
+
+**Detecta las pantallas** con la Window Management API (Chrome/Edge): el
+panel pide permiso con un clic («Detectar pantallas»; si ya estaba concedido,
+las lista solo) y muestra cada una con nombre, resolución, «principal» y «este
+panel»; se actualiza al conectar o desconectar una (`screenschange`). Por
+pantalla: **Proyectar** (abre la ventana sobre ella, a pantalla completa donde
+se admite) y, en directo, pantalla completa / traer al frente / cerrar.
+«Proyectar en todas» abre una en cada pantalla que no es la del panel.
+«Nueva ventana» abre una suelta (sin API, o para arrastrarla a mano).
+
+Cada ventana se llama `elim-proiectie-<pantalla>` (`<left>_<top>`) o
+`elim-proiectie-v<n>`: abrir otra vez en la misma pantalla la trae al frente.
+Los nombres que abrió el panel se guardan en `sessionStorage`, así que tras
+recargarlo las sigue controlando. Una pestaña abierta a mano en `/media/ecran`
+también se sincroniza y aparece en la lista («pestaña abierta a mano»), pero el
+panel no puede mandarle órdenes directas (no tiene su referencia).
 
 ### Pantalla completa desde el panel
 
 La Fullscreen API exige un gesto del usuario **en la ventana que la pide**, y
 el clic ocurre en el panel. Se resuelve con la **delegación de capacidades**
-(Chromium ≥ 104): `ProjectionWindowService.toggleFullscreen()` hace
-`postMessage({type: PROJECTION_MESSAGE.fullscreen}, {targetOrigin, delegate:
-'fullscreen'})` a la referencia de la ventana y el gesto viaja con el mensaje.
-`ProjectionComponent` (sólo con `role === 'window'` y mismo origen) llama a
-`PresentationService.toggleNative()` **dentro del manejador** —la capacidad sólo
-vale mientras se despacha el mensaje— y contesta `PROJECTION_MESSAGE.
-fullscreenResult {ok}`. Con `ok: false` (Firefox/Safari no delegan) el panel
-muestra `fullscreenDenied` → «pulsa F en la proyección». El estado real llega
-por el latido del líder (`SyncState.fullscreen`), no por la respuesta.
+(Chromium ≥ 104): `toggleFullscreen(name)` hace `postMessage({type:
+PROJECTION_MESSAGE.fullscreen}, {targetOrigin, delegate: 'fullscreen'})` a esa
+ventana y el gesto viaja con el mensaje. `ProjectionComponent` (sólo con
+`role === 'window'`) llama a `toggleNative()` **dentro del manejador** y
+contesta `fullscreenResult {ok}`. Con `ok: false` (Firefox/Safari) el panel
+muestra «pulsa F en la proyección». El estado real llega en el saludo de cada
+ventana (`PeerInfo.fullscreen`).
 
-Este protocolo va por `postMessage` directo y **no por el `BroadcastChannel`**:
-sólo un `postMessage` a una referencia de ventana puede delegar el gesto. Por
-eso el servicio necesita la referencia; si el panel se recargó y la perdió, la
-**recupera por el nombre** (`window.open('', 'elim-proiectie')` devuelve la
-ventana viva sin navegarla; si no existía, abre una en blanco que se detecta y
-se cierra al instante, así que sólo se intenta cuando el canal dice que hay
-ventana). La misma recuperación sirve a «Ir a la ventana». La tecla `F` y el
-botón de los controles flotantes de la propia ventana siguen funcionando.
+## Anuncios programados: verlos antes del día
+
+`AnnouncementsService.scheduled` = anuncios con `publishedOn` futuro. El panel
+los lista («Anuncios programados») con **Ver** (diálogo 16:9 con un `<iframe>`
+de `/media/ecran?rol=solo&anunt=<id>`: el mismo escenario, así que se ve
+exactamente como se proyectará) y **Probar en ventana** (la misma vista en una
+ventana suelta, para arrastrarla al proyector y verla a tamaño real). La web
+pública y la proyección siguen sin mostrarlos antes de tiempo.
+
+## Cuenta atrás del culto (03/10/2026)
+
+`ServiceCountdownService` + `shared/service-countdown`. Automática: el próximo
+comienzo de **hoy** según `weeklyProgram` y los eventos de hoy
+(`ScheduleService.todayStarts`; el domingo «10:00 & 18:00» son dos). El panel
+(tarjeta «Cuenta atrás del culto») permite encenderla/apagarla, elegir la
+antelación (15-90 min) y fijar una **hora manual para hoy** que manda sobre el
+horario y caduca a medianoche (`PresentationDisplayService.countdown`, en
+`localStorage` como el resto: todas las pantallas marcan lo mismo).
+
+En proyección es una píldora en el **margen inferior izquierdo** (simétrica a
+la firma ELIM), en todas las diapositivas: clara con texto navy sobre las
+diapositivas claras, oscura sobre las de oración a sangre (`:host-context(
+.stage--bleed)`). «ÎNCEPEM ÎN 12:47» con cifras monoespaciadas y un anillo que
+se cierra con la antelación; los 5 últimos minutos en oro; a la hora, «Începem
+acum» un minuto y desaparece. Rendimiento: el segundero sólo existe dentro de la
+ventana; fuera, un único `setTimeout`. Las diapositivas a sangre reservan 7u
+abajo (causas, collage de familias) para que no pise el texto.
+
+## Atajo «Rugăciune» (03/10/2026)
+
+Tercer botón de la selección global (junto a «Doar primul» / «Toate»):
+`PresentationBlocksService.selectPrayerBlocks()` deja encendidos sólo los
+bloques de oración (`PRAYER_BLOCKS`: `families` y `causes`) y, de familias,
+**sólo el resumen** (las fichas una a una, no). Se pinta en oro mientras está
+aplicado (`prayerOnly`).
+
+## Panel de control: consola de realización (03/10/2026)
+
+Lenguaje propio, no el de la web (decisión del usuario): negro azulado,
+filetes de 1 px, micro-rótulos en versalitas, cifras monoespaciadas; oro =
+marca y «en pantalla», rojo = en el aire, verde = salida sana. Tres columnas
+(escaleta · monitor · salidas/ritmo/programados) que caben en 13" y se apilan
+por debajo de 1100 px. Tokens en el `:host` de `presenter.component.scss`.
 
 ## Piezas
 
@@ -316,6 +390,7 @@ Cada diapositiva dura lo que su bloque tenga fijado
 
 | Bloque          | s  | Por qué                                              |
 | --------------- | -- | ---------------------------------------------------- |
+| `causes`        | 60 | la lista se lee en voz alta y se ora por ella (03/10/2026) |
 | `announcements` | 30 | se leen, y hay que darles tiempo a los más lentos     |
 | `bible`         | 20 | siete lecturas que muchos apuntan                     |
 | `upcoming`      | 15 | dos eventos con fecha, título y descripción por página |
@@ -329,6 +404,25 @@ temporizador** (la duración es una signal que lee el `effect` del carrusel).
 Persistencia: `localStorage['iglesia-redes.presentation.display']` (junto al
 aviso de directo). Los defectos viven en `DEFAULT_DURATIONS_S`; un bloque nuevo **debe**
 añadirse ahí (el tipo lo exige).
+
+### Avance automático / sólo manual (03/10/2026)
+
+Interruptor general en el panel (fila «Pantalla» → «Avans automat»):
+`PresentationDisplayService.autoAdvance` (`localStorage`, mismo objeto que las
+duraciones; **no caduca**: es un modo de trabajo, no contenido). Apagado:
+
+- el `effect` del carrusel no arranca el reloj (`CarouselService.autoAdvance`)
+  y el líder publica `durationMs: 0`, así las demás ventanas pintan la barra
+  vacía;
+- se cambia sólo a mano (← → / lista / 1-9) y **Espacio avanza** en vez de
+  pausar; en la proyección desaparece el botón de pausa y en el panel el de
+  transporte se deshabilita y el tiempo dice «Manual»;
+- las duraciones (de bloque y de diapositiva) **se conservan** y se atenúan en
+  la lista; al encenderlo vuelven a mandar tal cual, desde cero en la
+  diapositiva en curso.
+
+La pausa sigue siendo lo puntual («espera un momento»); el interruptor, el modo
+de toda la sesión.
 
 ## Lienzo: todo para el contenido (28/09/2026)
 
@@ -388,12 +482,12 @@ estar a la vista durante todo el culto.
 
 - Avance automático **por diapositiva**, con la duración de su bloque (ver
   «Duración por bloque»): cada anuncio y cada página de eventos tiene su tiempo.
-- El bucle `requestAnimationFrame` se arranca y se detiene desde un único
-  `effect()` que observa: fullscreen, pausa, `ClockService.pageVisible` y número
-  de diapositivas. Fuera de presentación **no corre nada**.
-- `currentIndex` se recorta contra el número real de diapositivas, así que
-  activar/desactivar bloques (o caducar un anuncio) nunca deja el carrusel en
-  un índice inválido.
+- Sólo el líder programa el plazo (un `setTimeout` por diapositiva); si el
+  navegador lo frenó, al volver a ser visible se comprueba el plazo y se pasa.
+  Cambiar de diapositiva por una orden, por tiempo o porque desaparece la
+  actual reinicia su reloj (`timedKey`).
+- `currentIndex` se resuelve por clave y se recorta contra el número real de
+  diapositivas: activar/desactivar bloques nunca deja un índice inválido.
 
 ## Atajos de teclado (`StageComponent.handleKey`)
 
@@ -403,7 +497,7 @@ estar a la vista durante todo el culto.
 | `Esc`        | Salir del modo simulado (o de la pantalla completa nativa, lo hace el navegador) |
 | `←` `→`      | Diapositiva anterior / siguiente           |
 | `PageUp/Down`| Igual que las flechas                      |
-| `Espacio`    | Pausar / reanudar                          |
+| `Espacio`    | Pausar / reanudar (en modo manual: siguiente) |
 | `1`…`9`      | Ir a la diapositiva n-ésima **de las activas** |
 
 Salvo `F` y `Esc`, sólo actúan en modo presentación. El panel de bloques hace

@@ -24,8 +24,9 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   // Resumen y fichas comparten tiempo: una ficha lleva foto y uno o dos
   // párrafos que se leen en voz alta mientras se ve la familia.
   families: 20,
-  // Una sola diapositiva con toda la lista: da tiempo a leer los nombres.
-  causes: 25,
+  // Una sola diapositiva con toda la lista, que se lee en voz alta y se ora
+  // por ella: un minuto entero para no cortar la oración a mitad.
+  causes: 60,
   talent: 25,
   // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
   website: 15,
@@ -79,13 +80,48 @@ interface DisplayPrefs {
    * no se proyecta (invariante 5: nunca contenido caducado).
    */
   readonly liveNoticeDate: string | null;
+  /**
+   * `false` ⇒ el carrusel no avanza solo: cada diapositiva cambia sólo a mano
+   * (flechas, panel). No caduca: es un modo de trabajo del operador (p. ej. un
+   * culto en el que se va pasando al ritmo del predicador), no un contenido.
+   * Las duraciones se conservan y vuelven a mandar al reactivarlo.
+   */
+  readonly autoAdvance: boolean;
+  /** Cuenta atrás para el inicio del culto (ver `ServiceCountdownService`). */
+  readonly countdown: CountdownPrefs;
 }
+
+/** Ajustes de la cuenta atrás hasta el comienzo del culto. */
+export interface CountdownPrefs {
+  /** Se muestra en la proyección (automática según el horario). */
+  readonly enabled: boolean;
+  /** Minutos antes del comienzo en que aparece. */
+  readonly leadMinutes: number;
+  /**
+   * Hora de comienzo puesta a mano para un día (`HH:MM` + `YYYY-MM-DD`), que
+   * manda sobre el horario: un culto que hoy empieza a otra hora, un evento
+   * que no está en el programa… Guarda el día para caducar sola a medianoche.
+   */
+  readonly manual: { readonly date: string; readonly time: string } | null;
+}
+
+/** Opciones de antelación que ofrece el panel (minutos). */
+export const COUNTDOWN_LEAD_OPTIONS: readonly number[] = [15, 30, 45, 60, 90];
+
+const COUNTDOWN_DEFAULTS: CountdownPrefs = { enabled: true, leadMinutes: 30, manual: null };
 
 const STORAGE_KEY = 'iglesia-redes.presentation.display';
 
-const DEFAULTS: DisplayPrefs = { durations: {}, slideDurations: {}, liveNoticeDate: null };
+const DEFAULTS: DisplayPrefs = {
+  durations: {},
+  slideDurations: {},
+  liveNoticeDate: null,
+  autoAdvance: true,
+  countdown: COUNTDOWN_DEFAULTS,
+};
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /**
  * Preferencias de **pantalla y ritmo** de la proyección (no de contenido):
@@ -101,6 +137,9 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
  * Las duraciones vienen con un valor por defecto por bloque y el operador
  * puede ajustarlas desde el panel de controles; se recuerdan en
  * `localStorage`, como el resto de ajustes.
+ *
+ * El **avance automático** es el interruptor general del ritmo: apagado, el
+ * carrusel no corre el reloj y sólo cambia de diapositiva a mano.
  *
  * El aviso de emisión en directo también es de pantalla: marca «ÎN DIRECT»
  * junto a la firma de la esquina y suma el código del directo a la
@@ -126,6 +165,33 @@ export class PresentationDisplayService {
 
   /** `true` si hoy se anuncia que el programa también se emite en directo. */
   readonly liveNotice = computed<boolean>(() => this.prefs().liveNoticeDate === this.today());
+
+  /**
+   * `true` si las diapositivas avanzan solas con su tiempo; `false` si sólo
+   * cambian a mano. Manda sobre todos los tiempos (de bloque y de diapositiva).
+   */
+  readonly autoAdvance = computed<boolean>(() => this.prefs().autoAdvance);
+
+  /** Ajustes de la cuenta atrás; la hora manual sólo vale el día en que se puso. */
+  readonly countdown = computed<CountdownPrefs>(() => {
+    const prefs = this.prefs().countdown;
+    return prefs.manual && prefs.manual.date !== this.today() ? { ...prefs, manual: null } : prefs;
+  });
+
+  setCountdownEnabled(enabled: boolean): void {
+    this.update({ countdown: { ...this.prefs().countdown, enabled } });
+  }
+
+  setCountdownLead(leadMinutes: number): void {
+    if (!COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)) return;
+    this.update({ countdown: { ...this.prefs().countdown, leadMinutes } });
+  }
+
+  /** Hora de comienzo manual para hoy (`HH:MM`), o `null` para volver al horario. */
+  setCountdownManual(time: string | null): void {
+    const manual = time && HH_MM.test(time) ? { date: this.today(), time } : null;
+    this.update({ countdown: { ...this.prefs().countdown, manual } });
+  }
 
   /** Duración efectiva por bloque (segundos), ya resuelta con los defectos. */
   readonly durations = computed<Readonly<Record<PresentationBlockId, number>>>(() => ({
@@ -223,6 +289,11 @@ export class PresentationDisplayService {
     this.update({ slideDurations });
   }
 
+  /** Avance automático por tiempos (`true`) o sólo manual (`false`). */
+  setAutoAdvance(on: boolean): void {
+    this.update({ autoAdvance: on });
+  }
+
   /** Enciende el aviso de directo para hoy (caduca a medianoche) o lo apaga. */
   setLiveNotice(on: boolean): void {
     this.update({ liveNoticeDate: on ? this.today() : null });
@@ -246,16 +317,38 @@ function readStoredPrefs(): DisplayPrefs {
     if (!parsed || typeof parsed !== 'object') return DEFAULTS;
     // Las claves antiguas (`qrVisible`, `qrSize`) se ignoran y desaparecen al
     // guardar la próxima preferencia.
-    const { durations, slideDurations, liveNoticeDate } = parsed as Record<string, unknown>;
+    const { durations, slideDurations, liveNoticeDate, autoAdvance, countdown } = parsed as Record<string, unknown>;
     return {
       durations: readDurations(durations),
       slideDurations: readSlideDurations(slideDurations),
       liveNoticeDate:
         typeof liveNoticeDate === 'string' && ISO_DATE.test(liveNoticeDate) ? liveNoticeDate : null,
+      // Sólo un `false` explícito apaga el avance: cualquier otra cosa (clave
+      // ausente en preferencias antiguas) deja el comportamiento de siempre.
+      autoAdvance: autoAdvance !== false,
+      countdown: readCountdown(countdown),
     };
   } catch {
     return DEFAULTS;
   }
+}
+
+/** Cuenta atrás guardada, validada campo a campo (lo dudoso vuelve al defecto). */
+function readCountdown(value: unknown): CountdownPrefs {
+  if (!value || typeof value !== 'object') return COUNTDOWN_DEFAULTS;
+  const { enabled, leadMinutes, manual } = value as Record<string, unknown>;
+  const { date, time } = (manual ?? {}) as Record<string, unknown>;
+  return {
+    enabled: enabled !== false,
+    leadMinutes:
+      typeof leadMinutes === 'number' && COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)
+        ? leadMinutes
+        : COUNTDOWN_DEFAULTS.leadMinutes,
+    manual:
+      typeof date === 'string' && ISO_DATE.test(date) && typeof time === 'string' && HH_MM.test(time)
+        ? { date, time }
+        : null,
+  };
 }
 
 /** Sólo acepta bloques conocidos y segundos dentro de los límites. */

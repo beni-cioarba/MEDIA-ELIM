@@ -2,11 +2,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  ElementRef,
   HostListener,
+  NgZone,
   OnInit,
   computed,
   inject,
   signal,
+  viewChild,
   DOCUMENT
 } from '@angular/core';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
@@ -25,14 +29,20 @@ import {
 } from '../../core/services/presentation-blocks.service';
 import {
   DURATION_MAX_S,
+  COUNTDOWN_LEAD_OPTIONS,
   DURATION_MIN_S,
   PresentationDisplayService,
   slideTimeKeys,
 } from '../../core/services/presentation-display.service';
-import { PresentationSyncService } from '../../core/services/presentation-sync.service';
-import { ProjectionWindowService } from '../../core/services/projection-window.service';
+import { Announcement } from '../../core/church.config';
+import { AnnouncementsService, announcementParts } from '../../core/services/announcements.service';
+import { SlideTiming } from '../../core/services/carousel.service';
+import { ServiceCountdownService } from '../../core/services/service-countdown.service';
+import { Peer, PresentationSyncService, elapsedMs } from '../../core/services/presentation-sync.service';
+import { DisplayScreen, ProjectionWindowService } from '../../core/services/projection-window.service';
 import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { SlideProgressDirective } from '../../shared/slide-progress/slide-progress.directive';
 
 /** Un bloque con sus diapositivas, para la lista lateral del panel. */
 interface BlockGroup {
@@ -62,11 +72,9 @@ interface BlockGroup {
  */
 @Component({
     selector: 'app-presenter',
-    // Consola: densidad compacta + superficie oscura del sistema. Va en el
-    // host (no en un div interno) para que las variables locales del `:host`
-    // se resuelvan ya con los valores oscuros.
-    host: { class: 'ui-dense ui-dark' },
-    imports: [TranslatePipe, DragDropModule, BrandLogoComponent, IconComponent],
+    // Consola de realización con su propio lenguaje visual (no el de la web):
+    // sus tokens viven en el `:host` de su hoja de estilos.
+    imports: [TranslatePipe, DragDropModule, BrandLogoComponent, IconComponent, SlideProgressDirective],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './presenter.component.html',
     styleUrl: './presenter.component.scss'
@@ -76,7 +84,9 @@ export class PresenterComponent implements OnInit {
   protected readonly display = inject(PresentationDisplayService);
   protected readonly sync = inject(PresentationSyncService);
   protected readonly projection = inject(ProjectionWindowService);
+  protected readonly announcements = inject(AnnouncementsService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly zone = inject(NgZone);
   private readonly translate = inject(TranslateService);
   private readonly document = inject(DOCUMENT);
 
@@ -89,12 +99,25 @@ export class PresenterComponent implements OnInit {
 
   /** URL de la vista previa (misma ruta de proyección en modo `preview`). */
   protected readonly previewUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-    this.projection.projectionUrl(true),
+    this.projection.projectionUrl({ rol: 'preview' }),
   );
 
-  /** Estado del líder (ventana o vista previa): índice, pausa, duración. */
+  /** Estado del líder (ventana o vista previa): índice, pausa, plazo. */
   protected readonly state = this.sync.remoteState;
-  protected readonly progress = this.sync.remoteProgress;
+
+  /** Plazo de la diapositiva en curso, para las barras de progreso (CSS). */
+  protected readonly timing = computed<SlideTiming | null>(() => {
+    const s = this.state();
+    return s
+      ? { startedAt: s.startedAt, durationMs: s.durationMs, paused: s.paused, elapsedAtPause: s.elapsedAtPause }
+      : null;
+  });
+
+  /**
+   * Reloj del panel: UNA señal por segundo, sólo para los textos (hora,
+   * transcurrido / restante). Las barras no lo necesitan: son animaciones CSS.
+   */
+  protected readonly now = signal<number>(Date.now());
 
   /** Diapositivas activas, las mismas que recorre el líder. */
   protected readonly slides = this.blocks.activeSlides;
@@ -115,9 +138,94 @@ export class PresenterComponent implements OnInit {
   protected readonly elapsedS = computed<number>(() => {
     const s = this.state();
     if (!s) return 0;
-    return Math.round(((this.progress() / 100) * s.durationMs) / 1000);
+    const ms = elapsedMs(s, this.now());
+    return Math.floor((s.durationMs > 0 ? Math.min(ms, s.durationMs) : ms) / 1000);
   });
   protected readonly durationS = computed<number>(() => Math.round((this.state()?.durationMs ?? 0) / 1000));
+  protected readonly remainingS = computed<number>(() => Math.max(0, this.durationS() - this.elapsedS()));
+
+  /** Hora local del panel («19:42:07»). */
+  protected readonly clock = computed<string>(() =>
+    new Date(this.now()).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+  );
+
+  // ---- Cuenta atrás del culto ------------------------------------------------
+
+  private readonly countdown = inject(ServiceCountdownService);
+  protected readonly countdownLeads = COUNTDOWN_LEAD_OPTIONS;
+  protected readonly countdownTarget = this.countdown.target;
+
+  /** Segundos que faltan para el comienzo (reloj de 1 s del panel). */
+  protected readonly countdownLeftS = computed<number>(() => {
+    const t = this.countdownTarget();
+    return t ? Math.max(0, Math.ceil((t.at - this.now()) / 1000)) : 0;
+  });
+
+  /** Ya se está viendo en la proyección. */
+  protected readonly countdownOnAir = computed<boolean>(() => {
+    const t = this.countdownTarget();
+    return !!t && this.display.countdown().enabled && this.now() >= t.showFrom;
+  });
+
+  /** Hora desde la que se proyecta («17:30»). */
+  protected readonly countdownFrom = computed<string>(() => {
+    const t = this.countdownTarget();
+    return t
+      ? new Date(t.showFrom).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' })
+      : '';
+  });
+
+  protected setCountdownEnabled(event: Event): void {
+    this.display.setCountdownEnabled((event.target as HTMLInputElement).checked);
+  }
+
+  protected setCountdownManual(event: Event, time: string): void {
+    event.preventDefault();
+    if (time) this.display.setCountdownManual(time);
+  }
+
+  // ---- Salidas (pantallas) ---------------------------------------------
+
+  /** Ventanas de proyección vivas en esta máquina (las abriera quien las abriera). */
+  protected readonly outputs = this.sync.outputs;
+
+  /** La ventana viva que proyecta en esta pantalla, si la hay. */
+  protected outputOn(screen: DisplayScreen): Peer | null {
+    const name = this.projection.nameFor(screen);
+    return this.outputs().find((o) => o.name === name) ?? null;
+  }
+
+  /** Número de una salida (1, 2…): el que muestra al identificarla. */
+  protected outputNumber(peer: Peer): number {
+    return this.outputs().findIndex((o) => o.id === peer.id) + 1;
+  }
+
+  /** Salidas que no están en ninguna pantalla detectada (ventanas sueltas, pestañas). */
+  protected readonly looseOutputs = computed<readonly Peer[]>(() => {
+    const names = new Set(this.projection.screens().map((s) => this.projection.nameFor(s)));
+    return this.outputs().filter((o) => !names.has(o.name));
+  });
+
+  // ---- Anuncios programados ----------------------------------------------
+
+  private readonly soloDialog = viewChild<ElementRef<HTMLDialogElement>>('soloDialog');
+  /** Anuncio en la vista de prueba, o `null`. */
+  protected readonly soloAnnouncement = signal<Announcement | null>(null);
+  /** Parte que se ve (1-based) de un anuncio en varias diapositivas. */
+  protected readonly soloPart = signal<number>(1);
+  protected readonly soloParts = computed<number>(() => {
+    const a = this.soloAnnouncement();
+    return a ? announcementParts(a) : 1;
+  });
+  protected readonly soloPartList = computed<readonly number[]>(() =>
+    Array.from({ length: this.soloParts() }, (_, i) => i + 1),
+  );
+  protected readonly soloUrl = computed<SafeResourceUrl | null>(() => {
+    const a = this.soloAnnouncement();
+    if (!a) return null;
+    const params = { rol: 'solo', anunt: a.id, parte: String(this.soloPart()) };
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.projection.projectionUrl(params));
+  });
 
   /**
    * Bloques con **todas** sus diapositivas (también los anuncios ocultos, para
@@ -127,34 +235,86 @@ export class PresenterComponent implements OnInit {
     this.blocks.states().map((state) => ({ state, slides: this.blocks.expand(state.id, 'panel') })),
   );
 
+  constructor() {
+    this.zone.runOutsideAngular(() => {
+      const timer = setInterval(() => this.zone.run(() => this.now.set(Date.now())), 1_000);
+      inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    });
+  }
+
   ngOnInit(): void {
     this.document.title = this.translate.instant('presenter.title');
   }
 
-  // ---- Ventana de proyección ------------------------------------------
+  // ---- Ventanas de proyección -----------------------------------------
 
-  protected async open(target: 'here' | 'other-screen'): Promise<void> {
-    const result = await this.projection.open(target);
+  /** Proyectar en una pantalla detectada, o en una ventana suelta nueva. */
+  protected async open(screen?: DisplayScreen): Promise<void> {
+    const result = await this.projection.open(screen);
     this.popupBlocked.set(result === 'blocked');
   }
 
-  protected close(): void {
-    this.projection.close();
+  /** Proyectar a la vez en todas las pantallas que no son la del panel. */
+  protected async openAllExternal(): Promise<void> {
+    for (const screen of this.projection.screens()) {
+      if (!screen.isCurrent && !this.outputOn(screen)) await this.open(screen);
+    }
   }
 
-  /** La ventana al frente; si el panel no la tiene (se recargó) y no la recupera, la abre. */
-  protected focusWindow(): void {
-    if (!this.projection.focus()) void this.open('here');
-  }
-
-  /** La ventana de proyección (el líder) ocupa la pantalla completa nativa. */
-  protected readonly isWindowFullscreen = computed<boolean>(
-    () => this.sync.hasProjectionWindow() && (this.state()?.fullscreen ?? false),
+  /** Hay alguna pantalla externa sin proyectar todavía. */
+  protected readonly hasFreeExternal = computed<boolean>(() =>
+    this.projection.screens().some((s) => !s.isCurrent && !this.outputOn(s)),
   );
 
-  /** Pantalla completa de la ventana desde aquí; si no hay ventana que mandar, la abre. */
-  protected toggleFullscreen(): void {
-    if (!this.projection.toggleFullscreen()) void this.open('here');
+  protected closeOutput(peer: Peer): void {
+    this.projection.close(peer.name);
+  }
+
+  protected focusOutput(peer: Peer): void {
+    this.projection.focus(peer.name);
+  }
+
+  protected toggleOutputFullscreen(peer: Peer): void {
+    this.projection.toggleFullscreen(peer.name);
+  }
+
+  /** ¿Puede el panel mandar a esta ventana (la abrió él)? */
+  protected canControl(peer: Peer): boolean {
+    return this.projection.canControl(peer.name);
+  }
+
+  protected identify(): void {
+    this.sync.identify();
+  }
+
+  // ---- Vista de prueba de anuncios programados ----------------------------
+
+  protected openSolo(announcement: Announcement): void {
+    this.soloPart.set(1);
+    this.soloAnnouncement.set(announcement);
+    queueMicrotask(() => this.soloDialog()?.nativeElement.showModal());
+  }
+
+  protected closeSolo(): void {
+    this.soloDialog()?.nativeElement.close();
+    this.soloAnnouncement.set(null);
+  }
+
+  /** La misma vista de prueba en una ventana, para arrastrarla al proyector. */
+  protected openSoloWindow(announcement: Announcement): void {
+    const result = this.projection.openSolo({ anunt: announcement.id });
+    this.popupBlocked.set(result === 'blocked');
+  }
+
+  /** Fecha corta («4 oct.»). */
+  protected shortDate(iso: string | undefined): string {
+    if (!iso) return '';
+    const lang = this.translate.getCurrentLang() ?? 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short' }).format(new Date(`${iso}T12:00:00`));
+    } catch {
+      return iso;
+    }
   }
 
   // ---- Transporte --------------------------------------------------------
@@ -211,7 +371,10 @@ export class PresenterComponent implements OnInit {
 
   /** Rótulo humano de una diapositiva: anuncio, página o nombre del bloque. */
   protected label(slide: PresentationSlide): string {
-    if (slide.announcement) return slide.announcement.title;
+    if (slide.announcement) {
+      const part = slide.page ? ` · ${slide.page.index + 1}/${slide.page.total}` : '';
+      return `${slide.announcement.title}${part}`;
+    }
     if (slide.family) return slide.family.fullName;
     if (slide.prayerWeek) {
       return `${this.translate.instant(slide.titleKey)} · ${this.translate.instant('family_prayer.summary')}`;
@@ -365,6 +528,10 @@ export class PresenterComponent implements OnInit {
     this.blocks.setAnnouncementVisible(id, (event.target as HTMLInputElement).checked);
   }
 
+  protected setAutoAdvance(event: Event): void {
+    this.display.setAutoAdvance((event.target as HTMLInputElement).checked);
+  }
+
   protected setLiveNotice(event: Event): void {
     this.display.setLiveNotice((event.target as HTMLInputElement).checked);
   }
@@ -374,10 +541,13 @@ export class PresenterComponent implements OnInit {
     this.display.resetDurations();
   }
 
+  /** «0:12», «12:47» o «1:05:30». */
   protected format(seconds: number): string {
-    const m = Math.floor(seconds / 60);
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    return `${m}:${String(s).padStart(2, '0')}`;
+    const mmss = `${h > 0 ? String(m).padStart(2, '0') : m}:${String(s).padStart(2, '0')}`;
+    return h > 0 ? `${h}:${mmss}` : mmss;
   }
 
   /**
@@ -408,7 +578,9 @@ export class PresenterComponent implements OnInit {
         break;
       case ' ':
         event.preventDefault();
-        this.togglePause();
+        // En modo manual Espacio avanza (no hay reloj que pausar).
+        if (this.display.autoAdvance()) this.togglePause();
+        else this.next();
         break;
     }
   }

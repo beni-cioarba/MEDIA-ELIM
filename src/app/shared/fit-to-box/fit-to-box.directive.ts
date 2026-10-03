@@ -77,9 +77,18 @@ export class FitToBoxDirective implements AfterViewInit, OnDestroy {
     const box = this.host.clientHeight;
     if (box === 0) return;
 
+    // Cabe en alto Y en ancho. El ancho importa por los textos que no se
+    // parten (`white-space: nowrap`: nombres, precios): podían crecer hasta
+    // salirse de SU columna y pisar la de al lado aunque todo cupiera en alto
+    // («Marcos Zăgrean», 03/10/2026). Ese desborde queda dentro del contenido,
+    // así que se mira cada uno de esos elementos, no sólo el conjunto.
+    const rigid = Array.from(inner.querySelectorAll<HTMLElement>('*')).filter(
+      (el) => getComputedStyle(el).whiteSpace === 'nowrap',
+    );
     const fits = (scale: number): boolean => {
       this.host.style.setProperty('--fit', scale.toFixed(3));
-      return inner.scrollHeight <= box;
+      if (inner.scrollHeight > box || inner.scrollWidth > inner.clientWidth + 1) return false;
+      return rigid.every((el) => el.scrollWidth <= el.clientWidth + 1);
     };
 
     const max = Math.max(1, this.appFitToBoxMax);

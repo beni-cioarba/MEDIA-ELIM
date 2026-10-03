@@ -468,6 +468,19 @@ app-announcement-card {
     border-radius: fit(var(--pj-r-sm));
   }
 
+  // «1/2» · «2/2»: anuncio en varias diapositivas. Misma altura y cuerpo que
+  // la insignia, pero sólo con filete: informa sin competir con ella.
+  .announcement__part {
+    padding: fit(calc(var(--pj-u) * 0.3)) fit(calc(var(--pj-u) * 1.1));
+    border: max(1px, calc(var(--pj-u) * 0.25)) solid var(--c-gold);
+    border-radius: fit(var(--pj-r-sm));
+    color: var(--c-gold-deep);
+    font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-eyebrow)));
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+  }
+
   .announcement__time {
     gap: fit(calc(var(--pj-u) * 0.5));
   }
@@ -601,6 +614,20 @@ app-announcement-card {
 
       .announcement__item {
         margin-bottom: fit(calc(var(--pj-u) * 0.9));
+        break-inside: avoid;
+      }
+
+      // Persona con acompañante («Pastor Mircea Coptil · cu soția»): en una
+      // columna no cabe en una línea y se partía a mitad («cu / soția»). El
+      // acompañante va en su propia línea, un escalón por debajo y atenuado:
+      // nombre arriba, «cu soția» debajo, siempre entero.
+      .announcement__item-value {
+        display: block;
+        font-size: max(calc(var(--pj-u) * 3.2), fit(var(--pj-fs-caption)));
+
+        &::before {
+          content: none;
+        }
       }
     }
   }

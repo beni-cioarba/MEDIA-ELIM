@@ -76,6 +76,14 @@ app-stage {
   opacity: 0.5;
   will-change: transform;
 
+  // Proyectando, los halos se quedan quietos: un `blur(120px)` sobre dos capas
+  // de 60vmax animadas sin fin costaba GPU en cada pantalla durante todo el
+  // culto, y bajo las diapositivas apenas se perciben.
+  .stage.is-fullscreen & {
+    animation: none;
+    will-change: auto;
+  }
+
   &--gold {
     width: 60vmax;
     height: 60vmax;
@@ -345,13 +353,15 @@ app-stage {
     transition: height 0.25s ease, background 0.25s ease;
   }
 
+  // Se rellena con `transform: scaleX()` (directiva `appSlideProgress`):
+  // animación del compositor, sin JavaScript por fotograma.
   &-progress {
     display: block;
     height: 100%;
-    width: 0%;
+    width: 100%;
+    transform: scaleX(0);
     background: linear-gradient(90deg, $color-gold, $color-gold-soft);
     border-radius: inherit;
-    transition: width 0.12s linear;
   }
 
   &.is-active {
@@ -1744,3 +1754,32 @@ app-stage {
 }
 
 @include projection.stage-projection;
+
+// ---------------------------------------------------------------------
+// Identificación de pantallas (panel → «Identificar»): el número de cada
+// ventana de proyección, enorme, durante unos segundos.
+// ---------------------------------------------------------------------
+.stage-identify {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: rgba(6, 12, 24, 0.55);
+
+  &__num {
+    display: grid;
+    place-items: center;
+    width: 38vmin;
+    height: 38vmin;
+    border-radius: 50%;
+    border: 1.2vmin solid $color-gold;
+    background: rgba(6, 12, 24, 0.9);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 24vmin;
+    font-weight: 800;
+    line-height: 1;
+  }
+}

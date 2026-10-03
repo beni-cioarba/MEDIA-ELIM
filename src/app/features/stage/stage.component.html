@@ -23,19 +23,24 @@
           [class.slide--active]="isSlideVisible(slide)"
           [attr.aria-hidden]="!isSlideVisible(slide)"
         >
-          @switch (slide.block) {
-            @case ('announcements') { <app-announcement-block [announcement]="slide.announcement ?? null" /> }
-            @case ('socials') { <app-socials-block /> }
-            @case ('streams') { <app-streams-block /> }
-            @case ('gallery') { <app-gallery-block /> }
-            @case ('weekly') { <app-weekly-block /> }
-            @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
-            @case ('bible') { <app-bible-block /> }
-            @case ('causes') { <app-causes-block /> }
-            @case ('talent') { <app-talent-block /> }
-            @case ('website') { <app-website-block /> }
-            @case ('families') { <app-family-block [week]="slide.prayerWeek ?? null" [family]="slide.family ?? null" /> }
-            @case ('location') { <app-location-block /> }
+          <!-- Proyectando sólo se monta la diapositiva en pantalla y sus dos
+               vecinas (la siguiente precarga sus fotos; la anterior hace el
+               fundido de salida). El resto es un div vacío. -->
+          @if (isMounted(slide)) {
+            @switch (slide.block) {
+              @case ('announcements') { <app-announcement-block [announcement]="slide.announcement ?? null" [part]="slide.page ?? null" /> }
+              @case ('socials') { <app-socials-block /> }
+              @case ('streams') { <app-streams-block /> }
+              @case ('gallery') { <app-gallery-block /> }
+              @case ('weekly') { <app-weekly-block /> }
+              @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
+              @case ('bible') { <app-bible-block /> }
+              @case ('causes') { <app-causes-block /> }
+              @case ('talent') { <app-talent-block /> }
+              @case ('website') { <app-website-block /> }
+              @case ('families') { <app-family-block [week]="slide.prayerWeek ?? null" [family]="slide.family ?? null" /> }
+              @case ('location') { <app-location-block /> }
+            }
           }
         </div>
       }
@@ -78,32 +83,37 @@
             <span class="carousel__dot-bar" aria-hidden="true">
               <span
                 class="carousel__dot-progress"
-                [style.width.%]="carousel.currentIndex() === i ? carousel.progress() : 0"
+                appSlideProgress
+                [timing]="carousel.timing()"
+                [active]="carousel.currentIndex() === i"
               ></span>
             </span>
           </button>
         }
       </div>
 
-      <button
-        type="button"
-        class="carousel__pause"
-        (click)="carousel.togglePause()"
-        [attr.aria-pressed]="carousel.isPaused()"
-        [attr.aria-label]="(carousel.isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
-        [title]="(carousel.isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
-      >
-        @if (!carousel.isPaused()) {
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
-            <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
-          </svg>
-        } @else {
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 5l12 7-12 7V5z" fill="currentColor" />
-          </svg>
-        }
-      </button>
+      <!-- En modo manual (panel → «Avans automat» apagado) no hay reloj que pausar. -->
+      @if (carousel.autoAdvance()) {
+        <button
+          type="button"
+          class="carousel__pause"
+          (click)="carousel.togglePause()"
+          [attr.aria-pressed]="carousel.isPaused()"
+          [attr.aria-label]="(carousel.isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+          [title]="(carousel.isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+        >
+          @if (!carousel.isPaused()) {
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" />
+              <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 5l12 7-12 7V5z" fill="currentColor" />
+            </svg>
+          }
+        </button>
+      }
 
       <button
         type="button"
@@ -134,6 +144,23 @@
           </svg>
         </button>
       }
+    </div>
+  }
+
+  <!-- Cuenta atrás hasta el comienzo del culto: en el margen inferior
+       izquierdo (simétrica a la firma), en todas las diapositivas. Ella sola
+       decide cuándo se ve (ver ServiceCountdownService). -->
+  @if (fullscreen() && !presentation.isSolo()) {
+    <div class="stage-countdown">
+      <app-service-countdown />
+    </div>
+  }
+
+  <!-- Panel → «Identificar pantallas»: cada ventana de proyección muestra
+       su número para saber cuál es cuál. -->
+  @if (identifyNumber(); as numero) {
+    <div class="stage-identify" aria-hidden="true">
+      <span class="stage-identify__num">{{ numero }}</span>
     </div>
   }
 

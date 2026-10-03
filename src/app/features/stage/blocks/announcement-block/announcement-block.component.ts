@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Announcement } from '../../../../core/church.config';
+import type { SlidePage } from '../../../../core/services/presentation-blocks.service';
 import { AnnouncementCardComponent } from '../../../announcements/announcement-card/announcement-card.component';
 
 /**
@@ -21,7 +22,7 @@ import { AnnouncementCardComponent } from '../../../announcements/announcement-c
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     @if (announcement; as current) {
-      <app-announcement-card [announcement]="current" />
+      <app-announcement-card [announcement]="current" [part]="part" />
     } @else {
       <section class="announcements-empty" aria-labelledby="announcements-title">
         <h2 id="announcements-title" class="announcements-empty__title">
@@ -35,4 +36,6 @@ import { AnnouncementCardComponent } from '../../../announcements/announcement-c
 })
 export class AnnouncementBlockComponent {
   @Input() announcement: Announcement | null = null;
+  /** Parte proyectada de un anuncio en varias diapositivas (`null` = entero). */
+  @Input() part: SlidePage | null = null;
 }

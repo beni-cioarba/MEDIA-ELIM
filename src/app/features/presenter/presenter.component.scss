@@ -1,1177 +1,1486 @@
-@use 'ds' as *;
-@use '../../shared/styles/buttons' as *;
-
 /* =====================================================================
- * Panel de control («vista del presentador»).
+ * Panel de control de la proyección — consola de realización.
  *
- * Es la sala de máquinas, no la web: fondo navy oscuro para que el operador
- * distinga de un vistazo qué ventana es la suya y para no deslumbrar en el
- * templo a media luz. Todo compacto: la información útil (qué se proyecta,
- * cuánto queda, qué viene) cabe en un portátil de 13" sin scroll.
+ * Lenguaje propio, no el de la web (decisión del 03/10/2026): el de una mesa
+ * de realización (vMix, ProPresenter, OBS). Negro azulado para no deslumbrar
+ * en el templo a media luz, filetes de 1 px en vez de tarjetas con sombra,
+ * micro-rótulos en versalitas, cifras en monoespaciada tabular y un único
+ * acento por significado:
+ *   · oro   → la marca y «lo que está en pantalla» (diapositiva, progreso);
+ *   · rojo  → en el aire (salidas en directo, aviso de directo);
+ *   · verde → salida conectada y sana.
+ *
+ * Compacto al máximo: filas de 28 px, controles de 20-24 px, tres columnas
+ * que caben en un portátil de 13" (escaleta · monitor · salidas) y se apilan
+ * por debajo de 1100 px. Cada columna desplaza lo suyo; la consola no.
  * ===================================================================== */
 
-/* La raíz lleva `.ui-dense .ui-dark` (plantilla): densidad de consola y
-   superficie oscura del sistema. Las variables locales de abajo son **alias**
-   de los tokens del sistema, para no reescribir 900 líneas de una vez; en
-   código nuevo usa directamente `--c-muted`, `--c-hairline`, `--c-surface`…
-   y las primitivas `ui-*` (ver /stil). */
 :host {
+  --bg: #05080e;
+  --s1: #0a0f19;
+  --s2: #0f1624;
+  --s3: #152033;
+  --line: rgba(148, 163, 184, 0.1);
+  --line-2: rgba(148, 163, 184, 0.2);
+  --ink: #e8edf5;
+  --ink-2: #9ba7bd;
+  --ink-3: #66738c;
+  --gold: #d4af37;
+  --gold-2: #f0d27a;
+  --gold-a: rgba(212, 175, 55, 0.13);
+  --gold-glow: 0 0 0 1px rgba(212, 175, 55, 0.55), 0 0 18px rgba(212, 175, 55, 0.18);
+  --live: #ff3b47;
+  --live-a: rgba(255, 59, 71, 0.14);
+  --ok: #2bd47d;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', 'Segoe UI Mono', Consolas, monospace;
+  --r: 6px;
+
   display: block;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--c-primary-darkest);
-  color: var(--c-on-primary);
-  --ink-soft: var(--c-muted);
-  --ink-faint: var(--c-faint);
-  --line: var(--c-hairline);
-  --line-strong: var(--c-hairline-strong);
-  --panel: var(--c-surface);
-  --panel-raised: var(--c-surface-2);
+  height: 100vh;
+  height: 100dvh;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(212, 175, 55, 0.05), transparent 60%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.35;
+  color-scheme: dark;
 }
 
-.presenter {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+button,
+input {
+  font: inherit;
+  color: inherit;
 }
 
-/* --- Barra superior ------------------------------------------------------ */
+button {
+  cursor: pointer;
+}
 
-// La barra **envuelve** en vez de encoger: la marca y los títulos no ceden ancho
-// (su mínimo es su contenido), así que cuando no caben las acciones bajan a una
-// segunda fila alineadas a la derecha. Antes `min-width: 0` aplastaba los
-// títulos a 0 px y el texto se pintaba encima del estado.
-.topbar {
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+/* --- Estructura ------------------------------------------------------- */
+
+.console {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  height: 100%;
+}
+
+.deck {
+  display: grid;
+  grid-template-columns: minmax(330px, 26%) minmax(0, 1fr) minmax(280px, 22%);
+  gap: 1px;
+  min-height: 0;
+  background: var(--line);
+  border-top: 1px solid var(--line);
+}
+
+.rundown,
+.program,
+.side {
+  min-height: 0;
+  overflow: auto;
+  background: var(--s1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+
+@media (max-width: 1099px) {
+  :host {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .console {
+    height: auto;
+  }
+
+  .deck {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .program {
+    order: -1;
+  }
+
+  .rundown,
+  .program,
+  .side {
+    overflow: visible;
+  }
+}
+
+/* --- Barra superior --------------------------------------------------- */
+
+.bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--sp-3) var(--sp-5);
-  padding: var(--sp-3) var(--sp-5);
-  border-bottom: 1px solid var(--line);
-  background: var(--c-primary-deep);
+  gap: 8px 16px;
+  padding: 6px 14px;
+  min-height: 44px;
+  background: var(--s1);
 }
 
-.topbar__brand {
+.bar__brand {
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
-  flex: 0 0 auto;
+  gap: 12px;
+  min-width: 0;
 }
 
-/* La marca de la web (`app-brand-logo`) en su tinta para fondo oscuro (papel +
-   oro), directamente sobre la barra, como en el pie. Un filete la separa de los
-   títulos; nada de pastillas claras en el panel oscuro.
-
-   Tamaño **fluido**: con `size="context"` el cuerpo lo fija aquí la barra, así
-   la marca aprovecha el sitio disponible (de 26 px en un portátil pequeño a
-   38 px en una pantalla ancha) en vez de quedarse en el mínimo de 24 px. El
-   suelo es el mínimo de la forma completa; el techo, lo que mide el bloque de
-   títulos a su lado, para que la barra no crezca por la marca. */
-.topbar__logo {
-  flex: 0 0 auto;
-  --brand-size: clamp(26px, 2.2vw, 38px);
-  padding-inline-end: var(--sp-4);
-  border-inline-end: 1px solid var(--line-strong);
+.bar__sep {
+  width: 1px;
+  height: 22px;
+  background: var(--line-2);
 }
 
-.topbar__titles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.05rem;
-}
-
-.topbar__title {
+.bar__title {
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--fs-body-lg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 13px;
   font-weight: 700;
-  color: var(--c-on-primary);
-  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
-.topbar__subtitle {
+.bar__subtitle {
   margin: 0;
-  max-width: none;
-  font-size: var(--fs-xs);
-  color: var(--ink-faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
-.topbar__status {
+.bar__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.bar__clock {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  padding-left: 14px;
+  border-left: 1px solid var(--line-2);
+}
+
+.chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-  padding: 0.35rem 0.8rem;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--line-strong);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
+  gap: 6px;
+  height: 22px;
+  padding: 0 9px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
   white-space: nowrap;
 
-  &.is-live {
-    border-color: rgba(212, 175, 55, 0.6);
-    color: var(--c-gold-soft);
-  }
-}
-
-.topbar__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ink-faint);
-
-  .is-live & {
-    background: var(--c-gold);
-    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
-  }
-}
-
-.topbar__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  margin-left: auto;
-
-  .btn {
-    padding-block: 0.5rem;
-    white-space: nowrap;
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink-3);
   }
 
-  .btn--ghost {
-    color: var(--c-on-primary);
-    border-color: var(--line-strong);
+  &--live {
+    border-color: rgba(255, 59, 71, 0.55);
+    background: var(--live-a);
+    color: #ffd7da;
 
-    &:hover,
-    &:focus-visible {
-      background: var(--panel-raised);
-      color: var(--c-gold-soft);
-    }
-
-    // Estado «pulsado» (la ventana ya ocupa la pantalla): mismo lenguaje que
-    // el indicador en vivo de la barra, borde y texto dorados.
-    &.is-active {
-      color: var(--c-gold-soft);
-      border-color: rgba(212, 175, 55, 0.6);
-      background: rgba(212, 175, 55, 0.1);
+    .chip__dot {
+      background: var(--live);
+      box-shadow: 0 0 8px var(--live);
     }
   }
-}
 
-@include until('sm') {
-  .topbar {
-    padding-inline: var(--sp-4);
+  &--manual {
+    border-color: rgba(212, 175, 55, 0.5);
+    color: var(--gold-2);
   }
 
-  // Las acciones ocupan su fila, se reparten el ancho y, si aun así no caben,
-  // el rótulo parte en dos líneas antes que desbordar la pantalla.
-  .topbar__actions {
-    flex: 1 1 100%;
-    flex-wrap: wrap;
-
-    .btn {
-      flex: 1 1 auto;
-      min-width: 0;
-      justify-content: center;
-      white-space: normal;
-      text-align: center;
-    }
+  &--rec {
+    border-color: var(--live);
+    color: var(--live);
   }
 }
 
 .alert {
-  margin: var(--sp-3) var(--sp-5) 0;
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--r-md);
-  border: 1px solid rgba(212, 175, 55, 0.5);
-  background: rgba(212, 175, 55, 0.12);
-  font-size: var(--fs-sm);
-  color: var(--c-gold-soft);
-}
-
-/* --- Cuerpo -------------------------------------------------------------- */
-
-.body {
-  flex: 1 1 auto;
-  display: grid;
-  grid-template-columns: minmax(300px, 27rem) minmax(0, 1fr);
-  gap: var(--sp-5);
-  padding: var(--sp-5);
-  min-height: 0;
-}
-
-@include until('lg') {
-  .body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .slides {
-    order: 2;
-  }
-}
-
-/* --- Lista de diapositivas ------------------------------------------------ */
-
-.slides {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  border-radius: var(--r-lg);
-  border: 1px solid var(--line);
-  background: var(--panel);
-}
-
-.slides__title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   margin: 0;
-  padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--line);
-  font-family: var(--font-sans);
-  font-size: var(--fs-xs);
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.slides__count {
-  padding: 0.05rem 0.5rem;
-  border-radius: var(--r-pill);
-  background: var(--panel-raised);
-  font-variant-numeric: tabular-nums;
-  color: var(--c-on-primary);
-}
-
-.slides__groups {
-  list-style: none;
-  margin: 0;
-  padding: var(--sp-2);
-  display: grid;
-  gap: var(--sp-2);
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.group {
-  border-radius: var(--r-md);
-  background: var(--panel);
-  border: 1px solid transparent;
-  transition: opacity var(--mo-fast) var(--ea-standard);
-
-  &.is-off {
-    opacity: 0.55;
-  }
-}
-
-.group__head {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-1);
-}
-
-// Muy estrecho: el nombre del bloque se quedaba en ~30 px entre la etiqueta y
-// la duración. Dos filas: agarrador + interruptor + nombre arriba; etiqueta y
-// duración debajo, a la derecha.
-@include until('xs') {
-  .group__head {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .group__meta {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .group__head > .duration {
-    grid-column: 2 / -1;
-    grid-row: 2;
-    justify-self: end;
-  }
-}
-
-/* --- Arrastrar para reordenar (CDK DragDrop) ----------------------------- */
-
-.group__grip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-xs);
-  background: transparent;
-  color: var(--ink-faint);
-  cursor: grab;
-  touch-action: none;
-
-  &:hover {
-    color: var(--c-on-primary);
-    background: var(--panel-raised);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: 1px;
-    color: var(--c-gold);
-  }
-
-  &:active {
-    cursor: grabbing;
-  }
-}
-
-/* Hueco que deja el bloque mientras se arrastra. */
-.group__placeholder {
-  min-height: 3rem;
-  border-radius: var(--r-md);
-  border: 1px dashed rgba(212, 175, 55, 0.6);
-  background: rgba(212, 175, 55, 0.08);
-}
-
-/* El bloque «en el aire»: mismo aspecto, con sombra, sobre fondo oscuro. */
-.cdk-drag-preview.group {
-  box-sizing: border-box;
-  background: var(--c-primary-deep);
-  border-color: rgba(212, 175, 55, 0.6);
-  box-shadow: var(--e-4);
-  color: var(--c-on-primary);
-}
-
-.cdk-drag-animating,
-.slides__groups.cdk-drop-list-dragging .group:not(.cdk-drag-placeholder) {
-  transition: transform var(--mo-base) var(--ea-standard);
-}
-
-.group__name {
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  color: var(--c-on-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.group__meta {
-  display: inline-flex;
-}
-
-.tag {
-  padding: 0.1rem 0.45rem;
-  border: 0;
-  border-radius: var(--r-pill);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1.4;
-
-  &--auto {
-    background: rgba(212, 175, 55, 0.18);
-    color: var(--c-gold-soft);
-  }
-
-  &--manual {
-    background: var(--panel-raised);
-    color: var(--c-on-primary);
-    cursor: pointer;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.14);
-    }
-  }
-}
-
-/* Selección rápida: una línea compacta sobre la lista del bloque, alineada
-   con las casillas. Contador a la izquierda (cuántas se proyectan) y dos
-   acciones de texto a la derecha; nada de botones grandes en una consola. */
-.bulk {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  margin: 0 var(--sp-2) 2px;
-  padding: 0.2rem 0.4rem;
-  border-top: 1px solid var(--line);
-  font-size: var(--fs-xs);
-}
-
-.bulk__count {
-  margin-right: auto;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-faint);
-}
-
-/* La global va bajo el título de la lista, a su mismo margen, y se distingue
-   de las de bloque sólo por el ámbito en versalitas: el mismo control, con
-   más alcance. Sin filete arriba: ya lo lleva el título. */
-.bulk--global {
-  margin: 0;
-  padding: var(--sp-2) var(--sp-4);
-  border-top: 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.bulk__scope {
-  margin-right: 0.35rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.bulk__btn {
-  padding: 0.1rem 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-weight: 700;
-  color: var(--c-gold-soft);
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover:not(:disabled) {
-    text-decoration: underline;
-  }
-
-  &:disabled {
-    cursor: default;
-    color: var(--ink-faint);
-    opacity: 0.6;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-}
-
-.group__slides {
-  list-style: none;
-  margin: 0;
-  padding: 0 var(--sp-2) var(--sp-2);
-  display: grid;
-  gap: 2px;
-}
-
-.slide {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.4rem;
-
-  &.is-hidden .slide__label {
-    color: var(--ink-faint);
-    text-decoration: line-through;
-  }
-}
-
-.slide__check {
-  width: 14px;
-  height: 14px;
-  margin: 0 0 0 0.4rem;
-  accent-color: var(--c-gold);
-  cursor: pointer;
-
-  &--spacer {
-    visibility: hidden;
-  }
-}
-
-.slide__btn {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.6rem minmax(0, 1fr);
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.4rem 0.6rem;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--c-on-primary);
-  text-align: left;
-  cursor: pointer;
-  overflow: hidden;
-  transition: background var(--mo-fast) var(--ea-standard);
-
-  &:hover:not(:disabled) {
-    background: var(--panel-raised);
-  }
-
-  &:disabled {
-    cursor: default;
-    color: var(--ink-faint);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: -2px;
-  }
-
-  .is-current & {
-    background: rgba(212, 175, 55, 0.16);
-    box-shadow: inset 3px 0 0 var(--c-gold);
-  }
-}
-
-.slide__num {
-  font-size: var(--fs-xs);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-faint);
-  text-align: right;
-
-  .is-current & {
-    color: var(--c-gold);
-  }
-}
-
-.slide__label {
-  font-size: var(--fs-sm);
+  padding: 7px 14px;
+  border-top: 1px solid rgba(255, 59, 71, 0.4);
+  background: var(--live-a);
+  color: #ffd7da;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
-/* Marca de familia de una semana anterior: pequeña, en la misma línea. */
-.slide__tag {
-  margin-left: 0.35rem;
-  padding: 0 0.35rem;
-  border-radius: var(--r-pill);
-  background: var(--panel-raised);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  vertical-align: 1px;
-  color: var(--ink-soft);
-}
-
-/* ---- Tiempo propio de una diapositiva -------------------------------------
-   Por defecto invisible (hereda el del bloque): aparece al apuntar la fila o
-   con el foco dentro, en tono apagado. Personalizado: queda siempre a la
-   vista y en oro, para que se note qué filas no siguen al bloque; los − / +
-   siguen saliendo sólo al apuntar. */
-.stime {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  padding-right: 0.2rem;
-  opacity: 0;
-  transition: opacity var(--mo-fast) var(--ea-standard);
-
-  .slide:hover &,
-  &:focus-within,
-  &.is-custom {
-    opacity: 1;
+  &--soft {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: var(--gold-a);
+    color: var(--gold-2);
   }
 }
 
-.stime__btn {
+/* --- Piezas comunes --------------------------------------------------- */
+
+.count {
   display: inline-grid;
   place-items: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-xs);
-  background: transparent;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--ink-soft);
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: var(--panel-raised);
-    color: var(--c-on-primary);
-  }
-
-  &:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: 1px;
-  }
+  min-width: 18px;
+  height: 16px;
+  padding: 0 4px;
+  margin-left: 4px;
+  border-radius: 4px;
+  background: var(--s3);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-2);
+  letter-spacing: 0;
 }
 
-// Con tiempo propio, en reposo sólo se ve la cifra (y el ↺).
-.stime.is-custom .stime__btn:not(.stime__reset) {
-  visibility: hidden;
-}
-
-.slide:hover .stime.is-custom .stime__btn,
-.stime.is-custom:focus-within .stime__btn {
-  visibility: visible;
-}
-
-.stime__input {
-  width: 1.9rem;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font: inherit;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  color: var(--ink-faint);
-  appearance: textfield;
-  -moz-appearance: textfield;
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    margin: 0;
-    -webkit-appearance: none;
-  }
-
-  &:focus-visible {
-    outline: 1px solid var(--c-gold);
-    border-radius: 2px;
-    color: var(--c-on-primary);
-  }
-
-  .stime.is-custom & {
-    color: var(--c-gold-soft);
-  }
-}
-
-.stime__unit {
-  margin-right: 0.15rem;
-  font-size: 0.65rem;
-  color: var(--ink-faint);
-
-  .stime.is-custom & {
-    color: var(--c-gold-soft);
-  }
-}
-
-.stime__reset {
-  color: var(--c-gold-soft);
-}
-
-/* ---- Familias de semanas anteriores ---------------------------------------
-   Un desplegable cerrado de una línea al pie del bloque: está si se necesita
-   y no pesa si no. */
-.past {
-  margin: 0 var(--sp-2) var(--sp-2);
-  border-top: 1px solid var(--line);
-  font-size: var(--fs-xs);
-}
-
-.past__summary {
-  padding: 0.35rem 0.4rem 0.2rem;
-  color: var(--ink-faint);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--ink-soft);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: -2px;
-    border-radius: 2px;
-  }
-}
-
-.past__hint {
-  margin: 0 0.4rem 0.3rem;
-  font-size: 0.68rem;
-  color: var(--ink-faint);
-}
-
-.past__list {
-  display: grid;
-  gap: 1px;
-  max-height: 12rem;
+.note {
   margin: 0;
-  padding: 0 0 0.2rem;
-  overflow-y: auto;
-  list-style: none;
-}
+  font-size: 11px;
+  color: var(--ink-3);
 
-.past__item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.4rem 0.25rem 0;
-  border-radius: var(--r-sm);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--panel-raised);
+  &--warn {
+    color: var(--gold-2);
   }
 }
 
-.past__name {
-  overflow: hidden;
-  font-weight: 600;
-  color: var(--ink-soft);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.past__week {
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-faint);
-}
-
-.slide__bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: rgba(212, 175, 55, 0.25);
-}
-
-.slide__bar-fill {
-  display: block;
-  height: 100%;
-  background: var(--c-gold);
-  transition: width 120ms linear;
-}
-
-.slides__foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
-  padding: var(--sp-2) var(--sp-4) var(--sp-3);
-  border-top: 1px solid var(--line);
-}
-
-.slides__note {
-  margin: 0;
-  font-size: 0.68rem;
-  color: var(--ink-faint);
-}
-
-.slides__foot-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--sp-3);
+.warn {
+  color: var(--gold-2);
 }
 
 .link {
   padding: 0;
   border: 0;
   background: none;
-  font-size: var(--fs-xs);
+  font-size: 11px;
   font-weight: 700;
-  color: var(--c-gold-soft);
-  cursor: pointer;
-  white-space: nowrap;
+  color: var(--gold);
 
   &:hover {
-    text-decoration: underline;
+    color: var(--gold-2);
   }
 }
 
-/* --- Interruptor y duración (mismo lenguaje que el popover del escenario) -- */
+/* Botón pequeño de texto (acciones de tarjeta y fila). */
+.mini {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  background: var(--s2);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 
-.switch {
+  &:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold-2);
+  }
+
+  &--go {
+    border-color: rgba(212, 175, 55, 0.6);
+    color: var(--gold-2);
+    background: var(--gold-a);
+  }
+}
+
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--s2);
+  font-size: 11.5px;
+  font-weight: 700;
+
+  &:hover {
+    border-color: var(--ink-3);
+    background: var(--s3);
+  }
+
+  &--primary {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: #14100a;
+
+    &:hover {
+      background: var(--gold-2);
+      border-color: var(--gold-2);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  app-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Botón de icono cuadrado (acciones de una salida). */
+.ico {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  background: var(--s2);
+  color: var(--ink-2);
+
+  svg,
+  app-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--ink);
+    border-color: var(--ink-3);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+  }
+
+  &.is-on {
+    color: var(--gold-2);
+    border-color: rgba(212, 175, 55, 0.6);
+  }
+
+  &--danger:hover:not(:disabled) {
+    color: var(--live);
+    border-color: var(--live);
+  }
+}
+
+/* Interruptor. */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
   cursor: pointer;
 
   input {
     position: absolute;
     opacity: 0;
-    width: 0;
-    height: 0;
+    width: 1px;
+    height: 1px;
   }
 
-  input:disabled ~ .switch__track {
-    cursor: not-allowed;
-    opacity: 0.5;
+  &__track {
+    position: relative;
+    flex: 0 0 auto;
+    width: 26px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--s3);
+    border: 1px solid var(--line-2);
+    transition: background 0.15s, border-color 0.15s;
   }
 
-  input:focus-visible ~ .switch__track {
-    outline: 2px solid var(--c-gold);
+  &__thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink-3);
+    transition: transform 0.15s, background 0.15s;
+  }
+
+  input:checked ~ &__track {
+    background: var(--gold-a);
+    border-color: var(--gold);
+
+    .switch__thumb {
+      transform: translateX(12px);
+      background: var(--gold);
+    }
+  }
+
+  input:checked ~ &__track--rec {
+    background: var(--live-a);
+    border-color: var(--live);
+
+    .switch__thumb {
+      background: var(--live);
+    }
+  }
+
+  input:focus-visible ~ &__track {
+    outline: 2px solid var(--gold);
     outline-offset: 2px;
   }
 
-  input:checked ~ .switch__track {
-    background: var(--c-gold);
+  input:disabled ~ &__track {
+    opacity: 0.4;
+  }
 
-    .switch__thumb {
-      transform: translateX(14px);
-      background: var(--c-primary-darkest);
+  &--row {
+    display: flex;
+    align-items: flex-start;
+    padding: 4px 0;
+
+    .switch__track {
+      margin-top: 1px;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__label {
+    font-weight: 700;
+  }
+
+  &__hint {
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+}
+
+/* Segmentado «N de M · Solo el primero · Todos». */
+.seg {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+
+  &__meta {
+    margin-right: auto;
+    overflow: hidden;
+    font-size: 10.5px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__btn {
+    height: 20px;
+    padding: 0 7px;
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    background: transparent;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: var(--gold-a);
+    }
+
+    &:disabled {
+      color: var(--ink-3);
+      border-color: var(--line);
+    }
+  }
+
+  &--inner {
+    padding: 0 8px 4px 28px;
+  }
+
+  /* «Rugăciune» aplicado: un modo, no una acción hecha; se marca encendido. */
+  &__btn--prayer[aria-pressed='true'] {
+    border-color: var(--gold);
+    background: var(--gold-a);
+    color: var(--gold-2);
+  }
+}
+
+/* Etiqueta AUTO / MANUAL de un bloque. */
+.tag {
+  flex: 0 0 auto;
+  height: 16px;
+  padding: 0 5px;
+  border: 1px solid var(--line-2);
+  border-radius: 3px;
+  background: transparent;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--ink-3);
+
+  &--manual {
+    border-color: rgba(212, 175, 55, 0.55);
+    color: var(--gold-2);
+
+    &:hover {
+      background: var(--gold-a);
     }
   }
 }
 
-.switch__track {
-  flex: 0 0 auto;
-  position: relative;
-  width: 32px;
-  height: 18px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.18);
-  transition: background var(--mo-fast) var(--ea-standard);
-}
-
-.switch__thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--c-on-primary);
-  transition: transform var(--mo-fast) var(--ea-standard), background var(--mo-fast) var(--ea-standard);
-}
-
-.duration {
+/* Tiempo: − [ 25 ] s + ↺ */
+.time {
   display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-pill);
-  overflow: hidden;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  background: var(--bg);
+  transition: opacity 0.15s;
 
   &.is-custom {
     border-color: rgba(212, 175, 55, 0.6);
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--gold-a);
   }
-}
 
-.duration__btn {
-  border: 0;
-  background: transparent;
-  color: var(--c-on-primary);
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
+  &__btn {
+    width: 18px;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink-2);
+    font-weight: 700;
 
-  &:disabled {
-    cursor: default;
+    &:hover:not(:disabled) {
+      color: var(--gold-2);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+
+  &__input {
+    width: 26px;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus {
+      outline: none;
+      color: var(--gold-2);
+    }
+  }
+
+  &__unit {
+    padding-left: 1px;
+    font-size: 10px;
+    color: var(--ink-3);
+  }
+
+  &__reset {
+    color: var(--gold);
+    border-left: 1px solid var(--line-2);
+  }
+
+  /* El de cada fila sólo se ve al apuntarla (o si es propio). */
+  &--row {
+    height: 20px;
+    opacity: 0;
+
+    .row:hover &,
+    &:focus-within,
+    &.is-custom {
+      opacity: 1;
+    }
+  }
+
+  /* Avance manual: los tiempos se conservan pero ahora no mandan. */
+  .rundown.is-manual &:not(:hover, :focus-within) {
     opacity: 0.35;
   }
-
-  &:not(:disabled):hover {
-    background: var(--panel-raised);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: -2px;
-  }
 }
 
-.duration__btn {
-  width: 22px;
-  font-size: 0.9rem;
-}
+.check {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--gold);
 
-/* Segundos escritos a mano: campo numérico sin flechas del navegador (ya
-   están los botones −/+), con el mismo cuerpo que el resto de la fila. */
-.duration__input {
-  width: 2.6rem;
-  padding: 0.25rem 0;
-  border: 0;
-  background: transparent;
-  color: var(--c-on-primary);
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-  -moz-appearance: textfield;
-  appearance: textfield;
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    appearance: none;
-    margin: 0;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: -2px;
-    border-radius: var(--r-xs);
+  &--spacer {
+    display: inline-block;
   }
 }
 
-.duration__unit {
-  align-self: center;
-  margin-right: 2px;
-  font-size: 0.6rem;
-  color: var(--ink-faint);
-}
+/* --- Escaleta --------------------------------------------------------- */
 
-.duration__reset {
-  color: var(--c-gold-soft);
-  border-left: 1px solid var(--line);
-}
-
-/* --- Vista previa, transporte y pantalla ---------------------------------- */
-
-.stage-panel {
+.pane-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
-  min-width: 0;
+  gap: 6px;
+  padding: 10px 10px 8px;
+  background: var(--s1);
+  border-bottom: 1px solid var(--line);
+
+  &__title {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
 }
 
-.preview {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--r-lg);
-  border: 1px solid var(--line-strong);
-  background: #000;
-  overflow: hidden;
-  box-shadow: var(--e-4);
+.groups {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
 }
 
-.preview__frame {
-  display: block;
-  width: 100%;
-  height: 100%;
+.group {
+  margin-bottom: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--s2);
+
+  &.is-off {
+    background: transparent;
+
+    .group__name,
+    .rows {
+      opacity: 0.45;
+    }
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 6px 0 2px;
+  }
+
+  &__name {
+    overflow: hidden;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__placeholder {
+    height: 32px;
+    margin-bottom: 4px;
+    border: 1px dashed var(--gold);
+    border-radius: var(--r);
+    background: var(--gold-a);
+  }
+
+  .switch {
+    flex: 1 1 auto;
+  }
+}
+
+.cdk-drag-preview.group {
+  box-shadow: var(--gold-glow);
+}
+
+.cdk-drag-animating,
+.groups.cdk-drop-list-dragging .group:not(.cdk-drag-placeholder) {
+  transition: transform 0.2s ease;
+}
+
+.grip {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 24px;
+  padding: 0;
   border: 0;
-  /* Es un espejo: nada de clics ni foco dentro. */
-  pointer-events: none;
+  background: none;
+  color: var(--ink-3);
+  cursor: grab;
+
+  app-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    color: var(--ink);
+  }
 }
 
-// Abajo a la izquierda: arriba tapaba la marca del escenario proyectado; la
-// franja del versículo es la zona menos crítica del lienzo.
-.preview__badge {
-  position: absolute;
-  bottom: var(--sp-3);
-  left: var(--sp-3);
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--r-pill);
-  background: rgba(13, 31, 53, 0.75);
-  border: 1px solid var(--line-strong);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  backdrop-filter: blur(6px);
+.rows {
+  margin: 0;
+  padding: 0 4px 4px;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 4px 0 8px;
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--s3);
+  }
+
+  &.is-hidden .row__btn {
+    opacity: 0.4;
+  }
+
+  &.is-current {
+    background: var(--gold-a);
+    box-shadow: inset 2px 0 0 var(--gold);
+
+    .row__label {
+      color: var(--gold-2);
+    }
+
+    .row__num {
+      color: var(--gold);
+    }
+  }
+
+  &__btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    gap: 8px;
+    height: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__num {
+    flex: 0 0 18px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    text-align: right;
+  }
+
+  &__label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__tag {
+    margin-left: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  &__bar {
+    position: absolute;
+    left: 26px;
+    right: 0;
+    bottom: 2px;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--line);
+  }
+
+  &__fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--gold);
+    transform: scaleX(0);
+  }
+}
+
+.past {
+  margin: 0 4px 4px;
+  border-top: 1px solid var(--line);
+
+  &__summary {
+    padding: 6px 4px;
+    font-size: 11px;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+
+  &__hint {
+    margin: 0 4px 4px;
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--s3);
+    }
+  }
+
+  &__name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__week {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+}
+
+.rundown__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 12px 14px;
+}
+
+.rundown__actions {
+  display: flex;
+  gap: 14px;
+}
+
+/* --- Monitor y transporte -------------------------------------------- */
+
+.program {
+  --stage-w: min(100%, calc((100dvh - 280px) * 16 / 9));
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+
+  > * {
+    width: var(--stage-w);
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 1099px) {
+  .program {
+    --stage-w: 100%;
+  }
+}
+
+.monitor-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-bottom: -4px;
+
+  &__slide {
+    overflow: hidden;
+    font-weight: 700;
+    color: var(--ink-2);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+/* El monitor cabe entero a lo alto de la columna (16:9, sin desplazar). */
+.monitor {
+  position: relative;
+  flex: 0 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r);
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 1px var(--line-2);
+
+  &.is-live {
+    box-shadow: 0 0 0 2px var(--live), 0 0 28px rgba(255, 59, 71, 0.18);
+  }
+
+  /* Rótulo encima del monitor (no sobre la imagen: taparía su esquina). */
+  &__tag {
+    flex: 0 0 auto;
+    height: 18px;
+    padding: 0 7px;
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    line-height: 16px;
+    text-transform: uppercase;
+    color: var(--ink-2);
+
+    &.is-live {
+      border-color: var(--live);
+      background: var(--live);
+      color: #fff;
+    }
+  }
+
+  &__frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    pointer-events: none;
+  }
 }
 
 .transport {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--r-lg);
+  gap: 14px;
+  padding: 8px 12px;
   border: 1px solid var(--line);
-  background: var(--panel);
+  border-radius: var(--r);
+  background: var(--s2);
+
+  &__keys {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__meter {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
 }
 
-.transport__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
+.key {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line-2);
   border-radius: 50%;
-  border: 1px solid var(--line-strong);
-  background: transparent;
-  color: var(--c-on-primary);
-  cursor: pointer;
-  transition: background var(--mo-fast) var(--ea-standard), transform var(--mo-fast) var(--ea-standard);
+  background: var(--s1);
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
-  &:hover {
-    background: var(--panel-raised);
+  &:hover:not(:disabled) {
+    border-color: var(--ink-3);
+    background: var(--s3);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.95);
   }
 
-  &:focus-visible {
-    outline: 2px solid var(--c-gold);
-    outline-offset: 2px;
-  }
-
   &--main {
-    width: 52px;
-    height: 52px;
-    background: var(--c-gold);
-    border-color: var(--c-gold);
-    color: var(--c-primary-darkest);
+    width: 42px;
+    height: 42px;
+    border-color: var(--gold);
+    background: var(--gold);
+    color: #14100a;
 
     svg {
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
     }
 
-    &:hover {
-      background: var(--c-gold-soft);
+    &:hover:not(:disabled) {
+      background: var(--gold-2);
+    }
+
+    &:disabled {
+      opacity: 0.3;
     }
   }
 }
 
-.transport__progress {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  min-width: 0;
-}
-
-.transport__row {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--fs-sm);
-  font-weight: 700;
+/* Código de tiempo. */
+.tc {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--ink-soft);
-}
-
-.transport__counter {
-  color: var(--c-on-primary);
-  // «1 / 10» no se parte en dos líneas en pantallas estrechas.
   white-space: nowrap;
+
+  &__dim {
+    color: var(--ink-3);
+  }
+
+  &__remain {
+    margin-left: 10px;
+    color: var(--gold-2);
+  }
+
+  &--manual {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-2);
+  }
 }
 
-.transport__bar {
-  height: 6px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.12);
+.meter {
+  height: 4px;
   overflow: hidden;
-}
+  border-radius: 2px;
+  background: var(--line);
 
-.transport__fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--c-gold);
-  transition: width 120ms linear;
+  &__fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-2));
+    transform: scaleX(0);
+  }
 }
 
 .cue {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-3);
-  margin: 0;
-}
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-block: 0;
 
-.cue__item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--r-md);
-  border: 1px solid var(--line);
-  background: var(--panel);
-  min-width: 0;
-
-  dt {
-    font-size: 0.65rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-
-  dd {
-    margin: 0;
-    font-size: var(--fs-body);
-    font-weight: 700;
-    color: var(--c-on-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &--now {
-    border-color: rgba(212, 175, 55, 0.45);
+  &__item {
+    min-width: 0;
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--s2);
 
     dt {
-      color: var(--c-gold-soft);
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    dd {
+      margin: 2px 0 0;
+      overflow: hidden;
+      font-weight: 700;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &--now {
+      border-color: rgba(212, 175, 55, 0.45);
+
+      dt {
+        color: var(--gold);
+      }
     }
   }
 }
 
+/* --- Columna derecha -------------------------------------------------- */
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  background: var(--s1);
+
+  &:last-child {
+    flex: 1 0 auto;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+.screens {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .screen {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: var(--sp-3) var(--sp-5);
-  padding: var(--sp-3) var(--sp-4);
-  border-radius: var(--r-lg);
+  gap: 8px;
+  padding: 6px;
   border: 1px solid var(--line);
-  background: var(--panel);
+  border-radius: var(--r);
+  background: var(--s2);
+
+  &.is-live {
+    border-color: rgba(43, 212, 125, 0.4);
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 30px;
+    height: 20px;
+    border: 1.5px solid var(--ink-3);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  &.is-live &__icon {
+    border-color: var(--ok);
+    color: var(--ok);
+    box-shadow: 0 0 10px rgba(43, 212, 125, 0.25);
+  }
+
+  &__glyph {
+    width: 10px;
+    height: 2px;
+    background: var(--ink-3);
+  }
+
+  &__info {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    overflow: hidden;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 3px;
+  }
 }
 
-.screen__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: var(--fs-sm);
-  font-weight: 700;
-}
-
-/* Cada ajuste con sus controles (aviso de directo: interruptor + caducidad)
-   salta de línea entero, nunca partido. */
-.screen__group {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-2) var(--sp-4);
-  min-width: 0;
-}
-
-/* El rojo de «en directo» es un estado: sólo aparece con el aviso encendido,
-   el mismo que lleva la insignia en la proyección. */
-.screen__live-dot {
-  flex: 0 0 auto;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--c-live);
-}
-
-.screen__note {
-  font-size: 0.7rem;
-  color: var(--ink-faint);
-}
-
-.screen__hint {
+.sched {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   margin: 0;
-  margin-left: auto;
-  max-width: none;
-  font-size: 0.7rem;
-  color: var(--ink-faint);
+  padding: 0;
+  list-style: none;
+
+  /* fecha | título (hasta dos líneas) · acciones debajo, a la derecha. */
+  &__item {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 4px 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__date {
+    padding-top: 1px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--gold);
+  }
+
+  &__title {
+    display: -webkit-box;
+    overflow: hidden;
+    font-weight: 600;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__actions {
+    display: flex;
+    grid-column: 2;
+    gap: 4px;
+  }
 }
 
-@include motion-reduce {
+/* --- Cuenta atrás ---------------------------------------------------- */
+
+.mini-status {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+
+  &.is-on {
+    color: var(--gold-2);
+  }
+}
+
+/* Próximo comienzo | cuánto falta: dos cifras grandes, como un reloj de sala. */
+.cd {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--line);
+
+  &__main,
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 7px 10px;
+    background: var(--s2);
+  }
+
+  &__time,
+  &__value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  &__value {
+    color: var(--gold-2);
+  }
+
+  &__src,
+  &__label {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+}
+
+.cd-manual {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &__label {
+    margin-right: auto;
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  &__input {
+    height: 22px;
+    padding: 0 6px;
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    background: var(--bg);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color-scheme: dark;
+  }
+}
+
+/* --- Vista de prueba de un anuncio programado ------------------------ */
+
+.solo {
+  width: min(96vw, calc(86dvh * 16 / 9));
+  max-width: none;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--s1);
+  color: var(--ink);
+
+  &::backdrop {
+    background: rgba(2, 4, 8, 0.78);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold);
+  }
+
+  &__screen {
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  &__frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
+/* Móvil: transporte y tiempos más compactos, sin salirse por la derecha. */
+@media (max-width: 600px) {
+  .bar__clock {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .transport {
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .transport__row {
+    flex-wrap: wrap;
+  }
+
+  .key {
+    width: 30px;
+    height: 30px;
+  }
+
+  .key--main {
+    width: 38px;
+    height: 38px;
+  }
+
+  .tc {
+    font-size: 14px;
+  }
+
+  .cue {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .switch__track,
   .switch__thumb,
-  .slide__btn,
-  .slide__bar-fill,
-  .transport__fill,
-  .transport__btn,
-  .group {
+  .time,
+  .key {
     transition: none;
   }
 }

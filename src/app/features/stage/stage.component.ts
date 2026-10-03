@@ -5,7 +5,9 @@ import {
   OnInit,
   ViewEncapsulation,
   computed,
+  effect,
   inject,
+  signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -14,6 +16,10 @@ import { CHURCH_CONFIG } from '../../core/church.config';
 import { PresentationService } from '../../core/presentation.service';
 import { YouTubeService } from '../../core/youtube.service';
 import { CarouselService } from '../../core/services/carousel.service';
+import { AnnouncementsService, announcementParts } from '../../core/services/announcements.service';
+import { PresentationSyncService } from '../../core/services/presentation-sync.service';
+import { SlideProgressDirective } from '../../shared/slide-progress/slide-progress.directive';
+import { ServiceCountdownComponent } from '../../shared/service-countdown/service-countdown.component';
 import { PresentationDisplayService } from '../../core/services/presentation-display.service';
 import {
   PresentationBlocksService,
@@ -83,6 +89,8 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
     selector: 'app-stage',
     imports: [
         TranslatePipe,
+        SlideProgressDirective,
+        ServiceCountdownComponent,
         BrandLogoComponent,
         PresentationSettingsComponent,
         AnnouncementBlockComponent,
@@ -106,6 +114,8 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
 export class StageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly youtube = inject(YouTubeService);
+  private readonly announcements = inject(AnnouncementsService);
+  private readonly sync = inject(PresentationSyncService);
 
   protected readonly config = inject(CHURCH_CONFIG);
   protected readonly presentation = inject(PresentationService);
@@ -140,6 +150,8 @@ export class StageComponent implements OnInit {
    * En los tres casos el bloque de anuncios va expandido: una por anuncio.
    */
   protected readonly renderedSlides = computed<readonly StageSlide[]>(() => {
+    const solo = this.soloSlide();
+    if (solo) return [solo];
     if (this.fullscreen()) return this.carousel.slides();
     const selected = this.selectedBlock();
     const ids = selected ? [selected] : this.allBlocks();
@@ -161,8 +173,62 @@ export class StageComponent implements OnInit {
     return this.fullscreen() && (block === 'families' || block === 'causes' || block === 'talent');
   });
 
+  private readonly queryParams = toSignal(this.route.queryParamMap);
+
+  /**
+   * Vista de prueba (`?rol=solo&anunt=<id>`): UNA diapositiva fija, la del
+   * anuncio pedido aunque aún no esté publicado. Así el panel deja ver y
+   * probar un anuncio programado antes del día, con el mismo renderizador.
+   */
+  protected readonly soloSlide = computed<StageSlide | null>(() => {
+    if (!this.presentation.isSolo()) return null;
+    const params = this.queryParams();
+    const announcement = this.announcements.anyById(params?.get('anunt'));
+    if (!announcement) return null;
+    // Anuncio en varias diapositivas: la parte pedida (`&parte=2`), o la 1.
+    const total = announcementParts(announcement);
+    const index = Math.min(total, Math.max(1, Number(params?.get('parte')) || 1)) - 1;
+    return {
+      key: `announcements:${announcement.id}`,
+      block: 'announcements',
+      titleKey: 'announcements.title',
+      announcement,
+      ...(total > 1 ? { page: { index, total } } : {}),
+    };
+  });
+
+  /**
+   * Claves montadas en proyección: la diapositiva en curso, la siguiente
+   * (precarga sus fotos para que entre sin parpadeo) y la anterior (hace el
+   * fundido de salida). Antes se montaban todas a la vez —17 diapositivas, 29
+   * imágenes, varios desenfoques— en cada pantalla y en la vista previa.
+   */
+  private readonly mountedKeys = computed<ReadonlySet<string>>(() => {
+    const slides = this.carousel.slides();
+    const total = slides.length;
+    if (total === 0) return new Set();
+    const index = this.carousel.currentIndex();
+    return new Set(
+      [index - 1, index, index + 1].map((i) => slides[(i + total) % total].key),
+    );
+  });
+
+  /** Número de esta pantalla mientras dura «Identificar» (4 s), o `null`. */
+  protected readonly identifyNumber = signal<number | null>(null);
+
   /** Aviso «hoy también en directo» activo y proyectando. */
   protected readonly liveNotice = computed<boolean>(() => this.fullscreen() && this.display.liveNotice());
+
+  constructor() {
+    effect((onCleanup) => {
+      const at = this.sync.identifyAt();
+      const numero = this.sync.outputNumber();
+      if (at === 0 || numero === null) return;
+      this.identifyNumber.set(numero);
+      const timer = setTimeout(() => this.identifyNumber.set(null), 4_000);
+      onCleanup(() => clearTimeout(timer));
+    });
+  }
 
   ngOnInit(): void {
     /*
@@ -173,11 +239,20 @@ export class StageComponent implements OnInit {
      * que menos gente deja abierta, así que la cuota da de sobra. La portada
      * va en modo ligero por el motivo contrario (ver `YouTubeService.start`).
      */
-    this.youtube.start('completo');
+    // La vista previa del panel y la de prueba no necesitan el sondeo: con
+    // varias pantallas abiertas, multiplicaría las consultas a YouTube.
+    this.youtube.start(this.presentation.isPreview() ? 'ligero' : 'completo');
+  }
+
+  /** ¿Se monta el contenido de esta diapositiva? (en la web, todas) */
+  protected isMounted(slide: StageSlide): boolean {
+    if (!this.fullscreen() || this.soloSlide()) return true;
+    return this.mountedKeys().has(slide.key);
   }
 
   /** ¿Debe verse esta diapositiva ahora mismo? */
   protected isSlideVisible(slide: StageSlide): boolean {
+    if (this.soloSlide()) return true;
     if (!this.fullscreen()) return true;
     // `location` nunca entra en la proyección.
     return slide.block !== 'location' && this.carousel.isActive(slide.key);
@@ -229,7 +304,10 @@ export class StageComponent implements OnInit {
       case ' ':
       case 'Spacebar':
         event.preventDefault();
-        this.carousel.togglePause();
+        // En modo manual no hay nada que pausar: Espacio avanza, como en
+        // cualquier programa de diapositivas.
+        if (this.carousel.autoAdvance()) this.carousel.togglePause();
+        else this.carousel.next();
         break;
     }
   }

@@ -130,6 +130,14 @@ export interface AnnouncementSection {
    * lo quiera lo tiene a un escaneo del QR.
    */
   readonly webOnly?: boolean;
+  /**
+   * Parte de la proyección en la que va (1 por defecto). Si alguna sección
+   * va en la 2, el anuncio se proyecta en **dos diapositivas** («1/2», «2/2»)
+   * en vez de dejar texto sólo para la web. Es la excepción a «un anuncio =
+   * una diapositiva»: para cuando todo el texto importa y no cabe legible en
+   * una. La parte 1 lleva el resumen; la última, la nota y el versículo.
+   */
+  readonly part?: number;
 }
 
 /**
@@ -778,8 +786,10 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
         {
           heading: 'Vor fi împreună cu noi',
           kind: 'people',
-          // Detalle para la web: en el cartel no cabe legible junto al menú y las inscripciones.
-          webOnly: true,
+          // Se proyecta entero (petición del usuario, 03/10/2026): en la
+          // segunda diapositiva, con la nota del mensaje principal. La 1/2
+          // queda para lo práctico (menú e inscripciones).
+          part: 2,
           items: [
             { label: 'Pastor Gavrilă Zăgrean', value: 'cu sora Ana' },
             { label: 'Pastor Mircea Coptil', value: 'cu soția' },

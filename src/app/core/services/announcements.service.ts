@@ -56,6 +56,28 @@ export class AnnouncementsService {
       .sort((a, b) => parseIsoDate(b.expiresOn).getTime() - parseIsoDate(a.expiresOn).getTime());
   });
 
+  /**
+   * Anuncios **programados**: ya escritos pero aún no publicados
+   * (`publishedOn` futuro), el que antes se publica primero. Sólo para el
+   * panel de control, que permite verlos y probarlos antes del día; la web
+   * y la proyección nunca los muestran antes de tiempo.
+   */
+  readonly scheduled = computed<readonly Announcement[]>(() => {
+    const today = startOfDay(new Date(this.clock.now())).getTime();
+    return this.config.announcements
+      .filter((a) => a.publishedOn && startOfDay(parseIsoDate(a.publishedOn)).getTime() > today)
+      .sort((a, b) => parseIsoDate(a.publishedOn!).getTime() - parseIsoDate(b.publishedOn!).getTime());
+  });
+
+  /**
+   * Cualquier anuncio por id (vigente, programado o pasado). Sólo para la
+   * vista de prueba del panel (`/media/ecran?rol=solo&anunt=<id>`).
+   */
+  anyById(id: string | null | undefined): Announcement | null {
+    if (!id) return null;
+    return this.config.announcements.find((a) => a.id === id) ?? null;
+  }
+
   /** Anuncio vigente por id, o `null` si no existe o ya ha caducado. */
   byId(id: string | null | undefined): Announcement | null {
     if (!id) return null;
@@ -67,6 +89,16 @@ export class AnnouncementsService {
     if (!id) return null;
     return this.past().find((a) => a.id === id) ?? null;
   }
+}
+
+/**
+ * Número de diapositivas que ocupa un anuncio al proyectarse: la mayor
+ * `part` de sus secciones proyectables (1 si ninguna la indica).
+ */
+export function announcementParts(announcement: Announcement): number {
+  return announcement.sections
+    .filter((s) => !s.webOnly)
+    .reduce((max, s) => Math.max(max, s.part ?? 1), 1);
 }
 
 function sortKey(announcement: Announcement): number {

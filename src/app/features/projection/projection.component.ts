@@ -14,12 +14,15 @@ import { PresentationService } from '../../core/presentation.service';
 import {
   FullscreenResultMessage,
   PROJECTION_MESSAGE,
+  WINDOW_NAME_PREFIX,
 } from '../../core/services/projection-window.service';
 import { StageComponent } from '../stage/stage.component';
 
 /** Parámetro de consulta que marca la vista previa incrustada en el panel. */
 export const PROJECTION_PREVIEW_PARAM = 'rol';
 export const PROJECTION_PREVIEW_VALUE = 'preview';
+/** Vista de prueba de una diapositiva fija (`?rol=solo&anunt=<id>`). */
+export const PROJECTION_SOLO_VALUE = 'solo';
 
 /**
  * Ventana de **proyección** (`/media/ecran`): el escenario, y nada más.
@@ -38,6 +41,14 @@ export const PROJECTION_PREVIEW_VALUE = 'preview';
  * canal), pero sin controles ni pantalla completa. Tener la vista previa como
  * una instancia real del escenario garantiza que lo que ve el operador es,
  * píxel a píxel, lo que se proyecta.
+ *
+ * Con `?rol=solo&anunt=<id>` es una **vista de prueba**: una diapositiva fija
+ * (p. ej. un anuncio que aún no se publica), sin sincronizarse con nadie. El
+ * panel la usa para ver y probar un anuncio programado antes del día.
+ *
+ * Pueden abrirse **varias ventanas** a la vez (una por pantalla): todas
+ * reflejan lo mismo. Una pestaña abierta a mano sin nombre recibe uno propio
+ * para que el panel la distinga en la lista de pantallas.
  */
 @Component({
     selector: 'app-projection',
@@ -63,9 +74,13 @@ export class ProjectionComponent implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
 
   ngOnInit(): void {
-    const preview =
-      this.route.snapshot.queryParamMap.get(PROJECTION_PREVIEW_PARAM) === PROJECTION_PREVIEW_VALUE;
-    this.presentation.enterProjectionRoute(preview ? 'preview' : 'window');
+    const rol = this.route.snapshot.queryParamMap.get(PROJECTION_PREVIEW_PARAM);
+    const role =
+      rol === PROJECTION_PREVIEW_VALUE ? 'preview' : rol === PROJECTION_SOLO_VALUE ? 'solo' : 'window';
+    if (role === 'window' && !window.name) {
+      window.name = `${WINDOW_NAME_PREFIX}t${Math.random().toString(36).slice(2, 6)}`;
+    }
+    this.presentation.enterProjectionRoute(role);
     // Título propio: es la ventana que el operador ve en la barra de tareas.
     this.document.title = this.translate.instant('presenter.window_title');
   }

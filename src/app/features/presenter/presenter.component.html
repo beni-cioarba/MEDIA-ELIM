@@ -1,110 +1,79 @@
-<div class="presenter">
-  <!-- ══════════ Barra superior: identidad, estado y ventana de proyección ══════════ -->
-  <header class="topbar">
-    <div class="topbar__brand">
-      <!-- La misma marca que la web en su tinta para fondo oscuro (papel + oro),
-           directamente sobre la barra: sin pastilla, como en el pie. -->
-      <app-brand-logo class="topbar__logo" size="context" tone="dark" [link]="mediaLink" />
-      <div class="topbar__titles">
-        <h1 class="topbar__title">{{ 'presenter.title' | translate }}</h1>
-        <p class="topbar__subtitle">{{ 'presenter.subtitle' | translate }}</p>
+<div class="console">
+  <!-- ══════════ Barra superior: identidad · estado · reloj ══════════ -->
+  <header class="bar">
+    <div class="bar__brand">
+      <app-brand-logo class="bar__logo" size="context" tone="dark" [link]="mediaLink" />
+      <span class="bar__sep" aria-hidden="true"></span>
+      <div class="bar__titles">
+        <h1 class="bar__title">{{ 'presenter.title' | translate }}</h1>
+        <p class="bar__subtitle">{{ 'presenter.subtitle' | translate }}</p>
       </div>
     </div>
 
-    <div class="topbar__status" [class.is-live]="sync.hasProjectionWindow()" role="status">
-      <span class="topbar__dot" aria-hidden="true"></span>
-      {{ (sync.hasProjectionWindow() ? 'presenter.status_window' : 'presenter.status_preview') | translate }}
-    </div>
-
-    <div class="topbar__actions">
-      @if (!sync.hasProjectionWindow()) {
-        @if (projection.canPlaceOnOtherScreen()) {
-          <button type="button" class="btn btn--primary" (click)="open('other-screen')">
-            <app-icon name="play" />
-            {{ 'presenter.open_other_screen' | translate }}
-          </button>
-          <button type="button" class="btn btn--ghost" (click)="open('here')">
-            {{ 'presenter.open' | translate }}
-          </button>
+    <div class="bar__status" role="status">
+      <span class="chip" [class.chip--live]="outputs().length > 0">
+        <span class="chip__dot" aria-hidden="true"></span>
+        @if (outputs().length > 0) {
+          {{ 'presenter.status_onair' | translate: { n: outputs().length } }}
         } @else {
-          <button type="button" class="btn btn--primary" (click)="open('here')">
-            <app-icon name="play" />
-            {{ 'presenter.open' | translate }}
-          </button>
+          {{ 'presenter.status_preview' | translate }}
         }
-      } @else {
-        <!-- Ventana abierta. Pantalla completa a distancia: el gesto del clic
-             viaja delegado a la ventana (ver ProjectionWindowService). El
-             estado lo publica el líder con su latido. Si este panel no abrió
-             la ventana (se recargó), la recupera por su nombre. -->
-        <button
-          type="button"
-          class="btn btn--ghost"
-          [class.is-active]="isWindowFullscreen()"
-          [attr.aria-pressed]="isWindowFullscreen()"
-          (click)="toggleFullscreen()"
-        >
-          <app-icon [name]="isWindowFullscreen() ? 'fullscreen-exit' : 'fullscreen'" />
-          {{ (isWindowFullscreen() ? 'presenter.fullscreen_exit' : 'presenter.fullscreen') | translate }}
-        </button>
-        <button type="button" class="btn btn--ghost" (click)="focusWindow()">
-          {{ 'presenter.focus' | translate }}
-        </button>
-        @if (projection.isOpen()) {
-          <button type="button" class="btn btn--ghost" (click)="close()">
-            <app-icon name="close" />
-            {{ 'presenter.close' | translate }}
-          </button>
-        }
+      </span>
+      <span class="chip" [class.chip--manual]="!display.autoAdvance()">
+        {{ (display.autoAdvance() ? 'blocks.auto' : 'presenter.manual_badge') | translate }}
+      </span>
+      @if (display.liveNotice()) {
+        <span class="chip chip--rec">{{ 'live_notice.badge' | translate }}</span>
       }
     </div>
+
+    <div class="bar__clock" aria-hidden="true">{{ clock() }}</div>
   </header>
 
   @if (popupBlocked()) {
     <p class="alert" role="alert">{{ 'presenter.blocked' | translate }}</p>
   }
   @if (projection.fullscreenDenied()) {
-    <p class="alert" role="status">{{ 'presenter.fullscreen_denied' | translate }}</p>
+    <p class="alert alert--soft" role="status">{{ 'presenter.fullscreen_denied' | translate }}</p>
   }
 
-  <!-- ══════════ Cuerpo: diapositivas | vista previa + transporte + ajustes ══════════ -->
-  <div class="body">
-    <!-- ── Lista de diapositivas, agrupadas por bloque ─────────────────────── -->
-    <aside class="slides" [attr.aria-label]="'presenter.slides' | translate">
-      <h2 class="slides__title">
-        {{ 'presenter.slides' | translate }}
-        <span class="slides__count">{{ slides().length }}</span>
-      </h2>
-
-      <!-- Selección global, sobre los BLOQUES: «Doar primul» deja encendido
-           sólo el primero (en el orden de la lista); «Toate» enciende todos
-           los que tienen contenido y marca todos sus elementos. Las familias
-           de semanas anteriores nunca entran con «Toate». -->
-      @let todo = blocks.globalSelection();
-      @if (todo.total > 1) {
-        <div class="bulk bulk--global" role="group" [attr.aria-label]="'presenter.global_label' | translate">
-          <span class="bulk__count">
-            <span class="bulk__scope">{{ 'presenter.global_label' | translate }}</span>
-            {{ 'presenter.global_count' | translate: { n: todo.visible, total: todo.total } }}
-          </span>
-          <button
-            type="button"
-            class="bulk__btn"
-            [disabled]="todo.onlyFirst"
-            (click)="blocks.selectOnlyFirstBlock()"
-          >{{ 'presenter.select_first' | translate }}</button>
-          <button
-            type="button"
-            class="bulk__btn"
-            [disabled]="todo.allSelected"
-            (click)="blocks.selectAllBlocks()"
-          >{{ 'presenter.select_all' | translate }}</button>
-        </div>
-      }
+  <div class="deck">
+    <!-- ══════════ Escaleta: bloques y diapositivas ══════════ -->
+    <aside class="rundown" [class.is-manual]="!display.autoAdvance()" [attr.aria-label]="'presenter.slides' | translate">
+      <div class="pane-head">
+        <h2 class="pane-head__title">
+          {{ 'presenter.slides' | translate }}
+          <span class="count">{{ slides().length }}</span>
+        </h2>
+        <!-- Selección global sobre los BLOQUES: «Doar primul» deja encendido
+             sólo el primero; «Toate» enciende todos los que tienen contenido.
+             Las familias de semanas anteriores nunca entran con «Toate». -->
+        @let todo = blocks.globalSelection();
+        @if (todo.total > 1) {
+          <div class="seg" role="group" [attr.aria-label]="'presenter.global_label' | translate">
+            <span class="seg__meta">{{ 'presenter.global_count' | translate: { n: todo.visible, total: todo.total } }}</span>
+            <button type="button" class="seg__btn" [disabled]="todo.onlyFirst" (click)="blocks.selectOnlyFirstBlock()">
+              {{ 'presenter.select_first' | translate }}
+            </button>
+            <button type="button" class="seg__btn" [disabled]="todo.allSelected" (click)="blocks.selectAllBlocks()">
+              {{ 'presenter.select_all' | translate }}
+            </button>
+            <!-- Momento de oración: sólo familias (el resumen) y causas. -->
+            <button
+              type="button"
+              class="seg__btn seg__btn--prayer"
+              [disabled]="blocks.prayerOnly() || !blocks.hasPrayerBlocks()"
+              [attr.aria-pressed]="blocks.prayerOnly()"
+              [title]="'presenter.select_prayer_hint' | translate"
+              (click)="blocks.selectPrayerBlocks()"
+            >{{ 'presenter.select_prayer' | translate }}</button>
+          </div>
+        }
+      </div>
 
       <!-- Bloques arrastrables (CDK): el orden es el de la proyección. -->
       <ol
-        class="slides__groups"
+        class="groups"
         role="list"
         cdkDropList
         [cdkDropListData]="groups()"
@@ -114,11 +83,10 @@
           <li class="group" [class.is-off]="!group.state.enabled" cdkDrag [cdkDragData]="group.state.id">
             <div class="group__placeholder" *cdkDragPlaceholder></div>
 
-            <!-- Cabecera del bloque: agarrador, interruptor, nombre, duración -->
             <div class="group__head">
               <button
                 type="button"
-                class="group__grip"
+                class="grip"
                 cdkDragHandle
                 (keydown)="onGripKeydown($event, i)"
                 [attr.aria-label]="'presenter.reorder' | translate: { name: (group.state.titleKey | translate) }"
@@ -138,37 +106,33 @@
                 <span class="group__name">{{ group.state.titleKey | translate }}</span>
               </label>
 
-              <span class="group__meta">
-                @if (group.state.isAuto) {
-                  <span class="tag tag--auto">{{ 'blocks.auto' | translate }}</span>
-                } @else {
-                  <button
-                    type="button"
-                    class="tag tag--manual"
-                    (click)="blocks.resetToAuto(group.state.id)"
-                    [title]="'blocks.reset_one' | translate"
-                  >
-                    {{ 'blocks.manual' | translate }} ↺
-                  </button>
-                }
-              </span>
+              @if (group.state.isAuto) {
+                <span class="tag">{{ 'blocks.auto' | translate }}</span>
+              } @else {
+                <button
+                  type="button"
+                  class="tag tag--manual"
+                  (click)="blocks.resetToAuto(group.state.id)"
+                  [title]="'blocks.reset_one' | translate"
+                >{{ 'blocks.manual' | translate }} ↺</button>
+              }
 
-              <!-- Duración: −/+ en pasos de 5 s o el número escrito a mano. -->
+              <!-- Duración del bloque: −/+ en pasos de 5 s o escrita a mano. -->
               <div
-                class="duration"
+                class="time"
                 [class.is-custom]="!display.isDefaultDuration(group.state.id)"
                 role="group"
                 [attr.aria-label]="'blocks.duration' | translate"
               >
                 <button
                   type="button"
-                  class="duration__btn"
+                  class="time__btn"
                   [disabled]="display.durationFor(group.state.id) <= durationMin"
                   (click)="display.stepDuration(group.state.id, -1)"
                   [attr.aria-label]="'blocks.duration_less' | translate"
                 >−</button>
                 <input
-                  class="duration__input"
+                  class="time__input"
                   type="number"
                   inputmode="numeric"
                   [min]="durationMin"
@@ -179,10 +143,10 @@
                   (keydown.enter)="commitDuration($event)"
                   [attr.aria-label]="'blocks.duration' | translate"
                 />
-                <span class="duration__unit" aria-hidden="true">s</span>
+                <span class="time__unit" aria-hidden="true">s</span>
                 <button
                   type="button"
-                  class="duration__btn"
+                  class="time__btn"
                   [disabled]="display.durationFor(group.state.id) >= durationMax"
                   (click)="display.stepDuration(group.state.id, 1)"
                   [attr.aria-label]="'blocks.duration_more' | translate"
@@ -190,7 +154,7 @@
                 @if (!display.isDefaultDuration(group.state.id)) {
                   <button
                     type="button"
-                    class="duration__btn duration__reset"
+                    class="time__btn time__reset"
                     (click)="display.resetDuration(group.state.id)"
                     [attr.aria-label]="'blocks.duration_reset' | translate"
                     [title]="'blocks.duration_reset' | translate"
@@ -199,23 +163,21 @@
               </div>
             </div>
 
-            <!-- Selección rápida (bloques con varios elementos elegibles):
-                 «sólo el primero» para ir marcando después los que se quieran,
-                 y «todos». El contador dice cuántos se proyectan. -->
+            <!-- Selección rápida del bloque (anuncios, eventos, familias). -->
             @if (selectable(group.state.id); as blockId) {
               @let sel = blocks.selection(blockId);
               @if (sel.total > 1) {
-                <div class="bulk" role="group" [attr.aria-label]="'presenter.select_label' | translate">
-                  <span class="bulk__count">{{ 'presenter.select_count' | translate: { n: sel.visible, total: sel.total } }}</span>
+                <div class="seg seg--inner" role="group" [attr.aria-label]="'presenter.select_label' | translate">
+                  <span class="seg__meta">{{ 'presenter.select_count' | translate: { n: sel.visible, total: sel.total } }}</span>
                   <button
                     type="button"
-                    class="bulk__btn"
+                    class="seg__btn"
                     [disabled]="sel.onlyFirst || !group.state.enabled"
                     (click)="blocks.selectOnlyFirst(blockId)"
                   >{{ 'presenter.select_first' | translate }}</button>
                   <button
                     type="button"
-                    class="bulk__btn"
+                    class="seg__btn"
                     [disabled]="sel.visible === sel.total || !group.state.enabled"
                     (click)="blocks.selectAll(blockId)"
                   >{{ 'presenter.select_all' | translate }}</button>
@@ -223,11 +185,10 @@
               }
             }
 
-            <!-- Diapositivas del bloque -->
-            <ol class="group__slides" role="list">
+            <ol class="rows" role="list">
               @for (slide of group.slides; track slide.key) {
                 <li
-                  class="slide"
+                  class="row"
                   [class.is-current]="isCurrent(slide)"
                   [class.is-hidden]="
                     (slide.announcement && !isAnnouncementVisible(slide)) ||
@@ -235,67 +196,67 @@
                     (!slide.pastFamily && familyId(slide) !== null && !blocks.isFamilyVisible(familyId(slide)!))
                   "
                 >
-                  @if (slide.announcement) {
+                  @if (slide.announcement && !slide.page?.index) {
+                    <!-- Una casilla por anuncio (en su primera parte): las
+                         demás partes lo siguen. -->
                     <input
                       type="checkbox"
-                      class="slide__check"
+                      class="check"
                       [checked]="isAnnouncementVisible(slide)"
                       [disabled]="!group.state.enabled"
                       (change)="setAnnouncementVisible(slide.announcement.id, $event)"
                       [attr.aria-label]="slide.announcement.title"
                     />
                   } @else if (eventId(slide); as eventoId) {
-                    <!-- Igual que un anuncio: cada evento se proyecta o no,
-                         uno a uno. La fila es el evento, no la página. -->
                     <input
                       type="checkbox"
-                      class="slide__check"
+                      class="check"
                       [checked]="isEventVisible(slide)"
                       [disabled]="!group.state.enabled"
                       (change)="setEventVisible(eventoId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
                   } @else if (slide.pastFamily && slide.family) {
-                    <!-- Familia de una semana anterior, añadida para hoy:
+                    <!-- Familia de una semana anterior añadida para hoy:
                          desmarcarla la devuelve al desplegable. -->
                     <input
                       type="checkbox"
-                      class="slide__check"
+                      class="check"
                       [checked]="true"
                       [disabled]="!group.state.enabled"
                       (change)="blocks.setPastFamilyShown(slide.family.id, false)"
                       [attr.aria-label]="label(slide)"
                     />
                   } @else if (familyId(slide); as famId) {
-                    <!-- Resumen o ficha de una familia: se proyecta o no. -->
                     <input
                       type="checkbox"
-                      class="slide__check"
+                      class="check"
                       [checked]="blocks.isFamilyVisible(famId)"
                       [disabled]="!group.state.enabled"
                       (change)="setFamilyVisible(famId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
                   } @else {
-                    <span class="slide__check slide__check--spacer" aria-hidden="true"></span>
+                    <span class="check check--spacer" aria-hidden="true"></span>
                   }
+
                   <button
                     type="button"
-                    class="slide__btn"
+                    class="row__btn"
                     [disabled]="position(slide) === null"
                     (click)="goTo(slide)"
                     [attr.aria-current]="isCurrent(slide) ? 'true' : null"
                   >
-                    <span class="slide__num">{{ position(slide) ?? '–' }}</span>
-                    <span class="slide__label">
+                    <span class="row__num">{{ position(slide) ?? '–' }}</span>
+                    <span class="row__label">
                       {{ label(slide) }}
                       @if (slide.pastFamily) {
-                        <span class="slide__tag">{{ 'presenter.past_tag' | translate }}</span>
+                        <span class="row__tag">{{ 'presenter.past_tag' | translate }}</span>
                       }
                     </span>
                     @if (isCurrent(slide)) {
-                      <span class="slide__bar" aria-hidden="true">
-                        <span class="slide__bar-fill" [style.width.%]="progress()"></span>
+                      <span class="row__bar" aria-hidden="true">
+                        <span class="row__fill" appSlideProgress [timing]="timing()"></span>
                       </span>
                     }
                   </button>
@@ -305,20 +266,20 @@
                     @let propio = display.slideOverride(tKey) !== null;
                     @let segundos = display.itemDuration(tKey, slide.block);
                     <div
-                      class="stime"
+                      class="time time--row"
                       [class.is-custom]="propio"
                       role="group"
                       [attr.aria-label]="'presenter.slide_time' | translate"
                     >
                       <button
                         type="button"
-                        class="stime__btn"
+                        class="time__btn"
                         [disabled]="segundos <= durationMin"
                         (click)="display.stepSlideDuration(tKey, slide.block, -1)"
                         [attr.aria-label]="'blocks.duration_less' | translate"
                       >−</button>
                       <input
-                        class="stime__input"
+                        class="time__input"
                         type="number"
                         inputmode="numeric"
                         [min]="durationMin"
@@ -330,10 +291,10 @@
                         [attr.aria-label]="'presenter.slide_time' | translate"
                         [title]="(propio ? 'presenter.slide_time_custom' : 'presenter.slide_time_inherit') | translate"
                       />
-                      <span class="stime__unit" aria-hidden="true">s</span>
+                      <span class="time__unit" aria-hidden="true">s</span>
                       <button
                         type="button"
-                        class="stime__btn"
+                        class="time__btn"
                         [disabled]="segundos >= durationMax"
                         (click)="display.stepSlideDuration(tKey, slide.block, 1)"
                         [attr.aria-label]="'blocks.duration_more' | translate"
@@ -341,7 +302,7 @@
                       @if (propio) {
                         <button
                           type="button"
-                          class="stime__btn stime__reset"
+                          class="time__btn time__reset"
                           (click)="display.resetSlideDuration(tKey)"
                           [attr.aria-label]="'presenter.slide_time_reset' | translate"
                           [title]="'presenter.slide_time_reset' | translate"
@@ -353,9 +314,8 @@
               }
             </ol>
 
-            <!-- Familias de semanas anteriores: plegado y discreto, para el
-                 caso excepcional. Nunca vienen marcadas; al marcar una pasa a
-                 la lista de arriba (sólo hoy: caduca a medianoche). -->
+            <!-- Familias de semanas anteriores: plegado, para el caso excepcional.
+                 Al marcar una pasa a la lista de arriba (sólo hoy). -->
             @if (group.state.id === 'families' && blocks.pastFamilyOptions().length > 0) {
               <details class="past">
                 <summary class="past__summary">
@@ -368,7 +328,7 @@
                       <label class="past__item">
                         <input
                           type="checkbox"
-                          class="slide__check"
+                          class="check"
                           [disabled]="!group.state.enabled"
                           (change)="addPastFamily(option.family.id, $event)"
                         />
@@ -384,9 +344,9 @@
         }
       </ol>
 
-      <div class="slides__foot">
-        <p class="slides__note">{{ 'blocks.min_one' | translate }} {{ 'presenter.reorder_hint' | translate }}</p>
-        <div class="slides__foot-actions">
+      <div class="rundown__foot">
+        <p class="note">{{ 'blocks.min_one' | translate }} {{ 'presenter.reorder_hint' | translate }}</p>
+        <div class="rundown__actions">
           @if (blocks.hasCustomOrder()) {
             <button type="button" class="link" (click)="blocks.resetOrder()">{{ 'presenter.reset_order' | translate }}</button>
           }
@@ -397,51 +357,64 @@
       </div>
     </aside>
 
-    <!-- ── Vista previa, transporte y ajustes de pantalla ───────────────────── -->
-    <section class="stage-panel">
-      <div class="preview">
+    <!-- ══════════ Centro: monitor de programa + transporte ══════════ -->
+    <section class="program">
+      <div class="monitor-head">
+        <span class="monitor__tag" [class.is-live]="outputs().length > 0">
+          {{ (outputs().length > 0 ? 'presenter.program' : 'presenter.preview_only') | translate }}
+        </span>
+        <span class="monitor-head__slide">{{ currentSlide() ? label(currentSlide()!) : '' }}</span>
+      </div>
+      <div class="monitor" [class.is-live]="outputs().length > 0">
         <iframe
-          class="preview__frame"
+          class="monitor__frame"
           [src]="previewUrl"
           [title]="'presenter.preview' | translate"
           tabindex="-1"
           aria-hidden="true"
         ></iframe>
-        @if (!sync.hasProjectionWindow()) {
-          <span class="preview__badge">{{ 'presenter.preview_only' | translate }}</span>
-        }
       </div>
 
       <!-- Transporte -->
       <div class="transport" role="group" [attr.aria-label]="'carousel.label' | translate">
-        <button type="button" class="transport__btn" (click)="prev()" [attr.aria-label]="'carousel.prev' | translate" [title]="'carousel.prev' | translate">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-        </button>
-        <button
-          type="button"
-          class="transport__btn transport__btn--main"
-          (click)="togglePause()"
-          [attr.aria-pressed]="isPaused()"
-          [attr.aria-label]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
-          [title]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
-        >
-          @if (isPaused()) {
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7V5z" fill="currentColor" /></svg>
-          } @else {
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" /><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" /></svg>
-          }
-        </button>
-        <button type="button" class="transport__btn" (click)="next()" [attr.aria-label]="'carousel.next' | translate" [title]="'carousel.next' | translate">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-        </button>
+        <div class="transport__keys">
+          <button type="button" class="key" (click)="prev()" [attr.aria-label]="'carousel.prev' | translate" [title]="'carousel.prev' | translate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <button
+            type="button"
+            class="key key--main"
+            [disabled]="!display.autoAdvance()"
+            (click)="togglePause()"
+            [attr.aria-pressed]="isPaused()"
+            [attr.aria-label]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+            [title]="(isPaused() ? 'carousel.play' : 'carousel.pause') | translate"
+          >
+            @if (isPaused()) {
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7V5z" fill="currentColor" /></svg>
+            } @else {
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" /><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" /></svg>
+            }
+          </button>
+          <button type="button" class="key" (click)="next()" [attr.aria-label]="'carousel.next' | translate" [title]="'carousel.next' | translate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+        </div>
 
-        <div class="transport__progress">
+        <div class="transport__meter">
           <div class="transport__row">
-            <span class="transport__counter">{{ currentIndex() + 1 }} / {{ slides().length }}</span>
-            <span class="transport__time">{{ format(elapsedS()) }} / {{ format(durationS()) }}</span>
+            <span class="tc tc--counter">{{ currentIndex() + 1 }}<span class="tc__dim">/{{ slides().length }}</span></span>
+            @if (display.autoAdvance()) {
+              <span class="tc">
+                {{ format(elapsedS()) }}<span class="tc__dim"> / {{ format(durationS()) }}</span>
+                <span class="tc__remain">−{{ format(remainingS()) }}</span>
+              </span>
+            } @else {
+              <span class="tc tc--manual">{{ 'presenter.manual_badge' | translate }}</span>
+            }
           </div>
-          <div class="transport__bar" aria-hidden="true">
-            <span class="transport__fill" [style.width.%]="progress()"></span>
+          <div class="meter" aria-hidden="true">
+            <span class="meter__fill" appSlideProgress [timing]="timing()"></span>
           </div>
         </div>
       </div>
@@ -458,35 +431,300 @@
         </div>
       </dl>
 
-      <!-- Pantalla: aviso de directo -->
-      <div class="screen">
-        <!-- Aviso de directo: «ÎN DIRECT» en la esquina de la proyección y el
-             código del directo en la diapositiva del QR. Caduca a medianoche. -->
-        <div class="screen__group">
-          <label class="switch">
-            <input
-              type="checkbox"
-              [checked]="display.liveNotice()"
-              [attr.aria-describedby]="display.liveNotice() ? 'live-notice-hint' : null"
-              (change)="setLiveNotice($event)"
-            />
-            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
-            <span class="screen__label">
-              @if (display.liveNotice()) {
-                <span class="screen__live-dot" aria-hidden="true"></span>
-              }
-              {{ 'live_notice.toggle' | translate }}
-            </span>
-          </label>
-          @if (display.liveNotice()) {
-            <span id="live-notice-hint" class="screen__note">{{ 'live_notice.hint' | translate }}</span>
+      <p class="note note--keys">{{ 'presenter.shortcuts' | translate }}</p>
+    </section>
+
+    <!-- ══════════ Derecha: salidas · ritmo · programados ══════════ -->
+    <aside class="side">
+      <!-- Salidas: pantallas detectadas y ventanas en directo -->
+      <section class="card" aria-labelledby="outputs-title">
+        <header class="card__head">
+          <h2 id="outputs-title" class="card__title">{{ 'presenter.outputs' | translate }}</h2>
+          @if (outputs().length > 0) {
+            <button type="button" class="mini" (click)="identify()" [title]="'presenter.identify_hint' | translate">
+              {{ 'presenter.identify' | translate }}
+            </button>
+          }
+        </header>
+
+        @switch (projection.access()) {
+          @case ('prompt') {
+            <p class="note">{{ 'presenter.screens_prompt' | translate }}</p>
+            <button type="button" class="btn btn--primary btn--block" (click)="projection.detectScreens()">
+              {{ 'presenter.screens_detect' | translate }}
+            </button>
+          }
+          @case ('denied') {
+            <p class="note note--warn">{{ 'presenter.screens_denied' | translate }}</p>
+          }
+          @case ('unsupported') {
+            <p class="note">{{ 'presenter.screens_unsupported' | translate }}</p>
+          }
+        }
+
+        @if (projection.screens().length > 0) {
+          <ul class="screens" role="list">
+            @for (screen of projection.screens(); track screen.key) {
+              @let out = outputOn(screen);
+              <li class="screen" [class.is-live]="out !== null">
+                <span class="screen__icon" aria-hidden="true">
+                  @if (out) { {{ outputNumber(out) }} } @else { <span class="screen__glyph"></span> }
+                </span>
+                <span class="screen__info">
+                  <span class="screen__name">{{ screen.label }}</span>
+                  <span class="screen__meta">
+                    {{ screen.width }}×{{ screen.height }}
+                    @if (screen.isPrimary) { · {{ 'presenter.screen_primary' | translate }} }
+                    @if (screen.isCurrent) { · {{ 'presenter.screen_this' | translate }} }
+                    @if (out && !out.visible) { · <span class="warn">{{ 'presenter.output_hidden' | translate }}</span> }
+                  </span>
+                </span>
+                <span class="screen__actions">
+                  @if (out) {
+                    <button type="button" class="ico" [class.is-on]="out.fullscreen" (click)="toggleOutputFullscreen(out)"
+                      [disabled]="!canControl(out)"
+                      [attr.aria-label]="(out.fullscreen ? 'presenter.fullscreen_exit' : 'presenter.fullscreen') | translate"
+                      [title]="(out.fullscreen ? 'presenter.fullscreen_exit' : 'presenter.fullscreen') | translate">
+                      <app-icon [name]="out.fullscreen ? 'fullscreen-exit' : 'fullscreen'" />
+                    </button>
+                    <button type="button" class="ico" (click)="focusOutput(out)" [disabled]="!canControl(out)"
+                      [attr.aria-label]="'presenter.focus' | translate" [title]="'presenter.focus' | translate">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-8 8M10 6H5a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1v-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    </button>
+                    <button type="button" class="ico ico--danger" (click)="closeOutput(out)" [disabled]="!canControl(out)"
+                      [attr.aria-label]="'presenter.close' | translate" [title]="'presenter.close' | translate">
+                      <app-icon name="close" />
+                    </button>
+                  } @else {
+                    <button type="button" class="mini mini--go" (click)="open(screen)">
+                      {{ 'presenter.screen_project' | translate }}
+                    </button>
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+        }
+
+        <!-- Ventanas sueltas o pestañas abiertas a mano (sin pantalla detectada). -->
+        @if (looseOutputs().length > 0) {
+          <ul class="screens" role="list">
+            @for (out of looseOutputs(); track out.id) {
+              <li class="screen is-live">
+                <span class="screen__icon" aria-hidden="true">{{ outputNumber(out) }}</span>
+                <span class="screen__info">
+                  <span class="screen__name">
+                    {{ (canControl(out) ? 'presenter.loose_window' : 'presenter.loose_tab') | translate }}
+                  </span>
+                  <span class="screen__meta">
+                    {{ out.screen }}
+                    @if (!out.visible) { · <span class="warn">{{ 'presenter.output_hidden' | translate }}</span> }
+                  </span>
+                </span>
+                <span class="screen__actions">
+                  <button type="button" class="ico" [class.is-on]="out.fullscreen" (click)="toggleOutputFullscreen(out)"
+                    [disabled]="!canControl(out)"
+                    [attr.aria-label]="(out.fullscreen ? 'presenter.fullscreen_exit' : 'presenter.fullscreen') | translate"
+                    [title]="(out.fullscreen ? 'presenter.fullscreen_exit' : 'presenter.fullscreen') | translate">
+                    <app-icon [name]="out.fullscreen ? 'fullscreen-exit' : 'fullscreen'" />
+                  </button>
+                  <button type="button" class="ico" (click)="focusOutput(out)" [disabled]="!canControl(out)"
+                    [attr.aria-label]="'presenter.focus' | translate" [title]="'presenter.focus' | translate">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-8 8M10 6H5a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1v-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </button>
+                  <button type="button" class="ico ico--danger" (click)="closeOutput(out)" [disabled]="!canControl(out)"
+                    [attr.aria-label]="'presenter.close' | translate" [title]="'presenter.close' | translate">
+                    <app-icon name="close" />
+                  </button>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="card__actions">
+          @if (hasFreeExternal()) {
+            <button type="button" class="btn btn--primary" (click)="openAllExternal()">
+              <app-icon name="play" />{{ 'presenter.open_all' | translate }}
+            </button>
+          }
+          <button type="button" class="btn" (click)="open()">{{ 'presenter.new_window' | translate }}</button>
+          @if (projection.openNames().length > 1) {
+            <button type="button" class="btn btn--ghost" (click)="projection.closeAll()">{{ 'presenter.close_all' | translate }}</button>
           }
         </div>
-        <p class="screen__hint">{{ 'presenter.shortcuts' | translate }}</p>
-        @if (sync.hasProjectionWindow()) {
-          <p class="screen__hint">{{ 'presenter.hint_fullscreen' | translate }}</p>
+        <p class="note">{{ 'presenter.hint_fullscreen' | translate }}</p>
+      </section>
+
+      <!-- Ritmo y pantalla -->
+      <section class="card" aria-labelledby="pace-title">
+        <header class="card__head">
+          <h2 id="pace-title" class="card__title">{{ 'presenter.pace' | translate }}</h2>
+        </header>
+        <!-- Interruptor general del ritmo: apagado, nada avanza solo. -->
+        <label class="switch switch--row">
+          <input
+            type="checkbox"
+            [checked]="display.autoAdvance()"
+            aria-describedby="auto-advance-hint"
+            (change)="setAutoAdvance($event)"
+          />
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="switch__text">
+            <span class="switch__label">{{ 'presenter.auto_advance' | translate }}</span>
+            <span id="auto-advance-hint" class="switch__hint">
+              {{ (display.autoAdvance() ? 'presenter.auto_advance_on' : 'presenter.auto_advance_off') | translate }}
+            </span>
+          </span>
+        </label>
+        <!-- Aviso de directo: «ÎN DIRECT» en la esquina y el QR del directo. -->
+        <label class="switch switch--row">
+          <input
+            type="checkbox"
+            [checked]="display.liveNotice()"
+            aria-describedby="live-notice-hint"
+            (change)="setLiveNotice($event)"
+          />
+          <span class="switch__track switch__track--rec" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="switch__text">
+            <span class="switch__label">{{ 'live_notice.toggle' | translate }}</span>
+            <span id="live-notice-hint" class="switch__hint">{{ 'live_notice.hint' | translate }}</span>
+          </span>
+        </label>
+      </section>
+
+      <!-- Cuenta atrás hasta el comienzo del culto (automática por horario;
+           hora manual para hoy si hace falta). Se ve en el margen de la
+           proyección sólo dentro de la antelación elegida. -->
+      <section class="card" aria-labelledby="countdown-title">
+        <header class="card__head">
+          <h2 id="countdown-title" class="card__title">{{ 'presenter.countdown' | translate }}</h2>
+          @if (countdownTarget(); as t) {
+            <span class="mini-status" [class.is-on]="countdownOnAir()">
+              {{ (countdownOnAir() ? 'presenter.countdown_onair' : 'presenter.countdown_waiting') | translate }}
+            </span>
+          }
+        </header>
+
+        <label class="switch switch--row">
+          <input
+            type="checkbox"
+            [checked]="display.countdown().enabled"
+            (change)="setCountdownEnabled($event)"
+          />
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="switch__text">
+            <span class="switch__label">{{ 'presenter.countdown_show' | translate }}</span>
+            <span class="switch__hint">{{ 'presenter.countdown_hint' | translate }}</span>
+          </span>
+        </label>
+
+        @if (countdownTarget(); as t) {
+          <div class="cd">
+            <div class="cd__main">
+              <span class="cd__time">{{ t.time }}</span>
+              <span class="cd__src">
+                {{ (t.source === 'manual' ? 'presenter.countdown_manual' : 'presenter.countdown_auto') | translate }}
+              </span>
+            </div>
+            <div class="cd__left">
+              <span class="cd__label">{{ 'presenter.countdown_left' | translate }}</span>
+              <span class="cd__value">{{ format(countdownLeftS()) }}</span>
+            </div>
+          </div>
+          <p class="note">{{ 'presenter.countdown_from' | translate: { time: countdownFrom() } }}</p>
+        } @else {
+          <p class="note">{{ 'presenter.countdown_none' | translate }}</p>
         }
-      </div>
-    </section>
+
+        <div class="seg" role="group" [attr.aria-label]="'presenter.countdown_lead' | translate">
+          <span class="seg__meta">{{ 'presenter.countdown_lead' | translate }}</span>
+          @for (m of countdownLeads; track m) {
+            <button
+              type="button"
+              class="seg__btn"
+              [disabled]="display.countdown().leadMinutes === m"
+              [attr.aria-pressed]="display.countdown().leadMinutes === m"
+              (click)="display.setCountdownLead(m)"
+            >{{ m }}′</button>
+          }
+        </div>
+
+        <!-- Hora manual para hoy: manda sobre el horario y caduca a medianoche. -->
+        <form class="cd-manual" (submit)="setCountdownManual($event, manualTime.value)">
+          <label class="cd-manual__label" for="cd-manual-time">{{ 'presenter.countdown_manual_label' | translate }}</label>
+          <input
+            #manualTime
+            id="cd-manual-time"
+            class="cd-manual__input"
+            type="time"
+            required
+            [value]="display.countdown().manual?.time ?? ''"
+          />
+          <button type="submit" class="mini mini--go">{{ 'presenter.countdown_set' | translate }}</button>
+          @if (display.countdown().manual) {
+            <button type="button" class="mini" (click)="display.setCountdownManual(null)">
+              {{ 'presenter.countdown_clear' | translate }}
+            </button>
+          }
+        </form>
+      </section>
+
+      <!-- Anuncios programados: verlos y probarlos antes del día -->
+      <section class="card" aria-labelledby="scheduled-title">
+        <header class="card__head">
+          <h2 id="scheduled-title" class="card__title">
+            {{ 'presenter.scheduled' | translate }}
+            <span class="count">{{ announcements.scheduled().length }}</span>
+          </h2>
+        </header>
+        @if (announcements.scheduled().length === 0) {
+          <p class="note">{{ 'presenter.scheduled_empty' | translate }}</p>
+        } @else {
+          <ul class="sched" role="list">
+            @for (a of announcements.scheduled(); track a.id) {
+              <li class="sched__item">
+                <span class="sched__date">{{ shortDate(a.publishedOn) }}</span>
+                <span class="sched__title" [title]="a.title">{{ a.title }}</span>
+                <span class="sched__actions">
+                  <button type="button" class="mini mini--go" (click)="openSolo(a)">{{ 'presenter.scheduled_view' | translate }}</button>
+                  <button type="button" class="mini" (click)="openSoloWindow(a)" [title]="'presenter.scheduled_test_hint' | translate">
+                    {{ 'presenter.scheduled_test' | translate }}
+                  </button>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </aside>
   </div>
+
+  <!-- Vista de prueba de un anuncio programado: el mismo escenario, a 16:9. -->
+  <dialog #soloDialog class="solo" (close)="soloAnnouncement.set(null)" (cancel)="closeSolo()">
+    @if (soloAnnouncement(); as a) {
+      <header class="solo__head">
+        <span class="solo__title">{{ a.title }}</span>
+        <span class="solo__meta">{{ 'presenter.scheduled_from' | translate: { date: shortDate(a.publishedOn) } }}</span>
+        @if (soloParts() > 1) {
+          <span class="seg" role="group">
+            @for (n of soloPartList(); track n) {
+              <button type="button" class="seg__btn" [disabled]="soloPart() === n" (click)="soloPart.set(n)">
+                {{ n }}/{{ soloParts() }}
+              </button>
+            }
+          </span>
+        }
+        <button type="button" class="mini" (click)="openSoloWindow(a)">{{ 'presenter.scheduled_test' | translate }}</button>
+        <button type="button" class="ico" (click)="closeSolo()" [attr.aria-label]="'presenter.close_preview' | translate">
+          <app-icon name="close" />
+        </button>
+      </header>
+      @if (soloUrl(); as url) {
+        <div class="solo__screen">
+          <iframe class="solo__frame" [src]="url" [title]="a.title"></iframe>
+        </div>
+      }
+    }
+  </dialog>
 </div>

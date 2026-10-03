@@ -49,7 +49,14 @@ iconos, viñetas, contadores ni cajas. Dos zonas:
 - **Por intención** (panel navy, el mismo lenguaje que las fichas de
   familias): título en oro y la intención en blanco debajo.
 - Web: las dos zonas lado a lado (3 : 2), apiladas en móvil.
-- Proyección (revisión del 29/09/2026): **a sangre sobre navy entero**
+- Proyección (revisión del **03/10/2026**, sustituye a la del 29/09): **blanco
+  y negro** a sangre (casi negro, sólo blancos y grises: nada compite con los
+  nombres y no ilumina la sala). Franjas a todo el ancho: rótulo con filete,
+  una franja por causa con nombres (1-3 columnas según cuántos, `--cols`) e
+  intenciones en columnas iguales (`--n`) bajo un filete. `appFitToBox` hasta
+  1,4 y ahora mide alto **y ancho** (cada texto `nowrap`), así nada se sale.
+  Abajo 7u libres para la cuenta atrás del culto. Lo de debajo es histórico.
+- (Histórico, 29/09/2026) **a sangre sobre navy entero**
   (`.stage--bleed`, como las familias) para que la pantalla no ilumine la
   sala mientras se ora; sin blancos grandes ni firma ELIM. 58 / 42 a todo el
   alto: título + nombres en blanco al 90 % | causas sobre `--c-primary-deep`

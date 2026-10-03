@@ -10,8 +10,11 @@ import { Injectable, inject, signal, computed, DOCUMENT } from '@angular/core';
  *               hay ventana, proyecta ella sola en pequeño.
  *  - `inline`   pantalla completa en la propia pestaña de `/media` (tecla `F`),
  *               para un solo monitor.
+ *  - `solo`     vista de prueba de UNA diapositiva concreta (p. ej. un anuncio
+ *               que aún no se publica), en el panel o en una ventana suelta.
+ *               No se sincroniza con nadie ni lleva controles.
  */
-export type ProjectionRole = 'window' | 'preview' | 'inline';
+export type ProjectionRole = 'window' | 'preview' | 'inline' | 'solo';
 
 /**
  * Estado del **modo presentación** de esta instancia.
@@ -53,8 +56,14 @@ export class PresentationService {
   /** Ruta de proyección activa (ventana o vista previa). */
   readonly isProjectionRoute = computed(() => this.projectionRole() !== null);
 
-  /** Vista previa incrustada: sin controles ni pantalla completa. */
-  readonly isPreview = computed(() => this.projectionRole() === 'preview');
+  /** Vista previa incrustada o de prueba: sin controles. */
+  readonly isPreview = computed(() => {
+    const role = this.projectionRole();
+    return role === 'preview' || role === 'solo';
+  });
+
+  /** Vista de prueba de una sola diapositiva (no se sincroniza). */
+  readonly isSolo = computed(() => this.projectionRole() === 'solo');
 
   /**
    * ¿Tiene sentido ofrecer «pantalla completa» aquí? Sólo en la ventana de

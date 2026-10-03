@@ -2,8 +2,8 @@
 
 // =====================================================================
 // Collage de la semana (sólo proyección, todo en `--pj-*`).
-// [lista en panel navy] [fotos en filas justificadas]. La lista se lleva
-// el ancho que el collage no usa (`1fr` + collage con ancho calculado).
+// [lista en panel navy] [filas de igual altura]. La lista se lleva el
+// ancho que el collage no usa (`1fr` + collage con ancho calculado).
 // =====================================================================
 
 :host {
@@ -18,9 +18,13 @@
 .collage {
   height: 100%;
   display: grid;
+  // Sin hueco entre columnas: el margen del collage (`--pad`) ya lo separa
+  // de la lista.
+  // El collage flota sobre navy profundo (el de las causas) con el mismo
+  // margen en los cuatro lados: ninguna foto toca el borde de la pantalla.
+  background: var(--c-primary-deep);
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: minmax(0, 1fr);
-  gap: var(--gap, calc(var(--pj-u) * 1.2));
 }
 
 .collage__head {
@@ -60,7 +64,9 @@
   box-sizing: border-box;
   min-height: 100%;
   // Mismos márgenes que la ficha (arriba 5u, lados 4,5u).
-  padding: calc(var(--pj-u) * 5) calc(var(--pj-u) * 4.5) var(--pj-sp-4);
+  // Abajo 7u: deja libre la esquina de la cuenta atrás del culto
+  // (`.stage-countdown`), que en las diapositivas a sangre se superpone.
+  padding: calc(var(--pj-u) * 5) calc(var(--pj-u) * 4.5) calc(var(--pj-u) * 7);
 }
 
 // Panel navy (el cuadro negro del PowerPoint, con la marca). Recorta y se
@@ -121,19 +127,21 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--gap, calc(var(--pj-u) * 1.2));
+  gap: var(--gap, calc(var(--pj-u) * 1.6));
+  box-sizing: border-box;
   height: 100%;
+  padding: var(--pad, calc(var(--pj-u) * 3));
 }
 
 .collage__row {
   display: flex;
-  gap: var(--gap, calc(var(--pj-u) * 1.2));
+  justify-content: center;
+  gap: var(--gap, calc(var(--pj-u) * 1.6));
 }
 
 .collage__tile {
   position: relative;
   flex: 0 0 auto;
-  height: 100%;
   margin: 0;
   overflow: hidden;
 }

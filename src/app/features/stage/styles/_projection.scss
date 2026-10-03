@@ -358,6 +358,17 @@
     pointer-events: none;
   }
 
+  // Cuenta atrás del culto: el mismo margen inferior, a la izquierda (la
+  // firma va a la derecha). También en las diapositivas a sangre: es lo único
+  // que se superpone, pequeño y en la esquina.
+  .stage.is-fullscreen .stage-countdown {
+    position: absolute;
+    left: max(calc(var(--pj-u) * 4.5), calc((100vw - var(--pj-canvas-w)) / 2));
+    bottom: calc(var(--pj-u) * 0.45);
+    z-index: 3;
+    pointer-events: none;
+  }
+
   .stage.is-fullscreen .stage-bug__logo {
     --brand-size: calc(var(--pj-u) * 2.2);
     filter: none;

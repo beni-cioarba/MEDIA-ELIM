@@ -21,6 +21,10 @@
             <app-icon name="megaphone" />
             {{ 'announcements.badge' | translate }}
           </span>
+          @if (page(); as p) {
+            <!-- Anuncio en varias diapositivas: en qué parte estamos. -->
+            <span class="announcement__part">{{ p.index + 1 }}/{{ p.total }}</span>
+          }
           @if (announcement.date) {
             <time class="announcement__date" [attr.datetime]="announcement.date">
               {{ schedule.formatEventDate(announcement.date) }}
@@ -45,7 +49,9 @@
       </div>
     </header>
 
-    <p class="announcement__lead">{{ announcement.lead }}</p>
+    @if (isFirstPart()) {
+      <p class="announcement__lead">{{ announcement.lead }}</p>
+    }
 
     @if (sections().length > 0) {
       <!-- Hasta dos secciones van en columnas; con tres o más se apilan a todo
@@ -84,14 +90,14 @@
       </div>
     }
 
-    @if (announcement.footnote) {
+    @if (announcement.footnote && isLastPart()) {
       <p class="announcement__footnote">{{ announcement.footnote }}</p>
     }
 
     <!-- El versículo va como cita, no como aviso: marcado semántico
          (`blockquote` + `cite`) y la serif que el sistema reserva para la
          marca y la Escritura. Se proyecta igual que el resto de la tarjeta. -->
-    @if (announcement.verse; as verse) {
+    @if (isLastPart() && announcement.verse; as verse) {
       <figure class="announcement__verse">
         <blockquote class="announcement__verse-text">«{{ verse.text }}»</blockquote>
         <figcaption class="announcement__verse-ref">{{ verse.reference }}</figcaption>
