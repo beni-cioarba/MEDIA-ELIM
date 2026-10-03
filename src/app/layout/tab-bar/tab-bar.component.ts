@@ -21,9 +21,9 @@ import { TabNavService } from './tab-nav.service';
  * Todo el primer nivel de `MAIN_NAV` (`TabNavService`), también «Donează» y
  * «În direct». Una hoja enlaza a su página; un grupo, a su **portada de
  * sección** (`NavHubComponent`), que resume sus páginas. Volver a pulsar la
- * pestaña de la página en la que ya se está sube al principio, y deslizar
- * sobre la página pasa a la pestaña contigua (`SwipeTabsDirective`), como en
- * las apps nativas.
+ * pestaña de la página en la que ya se está sube al principio, y arrastrar
+ * la página lleva a la pestaña contigua siguiendo al dedo
+ * (`SwipeTabsDirective`), como en WhatsApp.
  *
  * ── Siete pestañas en 320 px ──────────────────────────────────────────
  * Cada una mide ~43 px a 320. Con todos los rótulos no caben, así que por

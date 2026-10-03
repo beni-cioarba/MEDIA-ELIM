@@ -4,15 +4,22 @@ import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { NavItem } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 
-/** Sentido de un cambio de pestaña: de dónde entra la página nueva. */
+/** Sentido de un cambio de pestaña. */
 export type TabDirection = 'next' | 'prev';
+
+/** Pestaña vecina que asoma mientras se arrastra, y por qué lado. */
+export interface TabPeek {
+  readonly tab: NavItem;
+  readonly direction: TabDirection;
+}
 
 /**
  * Las pestañas del móvil y el paso de una a otra.
  *
- * Lo comparten la barra (`TabBarComponent`) y el gesto de deslizar sobre la
- * página (`SwipeTabsDirective`): los dos tienen que saber **qué pestañas hay,
- * cuál está activa y cuál es la siguiente**, y no deben poder discrepar.
+ * Lo comparten la barra (`TabBarComponent`), el gesto de arrastrar la página
+ * (`SwipeTabsDirective`) y la vista previa de la pestaña vecina
+ * (`SwipePeekComponent`): los tres tienen que saber **qué pestañas hay, cuál
+ * está activa y cuál es la vecina**, y no deben poder discrepar.
  *
  * Las pestañas son **todo el primer nivel de `MAIN_NAV`** —también las dos
  * llamadas a la acción, «Donează» y «În direct»—, en su orden. Sin lista
@@ -31,24 +38,22 @@ export class TabNavService {
     return root ? this.tabs.findIndex((tab) => tab.id === root.id) : -1;
   });
 
-  /**
-   * Sentido del último cambio hecho con el gesto. Lo lee el layout para que
-   * la página nueva entre desde el lado correcto; se consume al animar.
-   */
-  readonly lastDirection = signal<TabDirection | null>(null);
+  /** Vecina que asoma durante el arrastre (`null` = no se arrastra). */
+  readonly peek = signal<TabPeek | null>(null);
 
   /**
-   * Pasa a la pestaña contigua. No da la vuelta: en la última, deslizar
-   * hacia la siguiente no hace nada (como en las apps nativas).
-   * Devuelve si ha habido cambio.
+   * Pestaña contigua en ese sentido, o `null` si no la hay. No da la vuelta:
+   * desde la última no hay «siguiente» (como en las apps nativas).
    */
-  step(direction: TabDirection): boolean {
+  neighbor(direction: TabDirection): NavItem | null {
     const current = this.activeIndex();
-    if (current < 0) return false;
-    const target = this.tabs[current + (direction === 'next' ? 1 : -1)];
-    if (!target?.path) return false;
-    this.lastDirection.set(direction);
-    void this.router.navigateByUrl(target.path);
-    return true;
+    if (current < 0) return null;
+    return this.tabs[current + (direction === 'next' ? 1 : -1)] ?? null;
+  }
+
+  /** Navega a la pestaña contigua. Devuelve la promesa del router. */
+  go(direction: TabDirection): Promise<boolean> {
+    const target = this.neighbor(direction);
+    return target?.path ? this.router.navigateByUrl(target.path) : Promise.resolve(false);
   }
 }

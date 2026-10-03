@@ -237,15 +237,22 @@ debajo de 380 sólo la activa lleva rótulo (patrón de Material 3) y puede
 ocupar el hueco de sus vecinas. «În direct» lleva un punto dorado latiendo.
 Cápsula de 3,4 rem (`--tab-bar-height`) con 0,4 rem de margen.
 
-**Deslizar** (`SwipeTabsDirective`, en el `<main>`): de derecha a izquierda
-pasa a la pestaña siguiente y al revés, sin dar la vuelta; la página nueva
-entra desde ese lado (`is-swipe-next/prev`, 240 ms). Sólo con el dedo y con
-la barra visible. No actúa si el gesto empieza en los 24 px del borde
-(«atrás» del sistema), en algo con gesto horizontal propio (carruseles,
-campos, vídeo, cualquier caja con scroll horizontal o `[data-no-swipe]`),
-con texto seleccionado, si no es claramente horizontal (|dx| > 1,8·|dy|) o
-si es lento (> 700 ms). Marca con `data-no-swipe` cualquier pieza nueva que
-se arrastre en horizontal.
+**Arrastrar entre pestañas** (`SwipeTabsDirective` en el `<main>`, como
+WhatsApp, auditado): el contenido **sigue al dedo** y por el otro lado asoma
+la sección vecina; el indicador de la barra avanza en proporción
+(`--tab-drag`); al soltar cambia si se pasó el 40 % del ancho o hubo «flick»
+(> 0,45 px/ms), si no vuelve; sin vecina (primera/última) cede un 28 % y
+vuelve. Lo que asoma es una **vista previa** (`SwipePeekComponent`: cabecera
+navy de la sección + sus páginas como tarjetas, sin cargar nada), porque las
+rutas son perezosas y montar las vecinas costaría su carga; al completar se
+navega y la vista previa se funde sobre la página real. Manejadores pasivos
+fuera de Angular, un `transform` + variables CSS por fotograma;
+`touch-action: pan-y pinch-zoom` en el `<main>`. Se decide tras 10 px: si
+empieza vertical, no hay arrastre en ese gesto. No actúa en los 24 px del
+borde («atrás» del sistema), en `app-card-carousel`, campos, vídeo, diálogos,
+cajas con scroll horizontal o `[data-no-swipe]` (márcalo en cualquier pieza
+nueva que se arrastre en horizontal), con texto seleccionado ni con dos
+dedos.
 
 **Adónde lleva cada pestaña**: una hoja, a su página; un grupo, a su
 **portada de sección**. Por eso todo grupo lleva `path` (la portada) y

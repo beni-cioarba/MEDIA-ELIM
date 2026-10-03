@@ -10,6 +10,7 @@ import { TopNavComponent } from '../top-nav/top-nav.component';
 import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
 import { TabBarComponent } from '../tab-bar/tab-bar.component';
 import { SwipeTabsDirective } from '../tab-bar/swipe-tabs.directive';
+import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
 
 /**
  * Envoltorio (`shell`) reutilizable de toda la web pública:
@@ -42,6 +43,7 @@ import { SwipeTabsDirective } from '../tab-bar/swipe-tabs.directive';
         MobileNavComponent,
         TabBarComponent,
         SwipeTabsDirective,
+        SwipePeekComponent,
         BreadcrumbComponent,
         FooterComponent,
         FloatingActionsComponent,
@@ -66,6 +68,8 @@ import { SwipeTabsDirective } from '../tab-bar/swipe-tabs.directive';
 
     @if (!fullscreen()) {
       <app-tab-bar />
+      <!-- Lo que asoma al arrastrar la página hacia otra pestaña. -->
+      <app-swipe-peek />
     }
 
     @defer (on idle) {
@@ -92,39 +96,6 @@ import { SwipeTabsDirective } from '../tab-bar/swipe-tabs.directive';
         display: block;
         min-width: 0;
         outline: none;
-      }
-
-      /* Cambio de pestaña con el gesto (SwipeTabsDirective): la página nueva
-         entra desde el lado hacia el que se deslizó. Corto y sin rebote: es
-         orientación, no espectáculo. OJO: plantilla literal, sin acentos
-         graves ni en comentarios. */
-      .shell__main.is-swipe-next {
-        animation: swipe-from-right var(--mo-base) var(--ea-decelerate);
-      }
-
-      .shell__main.is-swipe-prev {
-        animation: swipe-from-left var(--mo-base) var(--ea-decelerate);
-      }
-
-      @keyframes swipe-from-right {
-        from {
-          opacity: 0.4;
-          transform: translateX(14%);
-        }
-      }
-
-      @keyframes swipe-from-left {
-        from {
-          opacity: 0.4;
-          transform: translateX(-14%);
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .shell__main.is-swipe-next,
-        .shell__main.is-swipe-prev {
-          animation: none;
-        }
       }
 
       /* Reserva la altura aproximada del pie para que no haya salto de
