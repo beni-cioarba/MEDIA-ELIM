@@ -15,7 +15,7 @@ un versículo. Antes era un PowerPoint; ahora es un módulo:
 | Web `/rugaciune-pentru-familii` | **Feed de semanas**: la en curso arriba y, al bajar, las anteriores (resumen + fichas de cada una), con índice lateral |
 | Web `/rugaciune-pentru-familii/<domingo>` | El mismo feed, colocado en esa semana (enlace para compartir) |
 | `#<id>-<domingo>` sobre esa URL | Salta a la ficha de una familia (botón «Distribuie»). Se sigue aceptando el formato antiguo `#<id>` |
-| Proyección, bloque `families` | **Resumen (mosaico de fotos) + una diapositiva por familia**, justo detrás de los anuncios |
+| Proyección, bloque `families` | **Resumen (mosaico de fotos) + una diapositiva por familia**, detrás de los anuncios y de «Cauzele Bisericii Elim» (orden por defecto desde el 04/10/2026) |
 | `/anunturi` | Tarjeta de acceso encima de los anuncios (`FamilyPrayerTeaserComponent`) |
 | Menú | Program → «Rugăciune pentru familii» (icono `hand-heart`) |
 
@@ -24,12 +24,38 @@ familias con menores; se comparten por enlace pero no salen en buscadores.
 
 ## Qué semana se muestra
 
-Misma regla que el plan de lectura: la semana que contiene **mañana**
-(`FamilyPrayerService.current`). El domingo ya se ven las familias que se
-presentan ese día (se ora por ellas de lunes a domingo); de lunes a sábado, las
-de la semana en curso. Si el domingo aún no está cargada la siguiente, se
-mantiene la de hoy. Las semanas cargadas por adelantado no se publican hasta su
-turno (`byDate` devuelve `null` para las futuras).
+**La semana va de domingo a sábado** y empieza el día en que se presenta
+(decisión del usuario, 03/10/2026): `start = presentedOn`, `end = presentedOn
++ 6`. Se anuncia la semana que contiene **hoy** (`FamilyPrayerService.current`):
+el domingo a las 00:00 la web, el panel de control y la proyección pasan solos
+a las familias nuevas, sin tocar nada, y siguen hasta el sábado. Si el domingo
+aún no está cargada la nueva, ese día se mantiene la anterior. Las fechas que
+se ven (web, PDF) son las de domingo a sábado: «4 – 10 octombrie».
+Antes se contaba de lunes a domingo («28 sept – 4 oct»): el cambio ya era el
+domingo, pero las fechas hacían creer que empezaba el lunes. (El plan de
+lectura bíblica no cambia: sus semanas vienen del Excel, de lunes a domingo.)
+Las semanas cargadas por adelantado no se publican hasta su turno (`byDate`
+devuelve `null` para las futuras).
+
+## Semanas previstas (03/10/2026)
+
+Pedido del usuario: poder revisar las semanas ya cargadas antes de su domingo.
+
+- **Web**: desplegable `<details>` **cerrado** encima de la semana en curso
+  («Săptămânile următoare» + contador), con el estilo del archivo plegable
+  (`shared/styles/_past-archive.scss`, aquí con el filete abajo). Se pinta
+  sólo al abrirlo (`previstasAbiertas`). Cada semana prevista lleva el chip
+  «Programată · Săptămâna N» y la misma plantilla que el feed, **sin
+  «Distribuie»** (su enlace `/<domingo>` no abre nada hasta que le toque:
+  `byDate` sigue sin adelantar semanas); el PDF sí, para revisarlo. No entran
+  en el feed ni en el índice. Fuente: `FamilyPrayerService.upcoming` / `next`.
+- **Panel de control**: en el bloque de familias, interruptor «Probă:
+  săptămâna următoare (5–11 oct.)» → el bloque proyecta la semana siguiente
+  en lugar de la actual (`PresentationBlocksService.familiesWeek`,
+  `setNextFamilyWeekShown`). Guarda el día en `localStorage`
+  (`…families.next`) y **caduca a medianoche**, como las familias
+  anteriores: un domingo no puede quedarse proyectando la semana que no es.
+  «Restablecer» también lo apaga.
 
 ## Feed de semanas, carga progresiva e índice (30/09/2026)
 
@@ -225,6 +251,81 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
   - Versículo en serif oro sobre navy; si no hay mensaje, sube a `body`.
   - Fotos `eager` al proyectar (en diapositivas ocultas `lazy` dejaba el marco
     vacío un instante).
+
+## PDF de la semana (03/10/2026)
+
+**Dos acciones distintas en cada semana** (decisión del usuario):
+- **«Distribuie»** comparte el **enlace** de la web (la semana, o una familia
+  desde su ficha). Nunca el PDF.
+- **«Descarcă PDF · 6 pagini · 4,2 MB»** (`features/family-prayer/family-pdf/`)
+  sólo **descarga** el PDF de esa semana: un enlace con `download`, sin hoja de
+  compartir ni opciones. Luego cada uno hace con el fichero lo que quiera.
+
+El PDF: 16:9 como el PowerPoint del domingo — página 1 el resumen (collage +
+lista), después una ficha por familia en el orden del resumen.
+
+**No se diseña aparte: es la proyección impresa.** Cada página es la
+diapositiva que ya se proyecta, abierta en la vista fija del escenario
+(`/media/ecran?rol=solo&familii=<domingo>&pagina=<n>`; 0 = resumen) e
+impresa por Chrome/Edge sin interfaz a 1920×1080 (`--pj-u` exacto). Si cambia
+el diseño de la proyección, el PDF cambia con él. Texto **vectorial**.
+
+**Por qué se genera al publicar y no al pulsar** (preguntado por el usuario):
+en GitHub Pages no hay servidor, así que «al pulsar» sería en el navegador
+de cada uno: o el diálogo de imprimir (30-45 MB, distinto en cada navegador,
+varios pasos en iPhone) o montar el PDF en JS (10-20 s en un móvil, ~500 kB
+más de código y un segundo diseño o capturas con texto borroso). Generado al
+publicar, el clic descarga al instante el mismo PDF en todos los dispositivos.
+
+| Pieza | Papel |
+| --- | --- |
+| `PresentationBlocksService.familyWeekSlides(week)` | Las diapositivas de una semana; única fuente para la proyección y el PDF |
+| `FamilyPrayerService.anyByDate` | Semana por domingo **aunque aún no le toque** (el PDF de una semana cargada por adelantado debe existir el domingo) |
+| `StageComponent.soloSlide` + `data-solo-pages` | La página n en la vista fija; el total para quien imprime |
+| `scripts/generate-family-pdfs.mjs` (`npm run pdf:familii`) | Imprime, une (`pdf-lib`), recomprime imágenes y escribe PDF + manifiesto |
+| `core/services/family-pdf.service.ts` | Lee el manifiesto (una vez, al montarse un botón) |
+| `features/family-prayer/family-pdf/` | «Descarcă PDF» en la cabecera del resumen, junto a «Distribuie» |
+
+**Despliegue** (`.github/workflows/deploy.yml`, paso «Family prayer PDFs»,
+tras compilar): sobre `dist` con su propio servidor estático (mismo `base
+href`, leído de `index.html`), Chrome del runner (`playwright-core`, sin
+descargar navegadores; `PDF_BROWSER`). Genera **todas las semanas** de la
+configuración (también las anteriores) en
+`assets/family-prayer/<domingo>/rugaciune-pentru-familii-<domingo>.pdf` y
+`assets/family-prayer/pdf.json`. **No bloquea la publicación**
+(`continue-on-error`): sin manifiesto la web no ofrece PDF. No pasan por el
+service worker (se generan después de su tabla). ~25 s por semana.
+
+**Calidad y peso**: se imprime a **3×** para que cada `srcset` entregue la
+foto de 1600 px (la mayor publicada; a 1× el collage cogía la de 960 y a 2×
+las verticales seguían en 960). Chrome incrusta las WebP sin pérdida y los
+fondos difuminados como mapas de bits enormes (hasta 47 MB por semana);
+`compressImages` pasa a JPEG las RGB de 8 bits en Flate: **fotos (con ICC)
+sin reducir y q92** (visualmente sin pérdida), mapas de bits de Chrome
+(DeviceRGB, los difuminados) q80 ≤ 1200 px; máscaras intactas. Resultado:
+3-5 MB por semana. El techo lo pone la variante de 1600 (WebP q84) de
+`import-family-photos.mjs`.
+
+**Idioma**: rumano siempre (`locale: 'ro-RO'` + `localStorage`), como el
+contenido. Metadatos: título «Rugăciune pentru familii · <rango>», autor
+Biserica Elim, idioma `ro`.
+
+**En local** (con `ng serve` en marcha; escribe en `src/assets/family-prayer/`,
+ignorado por git, y la web local enseña el botón):
+
+```bash
+npm run pdf:familii -- --url http://localhost:4310/
+```
+
+Después hay que **reiniciar `ng serve`**: sólo sirve los ficheros de `assets`
+que existían al arrancar. Si otra edición recarga `ng serve` a mitad, cada
+semana se reintenta una vez; lo más estable es generar sobre una compilación:
+`npx ng build` y `npm run pdf:familii -- --dist dist/iglesia-redes/browser
+--out src/assets/family-prayer`. `--weeks` regenera sólo esas semanas y
+conserva el resto del manifiesto.
+
+Ojo en Git Bash: no pases rutas sueltas tipo `/` como argumento (MSYS las
+convierte en rutas de Windows); por eso el `base href` se lee de la compilación.
 
 ## Ficheros
 

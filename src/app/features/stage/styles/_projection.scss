@@ -74,6 +74,12 @@
   // -------------------------------------------------------------------
   .stage.is-fullscreen {
     --pj-u: min(1vh, 0.5625vw);
+    // Distancia al borde de la PANTALLA de las piezas de esquina (cuenta
+    // atrás, reloj, firma + «În direct»): pegadas al borde, lo mínimo para
+    // que el filete de la píldora no toque el canto (04/10/2026, pedido del
+    // usuario; antes se alineaban con el contenido, a 4,5u). Si un proyector
+    // recortara los bordes (overscan), es el único número que hay que subir.
+    --pj-edge: calc(var(--pj-u) * 0.6);
     // Ancho del lienzo 16:9 (100u × 16/9). Sirve para centrar el contenido
     // en pantallas más anchas que 16:9.
     --pj-canvas-w: calc(var(--pj-u) * 177.78);
@@ -330,7 +336,7 @@
 
   // A sangre (familias y causas, los bloques de oración, y el cartel de
   // Talantul în Negoț): sin área segura,
-  // la diapositiva es la pantalla entera. Sin firma ELIM: en las fichas caía
+  // la diapositiva es la pantalla entera. Sin «ÎN DIRECT»: en las fichas caía
   // sobre el versículo, y mientras se ora sobra todo lo que no es contenido.
   .stage.is-fullscreen.stage--bleed {
     padding: 0;
@@ -341,15 +347,14 @@
   }
 
   // -------------------------------------------------------------------
-  // 5 · Firma: la marca en el margen inferior derecho
+  // 5 · Esquina inferior derecha: «ÎN DIRECT»
   // -------------------------------------------------------------------
-  // Como la mosca de una cadena: está siempre, no ocupa sitio al contenido y
-  // no se lee (se reconoce). 2,2u de cuerpo → ~3,2u de alto, dentro de los
-  // 5,5u del margen inferior. Con el aviso de directo, «ÎN DIRECT» delante.
+  // Sólo con el aviso de directo activo. Antes llevaba además la firma ELIM;
+  // se retiró de la proyección a petición del usuario (04/10/2026).
   .stage.is-fullscreen .stage-bug {
     position: absolute;
-    right: max(calc(var(--pj-u) * 4.5), calc((100vw - var(--pj-canvas-w)) / 2));
-    bottom: calc(var(--pj-u) * 1.1);
+    right: var(--pj-edge);
+    bottom: var(--pj-edge);
     z-index: 2;
     display: flex;
     align-items: center;
@@ -363,15 +368,23 @@
   // que se superpone, pequeño y en la esquina.
   .stage.is-fullscreen .stage-countdown {
     position: absolute;
-    left: max(calc(var(--pj-u) * 4.5), calc((100vw - var(--pj-canvas-w)) / 2));
-    bottom: calc(var(--pj-u) * 0.45);
+    left: var(--pj-edge);
+    bottom: var(--pj-edge);
     z-index: 3;
+    // Flex: sin la línea de texto que dejaba 2 px bajo la píldora.
+    display: flex;
     pointer-events: none;
   }
 
-  .stage.is-fullscreen .stage-bug__logo {
-    --brand-size: calc(var(--pj-u) * 2.2);
-    filter: none;
+  // Reloj (si el operador lo enciende): arriba a la derecha, la esquina que
+  // queda libre (abajo están la cuenta atrás y la firma), a `--pj-edge`.
+  .stage.is-fullscreen .stage-clock {
+    position: absolute;
+    top: var(--pj-edge);
+    right: var(--pj-edge);
+    z-index: 3;
+    display: flex;
+    pointer-events: none;
   }
 
   // Punto rojo `--c-live` + versalitas navy: un estado, sin gritar ni moverse.

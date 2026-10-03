@@ -51,6 +51,13 @@ export type SyncCommand =
   | { readonly type: 'next' }
   | { readonly type: 'prev' }
   | { readonly type: 'goto'; readonly index: number }
+  /**
+   * Ir a una diapositiva por su **clave**. A diferencia de `goto`, sirve
+   * justo después de cambiar la selección: la ventana que proyecta puede
+   * recibir la orden antes que la nueva lista, y la clave la espera hasta
+   * que aparece (el índice apuntaría a la diapositiva equivocada).
+   */
+  | { readonly type: 'gotoKey'; readonly key: string }
   | { readonly type: 'pause' }
   | { readonly type: 'play' }
   | { readonly type: 'toggle' };

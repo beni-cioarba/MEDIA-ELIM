@@ -95,6 +95,8 @@
     "slide_time_inherit": "Tiempo del bloque (se puede cambiar solo para esta)",
     "slide_time_custom": "Tiempo propio (ya no sigue al bloque)",
     "slide_time_reset": "Volver al tiempo del bloque",
+    "next_families": "Prueba: semana siguiente ({{range}})",
+    "next_families_hint": "Proyecta las familias previstas en lugar de las actuales. Solo hoy.",
     "past_families": "Familias de semanas anteriores ({{n}})",
     "past_hint": "Solo para hoy. No entran con «Todos».",
     "past_tag": "anterior",
@@ -143,7 +145,13 @@
     "countdown_set": "Fijar",
     "countdown_clear": "Quitar",
     "select_prayer": "Oración",
-    "select_prayer_hint": "Sólo la oración: el resumen de las familias y las causas de la iglesia"
+    "select_prayer_hint": "Sólo la oración: el resumen de las familias y las causas de la iglesia",
+    "countdown_always": "Siempre",
+    "countdown_from_always": "Siempre, desde las {{time}} (no durante un culto)",
+    "clock_show": "Mostrar la hora",
+    "clock_hint": "Reloj en la esquina superior derecha de la proyección",
+    "select_families": "Familias",
+    "select_families_hint": "Presentación de las familias: sólo las de esta semana (resumen + cada familia), en avance manual, desde el resumen"
   },
   "carousel": {
     "label": "Carrusel de contenido",
@@ -289,6 +297,9 @@
     "teaser_eyebrow": "Esta semana",
     "teaser_title": "Oramos por: {{names}}",
     "teaser_cta": "Ver las familias y sus motivos de oración",
+    "upcoming_title": "Próximas semanas",
+    "upcoming_hint": "Las familias previstas para las próximas semanas. Se publican el domingo en que se presentan.",
+    "upcoming_chip": "Prevista",
     "ago_one": "La semana pasada",
     "ago_other": "Hace {{n}} semanas",
     "loading": "Cargando las familias de esta semana…",
@@ -298,6 +309,10 @@
       "compact": "Semana",
       "top": "Volver arriba",
       "panel": "Semanas de oración"
+    },
+    "pdf": {
+      "download": "Descargar PDF",
+      "pages": "{{count}} páginas"
     }
   },
   "prayer_causes": {
@@ -915,7 +930,11 @@
       "slides": {
         "worship": "Noche de villancicos",
         "baptism": "Bautismo",
+        "baptism_candidates": "Los candidatos al bautismo",
         "children": "Concierto de los niños",
+        "youth": "Los jóvenes en alabanza",
+        "choir": "El coro de la iglesia",
+        "brass": "La fanfarria",
         "community": "Fin de año en familia",
         "outreach": "Proyecto social"
       }

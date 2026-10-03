@@ -256,6 +256,19 @@ export class CarouselService {
     this.elapsedAtPause.set(0);
   }
 
+  /**
+   * Como `goto`, pero por clave. Si la diapositiva aún no está en la lista
+   * (la selección nueva llega por otro canal), `currentIndex` la encuentra
+   * en cuanto aparece, porque resuelve primero por `requestedKey`.
+   */
+  private gotoKey(key: string): void {
+    this.requestedKey.set(key);
+    this.requestedIndex.set(Math.max(0, this.slides().findIndex((s) => s.key === key)));
+    this.timedKey = key;
+    this.startedAt.set(Date.now());
+    this.elapsedAtPause.set(0);
+  }
+
   private setPaused(paused: boolean): void {
     if (paused === this._isPaused()) return;
     if (paused) {
@@ -274,6 +287,9 @@ export class CarouselService {
       case 'goto':
         if (total === 0 || command.index < 0 || command.index >= total) return;
         this.goto(command.index);
+        break;
+      case 'gotoKey':
+        this.gotoKey(command.key);
         break;
       case 'next':
         if (total === 0) return;

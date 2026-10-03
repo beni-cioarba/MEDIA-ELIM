@@ -27,6 +27,7 @@ import { PageSectionComponent } from '../../shared/page-section/page-section.com
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { FamilyCardComponent } from './family-card/family-card.component';
+import { FamilyPdfComponent } from './family-pdf/family-pdf.component';
 import { FamilySummaryComponent } from './family-summary/family-summary.component';
 
 /** Prefijo del `id` de cada semana en el documento (`#saptamana-2026-09-20`). */
@@ -79,6 +80,7 @@ const ANCLA_SEMANA = 'saptamana-';
     NearViewportDirective,
     FamilyCardComponent,
     FamilySummaryComponent,
+    FamilyPdfComponent,
   ],
   templateUrl: './family-prayer.component.html',
   styleUrl: './family-prayer.component.scss',
@@ -122,6 +124,22 @@ export class FamilyPrayerComponent {
   protected pintar(week: PrayerWeekView): void {
     if (this.estaPintada(week)) return;
     this.pintadas.update((previas) => new Set(previas).add(week.presentedOn));
+  }
+
+  // ── Semanas previstas ──────────────────────────────────────────────
+
+  /**
+   * Semanas cargadas por adelantado (la más próxima primero). No entran en
+   * el feed ni en el índice: van en un desplegable cerrado encima de la
+   * semana en curso, para revisarlas antes de su domingo.
+   */
+  protected readonly previstas = this.prayer.upcoming;
+
+  /** Se pintan al abrir el desplegable por primera vez (y no se despintan). */
+  protected readonly previstasAbiertas = signal(false);
+
+  protected alAlternarPrevistas(event: Event): void {
+    if ((event.target as HTMLDetailsElement).open) this.previstasAbiertas.set(true);
   }
 
   // ── Índice ─────────────────────────────────────────────────────────

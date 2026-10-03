@@ -300,4 +300,69 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 5,
+    presentedOn: '2026-10-04',
+    families: [
+      {
+        id: 'biroveti-claudiu-claudia',
+        surname: 'Biroveti',
+        names: 'Claudiu și Claudia',
+        children: ['Lucas', 'Marcos'],
+        message: [
+          'Mulțumim lui Dumnezeu pentru harul Său și pentru toate binecuvântările revărsate peste noi.',
+          'Dorim ca El să ne poarte în carul Lui de biruință și să-I rămânem credincioși în orice vreme.',
+          'Vă mulțumim pentru toată dăruirea, pentru susținerea în rugăciune, și Domnul să lase mare îndurare de sus peste familia noastră. Domnul să ne asculte!',
+        ],
+      },
+      {
+        id: 'biru-ioan-felicia',
+        surname: 'Biru',
+        names: 'Ioan și Felicia',
+        message: [
+          'Mulțumim Domnului pentru toate binecuvântările primite din mâna Lui.',
+          'Rugămintea noastră este ca Domnul să lase îndurare peste cei 3 copii ai noștri, însă în mod special peste unul dintre ei, cu numele de Radu, ca Domnul să lase mântuire în viața lui.',
+          'Mulțumim Bisericii Elim pentru toată susținerea în rugăciune, și Domnul să ne asculte!',
+        ],
+        verse: {
+          text: 'Pot totul în Hristos, care mă întărește.',
+          reference: 'Filipeni 4:13',
+        },
+      },
+      {
+        id: 'blaj-lucia',
+        surname: 'Blaj',
+        names: 'Lucia',
+        single: true,
+        message: [
+          'Dorința mea e ca Dumnezeu să mă ajute să fiu lumină oriunde, oricând și în orice loc.',
+          'Așa să mă ajute Dumnezeu!',
+        ],
+      },
+      {
+        id: 'bloch-elena-liliana',
+        surname: 'Bloch',
+        names: 'Elena Liliana',
+        single: true,
+        message: [
+          'Dumnezeu să lase mare îndurare peste casa mea și peste toți copiii noștri.',
+          'Domnul poate! El poate ridica povara și să fie cu cel împovărat. El poate da odihnă sufletească.',
+          'Dumnezeu să binecuvânteze întreaga Biserică Elim și să se îndure de toți copiii noștri!',
+        ],
+      },
+      {
+        id: 'bodnariu-petrica-luminita',
+        surname: 'Bodnariu',
+        names: 'Petrică și Luminița',
+        children: ['Bianca', 'Debora', 'Lucas', 'Mateo'],
+        message: [
+          'Dorința familiei noastre este ca să slujim Domnului cu scumpătate și într-o zi toată familia să fim în Împărăția cerurilor!',
+        ],
+        verse: {
+          text: 'Cât despre mine, eu și casa mea vom sluji Domnului.',
+          reference: 'Iosua 24:15',
+        },
+      },
+    ],
+  },
 ];

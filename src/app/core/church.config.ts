@@ -914,8 +914,10 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
 
   heroSlides: [
     // El orden es deliberado: abre el concierto de niños (la foto con más
-    // gente y más luz, que es la primera impresión) y cierra la velada de
-    // villancicos. Entre medias, bautismo, Fin de Año y acción social.
+    // gente y más luz, que es la primera impresión), sigue el tineret en
+    // alabanza (segunda, a petición del usuario, 04/10/2026) y, agrupados por
+    // tema, la música (coro y fanfara) y el bautismo (candidatos y bautismo).
+    // Después Fin de Año y acción social, y cierra la velada de villancicos.
     // Cambiarlo es cambiar lo primero que ve quien entra.
     {
       id: 'hero_children',
@@ -926,12 +928,55 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       tone: '#797474',
     },
     {
+      // El tineret dirigiendo la alabanza: la letra en pantalla, el coro y
+      // la sala.
+      id: 'hero_youth',
+      i18nKey: 'youth',
+      image: 'assets/drive-media/inchinare_tineret_2026.webp',
+      medium: 'assets/drive-media/inchinare_tineret_2026-960.webp',
+      thumb: 'assets/drive-media/inchinare_tineret_2026-thumb.webp',
+      tone: '#6b645f',
+      // Con `upper` mandaba la pantalla con la letra y el tineret quedaba
+      // cortado por la cabeza en escritorio: centrado entran las dos cosas.
+      focus: 'center',
+    },
+    {
+      // El coro, con el director de espaldas y la sala delante.
+      id: 'hero_choir',
+      i18nKey: 'choir',
+      image: 'assets/drive-media/cor_2026.webp',
+      medium: 'assets/drive-media/cor_2026-960.webp',
+      thumb: 'assets/drive-media/cor_2026-thumb.webp',
+      tone: '#78716d',
+    },
+    {
+      // La fanfara tocando, con la letra en la pantalla y la sala llena.
+      id: 'hero_brass',
+      i18nKey: 'brass',
+      image: 'assets/drive-media/fanfara_2026.webp',
+      medium: 'assets/drive-media/fanfara_2026-960.webp',
+      thumb: 'assets/drive-media/fanfara_2026-thumb.webp',
+      tone: '#7d7976',
+    },
+    {
       id: 'hero_baptism',
       i18nKey: 'baptism',
       image: 'assets/drive-media/botez_2025.webp',
       medium: 'assets/drive-media/botez_2025-960.webp',
       thumb: 'assets/drive-media/botez_2025-thumb.webp',
       tone: '#91979f',
+    },
+    {
+      // Los candidatos al bautismo, de blanco, en primera fila.
+      id: 'hero_baptism_candidates',
+      i18nKey: 'baptism_candidates',
+      image: 'assets/drive-media/candidati_botez_2026.webp',
+      medium: 'assets/drive-media/candidati_botez_2026-960.webp',
+      thumb: 'assets/drive-media/candidati_botez_2026-thumb.webp',
+      tone: '#918880',
+      // Las caras están en el tercio de arriba: con `upper` se cortaban las
+      // cabezas en escritorio.
+      focus: 'top',
     },
     {
       id: 'hero_community',

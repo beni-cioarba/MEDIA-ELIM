@@ -1,6 +1,7 @@
 @use 'ds' as *;
 @use '../../shared/styles/buttons' as *;
 @use '../../shared/styles/page-hero' as *;
+@use '../../shared/styles/past-archive' as *;
 
 /* Página «Rugăciune pentru familii». El resumen y la ficha son globales (se
    comparten con la proyección); aquí el feed de semanas (separadores,
@@ -270,6 +271,14 @@
   gap: clamp(1.5rem, 3vw, 2.25rem);
 }
 
+// Cabecera del resumen: PDF de la semana + compartir el enlace.
+.fp__week-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
 .fp__actions {
   display: flex;
   justify-content: flex-start;
@@ -319,5 +328,25 @@
 .empty__text {
   margin: 0;
   font-size: var(--fs-body-lg);
+  color: var(--c-muted);
+}
+
+/* --- Semanas previstas (desplegable sobre la semana en curso) ---------- */
+
+/* El archivo plegable de `_past-archive.scss`, pero arriba del feed: filete
+   debajo en vez de encima y sin el margen superior de pie de página. */
+.fp__upcoming {
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  border-top: 0;
+  border-bottom: 1px solid var(--c-hairline);
+
+  &[open] {
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+}
+
+.fp__upcoming-hint {
+  margin: 0 0 var(--sp-5);
+  font-size: var(--fs-sm);
   color: var(--c-muted);
 }

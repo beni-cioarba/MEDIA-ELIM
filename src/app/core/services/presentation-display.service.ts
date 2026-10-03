@@ -25,8 +25,9 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   // párrafos que se leen en voz alta mientras se ve la familia.
   families: 20,
   // Una sola diapositiva con toda la lista, que se lee en voz alta y se ora
-  // por ella: un minuto entero para no cortar la oración a mitad.
-  causes: 60,
+  // por ella. 30 s por defecto (04/10/2026, a petición del usuario; antes 60):
+  // si se ora más rato, el operador lo alarga desde el panel.
+  causes: 30,
   talent: 25,
   // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
   website: 15,
@@ -89,14 +90,24 @@ interface DisplayPrefs {
   readonly autoAdvance: boolean;
   /** Cuenta atrás para el inicio del culto (ver `ServiceCountdownService`). */
   readonly countdown: CountdownPrefs;
+  /**
+   * Reloj (hora actual) en la esquina superior derecha de la proyección.
+   * Apagado por defecto: es una ayuda para quien dirige, no contenido. No
+   * caduca, como el modo de avance.
+   */
+  readonly clock: boolean;
 }
 
 /** Ajustes de la cuenta atrás hasta el comienzo del culto. */
 export interface CountdownPrefs {
   /** Se muestra en la proyección (automática según el horario). */
   readonly enabled: boolean;
-  /** Minutos antes del comienzo en que aparece. */
-  readonly leadMinutes: number;
+  /**
+   * Minutos antes del comienzo en que aparece, o `null` = **siempre**
+   * («Mereu», 04/10/2026): visible todo el día hasta el próximo comienzo,
+   * salvo mientras dura un culto (ver `ServiceCountdownService`).
+   */
+  readonly leadMinutes: number | null;
   /**
    * Hora de comienzo puesta a mano para un día (`HH:MM` + `YYYY-MM-DD`), que
    * manda sobre el horario: un culto que hoy empieza a otra hora, un evento
@@ -108,7 +119,8 @@ export interface CountdownPrefs {
 /** Opciones de antelación que ofrece el panel (minutos). */
 export const COUNTDOWN_LEAD_OPTIONS: readonly number[] = [15, 30, 45, 60, 90];
 
-const COUNTDOWN_DEFAULTS: CountdownPrefs = { enabled: true, leadMinutes: 30, manual: null };
+/** Por defecto aparece 90 min antes (04/10/2026, a petición del usuario; antes 30). */
+const COUNTDOWN_DEFAULTS: CountdownPrefs = { enabled: true, leadMinutes: 90, manual: null };
 
 const STORAGE_KEY = 'iglesia-redes.presentation.display';
 
@@ -118,6 +130,7 @@ const DEFAULTS: DisplayPrefs = {
   liveNoticeDate: null,
   autoAdvance: true,
   countdown: COUNTDOWN_DEFAULTS,
+  clock: false,
 };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -182,8 +195,9 @@ export class PresentationDisplayService {
     this.update({ countdown: { ...this.prefs().countdown, enabled } });
   }
 
-  setCountdownLead(leadMinutes: number): void {
-    if (!COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)) return;
+  /** Antelación en minutos, o `null` para que se vea siempre. */
+  setCountdownLead(leadMinutes: number | null): void {
+    if (leadMinutes !== null && !COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)) return;
     this.update({ countdown: { ...this.prefs().countdown, leadMinutes } });
   }
 
@@ -289,6 +303,13 @@ export class PresentationDisplayService {
     this.update({ slideDurations });
   }
 
+  /** Reloj (hora actual) en la esquina superior derecha de la proyección. */
+  readonly showClock = computed<boolean>(() => this.prefs().clock);
+
+  setShowClock(on: boolean): void {
+    this.update({ clock: on });
+  }
+
   /** Avance automático por tiempos (`true`) o sólo manual (`false`). */
   setAutoAdvance(on: boolean): void {
     this.update({ autoAdvance: on });
@@ -317,7 +338,7 @@ function readStoredPrefs(): DisplayPrefs {
     if (!parsed || typeof parsed !== 'object') return DEFAULTS;
     // Las claves antiguas (`qrVisible`, `qrSize`) se ignoran y desaparecen al
     // guardar la próxima preferencia.
-    const { durations, slideDurations, liveNoticeDate, autoAdvance, countdown } = parsed as Record<string, unknown>;
+    const { durations, slideDurations, liveNoticeDate, autoAdvance, countdown, clock } = parsed as Record<string, unknown>;
     return {
       durations: readDurations(durations),
       slideDurations: readSlideDurations(slideDurations),
@@ -327,6 +348,8 @@ function readStoredPrefs(): DisplayPrefs {
       // ausente en preferencias antiguas) deja el comportamiento de siempre.
       autoAdvance: autoAdvance !== false,
       countdown: readCountdown(countdown),
+      // Sólo un `true` explícito lo enciende: apagado por defecto.
+      clock: clock === true,
     };
   } catch {
     return DEFAULTS;
@@ -340,10 +363,13 @@ function readCountdown(value: unknown): CountdownPrefs {
   const { date, time } = (manual ?? {}) as Record<string, unknown>;
   return {
     enabled: enabled !== false,
+    // `null` = siempre; un número fuera de las opciones vuelve al defecto.
     leadMinutes:
-      typeof leadMinutes === 'number' && COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)
-        ? leadMinutes
-        : COUNTDOWN_DEFAULTS.leadMinutes,
+      leadMinutes === null
+        ? null
+        : typeof leadMinutes === 'number' && COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)
+          ? leadMinutes
+          : COUNTDOWN_DEFAULTS.leadMinutes,
     manual:
       typeof date === 'string' && ISO_DATE.test(date) && typeof time === 'string' && HH_MM.test(time)
         ? { date, time }

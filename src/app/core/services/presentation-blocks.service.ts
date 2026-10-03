@@ -123,9 +123,13 @@ const HIDDEN_ANNOUNCEMENTS_KEY = 'iglesia-redes.presentation.announcements.hidde
 const HIDDEN_EVENTS_KEY = 'iglesia-redes.presentation.events.hidden';
 const HIDDEN_FAMILIES_KEY = 'iglesia-redes.presentation.families.hidden';
 const PAST_FAMILIES_KEY = 'iglesia-redes.presentation.families.past';
+const NEXT_FAMILY_WEEK_KEY = 'iglesia-redes.presentation.families.next';
 
 /** Id de la diapositiva de resumen dentro de la selección de `families`. */
 export const FAMILY_SUMMARY_ID = 'summary';
+
+/** Clave de la diapositiva de resumen de las familias (la primera del bloque). */
+export const FAMILY_SUMMARY_SLIDE_KEY = 'families';
 
 /** Bloques cuyas diapositivas se eligen una a una en el panel. */
 export type SelectableBlockId = 'announcements' | 'upcoming' | 'families';
@@ -147,12 +151,14 @@ const ORDER_KEY = 'iglesia-redes.presentation.order';
 /**
  * Orden de proyección. Cambiarlo aquí cambia el orden del carrusel.
  * Los anuncios y la lectura bíblica de la semana van primero: son lo que la
- * congregación necesita leer antes de que empiece el programa.
+ * congregación necesita leer antes de que empiece el programa. En la oración,
+ * primero las causas de la iglesia y después las familias de la semana
+ * (04/10/2026, a petición del usuario).
  */
 const BLOCK_DEFS: readonly PresentationBlockDef[] = [
   { id: 'announcements', titleKey: 'announcements.title' },
-  { id: 'families', titleKey: 'family_prayer.title' },
   { id: 'causes', titleKey: 'prayer_causes.title' },
+  { id: 'families', titleKey: 'family_prayer.title' },
   { id: 'bible', titleKey: 'bible.title' },
   { id: 'socials', titleKey: 'socials.section_title' },
   { id: 'streams', titleKey: 'streams.title' },
@@ -225,6 +231,26 @@ export class PresentationBlocksService {
 
   private readonly today = computed<string>(() => toIsoDate(new Date(this.clock.now())));
 
+  /**
+   * Día en que el operador ha pedido proyectar **la semana siguiente** (ya
+   * cargada) en lugar de la que toca, para probarla antes del domingo.
+   * Caduca sola a medianoche: el domingo no puede quedarse olvidada.
+   */
+  private readonly nextFamilyWeekDate = signal<string | null>(readStoredString(NEXT_FAMILY_WEEK_KEY));
+
+  /** La próxima semana de familias ya cargada (para el interruptor del panel). */
+  readonly nextFamilyWeek = this.familyPrayer.next;
+
+  /** ¿Se está proyectando hoy la semana siguiente en lugar de la actual? */
+  readonly showingNextFamilyWeek = computed<boolean>(
+    () => this.nextFamilyWeek() !== null && this.nextFamilyWeekDate() === this.today(),
+  );
+
+  /** Semana que proyecta el bloque `families`: la que toca o, en prueba, la siguiente. */
+  readonly familiesWeek = computed<PrayerWeekView | null>(() =>
+    this.showingNextFamilyWeek() ? this.nextFamilyWeek() : this.familyPrayer.current(),
+  );
+
   /** Ids de las familias anteriores añadidas hoy (vacío si la marca es de otro día). */
   private readonly pastFamilyIds = computed<ReadonlySet<string>>(() => {
     const pick = this.pastFamilyPick();
@@ -237,7 +263,7 @@ export class PresentationBlocksService {
    */
   readonly pastFamilies = computed<readonly PastFamilyOption[]>(() => {
     // Una familia que se repite en varias semanas sale una vez: la más reciente.
-    const seen = new Set(this.familyPrayer.current()?.families.map((f) => f.id) ?? []);
+    const seen = new Set(this.familiesWeek()?.families.map((f) => f.id) ?? []);
     const options: PastFamilyOption[] = [];
     for (const week of this.familyPrayer.past()) {
       for (const family of week.families) {
@@ -297,6 +323,9 @@ export class PresentationBlocksService {
       if (event.key === null || event.key === PAST_FAMILIES_KEY) {
         this.pastFamilyPick.set(readPastFamilyPick());
       }
+      if (event.key === null || event.key === NEXT_FAMILY_WEEK_KEY) {
+        this.nextFamilyWeekDate.set(readStoredString(NEXT_FAMILY_WEEK_KEY));
+      }
       if (event.key === null || event.key === ORDER_KEY) {
         this.customOrder.set(readStoredOrder());
       }
@@ -314,7 +343,7 @@ export class PresentationBlocksService {
     weekly: this.config.weeklyProgram.length > 0,
     upcoming: this.schedule.hasUpcomingEvents(),
     bible: this.bible.hasReading(),
-    families: this.familyPrayer.hasCurrent(),
+    families: this.familiesWeek() !== null,
     causes: this.prayerCauses.hasCauses,
     // Mientras quede alguna fase por delante (o se esté celebrando).
     talent: this.talentContest.focusPhase() !== null,
@@ -410,7 +439,8 @@ export class PresentationBlocksService {
       this.hiddenAnnouncementIds().size > 0 ||
       this.hiddenEventIds().size > 0 ||
       this.hiddenFamilyIds().size > 0 ||
-      this.pastFamilyIds().size > 0,
+      this.pastFamilyIds().size > 0 ||
+      this.showingNextFamilyWeek(),
   );
 
   /**
@@ -496,7 +526,7 @@ export class PresentationBlocksService {
       // Resumen primero y, detrás, una ficha por familia en el orden del
       // resumen: se proyecta igual que el PowerPoint del domingo. En la web
       // no pasa por aquí (tiene página propia).
-      const week = this.familyPrayer.current();
+      const week = this.familiesWeek();
       if (!week) return this.emptySlide(id);
       // Familias anteriores añadidas hoy: detrás de las de la semana, en el
       // orden del desplegable. Se listan en el panel (para quitarlas o darles
@@ -512,16 +542,7 @@ export class PresentationBlocksService {
           family,
           pastFamily: true,
         }));
-      const all: PresentationSlide[] = [
-        { key: id, block: id, titleKey, prayerWeek: week },
-        ...week.families.map((family) => ({
-          key: `${id}:${family.id}`,
-          block: id,
-          titleKey,
-          prayerWeek: week,
-          family,
-        })),
-      ];
+      const all = this.familyWeekSlides(week);
       // El panel las lista todas (para poder volver a marcarlas); la
       // proyección, sólo las elegidas. Si se desmarcan todas, el bloque no
       // aporta diapositivas (como los eventos).
@@ -531,6 +552,27 @@ export class PresentationBlocksService {
     }
 
     return [{ key: id, block: id, titleKey }];
+  }
+
+  /**
+   * Las diapositivas de una semana de familias, en el orden del PowerPoint
+   * del domingo: el resumen y, detrás, una ficha por familia. Única fuente:
+   * la usan la proyección (`expand`) y el PDF de la semana (vista `solo` del
+   * escenario, `?familii=<domingo>&pagina=<n>`).
+   */
+  familyWeekSlides(week: PrayerWeekView): PresentationSlide[] {
+    const id: PresentationBlockId = 'families';
+    const titleKey = 'family_prayer.title';
+    return [
+      { key: FAMILY_SUMMARY_SLIDE_KEY, block: id, titleKey, prayerWeek: week },
+      ...week.families.map((family) => ({
+        key: `${id}:${family.id}`,
+        block: id,
+        titleKey,
+        prayerWeek: week,
+        family,
+      })),
+    ];
   }
 
   /** Fija manualmente si un bloque se proyecta o no. */
@@ -570,6 +612,7 @@ export class PresentationBlocksService {
     this.hiddenFamilyIds.set(new Set());
     persistHiddenIds(HIDDEN_FAMILIES_KEY, new Set());
     this.clearPastFamilies();
+    this.setNextFamilyWeekShown(false);
   }
 
   /**
@@ -631,6 +674,16 @@ export class PresentationBlocksService {
     const next: PastFamilyPick = { date: this.today(), ids: [...ids] };
     this.pastFamilyPick.set(next);
     persistPastFamilyPick(next);
+  }
+
+  /**
+   * Proyecta (sólo hoy) la semana siguiente en lugar de la que toca, o
+   * vuelve a la que toca. Para probar una semana cargada por adelantado.
+   */
+  setNextFamilyWeekShown(shown: boolean): void {
+    const date = shown ? this.today() : null;
+    this.nextFamilyWeekDate.set(date);
+    persistStoredString(NEXT_FAMILY_WEEK_KEY, date);
   }
 
   private clearPastFamilies(): void {
@@ -740,6 +793,40 @@ export class PresentationBlocksService {
     return ok && (!familias?.enabled || this.selection('families').onlyFirst);
   });
 
+  /**
+   * Atajo «Familii»: la **presentación de las familias en el culto**. Sólo
+   * queda encendido el bloque de familias, con **todas** las de la semana en
+   * curso (resumen + una ficha por familia, en su orden); fuera las de
+   * semanas anteriores, la prueba de la semana siguiente y todo lo demás.
+   * Quien está en el panel las va pasando a mano mientras se presentan (el
+   * panel pone además el avance en manual y salta al resumen).
+   */
+  selectFamilyPresentation(): void {
+    if (!this.hasFamilyWeek()) return;
+    const next: Partial<Record<PresentationBlockId, boolean>> = {};
+    for (const state of this.states()) next[state.id] = state.id === 'families';
+    this.overrides.set(next);
+    persistOverrides(next);
+    this.setNextFamilyWeekShown(false);
+    this.clearPastFamilies();
+    this.selectAll('families');
+  }
+
+  /** Hay semana de familias en curso (si no, el atajo no aplica). */
+  readonly hasFamilyWeek = computed<boolean>(() => this.familyPrayer.current() !== null);
+
+  /** Está aplicado el atajo «Familii» (para pintarlo como activo). */
+  readonly familiesOnly = computed<boolean>(() => {
+    if (!this.hasFamilyWeek()) return false;
+    const sel = this.selection('families');
+    return (
+      this.states().every((s) => s.enabled === (s.id === 'families')) &&
+      sel.visible === sel.total &&
+      this.pastFamilyIds().size === 0 &&
+      !this.showingNextFamilyWeek()
+    );
+  });
+
   /** Sólo el primer bloque con contenido queda encendido. */
   selectOnlyFirstBlock(): void {
     const primero = this.states().find((s) => s.autoAvailable);
@@ -777,7 +864,7 @@ export class PresentationBlocksService {
           key: HIDDEN_EVENTS_KEY,
         };
       case 'families': {
-        const week = this.familyPrayer.current();
+        const week = this.familiesWeek();
         return {
           ids: week ? [FAMILY_SUMMARY_ID, ...week.families.map((f) => f.id)] : [],
           hidden: this.hiddenFamilyIds,
@@ -909,6 +996,25 @@ function persistHiddenIds(key: string, ids: ReadonlySet<string>): void {
   if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(key, JSON.stringify([...ids]));
+  } catch {
+    /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
+  }
+}
+
+function readStoredString(key: string): string | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function persistStoredString(key: string, value: string | null): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, value);
   } catch {
     /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
   }

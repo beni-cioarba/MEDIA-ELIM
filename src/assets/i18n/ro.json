@@ -95,6 +95,8 @@
     "slide_time_inherit": "Timpul blocului (se poate schimba doar pentru aceasta)",
     "slide_time_custom": "Timp propriu (nu mai urmează blocul)",
     "slide_time_reset": "Revine la timpul blocului",
+    "next_families": "Probă: săptămâna următoare ({{range}})",
+    "next_families_hint": "Proiectează familiile programate în locul celor de acum. Doar azi.",
     "past_families": "Familii din săptămânile trecute ({{n}})",
     "past_hint": "Doar pentru azi. Nu intră cu «Toate».",
     "past_tag": "anterior",
@@ -143,7 +145,13 @@
     "countdown_set": "Setează",
     "countdown_clear": "Șterge",
     "select_prayer": "Rugăciune",
-    "select_prayer_hint": "Doar rugăciunea: rezumatul familiilor și cauzele bisericii"
+    "select_prayer_hint": "Doar rugăciunea: rezumatul familiilor și cauzele bisericii",
+    "countdown_always": "Mereu",
+    "countdown_from_always": "Mereu, de la {{time}} (nu în timpul unui serviciu)",
+    "clock_show": "Arată ora",
+    "clock_hint": "Ceas în colțul din dreapta sus al proiecției",
+    "select_families": "Familii",
+    "select_families_hint": "Prezentarea familiilor: doar familiile din săptămâna aceasta (rezumat + fiecare familie), pe avans manual, de la rezumat"
   },
   "carousel": {
     "label": "Carusel de conținut",
@@ -289,6 +297,9 @@
     "teaser_eyebrow": "În această săptămână",
     "teaser_title": "Ne rugăm pentru: {{names}}",
     "teaser_cta": "Vezi familiile și motivele lor de rugăciune",
+    "upcoming_title": "Săptămânile următoare",
+    "upcoming_hint": "Familiile programate pentru săptămânile care urmează. Se publică în duminica în care sunt prezentate.",
+    "upcoming_chip": "Programată",
     "ago_one": "Săptămâna trecută",
     "ago_other": "Acum {{n}} săptămâni",
     "loading": "Se încarcă familiile acestei săptămâni…",
@@ -298,6 +309,10 @@
       "compact": "Săptămâna",
       "top": "Înapoi sus",
       "panel": "Săptămânile de rugăciune"
+    },
+    "pdf": {
+      "download": "Descarcă PDF",
+      "pages": "{{count}} pagini"
     }
   },
   "prayer_causes": {
@@ -915,7 +930,11 @@
       "slides": {
         "worship": "Seară de colinde",
         "baptism": "Botez",
+        "baptism_candidates": "Candidații la botez",
         "children": "Concertul copiilor",
+        "youth": "Tineretul în închinare",
+        "choir": "Corul bisericii",
+        "brass": "Fanfara",
         "community": "Revelion în familie",
         "outreach": "Proiect social"
       }

@@ -107,6 +107,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
 | «Cambia la lista de enfermos / causas» | `docs/ai/37-prayer-causes.md` → `core/prayer-causes.config.ts` (+ `updatedOn`) |
+| «PDF de las familias» · «que se pueda descargar la semana» | Se genera solo al publicar; en local `npm run pdf:familii -- --url http://localhost:4310/`. Botón «Descarcă PDF» en cada semana (sólo descarga; compartir = enlace con «Distribuie») — `docs/ai/36-family-prayer.md` → «PDF de la semana» |
 | «Familias de esta semana» · «nuevas fotos de familias» | `docs/ai/36-family-prayer.md` → `scripts/import-family-photos.mjs` + `core/family-prayer.config.ts` |
 | «Nuevo Excel del plan de lectura bíblica»           | `python scripts/import-bible-plan.py <xlsx>` → regenera `core/bible-reading.config.ts` (`20-content-i18n.md`) |
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |

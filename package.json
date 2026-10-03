@@ -16,7 +16,8 @@
     "posters": "node scripts/optimize-posters.mjs",
     "images": "node scripts/generate-image-sizes.mjs",
     "check:projection": "node scripts/check-projection-sizes.mjs",
-    "check": "npm run i18n:check && npm run check:projection"
+    "check": "npm run i18n:check && npm run check:projection",
+    "pdf:familii": "node scripts/generate-family-pdfs.mjs"
   },
   "private": true,
   "dependencies": {
@@ -42,6 +43,8 @@
     "@angular/cli": "^22.1.8",
     "@angular/compiler-cli": "^22.1.7",
     "jsdom": "^30.1.1",
+    "pdf-lib": "^1.17.1",
+    "playwright-core": "^1.63.0",
     "sharp": "^0.34.5",
     "typescript": "~6.0.3",
     "vitest": "^4.1.11"

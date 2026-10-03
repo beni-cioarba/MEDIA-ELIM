@@ -67,6 +67,16 @@
               [title]="'presenter.select_prayer_hint' | translate"
               (click)="blocks.selectPrayerBlocks()"
             >{{ 'presenter.select_prayer' | translate }}</button>
+            <!-- Presentación de las familias en el culto: sólo las de la
+                 semana, todas, desde el resumen y en avance manual. -->
+            <button
+              type="button"
+              class="seg__btn seg__btn--prayer"
+              [disabled]="(blocks.familiesOnly() && !display.autoAdvance()) || !blocks.hasFamilyWeek()"
+              [attr.aria-pressed]="blocks.familiesOnly() && !display.autoAdvance()"
+              [title]="'presenter.select_families_hint' | translate"
+              (click)="presentFamilies()"
+            >{{ 'presenter.select_families' | translate }}</button>
           </div>
         }
       </div>
@@ -313,6 +323,27 @@
                 </li>
               }
             </ol>
+
+            <!-- Prueba: proyectar la semana siguiente (ya cargada) en lugar de la
+                 que toca. Sólo hoy: caduca a medianoche. -->
+            @if (group.state.id === 'families' && blocks.nextFamilyWeek(); as next) {
+              <label class="switch switch--row next-week">
+                <input
+                  type="checkbox"
+                  [checked]="blocks.showingNextFamilyWeek()"
+                  [disabled]="!group.state.enabled"
+                  aria-describedby="next-week-hint"
+                  (change)="setNextFamilyWeek($event)"
+                />
+                <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+                <span class="switch__text">
+                  <span class="switch__label">
+                    {{ 'presenter.next_families' | translate: { range: familyPrayer.formatShortRange(next) } }}
+                  </span>
+                  <span id="next-week-hint" class="switch__hint">{{ 'presenter.next_families_hint' | translate }}</span>
+                </span>
+              </label>
+            }
 
             <!-- Familias de semanas anteriores: plegado, para el caso excepcional.
                  Al marcar una pasa a la lista de arriba (sólo hoy). -->
@@ -577,6 +608,20 @@
             </span>
           </span>
         </label>
+        <!-- Reloj en la esquina superior derecha de la proyección. -->
+        <label class="switch switch--row">
+          <input
+            type="checkbox"
+            [checked]="display.showClock()"
+            aria-describedby="clock-hint"
+            (change)="setShowClock($event)"
+          />
+          <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <span class="switch__text">
+            <span class="switch__label">{{ 'presenter.clock_show' | translate }}</span>
+            <span id="clock-hint" class="switch__hint">{{ 'presenter.clock_hint' | translate }}</span>
+          </span>
+        </label>
         <!-- Aviso de directo: «ÎN DIRECT» en la esquina y el QR del directo. -->
         <label class="switch switch--row">
           <input
@@ -632,12 +677,17 @@
               <span class="cd__value">{{ format(countdownLeftS()) }}</span>
             </div>
           </div>
-          <p class="note">{{ 'presenter.countdown_from' | translate: { time: countdownFrom() } }}</p>
+          <p class="note">
+            {{
+              (display.countdown().leadMinutes === null ? 'presenter.countdown_from_always' : 'presenter.countdown_from')
+                | translate: { time: countdownFrom() }
+            }}
+          </p>
         } @else {
           <p class="note">{{ 'presenter.countdown_none' | translate }}</p>
         }
 
-        <div class="seg" role="group" [attr.aria-label]="'presenter.countdown_lead' | translate">
+        <div class="seg seg--stacked" role="group" [attr.aria-label]="'presenter.countdown_lead' | translate">
           <span class="seg__meta">{{ 'presenter.countdown_lead' | translate }}</span>
           @for (m of countdownLeads; track m) {
             <button
@@ -648,6 +698,15 @@
               (click)="display.setCountdownLead(m)"
             >{{ m }}′</button>
           }
+          <!-- «Mereu»: sin antelación fija, todo el día hasta el próximo
+               comienzo (salvo durante un culto). -->
+          <button
+            type="button"
+            class="seg__btn"
+            [disabled]="display.countdown().leadMinutes === null"
+            [attr.aria-pressed]="display.countdown().leadMinutes === null"
+            (click)="display.setCountdownLead(null)"
+          >{{ 'presenter.countdown_always' | translate }}</button>
         </div>
 
         <!-- Hora manual para hoy: manda sobre el horario y caduca a medianoche. -->

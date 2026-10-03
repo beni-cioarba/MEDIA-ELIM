@@ -2,6 +2,7 @@
   class="stage"
   [class.is-fullscreen]="fullscreen()"
   [class.stage--bleed]="bleed()"
+  [attr.data-solo-pages]="soloPages()"
 >
   <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
   <div class="backdrop" aria-hidden="true">
@@ -156,6 +157,15 @@
     </div>
   }
 
+  <!-- Reloj (hora actual): arriba a la derecha, sólo si el operador lo
+       enciende en el panel. Fuera de la vista fija (`solo`), que es la que
+       imprime el PDF. -->
+  @if (fullscreen() && !presentation.isSolo() && display.showClock()) {
+    <div class="stage-clock">
+      <app-stage-clock />
+    </div>
+  }
+
   <!-- Panel → «Identificar pantallas»: cada ventana de proyección muestra
        su número para saber cuál es cuál. -->
   @if (identifyNumber(); as numero) {
@@ -175,17 +185,14 @@
     </footer>
   }
 
-  <!-- Firma de la proyección: la marca, pequeña, en la esquina inferior
-       derecha (en el margen, como la mosca de una cadena de televisión). Con
-       el aviso de directo, «ÎN DIRECT» a su lado en todas las diapositivas. -->
-  @if (fullscreen()) {
+  <!-- Esquina inferior derecha: «ÎN DIRECT» cuando el operador activa el
+       aviso de directo. Sin logotipo ELIM (retirado a petición del usuario,
+       04/10/2026): en la proyección no aporta y ocupaba la esquina. -->
+  @if (fullscreen() && liveNotice()) {
     <div class="stage-bug">
-      @if (liveNotice()) {
-        <span class="stage-bug__live">
-          <span class="stage-bug__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
-        </span>
-      }
-      <app-brand-logo class="stage-bug__logo" size="context" tone="light" [link]="null" />
+      <span class="stage-bug__live">
+        <span class="stage-bug__dot" aria-hidden="true"></span>{{ 'live_notice.badge' | translate }}
+      </span>
     </div>
   }
 </main>

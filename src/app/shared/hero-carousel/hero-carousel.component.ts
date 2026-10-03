@@ -117,7 +117,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
           }
 
           @if (slides().length > 1) {
-            <div class="hero__dots">
+            <div class="hero__dots" [style.--dots]="slides().length">
               @for (slide of slides(); track slide.id; let i = $index) {
                 <button
                   type="button"
@@ -338,17 +338,26 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       }
 
       /* Puntos con barra de progreso. El botón mide 1,5 rem de alto para
-         poder pulsarlo con el dedo; lo que se ve es la pista interior. */
+         poder pulsarlo con el dedo; lo que se ve es la pista interior.
+         Siempre en UNA fila: con más fotos cada barra encoge (de 2,5 rem
+         hasta 1,25) en vez de saltar a otra línea, que con nueve fotos
+         dejaba la novena sola debajo en el teléfono. */
       .hero__dots {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        /* Ancho explícito (n barras de 2,5 rem + huecos), con tope en el
+           disponible: sin él la fila medía lo que sus botones vacíos y todas
+           las barras se quedaban en el mínimo también en escritorio. */
+        width: calc(var(--dots, 1) * 2.5rem + (var(--dots, 1) - 1) * 0.3rem);
+        max-width: 100%;
         gap: 0.3rem;
       }
 
       .hero__dot {
         display: grid;
         place-items: center;
-        width: 2.5rem;
+        flex: 0 1 2.5rem;
+        min-width: 1.25rem;
         height: 1.5rem;
         padding: 0;
         border: 0;

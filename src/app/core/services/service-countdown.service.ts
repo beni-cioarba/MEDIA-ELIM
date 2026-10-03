@@ -6,6 +6,14 @@ import { ScheduleService } from './schedule.service';
 /** Tras la hora de comienzo, «Începem acum» se mantiene este tiempo y desaparece. */
 export const COUNTDOWN_AFTER_MS = 60_000;
 
+/**
+ * Lo que se da por durado un culto, para el modo «siempre»: mientras dura el
+ * anterior no se anuncia el siguiente (el domingo, «Începem în 7:48:00» hacia
+ * las 18:00 en plena reunión de la mañana). Las mismas dos horas con las que
+ * `ScheduleService` delimita la ventana de un culto.
+ */
+const SERVICE_DURATION_MS = 120 * 60_000;
+
 /** El próximo comienzo de hoy y de dónde sale. */
 export interface CountdownTarget {
   /** Instante del comienzo (epoch ms). */
@@ -30,7 +38,9 @@ export interface CountdownTarget {
  *
  * ── Cuándo se ve ──────────────────────────────────────────────────────
  * Desde `leadMinutes` antes hasta un minuto después del comienzo («Începem
- * acum»); fuera de esa ventana no existe. Ni siquiera se calcula al segundo:
+ * acum»); fuera de esa ventana no existe. Con `leadMinutes = null`
+ * («Mereu») se ve todo el día hasta el próximo comienzo, salvo mientras dura
+ * un culto anterior de hoy (`SERVICE_DURATION_MS` desde su comienzo). Ni siquiera se calcula al segundo:
  * aquí sólo se resuelve el objetivo con el reloj de minuto de la app; el
  * segundero lo lleva el componente que lo pinta, y sólo dentro de la ventana.
  *
@@ -51,11 +61,24 @@ export class ServiceCountdownService {
     const now = this.clock.now();
     const midnight = new Date(now);
     midnight.setHours(0, 0, 0, 0);
-    const lead = prefs.leadMinutes * 60_000;
+    const starts = this.schedule.todayStarts();
+
+    /**
+     * Desde cuándo se proyecta. Con antelación fija, `at − antelación`. En
+     * «siempre», desde que acaba el culto anterior de hoy (o desde medianoche
+     * si es el primero).
+     */
+    const showFromFor = (at: number, minutes: number): number => {
+      if (prefs.leadMinutes !== null) return at - prefs.leadMinutes * 60_000;
+      const previous = starts.filter((start) => start < minutes).at(-1);
+      return previous === undefined
+        ? midnight.getTime()
+        : Math.min(at, midnight.getTime() + previous * 60_000 + SERVICE_DURATION_MS);
+    };
 
     const make = (minutes: number, source: CountdownTarget['source']): CountdownTarget => {
       const at = midnight.getTime() + minutes * 60_000;
-      return { at, time: toHHMM(minutes), source, showFrom: at - lead };
+      return { at, time: toHHMM(minutes), source, showFrom: showFromFor(at, minutes) };
     };
 
     if (prefs.manual) {
@@ -66,9 +89,7 @@ export class ServiceCountdownService {
     }
 
     // El primer comienzo que aún no ha pasado (con el minuto de «acum»).
-    const next = this.schedule
-      .todayStarts()
-      .find((minutes) => midnight.getTime() + minutes * 60_000 + COUNTDOWN_AFTER_MS > now);
+    const next = starts.find((minutes) => midnight.getTime() + minutes * 60_000 + COUNTDOWN_AFTER_MS > now);
     return next === undefined ? null : make(next, 'schedule');
   });
 }

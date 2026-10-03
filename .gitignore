@@ -43,3 +43,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# PDF de «Rugăciune pentru familii» generados en local (npm run pdf:familii).
+# En GitHub Pages los genera el despliegue: nunca se suben.
+/src/assets/family-prayer/*/*.pdf
+/src/assets/family-prayer/pdf.json

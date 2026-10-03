@@ -35,4 +35,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-09-27/biris-florin-anca': { width: 1600, height: 1523, variants: [[480, 480], [960, 960], [1600, 1600]] },
   '2026-09-27/birle-otniel-cristina': { width: 1275, height: 1600, variants: [[480, 382], [960, 765], [1600, 1275]] },
   '2026-09-27/birle-sebastian-maria': { width: 1570, height: 1600, variants: [[480, 471], [960, 942], [1600, 1570]] },
+  '2026-10-04/biroveti-claudiu-claudia': { width: 1600, height: 1365, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-10-04/biru-ioan-felicia': { width: 1106, height: 1600, variants: [[480, 332], [960, 664], [1600, 1106]] },
+  '2026-10-04/blaj-lucia': { width: 370, height: 658, variants: [[480, 270], [658, 370]] },
+  '2026-10-04/bloch-elena-liliana': { width: 784, height: 1600, variants: [[480, 235], [960, 470], [1600, 784]] },
+  '2026-10-04/bodnariu-petrica-luminita': { width: 1397, height: 1600, variants: [[480, 419], [960, 838], [1600, 1397]] },
 };

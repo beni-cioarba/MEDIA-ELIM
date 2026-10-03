@@ -516,6 +516,22 @@ button:disabled {
     }
   }
 
+  // Rótulo encima y botones debajo, repartidos a lo ancho: para filas con
+  // más opciones de las que caben junto al rótulo (la antelación de la
+  // cuenta atrás: 15′ … 90′ + «Mereu»).
+  &--stacked {
+    flex-wrap: wrap;
+    row-gap: 4px;
+
+    .seg__meta {
+      flex: 1 0 100%;
+    }
+
+    .seg__btn {
+      flex: 1 1 0;
+    }
+  }
+
   &--inner {
     padding: 0 8px 4px 28px;
   }
@@ -847,6 +863,19 @@ button:disabled {
     height: 100%;
     background: var(--gold);
     transform: scaleX(0);
+  }
+}
+
+/* Prueba de la semana siguiente: una fila discreta sobre las anteriores. */
+.next-week {
+  margin: 0 4px;
+  padding: 6px 4px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+
+  .switch__label {
+    font-weight: 600;
+    color: var(--ink-2);
   }
 }
 

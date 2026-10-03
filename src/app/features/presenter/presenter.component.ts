@@ -25,6 +25,7 @@ import {
   PresentationBlocksService,
   PresentationSlide,
   SelectableBlockId,
+  FAMILY_SUMMARY_SLIDE_KEY,
   familySelectionId,
 } from '../../core/services/presentation-blocks.service';
 import {
@@ -37,6 +38,7 @@ import {
 import { Announcement } from '../../core/church.config';
 import { AnnouncementsService, announcementParts } from '../../core/services/announcements.service';
 import { SlideTiming } from '../../core/services/carousel.service';
+import { FamilyPrayerService } from '../../core/services/family-prayer.service';
 import { ServiceCountdownService } from '../../core/services/service-countdown.service';
 import { Peer, PresentationSyncService, elapsedMs } from '../../core/services/presentation-sync.service';
 import { DisplayScreen, ProjectionWindowService } from '../../core/services/projection-window.service';
@@ -85,6 +87,7 @@ export class PresenterComponent implements OnInit {
   protected readonly sync = inject(PresentationSyncService);
   protected readonly projection = inject(ProjectionWindowService);
   protected readonly announcements = inject(AnnouncementsService);
+  protected readonly familyPrayer = inject(FamilyPrayerService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly zone = inject(NgZone);
   private readonly translate = inject(TranslateService);
@@ -456,6 +459,11 @@ export class PresenterComponent implements OnInit {
     }
   }
 
+  /** Interruptor de prueba: proyectar hoy la semana siguiente en lugar de la actual. */
+  protected setNextFamilyWeek(event: Event): void {
+    this.blocks.setNextFamilyWeekShown((event.target as HTMLInputElement).checked);
+  }
+
   /** Marcar en el desplegable: la familia pasa (para hoy) a la lista del bloque. */
   protected addPastFamily(id: string, event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -530,6 +538,23 @@ export class PresenterComponent implements OnInit {
 
   protected setAutoAdvance(event: Event): void {
     this.display.setAutoAdvance((event.target as HTMLInputElement).checked);
+  }
+
+  /**
+   * Atajo «Familii»: presentar en el culto las familias de la semana. Sólo
+   * ellas (resumen + fichas), **avance manual** —quien está en el panel las
+   * pasa al ritmo de la presentación—, sin cuenta atrás (la presentación ya
+   * es el culto; se vuelve a encender en su tarjeta) y desde el resumen.
+   */
+  protected presentFamilies(): void {
+    this.blocks.selectFamilyPresentation();
+    this.display.setAutoAdvance(false);
+    this.display.setCountdownEnabled(false);
+    this.sync.sendCommand({ type: 'gotoKey', key: FAMILY_SUMMARY_SLIDE_KEY });
+  }
+
+  protected setShowClock(event: Event): void {
+    this.display.setShowClock((event.target as HTMLInputElement).checked);
   }
 
   protected setLiveNotice(event: Event): void {

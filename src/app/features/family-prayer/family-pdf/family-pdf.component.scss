@@ -1,0 +1,57 @@
+@use 'ds' as *;
+
+// «Descarcă PDF» en la cabecera del resumen, junto a «Distribuie» (que
+// comparte el enlace). Misma caja que ese botón —0,5rem de relleno, 0,92rem,
+// interlineado 1 e icono de 18 px—, así las dos píldoras miden lo mismo; con
+// filete en vez del relleno dorado de «Distribuie» para que se lean como dos
+// acciones distintas. El dato del fichero va atenuado.
+
+:host {
+  display: contents;
+}
+
+.fpdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem 0.5rem 0.8rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 999px;
+  background: var(--c-surface);
+  font: 600 0.92rem/1 var(--font-sans);
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color var(--mo-fast) var(--ea-standard),
+    transform var(--mo-fast) var(--ea-standard);
+
+  app-icon {
+    // 18 px, como el icono de «Distribuie»: es lo que fija el alto.
+    font-size: 18px;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    border-color: rgb(26 54 93 / 0.3);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  @include focus-ring(3px);
+}
+
+.fpdf__meta {
+  font-weight: 500;
+  color: var(--c-muted);
+}
+
+// Teléfono estrecho: el dato del fichero sobra (sigue en el nombre accesible
+// y en el `title`).
+@include until('xs') {
+  .fpdf__meta {
+    display: none;
+  }
+}

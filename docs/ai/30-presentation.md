@@ -139,7 +139,7 @@ pública y la proyección siguen sin mostrarlos antes de tiempo.
 comienzo de **hoy** según `weeklyProgram` y los eventos de hoy
 (`ScheduleService.todayStarts`; el domingo «10:00 & 18:00» son dos). El panel
 (tarjeta «Cuenta atrás del culto») permite encenderla/apagarla, elegir la
-antelación (15-90 min) y fijar una **hora manual para hoy** que manda sobre el
+antelación (15-90 min; **90 por defecto** desde el 04/10/2026) y fijar una **hora manual para hoy** que manda sobre el
 horario y caduca a medianoche (`PresentationDisplayService.countdown`, en
 `localStorage` como el resto: todas las pantallas marcan lo mismo).
 
@@ -151,6 +151,54 @@ se cierra con la antelación; los 5 últimos minutos en oro; a la hora, «Încep
 acum» un minuto y desaparece. Rendimiento: el segundero sólo existe dentro de la
 ventana; fuera, un único `setTimeout`. Las diapositivas a sangre reservan 7u
 abajo (causas, collage de familias) para que no pise el texto.
+
+**«Mereu» (siempre, 04/10/2026, pedido del usuario)**: sexta opción de la
+antelación (`leadMinutes = null`). Sin elegir minutos: se ve todo el día
+hasta el próximo comienzo, **salvo mientras dura un culto anterior de hoy**
+(2 h desde su comienzo, `SERVICE_DURATION_MS`, las mismas que la ventana de
+culto de `ScheduleService`): el domingo, a las 11:00 no se proyecta «Începem
+în 7:00:00» hacia las 18:00 en plena reunión; vuelve a las 12:00. La fila de
+antelación del panel va apilada (`.seg--stacked`): rótulo encima, seis botones.
+
+## Piezas de esquina pegadas al borde (04/10/2026)
+
+Cuenta atrás (abajo izquierda), reloj (arriba derecha) y «ÎN DIRECT» (abajo
+derecha; sin logotipo desde el 04/10/2026) van **pegados al borde de la pantalla** a `--pj-edge` = 0,6u
+(~6 px a 1080p), no alineados con el contenido (antes 4,5u). Pedido del
+usuario: lo mínimo de margen. Es un único token en `_projection.scss`: si un
+proyector recorta los bordes (overscan), se sube ahí. Los contenedores de
+esquina son `flex` (sin el hueco de la línea de texto bajo la píldora).
+
+## Reloj en la proyección (04/10/2026)
+
+`shared/stage-clock` (`app-stage-clock`): la hora actual `HH:MM:SS` (segundos
+a 3,2u y atenuados) en la **esquina superior derecha**, la que queda libre
+(abajo están la cuenta atrás y la firma). Mismo lenguaje que la píldora de la
+cuenta atrás (clara / oscura a sangre). Se enciende en el panel → «Ritm și
+ecran» → «Arată ora» (`PresentationDisplayService.showClock`, preferencia
+`clock` en `localStorage`, **apagado por defecto**, no caduca). No sale en la
+vista fija `solo` (ni, por tanto, en el PDF de las familias). Un `setInterval`
+de 1 s fuera de Angular, alineado con el cambio de segundo.
+
+## Atajo «Familii» (04/10/2026)
+
+Cuarto botón de la selección global (tras «Rugăciune»): la **presentación de
+las familias en el culto**. `PresentationBlocksService.selectFamilyPresentation()`
+deja encendido sólo el bloque `families` con **todas** las de la semana en
+curso (resumen + fichas, `selectAll`), quita las de semanas anteriores y la
+prueba de la semana siguiente; el panel (`presentFamilies()`) pone además el
+**avance en manual** (`setAutoAdvance(false)`) y salta al resumen con la orden
+`gotoKey` (`FAMILY_SUMMARY_SLIDE_KEY`). Quien está en el panel pasa las fichas
+a mano al ritmo de la presentación. Activo (`familiesOnly` y avance manual) se
+pinta pulsado; para volver, «Toate» y el interruptor de avance automático.
+También **apaga la cuenta atrás** (`setCountdownEnabled(false)`): la
+presentación ya es el culto; se vuelve a encender en su tarjeta.
+
+**Orden `gotoKey`** (`SyncCommand`): ir a una diapositiva por clave. Hace falta
+justo después de cambiar la selección: la ventana que proyecta puede recibir
+la orden antes que la lista nueva; la clave espera a que la diapositiva
+aparezca (`CarouselService.currentIndex` resuelve primero por
+`requestedKey`), mientras que un índice caería en la equivocada.
 
 ## Atajo «Rugăciune» (03/10/2026)
 
@@ -213,7 +261,7 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 | `website`       | `WebsiteBlockComponent`      | siempre — «Toate informațiile, pe site»: el QR grande, al final de la vuelta (ver «Lienzo») |
 | `causes`        | `CausesBlockComponent`       | lista no vacía — toda la lista en una diapositiva (`docs/ai/37-prayer-causes.md`) |
 | `talent`        | `TalentBlockComponent`       | queda alguna fase por delante (`TalentContestService.focusPhase`) — cartel de Talantul în Negoț a sangre: fases, categorías, cuenta atrás y QR a `/talantul-in-negot` (`docs/ai/38-talent-contest.md`) |
-| `families`      | `FamilyBlockComponent`       | `FamilyPrayerService.hasCurrent()` — resumen (mosaico de fotos) + una diapositiva por familia, detrás de los anuncios (`docs/ai/36-family-prayer.md`) |
+| `families`      | `FamilyBlockComponent`       | `FamilyPrayerService.hasCurrent()` — resumen (mosaico de fotos) + una diapositiva por familia, detrás de los anuncios y de las causas (`causes` va antes desde el 04/10/2026; `docs/ai/36-family-prayer.md`) |
 | `socials`  | `SocialsBlockComponent`  | `socials.length > 0`               |
 | `streams`  | `StreamsBlockComponent`  | siempre                            |
 | `gallery`  | `GalleryBlockComponent`  | `mediaEvents.length > 0`           |
@@ -390,7 +438,7 @@ Cada diapositiva dura lo que su bloque tenga fijado
 
 | Bloque          | s  | Por qué                                              |
 | --------------- | -- | ---------------------------------------------------- |
-| `causes`        | 60 | la lista se lee en voz alta y se ora por ella (03/10/2026) |
+| `causes`        | 30 | la lista se lee en voz alta y se ora por ella (04/10/2026; antes 60) |
 | `announcements` | 30 | se leen, y hay que darles tiempo a los más lentos     |
 | `bible`         | 20 | siete lecturas que muchos apuntan                     |
 | `upcoming`      | 15 | dos eventos con fecha, título y descripción por página |
@@ -432,16 +480,17 @@ al mínimo. Medido a 960×540 (miniatura fiel del 1080p):
 | | Antes | Ahora |
 | --- | --- | --- |
 | Diapositiva | 115,8 × 75,2u (49 % del lienzo) | **168,8 × 91,5u** (1,76× el área) |
-| Marca | fila arriba, 12,6u de alto | firma de ~3u en el margen inferior derecho |
+| Marca | fila arriba, 12,6u de alto | ninguna (la firma de ~3u se retiró el 04/10/2026) |
 | QR | columna fija de 44u (S/M/L, tecla `Q`) | **diapositiva propia** (`website`) |
 | Versículo | pie de ~10u en cada diapositiva | sólo en la web |
 
 - **Área segura**: 3u arriba, 4,5u a los lados, 5,5u abajo (donde vive la
   firma). `_projection.scss` § 2.
-- **Firma** (`.stage-bug`): `app-brand-logo` a 2,2u de cuerpo, al 90 %,
-  `pointer-events: none`. Con el aviso de directo lleva «● ÎN DIRECT» delante.
-  No se pinta en las diapositivas a sangre (familias y causas: bloques de
-  oración, `StageComponent.bleed()`).
+- **Sin logotipo en la proyección** (04/10/2026, pedido del usuario): la firma
+  ELIM de la esquina inferior derecha se retiró. `.stage-bug` sólo existe con
+  el aviso de directo y lleva «● ÎN DIRECT», `pointer-events: none`. No se
+  pinta en las diapositivas a sangre (familias y causas: bloques de oración,
+  `StageComponent.bleed()`).
 - **QR** = bloque `website` («Toate informațiile, pe site»): QR de 64u (≈ 70 cm
   en una pantalla de 3 m, se escanea desde el fondo por la regla 1:10) y
   lo que hay en la web. Se enciende o apaga como cualquier bloque
@@ -466,8 +515,7 @@ Interruptor del panel de control, fila «Pantalla»
 diapositiva: es un **estado de la pantalla**, porque la invitación tiene que
 estar a la vista durante todo el culto.
 
-- **En todas las diapositivas**: «● ÎN DIRECT» junto a la firma de la
-  esquina (versalitas navy sobre blanco; el rojo `--c-live` sólo en el punto;
+- **En todas las diapositivas**: «● ÎN DIRECT» en la esquina inferior derecha (versalitas navy sobre blanco; el rojo `--c-live` sólo en el punto;
   sin pulso: en proyección no se mueve nada salvo el carrusel).
 - **En la diapositiva del QR** (`website`): el QR sigue siendo **uno solo**, a
   la web; sólo cambia la entradilla (`website_slide.lead_live`: el culto de hoy

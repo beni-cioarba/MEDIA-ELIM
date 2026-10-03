@@ -48,6 +48,17 @@ jobs:
       - name: Add .nojekyll
         run: touch dist/iglesia-redes/browser/.nojekyll
 
+      # PDF de «Rugăciune pentru familii» (uno por semana, para el grupo de la
+      # iglesia): imprime con el Chrome del runner las mismas diapositivas que
+      # se proyectan, sobre la web recién compilada. Deja los PDF y su
+      # manifiesto en assets/family-prayer/. No bloquea la publicación: si
+      # falla, la web simplemente no ofrece el botón de PDF esa vez.
+      - name: Family prayer PDFs
+        continue-on-error: true
+        env:
+          PDF_BROWSER: chrome
+        run: npm run pdf:familii -- --dist dist/iglesia-redes/browser
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

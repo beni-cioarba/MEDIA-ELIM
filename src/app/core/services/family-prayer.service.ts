@@ -80,9 +80,9 @@ export type PrayerWeekStatus = 'past' | 'current' | 'upcoming';
 export interface PrayerWeekView {
   readonly number: number;
   readonly presentedOn: string;
-  /** Lunes en que empieza la semana de oración (`YYYY-MM-DD`). */
+  /** Domingo en que empieza: el día en que se presenta (`YYYY-MM-DD`). */
   readonly start: string;
-  /** Domingo en que termina (`YYYY-MM-DD`). */
+  /** Sábado en que termina (`YYYY-MM-DD`). */
   readonly end: string;
   readonly families: readonly PrayerFamilyView[];
   readonly status: PrayerWeekStatus;
@@ -91,14 +91,16 @@ export interface PrayerWeekView {
 /**
  * «Rugăciune pentru familii»: **qué semana se anuncia hoy**.
  *
- * Misma regla que el plan de lectura (`BibleReadingService`): se anuncia la
- * semana que contiene **mañana**. El domingo, en el culto, ya se proyectan las
- * familias de la semana que empieza el lunes —exactamente lo que hacía el
- * PowerPoint «în următoarea săptămână»— y de lunes a sábado siguen las de la
- * semana en curso.
+ * **La semana va de domingo a sábado** y empieza el día en que se presenta
+ * (decisión del usuario, 03/10/2026). El domingo a las 00:00 la web, el panel
+ * de control y la proyección pasan a las familias nuevas —las que se
+ * presentan en el culto de ese día, «în următoarea săptămână»— y siguen hasta
+ * el sábado. Antes la semana se contaba de lunes a domingo: el cambio ya era
+ * el domingo, pero las fechas («28 sept – 4 oct») hacían creer que empezaba
+ * el lunes.
  *
- * Si el domingo aún no se ha cargado la semana siguiente, se mantiene la de
- * hoy (sigue en vigor hasta medianoche) en lugar de dejar la pantalla sin
+ * Si el domingo aún no se ha cargado la semana nueva, se mantiene la
+ * anterior ese día (hasta medianoche) en lugar de dejar la pantalla sin
  * familias. Todo en días naturales locales y reactivo al reloj compartido:
  * el portátil del templo cambia de semana a medianoche sin recargar.
  */
@@ -116,11 +118,12 @@ export class FamilyPrayerService {
 
   /** `presentedOn` de la semana que se anuncia, o `null` si no hay ninguna vigente. */
   private readonly announcedKey = computed<string | null>(() => {
-    const today = parseIsoDate(this.today());
-    const tomorrow = toIsoDate(addDays(today, 1));
+    const today = this.today();
+    const yesterday = toIsoDate(addDays(parseIsoDate(today), -1));
     const containing = (iso: string) =>
       this.weeks.find((week) => startOf(week) <= iso && iso <= endOf(week));
-    return (containing(tomorrow) ?? containing(this.today()))?.presentedOn ?? null;
+    // Ayer sólo cuenta el domingo sin semana nueva: la del sábado sigue ese día.
+    return (containing(today) ?? containing(yesterday))?.presentedOn ?? null;
   });
 
   /** Semana que se anuncia (web, panel y proyección). */
@@ -142,6 +145,29 @@ export class FamilyPrayerService {
       .filter((week) => week.status === 'past')
       .reverse(),
   );
+
+  /**
+   * Semanas cargadas por adelantado, la más próxima primero. No forman parte
+   * del feed ni de la proyección automática: la web las enseña en un
+   * desplegable cerrado y el panel puede proyectar la siguiente para probar.
+   */
+  readonly upcoming = computed<readonly PrayerWeekView[]>(() =>
+    this.weeks.map((week) => this.toView(week)).filter((week) => week.status === 'upcoming'),
+  );
+
+  /** La próxima semana ya cargada, o `null`. */
+  readonly next = computed<PrayerWeekView | null>(() => this.upcoming()[0] ?? null);
+
+  /**
+   * Una semana por su domingo **aunque aún no le toque**. Sólo para
+   * herramientas (el PDF de la semana se genera al publicar, y una semana
+   * cargada por adelantado tiene que tener su PDF listo el domingo); la web
+   * pública usa `byDate`, que no adelanta semanas.
+   */
+  anyByDate(presentedOn: string | null | undefined): PrayerWeekView | null {
+    const week = this.weeks.find((w) => w.presentedOn === presentedOn);
+    return week ? this.toView(week) : null;
+  }
 
   /** Una semana concreta por su domingo, si ya se ha publicado (no futura). */
   byDate(presentedOn: string): PrayerWeekView | null {
@@ -258,12 +284,12 @@ function toFamilyView(
   };
 }
 
-/** Lunes de la semana de oración (el día después del domingo en que se presenta). */
+/** Primer día de la semana de oración: el domingo en que se presenta. */
 function startOf(week: PrayerWeek): string {
-  return toIsoDate(addDays(parseIsoDate(week.presentedOn), 1));
+  return week.presentedOn;
 }
 
-/** Domingo en que termina la semana de oración. */
+/** Sábado en que termina la semana de oración. */
 function endOf(week: PrayerWeek): string {
-  return toIsoDate(addDays(parseIsoDate(week.presentedOn), 7));
+  return toIsoDate(addDays(parseIsoDate(week.presentedOn), 6));
 }
