@@ -700,7 +700,45 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
         reference: '2 Corinteni 1:11',
       },
       publishedOn: '2026-09-26',
-      expiresOn: '2026-10-04',
+      // Cede el sitio el domingo 04/10 al de ordine, sunet și proiecție (pasa al archivo).
+      expiresOn: '2026-10-03',
+    },
+    /*
+     * Semana de intercesión por quienes sirven en el orden, el sonido, la
+     * transmisión y la proyección (04/10 → 10/10).
+     *
+     * El original llegó sin diacríticos y con erratas (aducen→aducem,
+     * sai→să-i, «Sta»→stă, pt→pentru, Duhul sau cel sfânt→Duhul Său cel
+     * Sfânt). Misma estructura que la semana anterior: a quién se ora y qué
+     * se pide en dos listas; la oración por la iglesia, al pie.
+     */
+    {
+      id: 'mijlocire_ordine_sunet_proiectie',
+      title: 'Săptămână de rugăciune pentru ordine, sunet și proiecție',
+      lead: 'În săptămâna care ne stă în față îi aducem în rugăciune pe frații care ne slujesc în aceste lucrări.',
+      sections: [
+        {
+          heading: 'Îi aducem înaintea Domnului',
+          kind: 'list',
+          items: [
+            { label: 'Cei care slujesc la ordine în biserică' },
+            { label: 'Cei de la amplificare și transmisia live' },
+            { label: 'Cei care slujesc la videoproiector' },
+          ],
+        },
+        {
+          heading: 'Ce cerem pentru ei',
+          kind: 'list',
+          items: [
+            { label: 'Binecuvântare pentru ei și familiile lor' },
+            { label: 'Putere și înțelepciune' },
+            { label: 'Lumină în slujire' },
+          ],
+        },
+      ],
+      footnote: 'Continuăm să ne rugăm pentru o înviorare în Biserica Elim, prin Duhul Sfânt.',
+      publishedOn: '2026-10-04',
+      expiresOn: '2026-10-10',
     },
     {
       id: 'aniversare_25_ani',
