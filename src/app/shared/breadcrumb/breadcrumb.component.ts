@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
@@ -74,10 +74,16 @@ const HOME = MAIN_NAV.find((item) => item.id === 'home');
     styleUrl: './breadcrumb.component.scss'
 })
 export class BreadcrumbComponent {
-  private readonly trail = inject(NavActiveService).trail;
+  private readonly activeTrail = inject(NavActiveService).trail;
+
+  /**
+   * Rastro a pintar en vez del de la URL activa. Lo usa la vista previa del
+   * arrastre entre pestañas, que enseña la migaja de la página **vecina**.
+   */
+  readonly trail = input<readonly NavItem[] | null>(null);
 
   protected readonly crumbs = computed<readonly Crumb[]>(() => {
-    const trail = this.trail();
+    const trail = this.trail() ?? this.activeTrail();
     // Portada o ruta desconocida: nada que migar.
     if (trail.length === 0 || trail[0]?.id === 'home') return [];
 

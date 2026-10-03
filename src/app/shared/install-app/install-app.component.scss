@@ -4,8 +4,8 @@
 // «Instalar la app» — botón del pie + hoja de instrucciones
 // ---------------------------------------------------------------------
 // Línea propia (no catálogo `ui-*`): es la única llamada a la acción de la
-// franja legal y tiene que distinguirse de los iconos tenues que la rodean
-// sin gritar. Filete degradado oro, texto oro claro y un brillo al apuntar.
+// franja legal y tiene que destacar sobre los iconos tenues que la rodean:
+// relleno oro, texto navy y un halo que late (ver «Botón»).
 // La hoja es una superficie de cristal navy: en móvil sube desde abajo
 // (donde están el pulgar y los botones del navegador que va a buscar) y en
 // pantallas grandes es una tarjeta centrada.
@@ -22,6 +22,14 @@ $hair: rgba(247, 250, 252, 0.14);
 
 // ---------------------------------------------------------------------
 // Botón
+//
+// Revisión del 03/10/2026 («que destaque, sobre todo para quien aún no la
+// tiene»): pasa de filete a **relleno oro** —la única pieza maciza de la
+// franja legal, entre iconos huecos— con texto navy (contraste 8:1) y un
+// halo que late cada pocos segundos. Sólo existe mientras la app no está
+// instalada, así que el reclamo desaparece solo en cuanto cumple su función.
+// El latido es lento y espaciado (un aviso, no una alarma), se detiene al
+// apuntar o enfocar y no existe con `prefers-reduced-motion`.
 // ---------------------------------------------------------------------
 .install {
   position: relative;
@@ -29,41 +37,57 @@ $hair: rgba(247, 250, 252, 0.14);
   align-items: center;
   gap: 0.4rem;
   height: 2.125rem; // alto de los iconos vecinos: misma línea base visual
-  padding: 0 0.85rem 0 0.7rem;
-  overflow: hidden;
-  border: 1px solid transparent;
+  padding: 0 0.95rem 0 0.75rem;
+  overflow: visible;
+  border: 0;
   border-radius: var(--r-pill);
-  // Filete degradado: el fondo del borde es un gradiente y el interior se
-  // repinta con el navy del pie (truco padding-box / border-box).
-  background:
-    linear-gradient(var(--c-primary-deep), var(--c-primary-deep)) padding-box,
-    linear-gradient(120deg, var(--c-gold-soft), rgba($gold, 0.85) 45%, rgba($gold, 0.25))
-      border-box;
-  color: var(--c-gold-soft);
-  font: 600 0.78rem/1 var(--font-sans);
+  background: linear-gradient(135deg, var(--c-gold-soft) 0%, $gold 55%, #b8922a 100%);
+  box-shadow:
+    0 6px 18px -6px rgba($gold, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: var(--c-primary-deep);
+  font: 700 0.8rem/1 var(--font-sans);
   letter-spacing: 0.02em;
   white-space: nowrap;
   cursor: pointer;
+  isolation: isolate;
   transition:
-    box-shadow var(--mo-base) var(--ea-standard),
-    color var(--mo-base) var(--ea-standard);
+    transform var(--mo-base) var(--ea-standard),
+    box-shadow var(--mo-base) var(--ea-standard);
 
-  // Destello que barre el botón al apuntar (sólo con movimiento permitido).
+  // Halo: un anillo oro que se expande y se desvanece.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba($gold, 0.55);
+    pointer-events: none;
+  }
+
+  // Destello que barre el botón (con el halo y al apuntar).
   &::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
-    transform: translateX(-110%);
+    border-radius: inherit;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+    background-size: 250% 100%;
+    background-position: 130% 0;
     pointer-events: none;
   }
 
   &:hover,
   &:focus-visible {
-    color: #fff;
+    transform: translateY(-1px);
     box-shadow:
-      0 0 0 1px rgba($gold, 0.35),
-      0 0 18px -2px rgba($gold, 0.45);
+      0 10px 24px -6px rgba($gold, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 
   &:focus-visible {
@@ -77,14 +101,45 @@ $hair: rgba(247, 250, 252, 0.14);
 }
 
 .install__icon {
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 @include motion-safe {
+  .install::before {
+    animation: install-halo 3.2s var(--ea-standard) 1.2s infinite;
+  }
+
+  .install::after {
+    animation: install-shine 3.2s var(--ea-standard) 1.2s infinite;
+  }
+
+  .install:hover::before,
   .install:hover::after,
+  .install:focus-visible::before,
   .install:focus-visible::after {
-    transition: transform 700ms var(--ea-standard);
-    transform: translateX(110%);
+    animation: none;
+  }
+}
+
+@keyframes install-halo {
+  0% {
+    box-shadow: 0 0 0 0 rgba($gold, 0.55);
+  }
+
+  45%,
+  100% {
+    box-shadow: 0 0 0 0.6rem rgba($gold, 0);
+  }
+}
+
+@keyframes install-shine {
+  0% {
+    background-position: 130% 0;
+  }
+
+  35%,
+  100% {
+    background-position: -30% 0;
   }
 }
 

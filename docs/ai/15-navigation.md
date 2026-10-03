@@ -242,10 +242,19 @@ WhatsApp, auditado): el contenido **sigue al dedo** y por el otro lado asoma
 la sección vecina; el indicador de la barra avanza en proporción
 (`--tab-drag`); al soltar cambia si se pasó el 40 % del ancho o hubo «flick»
 (> 0,45 px/ms), si no vuelve; sin vecina (primera/última) cede un 28 % y
-vuelve. Lo que asoma es una **vista previa** (`SwipePeekComponent`: cabecera
-navy de la sección + sus páginas como tarjetas, sin cargar nada), porque las
-rutas son perezosas y montar las vecinas costaría su carga; al completar se
-navega y la vista previa se funde sobre la página real. Manejadores pasivos
+vuelve. Lo que asoma es **la página vecina real** (`SwipePeekComponent` +
+`PagePreviewService`): su componente, montado al empezar el gesto con un
+`ActivatedRoute` que hereda del raíz real (los `routerLink` necesitan el
+árbol) y lleva los datos/parámetros de su ruta, precedido de su migaja
+(`app-breadcrumb [trail]`), colocado bajo la cabecera, donde quedará. Un
+esqueleto genérico no coincidía con ninguna página (rechazado por el
+usuario). Las vecinas se cargan en reposo tras cada navegación (`warm`).
+Se desplazan juntos `<main>`, migaja y pie; la cabecera y la barra se
+quedan. Al completar: subida **instantánea** a 0 (el `html` tiene scroll
+suave), navegar, dos fotogramas y fundido de 160 ms sobre la página real.
+Una página que arranque algo caro debe consultar `PAGE_PREVIEW`
+(`core/navigation/page-preview.ts`); hoy sólo el escenario (sondeo del
+directo). Manejadores pasivos
 fuera de Angular, un `transform` + variables CSS por fotograma;
 `touch-action: pan-y pinch-zoom` en el `<main>`. Se decide tras 10 px: si
 empieza vertical, no hay arrastre en ese gesto. No actúa en los 24 px del

@@ -61,11 +61,11 @@ type Estado = 'quieto' | 'decidiendo' | 'arrastrando' | 'asentando';
  *
  * ── Cómo se hace aquí ─────────────────────────────────────────────────
  * Las secciones de WhatsApp están todas montadas; aquí cada una es una ruta
- * perezosa, y montar las vecinas costaría su carga entera. Lo que asoma es
- * una **vista previa** (`SwipePeekComponent`): la cabecera de la sección
- * vecina —mismo navy, su título y sus páginas—, que es exactamente lo
- * primero que se ve al llegar. Al soltar, la vista previa ocupa la pantalla,
- * se navega y se funde sobre la página real.
+ * perezosa y mantenerlas todas montadas costaría memoria y trabajo en
+ * segundo plano. Lo que asoma se monta **al empezar el gesto** y es la
+ * página vecina real (`SwipePeekComponent` + `PagePreviewService`), con su
+ * migaja, donde quedará. Al soltar ocupa la pantalla, se navega y se funde
+ * sobre la página real, que es idéntica.
  *
  * ── Rendimiento ───────────────────────────────────────────────────────
  * Manejadores pasivos y fuera de Angular. Durante el arrastre sólo se
@@ -94,6 +94,12 @@ export class SwipeTabsDirective {
   private muestras: { t: number; x: number }[] = [];
   private fotograma = 0;
   private temporizador: ReturnType<typeof setTimeout> | null = null;
+  /**
+   * Lo que se desplaza con el dedo: el `<main>` y sus hermanos de página (la
+   * migaja de pan y el pie), como una pantalla entera de WhatsApp. La
+   * cabecera y la barra de pestañas se quedan.
+   */
+  private movibles: HTMLElement[] = [];
 
   constructor() {
     const onStart = (e: TouchEvent): void => this.empezar(e);
@@ -154,9 +160,15 @@ export class SwipeTabsDirective {
       this.estado = 'arrastrando';
       // Se recoloca el origen: el contenido arranca pegado al dedo, sin salto.
       this.x0 = t.clientX;
-      this.host.style.willChange = 'transform';
+      this.movibles = [
+        this.host,
+        ...Array.from(
+          this.host.parentElement?.querySelectorAll<HTMLElement>(':scope > app-breadcrumb, :scope > app-footer') ?? [],
+        ),
+      ];
+      for (const el of this.movibles) el.style.willChange = 'transform';
       this.root.classList.add('is-swiping');
-      this.root.style.setProperty('--swipe-top', `${zonaSuperior(this.host)}px`);
+      this.root.style.setProperty('--swipe-top', `${pieDeCabecera()}px`);
     }
 
     this.dx = t.clientX - this.x0;
@@ -208,7 +220,8 @@ export class SwipeTabsDirective {
 
   private pintar(x: number): void {
     const ancho = window.innerWidth || 1;
-    this.host.style.transform = x === 0 ? '' : `translate3d(${x}px, 0, 0)`;
+    const transform = x === 0 ? '' : `translate3d(${x}px, 0, 0)`;
+    for (const el of this.movibles) el.style.transform = transform;
     this.root.style.setProperty('--swipe-dx', `${x}px`);
     // Progreso del indicador de la barra: +1 = una pestaña a la derecha.
     const progreso = this.hayVecina ? Math.max(-1, Math.min(1, -x / ancho)) : 0;
@@ -219,7 +232,9 @@ export class SwipeTabsDirective {
   private asentar(x: number, hecho: () => void): void {
     this.estado = 'asentando';
     this.root.classList.add('is-swipe-settling');
-    this.host.style.transition = `transform ${MS_ASENTAR}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
+    for (const el of this.movibles) {
+      el.style.transition = `transform ${MS_ASENTAR}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
+    }
     this.pintar(x);
     this.temporizador = setTimeout(hecho, MS_ASENTAR);
   }
@@ -230,6 +245,11 @@ export class SwipeTabsDirective {
    * y la vista previa se funde sobre ella.
    */
   private completar(sentido: TabDirection): void {
+    // La página nueva se verá desde arriba, que es lo que enseña la vista
+    // previa. Se sube ya y **sin animación**: el `html` tiene scroll suave y
+    // el del router se vería deslizarse bajo el fundido. La página vieja está
+    // fuera de pantalla, así que este salto no se ve.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     this.zone.run(() => {
       void this.tabsNav.go(sentido).then((ok) => {
         if (!ok) {
@@ -239,15 +259,26 @@ export class SwipeTabsDirective {
         // En la misma tarea que el cambio de `activeIndex`: el indicador pasa
         // de «anterior + 1» a «nueva + 0» sin pintar un fotograma intermedio.
         this.root.style.setProperty('--tab-drag', '0');
+        // Dos fotogramas: el primero pinta la página nueva (ya renderizada por
+        // la detección de cambios de la navegación) y en el segundo, con ella
+        // debajo, empieza el fundido.
         requestAnimationFrame(() => {
-          this.host.style.transition = '';
-          this.host.style.transform = '';
-          this.host.style.willChange = '';
-          this.root.classList.add('is-swipe-reveal');
-          this.temporizador = setTimeout(() => this.limpiar(), MS_FUNDIDO);
+          this.soltarMovibles();
+          requestAnimationFrame(() => {
+            this.root.classList.add('is-swipe-reveal');
+            this.temporizador = setTimeout(() => this.limpiar(), MS_FUNDIDO);
+          });
         });
       });
     });
+  }
+
+  private soltarMovibles(): void {
+    for (const el of this.movibles) {
+      el.style.transition = '';
+      el.style.transform = '';
+      el.style.willChange = '';
+    }
   }
 
   private limpiar(): void {
@@ -257,9 +288,8 @@ export class SwipeTabsDirective {
     this.estado = 'quieto';
     this.sentido = null;
     this.dx = 0;
-    this.host.style.transition = '';
-    this.host.style.transform = '';
-    this.host.style.willChange = '';
+    this.soltarMovibles();
+    this.movibles = [];
     this.root.classList.remove('is-swiping', 'is-swipe-settling', 'is-swipe-reveal');
     for (const prop of ['--swipe-dx', '--tab-drag', '--swipe-top']) this.root.style.removeProperty(prop);
     if (this.tabsNav.peek() !== null) this.zone.run(() => this.tabsNav.peek.set(null));
@@ -280,13 +310,11 @@ function hayTextoSeleccionado(): boolean {
 }
 
 /**
- * Dónde empieza, en pantalla, la zona que se desliza: el borde superior del
- * `<main>` o, si ya se ha bajado, el pie de la cabecera fija. La vista previa
- * se coloca ahí para no tapar la cabecera (que, como en WhatsApp, se queda).
+ * Borde inferior de la cabecera fija: ahí empieza la página tras navegar
+ * (arriba del todo), así que ahí se coloca la vista previa.
  */
-function zonaSuperior(main: HTMLElement): number {
-  const cabecera = document.querySelector('app-top-nav .nav')?.getBoundingClientRect().bottom ?? 0;
-  return Math.max(0, cabecera, main.getBoundingClientRect().top);
+function pieDeCabecera(): number {
+  return Math.max(0, document.querySelector('app-top-nav .nav')?.getBoundingClientRect().bottom ?? 0);
 }
 
 /**

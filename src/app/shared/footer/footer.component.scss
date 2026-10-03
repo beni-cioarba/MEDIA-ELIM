@@ -568,7 +568,11 @@
 .footer__build {
   position: absolute;
   bottom: calc(100% + 0.6rem);
-  left: 50%;
+  /* Anclado al **borde izquierdo** de la píldora, no centrado: la píldora
+     está pegada al margen izquierdo de la franja, y centrado el aviso
+     (~170 px sobre una píldora de ~60) se salía por la izquierda en el
+     teléfono. Así sólo crece hacia la derecha, donde siempre hay sitio. */
+  left: 0;
   z-index: var(--z-content);
   display: grid;
   gap: 0.2rem;
@@ -586,7 +590,7 @@
   // franja legal ni intercepta clics cuando está cerrado.
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, 0.25rem);
+  transform: translateY(0.25rem);
   transition: opacity var(--mo-fast) var(--ea-standard),
     transform var(--mo-fast) var(--ea-decelerate), visibility var(--mo-fast);
 
@@ -595,18 +599,18 @@
     content: '';
     position: absolute;
     top: 100%;
-    left: 50%;
+    /* Sobre el centro de la píldora (~1,9 rem desde su borde izquierdo). */
+    left: 1.5rem;
     border: 0.35rem solid transparent;
     border-block-end-width: 0;
     border-block-start-color: var(--c-primary-darkest);
-    transform: translateX(-50%);
   }
 
   .footer__version:hover &,
   .footer__version:focus-visible & {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%, 0);
+    transform: none;
   }
 }
 

@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { PAGE_PREVIEW } from '../../core/navigation/page-preview';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
@@ -113,6 +114,7 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
 })
 export class StageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly pagePreview = inject(PAGE_PREVIEW);
   private readonly youtube = inject(YouTubeService);
   private readonly announcements = inject(AnnouncementsService);
   private readonly sync = inject(PresentationSyncService);
@@ -241,7 +243,8 @@ export class StageComponent implements OnInit {
      */
     // La vista previa del panel y la de prueba no necesitan el sondeo: con
     // varias pantallas abiertas, multiplicaría las consultas a YouTube.
-    this.youtube.start(this.presentation.isPreview() ? 'ligero' : 'completo');
+    // Tampoco la vista previa del arrastre entre pestañas (`PAGE_PREVIEW`).
+    this.youtube.start(this.presentation.isPreview() || this.pagePreview ? 'ligero' : 'completo');
   }
 
   /** ¿Se monta el contenido de esta diapositiva? (en la web, todas) */
