@@ -5,8 +5,8 @@
 <article class="profile">
   <!-- ================= Cabecera ================= -->
   <header class="hero" [class.hero--pastor]="card().tier === 'pastor'">
-    <div class="hero__photo">
-      <app-person-avatar [photo]="card().photo" />
+    <div class="hero__photo" [appViewable]="photoItem()">
+      <app-person-avatar slot="hero" [photo]="card().photo" sizes="(max-width: 860px) 100vw, 16rem" [eager]="true" />
     </div>
 
     <div class="hero__body">
@@ -148,7 +148,7 @@
               <li>
                 <a class="peer" [routerLink]="peer.link">
                   <span class="peer__photo">
-                    <app-person-avatar [photo]="peer.photo" />
+                    <app-person-avatar slot="tiny" [photo]="peer.photo" sizes="3rem" />
                   </span>
                   <span class="peer__name">{{ peer.name }}</span>
                 </a>

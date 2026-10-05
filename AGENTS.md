@@ -75,6 +75,7 @@ La **marca** (navy y oro), la **accesibilidad** (contraste, foco,
 | `docs/ai/45-design-system.md`| Tokens, tema, Angular Material, iconos, tipografía         |
 | `docs/ai/47-design-language.md` | **Lenguaje visual**: superficies (web / consola / proyección), decisiones y catálogo `ui-*`. Referencia viva: `/stil` |
 | `docs/ai/48-carousel-cards.md` | **Escaparate (línea nueva)**: carruseles y tarjetas de promoción, calcados de la referencia medida. Manda sobre el catálogo dentro de un carrusel |
+| `docs/ai/49-viewer.md`       | **Visores**: documental (imagen, PDF, vídeo, texto) y galería; `[appViewable]` |
 | `docs/ai/50-build-deploy.md` | Build, PWA, GitHub Actions, scripts de datos e imágenes    |
 | `docs/ai/60-conventions.md`  | Convenciones y recetas paso a paso                         |
 | `docs/ai/70-roadmap.md`      | Deuda técnica y mejoras pendientes                         |

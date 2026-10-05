@@ -171,7 +171,12 @@
 
   <div class="fp__cards">
     @for (family of w.families; track family.anchor) {
-      <app-family-card [family]="family" [eager]="first && $first">
+      <app-family-card
+        [family]="family"
+        [eager]="first && $first"
+        [viewerItems]="family.photo ? weekMedia(w) : null"
+        [viewerIndex]="mediaIndex(w, family)"
+      >
         @if (!prevista) {
           <div class="fp__actions">
             <app-share-button [url]="familyUrl(w, family)" [title]="family.fullName" />

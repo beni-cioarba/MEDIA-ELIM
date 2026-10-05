@@ -1,0 +1,94 @@
+@use 'engine' as *;
+
+@include engine-host;
+@include engine-state;
+
+.state--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+// Páginas apiladas, centradas, con su sombra; el área se desplaza.
+.scroller {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 16px 72px;
+  overscroll-behavior: contain;
+
+  &--panning {
+    cursor: grabbing;
+    user-select: none;
+  }
+}
+
+.page {
+  position: relative;
+  flex: none;
+  background: #fff;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.35);
+}
+
+.page__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Píldora de páginas: flotante, centrada abajo (como en CemenWEB).
+.pager {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.72);
+  color: #fff;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+  transform: translateX(-50%);
+}
+
+.pager__text {
+  min-width: 3.6rem;
+  font-size: 0.8125rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.pager__btn {
+  display: inline-grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgb(255 255 255 / 0.18);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 1px;
+  }
+}

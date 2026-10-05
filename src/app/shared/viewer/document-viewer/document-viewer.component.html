@@ -1,0 +1,163 @@
+<!--
+  Visor universal de documentos (shell). Barra única compacta + contenido
+  (motor según la categoría) + panel de información superpuesto.
+-->
+<section class="dv" [attr.aria-label]="name()">
+  <!-- ================= Barra única: identidad + herramientas ================= -->
+  <header class="dv__bar">
+    <span class="dv__badge" [style.background]="caps().tone" [title]="caps().labelKey | translate">
+      <app-icon [name]="caps().icon" />
+    </span>
+
+    <div class="dv__id">
+      <span class="dv__name" [title]="name()">{{ name() }}</span>
+      @if (meta().length) {
+        <span class="dv__meta">{{ meta().join(' · ') }}</span>
+      }
+    </div>
+
+    @if (document().status; as status) {
+      <span class="dv__status" [attr.data-tone]="status.tone ?? 'neutral'">{{ status.label }}</span>
+    }
+
+    <span class="dv__spacer"></span>
+
+    @if (navigable() && position(); as pos) {
+      <span class="dv__position" aria-live="polite">{{ pos.index + 1 }} / {{ pos.total }}</span>
+      <span class="dv__sep" aria-hidden="true"></span>
+    }
+
+    <div class="dv__tools" role="toolbar" [attr.aria-label]="'doc_viewer.toolbar' | translate">
+      @if (caps().zoom) {
+        <button type="button" class="dv__btn" (click)="zoomOut()" [disabled]="!fit() && zoom() <= zoomMin"
+                [attr.aria-label]="'doc_viewer.zoom_out' | translate" [title]="'doc_viewer.zoom_out' | translate">
+          <app-icon name="zoom-out" />
+        </button>
+        <span class="dv__zoom">{{ fit() ? ('doc_viewer.fitted' | translate) : zoom() + '%' }}</span>
+        <button type="button" class="dv__btn" (click)="zoomIn()" [disabled]="!fit() && zoom() >= zoomMax"
+                [attr.aria-label]="'doc_viewer.zoom_in' | translate" [title]="'doc_viewer.zoom_in' | translate">
+          <app-icon name="zoom-in" />
+        </button>
+        <button type="button" class="dv__btn" [class.dv__btn--on]="fit()" [attr.aria-pressed]="fit()" (click)="toggleFit()"
+                [attr.aria-label]="'doc_viewer.fit' | translate" [title]="'doc_viewer.fit' | translate">
+          <app-icon name="fit" />
+        </button>
+      }
+
+      @if (caps().rotate) {
+        <span class="dv__sep" aria-hidden="true"></span>
+        <button type="button" class="dv__btn" (click)="rotate(-90)"
+                [attr.aria-label]="'doc_viewer.rotate_left' | translate" [title]="'doc_viewer.rotate_left' | translate">
+          <app-icon name="rotate-ccw" />
+        </button>
+        <button type="button" class="dv__btn" (click)="rotate(90)"
+                [attr.aria-label]="'doc_viewer.rotate_right' | translate" [title]="'doc_viewer.rotate_right' | translate">
+          <app-icon name="rotate-cw" />
+        </button>
+      }
+
+      @if (caps().wrap) {
+        <button type="button" class="dv__btn" [class.dv__btn--on]="wrap()" [attr.aria-pressed]="wrap()" (click)="wrap.set(!wrap())"
+                [attr.aria-label]="'doc_viewer.wrap' | translate" [title]="'doc_viewer.wrap' | translate">
+          <app-icon name="menu" />
+        </button>
+      }
+
+      <span class="dv__sep" aria-hidden="true"></span>
+
+      <button type="button" class="dv__btn" [class.dv__btn--on]="panelOpen()" [attr.aria-pressed]="panelOpen()"
+              (click)="panelOpen.set(!panelOpen())"
+              [attr.aria-label]="'doc_viewer.info' | translate" [title]="'doc_viewer.info' | translate">
+        <app-icon name="info" />
+      </button>
+      <button type="button" class="dv__btn" (click)="download()"
+              [attr.aria-label]="'doc_viewer.download' | translate" [title]="'doc_viewer.download' | translate">
+        <app-icon name="download" />
+      </button>
+      @if (caps().print) {
+        <button type="button" class="dv__btn dv__btn--secondary" (click)="print()"
+                [attr.aria-label]="'doc_viewer.print' | translate" [title]="'doc_viewer.print' | translate">
+          <app-icon name="printer" />
+        </button>
+      }
+      <button type="button" class="dv__btn dv__btn--secondary" (click)="openTab()"
+              [attr.aria-label]="'doc_viewer.open_tab' | translate" [title]="'doc_viewer.open_tab' | translate">
+        <app-icon name="external" />
+      </button>
+
+      @if (closable()) {
+        <button type="button" class="dv__btn dv__btn--close" (click)="closed.emit()"
+                [attr.aria-label]="'doc_viewer.close' | translate" [title]="'doc_viewer.close' | translate">
+          <app-icon name="close" />
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- ================= Cuerpo: motor + panel superpuesto ================= -->
+  <div class="dv__body">
+    @if (navigable()) {
+      <button type="button" class="dv__nav dv__nav--prev" [disabled]="!hasPrev()" (click)="prev.emit()"
+              [attr.aria-label]="'doc_viewer.prev' | translate" [title]="'doc_viewer.prev' | translate">
+        <app-icon name="chevron-left" />
+      </button>
+      <button type="button" class="dv__nav dv__nav--next" [disabled]="!hasNext()" (click)="next.emit()"
+              [attr.aria-label]="'doc_viewer.next' | translate" [title]="'doc_viewer.next' | translate">
+        <app-icon name="chevron-right" />
+      </button>
+    }
+
+    <div class="dv__content">
+      @switch (category()) {
+        @case ('image') {
+          <app-image-engine [document]="document()" [zoom]="zoom()" [rotation]="rotation()" [fit]="fit()" />
+        }
+        @case ('pdf') {
+          <app-pdf-engine [document]="document()" [zoom]="zoom()" [rotation]="rotation()" [fit]="fit()" />
+        }
+        @case ('video') {
+          <app-media-engine [document]="document()" [video]="true" (download)="download()" />
+        }
+        @case ('audio') {
+          <app-media-engine [document]="document()" [video]="false" (download)="download()" />
+        }
+        @case ('text') {
+          <app-text-engine [document]="document()" [wrap]="wrap()" />
+        }
+        @default {
+          <app-unsupported-engine [name]="name()" [icon]="caps().icon" (download)="download()" (openTab)="openTab()" />
+        }
+      }
+    </div>
+
+    <!-- Panel de información: se superpone (no resta espacio al contenido). -->
+    @if (panelOpen()) {
+      <aside class="dv__panel" [attr.aria-label]="'doc_viewer.info' | translate">
+        <div class="dv__panel-head">
+          <span class="dv__panel-title">{{ 'doc_viewer.info' | translate }}</span>
+          <button type="button" class="dv__btn" (click)="panelOpen.set(false)" [attr.aria-label]="'doc_viewer.close' | translate">
+            <app-icon name="close" />
+          </button>
+        </div>
+        <dl class="dv__dl">
+          <dt>{{ 'doc_viewer.field_name' | translate }}</dt>
+          <dd>{{ name() }}</dd>
+          <dt>{{ 'doc_viewer.field_type' | translate }}</dt>
+          <dd>{{ caps().labelKey | translate }}</dd>
+          @if (date(); as d) {
+            <dt>{{ 'doc_viewer.field_date' | translate }}</dt>
+            <dd>{{ d }}</dd>
+          }
+          @if (document().description; as description) {
+            <dt>{{ 'doc_viewer.field_description' | translate }}</dt>
+            <dd>{{ description }}</dd>
+          }
+          @for (row of document().details ?? []; track row.label) {
+            <dt>{{ row.label }}</dt>
+            <dd>{{ row.value }}</dd>
+          }
+        </dl>
+      </aside>
+    }
+  </div>
+</section>

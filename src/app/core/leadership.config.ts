@@ -63,13 +63,9 @@ export interface Person {
   /** Nombre propio — nunca se traduce. */
   readonly name: string;
   readonly titles?: readonly PersonTitle[];
-  /**
-   * Foto de perfil: nombre del fichero en `assets/leadership/`
-   * (`'pavel-negrusier.webp'`, cuadrada, ≥ 400 px, cara centrada). Sin ella
-   * se pinta el avatar de iniciales. Se añade persona a persona conforme
-   * lleguen las fotos: ninguna pantalla depende de que estén todas.
-   */
-  readonly photo?: string;
+  // La foto no se declara aquí: la pone `scripts/import-leadership-photos.mjs`
+  // (manifiesto `leadership-photos.generated.ts`, por `id`). Sin ella se pinta
+  // la silueta; ninguna pantalla depende de que estén todas.
 }
 
 // ---------------------------------------------------------------------
@@ -102,7 +98,7 @@ const PEOPLE = [
   { id: 'alin-negrusier', name: 'Alin Negrușier' },
   { id: 'emanuel-marcu', name: 'Emanuel Marcu' },
   { id: 'daniel-dulca', name: 'Daniel Dulcă' },
-  { id: 'beni-cioarba', name: 'Beni Cioarbă' },
+  { id: 'beni-cioarba', name: 'Beni Cioarba' },
   { id: 'andrei-stanus', name: 'Andrei Stănuș' },
   { id: 'mihai-zagrean', name: 'Mihai Zăgrean' },
   { id: 'ioan-strugaru', name: 'Ioan Strugaru' },

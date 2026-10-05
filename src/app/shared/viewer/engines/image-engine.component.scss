@@ -1,0 +1,65 @@
+@use 'engine' as *;
+
+@include engine-host;
+@include engine-state;
+
+.state--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+// Área de la imagen: la imagen centrada; si se amplía, se arrastra.
+.canvas {
+  position: relative;
+  display: grid;
+  flex: 1 1 auto;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  touch-action: pinch-zoom;
+  user-select: none;
+
+  &--pannable {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &--panning {
+    cursor: grabbing;
+  }
+}
+
+// Encajada entera en el área (`--cw`/`--ch` = tamaño del área). Girada un
+// cuarto de vuelta, los topes se intercambian para que siga cabiendo.
+.image {
+  display: block;
+  max-width: var(--cw, 100%);
+  max-height: var(--ch, 100%);
+  object-fit: contain;
+  opacity: 0;
+  transform-origin: center;
+  transition:
+    transform 120ms ease-out,
+    opacity 160ms ease;
+  -webkit-user-drag: none;
+
+  &--ready {
+    opacity: 1;
+  }
+
+  &--quarter {
+    max-width: var(--ch, 100%);
+    max-height: var(--cw, 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.canvas--panning .image {
+  transition: none;
+}

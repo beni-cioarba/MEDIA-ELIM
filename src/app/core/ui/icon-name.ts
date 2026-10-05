@@ -52,4 +52,17 @@ export type IconName =
   | 'share-ios'
   | 'more-vert'
   | 'more-horiz'
-  | 'add-box';
+  | 'add-box'
+  | 'pause'
+  | 'zoom-in'
+  | 'zoom-out'
+  | 'grid'
+  | 'maximize'
+  | 'rotate-ccw'
+  | 'rotate-cw'
+  | 'info'
+  | 'printer'
+  | 'file'
+  | 'file-text'
+  | 'film'
+  | 'fit';

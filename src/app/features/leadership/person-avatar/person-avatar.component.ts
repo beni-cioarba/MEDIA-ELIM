@@ -1,7 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-
-/** Carpeta de las fotos de perfil (`Person.photo`). */
-const PHOTO_ROOT = 'assets/leadership';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
+import { PersonPhoto, PhotoSlot, photoSource } from '../person-photo';
 
 /**
  * Imagen de una persona del organigrama: su foto si la hay y, si no, la
@@ -15,19 +13,39 @@ const PHOTO_ROOT = 'assets/leadership';
  *  · `--avatar-radius` (círculo por defecto).
  *
  * La foto va con `cover`: en un retrato de cara recortar los bordes es lo
- * correcto (a diferencia de las fotos de grupo de las familias).
+ * correcto (a diferencia de las fotos de grupo de las familias). Todas son
+ * retrato 4:5 con la cabeza arriba, así que el encuadre se ancla cerca del
+ * borde superior (`--avatar-focus` para un hueco concreto).
+ *
+ * Nitidez: quien lo usa dice el tipo de hueco (`slot`, que acota los anchos
+ * del `srcset`; ver `PhotoSlot`) y `sizes` con el ancho al que se pinta (si el
+ * hueco es más alto que ancho, el que exige el alto: 0,8 × alto). El
+ * navegador multiplica por la densidad de la pantalla y descarga sólo ese
+ * fichero. `srcset`/`sizes`/`loading` van antes que `src` en la plantilla:
+ * Angular asigna en ese orden y así nunca arranca la descarga de la reserva.
  */
 @Component({
   selector: 'app-person-avatar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'avatar',
-    '[class.avatar--photo]': 'src() !== null',
+    '[class.avatar--photo]': '!!photo()',
     'aria-hidden': 'true',
   },
   template: `
-    @if (src(); as url) {
-      <img class="avatar__img" [src]="url" alt="" loading="lazy" decoding="async" />
+    @if (source(); as image) {
+      <img
+        class="avatar__img"
+        [attr.loading]="eager() ? 'eager' : 'lazy'"
+        [attr.fetchpriority]="eager() ? 'high' : null"
+        decoding="async"
+        [attr.sizes]="sizes()"
+        [attr.srcset]="image.srcset"
+        [width]="image.width"
+        [height]="image.height"
+        [src]="image.src"
+        alt=""
+      />
     } @else {
       <!-- Silueta de maqueta: cabeza y hombros apoyados en el borde inferior. -->
       <svg class="avatar__silhouette" viewBox="0 0 64 64" preserveAspectRatio="xMidYMax meet" focusable="false">
@@ -52,8 +70,8 @@ const PHOTO_ROOT = 'assets/leadership';
       width: 100%;
       height: 100%;
       object-fit: cover;
-      /* Retratos: al recortar, se conserva la cara (tercio superior). */
-      object-position: center 30%;
+      /* Retratos 4:5 con la cabeza arriba: al recortar, nunca se corta la cabeza. */
+      object-position: var(--avatar-focus, center 15%);
     }
 
     .avatar__silhouette {
@@ -64,11 +82,20 @@ const PHOTO_ROOT = 'assets/leadership';
   `,
 })
 export class PersonAvatarComponent {
-  /** Fichero en `assets/leadership/` (`Person.photo`), o nada. */
-  readonly photo = input<string | undefined>();
+  /** Foto de la persona (`personPhoto(id)`), o nada: silueta. */
+  readonly photo = input<PersonPhoto | undefined>();
 
-  protected readonly src = computed(() => {
-    const file = this.photo();
-    return file ? `${PHOTO_ROOT}/${file}` : null;
+  /** Tipo de hueco: acota los anchos ofrecidos (ver `PhotoSlot`). */
+  readonly slot = input<PhotoSlot>('small');
+
+  /** Ancho al que se pinta (atributo `sizes`); ver la nota de nitidez. */
+  readonly sizes = input('3rem');
+
+  /** Visible al cargar (cabecera del perfil): sin carga diferida y con prioridad. */
+  readonly eager = input(false, { transform: booleanAttribute });
+
+  protected readonly source = computed(() => {
+    const photo = this.photo();
+    return photo ? photoSource(photo, this.slot()) : null;
   });
 }

@@ -25,7 +25,12 @@
 >
   <!-- Web: foto a sangre en su columna, de arriba abajo. Proyección: foto
        entera; si el marco no coincide, el hueco lo rellena ella difuminada. -->
-  <div class="fcard__media">
+  <div
+    class="fcard__media"
+    [appViewable]="viewerItems"
+    [appViewableIndex]="viewerIndex"
+    [appViewableDisabled]="fullscreen()"
+  >
     <app-family-photo class="fcard__photo" [family]="family" [sizes]="sizes()" [detail]="true" [eager]="eager" />
   </div>
 

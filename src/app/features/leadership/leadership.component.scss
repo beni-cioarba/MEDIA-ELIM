@@ -106,7 +106,7 @@
 // ---------------------------------------------------------------------
 .featured {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -502,14 +502,13 @@
 }
 
 // ---------------------------------------------------------------------
-// Directorio · por departamentos
+// Directorio · por departamentos (tabla)
 // ---------------------------------------------------------------------
-// Las columnas las decide el componente (`--cols`, según el ancho real) y el
-// reparto `packColumns` (alto parecido). Con `columns:` de CSS, que llena en
-// orden, una columna acababa mucho más baja que la de al lado.
+// Dos columnas continuas (`splitInTwo`: orden de lectura, mitades parejas);
+// una sola por debajo de `lg`. Sin tarjetas estiradas ni huecos.
 .areas {
   display: grid;
-  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 0.75rem;
 }
@@ -521,19 +520,25 @@
 }
 
 .area {
-  padding: 0.7rem 0.8rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border: 1px solid var(--c-hairline);
   border-radius: $lead-radius;
   background: var(--c-surface);
 }
 
+// Cabecera del área: franja gris clara con filete, como la de una tabla.
 .area__title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.25rem;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--c-hairline);
+  background: var(--c-surface-2);
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--c-primary);
 }
@@ -549,26 +554,26 @@
 }
 
 .area__count {
-  min-width: 1.35rem;
-  padding: 0.05rem 0.4rem;
-  border-radius: 999px;
-  background: var(--c-veil);
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   color: var(--c-muted);
+  white-space: nowrap;
 }
 
-.area__depts {
+.area__table {
   margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
+// Una fila por departamento: nombre (columna fija) | quién sirve.
 .dept {
-  padding-block: 0.4rem;
+  display: grid;
+  // Columna del departamento de ancho fijo: la misma en todas las tarjetas.
+  grid-template-columns: 11rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.2rem 0.85rem;
+  padding: 0.45rem 0.9rem;
 
   & + & {
     border-top: 1px solid var(--c-hairline);
@@ -576,44 +581,43 @@
 }
 
 .dept__name {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--c-muted);
+  // Centrado con la primera persona (miniatura de 1,5rem).
+  padding-top: 0.2rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-text);
 }
 
+// Personas seguidas en la misma línea (la columna es ancha: casi siempre
+// cabe el departamento entero en una); nunca se corta un nombre.
 .dept__people {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.3rem 1rem;
+  margin: 0;
 }
 
+// Persona: miniatura + nombre como enlace de texto (sin cápsula) + rol.
 .who {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   max-width: 100%;
-  padding: 0.15rem 0.6rem 0.15rem 0.15rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: 999px;
-  background: var(--c-surface);
+  border-radius: 4px;
   color: inherit;
   text-decoration: none;
-  transition: $lead-transition;
 
-  &:hover {
-    border-color: var(--c-hairline-strong);
-    background: var(--c-veil);
+  &:hover .who__name {
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
-  @include lead-focus(1px);
+  @include lead-focus(2px);
 }
 
 .who__avatar {
-  --avatar-size: 1.6rem;
+  --avatar-size: 1.5rem;
 }
 
 .who__name {
@@ -624,8 +628,7 @@
 }
 
 .who__role {
-  font-size: 0.6875rem;
-  font-weight: 600;
+  font-size: 0.75rem;
   color: var(--c-muted);
   white-space: nowrap;
 }
@@ -738,6 +741,10 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .areas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .stats {
     width: 100%;
   }
@@ -842,5 +849,15 @@
 
   .people {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  // Departamento encima, personas debajo.
+  .dept {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.55rem 0.85rem;
+  }
+
+  .area__title {
+    padding: 0.55rem 0.85rem;
   }
 }

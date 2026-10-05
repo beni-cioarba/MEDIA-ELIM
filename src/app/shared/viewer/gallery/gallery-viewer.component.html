@@ -1,0 +1,199 @@
+<!--
+  Galería de imágenes (adaptada de `atm-gallery` de CemenWEB).
+  `<dialog>` modal: top layer, resto de la página inerte, `Esc` = cancel.
+-->
+<dialog
+  #dialog
+  class="mv"
+  [attr.aria-label]="'viewer.label' | translate"
+  (cancel)="onCancel($event)"
+  (close)="closed.emit()"
+  (keydown)="onKeydown($event)"
+>
+  <!-- Barra de progreso segmentada (estilo WhatsApp). El segmento activo se
+       llena durante la autorreproducción. -->
+  @if (multiple()) {
+    <div class="mv__progress" aria-hidden="true">
+      @for (it of items(); track $index; let i = $index) {
+        <span
+          class="mv__seg"
+          [class.mv__seg--done]="i < index()"
+          [class.mv__seg--active]="i === index()"
+          [class.mv__seg--playing]="i === index() && playing()"
+        ></span>
+      }
+    </div>
+  }
+
+  <button type="button" class="mv__close" (click)="close()" [attr.aria-label]="'viewer.close' | translate">
+    <app-icon name="close" />
+  </button>
+
+  <!-- ================= Escenario ================= -->
+  <div
+    #stage
+    class="mv__stage"
+    [class.mv__stage--zoomed]="zoomed()"
+    [class.mv__stage--doc]="kind() === 'pdf'"
+    (wheel)="onWheel($event)"
+    (dblclick)="onDoubleClick($event)"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  >
+    @if (kind() === 'pdf') {
+      @if (pdfInline) {
+        <iframe class="mv__pdf" [src]="pdfUrl()" [title]="title() ?? ('viewer.document' | translate)"></iframe>
+      } @else {
+        <div class="mv__fallback">
+          <app-icon name="book" class="mv__fallback-icon" />
+          <p>{{ 'viewer.pdf_fallback' | translate }}</p>
+          <a class="mv__btn-text" [href]="item().src" target="_blank" rel="noopener">
+            <app-icon name="external" /> {{ 'viewer.open_new' | translate }}
+          </a>
+        </div>
+      }
+    } @else {
+      @if (loading()) {
+        <span class="mv__spinner" role="status" [attr.aria-label]="'viewer.loading' | translate"></span>
+      }
+      @if (failed()) {
+        <p class="mv__error">{{ 'viewer.error' | translate }}</p>
+      } @else {
+        <img
+          #image
+          class="mv__img"
+          [class.mv__img--ready]="!loading()"
+          [class.mv__img--dragging]="dragging()"
+          [src]="item().src"
+          [attr.srcset]="item().srcset ?? null"
+          sizes="100vw"
+          [alt]="item().alt ?? title() ?? ''"
+          [style.transform]="transform()"
+          draggable="false"
+          (load)="loading.set(false)"
+          (error)="loading.set(false); failed.set(true)"
+        />
+      }
+    }
+
+    @if (multiple()) {
+      <button type="button" class="mv__nav mv__nav--prev" (click)="prev()" [attr.aria-label]="'viewer.prev' | translate">
+        <app-icon name="chevron-left" />
+      </button>
+      <button type="button" class="mv__nav mv__nav--next" (click)="next()" [attr.aria-label]="'viewer.next' | translate">
+        <app-icon name="chevron-right" />
+      </button>
+    }
+
+    <!-- Pie de foto sobre degradado (se oculta con zoom: estorbaría). -->
+    @if ((title() || item().description) && kind() === 'image' && !zoomed()) {
+      <div class="mv__caption">
+        @if (title()) {
+          <p class="mv__caption-title">{{ title() }}</p>
+        }
+        @if (item().description) {
+          <p class="mv__caption-desc">{{ item().description }}</p>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- ================= Miniaturas ================= -->
+  @if (showThumbs() && multiple()) {
+    <div #thumbs class="mv__thumbs">
+      @for (it of items(); track $index; let i = $index) {
+        <button
+          type="button"
+          class="mv__thumb"
+          [class.mv__thumb--active]="i === index()"
+          [attr.aria-current]="i === index() ? 'true' : null"
+          [attr.aria-label]="it.name ?? ('viewer.counter' | translate: { n: i + 1, total: items().length })"
+          (click)="go(i)"
+        >
+          <img [src]="it.thumb ?? it.src" alt="" loading="lazy" decoding="async" />
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ================= Barra inferior ================= -->
+  <footer class="mv__bar">
+    <div class="mv__bar-left">
+      @if (multiple()) {
+        <button
+          type="button"
+          class="mv__btn"
+          [class.mv__btn--on]="showThumbs()"
+          [attr.aria-pressed]="showThumbs()"
+          [attr.aria-label]="'viewer.thumbnails' | translate"
+          [title]="'viewer.thumbnails' | translate"
+          (click)="toggleThumbs()"
+        >
+          <app-icon name="grid" />
+        </button>
+        @if (kind() === 'image') {
+          <button
+            type="button"
+            class="mv__btn"
+            [class.mv__btn--on]="autoplay()"
+            [attr.aria-pressed]="autoplay()"
+            [attr.aria-label]="'viewer.autoplay' | translate"
+            [title]="'viewer.autoplay' | translate"
+            (click)="toggleAutoplay()"
+          >
+            <app-icon [name]="autoplay() ? 'pause' : 'play'" />
+          </button>
+        }
+        <span class="mv__sep" aria-hidden="true"></span>
+        <span class="mv__counter" aria-live="polite">
+          {{ 'viewer.counter' | translate: { n: index() + 1, total: items().length } }}
+        </span>
+      }
+      @if (title()) {
+        <span class="mv__info">{{ title() }}</span>
+      }
+      @if (date(); as d) {
+        <span class="mv__date">{{ d }}</span>
+      }
+    </div>
+
+    <div class="mv__bar-right">
+      @if (kind() === 'image') {
+        <button type="button" class="mv__btn mv__zoom-btn" (click)="zoomOut()" [disabled]="!zoomed()"
+                [attr.aria-label]="'viewer.zoom_out' | translate" [title]="'viewer.zoom_out' | translate">
+          <app-icon name="zoom-out" />
+        </button>
+        <button type="button" class="mv__btn mv__zoom" (click)="resetZoom()" [disabled]="!zoomed()"
+                [attr.aria-label]="'viewer.zoom_reset' | translate" [title]="'viewer.zoom_reset' | translate">
+          {{ (scale() * 100).toFixed(0) }}%
+        </button>
+        <button type="button" class="mv__btn mv__zoom-btn" (click)="zoomIn()" [disabled]="scale() >= maxScale"
+                [attr.aria-label]="'viewer.zoom_in' | translate" [title]="'viewer.zoom_in' | translate">
+          <app-icon name="zoom-in" />
+        </button>
+        <span class="mv__sep" aria-hidden="true"></span>
+      }
+      <a class="mv__btn" [href]="item().src" [attr.download]="downloadName()"
+         [attr.aria-label]="'viewer.download' | translate" [title]="'viewer.download' | translate">
+        <app-icon name="download" />
+      </a>
+      <a class="mv__btn" [href]="item().src" target="_blank" rel="noopener"
+         [attr.aria-label]="'viewer.open_new' | translate" [title]="'viewer.open_new' | translate">
+        <app-icon name="external" />
+      </a>
+      @if (canFullscreen) {
+        <button
+          type="button"
+          class="mv__btn"
+          (click)="toggleFullscreen()"
+          [attr.aria-label]="(fullscreen() ? 'viewer.exit_fullscreen' : 'viewer.fullscreen') | translate"
+          [title]="(fullscreen() ? 'viewer.exit_fullscreen' : 'viewer.fullscreen') | translate"
+        >
+          <app-icon [name]="fullscreen() ? 'fullscreen-exit' : 'fullscreen'" />
+        </button>
+      }
+    </div>
+  </footer>
+</dialog>

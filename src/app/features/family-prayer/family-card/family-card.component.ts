@@ -17,6 +17,8 @@ import {
 } from '../../../core/services/family-prayer.service';
 import { FitToBoxDirective } from '../../../shared/fit-to-box/fit-to-box.directive';
 import { FamilyPhotoComponent } from '../family-photo/family-photo.component';
+import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
+import { ViewableDirective } from '../../../shared/viewer/viewable.directive';
 
 /** A partir de esta proporción (ancho / alto) la foto se trata como apaisada. */
 const LANDSCAPE_RATIO = 1.2;
@@ -86,7 +88,7 @@ const MIN_PHOTO_HEIGHT_VH = 0.55;
  */
 @Component({
   selector: 'app-family-card',
-  imports: [TranslatePipe, FitToBoxDirective, FamilyPhotoComponent],
+  imports: [TranslatePipe, FitToBoxDirective, FamilyPhotoComponent, ViewableDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: './family-card.component.html',
@@ -98,6 +100,14 @@ export class FamilyCardComponent {
   protected readonly fullscreen = inject(PresentationService).isFullscreen;
 
   @Input({ required: true }) family!: PrayerFamilyView;
+
+  /**
+   * Documentos que abre la foto en el visor (todas las fotos de la semana,
+   * para pasar de una familia a otra) y la posición de esta familia. Sólo en la web: en la proyección el
+   * visor queda desactivado.
+   */
+  @Input() viewerItems: readonly ViewerDocument[] | null = null;
+  @Input() viewerIndex = 0;
   /** Primera ficha visible al abrir: su foto no se difiere. */
   @Input() eager = false;
 

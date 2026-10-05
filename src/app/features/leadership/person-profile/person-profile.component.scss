@@ -458,6 +458,9 @@
   }
 
   .hero__photo {
+    // En 16:10 sólo cabe media foto: se ancla arriba para no cortar la cabeza.
+    --avatar-focus: center 4%;
+
     grid-area: photo;
     aspect-ratio: 16 / 10;
   }

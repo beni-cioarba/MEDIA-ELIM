@@ -39,7 +39,7 @@
     @for (item of featured; track item.card.id) {
       <a class="feature" [class.feature--pastor]="item.card.tier === 'pastor'" [routerLink]="item.card.link">
         <span class="feature__photo">
-          <app-person-avatar [photo]="item.card.photo" />
+          <app-person-avatar slot="card" [photo]="item.card.photo" sizes="(max-width: 860px) 9rem, 14rem" />
         </span>
         <span class="feature__body">
           <span class="feature__kicker">{{ 'leadership.tier.' + item.card.tier | translate }}</span>
@@ -73,7 +73,7 @@
         <li>
           <a class="tile" [routerLink]="person.link">
             <span class="tile__photo">
-              <app-person-avatar [photo]="person.photo" />
+              <app-person-avatar slot="card" [photo]="person.photo" sizes="(max-width: 860px) 4rem, 12rem" />
             </span>
             <span class="tile__body">
               <span class="tile__name">{{ person.name }}</span>
@@ -117,7 +117,7 @@
         <li>
           <a class="tile" [routerLink]="person.link">
             <span class="tile__photo">
-              <app-person-avatar [photo]="person.photo" />
+              <app-person-avatar slot="card" [photo]="person.photo" sizes="9rem" />
             </span>
             <span class="tile__body">
               <span class="tile__name">{{ person.name }}</span>
@@ -212,7 +212,7 @@
           <li>
             <a class="row" [routerLink]="person.link">
               <span class="row__photo">
-                <app-person-avatar [photo]="person.photo" />
+                <app-person-avatar [photo]="person.photo" sizes="4rem" />
               </span>
               <span class="row__text">
                 <span class="row__name">
@@ -238,8 +238,12 @@
         }
       </ul>
     } @else {
-      <!-- Vista por departamentos: columnas de alto parecido (`packColumns`). -->
-      <div class="areas" #areasEl [style.--cols]="areaColumns().length">
+      <!-- Vista por departamentos: directorio en tabla. Dos columnas
+           continuas (orden de lectura, `splitInTwo`); dentro de cada área,
+           una fila por departamento: nombre a la izquierda, quién sirve a la
+           derecha. `dl`: el departamento es el término y las personas, su
+           descripción. -->
+      <div class="areas">
         @for (column of areaColumns(); track $index) {
           <div class="areas__col">
             @for (area of column; track area.id) {
@@ -247,16 +251,18 @@
                 <h3 class="area__title" [id]="'area-' + area.id">
                   <app-icon class="area__icon" [name]="area.icon" />
                   <span class="area__name">{{ 'leadership.areas.' + area.i18nKey + '.name' | translate }}</span>
-                  <span class="area__count">{{ area.departments.length }}</span>
+                  <span class="area__count">
+                    {{ (area.departments.length === 1 ? 'leadership.directory.departments_one' : 'leadership.directory.departments_other') | translate: { n: area.departments.length } }}
+                  </span>
                 </h3>
-                <ul class="area__depts" role="list">
+                <dl class="area__table">
                   @for (department of area.departments; track department.id) {
-                    <li class="dept">
-                      <span class="dept__name">{{ 'leadership.departments.' + department.i18nKey | translate }}</span>
-                      <span class="dept__people">
+                    <div class="dept">
+                      <dt class="dept__name">{{ 'leadership.departments.' + department.i18nKey | translate }}</dt>
+                      <dd class="dept__people">
                         @for (member of department.members; track member.card.id) {
                           <a class="who" [routerLink]="member.card.link">
-                            <app-person-avatar class="who__avatar" [photo]="member.card.photo" />
+                            <app-person-avatar class="who__avatar" slot="tiny" [photo]="member.card.photo" sizes="1.5rem" />
                             <span class="who__name">
                               @for (part of member.card.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
                             </span>
@@ -269,10 +275,10 @@
                             }
                           </a>
                         }
-                      </span>
-                    </li>
+                      </dd>
+                    </div>
                   }
-                </ul>
+                </dl>
               </section>
             }
           </div>

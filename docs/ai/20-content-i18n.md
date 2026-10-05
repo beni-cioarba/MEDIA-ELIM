@@ -82,7 +82,7 @@ calcula solo recorriendo la estructura.
 | Añadir un departamento         | Meterlo en su `ServiceArea` + clave `leadership.departments.<id>` en es/ro |
 | Añadir un cargo permanente     | Valor en `PersonTitle` + clave `leadership.titles.*`                       |
 | Añadir una función interna     | Valor en `ServiceRole` + clave `leadership.roles.*`                        |
-| Poner la foto de alguien       | Fichero cuadrado (≥ 400 px, cara centrada, WebP) en `src/assets/leadership/<id>.webp` + `photo: '<id>.webp'` en su entrada de `PEOPLE` |
+| Poner la foto de alguien       | `node scripts/import-leadership-photos.mjs "<carpeta>"` (fichero «Nombre Apellido.jpg»; ver abajo). No se toca `PEOPLE` |
 
 **Página «Conducere»** (rediseño del 29/09/2026, de 4.200 a ~1.850 px en
 escritorio): tres bloques — conducerea **por personas** (cada una una vez,
@@ -116,15 +116,31 @@ aprovechando el espacio para imágenes y textos):
   conducerea en tarjetas con foto cuadrada (en móvil, filas con la foto a la
   izquierda). Comité con las mismas tarjetas en pequeño (`tiles--compact`,
   `auto-fit`: los nueve llenan el ancho; en móvil 3 × 3). Directorio con dos
-  vistas (departamentos / personas). Por departamentos: tantas columnas como
-  quepan (1–5, medidas con `ResizeObserver`) y áreas repartidas por alto
-  estimado (`packColumns` + `areaWeight`, LPT) — las `columns:` de CSS llenan
-  en orden y dejaban una columna mucho más baja.
+  vistas (departamentos / personas). Por departamentos = **directorio en tabla**
+  (petición del usuario: «más serio y mejor estructurado»): cada área es una
+  cabecera gris + una fila por departamento (`dl`: nombre en columna fija de
+  11rem | personas en línea, enlaces de texto con miniatura y rol en gris,
+  nunca cortados). Dos columnas continuas en orden de lectura, partidas por
+  el punto que las deja más parejas (`splitInTwo`); una sola por debajo de
+  `lg`; en móvil el departamento va encima de las personas. Se descartaron el
+  mosaico de píldoras (informal) y la rejilla de tarjetas alineadas (tarjetas
+  estiradas con huecos).
 - Perfil: cabecera con la foto a sangre (móvil: arriba a todo el ancho, 16:10);
   el del pastor en navy liso. Relato (biografía, versículo en Playfair,
   explicaciones) + columna con dónde sirve y con quién; anterior / siguiente.
 - Avatar sin foto = silueta gris sobre gris claro (`person-avatar`, sin
   tamaño propio: lo pone el contenedor con `--avatar-size` o al 100 %).
+- **Fotos de perfil** (05/10/2026): `scripts/import-leadership-photos.mjs`
+  recorta a retrato 4:5 (lados con `attention`, nunca la cabeza), genera
+  160 · 320 · 640 · 960 · 1600 px en WebP q90 sin metadatos y regenera
+  `core/leadership-photos.generated.ts`; `personPhoto(id)` (`person-photo.ts`)
+  y `photoSource(photo, slot)` monta `src`/`srcset`. Cada uso del avatar pasa
+  `slot` (`tiny` ≤160 · `small` ≤320 · `card` 320–640 · `hero` 320–960; el visor,
+  todas) y `sizes` (ancho pintado, o 0,8 × alto si el hueco es más alto que
+  ancho); la cabecera del perfil va `eager`. Los rangos existen porque Chrome
+  reutiliza una variante mayor ya en memoria: tras abrir el visor, una tarjeta
+  pintaba la de 1600 px reducida ×8 → muaré en trajes y listones. Encuadre `--avatar-focus` (15 % por defecto, 4 % en la cabecera
+  16:10 del móvil). Una foto de < 640 px de ancho sale con aviso: pedir otra.
 - Estilos comunes en `features/leadership/_leadership-shared.scss`.
 
 *Arquitectura*:

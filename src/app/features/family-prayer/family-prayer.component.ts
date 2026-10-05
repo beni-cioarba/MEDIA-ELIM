@@ -12,7 +12,8 @@ import {
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NgTemplateOutlet } from '@angular/common';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import {
@@ -236,6 +237,53 @@ export class FamilyPrayerComponent {
   }
 
   /** Enlace público de la semana (siempre con fecha: no cambia de contenido). */
+  private readonly translate = inject(TranslateService);
+
+  /**
+   * Fotos de una semana para el visor documental (`[appViewable]` de cada
+   * ficha): las familias con foto, en su orden, con nombre, hijos, semana y
+   * fecha; desde una se pasa a las demás. Se calcula una vez por semana e
+   * idioma (la plantilla la pide en cada ficha).
+   */
+  private readonly media = new WeakMap<PrayerWeekView, { lang: string; items: readonly ViewerDocument[] }>();
+
+  protected weekMedia(week: PrayerWeekView): readonly ViewerDocument[] {
+    const lang = this.translate.getCurrentLang() ?? '';
+    const cached = this.media.get(week);
+    if (cached?.lang === lang) return cached.items;
+    const section = this.translate.instant('family_prayer.title') as string;
+    const range = this.prayer.formatRange(week);
+    const items = week.families.flatMap((family): ViewerDocument[] => {
+      const photo = family.photo;
+      if (!photo) return [];
+      const childrenLabel = this.translate.instant(
+        family.children.length === 1 ? 'family_prayer.children_one' : 'family_prayer.children_other',
+      ) as string;
+      return [
+        {
+          src: photo.src,
+          mimeType: 'image/webp',
+          srcset: photo.srcset,
+          thumb: photo.thumb,
+          name: family.fullName,
+          alt: this.translate.instant('family_prayer.photo_alt', { name: family.fullName }) as string,
+          date: week.presentedOn,
+          meta: [section],
+          description: family.children.length ? `${childrenLabel}: ${family.children.join(', ')}` : undefined,
+          details: [{ label: this.translate.instant('doc_viewer.field_week') as string, value: range }],
+          downloadName: `${family.id}-${week.presentedOn}.webp`,
+        },
+      ];
+    });
+    this.media.set(week, { lang, items });
+    return items;
+  }
+
+  /** Posición de la foto de una familia en la galería de su semana. */
+  protected mediaIndex(week: PrayerWeekView, family: PrayerFamilyView): number {
+    return this.weekMedia(week).findIndex((item) => item.src === family.photo?.src);
+  }
+
   protected weekUrl(week: PrayerWeekView): string {
     return `${this.config.publicUrl.replace(/\/$/, '')}${this.weekLink(week)}`;
   }

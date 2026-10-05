@@ -1,0 +1,499 @@
+// =====================================================================
+// Visor de imágenes y documentos — adaptado de la galería de CemenWEB
+// (`_atm_gallery.scss`): negro a pantalla completa, barra de progreso
+// segmentada arriba, X arriba a la derecha, pie de foto sobre degradado y
+// barra inferior oscura con los controles.
+//
+// Superficie propia, siempre oscura (en cualquier página y tema): una foto
+// se mira mejor sobre negro. Colores fijos a propósito: no dependen de la
+// marca ni del tema de la página que lo abre.
+// =====================================================================
+
+$bg: #000;
+$bar: #0f172a;
+$fg: #fff;
+$fg-muted: rgb(255 255 255 / 0.72);
+$hover: rgb(255 255 255 / 0.12);
+$focus: rgb(255 255 255 / 0.9);
+$ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+:host {
+  display: contents;
+}
+
+// El `<dialog>` ocupa la ventana entera (sin márgenes ni bordes del UA).
+.mv {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: $bg;
+  color: $fg;
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: $bg;
+  }
+
+  &[open] {
+    animation: mv-in 220ms $ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[open] {
+      animation: none;
+    }
+  }
+}
+
+@keyframes mv-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+// Foco visible en todos los controles.
+button,
+a {
+  &:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Progreso (estilo WhatsApp) y cerrar
+// ---------------------------------------------------------------------
+.mv__progress {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  display: flex;
+  gap: 3px;
+  padding: 8px 64px 0 12px;
+  pointer-events: none;
+}
+
+.mv__seg {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.25);
+
+  &--done {
+    background: rgb(255 255 255 / 0.6);
+  }
+
+  &--active {
+    background: rgb(255 255 255 / 0.95);
+  }
+
+  // Autorreproducción: el segmento activo se llena en lo que dura la imagen.
+  &--playing {
+    background: rgb(255 255 255 / 0.25);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgb(255 255 255 / 0.95);
+      transform-origin: left;
+      animation: mv-fill 4s linear forwards;
+    }
+  }
+}
+
+@keyframes mv-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.mv__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.12);
+  color: $fg;
+  font-size: 1.15rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 150ms ease;
+
+  &:hover {
+    background: rgb(255 255 255 / 0.25);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Escenario
+// ---------------------------------------------------------------------
+.mv__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  cursor: zoom-in;
+
+  // Documento: franja superior propia para la X, que si no tapaba la barra
+  // de herramientas del visor de PDF del navegador.
+  &--doc {
+    padding-top: 64px;
+    cursor: default;
+  }
+
+  &--zoomed {
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.mv__img {
+  grid-area: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform-origin: center;
+  transition:
+    transform 180ms $ease,
+    opacity 200ms ease;
+  will-change: transform;
+
+  &--ready {
+    opacity: 1;
+  }
+
+  &--dragging {
+    transition: opacity 200ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.mv__pdf {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.mv__spinner {
+  grid-area: 1 / 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 3px solid rgb(255 255 255 / 0.2);
+  border-top-color: $fg;
+  border-radius: 50%;
+  animation: mv-spin 0.8s linear infinite;
+}
+
+@keyframes mv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mv__error,
+.mv__fallback {
+  grid-area: 1 / 1;
+  max-width: 28rem;
+  margin: 0;
+  padding: 1rem;
+  color: $fg-muted;
+  text-align: center;
+}
+
+.mv__fallback {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+.mv__fallback-icon {
+  font-size: 2.5rem;
+  opacity: 0.6;
+}
+
+.mv__btn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 8px;
+  color: $fg;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    background: $hover;
+  }
+}
+
+// Flechas laterales.
+.mv__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.45);
+  color: $fg;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 150ms ease;
+
+  &:hover {
+    background: rgb(0 0 0 / 0.7);
+  }
+
+  &--prev {
+    left: 12px;
+  }
+
+  &--next {
+    right: 12px;
+  }
+}
+
+// Pie de foto sobre degradado (como en CemenWEB).
+.mv__caption {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+  padding: 2.5rem 1.25rem 0.9rem;
+  background: linear-gradient(0deg, rgb(0 0 0 / 0.7) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.mv__caption-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mv__caption-desc {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: $fg-muted;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+// ---------------------------------------------------------------------
+// Miniaturas
+// ---------------------------------------------------------------------
+.mv__thumbs {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  background: #0b0b0b;
+  scrollbar-width: thin;
+}
+
+.mv__thumb {
+  flex: none;
+  width: 80px;
+  height: 56px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: #1a1a1a;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &--active {
+    border-color: $fg;
+    opacity: 1;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Barra inferior
+// ---------------------------------------------------------------------
+.mv__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0 8px env(safe-area-inset-bottom);
+  background: $bar;
+}
+
+.mv__bar-left,
+.mv__bar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mv__bar-left {
+  flex: 1;
+  overflow: hidden;
+}
+
+.mv__bar-right {
+  flex: none;
+}
+
+.mv__btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: $fg-muted;
+  font: inherit;
+  font-size: 1.1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+
+  &:hover:not(:disabled) {
+    background: $hover;
+    color: $fg;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &--on {
+    color: $fg;
+    background: rgb(255 255 255 / 0.16);
+  }
+}
+
+.mv__zoom {
+  min-width: 52px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mv__sep {
+  flex: none;
+  width: 1px;
+  height: 18px;
+  margin: 0 6px;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.mv__counter {
+  flex: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mv__info {
+  min-width: 0;
+  margin-inline-start: 0.75rem;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mv__date {
+  flex: none;
+  margin-inline-start: 0.75rem;
+  font-size: 0.75rem;
+  color: $fg-muted;
+}
+
+// ---------------------------------------------------------------------
+// Móvil: menos controles a la vista (zoom con los dedos; sin título en la
+// barra, ya va en el pie de foto) y flechas más pequeñas.
+// ---------------------------------------------------------------------
+@media (max-width: 640px) {
+  .mv__info,
+  .mv__date,
+  .mv__zoom,
+  .mv__bar-right .mv__sep {
+    display: none;
+  }
+
+  .mv__nav {
+    width: 38px;
+    height: 38px;
+    font-size: 1.2rem;
+  }
+
+  .mv__thumb {
+    width: 64px;
+    height: 46px;
+  }
+}
+
+@media (hover: none) {
+  // Con los dedos el zoom es el pellizco: los botones de zoom sobran.
+  .mv__zoom-btn {
+    display: none;
+  }
+}

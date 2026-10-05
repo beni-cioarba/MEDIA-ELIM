@@ -22,7 +22,10 @@ import { PLACEHOLDER_STORIES, PERSON_STORIES, storyOf } from '../../../core/lead
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { PERSON_CARDS, PersonCard, cardOf, servicePostings } from '../leadership.view';
+import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
+import { ViewableDirective } from '../../../shared/viewer/viewable.directive';
 import { PersonAvatarComponent } from '../person-avatar/person-avatar.component';
+import { photoSource, photoThumb } from '../person-photo';
 
 /** Puestos de una persona en un área, para la columna «Unde slujește». */
 interface AreaPostings {
@@ -55,6 +58,7 @@ const COMMITTEE = new Set<PersonId>(CHURCH_COMMITTEE);
     IconComponent,
     PersonAvatarComponent,
     CopyButtonComponent,
+    ViewableDirective,
   ],
   templateUrl: './person-profile.component.html',
   styleUrl: './person-profile.component.scss',
@@ -76,6 +80,14 @@ export class PersonProfileComponent {
   protected readonly card = computed(() => cardOf(this.id()));
 
   protected readonly story = computed(() => storyOf(this.person()));
+
+  /** Retrato para el visor; sin foto real (silueta de maqueta), nada. */
+  protected readonly photoItem = computed<ViewerDocument | null>(() => {
+    const { photo, name } = this.card();
+    if (!photo) return null;
+    const { src, srcset } = photoSource(photo, null);
+    return { src, srcset, thumb: photoThumb(photo), name, alt: name };
+  });
 
   /** ¿El texto que se ve es de maqueta? (aviso discreto al pie del relato). */
   protected readonly isPlaceholder = computed(() => PLACEHOLDER_STORIES && !PERSON_STORIES[this.id()]);

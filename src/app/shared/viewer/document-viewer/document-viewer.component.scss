@@ -1,0 +1,374 @@
+// =====================================================================
+// Visor universal de documentos — shell (adaptado de
+// `visor-documento.component.scss` de CemenWEB).
+//
+// Dos temas por variables `--dv-*`: claro (embebido en una página) y oscuro
+// (`.dv--overlay`, pantalla completa, estilo visor profesional). El cromo es
+// una sola barra compacta para dar la máxima superficie al contenido. Los
+// motores leen las mismas variables, así que siguen el tema solos.
+// =====================================================================
+
+:host {
+  // Tema claro (embebido).
+  --dv-bg: #f4f5f7;
+  --dv-bar: #f8f9fa;
+  --dv-line: #dee2e6;
+  --dv-line-strong: #c4cad1;
+  --dv-fg: #1f2933;
+  --dv-muted: #5f6b77;
+  --dv-hover: #e9ecef;
+  --dv-on: #e2e8f0;
+  --dv-track: rgb(0 0 0 / 0.12);
+  --dv-focus: #1a365d;
+  --dv-accent: #1a365d;
+  --dv-on-accent: #fff;
+  --dv-danger: #dc2626;
+  --dv-panel: #fff;
+  --dv-paper: #fff;
+  --dv-paper-fg: #1f2933;
+
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+// Tema oscuro (overlay a pantalla completa).
+:host(.dv--overlay) {
+  --dv-bg: #16181a;
+  --dv-bar: rgb(24 26 28 / 0.97);
+  --dv-line: rgb(255 255 255 / 0.08);
+  --dv-line-strong: rgb(255 255 255 / 0.28);
+  --dv-fg: #f4f5f6;
+  --dv-muted: rgb(255 255 255 / 0.62);
+  --dv-hover: rgb(255 255 255 / 0.14);
+  --dv-on: rgb(255 255 255 / 0.18);
+  --dv-track: rgb(255 255 255 / 0.2);
+  --dv-focus: #fff;
+  --dv-accent: #fff;
+  --dv-on-accent: #111;
+  --dv-danger: #f87171;
+  --dv-panel: #1e2123;
+  --dv-paper: #1e2123;
+  --dv-paper-fg: #e9eaeb;
+}
+
+.dv {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--dv-bg);
+  color: var(--dv-fg);
+}
+
+// ---------------------------------------------------------------------
+// Barra única compacta
+// ---------------------------------------------------------------------
+.dv__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--dv-line);
+  background: var(--dv-bar);
+}
+
+// Insignia del tipo de fichero (color por familia).
+.dv__badge {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.dv__id {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.dv__name {
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dv__meta {
+  overflow: hidden;
+  font-size: 0.75rem;
+  color: var(--dv-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Distintivo de estado (en CemenWEB, el de firma electrónica).
+.dv__status {
+  flex: none;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgb(148 163 184 / 0.25);
+  color: var(--dv-fg);
+
+  &[data-tone='info'] {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  &[data-tone='success'] {
+    background: #16a34a;
+    color: #fff;
+  }
+
+  &[data-tone='warning'] {
+    background: #d97706;
+    color: #fff;
+  }
+
+  &[data-tone='danger'] {
+    background: #dc2626;
+    color: #fff;
+  }
+}
+
+.dv__spacer {
+  flex: 1 1 auto;
+}
+
+.dv__position {
+  flex: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--dv-muted);
+}
+
+.dv__tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.dv__zoom {
+  min-width: 3.4rem;
+  font-size: 0.78rem;
+  color: var(--dv-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.dv__sep {
+  flex: none;
+  width: 1px;
+  height: 1.4rem;
+  margin: 0 0.25rem;
+  background: var(--dv-line-strong);
+  opacity: 0.6;
+}
+
+.dv__btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dv-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover:not(:disabled) {
+    background: var(--dv-hover);
+    color: var(--dv-fg);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dv-focus);
+    outline-offset: 1px;
+  }
+
+  &--on {
+    background: var(--dv-on);
+    color: var(--dv-fg);
+  }
+
+  &--close:hover:not(:disabled) {
+    background: #dc2626;
+    color: #fff;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Cuerpo
+// ---------------------------------------------------------------------
+.dv__body {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.dv__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// Flechas entre documentos, superpuestas a los lados.
+.dv__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--dv-hover);
+  color: var(--dv-fg);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color 120ms ease,
+    opacity 120ms ease;
+
+  &--prev {
+    left: 0.85rem;
+  }
+
+  &--next {
+    right: 0.85rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--dv-line-strong);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dv-focus);
+    outline-offset: 2px;
+  }
+}
+
+// Panel de información: cajón a la derecha, superpuesto.
+.dv__panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 7;
+  width: 300px;
+  max-width: 85%;
+  padding: 0.9rem 1rem;
+  overflow: auto;
+  border-left: 1px solid var(--dv-line);
+  background: var(--dv-panel);
+  box-shadow: -6px 0 24px rgb(0 0 0 / 0.35);
+}
+
+.dv__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.dv__panel-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dv-muted);
+}
+
+.dv__dl {
+  margin: 0;
+
+  dt {
+    margin-top: 0.7rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--dv-muted);
+  }
+
+  dd {
+    margin: 0.15rem 0 0;
+    font-size: 0.875rem;
+    word-break: break-word;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Móvil: la barra no cabe entera → fuera lo secundario (imprimir, abrir
+// fuera, información) y los datos del fichero; el nombre se recorta.
+// ---------------------------------------------------------------------
+@media (max-width: 640px) {
+  .dv__meta,
+  .dv__status,
+  .dv__zoom,
+  .dv__btn--secondary,
+  .dv__sep {
+    display: none;
+  }
+
+  .dv__bar {
+    gap: 0.4rem;
+    padding-inline: 0.4rem;
+  }
+
+  .dv__nav {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.1rem;
+
+    &--prev {
+      left: 0.4rem;
+    }
+
+    &--next {
+      right: 0.4rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dv__btn,
+  .dv__nav {
+    transition: none;
+  }
+}

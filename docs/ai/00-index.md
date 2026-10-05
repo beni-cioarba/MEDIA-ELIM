@@ -93,6 +93,7 @@ src/app/
     floating-actions/ calendar-sync-button/ presentation-settings/
     page-section/ hero-carousel/ card-carousel/
     doc-toc/                ⭐ Índice lateral con seguimiento del apartado activo (documentos largos)
+    viewer/                 ⭐ Visor documental (imagen/PDF/vídeo/texto) + galería + `[appViewable]` — `49-viewer.md`
     styles/                 Parciales SCSS compartidos (botones, page-hero)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
 src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
@@ -132,6 +133,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |
 | «Color, espaciado, tipografía, componente Material» | `docs/ai/45-design-system.md`                           |
 | «¿Qué clase uso?» · «Necesito una tarjeta / fila / barra» | Abre **`/stil`** y usa la primitiva `ui-*`; catálogo y reglas en `docs/ai/47-design-language.md` |
+| «Ver una foto / un PDF a pantalla completa» · «visor de documentos» | `[appViewable]` o `DocumentViewerService.open` — `docs/ai/49-viewer.md` |
 | «Monto un carrusel o un bloque de escaparate» | `docs/ai/48-carousel-cards.md` — **línea nueva**, calcada de la referencia medida; manda sobre el catálogo dentro de un carrusel o una tarjeta de promoción |
 | «Una página larga que hay que poder recorrer» · «Índice / cuprins» | `<app-doc-toc>` (`shared/doc-toc/`): le pasas las entradas ya traducidas y él pone la columna fija, el seguimiento del apartado activo y el plegable de móvil. El anfitrión escucha `(select)` para preparar el destino. Decisiones 34-38 de `docs/ai/47-design-language.md` |
 | «Módulo de gestión nuevo (consola)»                 | `host: { class: 'ui-dense ui-dark' }` + `ui-toolbar` + `ui-panel` — `docs/ai/47-design-language.md` |
