@@ -114,8 +114,12 @@ aprovechando el espacio para imágenes y textos):
 - Jerarquía por tamaño y posición: **pastor** en la tarjeta principal, navy
   liso y foto mayor; **pastor asistente** al lado en claro; el resto de la
   conducerea en tarjetas con foto cuadrada (en móvil, filas con la foto a la
-  izquierda). Comité en tira de avatares. Directorio con dos vistas
-  (departamentos / personas).
+  izquierda). Comité con las mismas tarjetas en pequeño (`tiles--compact`,
+  `auto-fit`: los nueve llenan el ancho; en móvil 3 × 3). Directorio con dos
+  vistas (departamentos / personas). Por departamentos: tantas columnas como
+  quepan (1–5, medidas con `ResizeObserver`) y áreas repartidas por alto
+  estimado (`packColumns` + `areaWeight`, LPT) — las `columns:` de CSS llenan
+  en orden y dejaban una columna mucho más baja.
 - Perfil: cabecera con la foto a sangre (móvil: arriba a todo el ancho, 16:10);
   el del pastor en navy liso. Relato (biografía, versículo en Playfair,
   explicaciones) + columna con dónde sirve y con quién; anterior / siguiente.

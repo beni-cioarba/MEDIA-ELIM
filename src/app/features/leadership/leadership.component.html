@@ -103,18 +103,30 @@
     </p>
   </section>
 
-  <!-- ================= Comitetul Bisericii ================= -->
-  <section class="committee" aria-labelledby="committee-title">
-    <div class="committee__head">
+  <!-- ================= Comitetul Bisericii =================
+       Las mismas tarjetas con foto a sangre que la conducerea, más
+       pequeñas: los nueve llenan el ancho. Bajo el nombre, su cargo
+       permanente (el acta no reparte funciones dentro del comité). -->
+  <section aria-labelledby="committee-title">
+    <div class="head">
       <h2 class="head__title" id="committee-title">{{ 'leadership.committee.title' | translate }}</h2>
       <p class="head__sub">{{ 'leadership.committee.subtitle' | translate }}</p>
     </div>
-    <ul class="committee__list" role="list">
+    <ul class="tiles tiles--compact" role="list">
       @for (person of committee; track person.id) {
         <li>
-          <a class="member" [routerLink]="person.link">
-            <app-person-avatar class="member__avatar" [photo]="person.photo" />
-            <span class="member__name">{{ person.name }}</span>
+          <a class="tile" [routerLink]="person.link">
+            <span class="tile__photo">
+              <app-person-avatar [photo]="person.photo" />
+            </span>
+            <span class="tile__body">
+              <span class="tile__name">{{ person.name }}</span>
+              <span class="tile__titles">
+                @for (title of person.titles; track title; let last = $last) {
+                  {{ 'leadership.titles.' + title | translate }}{{ last ? '' : ' · ' }}
+                }
+              </span>
+            </span>
           </a>
         </li>
       }
@@ -226,40 +238,44 @@
         }
       </ul>
     } @else {
-      <!-- Vista por departamentos: paneles en columnas (mampostería). -->
-      <div class="areas">
-        @for (area of directory(); track area.id) {
-          <section class="area" [attr.aria-labelledby]="'area-' + area.id">
-            <h3 class="area__title" [id]="'area-' + area.id">
-              <app-icon class="area__icon" [name]="area.icon" />
-              <span class="area__name">{{ 'leadership.areas.' + area.i18nKey + '.name' | translate }}</span>
-              <span class="area__count">{{ area.departments.length }}</span>
-            </h3>
-            <ul class="area__depts" role="list">
-              @for (department of area.departments; track department.id) {
-                <li class="dept">
-                  <span class="dept__name">{{ 'leadership.departments.' + department.i18nKey | translate }}</span>
-                  <span class="dept__people">
-                    @for (member of department.members; track member.card.id) {
-                      <a class="who" [routerLink]="member.card.link">
-                        <app-person-avatar class="who__avatar" [photo]="member.card.photo" />
-                        <span class="who__name">
-                          @for (part of member.card.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
-                        </span>
-                        @if (member.roles; as roles) {
-                          <span class="who__role">
-                            @for (role of roles; track role; let last = $last) {
-                              {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
+      <!-- Vista por departamentos: columnas de alto parecido (`packColumns`). -->
+      <div class="areas" #areasEl [style.--cols]="areaColumns().length">
+        @for (column of areaColumns(); track $index) {
+          <div class="areas__col">
+            @for (area of column; track area.id) {
+              <section class="area" [attr.aria-labelledby]="'area-' + area.id">
+                <h3 class="area__title" [id]="'area-' + area.id">
+                  <app-icon class="area__icon" [name]="area.icon" />
+                  <span class="area__name">{{ 'leadership.areas.' + area.i18nKey + '.name' | translate }}</span>
+                  <span class="area__count">{{ area.departments.length }}</span>
+                </h3>
+                <ul class="area__depts" role="list">
+                  @for (department of area.departments; track department.id) {
+                    <li class="dept">
+                      <span class="dept__name">{{ 'leadership.departments.' + department.i18nKey | translate }}</span>
+                      <span class="dept__people">
+                        @for (member of department.members; track member.card.id) {
+                          <a class="who" [routerLink]="member.card.link">
+                            <app-person-avatar class="who__avatar" [photo]="member.card.photo" />
+                            <span class="who__name">
+                              @for (part of member.card.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
+                            </span>
+                            @if (member.roles; as roles) {
+                              <span class="who__role">
+                                @for (role of roles; track role; let last = $last) {
+                                  {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
+                                }
+                              </span>
                             }
-                          </span>
+                          </a>
                         }
-                      </a>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
-          </section>
+                      </span>
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+          </div>
         }
       </div>
     }

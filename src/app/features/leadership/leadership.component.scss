@@ -313,58 +313,23 @@
   @include lead-focus;
 }
 
-// ---------------------------------------------------------------------
-// Comité: tira de avatares
-// ---------------------------------------------------------------------
-.committee {
-  display: grid;
-  grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr);
-  align-items: center;
-  gap: 0.75rem 1.5rem;
-  padding: 0.9rem 1.1rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: $lead-radius;
-  background: var(--c-surface);
-}
+// Comité: las mismas tarjetas, más pequeñas. `auto-fit` estira las nueve
+// para llenar el ancho (con `auto-fill` quedaban huecos a la derecha).
+.tiles--compact {
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.5rem;
 
-.committee__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.member {
-  display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-  height: 100%;
-  padding: 0.35rem 0.2rem;
-  border-radius: 8px;
-  color: inherit;
-  text-align: center;
-  text-decoration: none;
-  transition: $lead-transition;
-
-  &:hover {
-    background: var(--c-veil);
+  .tile__body {
+    padding: 0.45rem 0.55rem 0.55rem;
   }
 
-  @include lead-focus(1px);
-}
+  .tile__name {
+    font-size: 0.8125rem;
+  }
 
-.member__avatar {
-  --avatar-size: 2.75rem;
-}
-
-.member__name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--c-primary);
-  text-wrap: balance;
+  .tile__titles {
+    font-size: 0.6875rem;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -537,17 +502,26 @@
 }
 
 // ---------------------------------------------------------------------
-// Directorio · por departamentos (paneles en columnas)
+// Directorio · por departamentos
 // ---------------------------------------------------------------------
+// Las columnas las decide el componente (`--cols`, según el ancho real) y el
+// reparto `packColumns` (alto parecido). Con `columns:` de CSS, que llena en
+// orden, una columna acababa mucho más baja que la de al lado.
 .areas {
-  columns: 3 18rem;
-  column-gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.areas__col {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
 .area {
-  break-inside: avoid;
-  margin-bottom: 0.75rem;
-  padding: 0.8rem 0.9rem 0.45rem;
+  padding: 0.7rem 0.8rem 0.35rem;
   border: 1px solid var(--c-hairline);
   border-radius: $lead-radius;
   background: var(--c-surface);
@@ -594,7 +568,7 @@
 }
 
 .dept {
-  padding-block: 0.45rem;
+  padding-block: 0.4rem;
 
   & + & {
     border-top: 1px solid var(--c-hairline);
@@ -603,7 +577,7 @@
 
 .dept__name {
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -823,13 +797,34 @@
     padding: 0.4rem 0.75rem;
   }
 
-  .committee {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 0.85rem;
-  }
+  // El comité, en cambio, se queda en tarjetas verticales de tres en tres:
+  // nueve filas serían el doble de alto (y 9 = 3 × 3 justas).
+  .tiles--compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
 
-  .committee__list {
-    grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+    .tile {
+      grid-template-columns: none;
+      grid-template-rows: auto 1fr;
+      align-items: stretch;
+    }
+
+    .tile__photo {
+      aspect-ratio: 1;
+      min-height: 0;
+    }
+
+    .tile__body {
+      padding: 0.4rem 0.45rem 0.5rem;
+    }
+
+    .tile__name {
+      font-size: 0.75rem;
+    }
+
+    .tile__titles {
+      font-size: 0.625rem;
+    }
   }
 
   .tools,

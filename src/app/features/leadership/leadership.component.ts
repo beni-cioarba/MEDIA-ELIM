@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   inject,
   signal,
   viewChild,
@@ -25,13 +26,24 @@ import {
   LEADER_CARDS,
   PERSON_CARDS,
   PersonCard,
+  areaWeight,
   normalize,
+  packColumns,
 } from './leadership.view';
 import { PersonAvatarComponent } from './person-avatar/person-avatar.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 /** Vista del directorio: por departamentos (índice) o por personas (tarjetas). */
 type DirectoryView = 'areas' | 'people';
+
+/** Ancho mínimo de una columna del directorio y hueco entre columnas (px). */
+const AREA_COLUMN_MIN = 272;
+const AREA_COLUMN_GAP = 12;
+
+/** Columnas del directorio que caben en `width` px (1–5). */
+function areaColumnsFor(width: number): number {
+  return Math.max(1, Math.min(5, Math.floor((width + AREA_COLUMN_GAP) / (AREA_COLUMN_MIN + AREA_COLUMN_GAP))));
+}
 
 /** Valor de `?vista=` para la vista por personas (la otra es la de defecto). */
 const PEOPLE_VIEW_PARAM = 'persoane';
@@ -134,6 +146,22 @@ export class LeadershipComponent {
     ).filter((area) => area.departments.length > 0);
   });
 
+  /**
+   * Columnas del directorio según el ancho **real** del contenedor (lo mide
+   * un `ResizeObserver`). Arranca con una estimación por la ventana para no
+   * dar un salto al pintar.
+   */
+  private readonly areaColumnCount = signal(
+    areaColumnsFor(typeof window === 'undefined' ? 1200 : Math.min(window.innerWidth, 1440) - 32),
+  );
+
+  private readonly areasEl = viewChild<ElementRef<HTMLElement>>('areasEl');
+
+  /** Áreas repartidas en columnas de alto parecido (ver `packColumns`). */
+  protected readonly areaColumns = computed(() =>
+    packColumns(this.directory(), areaWeight, this.areaColumnCount()),
+  );
+
   /** Directorio por personas: por nombre o por cualquiera de sus departamentos. */
   protected readonly people = computed<readonly PersonCard[]>(() => {
     const q = this.needle();
@@ -150,6 +178,20 @@ export class LeadershipComponent {
       ? this.people().length
       : this.directory().reduce((sum, area) => sum + area.departments.length, 0),
   );
+
+  constructor() {
+    // El contenedor sólo existe en la vista por departamentos: se observa
+    // cuando aparece y se deja de observar cuando se va.
+    effect((onCleanup) => {
+      const el = this.areasEl()?.nativeElement;
+      if (!el || typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(([entry]) =>
+        this.areaColumnCount.set(areaColumnsFor(entry.contentRect.width)),
+      );
+      observer.observe(el);
+      onCleanup(() => observer.disconnect());
+    });
+  }
 
   protected setView(view: DirectoryView): void {
     this.view.set(view);

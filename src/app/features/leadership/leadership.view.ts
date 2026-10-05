@@ -187,3 +187,36 @@ export function highlight(text: string, needle: string): readonly TextSegment[] 
     { text: chars.slice(end).join(''), hit: false },
   ].filter((segment) => segment.text !== '');
 }
+
+// ---------------------------------------------------------------------
+// Reparto del directorio en columnas
+// ---------------------------------------------------------------------
+
+/**
+ * Alto relativo de un área en el directorio: cabecera + por cada
+ * departamento su rótulo y sus filas de personas (caben ~2 píldoras por
+ * fila). No tiene que ser exacto: sólo ordenar bien las áreas por tamaño.
+ */
+export function areaWeight(area: DirectoryArea): number {
+  return area.departments.reduce((sum, d) => sum + 0.9 + Math.ceil(d.members.length / 2), 1.4);
+}
+
+/**
+ * Reparte `items` en `n` columnas de alto parecido (LPT: de mayor a menor,
+ * cada uno a la columna más baja) y conserva el orden original dentro de
+ * cada columna. Las columnas CSS (`columns:`) llenan en orden y, con
+ * bloques que no se parten, dejaban una columna mucho más baja que otra.
+ */
+export function packColumns<T>(items: readonly T[], weight: (item: T) => number, n: number): T[][] {
+  const count = Math.max(1, Math.min(n, items.length));
+  const columns = Array.from({ length: count }, () => ({ height: 0, entries: [] as { item: T; index: number }[] }));
+  const order = items.map((item, index) => ({ item, index, w: weight(item) })).sort((a, b) => b.w - a.w);
+  for (const entry of order) {
+    const lowest = columns.reduce((min, col) => (col.height < min.height ? col : min));
+    lowest.height += entry.w;
+    lowest.entries.push(entry);
+  }
+  return columns
+    .map((col) => col.entries.sort((a, b) => a.index - b.index).map((e) => e.item))
+    .sort((a, b) => items.indexOf(a[0]) - items.indexOf(b[0]));
+}
