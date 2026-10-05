@@ -162,6 +162,21 @@ con el recorte gobernado.
   ritmo real del carrusel. Todo se pausa con el puntero encima, con el foco
   dentro, con la pestaña oculta (WCAG 2.2.2) y con `prefers-reduced-motion`.
   Elegir un punto reinicia el intervalo, para que la barra no mienta.
+- **Mandos** (oct. 2026): pie único alineado con el titular —pista de
+  segmentos (vistos a medio tono, activo en oro) y debajo pausa, anterior,
+  siguiente, contador `03 / 09` y rótulo como texto, no pastilla—. La pausa
+  es explícita (WCAG 2.2.2: en el teléfono no hay «puntero encima») y se
+  oculta con `prefers-reduced-motion`, donde no hay auto-avance. Flechas del
+  teclado con el foco dentro y deslizar con el dedo (`touch-action: pan-y`).
+  Por debajo de 560 px anterior/siguiente se ocultan y su sitio es del rótulo.
+- **Contenido de portada** (`home.component.*`): chip de estado enlazado al
+  programa con tres estados (`heroNext`): en marcha (verde que late, hasta
+  2 h desde el inicio), hoy (verde + «en 1 h 45 min») y otro día (oro); si el
+  culto de hoy ya terminó, anuncia el siguiente. Titular
+  `clamp(2.5rem, 2rem + 3.2vw, 5rem)` con `text-wrap: balance`. Acción
+  principal en **oro** (el navy desaparecía sobre el velo navy); si hay
+  directo, la secundaria lleva a la emisión con punto rojo. Entrada
+  escalonada de 0,7 s sólo al cargar.
 - Ojo con `<ng-content>`: los estilos encapsulados del carrusel **no** alcanzan
   a los nodos proyectados; acota con un envoltorio propio (`.hero__text`), no
   con `.hero__content > *` (así se «descolocó» el titular).

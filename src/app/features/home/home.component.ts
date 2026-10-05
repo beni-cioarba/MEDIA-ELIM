@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { CHURCH_CONFIG } from '../../core/church.config';
+import { CHURCH_CONFIG, WeeklyProgram } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { AnnouncementsService } from '../../core/services/announcements.service';
 import { BibleReadingService } from '../../core/services/bible-reading.service';
+import { ClockService } from '../../core/services/clock.service';
 import { LanguageService } from '../../core/services/language.service';
 import { ScheduleService } from '../../core/services/schedule.service';
 import { YouTubeService } from '../../core/youtube.service';
@@ -149,6 +150,24 @@ interface QuickLink {
   readonly path: string;
 }
 
+/** Minutos que un culto cuenta como «en marcha» desde su hora de inicio. */
+const HERO_NOW_WINDOW_MIN = 120;
+
+interface HeroNext {
+  readonly program: WeeklyProgram;
+  readonly state: 'now' | 'today' | 'later';
+  /** «2 h 15 min» hasta que empiece; sólo en `today`. */
+  readonly inLabel: string | null;
+}
+
+/** Duración corta y neutra en ambos idiomas: «45 min», «2 h», «2 h 15 min». */
+function formatIn(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
 /**
  * Portada pública de la iglesia.
  *
@@ -180,6 +199,36 @@ export class HomeComponent {
   protected readonly bible = inject(BibleReadingService);
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
+  private readonly clock = inject(ClockService);
+
+  /**
+   * Estado del culto que anuncia la portada, con la hora a la vista:
+   *  - `now`: está en marcha (de la hora anunciada a dos horas después).
+   *  - `today`: es hoy y aún no ha empezado; lleva la cuenta atrás.
+   *  - `later`: otro día. También cuando el de hoy ya terminó: anunciar un
+   *    culto que acabó hace una hora no le sirve a nadie, se pasa al siguiente.
+   * Se recalcula con el reloj compartido (cada minuto), sin temporizador propio.
+   */
+  protected readonly heroNext = computed<HeroNext | null>(() => {
+    const today = this.schedule.todayProgram();
+    if (today) {
+      const ahora = new Date(this.clock.now());
+      const minuto = ahora.getHours() * 60 + ahora.getMinutes();
+      const inicios = [...today.time.matchAll(/(\d{1,2}):(\d{2})/g)].map(
+        (m) => Number(m[1]) * 60 + Number(m[2]),
+      );
+      if (inicios.some((i) => minuto >= i && minuto < i + HERO_NOW_WINDOW_MIN)) {
+        return { program: today, state: 'now', inLabel: null };
+      }
+      const siguiente = inicios.find((i) => i > minuto);
+      if (siguiente !== undefined) {
+        return { program: today, state: 'today', inLabel: formatIn(siguiente - minuto) };
+      }
+    }
+    const program =
+      this.schedule.weeklyProgram().find((p) => p.id !== today?.id) ?? today ?? null;
+    return program ? { program, state: 'later', inLabel: null } : null;
+  });
 
   /** Rutas usadas en la plantilla — nunca literales sueltos. */
   protected readonly links = {

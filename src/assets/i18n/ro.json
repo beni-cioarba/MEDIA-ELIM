@@ -926,6 +926,13 @@
       "aria": "Imagini din viața bisericii",
       "cta_about": "Cunoaște-ne",
       "cta_live": "Vezi în direct",
+      "now": "Acum",
+      "in": "în {{time}}",
+      "pause": "Oprește derularea fotografiilor",
+      "play": "Reia derularea fotografiilor",
+      "prev": "Fotografia anterioară",
+      "next": "Fotografia următoare",
+      "program_aria": "Vezi programul săptămânal",
       "slides": {
         "worship": "Seară de colinde",
         "baptism": "Botez",

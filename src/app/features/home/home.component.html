@@ -5,34 +5,53 @@
 
 <app-hero-carousel [items]="config.heroSlides">
   <!-- La pregunta número uno de quien llega a la web de una iglesia es
-       «¿cuándo os reunís?». Estaba respondida más abajo, fuera de la primera
-       pantalla. Una línea la sube arriba sin robarle sitio al titular. -->
-  @if (schedule.featuredProgram(); as culto) {
-    <p class="hero-next">
+       «¿cuándo os reunís?». Se responde arriba, con el estado a la vista
+       (ahora · hoy en 2 h · el próximo día) y como enlace: quien lo lee
+       quiere el programa entero, no sólo el rótulo. -->
+  @if (heroNext(); as next) {
+    <a
+      class="hero-next"
+      [class.is-now]="next.state === 'now'"
+      [class.is-today]="next.state === 'today'"
+      [routerLink]="links.weekly"
+      [attr.aria-label]="('home.hero.program_aria' | translate)"
+    >
       <span class="hero-next__dot" aria-hidden="true"></span>
       <span class="hero-next__when">
-        @if (schedule.todayProgram()) {
-          {{ 'weekly.today' | translate }}
-        } @else {
-          {{ culto.dayLabel }}
+        @switch (next.state) {
+          @case ('now') { {{ 'home.hero.now' | translate }} · {{ next.program.time }} }
+          @case ('today') { {{ 'weekly.today' | translate }} · {{ next.program.time }} }
+          @default { {{ next.program.dayLabel }} · {{ next.program.time }} }
         }
-        · {{ culto.time }}
       </span>
-      <span class="hero-next__what">{{ culto.title }}</span>
-    </p>
+      <span class="hero-next__what">{{ next.program.title }}</span>
+      @if (next.inLabel; as inLabel) {
+        <span class="hero-next__in">{{ 'home.hero.in' | translate: { time: inLabel } }}</span>
+      }
+      <app-icon class="hero-next__go" name="chevron-right" />
+    </a>
   }
 
   <h1 class="hero-title">{{ 'home.hero.title' | translate }}</h1>
   <p class="hero-subtitle">{{ 'home.hero.subtitle' | translate }}</p>
 
   <div class="hero-actions">
-    <a class="btn btn--primary" [routerLink]="links.about">
+    <a class="btn btn--gold hero-actions__main" [routerLink]="links.about">
       {{ 'home.hero.cta_about' | translate }}
+      <app-icon name="chevron-right" />
     </a>
-    <a class="btn btn--ghost" [routerLink]="links.streams">
-      <app-icon name="play" />
-      {{ 'home.hero.cta_live' | translate }}
-    </a>
+    @if (liveStream(); as live) {
+      <!-- En directo: la acción secundaria lleva a la emisión, no al archivo. -->
+      <a class="btn btn--ghost hero-actions__live" [href]="live.url" target="_blank" rel="noopener noreferrer">
+        <span class="hero-actions__pulse" aria-hidden="true"></span>
+        {{ 'streams.watch_now' | translate }}
+      </a>
+    } @else {
+      <a class="btn btn--ghost" [routerLink]="links.streams">
+        <app-icon name="play" />
+        {{ 'home.hero.cta_live' | translate }}
+      </a>
+    }
   </div>
 </app-hero-carousel>
 

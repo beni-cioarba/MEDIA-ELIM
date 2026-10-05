@@ -926,6 +926,13 @@
       "aria": "Imágenes de la vida de la iglesia",
       "cta_about": "Conócenos",
       "cta_live": "Ver en directo",
+      "now": "Ahora",
+      "in": "en {{time}}",
+      "pause": "Pausar el pase de fotos",
+      "play": "Reanudar el pase de fotos",
+      "prev": "Foto anterior",
+      "next": "Foto siguiente",
+      "program_aria": "Ver el programa semanal",
       "slides": {
         "worship": "Noche de villancicos",
         "baptism": "Bautismo",

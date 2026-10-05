@@ -72,6 +72,11 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
     '(mouseleave)': 'hold.set(false)',
     '(focusin)': 'hold.set(true)',
     '(focusout)': 'hold.set(false)',
+    '(pointerdown)': 'swipeStart($event)',
+    '(pointerup)': 'swipeEnd($event)',
+    '(pointercancel)': 'swipeX = null',
+    '(keydown.arrowleft)': 'onArrow($event, -1)',
+    '(keydown.arrowright)': 'onArrow($event, 1)',
   },
   template: `
     <section
@@ -108,14 +113,15 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
           <ng-content />
         </div>
 
+        <!--
+          Pie de la portada: una sola pieza, alineada con el titular. Arriba
+          la pista de progreso (un segmento por foto) y debajo los mandos —
+          pausa, anterior, siguiente—, el contador y el rótulo de la foto.
+          Mandos explícitos y no sólo puntos: WCAG 2.2.2 pide poder parar un
+          contenido que se mueve solo, y en el teléfono no hay «puntero
+          encima» que lo pare.
+        -->
         <div class="hero__bar">
-          @if (current(); as slide) {
-            <p class="hero__caption" aria-live="polite">
-              <app-icon name="sparkles" />
-              <span>{{ captionKey(slide) | translate }}</span>
-            </p>
-          }
-
           @if (slides().length > 1) {
             <div class="hero__dots" [style.--dots]="slides().length">
               @for (slide of slides(); track slide.id; let i = $index) {
@@ -123,6 +129,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
                   type="button"
                   class="hero__dot"
                   [class.is-active]="i === index()"
+                  [class.is-done]="i < index()"
                   [attr.aria-current]="i === index() ? 'true' : null"
                   [attr.aria-label]="captionKey(slide) | translate"
                   (click)="select(i)"
@@ -132,6 +139,46 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
               }
             </div>
           }
+
+          <div class="hero__controls">
+            @if (slides().length > 1) {
+              @if (!reducedMotion) {
+                <button
+                  type="button"
+                  class="hero__ctl"
+                  [attr.aria-pressed]="userPaused()"
+                  [attr.aria-label]="(userPaused() ? 'home.hero.play' : 'home.hero.pause') | translate"
+                  (click)="togglePause()"
+                >
+                  <app-icon [name]="userPaused() ? 'play' : 'pause'" />
+                </button>
+              }
+              <button
+                type="button"
+                class="hero__ctl hero__ctl--step"
+                [attr.aria-label]="'home.hero.prev' | translate"
+                (click)="step(-1)"
+              >
+                <app-icon name="chevron-left" />
+              </button>
+              <button
+                type="button"
+                class="hero__ctl hero__ctl--step"
+                [attr.aria-label]="'home.hero.next' | translate"
+                (click)="step(1)"
+              >
+                <app-icon name="chevron-right" />
+              </button>
+
+              <span class="hero__count" aria-hidden="true">
+                <b>{{ pad(index() + 1) }}</b><span>/ {{ pad(slides().length) }}</span>
+              </span>
+            }
+
+            @for (slide of currentList(); track slide.id) {
+              <p class="hero__caption" aria-live="polite">{{ captionKey(slide) | translate }}</p>
+            }
+          </div>
         </div>
       </div>
 
@@ -158,6 +205,9 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         min-height: max(26rem, 66svh);
         overflow: hidden;
         isolation: isolate;
+        /* El gesto vertical es del navegador (scroll); el horizontal, del
+           carrusel: deslizar cambia de foto, como en cualquier galería. */
+        touch-action: pan-y;
         background: var(--c-primary-darkest);
         color: var(--c-on-primary);
       }
@@ -287,7 +337,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
        * velo lateral, así que ahí sí se centra.
        */
       .hero__text {
-        max-width: 38rem;
+        max-width: 44rem;
         margin-top: auto;
       }
 
@@ -298,67 +348,122 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       }
 
       /*
-       * Pie de la portada, todo contra el margen izquierdo: el rótulo de la
-       * foto y, debajo, los puntos. Se mantiene a la izquierda a propósito —
-       * es el mismo eje de lectura que el titular, y deja libre la esquina
-       * inferior derecha, donde flotan los botones de compartir y subir.
+       * Pie de la portada, contra el margen izquierdo y con un ancho fijo en
+       * el eje del titular: deja libre la esquina inferior derecha, donde
+       * flotan los botones de compartir y subir. Dos filas: la pista de
+       * progreso y, debajo, mandos + contador + rótulo. Antes eran dos
+       * pastillas sueltas (rótulo y «hoy») que se leían como la misma cosa;
+       * el rótulo ahora es texto, no pastilla.
        */
       .hero__bar {
+        display: grid;
+        gap: 0.7rem;
+        width: min(100%, 30rem);
+      }
+
+      .hero__controls {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.6rem;
-      }
-
-      .hero__caption {
-        display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        max-width: 100%;
-        margin: 0;
-        padding: 0.32rem 0.85rem;
-        border: 1px solid rgb(247 250 252 / 0.28);
-        border-radius: var(--r-pill);
-        background: color-mix(in srgb, var(--c-primary-darkest) 55%, transparent);
-        backdrop-filter: blur(6px);
-        font-size: var(--fs-sm);
-        letter-spacing: var(--ls-meta);
-        color: var(--c-on-primary);
+        gap: 0.4rem;
+        min-width: 0;
       }
 
-      .hero__caption span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .hero__caption app-icon {
+      /* Mando redondo de cristal: 2,5 rem = 40 px, objetivo táctil holgado
+         (WCAG 2.5.8 pide 24) sin que el pie crezca. */
+      .hero__ctl {
+        display: grid;
+        place-items: center;
         flex: none;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        border: 1px solid rgb(247 250 252 / 0.24);
+        border-radius: 50%;
+        background: rgb(9 20 36 / 0.38);
+        backdrop-filter: blur(8px);
+        font-size: 1.1rem;
+        color: var(--c-on-primary);
+        cursor: pointer;
+        transition:
+          background var(--mo-fast) var(--ea-standard),
+          border-color var(--mo-fast) var(--ea-standard);
+      }
+
+      .hero__ctl:hover {
+        border-color: rgb(247 250 252 / 0.55);
+        background: rgb(247 250 252 / 0.14);
+      }
+
+      .hero__ctl:focus-visible {
+        outline: 2px solid var(--c-gold);
+        outline-offset: 2px;
+      }
+
+      .hero__ctl[aria-pressed='true'] {
+        border-color: var(--c-gold);
         color: var(--c-gold-soft);
       }
 
-      /* Puntos con barra de progreso. El botón mide 1,5 rem de alto para
-         poder pulsarlo con el dedo; lo que se ve es la pista interior.
-         Siempre en UNA fila: con más fotos cada barra encoge (de 2,5 rem
-         hasta 1,25) en vez de saltar a otra línea, que con nueve fotos
-         dejaba la novena sola debajo en el teléfono. */
+      /* Contador en cifras tabulares: «03 / 09» no baila al pasar de foto. */
+      .hero__count {
+        flex: none;
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.3rem;
+        margin-inline: 0.5rem 0.15rem;
+        font-size: var(--fs-sm);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.06em;
+        color: rgb(247 250 252 / 0.62);
+      }
+
+      .hero__count b {
+        font-weight: 700;
+        color: var(--c-on-primary);
+      }
+
+      .hero__caption {
+        min-width: 0;
+        margin: 0;
+        padding-left: 0.75rem;
+        border-left: 1px solid rgb(247 250 252 / 0.28);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: var(--fs-sm);
+        letter-spacing: var(--ls-meta);
+        color: rgb(247 250 252 / 0.86);
+        animation: hero-caption 0.6s var(--ea-standard) both;
+      }
+
+      @keyframes hero-caption {
+        from {
+          opacity: 0;
+          transform: translateY(0.35rem);
+        }
+      }
+
+      /*
+       * Pista de progreso: un segmento por foto, siempre en UNA fila (con
+       * más fotos cada segmento encoge en vez de saltar de línea). Ocupa el
+       * ancho del pie, así que queda alineada con los mandos de debajo. El
+       * botón mide 1,25 rem de alto para poder pulsarlo; lo que se ve es la
+       * pista interior. Las fotos ya vistas quedan llenas a medio tono: se
+       * lee de un vistazo por dónde va el pase.
+       */
       .hero__dots {
         display: flex;
         flex-wrap: nowrap;
-        /* Ancho explícito (n barras de 2,5 rem + huecos), con tope en el
-           disponible: sin él la fila medía lo que sus botones vacíos y todas
-           las barras se quedaban en el mínimo también en escritorio. */
-        width: calc(var(--dots, 1) * 2.5rem + (var(--dots, 1) - 1) * 0.3rem);
-        max-width: 100%;
         gap: 0.3rem;
+        width: 100%;
       }
 
       .hero__dot {
         display: grid;
         place-items: center;
-        flex: 0 1 2.5rem;
-        min-width: 1.25rem;
-        height: 1.5rem;
+        flex: 1 1 0;
+        min-width: 0;
+        height: 1.25rem;
         padding: 0;
         border: 0;
         background: none;
@@ -371,12 +476,19 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         width: 100%;
         height: 3px;
         border-radius: var(--r-pill);
-        background: rgb(247 250 252 / 0.32);
-        transition: background var(--mo-fast) var(--ea-standard);
+        background: rgb(247 250 252 / 0.28);
+        transition:
+          background var(--mo-fast) var(--ea-standard),
+          height var(--mo-fast) var(--ea-standard);
+      }
+
+      .hero__dot.is-done::before {
+        background: rgb(247 250 252 / 0.62);
       }
 
       .hero__dot:hover::before {
-        background: rgb(247 250 252 / 0.6);
+        height: 5px;
+        background: rgb(247 250 252 / 0.7);
       }
 
       /* El relleno avanza al ritmo del carrusel: es el reloj a la vista. */
@@ -386,11 +498,14 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         height: 3px;
         border-radius: var(--r-pill);
         background: var(--c-gold);
+        box-shadow: 0 0 10px color-mix(in srgb, var(--c-gold) 55%, transparent);
         transform: scaleX(0);
         transform-origin: left center;
+        opacity: 0;
       }
 
       .hero__dot.is-active .hero__dot-fill {
+        opacity: 1;
         animation: hero-progress var(--hero-ms, 6000ms) linear both;
       }
 
@@ -411,6 +526,15 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         outline: 2px solid var(--c-gold);
         outline-offset: 2px;
         border-radius: var(--r-xs);
+      }
+
+      /* Teléfono: anterior/siguiente sobran —se desliza con el dedo y los
+         segmentos se pueden pulsar— y su sitio es para el rótulo. La pausa
+         se queda: es la que pide WCAG 2.2.2. */
+      @media (max-width: 559.98px) {
+        .hero__ctl--step {
+          display: none;
+        }
       }
 
       /*
@@ -462,6 +586,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
 
         .hero__image.is-active,
         .hero__dot.is-active .hero__dot-fill,
+        .hero__caption,
         .hero__cue {
           animation: none;
         }
@@ -525,7 +650,24 @@ export class HeroCarouselComponent {
    * Lo consume la plantilla para pausar también el zoom y la barra: una
    * portada que se para con la barra corriendo se lee como un fallo.
    */
-  protected readonly paused = computed(() => this.hold() || !this.clock.pageVisible());
+  protected readonly paused = computed(
+    () => this.userPaused() || this.hold() || !this.clock.pageVisible(),
+  );
+
+  /** Pausa pedida con el botón: manda sobre todo lo demás hasta que se reanude. */
+  protected readonly userPaused = signal(false);
+
+  /** Sin auto-avance no tiene sentido ofrecer un botón de pausa. */
+  protected readonly reducedMotion = prefersReducedMotion();
+
+  /** La diapositiva activa como lista de uno: el rótulo se re-monta (y anima) al cambiar. */
+  protected readonly currentList = computed(() => {
+    const slide = this.current();
+    return slide ? [slide] : [];
+  });
+
+  /** Origen horizontal del gesto de deslizar en curso. */
+  protected swipeX: number | null = null;
 
   protected readonly current = computed<HeroSlide | null>(
     () => this._slides()[this.index()] ?? null,
@@ -543,11 +685,11 @@ export class HeroCarouselComponent {
     effect(() => {
       const total = this._slides().length;
       const visible = this.clock.pageVisible();
-      const held = this.hold();
+      const held = this.hold() || this.userPaused();
       this.restart();
       stop();
 
-      if (total < 2 || !visible || held || prefersReducedMotion()) return;
+      if (total < 2 || !visible || held || this.reducedMotion) return;
 
       timer = setInterval(() => {
         this.index.update((i) => (i + 1) % total);
@@ -560,6 +702,38 @@ export class HeroCarouselComponent {
   protected select(index: number): void {
     this.index.set(index);
     this.restart.update((v) => v + 1);
+  }
+
+  protected step(delta: number): void {
+    const total = this._slides().length;
+    if (total < 2) return;
+    this.select((this.index() + delta + total) % total);
+  }
+
+  protected togglePause(): void {
+    this.userPaused.update((v) => !v);
+  }
+
+  /** Flechas del teclado con el foco en la portada. */
+  protected onArrow(event: Event, delta: number): void {
+    event.preventDefault();
+    this.step(delta);
+  }
+
+  /** Sólo el dedo: con ratón, arrastrar sobre la portada es seleccionar texto. */
+  protected swipeStart(event: PointerEvent): void {
+    this.swipeX = event.pointerType === 'mouse' ? null : event.clientX;
+  }
+
+  protected swipeEnd(event: PointerEvent): void {
+    if (this.swipeX === null) return;
+    const dx = event.clientX - this.swipeX;
+    this.swipeX = null;
+    if (Math.abs(dx) >= 48) this.step(dx < 0 ? 1 : -1);
+  }
+
+  protected pad(n: number): string {
+    return String(n).padStart(2, '0');
   }
 
   protected captionKey(slide: HeroSlide): string {
