@@ -1,223 +1,298 @@
 @use 'ds' as *;
+@use './leadership-shared' as *;
 
 // =====================================================================
-// «Conducere» — página de equipo (revisión del 29/09/2026).
+// «Conducere» — índice del organigrama (revisión 05/10/2026, tercera).
 //
-// Diseño propio, fuera del catálogo a propósito (petición del usuario):
-// tres bloques densos en vez de diez secciones a todo lo ancho. De
-// 4.200 px a ~1.600 en escritorio. Los nombres son botones que abren la
-// ficha; el avatar (`app-person-avatar`) es la foto cuando llegue y las
-// iniciales mientras tanto.
+// Sobrio y compacto: superficies claras, navy como único acento y fotos a
+// sangre (la imagen llena su hueco de la tarjeta). El pastor destaca por
+// tamaño y por su tarjeta navy lisa; el pastor asistente va al lado en claro.
+// Piezas comunes con el perfil en `_leadership-shared.scss`.
 // =====================================================================
 
 :host {
   display: block;
 }
 
-.lead-page {
+.page {
   @include container(var(--w-wide));
 
   display: grid;
-  gap: clamp(1.75rem, 4vh, 2.75rem);
-  padding-block: clamp(1.5rem, 4vh, 2.5rem) clamp(2rem, 5vh, 3rem);
+  gap: clamp(1.5rem, 3.5vh, 2.25rem);
+  padding-block: clamp(1.25rem, 3vh, 2rem) clamp(2rem, 5vh, 3rem);
 }
 
-// Títulos de bloque: mismos para comité y directorio.
-.block-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--c-primary);
-}
+.eyebrow {
+  @include lead-eyebrow;
 
-.block-sub {
-  margin: 0.15rem 0 0;
-  font-size: 0.875rem;
-  color: var(--c-muted);
-}
-
-// Etiqueta de cargo (Pastor, Prezbiter, Secretar…).
-.chip {
-  display: inline-block;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  background: rgb(26 54 93 / 0.07);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--c-primary);
-  white-space: nowrap;
-}
-
-.chip--gold {
-  background: rgb(212 175 55 / 0.16);
-  color: var(--c-gold-deep);
+  margin-bottom: 0.35rem;
 }
 
 // ---------------------------------------------------------------------
-// 1 · Conducerea
+// Cabecera
 // ---------------------------------------------------------------------
-.lead__head {
+.intro {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 0.75rem 2rem;
-  margin-bottom: 1rem;
+  gap: 1rem 2.5rem;
 }
 
-.lead__eyebrow {
-  margin: 0 0 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--c-gold-deep);
+.intro__text {
+  flex: 1 1 24rem;
+  min-width: 0;
 }
 
-.lead__title {
+.intro__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.15rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   color: var(--c-primary);
 }
 
-.lead__subtitle {
-  margin: 0.25rem 0 0;
-  max-width: 60ch;
+.intro__sub {
+  margin: 0.35rem 0 0;
+  max-width: 62ch;
   font-size: 0.9375rem;
+  line-height: 1.5;
   color: var(--c-muted);
+  text-wrap: pretty;
 }
 
-.lead__hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
+// Cifras: cuatro celdas con divisor; número arriba, rótulo debajo.
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(max-content, 1fr));
   margin: 0;
-  font-size: 0.8125rem;
-  color: var(--c-muted);
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
+  background: var(--c-surface);
+}
 
-  app-icon {
-    font-size: 1rem;
-    color: var(--c-gold-deep);
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.1rem;
+  padding: 0.55rem 1rem;
+
+  & + & {
+    border-inline-start: 1px solid var(--c-hairline);
+  }
+
+  dt {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--c-muted);
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-primary);
   }
 }
 
-// Rejilla de personas: tarjetas horizontales compactas (avatar + nombre +
-// cargos). El pastor, primero y a dos columnas: se ve quién guía sin
-// convertir la página en un organigrama de rango.
-.leaders {
+// ---------------------------------------------------------------------
+// Pastor + pastor asistente
+// ---------------------------------------------------------------------
+.featured {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: 0.75rem;
+}
+
+.feature {
+  @include lead-card;
+
+  display: grid;
+  grid-template-columns: clamp(7.5rem, 5rem + 6vw, 10rem) minmax(0, 1fr);
+  min-height: 11rem;
+  overflow: hidden;
+}
+
+// Foto a sangre: todo el alto de la tarjeta.
+.feature__photo {
+  @include lead-photo-fill;
+}
+
+.feature__body {
+  display: grid;
+  align-content: center;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 1rem 1.25rem;
+}
+
+.feature__kicker {
+  @include lead-eyebrow;
+}
+
+.feature__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1rem + 0.6vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  color: var(--c-primary);
+}
+
+.feature__summary {
+  @include line-clamp(3);
+
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.feature__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+}
+
+.feature__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--c-primary);
+
+  app-icon {
+    font-size: 1rem;
+  }
+}
+
+// Pastor: tarjeta navy lisa y foto mayor.
+.feature--pastor {
+  grid-template-columns: clamp(9rem, 5.5rem + 9vw, 14rem) minmax(0, 1fr);
+  min-height: 14rem;
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+
+  &:hover {
+    border-color: var(--c-primary-deep);
+    background: var(--c-primary-deep);
+  }
+
+  // Sobre navy el anillo navy no se ve: foco en blanco con halo navy.
+  &:focus-visible {
+    outline-color: var(--c-on-primary);
+    box-shadow: 0 0 0 4px var(--c-primary);
+  }
+
+  .feature__body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .feature__kicker,
+  .feature__summary,
+  .feature__foot {
+    color: var(--c-on-band-muted);
+  }
+
+  .feature__name,
+  .feature__cta {
+    color: var(--c-on-primary);
+  }
+
+  .feature__name {
+    font-size: clamp(1.5rem, 1.15rem + 1.1vw, 2rem);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Cabeceras de bloque
+// ---------------------------------------------------------------------
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.head__title {
+  @include lead-section-title;
+}
+
+.head__sub {
+  margin: 0.1rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// Conducerea: tarjetas con foto a todo el ancho
+// ---------------------------------------------------------------------
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.625rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.leaders__first {
-  grid-column: span 2;
-}
+.tile {
+  @include lead-card;
 
-.leader {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  width: 100%;
-  height: 100%;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid rgb(26 54 93 / 0.1);
-  border-radius: 14px;
-  background: var(--c-surface);
-  color: inherit;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-  transition:
-    border-color 160ms cubic-bezier(0.2, 0, 0, 1),
-    box-shadow 160ms cubic-bezier(0.2, 0, 0, 1);
-
-  &:hover {
-    border-color: rgb(212 175 55 / 0.6);
-    box-shadow: 0 10px 22px -16px rgb(26 54 93 / 0.45);
-  }
-
-  &:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 2px;
-  }
-}
-
-.leader__avatar {
-  --avatar-size: 3.25rem;
-}
-
-.leaders__first .leader {
-  padding: 1rem 1.1rem;
-  background:
-    radial-gradient(ellipse at 100% 0%, rgb(212 175 55 / 0.16), transparent 60%),
-    linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
-  border-color: transparent;
-  color: var(--c-on-primary);
-
-  .leader__avatar {
-    --avatar-size: 4.25rem;
-    box-shadow: 0 0 0 3px rgb(212 175 55 / 0.55);
-  }
-
-  .leader__name {
-    font-size: 1.25rem;
-    color: var(--c-on-primary);
-  }
-
-  .chip {
-    background: rgb(212 175 55 / 0.22);
-    color: var(--c-gold-soft);
-  }
-}
-
-.leader__text {
   display: grid;
-  gap: 0.3rem;
-  min-width: 0;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
 }
 
-.leader__name {
+.tile__photo {
+  @include lead-photo-fill;
+
+  aspect-ratio: 1;
+}
+
+.tile__body {
+  display: grid;
+  align-content: start;
+  gap: 0.1rem;
+  padding: 0.55rem 0.7rem 0.65rem;
+}
+
+.tile__name {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   color: var(--c-primary);
 }
 
-.leader__titles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-// «3 slujiri»: la medida de la persona sin abrir la ficha.
-.leader__serves {
+.tile__titles {
   font-size: 0.75rem;
+  line-height: 1.35;
   color: var(--c-muted);
-  white-space: nowrap;
 }
 
-.leaders__first .leader__serves {
-  color: rgb(247 250 252 / 0.7);
-}
-
-// Fundamento (art. 17): una línea de contexto, no un bloque.
+// Fundamento (art. 17): una línea de contexto.
 .ground {
-  max-width: 80ch;
-  margin: 0.9rem 0 0;
+  max-width: 85ch;
+  margin: 0.85rem 0 0;
   padding-inline-start: 0.75rem;
-  border-inline-start: 2px solid var(--c-gold);
+  border-inline-start: 2px solid var(--c-hairline-strong);
   font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--c-muted);
@@ -225,48 +300,37 @@
 }
 
 .ground__ref {
-  display: inline-block;
-  margin-inline-start: 0.35rem;
-  padding: 0.05rem 0.45rem;
-  border: 1px solid rgb(26 54 93 / 0.18);
-  border-radius: 999px;
-  font-size: 0.6875rem;
+  margin-inline-start: 0.25rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--c-gold-deep);
-  text-decoration: none;
+  color: var(--c-primary);
   white-space: nowrap;
 
   &:hover {
-    background: rgb(212 175 55 / 0.12);
-    border-color: var(--c-gold);
+    text-decoration-thickness: 2px;
   }
 
-  &:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 2px;
-  }
+  @include lead-focus;
 }
 
 // ---------------------------------------------------------------------
-// 2 · Comitetul Bisericii — tira de avatares
+// Comité: tira de avatares
 // ---------------------------------------------------------------------
 .committee {
   display: grid;
-  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr);
   align-items: center;
-  gap: 1rem 2rem;
-  padding: 1.1rem 1.25rem;
-  border-radius: 16px;
-  background: #f1f4f8;
+  gap: 0.75rem 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
+  background: var(--c-surface);
 }
 
-// `auto-fit`: las columnas vacías se colapsan y los nueve se reparten la
-// fila (con `auto-fill` cabían ocho y el noveno caía solo a otra línea).
 .committee__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr));
+  gap: 0.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -275,26 +339,20 @@
 .member {
   display: grid;
   justify-items: center;
-  gap: 0.4rem;
-  width: 100%;
-  padding: 0.4rem 0.25rem;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
+  gap: 0.3rem;
+  height: 100%;
+  padding: 0.35rem 0.2rem;
+  border-radius: 8px;
   color: inherit;
-  font: inherit;
   text-align: center;
-  cursor: pointer;
-  transition: background 140ms cubic-bezier(0.2, 0, 0, 1);
+  text-decoration: none;
+  transition: $lead-transition;
 
   &:hover {
-    background: rgb(255 255 255 / 0.8);
+    background: var(--c-veil);
   }
 
-  &:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 1px;
-  }
+  @include lead-focus(1px);
 }
 
 .member__avatar {
@@ -310,27 +368,59 @@
 }
 
 // ---------------------------------------------------------------------
-// 3 · Directorio de servicio
+// Directorio: herramientas
 // ---------------------------------------------------------------------
-.dir__head {
+.tools {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 0.75rem 2rem;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.seg {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 8px;
+  background: var(--c-surface);
+}
+
+.seg__btn {
+  min-height: 2.05rem;
+  padding-inline: 0.85rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: $lead-transition;
+
+  &:hover {
+    color: var(--c-primary);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+
+  @include lead-focus(1px);
 }
 
 .search {
   position: relative;
   display: flex;
   align-items: center;
-  width: min(100%, 20rem);
+  width: 21rem;
+  max-width: 100%;
 }
 
 .search__icon {
   position: absolute;
-  left: 0.8rem;
+  left: 0.75rem;
   width: 1rem;
   height: 1rem;
   color: var(--c-muted);
@@ -339,17 +429,15 @@
 
 .search__input {
   width: 100%;
-  height: 2.5rem;
-  padding: 0 2.4rem 0 2.3rem;
-  border: 1px solid rgb(26 54 93 / 0.16);
-  border-radius: 999px;
+  height: 2.4rem;
+  padding: 0 2.4rem 0 2.2rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 8px;
   background: var(--c-surface);
   font: inherit;
   font-size: 0.875rem;
   color: var(--c-text);
-  transition:
-    border-color 140ms cubic-bezier(0.2, 0, 0, 1),
-    box-shadow 140ms cubic-bezier(0.2, 0, 0, 1);
+  transition: $lead-transition;
 
   &::-webkit-search-cancel-button {
     display: none;
@@ -357,60 +445,128 @@
 
   &:focus {
     outline: none;
-    border-color: var(--c-gold);
-    box-shadow: 0 0 0 3px rgb(212 175 55 / 0.2);
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 14%, transparent);
+  }
+}
+
+// Atajo de teclado: pista discreta, sólo con ratón (en táctil no hay «/»).
+.search__kbd {
+  position: absolute;
+  right: 0.55rem;
+  display: grid;
+  place-items: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  pointer-events: none;
+
+  @media (hover: none) {
+    display: none;
   }
 }
 
 .search__clear {
   position: absolute;
-  right: 0.35rem;
+  right: 0.3rem;
   display: grid;
   place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
+  width: 1.85rem;
+  height: 1.85rem;
   border: 0;
-  border-radius: 50%;
+  border-radius: 6px;
   background: transparent;
   color: var(--c-muted);
   cursor: pointer;
 
   &:hover {
-    background: rgb(26 54 93 / 0.07);
+    background: var(--c-veil);
     color: var(--c-text);
   }
 
   app-icon {
     font-size: 1rem;
   }
+
+  @include lead-focus(1px);
 }
 
-// Paneles en columnas CSS: se empaquetan como mampostería (un área de
-// cinco departamentos junto a una de uno no deja hueco) y se leen de arriba
-// abajo, como un índice.
+.status {
+  margin: -0.35rem 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-muted);
+
+  &:empty {
+    margin: 0;
+  }
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 1.75rem 1rem;
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: $lead-radius;
+  text-align: center;
+}
+
+.empty__text {
+  margin: 0;
+  color: var(--c-muted);
+}
+
+.btn {
+  @include lead-button;
+}
+
+.btn--primary {
+  @include lead-button-primary;
+}
+
+// Coincidencia de la búsqueda dentro de un nombre.
+.hl--hit {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--c-primary) 14%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-primary) 14%, transparent);
+}
+
+// ---------------------------------------------------------------------
+// Directorio · por departamentos (paneles en columnas)
+// ---------------------------------------------------------------------
 .areas {
   columns: 3 18rem;
-  column-gap: 1rem;
+  column-gap: 0.75rem;
 }
 
 .area {
   break-inside: avoid;
-  margin-bottom: 1rem;
-  padding: 0.9rem 1rem 0.6rem;
-  border: 1px solid rgb(26 54 93 / 0.1);
-  border-radius: 14px;
+  margin-bottom: 0.75rem;
+  padding: 0.8rem 0.9rem 0.45rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
   background: var(--c-surface);
 }
 
 .area__title {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.35rem;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--c-primary);
+}
+
+.area__icon {
+  font-size: 1.05rem;
+  color: var(--c-primary-soft);
 }
 
 .area__name {
@@ -418,12 +574,11 @@
   min-width: 0;
 }
 
-// Número de departamentos del área: se sabe el tamaño antes de leerla.
 .area__count {
-  min-width: 1.4rem;
+  min-width: 1.35rem;
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
-  background: rgb(26 54 93 / 0.07);
+  background: var(--c-veil);
   font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 700;
@@ -432,29 +587,17 @@
   color: var(--c-muted);
 }
 
-.area__icon {
-  display: grid;
-  place-items: center;
-  width: 1.85rem;
-  height: 1.85rem;
-  border-radius: 8px;
-  background: rgb(212 175 55 / 0.14);
-  color: var(--c-gold-deep);
-  font-size: 1rem;
-}
-
 .area__depts {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-// Departamento: nombre en versalitas pequeñas y, debajo, quién sirve.
 .dept {
-  padding-block: 0.5rem;
+  padding-block: 0.45rem;
 
   & + & {
-    border-top: 1px solid rgb(26 54 93 / 0.07);
+    border-top: 1px solid var(--c-hairline);
   }
 }
 
@@ -463,7 +606,7 @@
   margin-bottom: 0.3rem;
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--c-muted);
 }
@@ -471,40 +614,28 @@
 .dept__people {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.35rem;
+  gap: 0.25rem;
 }
 
-// Persona: píldora con mini avatar. Botón que abre su ficha.
 .who {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.2rem 0.6rem 0.2rem 0.2rem;
-  border: 1px solid transparent;
+  max-width: 100%;
+  padding: 0.15rem 0.6rem 0.15rem 0.15rem;
+  border: 1px solid var(--c-hairline);
   border-radius: 999px;
-  background: rgb(26 54 93 / 0.04);
+  background: var(--c-surface);
   color: inherit;
-  font: inherit;
-  cursor: pointer;
-  transition:
-    background 140ms cubic-bezier(0.2, 0, 0, 1),
-    border-color 140ms cubic-bezier(0.2, 0, 0, 1);
+  text-decoration: none;
+  transition: $lead-transition;
 
   &:hover {
-    border-color: rgb(212 175 55 / 0.55);
-    background: rgb(212 175 55 / 0.08);
+    border-color: var(--c-hairline-strong);
+    background: var(--c-veil);
   }
 
-  &:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 1px;
-  }
-}
-
-.who.is-match {
-  border-color: var(--c-gold);
-  background: rgb(212 175 55 / 0.16);
-  box-shadow: 0 0 0 2px rgb(212 175 55 / 0.18);
+  @include lead-focus(1px);
 }
 
 .who__avatar {
@@ -521,34 +652,80 @@
 .who__role {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--c-gold-deep);
+  color: var(--c-muted);
   white-space: nowrap;
 }
 
-.dir__status {
-  min-height: 1.1rem;
-  margin: -0.5rem 0 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--c-gold-deep);
-
-  &:empty {
-    min-height: 0;
-    margin: 0;
-  }
+// ---------------------------------------------------------------------
+// Directorio · por personas (filas con foto a sangre)
+// ---------------------------------------------------------------------
+.people {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.dir__empty {
-  margin: 0;
-  padding: 1.5rem;
-  border: 1px dashed rgb(26 54 93 / 0.2);
-  border-radius: 14px;
-  text-align: center;
+.row {
+  @include lead-card;
+
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  height: 100%;
+  min-height: 3.5rem;
+  overflow: hidden;
+}
+
+.row__photo {
+  @include lead-photo-fill;
+
+  align-self: stretch;
+}
+
+.row__text {
+  display: grid;
+  min-width: 0;
+  padding: 0.4rem 0.75rem;
+}
+
+.row__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row__sub {
+  overflow: hidden;
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row__count {
+  display: grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-end: 0.75rem;
+  padding-inline: 0.3rem;
+  border-radius: 999px;
+  background: var(--c-veil);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: var(--c-muted);
 }
 
 // ---------------------------------------------------------------------
-// Contacto: una franja, no una sección
+// Contacto
 // ---------------------------------------------------------------------
 .talk {
   display: flex;
@@ -556,19 +733,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem 1.5rem;
-  padding: 0.9rem 1.25rem;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
-  color: rgb(247 250 252 / 0.78);
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
+  background: var(--c-surface);
 }
 
 .talk__text {
   margin: 0;
   font-size: 0.875rem;
+  color: var(--c-muted);
 
   strong {
-    margin-inline-end: 0.35rem;
-    color: var(--c-on-primary);
+    margin-inline-end: 0.3rem;
+    color: var(--c-primary);
   }
 }
 
@@ -578,227 +756,96 @@
   gap: 0.5rem;
 }
 
-.talk__btn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.25rem;
-  padding-inline: 1rem;
-  border: 1px solid rgb(247 250 252 / 0.3);
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--c-on-primary);
-  text-decoration: none;
-  white-space: nowrap;
-
-  &:hover {
-    background: rgb(247 250 252 / 0.1);
-  }
-
-  &:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 2px;
-  }
-}
-
-.talk__btn--primary {
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
-  color: var(--c-primary-deep);
-
-  &:hover {
-    background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 100%);
-  }
-}
-
-// ---------------------------------------------------------------------
-// Ficha de persona (diálogo)
-// ---------------------------------------------------------------------
-.sheet {
-  width: min(100%, 30rem);
-  max-height: min(80vh, 40rem);
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-lg);
-  background: var(--c-surface);
-  box-shadow: var(--e-4);
-  color: var(--c-text);
-  overflow: auto;
-  overscroll-behavior: contain;
-
-  &::backdrop {
-    background: var(--c-veil-strong);
-    backdrop-filter: blur(3px);
-  }
-
-  @include motion-safe {
-    animation: sheet-in var(--mo-base) var(--ea-decelerate);
-  }
-}
-
-@keyframes sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-}
-
-.sheet__inner {
-  position: relative;
-  display: grid;
-  gap: var(--sp-4);
-  padding: var(--sp-6);
-}
-
-.sheet__close {
-  position: absolute;
-  inset-block-start: var(--sp-3);
-  inset-inline-end: var(--sp-3);
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: 0;
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--c-muted);
-  cursor: pointer;
-  transition: background var(--mo-fast) var(--ea-standard);
-
-  &:hover {
-    background: var(--c-surface-sunken);
-    color: var(--c-text);
-  }
-
-  @include focus-ring;
-
-  app-icon {
-    width: 1.15rem;
-    height: 1.15rem;
-  }
-}
-
-.sheet__head {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  padding-inline-end: var(--sp-8);
-}
-
-.sheet__avatar {
-  --avatar-size: 4rem;
-}
-
-.sheet__name {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--fs-h3);
-  color: var(--c-primary);
-}
-
-.sheet__titles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin: var(--sp-2) 0 0;
-}
-
-.sheet__subtitle {
-  @include eyebrow;
-  margin: 0;
-  color: var(--c-muted);
-}
-
-.sheet__list {
-  display: grid;
-  gap: var(--sp-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.posting {
-  display: grid;
-  gap: 0.1rem;
-  padding: var(--sp-3);
-  border-radius: var(--r-sm);
-  background: var(--c-surface-sunken);
-}
-
-.posting__dept {
-  font-weight: 550;
-}
-
-.posting__meta {
-  font-size: var(--fs-xs);
-  color: var(--c-muted);
-}
-
-// Enlace a la ficha, para compartirla.
-.sheet__link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
-  margin: 0;
-  padding-top: var(--sp-3);
-  border-top: 1px solid rgb(26 54 93 / 0.08);
-  font-size: 0.8125rem;
-  color: var(--c-muted);
-}
-
 // ---------------------------------------------------------------------
 // Anchos estrechos
 // ---------------------------------------------------------------------
-@include until('md') {
-  // El pastor, a lo ancho y horizontal; el resto en dos columnas de
-  // tarjetas verticales (avatar arriba): en una sola columna los nueve
-  // ocupaban ~900 px de pantalla del móvil.
-  .leaders {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-  }
-
-  .leaders__first {
-    grid-column: 1 / -1;
-  }
-
-  .leaders > li:not(.leaders__first) .leader {
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    padding: 0.75rem 0.5rem;
-    text-align: center;
-
-    .leader__text {
-      justify-items: center;
-    }
-
-    .leader__titles {
-      justify-content: center;
-    }
-  }
-
-  .committee {
+@include until('lg') {
+  .featured {
     grid-template-columns: minmax(0, 1fr);
-    padding: 1rem;
   }
 
-  .committee__list {
-    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
-  }
-
-  .search {
+  .stats {
     width: 100%;
   }
 }
 
-@include motion-reduce {
-  .leader,
-  .member,
-  .who,
-  .search__input,
-  .sheet__close {
-    transition: none;
+@include until('md') {
+  .stat {
+    align-items: center;
+    padding: 0.5rem 0.35rem;
+    text-align: center;
+
+    dt {
+      font-size: 0.625rem;
+    }
+
+    dd {
+      font-size: 1.2rem;
+    }
+  }
+
+  .feature {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    min-height: 8.5rem;
+  }
+
+  .feature--pastor {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    min-height: 10.5rem;
+  }
+
+  .feature__body,
+  .feature--pastor .feature__body {
+    padding: 0.85rem 1rem;
+  }
+
+  // Conducerea en filas con la foto a sangre a la izquierda (como la vista
+  // por personas): en tres columnas la séptima quedaba sola y el bloque
+  // ocupaba casi el doble de alto.
+  .tiles {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+
+  .tile {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    grid-template-rows: none;
+    align-items: center;
+  }
+
+  .tile__photo {
+    align-self: stretch;
+    aspect-ratio: auto;
+    min-height: 3.5rem;
+  }
+
+  .tile__body {
+    padding: 0.4rem 0.75rem;
+  }
+
+  .committee {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.85rem;
+  }
+
+  .committee__list {
+    grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+  }
+
+  .tools,
+  .search {
+    width: 100%;
+  }
+
+  .seg {
+    width: 100%;
+
+    .seg__btn {
+      flex: 1;
+    }
+  }
+
+  .people {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

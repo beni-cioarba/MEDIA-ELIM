@@ -17,6 +17,12 @@ export interface RouteSeo {
   readonly noindex?: boolean;
 }
 
+/** Título y descripción de una página que dependen de sus datos (ya traducidos). */
+export interface PageSeoOverride {
+  readonly title: string;
+  readonly description?: string;
+}
+
 /**
  * Aplica título y metadatos de la ruta activa, **reaccionando al idioma**.
  *
@@ -34,6 +40,14 @@ export class SeoService {
 
   private readonly current = signal<RouteSeo | null>(null);
 
+  /**
+   * Título y descripción **ya resueltos** que una página pone encima de los
+   * de su ruta cuando dependen de los datos (el nombre de una persona en
+   * `/conducere/<id>`). Cada navegación lo borra: la página lo vuelve a poner
+   * si sigue siendo suyo.
+   */
+  private readonly override = signal<PageSeoOverride | null>(null);
+
   /** Ruta de la página activa (`/rugaciune-pentru-familii/2026-09-27`), sin ancla ni query. */
   private readonly path = signal('/');
 
@@ -45,13 +59,19 @@ export class SeoService {
   constructor() {
     effect(() => {
       this.langChange();
-      this.apply(this.current());
+      this.apply(this.current(), this.override());
     });
+  }
+
+  /** Pone (o quita, con `null`) el título y la descripción propios de la página. */
+  setOverride(override: PageSeoOverride | null): void {
+    this.override.set(override);
   }
 
   /** Llamado por `AppTitleStrategy` en cada navegación, con la URL nueva. */
   update(seo: RouteSeo | null, url = '/'): void {
     this.path.set(url.split(/[?#]/)[0] || '/');
+    this.override.set(null);
     this.current.set(seo);
   }
 
@@ -60,14 +80,14 @@ export class SeoService {
     return `${this.config.publicUrl.replace(/\/$/, '')}${this.path()}`;
   }
 
-  private apply(seo: RouteSeo | null): void {
+  private apply(seo: RouteSeo | null, override: PageSeoOverride | null): void {
     const brand = this.translate.instant('brand.name') as string;
-    const pageTitle = seo ? (this.translate.instant(seo.titleKey) as string) : '';
+    const pageTitle = override?.title ?? (seo ? (this.translate.instant(seo.titleKey) as string) : '');
     const title = pageTitle && pageTitle !== brand ? `${pageTitle} · ${brand}` : brand;
 
-    const description = this.translate.instant(
-      seo?.descriptionKey ?? 'app.description',
-    ) as string;
+    const description =
+      override?.description ??
+      (this.translate.instant(seo?.descriptionKey ?? 'app.description') as string);
 
     this.titleService.setTitle(title);
     this.meta.updateTag({ name: 'description', content: description });

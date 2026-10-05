@@ -1,0 +1,144 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Lenguaje visual de «Conducere» (índice + perfil). Revisión 05/10/2026 (3).
+//
+// Sobrio y compacto, a petición del usuario («simple y profesional, digno de
+// una app escalable»; sin dorados ni efectos):
+//
+//  · Superficies blancas con filete gris; **navy como único acento**.
+//  · Fotos **a sangre**: la imagen ocupa todo su hueco de la tarjeta, sin
+//    marco ni margen alrededor. El espacio se lo llevan imagen y texto.
+//  · Jerarquía por tamaño y posición, no por efectos: el pastor en la
+//    tarjeta principal (navy liso), el pastor asistente al lado en claro.
+//  · Movimiento mínimo: cambio de borde y sombra al pasar, nada más.
+// =====================================================================
+
+/** Radio común de tarjetas del módulo. */
+$lead-radius: 12px;
+
+/** Transición común (sólo color, borde y sombra). */
+$lead-transition:
+  border-color 140ms ease,
+  box-shadow 140ms ease,
+  background-color 140ms ease,
+  color 140ms ease;
+
+/** Foco visible: anillo navy. */
+@mixin lead-focus($offset: 2px) {
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: $offset;
+  }
+}
+
+/** Etiqueta superior en versalitas. */
+@mixin lead-eyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/** Tarjeta base: blanca, filete gris, sombra al pasar. */
+@mixin lead-card {
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
+  background: var(--c-surface);
+  color: inherit;
+  text-decoration: none;
+  transition: $lead-transition;
+
+  &:hover {
+    border-color: var(--c-hairline-strong);
+    box-shadow: 0 6px 18px -12px color-mix(in srgb, var(--c-primary) 45%, transparent);
+  }
+
+  @include lead-focus;
+
+  @include motion-reduce {
+    transition: none;
+  }
+}
+
+/** Título de bloque (h2 de cada sección). */
+@mixin lead-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--c-primary);
+}
+
+/** Rótulo de panel en versalitas con filete a la derecha. */
+@mixin lead-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--c-hairline);
+  }
+}
+
+/** Botón: contorno por defecto; `--primary` en navy lleno. */
+@mixin lead-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding-inline: 0.9rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 8px;
+  background: var(--c-surface);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: $lead-transition;
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include lead-focus;
+}
+
+@mixin lead-button-primary {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+
+  &:hover {
+    background: var(--c-primary-deep);
+  }
+}
+
+/** Contenedor de foto a sangre: el avatar lo llena entero. */
+@mixin lead-photo-fill {
+  display: block;
+  overflow: hidden;
+
+  app-person-avatar {
+    --avatar-radius: 0;
+
+    width: 100%;
+    height: 100%;
+  }
+}

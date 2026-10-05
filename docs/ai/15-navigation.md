@@ -29,6 +29,7 @@ app.routes.ts
     ├── 'despre-noi'  → AboutComponent       (lazy)
     ├── 'marturisirea-de-credinta' → CredoComponent (lazy + resolve i18n)
     ├── 'conducere'   → LeadershipComponent  (lazy)
+    ├── 'conducere/:id' → PersonProfileComponent (lazy, noindex; guarda perezosa; migas con el nombre vía BreadcrumbTailService)
     ├── 'media'       → StageComponent       (lazy)  ← todos los bloques
     ├── 'media/:blockId' → StageComponent    (lazy)  ← un bloque suelto
     ├── 'contact'     → ContactComponent     (lazy)

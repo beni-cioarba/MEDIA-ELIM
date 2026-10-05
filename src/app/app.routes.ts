@@ -1,4 +1,5 @@
-import { Route, Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, Route, Router, Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { APP_PATHS } from './core/navigation/app-paths';
 import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
@@ -96,10 +97,44 @@ export const APP_ROUTES: Routes = [
           import('./features/leadership/leadership.component').then(
             (m) => m.LeadershipComponent,
           ),
+        // `/conducere#<id>` (ficha antigua en diálogo) → perfil de la persona.
+        canActivate: [
+          (route: ActivatedRouteSnapshot) => {
+            const router = inject(Router);
+            return import('./features/leadership/leadership.guards').then((m) =>
+              m.legacyPersonAnchor(route, router),
+            );
+          },
+        ],
         data: {
           seo: {
             titleKey: 'seo.leadership.title',
             descriptionKey: 'seo.leadership.description',
+          },
+        },
+      },
+      {
+        // Perfil propio de cada persona del organigrama (`/conducere/<id>`).
+        // Fuera de los buscadores mientras los textos sean de maqueta.
+        path: `${APP_PATHS.leadership}/:id`,
+        loadComponent: () =>
+          import('./features/leadership/person-profile/person-profile.component').then(
+            (m) => m.PersonProfileComponent,
+          ),
+        // Id inexistente → al índice, antes de pintar.
+        canActivate: [
+          (route: ActivatedRouteSnapshot) => {
+            const router = inject(Router);
+            return import('./features/leadership/leadership.guards').then((m) =>
+              m.personExists(route, router),
+            );
+          },
+        ],
+        data: {
+          seo: {
+            titleKey: 'seo.leadership.title',
+            descriptionKey: 'seo.leadership.description',
+            noindex: true,
           },
         },
       },

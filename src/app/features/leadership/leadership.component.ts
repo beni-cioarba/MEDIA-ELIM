@@ -1,172 +1,189 @@
+import { Location } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  afterNextRender,
   computed,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { CHURCH_CONFIG } from '../../core/church.config';
-import { LanguageService } from '../../core/services/language.service';
-import { CopyButtonComponent } from '../../shared/copy-button/copy-button.component';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
+import { LanguageService } from '../../core/services/language.service';
+import { storyOf } from '../../core/leadership-stories.config';
+import { PEOPLE_INDEX, PersonProfile } from '../../core/leadership.config';
 import { citarArticulo } from '../credo/credo.data';
+import { HighlightPipe } from './highlight.pipe';
 import {
-  Assignment,
-  CHURCH_COMMITTEE,
-  Department,
-  LEADERSHIP_OFFICES,
-  PEOPLE_INDEX,
-  PersonId,
-  PersonProfile,
-  SERVICE_AREAS,
-  ServiceArea,
-} from '../../core/leadership.config';
-import { IconComponent } from '../../shared/icon/icon.component';
+  COMMITTEE_CARDS,
+  DIRECTORY,
+  DirectoryArea,
+  FEATURED_CARDS,
+  LEADERSHIP_STATS,
+  LEADER_CARDS,
+  PERSON_CARDS,
+  PersonCard,
+  normalize,
+} from './leadership.view';
 import { PersonAvatarComponent } from './person-avatar/person-avatar.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
-/** Un área del directorio ya filtrada por la búsqueda. */
-interface DirectoryArea {
-  readonly area: ServiceArea;
-  readonly departments: readonly Department[];
-}
+/** Vista del directorio: por departamentos (índice) o por personas (tarjetas). */
+type DirectoryView = 'areas' | 'people';
+
+/** Valor de `?vista=` para la vista por personas (la otra es la de defecto). */
+const PEOPLE_VIEW_PARAM = 'persoane';
 
 /**
- * «Conducere» — quién guía la iglesia y quién sirve en cada área.
+ * «Conducere» — índice del organigrama.
  *
- * ── Revisión del 29/09/2026 («más profesional, innovador y comprimido») ──
- * La página medía 4.200 px en escritorio y 7.500 en móvil: diez secciones a
- * todo lo ancho, cada una con su título, subtítulo y márgenes, para tarjetas
- * de uno a cuatro nombres (una tarjeta entera para «Copii: Petrică Halas»).
- * Ahora son **tres bloques**, como una página de equipo profesional:
+ * Revisión del 05/10/2026 (tercera): diseño sobrio y compacto (superficies
+ * claras, navy como único acento, fotos a sangre en las tarjetas) y una
+ * arquitectura más limpia:
  *
- *   1. **Conducerea** — centrada en **personas**, no en cargos: cada una una
- *      vez, con su avatar (foto cuando llegue; iniciales mientras) y todos
- *      sus cargos en etiquetas. Antes Samuel Bogdan salía dos veces
- *      («Diaconi» y «Secretar») y las siete tarjetas se partían 5 + 2.
- *   2. **Comitetul Bisericii** — tira compacta de avatares.
- *   3. **Directorio de servicio** — las siete áreas en UN bloque de paneles
- *      en columnas, con **buscador** por persona o departamento (con o sin
- *      diacríticos). Es lo que de verdad se viene a buscar: «¿quién lleva el
- *      sonido?», «¿dónde sirve fulano?».
- *
- * Cada nombre sigue abriendo la ficha con **todos** sus cargos
- * (`PEOPLE_INDEX`, sin datos duplicados), en un `<dialog>` nativo: vive en la
- * *top layer*, así que nada lo recorta y el navegador ya gestiona foco, `Esc`
- * e `inert`.
+ *  · **Modelos de vista constantes** (`leadership.view.ts`): las plantillas
+ *    sólo leen campos ya calculados.
+ *  · **Estado del directorio en la URL** (`?vista=persoane&q=…`): se puede
+ *    compartir una búsqueda y, al volver de un perfil con «atrás», la página
+ *    sale como se dejó. Se escribe con `Location.replaceState` (no con el
+ *    router): así no se navega ni se salta al principio en cada tecla.
+ *  · **Índice de búsqueda por idioma**: los nombres traducidos de los
+ *    departamentos se normalizan una vez por idioma, no en cada tecla.
+ *  · Los enlaces antiguos `/conducere#<id>` los resuelve una guarda
+ *    (`leadership.guards.ts`) antes de pintar.
  */
 @Component({
   selector: 'app-leadership',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TranslatePipe, IconComponent, PersonAvatarComponent, CopyButtonComponent],
+  imports: [RouterLink, TranslatePipe, IconComponent, PersonAvatarComponent, HighlightPipe],
   templateUrl: './leadership.component.html',
   styleUrl: './leadership.component.scss',
+  host: { '(document:keydown)': 'onShortcut($event)' },
 })
 export class LeadershipComponent {
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
-  private readonly config = inject(CHURCH_CONFIG);
+  private readonly location = inject(Location);
 
-  constructor() {
-    // Enlace directo a una persona (`/conducere#samuel-bogdan`): abre su
-    // ficha al llegar. Tras pintar, porque el `<dialog>` tiene que existir.
-    afterNextRender(() => {
-      const id = decodeURIComponent(location.hash.slice(1));
-      const person = PEOPLE_INDEX.get(id as PersonId);
-      if (person) this.open(person);
-    });
-  }
+  /** Pastor y pastor asistente, con su resumen (texto real o de maqueta). */
+  protected readonly featured = FEATURED_CARDS.map((card) => ({
+    card,
+    summary: storyOf(PEOPLE_INDEX.get(card.id) as PersonProfile)?.summary ?? null,
+  }));
 
-  /**
-   * Conducerea: las personas de los cargos de gobierno, **una vez cada una**,
-   * en el orden de los cargos (pastor primero). Sus etiquetas son sus cargos
-   * permanentes (`titles`), en singular: «Prezbiter», no «Prezbiteri».
-   */
-  protected readonly leaders: readonly PersonProfile[] = (() => {
-    const seen = new Set<string>();
-    const list: PersonProfile[] = [];
-    for (const office of LEADERSHIP_OFFICES) {
-      for (const member of office.members) {
-        if (seen.has(member.person)) continue;
-        seen.add(member.person);
-        list.push(PEOPLE_INDEX.get(member.person) as PersonProfile);
-      }
-    }
-    return list;
-  })();
+  protected readonly leaders = LEADER_CARDS;
+  protected readonly committee = COMMITTEE_CARDS;
+  protected readonly stats = LEADERSHIP_STATS;
 
-  /** El comité, resuelto a perfiles una vez (no en cada ciclo de detección). */
-  protected readonly committee: readonly PersonProfile[] = CHURCH_COMMITTEE.map(
-    (id) => PEOPLE_INDEX.get(id) as PersonProfile,
+  // ------------------------------------------------------------------
+  // Directorio: estado (sale de la URL al entrar)
+  // ------------------------------------------------------------------
+
+  private readonly initial = inject(ActivatedRoute).snapshot.queryParamMap;
+
+  protected readonly view = signal<DirectoryView>(
+    this.initial.get('vista') === PEOPLE_VIEW_PARAM ? 'people' : 'areas',
   );
 
-  /** Totales fijos del directorio (no cambian al buscar). */
-  protected readonly areaCount = SERVICE_AREAS.length;
-  protected readonly servingCount = new Set(
-    SERVICE_AREAS.flatMap((area) => area.departments.flatMap((d) => d.members.map((m) => m.person))),
-  ).size;
-
-  /** Texto del buscador del directorio. */
-  protected readonly query = signal('');
+  /** Texto del buscador. */
+  protected readonly query = signal(this.initial.get('q') ?? '');
 
   /** Búsqueda normalizada (sin diacríticos), o `''`. */
-  private readonly needle = computed(() => normalize(this.query().trim()));
+  protected readonly needle = computed(() => normalize(this.query().trim()));
+
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   /**
-   * Directorio filtrado: un departamento entra si coincide su nombre (en el
-   * idioma activo) o el de alguien que sirve en él; un área, si le queda
-   * algún departamento. Sin búsqueda, todo. Lee el idioma activo para
-   * volver a filtrar si cambia (los nombres de departamento se traducen).
+   * Nombres traducidos y normalizados de áreas y departamentos. Se rehace
+   * sólo al cambiar de idioma.
    */
-  protected readonly directory = computed<readonly DirectoryArea[]>(() => {
+  private readonly labels = computed(() => {
     this.language.current();
-    const q = this.needle();
-    const all = SERVICE_AREAS.map((area) => ({ area, departments: area.departments }));
-    if (!q) return all;
-    return all
-      .map(({ area }) => {
-        const areaName = normalize(this.translate.instant(`leadership.areas.${area.i18nKey}.name`));
-        const departments = areaName.includes(q)
-          ? area.departments
-          : area.departments.filter(
-              (d) =>
-                normalize(this.translate.instant(`leadership.departments.${d.i18nKey}`)).includes(q) ||
-                d.members.some((m) => normalize(this.profile(m).name).includes(q)),
-            );
-        return { area, departments };
-      })
-      .filter((entry) => entry.departments.length > 0);
+    const text = (key: string): string => normalize(this.translate.instant(key) as string);
+    const map = new Map<string, string>();
+    for (const area of DIRECTORY) {
+      map.set(`area:${area.i18nKey}`, text(`leadership.areas.${area.i18nKey}.name`));
+      for (const department of area.departments) {
+        map.set(department.i18nKey, text(`leadership.departments.${department.i18nKey}`));
+      }
+    }
+    return map;
   });
 
-  /** Departamentos que deja la búsqueda (para el aviso de resultados). */
+  /**
+   * Directorio por departamentos: entra un departamento si coincide su
+   * nombre o el de alguien que sirve en él; un área entera, si coincide su
+   * nombre.
+   */
+  protected readonly directory = computed<readonly DirectoryArea[]>(() => {
+    const q = this.needle();
+    if (!q) return DIRECTORY;
+    const labels = this.labels();
+    return DIRECTORY.map((area) =>
+      labels.get(`area:${area.i18nKey}`)?.includes(q)
+        ? area
+        : {
+            ...area,
+            departments: area.departments.filter(
+              (d) =>
+                labels.get(d.i18nKey)?.includes(q) || d.members.some((m) => m.card.searchName.includes(q)),
+            ),
+          },
+    ).filter((area) => area.departments.length > 0);
+  });
+
+  /** Directorio por personas: por nombre o por cualquiera de sus departamentos. */
+  protected readonly people = computed<readonly PersonCard[]>(() => {
+    const q = this.needle();
+    if (!q) return PERSON_CARDS;
+    const labels = this.labels();
+    return PERSON_CARDS.filter(
+      (card) => card.searchName.includes(q) || card.departmentKeys.some((key) => labels.get(key)?.includes(q)),
+    );
+  });
+
+  /** Resultados de la vista activa (aviso de resultados y vacío). */
   protected readonly resultCount = computed(() =>
-    this.directory().reduce((sum, entry) => sum + entry.departments.length, 0),
+    this.view() === 'people'
+      ? this.people().length
+      : this.directory().reduce((sum, area) => sum + area.departments.length, 0),
   );
 
-  /** ¿Coincide esta persona con la búsqueda? (se resalta en el directorio). */
-  protected isMatch(assignment: Assignment): boolean {
-    const q = this.needle();
-    return q !== '' && normalize(this.profile(assignment).name).includes(q);
+  protected setView(view: DirectoryView): void {
+    this.view.set(view);
+    this.syncUrl();
   }
 
-  /** Departamentos de servicio de una persona (sin los cargos de gobierno). */
-  protected servicePostings(person: PersonProfile): PersonProfile['postings'] {
-    return person.postings.filter((posting) => posting.areaKey !== null);
+  protected onSearch(event: Event): void {
+    this.query.set((event.target as HTMLInputElement).value);
+    this.syncUrl();
   }
 
-  /** Enlace público a la ficha de una persona. */
-  protected personUrl(person: PersonProfile): string {
-    return `${this.config.publicUrl.replace(/\/$/, '')}/${APP_PATHS.leadership}#${person.id}`;
+  protected clearSearch(): void {
+    this.query.set('');
+    this.syncUrl();
+    this.searchInput()?.nativeElement.focus();
   }
 
-  /** Persona abierta en la ficha, o `null` si está cerrada. */
-  protected readonly selected = signal<PersonProfile | null>(null);
+  /** `/` enfoca el buscador (como en GitHub o MDN), salvo si ya se escribe. */
+  protected onShortcut(event: KeyboardEvent): void {
+    if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+    event.preventDefault();
+    this.searchInput()?.nativeElement.focus();
+  }
 
-  private readonly dialog = viewChild<ElementRef<HTMLDialogElement>>('personDialog');
+  /** Refleja vista y búsqueda en la URL sin navegar (ni mover el scroll). */
+  private syncUrl(): void {
+    const params = new URLSearchParams();
+    if (this.view() === 'people') params.set('vista', PEOPLE_VIEW_PARAM);
+    const q = this.query().trim();
+    if (q) params.set('q', q);
+    this.location.replaceState(`/${APP_PATHS.leadership}`, params.toString());
+  }
 
   protected readonly links = {
     contact: `/${APP_PATHS.contact}`,
@@ -176,58 +193,7 @@ export class LeadershipComponent {
 
   /**
    * Artículo de la confesión que sostiene el organigrama (sacerdocio
-   * universal; los oficios son gobierno espiritual, no rango). El número se
-   * resuelve desde `credo.data.ts` para que no pueda quedarse desfasado.
+   * universal; los oficios son gobierno espiritual, no rango).
    */
   protected readonly sacerdocio = citarArticulo('ministers');
-
-  /** Resuelve la referencia a persona. Nunca falla: `PersonId` está tipado. */
-  protected profile(assignment: Assignment): PersonProfile {
-    return PEOPLE_INDEX.get(assignment.person) as PersonProfile;
-  }
-
-  protected onSearch(event: Event): void {
-    this.query.set((event.target as HTMLInputElement).value);
-  }
-
-  protected clearSearch(input: HTMLInputElement): void {
-    input.value = '';
-    this.query.set('');
-    input.focus();
-  }
-
-  /**
-   * Abre la ficha y pone su ancla en la barra de direcciones: así la ficha
-   * se puede compartir o guardar tal cual. Con la ruta entera: una URL
-   * relativa se resolvería contra el `<base href>` y borraría la ruta.
-   */
-  protected open(person: PersonProfile): void {
-    this.selected.set(person);
-    const dialog = this.dialog()?.nativeElement;
-    if (dialog && !dialog.open) dialog.showModal();
-    history.replaceState(history.state, '', `${location.pathname}${location.search}#${person.id}`);
-  }
-
-  protected close(): void {
-    this.dialog()?.nativeElement.close();
-  }
-
-  /** Al cerrarse (botón, fondo o `Esc`): fuera la persona y fuera el ancla. */
-  protected onClosed(): void {
-    this.selected.set(null);
-    history.replaceState(history.state, '', `${location.pathname}${location.search}`);
-  }
-
-  /** Cierra al pulsar el fondo: el `::backdrop` es el propio `<dialog>`. */
-  protected onDialogClick(event: MouseEvent): void {
-    if (event.target === this.dialog()?.nativeElement) this.close();
-  }
-}
-
-/** Minúsculas y sin diacríticos: «tomoiaga» encuentra a «Tomoiagă». */
-function normalize(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
 }

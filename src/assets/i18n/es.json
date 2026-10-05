@@ -1077,7 +1077,7 @@
       "ref": "Art. {{n}}",
       "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
     },
-    "hint": "Pulsa cualquier nombre y verás todo lo que esa persona sirve en la iglesia.",
+    "hint": "Pulsa sobre cualquiera para ver su perfil completo.",
     "structure": {
       "title": "Estructura de liderazgo",
       "subtitle": "Los oficios de gobierno reconocidos por la confesión de fe, a los que se accede por la ordenación."
@@ -1164,10 +1164,6 @@
       "design": "Diseño",
       "cleaning": "Limpieza"
     },
-    "sheet": {
-      "serves": "Dónde sirve",
-      "link": "Enlace a esta ficha"
-    },
     "ministries": {
       "worship": {
         "name": "Alabanza",
@@ -1214,10 +1210,52 @@
       "search": "Busca una persona o un departamento",
       "empty": "Ningún resultado para «{{q}}».",
       "results_one": "Un departamento encontrado",
-      "results_other": "{{n}} departamentos encontrados"
+      "results_other": "{{n}} departamentos encontrados",
+      "view_label": "Modo de vista",
+      "view_areas": "Departamentos",
+      "view_people": "Personas",
+      "results_people_one": "Una persona encontrada",
+      "results_people_other": "{{n}} personas encontradas",
+      "clear": "Borrar búsqueda"
     },
     "serves_one": "un servicio",
-    "serves_other": "{{n}} servicios"
+    "serves_other": "{{n}} servicios",
+    "stats": {
+      "people": "Personas",
+      "offices": "Cargos",
+      "areas": "Áreas",
+      "departments": "Departamentos"
+    },
+    "pastoral": {
+      "title": "Cuidado pastoral"
+    },
+    "tier": {
+      "pastor": "Pastor de la iglesia",
+      "assistant": "Pastor asistente",
+      "leader": "Liderazgo de la iglesia",
+      "member": "Servidor"
+    },
+    "view_profile": "Ver perfil",
+    "leaders": {
+      "title": "Liderazgo"
+    },
+    "profile": {
+      "bio": "Biografía",
+      "about": "Sobre su servicio",
+      "serves": "Dónde sirve",
+      "serves_none": "Sirve en el liderazgo de la iglesia.",
+      "peers": "Sirve junto a",
+      "committee": "Comité de la iglesia",
+      "fact_since": "desde",
+      "pager": "Otros perfiles",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "placeholder": "Texto de prueba: la biografía real se añadirá pronto.",
+      "fact_ministries_one": "servicio",
+      "fact_ministries_other": "servicios",
+      "fact_areas_one": "área",
+      "fact_areas_other": "áreas"
+    }
   },
   "credo": {
     "eyebrow": "En qué creemos",

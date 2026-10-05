@@ -1,55 +1,95 @@
 <!--
-  «Conducere» en tres bloques (revisión del 29/09/2026): conducerea (personas,
-  no cargos), el comité (tira de avatares) y el directorio de servicio (las
-  siete áreas en un solo bloque, con buscador). Ver el componente.
+  «Conducere» (revisión del 05/10/2026, tercera): diseño sobrio y compacto.
+  Fotos a sangre en las tarjetas; navy como único acento. Cada persona enlaza
+  a su perfil (`/conducere/<id>`). Ver el componente.
 -->
-<div class="lead-page">
-  <!-- ================= Conducerea ================= -->
-  <section class="lead" aria-labelledby="lead-title">
-    <header class="lead__head">
-      <div>
-        <p class="lead__eyebrow">{{ 'leadership.title' | translate }}</p>
-        <h1 class="lead__title" id="lead-title">{{ 'leadership.structure.title' | translate }}</h1>
-        <p class="lead__subtitle">{{ 'leadership.structure.subtitle' | translate }}</p>
+<div class="page">
+  <!-- ================= Cabecera ================= -->
+  <header class="intro">
+    <div class="intro__text">
+      <p class="eyebrow">{{ 'leadership.title' | translate }}</p>
+      <h1 class="intro__title">{{ 'leadership.structure.title' | translate }}</h1>
+      <p class="intro__sub">{{ 'leadership.structure.subtitle' | translate }}</p>
+    </div>
+    <dl class="stats">
+      <div class="stat">
+        <dt>{{ 'leadership.stats.people' | translate }}</dt>
+        <dd>{{ stats.people }}</dd>
       </div>
-      <p class="lead__hint">
-        <app-icon name="sparkles" />
-        {{ 'leadership.hint' | translate }}
-      </p>
-    </header>
+      <div class="stat">
+        <dt>{{ 'leadership.stats.offices' | translate }}</dt>
+        <dd>{{ stats.offices }}</dd>
+      </div>
+      <div class="stat">
+        <dt>{{ 'leadership.stats.areas' | translate }}</dt>
+        <dd>{{ stats.areas }}</dd>
+      </div>
+      <div class="stat">
+        <dt>{{ 'leadership.stats.departments' | translate }}</dt>
+        <dd>{{ stats.departments }}</dd>
+      </div>
+    </dl>
+  </header>
 
-    <!-- Una tarjeta por persona: avatar, nombre y todos sus cargos. El
-         pastor, primero y destacado (ocupa dos columnas en escritorio). -->
-    <ul class="leaders" role="list">
-      @for (person of leaders; track person.id; let first = $first) {
-        <li [class.leaders__first]="first">
-          <button type="button" class="leader" aria-haspopup="dialog" (click)="open(person)">
-            <app-person-avatar class="leader__avatar" [name]="person.name" [photo]="person.photo" />
-            <span class="leader__text">
-              <span class="leader__name">{{ person.name }}</span>
-              @if (person.titles; as titles) {
-                <span class="leader__titles">
-                  @for (title of titles; track title) {
-                    <span class="chip">{{ 'leadership.titles.' + title | translate }}</span>
-                  }
-                </span>
-              }
-              <!-- Cuánto sirve además de su cargo: da la medida de la persona
-                   sin abrir la ficha. -->
-              @if (servicePostings(person).length; as n) {
-                <span class="leader__serves">
-                  {{ (n === 1 ? 'leadership.serves_one' : 'leadership.serves_other') | translate: { n } }}
-                </span>
-              }
+  <!-- ================= Pastor + pastor asistente =================
+       El pastor en la tarjeta principal (navy liso, foto mayor); el pastor
+       asistente al lado, en claro. Foto a sangre: ocupa todo el alto. -->
+  <section class="featured" aria-labelledby="featured-title">
+    <h2 class="u-sr-only" id="featured-title">{{ 'leadership.pastoral.title' | translate }}</h2>
+    @for (item of featured; track item.card.id) {
+      <a class="feature" [class.feature--pastor]="item.card.tier === 'pastor'" [routerLink]="item.card.link">
+        <span class="feature__photo">
+          <app-person-avatar [photo]="item.card.photo" />
+        </span>
+        <span class="feature__body">
+          <span class="feature__kicker">{{ 'leadership.tier.' + item.card.tier | translate }}</span>
+          <span class="feature__name">{{ item.card.name }}</span>
+          @if (item.summary) {
+            <span class="feature__summary">{{ item.summary }}</span>
+          }
+          <span class="feature__foot">
+            <span>
+              {{ (item.card.serviceCount === 1 ? 'leadership.serves_one' : 'leadership.serves_other') | translate: { n: item.card.serviceCount } }}
             </span>
-          </button>
+            <span class="feature__cta">
+              {{ 'leadership.view_profile' | translate }}
+              <app-icon name="arrow-right" />
+            </span>
+          </span>
+        </span>
+      </a>
+    }
+  </section>
+
+  <!-- ================= Conducerea =================
+       Una tarjeta por persona: foto a todo el ancho, nombre y cargos. -->
+  <section aria-labelledby="leaders-title">
+    <div class="head">
+      <h2 class="head__title" id="leaders-title">{{ 'leadership.leaders.title' | translate }}</h2>
+      <p class="head__sub">{{ 'leadership.hint' | translate }}</p>
+    </div>
+    <ul class="tiles" role="list">
+      @for (person of leaders; track person.id) {
+        <li>
+          <a class="tile" [routerLink]="person.link">
+            <span class="tile__photo">
+              <app-person-avatar [photo]="person.photo" />
+            </span>
+            <span class="tile__body">
+              <span class="tile__name">{{ person.name }}</span>
+              <span class="tile__titles">
+                @for (title of person.titles; track title; let last = $last) {
+                  {{ 'leadership.titles.' + title | translate }}{{ last ? '' : ' · ' }}
+                }
+              </span>
+            </span>
+          </a>
         </li>
       }
     </ul>
 
     <!-- Sobre qué se apoya el organigrama: sin esto se lee como una jerarquía
-         de rango, justo lo contrario de lo que dice la confesión. La cita
-         enlaza al artículo para que cualquiera lo compruebe. -->
+         de rango, justo lo contrario de lo que dice la confesión. -->
     <p class="ground">
       {{ 'leadership.priesthood.body' | translate }}
       <a
@@ -63,109 +103,157 @@
     </p>
   </section>
 
-  <!-- ================= Comitetul Bisericii =================
-       Nómina plana: el documento oficial no reparte funciones dentro del
-       comité, así que no se inventa ninguna. Tira de avatares con nombre:
-       quien ya salió arriba se reconoce por su avatar. -->
+  <!-- ================= Comitetul Bisericii ================= -->
   <section class="committee" aria-labelledby="committee-title">
     <div class="committee__head">
-      <h2 class="block-title" id="committee-title">{{ 'leadership.committee.title' | translate }}</h2>
-      <p class="block-sub">{{ 'leadership.committee.subtitle' | translate }}</p>
+      <h2 class="head__title" id="committee-title">{{ 'leadership.committee.title' | translate }}</h2>
+      <p class="head__sub">{{ 'leadership.committee.subtitle' | translate }}</p>
     </div>
     <ul class="committee__list" role="list">
       @for (person of committee; track person.id) {
         <li>
-          <button type="button" class="member" aria-haspopup="dialog" (click)="open(person)">
-            <app-person-avatar class="member__avatar" [name]="person.name" [photo]="person.photo" />
+          <a class="member" [routerLink]="person.link">
+            <app-person-avatar class="member__avatar" [photo]="person.photo" />
             <span class="member__name">{{ person.name }}</span>
-          </button>
+          </a>
         </li>
       }
     </ul>
   </section>
 
-  <!-- ================= Directorio de servicio =================
-       Las siete áreas en UN bloque: paneles en columnas (se empaquetan como
-       mampostería, sin huecos), cada departamento en una fila con quién
-       sirve. Buscador por persona o departamento, con o sin diacríticos. -->
-  <section class="dir" aria-labelledby="dir-title">
-    <div class="dir__head">
+  <!-- ================= Directorio =================
+       Buscador (persona o departamento, con o sin diacríticos; atajo «/»)
+       y dos vistas. Vista y búsqueda viajan en la URL. -->
+  <section aria-labelledby="dir-title">
+    <div class="head head--tools">
       <div>
-        <h2 class="block-title" id="dir-title">{{ 'leadership.directory.title' | translate }}</h2>
-        <p class="block-sub">
-          {{ 'leadership.directory.subtitle' | translate: { areas: areaCount, people: servingCount } }}
+        <h2 class="head__title" id="dir-title">{{ 'leadership.directory.title' | translate }}</h2>
+        <p class="head__sub">
+          {{ 'leadership.directory.subtitle' | translate: { areas: stats.areas, people: stats.serving } }}
         </p>
       </div>
-      <label class="search">
-        <span class="u-sr-only">{{ 'leadership.directory.search' | translate }}</span>
-        <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
-          <path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-        <input
-          #searchInput
-          class="search__input"
-          type="search"
-          [placeholder]="'leadership.directory.search' | translate"
-          (input)="onSearch($event)"
-          autocomplete="off"
-        />
-        @if (query()) {
-          <button
-            type="button"
-            class="search__clear"
-            (click)="clearSearch(searchInput)"
-            [attr.aria-label]="'common.close' | translate"
-          >
-            <app-icon name="close" />
+
+      <div class="tools">
+        <div class="seg" role="group" [attr.aria-label]="'leadership.directory.view_label' | translate">
+          <button type="button" class="seg__btn" [attr.aria-pressed]="view() === 'areas'" (click)="setView('areas')">
+            {{ 'leadership.directory.view_areas' | translate }}
           </button>
-        }
-      </label>
+          <button type="button" class="seg__btn" [attr.aria-pressed]="view() === 'people'" (click)="setView('people')">
+            {{ 'leadership.directory.view_people' | translate }}
+          </button>
+        </div>
+
+        <label class="search">
+          <span class="u-sr-only">{{ 'leadership.directory.search' | translate }}</span>
+          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <input
+            #searchInput
+            class="search__input"
+            type="search"
+            [value]="query()"
+            [placeholder]="'leadership.directory.search' | translate"
+            (input)="onSearch($event)"
+            autocomplete="off"
+            aria-keyshortcuts="/"
+          />
+          @if (query()) {
+            <button
+              type="button"
+              class="search__clear"
+              (click)="clearSearch()"
+              [attr.aria-label]="'leadership.directory.clear' | translate"
+            >
+              <app-icon name="close" />
+            </button>
+          } @else {
+            <kbd class="search__kbd" aria-hidden="true">/</kbd>
+          }
+        </label>
+      </div>
     </div>
 
     <!-- Resultado de la búsqueda, anunciado al lector de pantalla. -->
-    <p class="dir__status" aria-live="polite">
-      @if (query() && resultCount() > 0) {
-        {{ (resultCount() === 1 ? 'leadership.directory.results_one' : 'leadership.directory.results_other') | translate: { n: resultCount() } }}
+    <p class="status" aria-live="polite">
+      @if (needle() && resultCount() > 0) {
+        @if (view() === 'people') {
+          {{ (resultCount() === 1 ? 'leadership.directory.results_people_one' : 'leadership.directory.results_people_other') | translate: { n: resultCount() } }}
+        } @else {
+          {{ (resultCount() === 1 ? 'leadership.directory.results_one' : 'leadership.directory.results_other') | translate: { n: resultCount() } }}
+        }
       }
     </p>
 
-    @if (directory().length > 0) {
+    @if (resultCount() === 0) {
+      <div class="empty">
+        <p class="empty__text">{{ 'leadership.directory.empty' | translate: { q: query() } }}</p>
+        <button type="button" class="btn" (click)="clearSearch()">
+          {{ 'leadership.directory.clear' | translate }}
+        </button>
+      </div>
+    } @else if (view() === 'people') {
+      <!-- Vista por personas: filas con la foto a sangre a la izquierda. -->
+      <ul class="people" role="list">
+        @for (person of people(); track person.id) {
+          <li>
+            <a class="row" [routerLink]="person.link">
+              <span class="row__photo">
+                <app-person-avatar [photo]="person.photo" />
+              </span>
+              <span class="row__text">
+                <span class="row__name">
+                  @for (part of person.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
+                </span>
+                <span class="row__sub">
+                  @if (person.titles[0]; as title) {
+                    {{ 'leadership.titles.' + title | translate }}
+                  } @else if (person.firstDepartmentKey; as key) {
+                    {{ 'leadership.departments.' + key | translate }}
+                  }
+                </span>
+              </span>
+              @if (person.serviceCount) {
+                <span
+                  class="row__count"
+                  [attr.aria-label]="(person.serviceCount === 1 ? 'leadership.serves_one' : 'leadership.serves_other') | translate: { n: person.serviceCount }"
+                  >{{ person.serviceCount }}</span
+                >
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <!-- Vista por departamentos: paneles en columnas (mampostería). -->
       <div class="areas">
-        @for (entry of directory(); track entry.area.id) {
-          <section class="area" [attr.aria-labelledby]="'area-' + entry.area.id">
-            <h3 class="area__title" [id]="'area-' + entry.area.id">
-              <span class="area__icon"><app-icon [name]="entry.area.icon" /></span>
-              <span class="area__name">{{ 'leadership.areas.' + entry.area.i18nKey + '.name' | translate }}</span>
-              <span class="area__count">{{ entry.departments.length }}</span>
+        @for (area of directory(); track area.id) {
+          <section class="area" [attr.aria-labelledby]="'area-' + area.id">
+            <h3 class="area__title" [id]="'area-' + area.id">
+              <app-icon class="area__icon" [name]="area.icon" />
+              <span class="area__name">{{ 'leadership.areas.' + area.i18nKey + '.name' | translate }}</span>
+              <span class="area__count">{{ area.departments.length }}</span>
             </h3>
             <ul class="area__depts" role="list">
-              @for (department of entry.departments; track department.id) {
+              @for (department of area.departments; track department.id) {
                 <li class="dept">
                   <span class="dept__name">{{ 'leadership.departments.' + department.i18nKey | translate }}</span>
                   <span class="dept__people">
-                    @for (assignment of department.members; track $index) {
-                      <button
-                        type="button"
-                        class="who"
-                        [class.is-match]="isMatch(assignment)"
-                        aria-haspopup="dialog"
-                        (click)="open(profile(assignment))"
-                      >
-                        <app-person-avatar
-                          class="who__avatar"
-                          [name]="profile(assignment).name"
-                          [photo]="profile(assignment).photo"
-                        />
-                        <span class="who__name">{{ profile(assignment).name }}</span>
-                        @if (assignment.roles; as roles) {
+                    @for (member of department.members; track member.card.id) {
+                      <a class="who" [routerLink]="member.card.link">
+                        <app-person-avatar class="who__avatar" [photo]="member.card.photo" />
+                        <span class="who__name">
+                          @for (part of member.card.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
+                        </span>
+                        @if (member.roles; as roles) {
                           <span class="who__role">
                             @for (role of roles; track role; let last = $last) {
                               {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
                             }
                           </span>
                         }
-                      </button>
+                      </a>
                     }
                   </span>
                 </li>
@@ -174,96 +262,18 @@
           </section>
         }
       </div>
-    } @else {
-      <p class="dir__empty">{{ 'leadership.directory.empty' | translate: { q: query() } }}</p>
     }
   </section>
 
-  <!-- ================= Contacto: una línea, no una sección ================= -->
+  <!-- ================= Contacto: una franja ================= -->
   <aside class="talk">
     <p class="talk__text">
       <strong>{{ 'leadership.contact.title' | translate }}</strong>
       {{ 'leadership.contact.subtitle' | translate }}
     </p>
     <div class="talk__actions">
-      <a class="talk__btn talk__btn--primary" [routerLink]="links.contact">
-        {{ 'leadership.contact.cta_contact' | translate }}
-      </a>
-      <a class="talk__btn" [routerLink]="links.location">
-        {{ 'leadership.contact.cta_visit' | translate }}
-      </a>
+      <a class="btn btn--primary" [routerLink]="links.contact">{{ 'leadership.contact.cta_contact' | translate }}</a>
+      <a class="btn" [routerLink]="links.location">{{ 'leadership.contact.cta_visit' | translate }}</a>
     </div>
   </aside>
 </div>
-
-<!--
-  Ficha de persona. `<dialog>` nativo: vive en la top layer, así que ningún
-  ancestro con overflow o transform puede recortarla, y el navegador ya
-  aporta foco atrapado, cierre con Esc e inerte el resto de la página.
--->
-<dialog
-  #personDialog
-  class="sheet"
-  [attr.aria-label]="selected()?.name"
-  (click)="onDialogClick($event)"
-  (close)="onClosed()"
->
-  @if (selected(); as person) {
-    <div class="sheet__inner">
-      <button
-        type="button"
-        class="sheet__close"
-        (click)="close()"
-        [attr.aria-label]="'common.close' | translate"
-      >
-        <app-icon name="close" />
-      </button>
-
-      <div class="sheet__head">
-        <app-person-avatar class="sheet__avatar" [name]="person.name" [photo]="person.photo" />
-        <div>
-          <h2 class="sheet__name">{{ person.name }}</h2>
-          @if (person.titles; as titles) {
-            <p class="sheet__titles">
-              @for (title of titles; track title) {
-                <span class="chip chip--gold">{{ 'leadership.titles.' + title | translate }}</span>
-              }
-            </p>
-          }
-        </div>
-      </div>
-
-      <!-- Sólo dónde sirve: los cargos de gobierno ya van en las etiquetas de
-           arriba (antes se repetían aquí en plural: «Prezbiteri · Structura
-           de conducere»). -->
-      @if (servicePostings(person); as postings) {
-        @if (postings.length > 0) {
-          <h3 class="sheet__subtitle">{{ 'leadership.sheet.serves' | translate }}</h3>
-          <ul class="sheet__list">
-            @for (posting of postings; track $index) {
-              <li class="posting">
-                <span class="posting__dept">
-                  {{ 'leadership.departments.' + posting.departmentKey | translate }}
-                </span>
-                <span class="posting__meta">
-                  {{ 'leadership.areas.' + posting.areaKey + '.name' | translate }}
-                  @if (posting.roles; as roles) {
-                    @for (role of roles; track role) {
-                      · {{ 'leadership.roles.' + role | translate }}
-                    }
-                  }
-                </span>
-              </li>
-            }
-          </ul>
-        }
-      }
-
-      <!-- Enlace a esta ficha (`/conducere#<id>`), para compartirla. -->
-      <p class="sheet__link">
-        <span>{{ 'leadership.sheet.link' | translate }}</span>
-        <app-copy-button [value]="personUrl(person)" [label]="person.name" />
-      </p>
-    </div>
-  }
-</dialog>

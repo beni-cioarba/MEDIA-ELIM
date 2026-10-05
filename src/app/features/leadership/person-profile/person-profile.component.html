@@ -1,0 +1,180 @@
+<!--
+  Perfil de una persona del organigrama (`/conducere/<id>`). Sobrio y
+  compacto: foto a sangre en la cabecera; el pastor en navy liso.
+-->
+<article class="profile">
+  <!-- ================= Cabecera ================= -->
+  <header class="hero" [class.hero--pastor]="card().tier === 'pastor'">
+    <div class="hero__photo">
+      <app-person-avatar [photo]="card().photo" />
+    </div>
+
+    <div class="hero__body">
+      <p class="hero__kicker">{{ 'leadership.tier.' + card().tier | translate }}</p>
+      <h1 class="hero__name">{{ card().name }}</h1>
+
+      <!-- Cargos, salvo el que ya dice el antetítulo (pastor / asistente). -->
+      @if (otherTitles().length) {
+        <p class="hero__titles">
+          @for (title of otherTitles(); track title; let last = $last) {
+            {{ 'leadership.titles.' + title | translate }}{{ last ? '' : ' · ' }}
+          }
+        </p>
+      }
+
+      @if (story()?.summary; as summary) {
+        <p class="hero__summary">{{ summary }}</p>
+      }
+
+      <!-- Cifras en una línea: cuánto sirve, dónde, desde cuándo y comité. -->
+      <ul class="facts" role="list">
+        <li>
+          <strong>{{ card().serviceCount }}</strong>
+          {{ (card().serviceCount === 1 ? 'leadership.profile.fact_ministries_one' : 'leadership.profile.fact_ministries_other') | translate }}
+        </li>
+        <li>
+          <strong>{{ areas().length }}</strong>
+          {{ (areas().length === 1 ? 'leadership.profile.fact_areas_one' : 'leadership.profile.fact_areas_other') | translate }}
+        </li>
+        @if (story()?.since; as since) {
+          <li>
+            {{ 'leadership.profile.fact_since' | translate }}
+            <strong>{{ since }}</strong>
+          </li>
+        }
+        @if (inCommittee()) {
+          <li>{{ 'leadership.profile.committee' | translate }}</li>
+        }
+      </ul>
+    </div>
+
+    <div class="hero__actions">
+      <!-- Compartir nativo sólo donde existe (móvil); copiar, siempre. -->
+      @if (canShare) {
+        <button type="button" class="action" (click)="share()">
+          <app-icon name="share" />
+          {{ 'share.button_label' | translate }}
+        </button>
+      }
+      <app-copy-button [value]="url()" [label]="card().name" />
+    </div>
+  </header>
+
+  <!-- ================= Cuerpo: relato + datos ================= -->
+  <div class="layout">
+    <div class="main">
+      @if (story(); as s) {
+        <section class="panel" aria-labelledby="bio-title">
+          <h2 class="panel__title" id="bio-title">{{ 'leadership.profile.bio' | translate }}</h2>
+          <div class="prose">
+            @for (paragraph of s.bio; track $index) {
+              <p>{{ paragraph }}</p>
+            }
+          </div>
+
+          @if (s.verse; as verse) {
+            <figure class="verse">
+              <blockquote class="verse__text">{{ verse.text }}</blockquote>
+              <figcaption class="verse__ref">{{ verse.ref }}</figcaption>
+            </figure>
+          }
+        </section>
+
+        @if (s.sections?.length) {
+          <section class="panel" aria-labelledby="about-title">
+            <h2 class="panel__title" id="about-title">{{ 'leadership.profile.about' | translate }}</h2>
+            <div class="notes">
+              @for (section of s.sections; track $index) {
+                <section class="note">
+                  <h3 class="note__title">{{ section.title }}</h3>
+                  <p class="note__body">{{ section.body }}</p>
+                </section>
+              }
+            </div>
+          </section>
+        }
+
+        @if (isPlaceholder()) {
+          <p class="draft">{{ 'leadership.profile.placeholder' | translate }}</p>
+        }
+      }
+    </div>
+
+    <aside class="side">
+      <!-- Dónde sirve, por áreas. Cada departamento abre el directorio
+           filtrado por él. -->
+      <section class="panel" aria-labelledby="serves-title">
+        <h2 class="panel__title" id="serves-title">{{ 'leadership.profile.serves' | translate }}</h2>
+        @if (areas().length) {
+          <ul class="serves" role="list">
+            @for (group of areas(); track group.area.id) {
+              <li class="serves__area">
+                <app-icon class="serves__icon" [name]="group.area.icon" />
+                <div class="serves__text">
+                  <span class="serves__area-name">
+                    {{ 'leadership.areas.' + group.area.i18nKey + '.name' | translate }}
+                  </span>
+                  @for (posting of group.postings; track posting.departmentKey) {
+                    <a
+                      class="serves__dept"
+                      [routerLink]="index"
+                      [queryParams]="{ q: ('leadership.departments.' + posting.departmentKey | translate) }"
+                    >
+                      {{ 'leadership.departments.' + posting.departmentKey | translate }}
+                      @if (posting.roles; as roles) {
+                        <span class="serves__role">
+                          @for (role of roles; track role; let last = $last) {
+                            {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
+                          }
+                        </span>
+                      }
+                    </a>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="side__empty">{{ 'leadership.profile.serves_none' | translate }}</p>
+        }
+      </section>
+
+      <!-- Con quién comparte departamento. -->
+      @if (peers().length) {
+        <section class="panel" aria-labelledby="peers-title">
+          <h2 class="panel__title" id="peers-title">{{ 'leadership.profile.peers' | translate }}</h2>
+          <ul class="peers" role="list">
+            @for (peer of peers(); track peer.id) {
+              <li>
+                <a class="peer" [routerLink]="peer.link">
+                  <span class="peer__photo">
+                    <app-person-avatar [photo]="peer.photo" />
+                  </span>
+                  <span class="peer__name">{{ peer.name }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </aside>
+  </div>
+
+  <!-- ================= Anterior / siguiente ================= -->
+  <nav class="pager" [attr.aria-label]="'leadership.profile.pager' | translate">
+    <a class="pager__link" [routerLink]="siblings().prev.link" rel="prev">
+      <app-icon name="chevron-left" />
+      <span class="pager__text">
+        <span class="pager__dir">{{ 'leadership.profile.prev' | translate }}</span>
+        <span class="pager__name">{{ siblings().prev.name }}</span>
+      </span>
+    </a>
+    <a class="pager__link pager__link--next" [routerLink]="siblings().next.link" rel="next">
+      <span class="pager__text">
+        <span class="pager__dir">{{ 'leadership.profile.next' | translate }}</span>
+        <span class="pager__name">{{ siblings().next.name }}</span>
+      </span>
+      <app-icon name="chevron-right" />
+    </a>
+  </nav>
+</article>

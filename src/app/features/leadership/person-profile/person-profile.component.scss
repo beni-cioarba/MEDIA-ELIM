@@ -1,0 +1,500 @@
+@use 'ds' as *;
+@use '../leadership-shared' as *;
+
+// =====================================================================
+// Perfil de persona (`/conducere/<id>`). Revisión 05/10/2026 (tercera).
+//
+// Sobrio y compacto. Cabecera = tarjeta con la foto a sangre (todo su alto);
+// el pastor, en navy liso como en el índice. Debajo: relato a la izquierda y
+// datos a la derecha; anterior / siguiente al pie. Piezas comunes en
+// `_leadership-shared.scss`.
+// =====================================================================
+
+:host {
+  display: block;
+}
+
+.profile {
+  @include container(76rem);
+
+  display: grid;
+  gap: 0.875rem;
+  padding-block: clamp(1rem, 2.5vh, 1.5rem) clamp(2rem, 5vh, 3rem);
+}
+
+// ---------------------------------------------------------------------
+// Cabecera
+// ---------------------------------------------------------------------
+.hero {
+  display: grid;
+  grid-template-columns: clamp(9rem, 6rem + 9vw, 15rem) minmax(0, 1fr) auto;
+  min-height: clamp(11rem, 8rem + 9vw, 16rem);
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
+  background: var(--c-surface);
+}
+
+.hero__photo {
+  @include lead-photo-fill;
+}
+
+.hero__body {
+  display: grid;
+  align-content: center;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.hero__kicker {
+  @include lead-eyebrow;
+}
+
+.hero__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--c-primary);
+}
+
+.hero__titles {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-primary-soft);
+}
+
+.hero__summary {
+  max-width: 62ch;
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--c-muted);
+  text-wrap: pretty;
+}
+
+// Cifras en una línea, separadas por un punto medio.
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
+
+  li + li::before {
+    content: '·';
+    margin-inline: 0.5rem;
+    color: var(--c-faint);
+  }
+
+  strong {
+    font-variant-numeric: tabular-nums;
+    color: var(--c-primary);
+  }
+}
+
+.hero__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1rem, 2.5vw, 1.5rem) 0 0;
+}
+
+// Botón «Distribuie» propio (el de la web lleva fondo ocre).
+.action {
+  @include lead-button;
+
+  app-icon {
+    font-size: 1rem;
+  }
+}
+
+// Pastor: navy liso, como su tarjeta del índice. «Distribuie» y «Copiar»
+// heredan la versión clara de los tokens que ya consumen.
+.hero--pastor {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+
+  .hero__kicker,
+  .hero__summary,
+  .facts {
+    color: var(--c-on-band-muted);
+  }
+
+  .hero__name,
+  .facts strong {
+    color: var(--c-on-primary);
+  }
+
+  .hero__titles {
+    color: var(--c-on-band-muted);
+  }
+
+  .facts li + li::before {
+    color: var(--c-on-band-muted);
+  }
+
+  .action {
+    border-color: rgb(255 255 255 / 0.3);
+    background: transparent;
+    color: var(--c-on-primary);
+
+    &:hover {
+      background: rgb(255 255 255 / 0.1);
+    }
+
+    &:focus-visible {
+      outline-color: var(--c-on-primary);
+    }
+  }
+
+  .hero__actions {
+    --c-text: var(--c-on-primary);
+    --c-muted: var(--c-on-band-muted);
+    --c-primary: var(--c-on-primary);
+    --c-primary-soft: var(--c-on-primary);
+    --c-hairline: rgb(255 255 255 / 0.24);
+    --c-veil: rgb(255 255 255 / 0.1);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Cuerpo
+// ---------------------------------------------------------------------
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem);
+  align-items: start;
+  gap: 0.875rem;
+}
+
+.main,
+.side {
+  display: grid;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.side {
+  position: sticky;
+  top: calc(var(--nav-height, 4rem) + 1rem);
+}
+
+.panel {
+  padding: clamp(0.9rem, 2vw, 1.25rem);
+  border: 1px solid var(--c-hairline);
+  border-radius: $lead-radius;
+  background: var(--c-surface);
+}
+
+.panel__title {
+  @include lead-panel-title;
+}
+
+.prose {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 70ch;
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--c-text);
+    text-wrap: pretty;
+  }
+}
+
+// Versículo: Playfair sólo aquí (regla de tipografía: versículos y marca).
+.verse {
+  max-width: 70ch;
+  margin: 1rem 0 0;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-inline-start: 3px solid var(--c-primary);
+}
+
+.verse__text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--c-primary);
+  text-wrap: pretty;
+}
+
+.verse__ref {
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+// Explicaciones: rejilla de notas, sin marco propio (ya están en un panel).
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem 1.25rem;
+}
+
+.note {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 2px solid var(--c-hairline-strong);
+}
+
+.note__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.note__body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+// Aviso de maqueta.
+.draft {
+  margin: 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--c-faint);
+}
+
+// ---------------------------------------------------------------------
+// Columna de datos
+// ---------------------------------------------------------------------
+.serves {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.serves__area {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem;
+}
+
+.serves__icon {
+  margin-top: 0.05rem;
+  font-size: 1.05rem;
+  color: var(--c-primary-soft);
+}
+
+.serves__text {
+  display: grid;
+  justify-items: start;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.serves__area-name {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.serves__dept {
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include lead-focus(1px);
+}
+
+.serves__role {
+  margin-inline-start: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.side__empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
+}
+
+// Con quién sirve: filas compactas con la foto a sangre.
+.peers {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.peer {
+  @include lead-card;
+
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  min-height: 2.5rem;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.peer__photo {
+  @include lead-photo-fill;
+
+  align-self: stretch;
+}
+
+.peer__name {
+  overflow: hidden;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------
+// Anterior / siguiente
+// ---------------------------------------------------------------------
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.pager__link {
+  @include lead-card;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
+  color: var(--c-muted);
+
+  > app-icon {
+    flex: none;
+    font-size: 1.2rem;
+  }
+}
+
+.pager__link--next {
+  justify-content: flex-end;
+  text-align: end;
+}
+
+.pager__text {
+  display: grid;
+  min-width: 0;
+}
+
+.pager__dir {
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.pager__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------
+// Anchos estrechos
+// ---------------------------------------------------------------------
+@include until('lg') {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .side {
+    position: static;
+  }
+}
+
+@include until('md') {
+  // Foto arriba a todo el ancho (16:10, encuadrada a la cara) y texto debajo
+  // también a todo el ancho: en columna, la foto se estiraba a todo el alto
+  // del texto y desperdiciaba media tarjeta.
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'photo'
+      'body'
+      'actions';
+    min-height: 0;
+  }
+
+  .hero__photo {
+    grid-area: photo;
+    aspect-ratio: 16 / 10;
+  }
+
+  .hero__body {
+    grid-area: body;
+    padding: 0.9rem 0.9rem 0.5rem;
+  }
+
+  .hero__actions {
+    grid-area: actions;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 0.9rem 0.9rem;
+  }
+
+  .hero__summary {
+    font-size: 0.875rem;
+  }
+
+  // Cifras en cápsulas: con puntos medios, al saltar de línea quedaban
+  // separadores huérfanos al principio de la línea.
+  .facts {
+    gap: 0.3rem;
+
+    li {
+      padding: 0.1rem 0.5rem;
+      border: 1px solid var(--c-hairline-strong);
+      border-radius: 999px;
+    }
+
+    li + li::before {
+      content: none;
+    }
+  }
+
+  .hero--pastor .facts li {
+    border-color: rgb(255 255 255 / 0.24);
+  }
+}

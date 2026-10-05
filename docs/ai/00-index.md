@@ -27,6 +27,7 @@ src/app/
   core/
     church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
     leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
+    leadership-stories.config.ts  Biografías de los perfiles `/conducere/<id>` (maqueta hasta que lleguen)
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
     family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
@@ -71,7 +72,7 @@ src/app/
     nav-hub/                Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`)
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
-    leadership/             Estructura de liderazgo y departamentos
+    leadership/             Índice del organigrama + `person-profile/` (perfil `/conducere/<id>`)
     announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección)
     family-prayer/          ⭐ Rugăciune pentru familii: página, resumen, ficha, foto entera, acceso desde anuncios
     prayer-causes/          ⭐ Cauzele Bisericii Elim: página + tablero (web y proyección)
@@ -113,6 +114,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
+| «Biografía / foto de alguien de la conducere»       | `core/leadership-stories.config.ts` / `photo` en `PEOPLE` — `docs/ai/20-content-i18n.md` |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
 | «Proyectar en la pantalla del templo» · «en dos pantallas a la vez» | `/media/control` → Pantallas → «Detectar pantallas» → «Proyectar» en cada una (nada de código; `docs/ai/30-presentation.md`) |

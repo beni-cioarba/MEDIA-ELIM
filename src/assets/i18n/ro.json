@@ -1077,7 +1077,7 @@
       "ref": "Art. {{n}}",
       "ref_long": "Citește articolul {{n}} din Mărturisirea de credință"
     },
-    "hint": "Apasă pe orice nume și vezi tot ce slujește persoana aceea în biserică.",
+    "hint": "Apasă pe oricine ca să-i vezi profilul complet.",
     "structure": {
       "title": "Structura de conducere",
       "subtitle": "Oficiile de conducere recunoscute de mărturisirea de credință, la care se ajunge prin actul ordinării."
@@ -1164,10 +1164,6 @@
       "design": "Design",
       "cleaning": "Curățenie"
     },
-    "sheet": {
-      "serves": "Unde slujește",
-      "link": "Link către această fișă"
-    },
     "ministries": {
       "worship": {
         "name": "Închinare",
@@ -1214,10 +1210,52 @@
       "search": "Caută o persoană sau un departament",
       "empty": "Niciun rezultat pentru „{{q}}”.",
       "results_one": "Un departament găsit",
-      "results_other": "{{n}} departamente găsite"
+      "results_other": "{{n}} departamente găsite",
+      "view_label": "Mod de afișare",
+      "view_areas": "Departamente",
+      "view_people": "Persoane",
+      "results_people_one": "O persoană găsită",
+      "results_people_other": "{{n}} persoane găsite",
+      "clear": "Șterge căutarea"
     },
     "serves_one": "o slujire",
-    "serves_other": "{{n}} slujiri"
+    "serves_other": "{{n}} slujiri",
+    "stats": {
+      "people": "Persoane",
+      "offices": "Oficii",
+      "areas": "Arii",
+      "departments": "Departamente"
+    },
+    "pastoral": {
+      "title": "Grija pastorală"
+    },
+    "tier": {
+      "pastor": "Pastorul bisericii",
+      "assistant": "Pastor asistent",
+      "leader": "Conducerea bisericii",
+      "member": "Slujitor"
+    },
+    "view_profile": "Vezi profilul",
+    "leaders": {
+      "title": "Conducerea"
+    },
+    "profile": {
+      "bio": "Biografie",
+      "about": "Despre slujire",
+      "serves": "Unde slujește",
+      "serves_none": "Slujește în conducerea bisericii.",
+      "peers": "Slujește împreună cu",
+      "committee": "Comitetul Bisericii",
+      "fact_since": "din",
+      "pager": "Alte profiluri",
+      "prev": "Anterior",
+      "next": "Următorul",
+      "placeholder": "Text de probă: biografia reală va fi adăugată în curând.",
+      "fact_ministries_one": "slujire",
+      "fact_ministries_other": "slujiri",
+      "fact_areas_one": "arie",
+      "fact_areas_other": "arii"
+    }
   },
   "credo": {
     "eyebrow": "Ce credem",

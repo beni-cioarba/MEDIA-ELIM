@@ -463,3 +463,57 @@ export const PEOPLE_INDEX: ReadonlyMap<PersonId, PersonProfile> = (() => {
   return index;
 })();
 
+
+// ---------------------------------------------------------------------
+// Rango visual y orden de lectura
+// ---------------------------------------------------------------------
+
+/**
+ * Peso visual de una persona en la web. **No es una jerarquía de rango**
+ * (la confesión lo niega: art. 17), sino el orden en que alguien de fuera
+ * busca a quién dirigirse: primero el pastor, después el pastor asistente,
+ * después el resto de cargos de gobierno y, por último, quien sirve en un
+ * departamento.
+ */
+export type PersonTier = 'pastor' | 'assistant' | 'leader' | 'member';
+
+export function personTier(person: Pick<PersonProfile, 'titles' | 'postings'>): PersonTier {
+  if (person.titles?.includes('pastor')) return 'pastor';
+  if (person.titles?.includes('assistant_pastor')) return 'assistant';
+  return person.postings.some((posting) => posting.areaKey === null) ? 'leader' : 'member';
+}
+
+/**
+ * Todas las personas, cada una una vez, en orden de lectura de la página:
+ * cargos de gobierno (en su orden), comité y después el directorio por
+ * áreas. Es el orden de «anterior / siguiente» de los perfiles.
+ */
+export const PEOPLE_IN_ORDER: readonly PersonProfile[] = (() => {
+  const ids = new Set<PersonId>([
+    ...LEADERSHIP_OFFICES.flatMap((office) => office.members.map((m) => m.person)),
+    ...CHURCH_COMMITTEE,
+    ...SERVICE_AREAS.flatMap((area) => area.departments.flatMap((d) => d.members.map((m) => m.person))),
+    ...PEOPLE.map((person) => person.id),
+  ]);
+  return [...ids].map((id) => PEOPLE_INDEX.get(id) as PersonProfile);
+})();
+
+/**
+ * Con quién comparte departamento una persona (sin ella misma), en orden de
+ * lectura. Responde a «¿con quién trabaja?» en su perfil.
+ */
+export function coServants(id: PersonId): readonly PersonProfile[] {
+  const peers = new Set<PersonId>();
+  for (const area of SERVICE_AREAS) {
+    for (const department of area.departments) {
+      if (!department.members.some((m) => m.person === id)) continue;
+      for (const { person } of department.members) if (person !== id) peers.add(person);
+    }
+  }
+  return PEOPLE_IN_ORDER.filter((person) => peers.has(person.id as PersonId));
+}
+
+/** ¿Es un `PersonId` válido? Para validar el parámetro de la ruta del perfil. */
+export function isPersonId(value: string): value is PersonId {
+  return PEOPLE_INDEX.has(value as PersonId);
+}

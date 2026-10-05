@@ -101,6 +101,55 @@ tarjeta de conducerea dice cuántas slujiri tiene; la búsqueda resalta a las
 personas que coinciden, anuncia el resultado (`aria-live`) y se recalcula al
 cambiar de idioma; contador de departamentos por área.
 
+**Revisión del 05/10/2026 — índice + perfiles propios** (estado vigente).
+Cada persona tiene **su página** `/conducere/<id>` (`features/leadership/person-profile/`,
+chunk propio, `noindex` mientras el texto sea de maqueta).
+
+*Diseño* (decisión firme del usuario: «simple y profesional, digno de una app
+escalable»; **sin dorados, brillos, tramas ni degradados**; compacto y
+aprovechando el espacio para imágenes y textos):
+
+- Superficies blancas con filete gris; **navy como único acento**. Fotos **a
+  sangre** (la imagen llena su hueco de la tarjeta; `lead-photo-fill`).
+- Jerarquía por tamaño y posición: **pastor** en la tarjeta principal, navy
+  liso y foto mayor; **pastor asistente** al lado en claro; el resto de la
+  conducerea en tarjetas con foto cuadrada (en móvil, filas con la foto a la
+  izquierda). Comité en tira de avatares. Directorio con dos vistas
+  (departamentos / personas).
+- Perfil: cabecera con la foto a sangre (móvil: arriba a todo el ancho, 16:10);
+  el del pastor en navy liso. Relato (biografía, versículo en Playfair,
+  explicaciones) + columna con dónde sirve y con quién; anterior / siguiente.
+- Avatar sin foto = silueta gris sobre gris claro (`person-avatar`, sin
+  tamaño propio: lo pone el contenedor con `--avatar-size` o al 100 %).
+- Estilos comunes en `features/leadership/_leadership-shared.scss`.
+
+*Arquitectura*:
+
+- `leadership.view.ts`: **modelos de vista constantes** (tarjetas de persona,
+  directorio resuelto, cifras, `normalize`, `highlight`). Las plantillas sólo
+  leen campos; nada de llamadas a funciones por tarjeta.
+- **Estado del directorio en la URL** (`?vista=persoane&q=…`), escrito con
+  `Location.replaceState` (sin navegar ni mover el scroll): se comparte una
+  búsqueda y «atrás» desde un perfil la conserva. Índice de búsqueda por
+  idioma (`computed`). Atajo `/` para buscar; coincidencias resaltadas
+  conservando diacríticos (`HighlightPipe`, puro).
+- **Guardas perezosas** (`leadership.guards.ts`, cargadas con `import()` desde
+  `app.routes.ts` para no inflar el bundle inicial): id inexistente → índice;
+  `/conducere#<id>` antiguo → perfil. Ambas con `replaceUrl`.
+- **Migas de pan con el nombre**: `BreadcrumbTailService` (core/navigation);
+  una página de detalle pone su nombre y la migaja lo añade como último eslabón.
+  Pestaña y metadatos: `SeoService.setOverride`.
+- En el perfil, cada departamento enlaza al directorio filtrado (`?q=`).
+- Biografías: `core/leadership-stories.config.ts` → `PERSON_STORIES`
+  (`summary`, `bio[]`, `sections[]`, `verse`, `since`); sin entrada, texto de
+  maqueta por nivel mientras `PLACEHOLDER_STORIES` sea `true`.
+
+| Quiero…                        | Hago                                                                       |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| Poner la biografía de alguien  | Entrada en `PERSON_STORIES` (`leadership-stories.config.ts`)               |
+| Quitar todos los textos de prueba | `PLACEHOLDER_STORIES = false` (y quitar `noindex` de la ruta `conducere/:id`) |
+| Migas con el nombre en otra página de detalle | `BreadcrumbTailService.set(nombre)` y `set(null)` al destruirse |
+
 `Assignment.roles` es una lista: alguien puede ser responsable **y** director
 del mismo departamento sin aparecer dos veces en la tarjeta. Y un cargo de
 gobierno puede declarar `impliedTitle` para no repetir «Cenzor» debajo de un
