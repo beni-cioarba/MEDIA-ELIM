@@ -238,7 +238,6 @@
   }
 }
 
-
 // Entre `lg` (donde aparece el menú horizontal) y `xl` la barra va justa:
 // cinco enlaces, dos CTA y el selector de idioma. El rótulo del donativo se
 // repliega al icono porque es la acción *secundaria* y porque así el ajuste no
@@ -634,27 +633,42 @@
 }
 
 /*
- * El marco recorta: al apuntar se acerca **la foto dentro del marco**, no se
- * mueve la tarjeta. Mover la tarjeta desplaza el objetivo justo cuando el
- * usuario va a pulsarlo; acercar la foto no mueve nada.
+ * Portada SIEMPRE entera: la foto se encaja (`contain`) y el hueco que sobra
+ * lo rellena la misma foto difuminada (como las fotos de las familias).
+ * Al apuntar se aviva el relleno, no se mueve la tarjeta: mover la tarjeta
+ * desplaza el objetivo justo cuando el usuario va a pulsarlo.
  */
 .nav__album-frame {
+  position: relative;
   display: block;
   overflow: hidden;
+  isolation: isolate;
+  aspect-ratio: 16 / 9;
   border-radius: var(--r-md);
-  background: var(--c-surface-2);
+  background: var(--c-primary-deep);
+}
+
+.nav__album-ambient {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.15);
+  filter: blur(14px) saturate(1.2) brightness(0.65);
+  transition: filter var(--mo-base) var(--ea-standard);
 }
 
 .nav__album-img {
+  position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  transition: transform var(--mo-base) var(--ea-standard);
+  height: 100%;
+  object-fit: contain;
 }
 
-.nav__album:hover .nav__album-img {
-  transform: scale(1.06);
+.nav__album:hover .nav__album-ambient {
+  filter: blur(14px) saturate(1.3) brightness(0.85);
 }
 
 /*
@@ -684,10 +698,8 @@
 }
 
 @include motion-reduce {
-  .nav__album-img,
-  .nav__album:hover .nav__album-img {
+  .nav__album-ambient {
     transition: none;
-    transform: none;
   }
 }
 

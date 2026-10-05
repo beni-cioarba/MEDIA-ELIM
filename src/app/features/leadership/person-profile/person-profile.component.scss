@@ -4,7 +4,7 @@
 // =====================================================================
 // Perfil de persona (`/conducere/<id>`). Revisión 05/10/2026 (tercera).
 //
-// Sobrio y compacto. Cabecera = tarjeta con la foto a sangre (todo su alto);
+// Sobrio y compacto. Cabecera = tarjeta con la foto a sangre y entera (4:5);
 // el pastor, en navy liso como en el índice. Debajo: relato a la izquierda y
 // datos a la derecha; anterior / siguiente al pie. Piezas comunes en
 // `_leadership-shared.scss`.
@@ -25,10 +25,17 @@
 // ---------------------------------------------------------------------
 // Cabecera
 // ---------------------------------------------------------------------
+// La foto (4:5, entera) ocupa la primera columna y marca el alto; nombre y
+// datos se centran en vertical a su lado (filas 1fr arriba y abajo).
 .hero {
   display: grid;
-  grid-template-columns: clamp(9rem, 6rem + 9vw, 15rem) minmax(0, 1fr) auto;
-  min-height: clamp(11rem, 8rem + 9vw, 16rem);
+  grid-template-columns: clamp(9rem, 6rem + 8vw, 14rem) minmax(0, 1fr) auto;
+  grid-template-rows: 1fr auto auto 1fr;
+  grid-template-areas:
+    'photo .    actions'
+    'photo id   actions'
+    'photo body actions'
+    'photo .    actions';
   overflow: hidden;
   border: 1px solid var(--c-hairline);
   border-radius: $lead-radius;
@@ -37,14 +44,29 @@
 
 .hero__photo {
   @include lead-photo-fill;
+
+  grid-area: photo;
+  align-self: start;
+  aspect-ratio: 4 / 5;
+}
+
+.hero__id,
+.hero__body {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding-inline: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.hero__id {
+  grid-area: id;
+  padding-top: clamp(1rem, 2.5vw, 1.75rem);
 }
 
 .hero__body {
-  display: grid;
-  align-content: center;
-  gap: 0.35rem;
-  min-width: 0;
-  padding: clamp(1rem, 2.5vw, 1.75rem);
+  grid-area: body;
+  padding-top: 0.35rem;
+  padding-bottom: clamp(1rem, 2.5vw, 1.75rem);
 }
 
 .hero__kicker {
@@ -101,6 +123,7 @@
 }
 
 .hero__actions {
+  grid-area: actions;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -358,17 +381,18 @@
   @include lead-card;
 
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr);
+  grid-template-columns: 2.4rem minmax(0, 1fr);
   align-items: center;
-  min-height: 2.5rem;
   overflow: hidden;
   border-radius: 8px;
 }
 
+// Foto entera (4:5): marca el alto de la fila.
 .peer__photo {
   @include lead-photo-fill;
 
-  align-self: stretch;
+  align-self: start;
+  aspect-ratio: 4 / 5;
 }
 
 .peer__name {
@@ -445,33 +469,28 @@
 }
 
 @include until('md') {
-  // Foto arriba a todo el ancho (16:10, encuadrada a la cara) y texto debajo
-  // también a todo el ancho: en columna, la foto se estiraba a todo el alto
-  // del texto y desperdiciaba media tarjeta.
+  // Foto entera a la izquierda (más pequeña) con el nombre al lado; resumen,
+  // cifras y acciones debajo a todo el ancho. Antes la foto iba arriba en
+  // 16:10 y se cortaba media foto.
   .hero {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    grid-template-rows: none;
     grid-template-areas:
-      'photo'
-      'body'
-      'actions';
-    min-height: 0;
+      'photo id'
+      'body  body'
+      'actions actions';
   }
 
-  .hero__photo {
-    // En 16:10 sólo cabe media foto: se ancla arriba para no cortar la cabeza.
-    --avatar-focus: center 4%;
-
-    grid-area: photo;
-    aspect-ratio: 16 / 10;
+  .hero__id {
+    align-self: center;
+    padding: 0.75rem 0.9rem;
   }
 
   .hero__body {
-    grid-area: body;
-    padding: 0.9rem 0.9rem 0.5rem;
+    padding: 0.75rem 0.9rem 0.5rem;
   }
 
   .hero__actions {
-    grid-area: actions;
     flex-direction: row;
     align-items: center;
     padding: 0 0.9rem 0.9rem;

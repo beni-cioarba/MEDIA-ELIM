@@ -113,9 +113,10 @@ aprovechando el espacio para imágenes y textos):
   sangre** (la imagen llena su hueco de la tarjeta; `lead-photo-fill`).
 - Jerarquía por tamaño y posición: **pastor** en la tarjeta principal, navy
   liso y foto mayor; **pastor asistente** al lado en claro; el resto de la
-  conducerea en tarjetas con foto cuadrada (en móvil, filas con la foto a la
-  izquierda). Comité con las mismas tarjetas en pequeño (`tiles--compact`,
-  `auto-fit`: los nueve llenan el ancho; en móvil 3 × 3). Directorio con dos
+  conducerea en tarjetas con la foto 4:5 (también en móvil, como el comité:
+  3 + 3 + 1 centrado). Comité con las mismas tarjetas en pequeño
+  (`tiles--compact`). Columnas por consulta de contenedor (`--cols`; 7 → 3/4/7,
+  9 → 3/5/9) y la última fila incompleta centrada. Directorio con dos
   vistas (departamentos / personas). Por departamentos = **directorio en tabla**
   (petición del usuario: «más serio y mejor estructurado»): cada área es una
   cabecera gris + una fila por departamento (`dl`: nombre en columna fija de
@@ -125,7 +126,12 @@ aprovechando el espacio para imágenes y textos):
   `lg`; en móvil el departamento va encima de las personas. Se descartaron el
   mosaico de píldoras (informal) y la rejilla de tarjetas alineadas (tarjetas
   estiradas con huecos).
-- Perfil: cabecera con la foto a sangre (móvil: arriba a todo el ancho, 16:10);
+- **Fotos SIEMPRE enteras** (05/10/2026, petición firme del usuario): el avatar
+  pinta con `contain` y cada hueco de foto tiene la proporción 4:5 del retrato
+  (`aspect-ratio: 4 / 5`), así llena sin recortar. Nada de huecos cuadrados,
+  16:10 ni círculos (las miniaturas del directorio son retratos 1,2 × 1,5rem).
+- Perfil: cabecera con la foto 4:5 a sangre (móvil: foto de 7,5rem a la
+  izquierda con el nombre al lado; resumen y cifras debajo);
   el del pastor en navy liso. Relato (biografía, versículo en Playfair,
   explicaciones) + columna con dónde sirve y con quién; anterior / siguiente.
 - Avatar sin foto = silueta gris sobre gris claro (`person-avatar`, sin
@@ -139,8 +145,7 @@ aprovechando el espacio para imágenes y textos):
   todas) y `sizes` (ancho pintado, o 0,8 × alto si el hueco es más alto que
   ancho); la cabecera del perfil va `eager`. Los rangos existen porque Chrome
   reutiliza una variante mayor ya en memoria: tras abrir el visor, una tarjeta
-  pintaba la de 1600 px reducida ×8 → muaré en trajes y listones. Encuadre `--avatar-focus` (15 % por defecto, 4 % en la cabecera
-  16:10 del móvil). Una foto de < 640 px de ancho sale con aviso: pedir otra.
+  pintaba la de 1600 px reducida ×8 → muaré en trajes y listones. Una foto de < 640 px de ancho sale con aviso: pedir otra.
 - Estilos comunes en `features/leadership/_leadership-shared.scss`.
 
 *Arquitectura*:

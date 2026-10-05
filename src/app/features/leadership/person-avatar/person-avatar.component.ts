@@ -12,10 +12,10 @@ import { PersonPhoto, PhotoSlot, photoSource } from '../person-photo';
  *    fila «a sangre» (la foto con `cover`, la silueta apoyada abajo).
  *  · `--avatar-radius` (círculo por defecto).
  *
- * La foto va con `cover`: en un retrato de cara recortar los bordes es lo
- * correcto (a diferencia de las fotos de grupo de las familias). Todas son
- * retrato 4:5 con la cabeza arriba, así que el encuadre se ancla cerca del
- * borde superior (`--avatar-focus` para un hueco concreto).
+ * La foto se ve SIEMPRE entera (`contain`, decisión del usuario: nunca
+ * recortada). Todas son retrato 4:5, así que quien la usa da a su hueco esa
+ * proporción (`aspect-ratio: 4 / 5`) y la foto lo llena sin bandas; si algún
+ * hueco no la respeta, sobra fondo gris claro, nunca se corta la cara.
  *
  * Nitidez: quien lo usa dice el tipo de hueco (`slot`, que acota los anchos
  * del `srcset`; ver `PhotoSlot`) y `sizes` con el ancho al que se pinta (si el
@@ -69,9 +69,8 @@ import { PersonPhoto, PhotoSlot, photoSource } from '../person-photo';
     .avatar__img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      /* Retratos 4:5 con la cabeza arriba: al recortar, nunca se corta la cabeza. */
-      object-position: var(--avatar-focus, center 15%);
+      /* Foto entera siempre; el hueco tiene la proporción 4:5 de la foto. */
+      object-fit: contain;
     }
 
     .avatar__silhouette {

@@ -253,7 +253,11 @@ usuario). Las vecinas se cargan en reposo tras cada navegación (`warm`).
 Se desplazan juntos `<main>`, migaja y pie; la cabecera y la barra se
 quedan. Al completar: subida **instantánea** a 0 (el `html` tiene scroll
 suave), navegar, dos fotogramas y fundido de 160 ms sobre la página real.
-Una página que arranque algo caro debe consultar `PAGE_PREVIEW`
+**Las páginas de pestaña no llevan animación de entrada** (05/10/2026): la
+página real se monta bajo la vista previa durante el fundido, y una entrada
+animada (opacidad 0 + desplazamiento) se veía doble y desvaída bajo ella.
+Como en una app nativa, el destino de una pestaña está ahí sin más; lo
+animado es el gesto. Una página que arranque algo caro debe consultar `PAGE_PREVIEW`
 (`core/navigation/page-preview.ts`); hoy sólo el escenario (sondeo del
 directo). Manejadores pasivos
 fuera de Angular, un `transform` + variables CSS por fotograma;
@@ -270,8 +274,11 @@ dedos.
 la página actual sube arriba. Activa = `NavActiveService.trail()[0]`; en
 páginas fuera de las pestañas (Donează) el indicador se apaga.
 
-**Portada de sección** (`NavHubComponent`, una para todos los grupos):
-cabecera navy + una tarjeta por hijo con icono, rótulo, descripción y el
+**Portada de sección** (`NavHubComponent`, una para todos los grupos;
+rediseñada sobria el 05/10/2026: navy liso, sin píldora de «N páginas»,
+tramas, halos ni dorados): cabecera + una entrada por hijo con icono en
+fondo tintado, rótulo, línea de estado «rótulo · **dato**» (texto corrido,
+verde con punto si es de hoy) y detalle, más chevron; y el
 **dato vivo** de `NavSummaryService` (próximo culto, avisos en vigor, lectura
 de hoy, familias de la semana, fase del concurso, miniaturas de la
 galería…). Debajo, el **destacado** del grupo (`nav-hub/spotlights/`,
@@ -286,6 +293,14 @@ es rejilla de `minmax(0, 1fr)`; sin él el carrusel ensanchaba la página a
 `navHubRoute()` en `app.routes.ts`. Página nueva dentro de un grupo = sale
 sola; darle dato vivo = un `case` en `NavSummaryService.build()`.
 `/multimedia` y no `/media`: `/media` es el panel completo y circula en QR.
+En el teléfono (< `sm`) las entradas son filas de **una sola superficie**
+(`.hub__body` da el margen, `.hub__list` es la superficie) con filetes que
+empiezan en la columna del texto; con dato vivo no se repite la descripción.
+Sin `filter: drop-shadow` en la lista (obligaba a repintarla entera durante
+el arrastre): sombra normal en la superficie. Desde `sm`, tarjetas en
+rejilla con la misma anatomía y la descripción en hasta dos líneas. Las portadas de álbum (destacado de Media y panel
+de escritorio de la cabecera) se ven **enteras**: `contain` + la misma foto
+difuminada de relleno, y el nombre debajo, no encima de la foto.
 
 **Contrato de altura** (`_base.scss`): `MainLayoutComponent` pone
 `body.has-tab-bar`; ahí se declaran `--tab-bar-height`, `--tab-bar-gap`,

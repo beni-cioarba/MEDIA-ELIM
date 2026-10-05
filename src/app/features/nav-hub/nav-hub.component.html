@@ -1,15 +1,9 @@
 @if (group(); as grupo) {
   <section class="hub" [attr.aria-labelledby]="'hub-title-' + grupo.id">
-    <!-- Cabecera: qué es la sección y cuántas páginas tiene. Compacta: en el
-         teléfono la sección se tiene que ver entera sin bajar mucho. -->
+    <!-- Cabecera: el nombre de la sección y para qué sirve. Compacta: en el
+         teléfono la lista se tiene que ver casi entera sin bajar. -->
     <header class="hub__hero">
       <div class="hub__hero-inner">
-        <p class="hub__eyebrow">
-          @if (grupo.icon; as icono) {
-            <app-icon class="hub__eyebrow-icon" [name]="icono" />
-          }
-          {{ 'nav_hub.eyebrow' | translate: { count: grupo.children.length } }}
-        </p>
         <h1 class="hub__title" [id]="'hub-title-' + grupo.id">{{ grupo.labelKey | translate }}</h1>
         @if (grupo.descriptionKey) {
           <p class="hub__lead">{{ grupo.descriptionKey | translate }}</p>
@@ -17,58 +11,59 @@
       </div>
     </header>
 
-    <!-- Una tarjeta por página de la sección. La tarjeta entera es el enlace:
+    <!-- Una entrada por página de la sección. La entrada entera es el enlace:
          en el teléfono el objetivo táctil es la fila completa. -->
-    <ul class="hub__grid" role="list">
-      @for (card of cards(); track card.item.id; let i = $index) {
-        <li class="hub__cell" [style.--i]="i">
-          <a
-            class="card"
-            [routerLink]="card.external ? null : card.item.path"
-            [attr.href]="card.external ? card.item.externalUrl : null"
-            [attr.target]="card.external ? '_blank' : null"
-            [attr.rel]="card.external ? 'noopener noreferrer' : null"
-          >
-            <span class="card__head">
-              <span class="card__tile" aria-hidden="true">
+    <div class="hub__body">
+      <ul class="hub__list" role="list">
+        @for (card of cards(); track card.item.id) {
+          @let resumen = card.summary();
+          <li class="hub__item">
+            <a
+              class="entry"
+              [class.has-live]="resumen !== null"
+              [routerLink]="card.external ? null : card.item.path"
+              [attr.href]="card.external ? card.item.externalUrl : null"
+              [attr.target]="card.external ? '_blank' : null"
+              [attr.rel]="card.external ? 'noopener noreferrer' : null"
+            >
+              <span class="entry__icon" aria-hidden="true">
                 <app-icon [name]="card.item.icon ?? 'arrow-right'" />
               </span>
-              <span class="card__text">
-                <span class="card__title">{{ card.item.labelKey | translate }}</span>
+
+              <span class="entry__body">
+                <span class="entry__title">{{ card.item.labelKey | translate }}</span>
                 @if (card.item.descriptionKey) {
-                  <span class="card__desc">{{ card.item.descriptionKey | translate }}</span>
+                  <span class="entry__desc">{{ card.item.descriptionKey | translate }}</span>
                 }
-              </span>
-              <app-icon class="card__go" [name]="card.external ? 'external' : 'arrow-right'" />
-            </span>
 
-            @if (card.summary(); as resumen) {
-              <span class="card__live" [class.is-live]="resumen.live">
-                <span class="card__kicker">
-                  @if (resumen.live) {
-                    <span class="card__pulse" aria-hidden="true"></span>
+                <!-- Dato vivo: qué pasa ahora en esa página. El rótulo da el
+                     contexto y el dato va destacado; el detalle, debajo. -->
+                @if (resumen) {
+                  <span class="entry__status" [class.is-live]="resumen.live">
+                    <span class="entry__kicker">{{ resumen.kicker.key | translate: resumen.kicker.params }}</span>
+                    @if (resumen.value) {
+                      <span class="entry__value">{{ resumen.value }}</span>
+                    } @else if (resumen.valueText; as texto) {
+                      <span class="entry__value">{{ texto.key | translate: texto.params }}</span>
+                    }
+                  </span>
+                  @if (resumen.meta) {
+                    <span class="entry__meta">{{ resumen.meta }}</span>
                   }
-                  {{ resumen.kicker.key | translate: resumen.kicker.params }}
-                </span>
-                @if (resumen.value) {
-                  <span class="card__value">{{ resumen.value }}</span>
-                } @else if (resumen.valueText; as texto) {
-                  <span class="card__value">{{ texto.key | translate: texto.params }}</span>
-                }
-                @if (resumen.meta) {
-                  <span class="card__meta">{{ resumen.meta }}</span>
                 }
               </span>
-            }
-          </a>
-        </li>
-      }
-    </ul>
 
-    <!-- Destacado: lo que se ve de un vistazo y no cabe en una tarjeta (la
+              <app-icon class="entry__go" [name]="card.external ? 'external' : 'chevron-right'" />
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Destacado: lo que se ve de un vistazo y no cabe en una entrada (la
          semana, las familias, los álbumes, las emisiones, la invitación). Es
          el equivalente a escala de página del bloque derecho del panel de
-         escritorio. Un grupo sin destacado se queda en las tarjetas. -->
+         escritorio. Un grupo sin destacado se queda en la lista. -->
     <div class="hub__spotlight">
       @switch (grupo.id) {
         @case ('program') {

@@ -1,15 +1,16 @@
 <!--
   Perfil de una persona del organigrama (`/conducere/<id>`). Sobrio y
-  compacto: foto a sangre en la cabecera; el pastor en navy liso.
+  compacto: foto a sangre y entera (4:5) en la cabecera; el pastor en navy liso.
 -->
 <article class="profile">
   <!-- ================= Cabecera ================= -->
   <header class="hero" [class.hero--pastor]="card().tier === 'pastor'">
     <div class="hero__photo" [appViewable]="photoItem()">
-      <app-person-avatar slot="hero" [photo]="card().photo" sizes="(max-width: 860px) 100vw, 16rem" [eager]="true" />
+      <app-person-avatar slot="hero" [photo]="card().photo" sizes="(max-width: 860px) 7.5rem, 14rem" [eager]="true" />
     </div>
 
-    <div class="hero__body">
+    <!-- Quién es: en móvil va al lado de la foto; el resto, debajo. -->
+    <div class="hero__id">
       <p class="hero__kicker">{{ 'leadership.tier.' + card().tier | translate }}</p>
       <h1 class="hero__name">{{ card().name }}</h1>
 
@@ -21,7 +22,9 @@
           }
         </p>
       }
+    </div>
 
+    <div class="hero__body">
       @if (story()?.summary; as summary) {
         <p class="hero__summary">{{ summary }}</p>
       }

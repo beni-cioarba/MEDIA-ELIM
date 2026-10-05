@@ -163,6 +163,7 @@
                     <li>
                       <a class="nav__album" [routerLink]="galleryPath" (click)="ui.closeAll()">
                         <span class="nav__album-frame">
+                          <img class="nav__album-ambient" [src]="album.thumb" alt="" loading="lazy" decoding="async" />
                           <img
                             class="nav__album-img"
                             [src]="album.thumb"

@@ -1,11 +1,13 @@
 @use 'ds' as *;
 
 // =====================================================================
-// Portada de sección (03/10/2026, «profesional y futurista»).
-// Diseño propio, fuera del catálogo a propósito (AGENTS.md): cabecera navy
-// con retícula y halo dorado, y una rejilla de tarjetas que se monta sobre
-// su borde inferior. Cada tarjeta = icono · rótulo · descripción + el dato
-// vivo de la página (franja inferior). Detalle en docs/ai/15-navigation.md.
+// Portada de sección (rediseño 05/10/2026: sobria y profesional).
+// Cabecera navy lisa y, montada sobre su borde, la lista de páginas de la
+// sección. Cada entrada = icono · rótulo + dato vivo · chevron. Sin tramas,
+// halos, dorados ni animaciones de entrada: la portada es el destino de una
+// pestaña y, como en una app nativa, tiene que estar ahí sin más al llegar
+// (la animación de entrada se veía doble bajo el fundido del gesto de
+// deslizar). Detalle en docs/ai/15-navigation.md.
 // =====================================================================
 
 :host {
@@ -13,9 +15,14 @@
 }
 
 .hub {
-  /* Lo que la rejilla se monta sobre la cabecera. Un solo número: lo usan
-     el relleno inferior de la cabecera y el margen negativo de la rejilla. */
-  --hub-overlap: 2.25rem;
+  /* Lo que la lista se monta sobre la cabecera. Un solo número: lo usan el
+     relleno inferior de la cabecera y el margen negativo de la lista. */
+  --hub-overlap: 2rem;
+  /* Columna del icono y separación con el texto: los filetes entre filas
+     empiezan donde empieza el texto. */
+  --hub-icon: 2.5rem;
+  --hub-gap: 0.875rem;
+  --hub-pad-x: 1rem;
 
   padding-block-end: clamp(1.5rem, 4vh, 2.75rem);
 }
@@ -24,265 +31,276 @@
 // Cabecera
 // ---------------------------------------------------------------------
 .hub__hero {
-  position: relative;
-  overflow: hidden;
-  padding-block: clamp(1.5rem, 5vh, 2.75rem) calc(var(--hub-overlap) + clamp(1.25rem, 3vh, 1.75rem));
-  color: rgb(247 250 252 / 0.78);
-  background:
-    radial-gradient(60rem 22rem at 100% 0%, rgb(212 175 55 / 0.16), transparent 60%),
-    radial-gradient(40rem 18rem at 0% 120%, rgb(76 120 180 / 0.22), transparent 65%),
-    linear-gradient(160deg, var(--c-primary) 0%, var(--c-primary-deep) 70%);
-}
-
-/* Retícula técnica que se desvanece hacia abajo: el gesto «futurista» sin
-   ruido. Puramente decorativa. */
-.hub__hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
-  pointer-events: none;
-}
-
-/* Filete dorado de luz en el borde superior (mismo gesto que el pie). */
-.hub__hero::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(212 175 55 / 0.7) 50%, transparent);
+  padding-block: clamp(1.4rem, 4vh, 2.5rem) calc(var(--hub-overlap) + clamp(1.1rem, 3vh, 1.6rem));
+  background: var(--c-primary-deep);
+  color: rgb(247 250 252 / 0.76);
 }
 
 .hub__hero-inner {
   @include container(var(--w-wide));
-
-  position: relative;
-}
-
-.hub__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.6rem;
-  padding: 0.3rem 0.7rem 0.3rem 0.45rem;
-  border: 1px solid rgb(212 175 55 / 0.35);
-  border-radius: 999px;
-  background: rgb(212 175 55 / 0.08);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-gold);
-}
-
-.hub__eyebrow-icon {
-  font-size: 1rem;
 }
 
 .hub__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 5.5vw, 2.6rem);
+  font-size: clamp(1.75rem, 5.5vw, 2.5rem);
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.02em;
   color: #fff;
 }
 
 .hub__lead {
   max-width: 40rem;
-  margin: 0.55rem 0 0;
-  font-size: clamp(0.9rem, 2.2vw, 1.02rem);
+  margin: 0.45rem 0 0;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
   line-height: 1.5;
 }
 
 // ---------------------------------------------------------------------
-// Rejilla de tarjetas
+// Lista de páginas. En el teléfono, una sola superficie con filas
+// separadas por filete (como los ajustes del sistema); desde `sm`, una
+// rejilla de tarjetas con la misma anatomía.
 // ---------------------------------------------------------------------
-.hub__grid {
+/* El contenedor da el ancho y el margen de página; la superficie es la
+   lista, dentro, para que su fondo no ocupe el margen lateral. */
+.hub__body {
   @include container(var(--w-wide));
 
   position: relative;
-  display: grid;
-  /* Derivada, no fija: 1 columna en el teléfono, 2 en tableta, 3 en
-     escritorio, y crece sola si el grupo gana entradas. */
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-  gap: clamp(0.6rem, 1.6vw, 1rem);
   margin-block: calc(var(--hub-overlap) * -1) 0;
-  /* Sólo el bloque: el relleno lateral es el margen de página de `container`. */
-  padding-block: 0;
+}
+
+.hub__list {
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
-.hub__cell {
+.hub__item {
   display: flex;
   min-width: 0;
-  animation: card-in var(--mo-slow) var(--ea-decelerate) both;
-  animation-delay: calc(var(--i, 0) * 45ms);
 }
 
-.card {
+.entry {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: var(--hub-icon) minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--hub-gap);
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--c-hairline);
-  border-radius: 16px;
-  background: var(--c-surface);
-  box-shadow:
-    0 1px 2px rgb(9 20 36 / 0.06),
-    0 10px 28px -12px rgb(9 20 36 / 0.22);
+  padding: 0.85rem var(--hub-pad-x);
   color: inherit;
   text-decoration: none;
-  transition:
-    transform var(--mo-base) var(--ea-standard),
-    box-shadow var(--mo-base) var(--ea-standard),
-    border-color var(--mo-base) var(--ea-standard);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms var(--ea-standard);
 
-  @include focus-ring(3px);
+  @include focus-ring(-2px);
 }
 
-/* Borde de luz dorada que aparece al apuntar: un degradado en el filete,
-   no un cambio de color plano. */
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  padding: 1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgb(212 175 55 / 0.85), rgb(212 175 55 / 0) 45%);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity var(--mo-base) var(--ea-standard);
-  pointer-events: none;
+/* Respuesta al toque y al ratón: un tinte de la fila, sin mover nada. */
+.entry:active {
+  background: var(--c-surface-accent);
 }
 
 @media (hover: hover) {
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 1px 2px rgb(9 20 36 / 0.06),
-      0 18px 36px -14px rgb(9 20 36 / 0.3);
+  .entry:hover {
+    background: var(--c-surface-accent);
   }
 
-  .card:hover::before {
-    opacity: 1;
-  }
-
-  .card:hover .card__go {
-    transform: translateX(3px);
-    color: var(--c-gold-deep);
+  .entry:hover .entry__go {
+    color: var(--c-primary);
+    transform: translateX(2px);
   }
 }
 
-.card:active {
-  transform: scale(0.99);
-}
-
-.card__head {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.9rem 0.95rem 0.85rem;
-}
-
-.card__tile {
+.entry__icon {
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 12px;
-  background: linear-gradient(145deg, var(--c-primary), var(--c-primary-deep));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
-  color: var(--c-gold);
-  font-size: 1.2rem;
+  width: var(--hub-icon);
+  height: var(--hub-icon);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--c-primary) 8%, var(--c-surface));
+  color: var(--c-primary);
+  font-size: 1.25rem;
 }
 
-.card__text {
+.entry__body {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
   min-width: 0;
 }
 
-.card__title {
+.entry__title {
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
   color: var(--c-primary);
 }
 
-.card__desc {
+.entry__desc {
+  margin-top: 0.1rem;
   font-size: 0.8125rem;
-  line-height: 1.35;
+  line-height: 1.4;
   color: var(--c-muted);
+
+  @include line-clamp(1);
 }
 
-.card__go {
-  font-size: 1.1rem;
-  color: var(--c-primary-soft);
-  transition:
-    transform var(--mo-base) var(--ea-standard),
-    color var(--mo-base) var(--ea-standard);
+/* Línea de estado: «rótulo · dato». El rótulo pone el contexto en gris y el
+   dato va en el color del texto; si algo ocurre hoy, el rótulo pasa a verde
+   con un punto delante. Es texto corrido (no flex): si el dato es largo
+   sigue en la misma línea y salta como una frase, sin dejar el separador
+   colgando al final de la primera. Dos líneas como mucho. */
+.entry__status {
+  margin-top: 0.2rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  /* Reparte el salto para que no quede una palabra suelta en la segunda
+     línea («6» arriba y «cauze» abajo). */
+  text-wrap: pretty;
+
+  @include line-clamp(2);
 }
 
-/* Franja del dato vivo: separada por filete, tono de superficie apagado. Va
-   pegada al fondo (`margin-top: auto`) para que en una fila de tarjetas los
-   datos queden alineados aunque una descripción ocupe dos líneas. */
-.card__live {
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-  margin-top: auto;
-  padding: 0.7rem 0.95rem 0.8rem;
-  border-top: 1px solid var(--c-hairline);
-  background: linear-gradient(180deg, rgb(26 54 93 / 0.035), rgb(26 54 93 / 0.015));
+.entry__kicker {
+  color: var(--c-muted);
+  font-weight: 500;
 }
 
-.card__kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--c-gold-deep);
+.entry__kicker:not(:last-child)::after {
+  content: ' · ';
+  white-space: pre;
 }
 
-.card__pulse {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: #1f9d55;
-  box-shadow: 0 0 0 0 rgb(31 157 85 / 0.5);
-  animation: pulse 2s var(--ea-standard) infinite;
-}
-
-.card__value {
-  font-size: 0.9375rem;
+.entry__status.is-live .entry__kicker {
+  color: var(--c-success);
   font-weight: 600;
-  line-height: 1.35;
+}
+
+.entry__status.is-live .entry__kicker::before {
+  content: '';
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-right: 0.35rem;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: 0.1em;
+}
+
+.entry__value {
+  font-weight: 600;
   color: var(--c-text);
   overflow-wrap: anywhere;
 }
 
-.card__meta {
+.entry__meta {
+  margin-top: 0.05rem;
   font-size: 0.8125rem;
-  line-height: 1.35;
+  line-height: 1.4;
   color: var(--c-muted);
+
+  @include line-clamp(1);
+}
+
+.entry__go {
+  font-size: 1.25rem;
+  color: var(--c-faint);
+  transition:
+    transform 120ms var(--ea-standard),
+    color 120ms var(--ea-standard);
+}
+
+// ---------------------------------------------------------------------
+// Teléfono: superficie única. Lo que identifica la página es su rótulo y lo
+// que interesa es lo que pasa ahora en ella, así que con dato vivo no se
+// repite la descripción (decía lo mismo que el rótulo del dato).
+// ---------------------------------------------------------------------
+@include until('sm') {
+  .hub__list {
+    overflow: hidden;
+    border: 1px solid var(--c-hairline);
+    border-radius: 1rem;
+    background: var(--c-surface);
+    box-shadow:
+      0 1px 2px rgb(9 20 36 / 0.05),
+      0 12px 28px -16px rgb(9 20 36 / 0.22);
+  }
+
+  /* Filete entre filas desde la columna del texto. */
+  .hub__item + .hub__item .entry::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: calc(var(--hub-pad-x) + var(--hub-icon) + var(--hub-gap));
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  .entry.has-live .entry__desc {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Tableta y escritorio: tarjetas sueltas en rejilla derivada (2 columnas en
+// tableta, 3 en escritorio; crece sola si el grupo gana páginas).
+// ---------------------------------------------------------------------
+@include from('sm') {
+  .hub {
+    --hub-overlap: 2.25rem;
+    --hub-icon: 2.75rem;
+    --hub-pad-x: 1.15rem;
+  }
+
+  .hub__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: clamp(0.6rem, 1.4vw, 0.9rem);
+  }
+
+  .entry {
+    align-items: start;
+    padding-block: 1.05rem 1.1rem;
+    border: 1px solid var(--c-hairline);
+    border-radius: 0.875rem;
+    background: var(--c-surface);
+    box-shadow: 0 1px 2px rgb(9 20 36 / 0.05);
+    transition:
+      background-color 120ms var(--ea-standard),
+      border-color 120ms var(--ea-standard),
+      box-shadow 120ms var(--ea-standard);
+  }
+
+  @media (hover: hover) {
+    .entry:hover {
+      border-color: var(--c-hairline-strong);
+      background: var(--c-surface);
+      box-shadow: 0 6px 18px -10px rgb(9 20 36 / 0.25);
+    }
+  }
+
+  .entry__go {
+    align-self: center;
+  }
+
+  /* En la tarjeta hay sitio: la descripción entera, hasta dos líneas. */
+  .entry__desc {
+    text-wrap: pretty;
+
+    @include line-clamp(2);
+  }
+
+  /* El dato vivo, separado de la descripción por un filete fino. */
+  .entry__status {
+    margin-top: 0.6rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--c-hairline);
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -291,59 +309,16 @@
 .hub__spotlight {
   @include container(var(--w-wide));
 
-  margin-top: clamp(1.75rem, 4.5vh, 2.75rem);
+  margin-top: clamp(1.5rem, 4.5vh, 2.75rem);
 }
 
 .hub__spotlight:empty {
   display: none;
 }
 
-// ---------------------------------------------------------------------
-// Teléfono: las tarjetas se compactan (icono más pequeño, menos relleno).
-// La rejilla ya es de una columna por su propio mínimo.
-// ---------------------------------------------------------------------
-@include until('sm') {
-  .hub {
-    --hub-overlap: 1.75rem;
-  }
-
-  .card__head {
-    gap: 0.7rem;
-    padding: 0.75rem 0.85rem 0.7rem;
-  }
-
-  .card__tile {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 10px;
-    font-size: 1.1rem;
-  }
-
-  .card__live {
-    padding: 0.6rem 0.85rem 0.7rem;
-  }
-}
-
-@keyframes card-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-}
-
-@keyframes pulse {
-  70% {
-    box-shadow: 0 0 0 0.45rem rgb(31 157 85 / 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgb(31 157 85 / 0);
-  }
-}
-
 @include motion-reduce {
-  .hub__cell,
-  .card__pulse {
-    animation: none;
+  .entry,
+  .entry__go {
+    transition: none;
   }
 }

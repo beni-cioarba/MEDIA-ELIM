@@ -98,11 +98,29 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
 ## PWA
 
 - `ngsw-config.json` + `provideServiceWorker` (sólo en producción).
-- `PwaUpdateService` comprueba versiones al estabilizarse la app, cada 15 min
-  y al volver la pestaña a primer plano (como Administrativ); si hay una
-  nueva, la activa y recarga. **Nunca en mitad de una proyección**: con la
-  presentación a pantalla completa o en `/media/control` · `/media/ecran`, la
-  recarga espera a que se salga (29/09/2026).
+- **Actualizaciones** (`PwaUpdateService`, rehecho el 05/10/2026). El SW
+  sirve siempre la copia guardada y descarga la nueva por detrás; aplicarla =
+  **recargar** (toda navegación completa recibe la última versión, lo asigna
+  `ngsw-worker.js`). No se usa `activateUpdate()`: cambia la caché por debajo
+  del JS antiguo y rompe los chunks diferidos.
+  - Comprueba al abrir, al volver a la pestaña, al recuperar la red y cada
+    15 min con la pestaña visible (mínimo 1 min entre comprobaciones).
+  - Aplica: **al entrar** (abrir, volver tras ≥ 10 min fuera o restaurar del
+    bfcache) si la versión llega en ≤ 15 s → recarga ya; si no, **en la
+    siguiente navegación** carga completa del destino (`location.assign`;
+    con atrás/adelante, `reload`); y **al salir de pantalla completa**.
+  - Nunca durante una proyección (pantalla completa, o entre ventanas
+    `/media/…`), ni con el foco en un campo de texto. `unrecoverable` →
+    recarga en cuanto se pueda. Tope anti-bucle: una recarga automática por
+    minuto (`sessionStorage`).
+  - **Fallo corregido**: antes todo colgaba de `ApplicationRef.isStable`, que
+    nunca llega (los `setInterval` de reloj y carruseles corren dentro de la
+    zona): no había comprobaciones periódicas ni al volver, y el SW se
+    registra siempre por el tope de 30 s de `registerWhenStable`. Los
+    temporizadores del servicio van fuera de la zona.
+  - Probado con Playwright + Edge sobre un build servido en local
+    (versiones A→B→C→D con `ngsw-config` regenerado): entrada, sin recarga a
+    mitad de lectura, navegación y atrás.
 - **Enlaces profundos** (auditado el 29/09/2026): GitHub Pages no tiene
   rutas; `404.html` es copia de `index.html`, así que
   `…/rugaciune-pentru-familii/<domingo>#<familia>` abre la página y el router

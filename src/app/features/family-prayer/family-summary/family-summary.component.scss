@@ -124,7 +124,9 @@ app-family-summary {
 }
 
 // Móvil: el mosaico de 2 columnas dejaba fotos de sello; una lista de filas
-// (foto · número · nombre) se recorre con el pulgar y se lee entera.
+// (foto · nombre) se recorre con el pulgar y se lee entera. La miniatura es
+// un retrato 4:5 como el del mosaico (la proporción de casi todas las fotos):
+// en el cuadrado de 3,5rem la foto entera quedaba diminuta entre bandas.
 @include until('sm') {
   .fsum__list {
     grid-template-columns: minmax(0, 1fr);
@@ -140,7 +142,7 @@ app-family-summary {
   }
 
   .fsum__link {
-    grid-template-columns: 3.5rem minmax(0, 1fr);
+    grid-template-columns: 4.5rem minmax(0, 1fr);
     align-items: center;
     gap: var(--sp-3);
     padding: var(--sp-2) var(--sp-3);
@@ -148,7 +150,6 @@ app-family-summary {
   }
 
   .fsum__photo {
-    aspect-ratio: 1;
     border-radius: var(--r-sm);
     box-shadow: none;
   }

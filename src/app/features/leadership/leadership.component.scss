@@ -5,7 +5,8 @@
 // «Conducere» — índice del organigrama (revisión 05/10/2026, tercera).
 //
 // Sobrio y compacto: superficies claras, navy como único acento y fotos a
-// sangre (la imagen llena su hueco de la tarjeta). El pastor destaca por
+// sangre y ENTERAS: todo hueco de foto tiene la proporción 4:5 del retrato,
+// así la imagen lo llena sin recortar nada (decisión del usuario). El pastor destaca por
 // tamaño y por su tarjeta navy lisa; el pastor asistente va al lado en claro.
 // Piezas comunes con el perfil en `_leadership-shared.scss`.
 // =====================================================================
@@ -106,22 +107,27 @@
 // ---------------------------------------------------------------------
 .featured {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 0.75rem;
 }
 
+// La foto (4:5, entera) marca el alto de la tarjeta; el texto se centra al
+// lado. Mismo ancho de foto en las dos para que la fila quede pareja: el
+// pastor destaca por su tarjeta navy, más ancha, y por el nombre mayor.
 .feature {
   @include lead-card;
 
+  --feature-photo: clamp(8.5rem, 5rem + 6vw, 12rem);
+
   display: grid;
-  grid-template-columns: clamp(7.5rem, 5rem + 6vw, 10rem) minmax(0, 1fr);
-  min-height: 11rem;
+  grid-template-columns: var(--feature-photo) minmax(0, 1fr);
   overflow: hidden;
 }
 
-// Foto a sangre: todo el alto de la tarjeta.
 .feature__photo {
   @include lead-photo-fill;
+
+  aspect-ratio: 4 / 5;
 }
 
 .feature__body {
@@ -179,10 +185,8 @@
   }
 }
 
-// Pastor: tarjeta navy lisa y foto mayor.
+// Pastor: tarjeta navy lisa.
 .feature--pastor {
-  grid-template-columns: clamp(9rem, 5.5rem + 9vw, 14rem) minmax(0, 1fr);
-  min-height: 14rem;
   border-color: var(--c-primary);
   background: var(--c-primary);
 
@@ -240,15 +244,45 @@
 }
 
 // ---------------------------------------------------------------------
-// Conducerea: tarjetas con foto a todo el ancho
+// Conducerea y comité: tarjetas con la foto entera a todo el ancho
 // ---------------------------------------------------------------------
+// Filas de `--cols` tarjetas iguales; la última fila incompleta se centra (7
+// de la conducerea = 4 + 3 o 3 + 3 + 1, sin huecos colgando a la derecha).
+// Las columnas dependen del ancho del bloque (consulta de contenedor), no de
+// la ventana: así vale igual dentro de cualquier maqueta.
+.tiles-wrap {
+  container-type: inline-size;
+}
+
 .tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-  gap: 0.625rem;
+  --cols: 3;
+  --gap: 0.625rem;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap);
   margin: 0;
   padding: 0;
   list-style: none;
+
+  > li {
+    flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
+    min-width: 0;
+  }
+}
+
+// Conducerea (7): en una fila si caben a ≥ 8,5rem; si no, 4 + 3.
+@container (min-width: 36rem) {
+  .tiles {
+    --cols: 4;
+  }
+}
+
+@container (min-width: 64rem) {
+  .tiles {
+    --cols: 7;
+  }
 }
 
 .tile {
@@ -263,7 +297,7 @@
 .tile__photo {
   @include lead-photo-fill;
 
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
 }
 
 .tile__body {
@@ -313,11 +347,10 @@
   @include lead-focus;
 }
 
-// Comité: las mismas tarjetas, más pequeñas. `auto-fit` estira las nueve
-// para llenar el ancho (con `auto-fill` quedaban huecos a la derecha).
+// Comité (9): las mismas tarjetas, más pequeñas. 3 × 3, 5 + 4 o las nueve
+// en una fila.
 .tiles--compact {
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-  gap: 0.5rem;
+  --gap: 0.5rem;
 
   .tile__body {
     padding: 0.45rem 0.55rem 0.55rem;
@@ -329,6 +362,18 @@
 
   .tile__titles {
     font-size: 0.6875rem;
+  }
+}
+
+@container (min-width: 36rem) {
+  .tiles--compact {
+    --cols: 5;
+  }
+}
+
+@container (min-width: 64rem) {
+  .tiles--compact {
+    --cols: 9;
   }
 }
 
@@ -616,8 +661,12 @@
   @include lead-focus(2px);
 }
 
+// Miniatura en retrato 4:5 (no círculo: el círculo recorta la foto).
 .who__avatar {
-  --avatar-size: 1.5rem;
+  --avatar-radius: 3px;
+
+  width: 1.2rem;
+  height: 1.5rem;
 }
 
 .who__name {
@@ -649,17 +698,18 @@
   @include lead-card;
 
   display: grid;
-  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  grid-template-columns: 3.2rem minmax(0, 1fr) auto;
   align-items: center;
   height: 100%;
-  min-height: 3.5rem;
   overflow: hidden;
 }
 
+// Foto entera (4:5): marca el alto de la fila.
 .row__photo {
   @include lead-photo-fill;
 
-  align-self: stretch;
+  align-self: start;
+  aspect-ratio: 4 / 5;
 }
 
 .row__text {
@@ -766,13 +816,11 @@
   }
 
   .feature {
-    grid-template-columns: 6.5rem minmax(0, 1fr);
-    min-height: 8.5rem;
+    --feature-photo: 7rem;
   }
 
   .feature--pastor {
-    grid-template-columns: 8.5rem minmax(0, 1fr);
-    min-height: 10.5rem;
+    --feature-photo: 8rem;
   }
 
   .feature__body,
@@ -780,51 +828,23 @@
     padding: 0.85rem 1rem;
   }
 
-  // Conducerea en filas con la foto a sangre a la izquierda (como la vista
-  // por personas): en tres columnas la séptima quedaba sola y el bloque
-  // ocupaba casi el doble de alto.
   .tiles {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.4rem;
-  }
-
-  .tile {
-    grid-template-columns: 3.5rem minmax(0, 1fr);
-    grid-template-rows: none;
-    align-items: center;
-  }
-
-  .tile__photo {
-    align-self: stretch;
-    aspect-ratio: auto;
-    min-height: 3.5rem;
+    --gap: 0.4rem;
   }
 
   .tile__body {
-    padding: 0.4rem 0.75rem;
+    padding: 0.4rem 0.45rem 0.5rem;
   }
 
-  // El comité, en cambio, se queda en tarjetas verticales de tres en tres:
-  // nueve filas serían el doble de alto (y 9 = 3 × 3 justas).
+  .tile__name {
+    font-size: 0.8125rem;
+  }
+
+  .tile__titles {
+    font-size: 0.6875rem;
+  }
+
   .tiles--compact {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.4rem;
-
-    .tile {
-      grid-template-columns: none;
-      grid-template-rows: auto 1fr;
-      align-items: stretch;
-    }
-
-    .tile__photo {
-      aspect-ratio: 1;
-      min-height: 0;
-    }
-
-    .tile__body {
-      padding: 0.4rem 0.45rem 0.5rem;
-    }
-
     .tile__name {
       font-size: 0.75rem;
     }

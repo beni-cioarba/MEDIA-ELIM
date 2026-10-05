@@ -31,18 +31,12 @@ const STREAMS = 4;
           @for (album of albums; track album.id) {
             <li>
               <a class="album" [routerLink]="galleryPath">
-                <img
-                  class="album__img"
-                  [src]="album.medium"
-                  [style.background-color]="album.tone"
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span class="album__text">
-                  <span class="album__name">{{ 'gallery.events.' + album.i18nKey + '.name' | translate }}</span>
-                  <span class="album__date">{{ 'gallery.events.' + album.i18nKey + '.date' | translate }}</span>
+                <span class="album__frame" [style.background-color]="album.tone">
+                  <img class="album__ambient" [src]="album.medium" alt="" loading="lazy" decoding="async" />
+                  <img class="album__img" [src]="album.medium" alt="" loading="lazy" decoding="async" />
                 </span>
+                <span class="album__name">{{ 'gallery.events.' + album.i18nKey + '.name' | translate }}</span>
+                <span class="album__date">{{ 'gallery.events.' + album.i18nKey + '.date' | translate }}</span>
               </a>
             </li>
           }
