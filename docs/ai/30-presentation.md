@@ -319,6 +319,38 @@ plan completo (`BibleReadingService.planOverview`): mes a mes, cada semana con
 su tramo y estado (`past` atenuada · `current` resaltada · `upcoming`), y cada
 semana desplegable a sus lecturas diarias. En proyección no se pinta.
 
+### Programa semanal (web) — 05/10/2026
+
+`WeeklyBlockComponent` tiene **dos marcados** según `PresentationService.isFullscreen`
+y hoja propia (`weekly-block.component.scss`, `ViewEncapsulation.None`); las
+reglas antiguas de `.weekly` salieron de `stage.component.scss`.
+
+- **Proyección**: sin cambios. Lista `.weekly__list` / `.weekly__item` desde
+  hoy (`ScheduleService.weeklyProgram`); la hoja del bloque sólo pone la base
+  sin ámbito (0,1,0) y la escala sigue en `_projection.scss`.
+- **Web**: medido a 1520 px, la lista eran 6 filas de 1.415 × 80 px (540 px de
+  alto) con títulos de ~300 px: el 75 % de cada fila vacío. Ahora:
+  1. **Panel «ahora / siguiente»** (navy, filete de oro, retícula de puntos):
+     estado («Următorul serviciu» / «Acum, în desfășurare» con punto `--c-live`
+     que late, sin animación con `prefers-reduced-motion`), título del culto,
+     «Azi / Mâine / <día> · hora» y a la derecha la **cuenta atrás** en las dos
+     unidades mayores (`2 zile 3 h`, `3 h 12 min`, `25 min`). En curso, la
+     cuenta atrás se cambia por «Urmărește în direct» → `/media/transmisiuni`.
+     Sale de `ScheduleService.nextService`: cada hora de «10:00 & 18:00» es una
+     sesión propia, y una sesión cuenta como en curso desde su hora hasta +2 h
+     (`MINUTOS_VENTANA`, la misma ventana que usa el directo).
+  2. **La semana como calendario** (`ScheduleService.week`): lunes → domingo
+     con fecha, **incluidos los días sin culto** (rayado tenue, «Fără serviciu»),
+     pasados atenuados, hoy en oro, el siguiente culto (si no es hoy) con filete
+     navy. ≥ lg: 7 columnas en una sola superficie (194 px de alto a 1520 px);
+     por debajo, lista agrupada con columna de día fija; < md la hora va siempre
+     encima del título. Las horas son `<time>` en pastilla, una por sesión.
+  3. **Pie**: dirección + «Cum ajungi» → `/media/locatie`.
+- Los nombres de día salen de Intl en el idioma activo (`formatWeekdayLong`),
+  no de `dayLabel` (que sigue siendo el rumano de la proyección).
+- Crecer: un culto nuevo el sábado o un segundo culto un día es **sólo datos**
+  (`weeklyProgram`); la rejilla y el panel lo recogen sin tocar marcado.
+
 ## Selector de bloques (auto / manual)
 
 Botón con icono de cuadrícula y contador `n/N` dentro de la barra de controles.

@@ -82,7 +82,7 @@ const PEOPLE = [
   { id: 'petrica-halas', name: 'Petrică Halas', titles: ['elder'] },
   { id: 'grigore-tomoiaga', name: 'Grigore Tomoiagă', titles: ['assistant_pastor'] },
   { id: 'ionel-sidor', name: 'Ionel Sidor', titles: ['elder'] },
-  { id: 'gabriel-cifor', name: 'Gabriel Cifor', titles: ['censor'] },
+  { id: 'gabriel-chifor', name: 'Gabriel Chifor', titles: ['censor'] },
   { id: 'vali-roman', name: 'Vali Roman', titles: ['censor'] },
   { id: 'ramona-fluerariu', name: 'Ramona Fluerariu', titles: ['lawyer'] },
   { id: 'sebastian-birle', name: 'Sebastian Bîrle' },
@@ -215,7 +215,7 @@ export const LEADERSHIP_OFFICES: readonly Department[] = [
     id: 'censors',
     i18nKey: 'censors',
     impliedTitle: 'censor',
-    members: [{ person: 'gabriel-cifor' }, { person: 'vali-roman' }],
+    members: [{ person: 'gabriel-chifor' }, { person: 'vali-roman' }],
   },
 ];
 
@@ -294,7 +294,7 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
         i18nKey: 'youth',
         members: [
           { person: 'samuel-bogdan', roles: ['lead'] },
-          { person: 'gabriel-cifor' },
+          { person: 'gabriel-chifor' },
         ],
       },
       {
@@ -329,7 +329,7 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
         i18nKey: 'brass_band',
         members: [
           { person: 'samuel-bogdan' },
-          { person: 'gabriel-cifor' },
+          { person: 'gabriel-chifor' },
           { person: 'alin-negrusier' },
           { person: 'emanuel-marcu' },
         ],

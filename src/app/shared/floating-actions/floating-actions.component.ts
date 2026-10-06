@@ -10,7 +10,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { ShareButtonComponent } from '../share-button/share-button.component';
 import { PresentationService } from '../../core/presentation.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { DockActionsService } from './dock-actions.service';
@@ -42,6 +42,7 @@ import { DockOverlapService } from './dock-overlap.service';
       class="dock"
       [class.dock--visible]="isVisible() && !footerVisible()"
       [class.dock--present]="presentation.isFullscreen()"
+      [class.dock--on-photo]="onPhoto()"
       role="complementary"
       [attr.aria-hidden]="footerVisible()"
     >
@@ -163,20 +164,23 @@ import { DockOverlapService } from './dock-overlap.service';
         display: inline-flex;
         flex-direction: row-reverse;
         align-items: center;
-        gap: 0.55rem;
-        padding: 0.4rem;
-        background: rgba(255, 255, 255, 0.85);
-        border: 1px solid rgba(26, 54, 93, 0.14);
+        gap: 0.35rem;
+        padding: 0.25rem;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(26, 54, 93, 0.12);
         border-radius: 999px;
         backdrop-filter: blur(14px) saturate(140%);
         -webkit-backdrop-filter: blur(14px) saturate(140%);
-        box-shadow: 0 14px 36px rgba(26, 54, 93, 0.18);
+        box-shadow: 0 6px 20px rgba(26, 54, 93, 0.12);
         opacity: 0;
         transform: translateY(16px) scale(0.95);
         pointer-events: none;
         transition:
           opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-          transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+          transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+          background 0.3s ease,
+          border-color 0.3s ease,
+          box-shadow 0.3s ease;
 
         &--visible {
           opacity: 1;
@@ -229,23 +233,23 @@ import { DockOverlapService } from './dock-overlap.service';
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
-        background: rgba(212, 175, 55, 0.12);
-        border: 1px solid rgba(26, 54, 93, 0.14);
+        background: transparent;
+        border: 1px solid transparent;
         color: var(--c-text);
         cursor: pointer;
         padding: 0;
         transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
 
         svg {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
         }
 
         &:hover {
-          background: rgba(212, 175, 55, 0.2);
+          background: rgba(212, 175, 55, 0.18);
           color: var(--c-gold-deep);
           transform: scale(1.06);
         }
@@ -261,18 +265,46 @@ import { DockOverlapService } from './dock-overlap.service';
       // El share button reutilizado dentro del dock se restila para
       // ser un botón redondo idéntico a los demás del dock.
       .dock__share ::ng-deep .share-btn {
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
         padding: 0;
         border-radius: 50%;
         justify-content: center;
-        background: rgba(212, 175, 55, 0.12);
-        border-color: rgba(26, 54, 93, 0.14);
+        background: transparent;
+        border-color: transparent;
         color: var(--c-text);
+        box-shadow: none;
+      }
+      .dock__share ::ng-deep .share-btn:hover {
+        background: rgba(212, 175, 55, 0.18);
       }
       .dock__share ::ng-deep .share-btn__icon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
+      }
+
+      /* Sobre la foto de portada: cristal oscuro casi transparente. El cristal
+         blanco era la mancha más clara de la pantalla y le robaba la mirada a
+         la foto; así se ve que está ahí (borde fino e icono claro) sin pesar.
+         Contraste del icono: blanco al 88 % sobre el navy translúcido, >= 3:1
+         que pide un control no textual. Al bajar de la portada vuelve el
+         cristal claro, que es el que funciona sobre el fondo de la web. */
+      .dock--on-photo {
+        background: rgba(9, 20, 36, 0.22);
+        border-color: rgba(247, 250, 252, 0.2);
+        box-shadow: none;
+      }
+      .dock--on-photo .dock__btn,
+      .dock--on-photo .dock__share ::ng-deep .share-btn {
+        color: rgba(247, 250, 252, 0.88);
+      }
+      .dock--on-photo .dock__btn:hover,
+      .dock--on-photo .dock__share ::ng-deep .share-btn:hover {
+        background: rgba(247, 250, 252, 0.14);
+        color: #fff;
+      }
+      .dock--on-photo .dock__btn:focus-visible {
+        outline-color: var(--c-gold);
       }
       .dock__share ::ng-deep .share-btn__label {
         display: none;
@@ -334,6 +366,13 @@ export class FloatingActionsComponent {
 
   private readonly scrolledFar = signal(false);
 
+  /**
+   * El dock está encima de la foto de portada (la de cualquier página que
+   * monte un app-hero-carousel). Se mide la posición real, no la ruta: así
+   * vale para cualquier portada futura y para cualquier alto de pantalla.
+   */
+  protected readonly onPhoto = signal(false);
+
   constructor() {
     if (typeof window === 'undefined') return;
 
@@ -344,12 +383,27 @@ export class FloatingActionsComponent {
     const zone = inject(NgZone);
     const onScroll = () => {
       const far = window.scrollY > window.innerHeight * 1.5;
-      if (far === this.scrolledFar()) return;
-      zone.run(() => this.scrolledFar.set(far));
+      // La foto queda detrás del dock mientras su borde inferior esté por
+      // debajo del dock (unos 64 px sobre el pie de la ventana).
+      const hero = document.querySelector('app-hero-carousel');
+      const photo = !!hero && hero.getBoundingClientRect().bottom > window.innerHeight - 64;
+      if (far === this.scrolledFar() && photo === this.onPhoto()) return;
+      zone.run(() => {
+        this.scrolledFar.set(far);
+        this.onPhoto.set(photo);
+      });
     };
 
     zone.runOutsideAngular(() => window.addEventListener('scroll', onScroll, { passive: true }));
     this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+
+    // Al cambiar de página la portada aparece o desaparece sin scroll: se
+    // vuelve a medir cuando la vista nueva ya está pintada.
+    const sub = this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) requestAnimationFrame(() => requestAnimationFrame(onScroll));
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+    requestAnimationFrame(onScroll);
   }
 
   /**

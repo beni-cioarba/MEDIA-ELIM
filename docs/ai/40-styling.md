@@ -173,10 +173,23 @@ con el recorte gobernado.
   programa con tres estados (`heroNext`): en marcha (verde que late, hasta
   2 h desde el inicio), hoy (verde + «en 1 h 45 min») y otro día (oro); si el
   culto de hoy ya terminó, anuncia el siguiente. Titular
-  `clamp(2.5rem, 2rem + 3.2vw, 5rem)` con `text-wrap: balance`. Acción
+  compacto (ver abajo) con `text-wrap: balance`. Acción
   principal en **oro** (el navy desaparecía sobre el velo navy); si hay
   directo, la secundaria lleva a la emisión con punto rojo. Entrada
   escalonada de 0,7 s sólo al cargar.
+- **Compacta** (oct. 2026, segunda pasada): la foto es la protagonista. El
+  texto se ancla **abajo a la izquierda en todas las anchuras** (ya no se
+  centra en escritorio) y ocupa ~13 % de la portada (antes ~21 %): titular
+  `clamp(2rem, 1.45rem + 2vw, 3.25rem)`, subtítulo ~17 px, botones de 40 px,
+  chip de 27 px y mandos de 32 px con pista de 2 px. El velo lateral plano
+  (hasta 92 % de navy) pasa a ser una **elipse desde la esquina inferior
+  izquierda** (≥ 55 % bajo el subtítulo, AA sobre una pared blanca) y el
+  resto de la foto queda limpio; las sombras de texto amplias sostienen el
+  contraste. Chip, botón secundario y mandos son cristal translúcido.
+- **Dock flotante sobre la portada** (`floating-actions`): mientras la foto de
+  un `app-hero-carousel` queda detrás (se mide la posición, no la ruta), pasa
+  a cristal oscuro casi transparente (`dock--on-photo`) con iconos claros;
+  al bajar vuelve al cristal claro. Botones de 38 px sin relleno propio.
 - Ojo con `<ng-content>`: los estilos encapsulados del carrusel **no** alcanzan
   a los nodos proyectados; acota con un envoltorio propio (`.hero__text`), no
   con `.hero__content > *` (así se «descolocó» el titular).
@@ -201,6 +214,21 @@ Tres cosas, por orden de impacto:
    campo `tone` en `church.config.ts`). Mientras la imagen viaja por la red se
    ve su propio tono en vez del navy de marca, que no se parece a nada de lo
    que va a aparecer. Cuesta cero bytes.
+
+### Nitidez de la portada (oct. 2026)
+
+Diagnóstico medido en 1920×1000: el navegador elige la de 1600 px y la
+estira a 1948 px CSS (×1,22 a densidad 1; ×1,8 en un portátil a 150 %), y el
+*Ken Burns* sumaba otro 12 %. Además varias fotos ya llegaron blandas y muy
+comprimidas: nitidez (varianza del laplaciano) 43-45 en `botez_2025` y
+`cor_2026` frente a 353 en `concert_copii_2025`, con 0,26-0,47 bits por píxel.
+Lo que se arregla en código: zoom 1,00 → 1,05 y variante opcional `large`
+(2560 px) en `HeroSlide`, que entra en el `srcset` si existe.
+`scripts/optimize-images.js` la genera sólo si el original mide ≥ 2400 px
+(calidad 82 la de 1600, 80 la de 2560 y la de 960) y avisa si no. Lo que no se
+arregla en código: una foto que ya llegó comprimida; hace falta el fichero
+original de la cámara. **Los originales no se borran**: se sacan de
+`assets/` (que se publica entero) y se guardan fuera.
 
 Alternativa probada y descartada: **hero partido** (texto sobre navy a la
 izquierda, foto entera en un marco 3:2 a la derecha). Evitaba el recorte por

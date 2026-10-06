@@ -1102,144 +1102,6 @@ app-stage {
 }
 
 // ---------------------------------------------------------------------
-// Programare săptămânală (slide 4)
-//   · Lista verticală cu zilele săptămânii.
-//   · Ziua curentă primește highlight (badge "AZI" + ramă aurie).
-// ---------------------------------------------------------------------
-.weekly {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.85rem, 1.6vh, 1.25rem);
-  min-height: 0;
-
-  &__header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  &__title {
-    margin: 0;
-    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: $color-gold-deep;
-  }
-
-  &__subtitle {
-    margin: 0;
-    color: $color-muted;
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
-    line-height: 1.45;
-    max-width: 60ch;
-  }
-
-  &__list {
-    list-style: none;
-    margin: 0;
-    padding: 0 4px 4px 0;
-    display: flex;
-    flex-direction: column;
-    gap: clamp(0.5rem, 0.9vh, 0.85rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    min-height: 0;
-  }
-
-  &__item {
-    display: grid;
-    grid-template-columns: minmax(110px, 22%) 1fr;
-    align-items: stretch;
-    gap: clamp(0.75rem, 1.5vw, 1.25rem);
-    padding: clamp(0.75rem, 1.4vh, 1.1rem) clamp(0.9rem, 1.6vw, 1.25rem);
-    border-radius: $radius-md;
-    background: $color-card;
-    border: 1px solid $color-hairline;
-    box-shadow: $shadow-sm;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-
-    &:hover {
-      transform: translateX(2px);
-      border-color: rgba(212, 175, 55, 0.35);
-      box-shadow: $shadow-soft;
-    }
-
-    &.is-today {
-      background: linear-gradient(135deg,
-        rgba(212, 175, 55, 0.16),
-        rgba(255, 255, 255, 1));
-      border-color: rgba(212, 175, 55, 0.55);
-      box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.22),
-                  $shadow-soft;
-    }
-  }
-
-  &__day {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    align-items: flex-start;
-    justify-content: center;
-    border-right: 1px solid $color-hairline;
-    padding-right: clamp(0.5rem, 1vw, 1rem);
-  }
-
-  &__day-name {
-    font-size: clamp(1rem, 1.4vw, 1.25rem);
-    font-weight: 700;
-    color: $color-text;
-    letter-spacing: 0.02em;
-  }
-
-  &__today-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.15rem 0.55rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: linear-gradient(90deg, $color-gold, $color-gold-soft);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
-  }
-
-  &__body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    min-width: 0;
-  }
-
-  &__time {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    color: $color-gold-deep;
-    font-variant-numeric: tabular-nums;
-    font-weight: 600;
-  }
-
-  &__item-title {
-    margin: 0;
-    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
-    font-weight: 600;
-    line-height: 1.3;
-    color: $color-text;
-  }
-
-  &__item-desc {
-    margin: 0;
-    color: $color-muted;
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
-}
-
-// ---------------------------------------------------------------------
 // Evenimente viitoare (slide 5)
 //   · Card-uri cu contoare prominente "X zile".
 //   · Primul = "URMĂTORUL" (badge), iar dacă este azi → highlight live.
@@ -1549,19 +1411,10 @@ app-stage {
 }
 
 // Responsive: pe ecrane înguste, item-urile devin verticale
+// (el programa semanal lleva su propia hoja: `weekly-block.component.scss`)
 @media (max-width: 720px) {
-  .weekly__item,
   .upcoming__item {
     grid-template-columns: 1fr;
-  }
-
-  .weekly__day {
-    border-right: none;
-    border-bottom: 1px solid $color-hairline;
-    padding-right: 0;
-    padding-bottom: 0.5rem;
-    flex-direction: row;
-    gap: 0.6rem;
   }
 
   .upcoming__countdown {
@@ -1624,7 +1477,6 @@ app-stage {
 .socials__title,
 .broadcasts__title,
 .gallery__title,
-.weekly__title,
 .upcoming__title,
 .live-now__title,
 .streams__title,

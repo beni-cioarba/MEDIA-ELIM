@@ -1,35 +1,141 @@
 <section class="weekly" aria-labelledby="weekly-title">
   <header class="weekly__header">
     <h2 id="weekly-title" class="weekly__title">{{ 'weekly.title' | translate }}</h2>
+    @if (!fullscreen()) {
+      <p class="weekly__subtitle">{{ 'weekly.subtitle' | translate }}</p>
+    }
   </header>
 
-  <ul class="weekly__list" role="list">
-    @for (item of schedule.weeklyProgram(); track item.id) {
-      <li
-        class="weekly__item"
-        [class.is-today]="item.day === schedule.currentWeekDay()"
-        [attr.aria-current]="item.day === schedule.currentWeekDay() ? 'date' : null"
-      >
-        <div class="weekly__day">
-          <span class="weekly__day-name">{{ item.dayLabel }}</span>
-          @if (item.day === schedule.currentWeekDay()) {
-            <span class="weekly__today-badge">{{ 'weekly.today' | translate }}</span>
+  @if (fullscreen()) {
+    <!-- Proyección: una fila por día empezando por hoy (`_projection.scss`). -->
+    <ul class="weekly__list" role="list">
+      @for (item of schedule.weeklyProgram(); track item.id) {
+        <li
+          class="weekly__item"
+          [class.is-today]="item.day === schedule.currentWeekDay()"
+          [attr.aria-current]="item.day === schedule.currentWeekDay() ? 'date' : null"
+        >
+          <div class="weekly__day">
+            <span class="weekly__day-name">{{ item.dayLabel }}</span>
+            @if (item.day === schedule.currentWeekDay()) {
+              <span class="weekly__today-badge">{{ 'weekly.today' | translate }}</span>
+            }
+          </div>
+          <div class="weekly__body">
+            <span class="weekly__time">
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ item.time }}
+            </span>
+            <h3 class="weekly__item-title">{{ item.title }}</h3>
+            @if (item.description) {
+              <p class="weekly__item-desc">{{ item.description }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <!--
+      Panel «ahora / siguiente»: responde a la única pregunta con prisa
+      («¿cuándo es el próximo culto?») antes de enseñar la semana entera.
+      Sin aria-live a propósito: la cuenta atrás cambia cada minuto.
+    -->
+    @if (next(); as n) {
+      <div class="weekly__next" [class.is-live]="n.isLive">
+        <div class="weekly__next-main">
+          <p class="weekly__next-status">
+            <span class="weekly__next-dot" aria-hidden="true"></span>
+            {{ (n.isLive ? 'weekly.live' : 'weekly.next') | translate }}
+          </p>
+          <p class="weekly__next-title">{{ n.service.title }}</p>
+          <p class="weekly__next-when">
+            <span class="weekly__next-day">
+              @switch (n.daysAway) {
+                @case (0) { {{ 'weekly.today_label' | translate }} }
+                @case (1) { {{ 'weekly.tomorrow' | translate }} }
+                @default { {{ nextDayLabel() }} }
+              }
+            </span>
+            <span class="weekly__next-sep" aria-hidden="true"></span>
+            <time class="weekly__next-time" [attr.datetime]="n.time">{{ n.time }}</time>
+          </p>
+        </div>
+
+        <div class="weekly__next-side">
+          @if (n.isLive) {
+            <a class="weekly__next-cta" [routerLink]="streamsPath">
+              <app-icon name="play" />
+              <span>{{ 'weekly.watch_live' | translate }}</span>
+            </a>
+          } @else {
+            <span class="weekly__next-label">{{ 'weekly.starts_in' | translate }}</span>
+            <span class="weekly__countdown">
+              @for (part of countdown(); track part.unitKey) {
+                <span class="weekly__countdown-part">
+                  <span class="weekly__countdown-num">{{ part.value }}</span>
+                  <span class="weekly__countdown-unit">{{ part.unitKey | translate }}</span>
+                </span>
+              }
+            </span>
           }
         </div>
-        <div class="weekly__body">
-          <span class="weekly__time" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="14" height="14">
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            {{ item.time }}
-          </span>
-          <h3 class="weekly__item-title">{{ item.title }}</h3>
-          @if (item.description) {
-            <p class="weekly__item-desc">{{ item.description }}</p>
-          }
-        </div>
-      </li>
+      </div>
     }
-  </ul>
+
+    <!--
+      La semana como calendario, lunes → domingo: siete columnas en escritorio,
+      lista agrupada (una superficie, filetes) por debajo de lg. Los días sin
+      culto se ven, atenuados: el hueco también es información.
+    -->
+    <ol class="weekly__week" role="list">
+      @for (d of schedule.week(); track d.iso) {
+        <li
+          class="weekly__cell"
+          [class.is-today]="d.isToday"
+          [class.is-past]="d.isPast"
+          [class.is-empty]="!d.services.length"
+          [class.is-next]="!d.isToday && next()?.iso === d.iso"
+          [attr.aria-current]="d.isToday ? 'date' : null"
+        >
+          <div class="weekly__cell-head">
+            <span class="weekly__cell-day">{{ schedule.formatWeekdayLong(d.iso) }}</span>
+            <span class="weekly__cell-date">{{ dateLabel(d.iso) }}</span>
+            @if (d.isToday) {
+              <span class="weekly__cell-today">{{ 'weekly.today' | translate }}</span>
+            }
+          </div>
+
+          <div class="weekly__cell-body">
+            @for (s of d.services; track s.id) {
+              <div class="weekly__service">
+                <span class="weekly__times">
+                  @for (t of s.times; track t) {
+                    <time class="weekly__time-chip" [attr.datetime]="t">{{ t }}</time>
+                  }
+                </span>
+                <h3 class="weekly__service-title">{{ s.title }}</h3>
+                @if (s.description) {
+                  <p class="weekly__service-desc">{{ s.description }}</p>
+                }
+              </div>
+            } @empty {
+              <p class="weekly__cell-empty">{{ 'weekly.no_service' | translate }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+
+    <p class="weekly__meta">
+      <app-icon name="map-pin" class="weekly__meta-icon" />
+      <span class="weekly__address">{{ location.address }}</span>
+      <a class="weekly__meta-link" [routerLink]="locationPath">
+        {{ 'weekly.directions' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </p>
+  }
 </section>

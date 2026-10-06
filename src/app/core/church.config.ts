@@ -224,6 +224,12 @@ export interface HeroSlide {
   readonly image: string;
   /** Variante intermedia (960px webp) para móviles de densidad doble. */
   readonly medium: string;
+  /**
+   * Variante grande (2560px webp) para pantallas anchas y de alta densidad.
+   * Opcional: sólo existe si el original medía al menos 2400 px. Sin ella, en
+   * un monitor de 1920 la foto de 1600 se amplía un 20-80 % y se ve blanda.
+   */
+  readonly large?: string;
   /** Miniatura (480px webp) usada como LQIP/preview. */
   readonly thumb: string;
   /**

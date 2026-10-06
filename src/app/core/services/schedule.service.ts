@@ -37,6 +37,46 @@ export interface UpcomingEventView extends UpcomingEvent {
   readonly isPast: boolean;
 }
 
+/** Un culto del programa semanal con sus horas ya separadas («10:00 & 18:00» → dos). */
+export interface WeeklyServiceView {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly times: readonly string[];
+}
+
+/**
+ * Un día de la semana en curso (lunes → domingo), con o sin cultos. Los días
+ * sin programa también existen: la semana se lee como un calendario, y un
+ * hueco visible («sábado: sin culto») informa tanto como una fila.
+ */
+export interface WeekDayView {
+  readonly day: WeekDayIndex;
+  /** `YYYY-MM-DD` local de ese día en la semana actual. */
+  readonly iso: string;
+  readonly isToday: boolean;
+  readonly isPast: boolean;
+  readonly services: readonly WeeklyServiceView[];
+}
+
+/** El culto que toca destacar: el que está en curso o, si no, el siguiente. */
+export interface NextServiceView {
+  readonly service: WeeklyServiceView;
+  readonly day: WeekDayIndex;
+  /** Hora concreta de esta sesión (de un domingo con dos, la que toca). */
+  readonly time: string;
+  /** Minutos que faltan para empezar (negativo: minutos desde que empezó). */
+  readonly minutesUntil: number;
+  /** Dentro de la ventana del culto (desde la hora anunciada hasta +2 h). */
+  readonly isLive: boolean;
+  /** Días naturales hasta ese culto (0 = hoy, 1 = mañana…). */
+  readonly daysAway: number;
+  /** `YYYY-MM-DD` local del día de esa sesión. */
+  readonly iso: string;
+}
+
+type WeekDayIndex = WeeklyProgram['day'];
+
 /**
  * Única fuente de verdad para los datos temporales de la iglesia:
  * programa semanal reordenado y eventos futuros con contadores.
@@ -89,6 +129,71 @@ export class ScheduleService {
   readonly featuredProgram = computed<WeeklyProgram | null>(
     () => this.todayProgram() ?? this.weeklyProgram()[0] ?? null,
   );
+
+  /**
+   * La semana en curso como calendario: siete días de lunes a domingo (la
+   * semana empieza el lunes en ro y es), cada uno con su fecha y sus cultos.
+   * Sale de los datos, no del marcado: si mañana hay culto el sábado, basta
+   * con añadirlo a `weeklyProgram`.
+   */
+  readonly week = computed<readonly WeekDayView[]>(() => {
+    const today = startOfDay(new Date(this.clock.now()));
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      const day = date.getDay() as WeekDayIndex;
+      return {
+        day,
+        iso: isoDeFecha(date),
+        isToday: date.getTime() === today.getTime(),
+        isPast: date.getTime() < today.getTime(),
+        services: this.config.weeklyProgram.filter((p) => p.day === day).map(toServiceView),
+      };
+    });
+  });
+
+  /**
+   * El culto en curso o, si no hay ninguno, el siguiente (hasta siete días
+   * vista). Cada hora de un día con varias («10:00 & 18:00») es una sesión
+   * propia: el domingo a mediodía el siguiente es el de las 18:00.
+   */
+  readonly nextService = computed<NextServiceView | null>(() => {
+    const now = this.clock.now();
+    const today = startOfDay(new Date(now));
+
+    for (let offset = 0; offset <= 7; offset++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + offset);
+      const day = date.getDay() as WeekDayIndex;
+
+      const sessions = this.config.weeklyProgram
+        .filter((p) => p.day === day)
+        .flatMap((p) => {
+          const view = toServiceView(p);
+          return view.times.map((time) => ({ view, time, start: date.getTime() + parseTimeToMinutes(time) * 60_000 }));
+        })
+        .filter((s) => now < s.start + MINUTOS_VENTANA * 60_000)
+        .sort((a, b) => a.start - b.start);
+
+      const first = sessions[0];
+      if (first) {
+        const minutesUntil = Math.ceil((first.start - now) / 60_000);
+        return {
+          service: first.view,
+          day,
+          time: first.time,
+          minutesUntil,
+          isLive: minutesUntil <= 0,
+          daysAway: offset,
+          iso: isoDeFecha(date),
+        };
+      }
+    }
+    return null;
+  });
 
   /**
    * Minutos de comienzo de **todo lo que hoy reúne a la iglesia**: los cultos
@@ -243,7 +348,17 @@ export class ScheduleService {
   }
 }
 
-/** Convierte "10:00" / "18:30" en minutos desde medianoche (para ordenar). */
+/** Culto del programa con sus horas separadas, en el orden en que se escriben. */
+function toServiceView(p: WeeklyProgram): WeeklyServiceView {
+  const times = [...p.time.matchAll(/\d{1,2}:\d{2}/g)].map((m) => m[0]);
+  return {
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    times: times.length ? times : [p.time],
+  };
+}
+
 /**
  * Todas las horas de comienzo que contiene una cadena de hora.
  *
@@ -262,6 +377,7 @@ function parseAllTimesToMinutes(time: string | undefined): readonly number[] {
   return minutos;
 }
 
+/** Convierte "10:00" / "18:30" en minutos desde medianoche (para ordenar). */
 function parseTimeToMinutes(time: string | undefined): number {
   if (!time) return UNPARSEABLE_TIME_ORDER;
   const match = time.match(/(\d{1,2}):(\d{2})/);

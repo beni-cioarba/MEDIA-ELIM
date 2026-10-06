@@ -259,29 +259,36 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         animation-play-state: paused;
       }
 
+      /* Zoom contenido (1,00 → 1,05). Llegó a 1,12: cada punto de zoom es un
+         punto más de ampliación sobre una foto que en un monitor de 1920 ya
+         se estira, y se notaba en las caras. Con 5 % sigue habiendo
+         movimiento y la foto no pierde nitidez. */
       @keyframes hero-zoom-in {
         from {
-          transform: scale(1.02);
+          transform: scale(1);
         }
         to {
-          transform: scale(1.12);
+          transform: scale(1.05);
         }
       }
 
       @keyframes hero-zoom-out {
         from {
-          transform: scale(1.12) translateX(1%);
+          transform: scale(1.05) translateX(0.6%);
         }
         to {
-          transform: scale(1.02) translateX(0);
+          transform: scale(1) translateX(0);
         }
       }
 
       /*
-       * Velo. En horizontal oscurece el lado del texto y deja ver la foto en
-       * el otro; en vertical el texto ocupa todo el ancho, así que el velo
-       * pasa a ser de abajo arriba. Sin esto no hay contraste AA sobre una
-       * foto clara.
+       * Velo **localizado** (oct. 2026). Antes era un degradado lateral que
+       * dejaba media foto al 74-92 % de navy: el texto se leía, pero la foto
+       * —que es la protagonista— se veía apagada y azulada. Ahora el texto vive
+       * abajo a la izquierda y el velo es una elipse que nace en esa esquina:
+       * oscurece donde hay letra (≥ 55 % bajo el subtítulo, que con texto
+       * blanco da ≥ 4,5:1 aun sobre una pared blanca) y deja limpio el centro
+       * y la derecha. Una franja inferior suave sostiene el pie de mandos.
        */
       .hero__scrim {
         position: absolute;
@@ -290,61 +297,53 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         background:
           linear-gradient(
             to top,
-            color-mix(in srgb, var(--c-primary-darkest) 92%, transparent) 0%,
-            color-mix(in srgb, var(--c-primary-darkest) 78%, transparent) 30%,
-            color-mix(in srgb, var(--c-primary-darkest) 42%, transparent) 62%,
-            color-mix(in srgb, var(--c-primary-darkest) 12%, transparent) 100%
+            color-mix(in srgb, var(--c-primary-darkest) 88%, transparent) 0%,
+            color-mix(in srgb, var(--c-primary-darkest) 70%, transparent) 28%,
+            color-mix(in srgb, var(--c-primary-darkest) 30%, transparent) 52%,
+            transparent 78%
           );
       }
 
       @media (min-width: 860px) {
         .hero__scrim {
           background:
-            linear-gradient(
-              100deg,
-              color-mix(in srgb, var(--c-primary-darkest) 92%, transparent) 0%,
-              color-mix(in srgb, var(--c-primary-darkest) 74%, transparent) 34%,
-              color-mix(in srgb, var(--c-primary-darkest) 28%, transparent) 62%,
-              color-mix(in srgb, var(--c-primary-darkest) 10%, transparent) 100%
+            radial-gradient(
+              125% 95% at 0% 100%,
+              color-mix(in srgb, var(--c-primary-darkest) 84%, transparent) 0%,
+              color-mix(in srgb, var(--c-primary-darkest) 66%, transparent) 38%,
+              color-mix(in srgb, var(--c-primary-darkest) 28%, transparent) 64%,
+              transparent 88%
             ),
             linear-gradient(
               to top,
-              color-mix(in srgb, var(--c-primary-darkest) 55%, transparent) 0%,
-              transparent 28%
+              color-mix(in srgb, var(--c-primary-darkest) 45%, transparent) 0%,
+              transparent 22%
             );
         }
       }
 
-      /* El contenido se apoya abajo y el texto se empuja al centro óptico con
-         el margen automático: así el titular no queda pegado al pie ni baila
-         al cambiar de alto de pantalla. */
+      /* El contenido se apoya abajo: texto y, debajo, el pie de mandos. */
       .hero__inner {
         display: flex;
-        /* Ocupa todo el alto de la portada: es lo que permite que el texto se
-           centre con un margen automatico y que el pie quede abajo del todo. */
+        /* Ocupa todo el alto de la portada: el margen automático del texto lo
+           empuja abajo y el centro de la foto queda libre. */
         flex: 1 1 auto;
         flex-direction: column;
-        gap: clamp(1.5rem, 4vh, 3rem);
+        gap: clamp(1rem, 2.6vh, 1.75rem);
         width: min(100%, var(--w-wide));
         margin-inline: auto;
-        padding: clamp(2.5rem, 8vh, 6rem) clamp(1rem, 5vw, 3rem) clamp(1.25rem, 3vh, 2rem);
+        padding: clamp(2rem, 6vh, 4rem) clamp(1rem, 5vw, 3rem) clamp(1rem, 2.6vh, 1.6rem);
       }
 
       /*
-       * En móvil el texto se apoya en el pie, que es donde el velo es opaco:
-       * centrado caía en la franja media de la foto —la más clara y la más
-       * llena de detalle— y el subtítulo dejaba de leerse. En escritorio hay
-       * velo lateral, así que ahí sí se centra.
+       * Texto anclado abajo a la izquierda, en todas las anchuras. Centrado en
+       * vertical tapaba justo la franja media de la foto, donde están las
+       * caras; abajo se apoya en la zona más oscura del velo y deja que la
+       * imagen respire. Es el patrón de las portadas de cine y streaming.
        */
       .hero__text {
-        max-width: 44rem;
+        max-width: 36rem;
         margin-top: auto;
-      }
-
-      @media (min-width: 860px) {
-        .hero__text {
-          margin-block: auto;
-        }
       }
 
       /*
@@ -357,31 +356,31 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
        */
       .hero__bar {
         display: grid;
-        gap: 0.7rem;
-        width: min(100%, 30rem);
+        gap: 0.45rem;
+        width: min(100%, 24rem);
       }
 
       .hero__controls {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.3rem;
         min-width: 0;
       }
 
-      /* Mando redondo de cristal: 2,5 rem = 40 px, objetivo táctil holgado
-         (WCAG 2.5.8 pide 24) sin que el pie crezca. */
+      /* Mando redondo de cristal: 2 rem = 32 px, por encima de los 24 que
+         pide WCAG 2.5.8, y discreto: el pie no debe competir con la foto. */
       .hero__ctl {
         display: grid;
         place-items: center;
         flex: none;
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2rem;
+        height: 2rem;
         padding: 0;
-        border: 1px solid rgb(247 250 252 / 0.24);
+        border: 1px solid rgb(247 250 252 / 0.18);
         border-radius: 50%;
-        background: rgb(9 20 36 / 0.38);
-        backdrop-filter: blur(8px);
-        font-size: 1.1rem;
+        background: rgb(9 20 36 / 0.22);
+        backdrop-filter: blur(10px) saturate(140%);
+        font-size: 0.95rem;
         color: var(--c-on-primary);
         cursor: pointer;
         transition:
@@ -410,8 +409,8 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         display: inline-flex;
         align-items: baseline;
         gap: 0.3rem;
-        margin-inline: 0.5rem 0.15rem;
-        font-size: var(--fs-sm);
+        margin-inline: 0.45rem 0.1rem;
+        font-size: var(--fs-xs);
         font-variant-numeric: tabular-nums;
         letter-spacing: 0.06em;
         color: rgb(247 250 252 / 0.62);
@@ -425,12 +424,12 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       .hero__caption {
         min-width: 0;
         margin: 0;
-        padding-left: 0.75rem;
-        border-left: 1px solid rgb(247 250 252 / 0.28);
+        padding-left: 0.6rem;
+        border-left: 1px solid rgb(247 250 252 / 0.24);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        font-size: var(--fs-sm);
+        font-size: var(--fs-xs);
         letter-spacing: var(--ls-meta);
         color: rgb(247 250 252 / 0.86);
         animation: hero-caption 0.6s var(--ea-standard) both;
@@ -463,7 +462,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         place-items: center;
         flex: 1 1 0;
         min-width: 0;
-        height: 1.25rem;
+        height: 1rem;
         padding: 0;
         border: 0;
         background: none;
@@ -474,7 +473,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         content: '';
         grid-area: 1 / 1;
         width: 100%;
-        height: 3px;
+        height: 2px;
         border-radius: var(--r-pill);
         background: rgb(247 250 252 / 0.28);
         transition:
@@ -487,7 +486,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       }
 
       .hero__dot:hover::before {
-        height: 5px;
+        height: 4px;
         background: rgb(247 250 252 / 0.7);
       }
 
@@ -495,7 +494,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       .hero__dot-fill {
         grid-area: 1 / 1;
         width: 100%;
-        height: 3px;
+        height: 2px;
         border-radius: var(--r-pill);
         background: var(--c-gold);
         box-shadow: 0 0 10px color-mix(in srgb, var(--c-gold) 55%, transparent);
@@ -553,11 +552,11 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
           left: 50%;
           bottom: 1.1rem;
           display: block;
-          width: 1.35rem;
-          height: 1.35rem;
-          margin-left: -0.675rem;
-          border-right: 2px solid rgb(247 250 252 / 0.55);
-          border-bottom: 2px solid rgb(247 250 252 / 0.55);
+          width: 0.9rem;
+          height: 0.9rem;
+          margin-left: -0.45rem;
+          border-right: 1.5px solid rgb(247 250 252 / 0.5);
+          border-bottom: 1.5px solid rgb(247 250 252 / 0.5);
           transform: rotate(45deg);
           animation: hero-cue 2.4s var(--ea-standard) infinite;
         }
@@ -620,7 +619,9 @@ export class HeroCarouselComponent {
        * entera** para pintar 390 px. Ahora un móvil 2× coge la de 960 (la
        * mitad de peso) y la de 480 queda para pantallas pequeñas y sencillas.
        */
-      srcset: `${slide.thumb} 480w, ${slide.medium} 960w, ${slide.image} 1600w`,
+      srcset:
+        `${slide.thumb} 480w, ${slide.medium} 960w, ${slide.image} 1600w` +
+        (slide.large ? `, ${slide.large} 2560w` : ''),
     })),
   );
 

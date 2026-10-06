@@ -14,6 +14,7 @@ export interface LeadershipPhotoManifestEntry {
 }
 
 export const LEADERSHIP_PHOTOS: Readonly<Record<string, LeadershipPhotoManifestEntry>> = {
+  'gabriel-chifor': { width: 1003, height: 1254, variants: [160, 320, 640, 1003] },
   'grigore-tomoiaga': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'ilie-petrescu': { width: 1176, height: 1470, variants: [160, 320, 640, 960, 1176] },
   'ioan-andor': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },

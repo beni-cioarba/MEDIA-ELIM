@@ -241,7 +241,20 @@
   },
   "weekly": {
     "title": "Programa semanal",
-    "today": "HOY"
+    "today": "HOY",
+    "subtitle": "Los cultos de la iglesia cada semana. ¡Te esperamos!",
+    "next": "Próximo culto",
+    "live": "Ahora, en curso",
+    "starts_in": "Empieza en",
+    "today_label": "Hoy",
+    "tomorrow": "Mañana",
+    "watch_live": "Ver en directo",
+    "no_service": "Sin culto",
+    "directions": "Cómo llegar",
+    "unit_day": "día",
+    "unit_days": "días",
+    "unit_hour": "h",
+    "unit_min": "min"
   },
   "upcoming": {
     "title": "Próximos eventos",

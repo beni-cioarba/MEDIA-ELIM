@@ -241,7 +241,20 @@
   },
   "weekly": {
     "title": "Programare săptămânală",
-    "today": "AZI"
+    "today": "AZI",
+    "subtitle": "Serviciile bisericii din fiecare săptămână. Te așteptăm!",
+    "next": "Următorul serviciu",
+    "live": "Acum, în desfășurare",
+    "starts_in": "Începe în",
+    "today_label": "Azi",
+    "tomorrow": "Mâine",
+    "watch_live": "Urmărește în direct",
+    "no_service": "Fără serviciu",
+    "directions": "Cum ajungi",
+    "unit_day": "zi",
+    "unit_days": "zile",
+    "unit_hour": "h",
+    "unit_min": "min"
   },
   "upcoming": {
     "title": "Evenimente viitoare",
