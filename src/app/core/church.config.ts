@@ -999,9 +999,10 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       medium: 'assets/drive-media/revelion_2025-960.webp',
       thumb: 'assets/drive-media/revelion_2025-thumb.webp',
       tone: '#5e6163',
-      // Los músicos ocupan la franja central; con `upper` se comía la
-      // cabecera de la carpa y se perdían los acordeones.
-      focus: 'center',
+      // Arriba del todo: con `center`, en escritorio (marco ~2,25:1 sobre una
+      // foto 3:2) el recorte se llevaba 211 px de arriba y cortaba las cabezas
+      // de los que están de pie. Abajo sólo hay suelo y cajas.
+      focus: 'top',
     },
     {
       id: 'hero_outreach',
@@ -1010,6 +1011,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       medium: 'assets/drive-media/zambetul_cutie_2025-960.webp',
       thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
       tone: '#736d74',
+      // Los chicos de delante tienen la cabeza pegada al borde de arriba: con
+      // `upper` (28 %) se les cortaba el pelo. Abajo sólo hay cajas.
+      focus: 'top',
     },
     {
       id: 'hero_worship',
