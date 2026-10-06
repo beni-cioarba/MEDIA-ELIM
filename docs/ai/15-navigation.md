@@ -238,7 +238,8 @@ debajo de 380 sólo la activa lleva rótulo (patrón de Material 3) y puede
 ocupar el hueco de sus vecinas. «În direct» lleva un punto dorado latiendo.
 Cápsula de 3,4 rem (`--tab-bar-height`) con 0,4 rem de margen.
 
-**Arrastrar entre pestañas** (`SwipeTabsDirective` en el `<main>`, como
+**Arrastrar entre pestañas** (`SwipeTabsDirective` como `hostDirectives` del
+shell, así que el gesto empieza igual en el contenido, la migaja o el pie; como
 WhatsApp, auditado): el contenido **sigue al dedo** y por el otro lado asoma
 la sección vecina; el indicador de la barra avanza en proporción
 (`--tab-drag`); al soltar cambia si se pasó el 40 % del ancho o hubo «flick»
@@ -260,9 +261,18 @@ Como en una app nativa, el destino de una pestaña está ahí sin más; lo
 animado es el gesto. Una página que arranque algo caro debe consultar `PAGE_PREVIEW`
 (`core/navigation/page-preview.ts`); hoy sólo el escenario (sondeo del
 directo). Manejadores pasivos
-fuera de Angular, un `transform` + variables CSS por fotograma;
-`touch-action: pan-y pinch-zoom` en el `<main>`. Se decide tras 10 px: si
-empieza vertical, no hay arrastre en ese gesto. No actúa en los 24 px del
+fuera de Angular, un `transform` + variables CSS por fotograma. Las
+variables se escriben **en la vista previa (`--swipe-dx`, `--swipe-top`) y
+en la barra (`--tab-drag`), nunca en el `<html>`**: heredadas desde la raíz
+obligaban a recalcular el estilo de todo el documento en cada fotograma. El
+indicador se asienta con la misma curva y duración (260 ms) que el
+contenido, y con `prefers-reduced-motion` el asentamiento es inmediato.
+Superficies (las únicas donde empieza y lo que se mueve): `<main>`,
+`app-breadcrumb` y `app-footer`, con `touch-action: pan-y pinch-zoom`; la
+cabecera, la barra, el dock y el cajón quedan fuera. Se decide tras 10 px: si
+empieza vertical, no hay arrastre en ese gesto; la búsqueda de cajas con
+scroll horizontal (lee el layout) sólo se hace entonces, no en cada
+`touchstart`. No actúa en los 24 px del
 borde («atrás» del sistema), en `app-card-carousel`, campos, vídeo, diálogos,
 cajas con scroll horizontal o `[data-no-swipe]` (márcalo en cualquier pieza
 nueva que se arrastre en horizontal), con texto seleccionado ni con dos

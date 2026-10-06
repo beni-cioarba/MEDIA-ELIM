@@ -42,19 +42,21 @@ import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
         TopNavComponent,
         MobileNavComponent,
         TabBarComponent,
-        SwipeTabsDirective,
         SwipePeekComponent,
         BreadcrumbComponent,
         FooterComponent,
         FloatingActionsComponent,
     ],
+    // Arrastrar entre pestañas: escucha en todo el shell para que el gesto
+    // valga sobre el contenido, la migaja y el pie (ver la directiva).
+    hostDirectives: [SwipeTabsDirective],
     template: `
     @if (!fullscreen()) {
       <app-top-nav />
       <app-breadcrumb />
     }
 
-    <main id="main-content" class="shell__main" tabindex="-1" appSwipeTabs>
+    <main id="main-content" class="shell__main" tabindex="-1">
       <router-outlet />
     </main>
 
@@ -96,6 +98,16 @@ import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
         display: block;
         min-width: 0;
         outline: none;
+      }
+
+      /* Superficies del arrastre entre pestañas: el navegador se queda el
+         scroll vertical y el zoom; el horizontal llega al gesto sin esperar
+         a JS. Las cajas con scroll propio (tablas, migaja larga) lo
+         recuperan por ser contenedores de desplazamiento. */
+      .shell__main,
+      app-breadcrumb,
+      app-footer {
+        touch-action: pan-y pinch-zoom;
       }
 
       /* Reserva la altura aproximada del pie para que no haya salto de

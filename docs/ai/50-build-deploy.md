@@ -21,7 +21,7 @@ npm start        # ng serve (prestart regenera version.ts)
 npm run build    # ng build (producción; prebuild = version.ts + npm run check)
 npm run watch    # build --watch en desarrollo
 npm test         # Vitest (@angular/build:unit-test) — configurado, aún sin specs
-npm run check    # i18n:check + check:projection (puertas de calidad, también en CI)
+npm run check    # i18n:check + check:projection + Drive sin red (puertas de calidad, también en CI)
 npm run i18n:check
 npm run check:projection   # presupuesto de legibilidad de la proyección
 npm run version:generate
@@ -176,6 +176,7 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
 | `responsive-audit.snippet.js` | **No es de Node**: se pega en la consola del navegador. Informe de scroll horizontal, desbordes, solapes y `nowrap` recortados en el ancho actual (`docs/ai/40-styling.md` → Responsive) |
 | `check-projection-sizes.mjs` | Guardia del presupuesto de legibilidad: falla si un `font-size` en `--pj-u` baja de 3,2u o la escala `--pj-fs-*` de su suelo (`npm run check:projection`, en CI) |
 | `fetch-youtube.js`       | Genera `youtube.json` (usado por el cron)                    |
+| `check-drive-links.mjs`  | Enlaces de Drive de la galería: forma de cada `driveFolderId` y sin repetidos (`--offline`, dentro de `npm run check`); con red (`npm run check:drive`) además que cada carpeta exista y sea pública. Receta en `20-content-i18n.md` |
 | `check-i18n-parity.mjs`  | Verifica que ES y RO tengan las mismas claves                 |
 | `import-bible-plan.py`   | Excel del plan de lectura → `src/app/core/bible-reading.config.ts` (Python + `openpyxl`) |
 | `import-family-photos.mjs` | Fotos de una semana de familias → `src/assets/family-prayer/<domingo>/<id>.webp` (1280) + `-480.webp`, sin metadatos; imprime `id` y medidas (`36-family-prayer.md`) |

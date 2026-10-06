@@ -7,6 +7,9 @@
         @if (page && page.total > 1) {
           <span class="upcoming__page" aria-hidden="true">{{ page.index + 1 }}/{{ page.total }}</span>
         }
+        @if (!fullscreen() && shown().length > 1) {
+          <span class="ev-count">{{ shown().length }}</span>
+        }
       </h2>
     </div>
     @if (!fullscreen() && schedule.upcomingEvents().length > 0) {
@@ -16,79 +19,208 @@
 
   @if (shown().length === 0) {
     <p class="upcoming__empty">{{ 'upcoming.empty' | translate }}</p>
-  } @else {
-    <ul class="upcoming__list" role="list">
-      @for (ev of shown(); track ev.id; let first = $first; let i = $index) {
-        <li
-          class="upcoming__item"
-          [style.--item-idx]="i"
-          [class.is-today]="ev.isToday"
-          [class.is-next]="first && !ev.isToday && (!page || page.index === 0)"
-        >
-          <div class="upcoming__countdown" aria-hidden="true">
-            @if (ev.isToday) {
-              <span class="upcoming__count-num">{{ 'upcoming.today_short' | translate }}</span>
-            } @else {
-              <span class="upcoming__count-num">{{ ev.daysLeft }}</span>
-              <span class="upcoming__count-label">
-                {{ (ev.daysLeft === 1 ? 'upcoming.day_left' : 'upcoming.days_left') | translate }}
-              </span>
-            }
-          </div>
-
-          <div class="upcoming__body">
-            <div class="upcoming__meta">
-              <span class="upcoming__date">{{ formatEventDate(ev.date) }}</span>
-              <span class="upcoming__time">· {{ ev.time }}</span>
-              @if (first && !ev.isToday && (!page || page.index === 0)) {
-                <span class="upcoming__next-badge">{{ 'upcoming.next' | translate }}</span>
-              }
-              @if (ev.isToday) {
-                <span class="upcoming__today-badge">
-                  <span class="upcoming__live-dot" aria-hidden="true"></span>
-                  {{ 'upcoming.today' | translate }}
-                </span>
-              }
-            </div>
-
-            <h3 class="upcoming__item-title">{{ ev.title }}</h3>
-
-            @if (ev.description) {
-              <p class="upcoming__item-desc">{{ ev.description }}</p>
-            }
-
-            @if (ev.verse) {
-              <blockquote class="upcoming__verse">
-                <span class="upcoming__verse-icon" aria-hidden="true">✠</span>
-                {{ ev.verse }}
-              </blockquote>
-            }
-
-            @if (ev.preacher || ev.worshipLead) {
-              <dl class="upcoming__credits">
-                @if (ev.preacher) {
-                  <div class="upcoming__credit">
-                    <dt>{{ 'upcoming.preacher' | translate }}</dt>
-                    <dd>{{ ev.preacher }}</dd>
-                  </div>
-                }
-                @if (ev.worshipLead) {
-                  <div class="upcoming__credit">
-                    <dt>{{ 'upcoming.worship' | translate }}</dt>
-                    <dd>{{ ev.worshipLead }}</dd>
-                  </div>
-                }
-              </dl>
-            }
-
-            @if (!fullscreen()) {
-              <div class="upcoming__actions">
-                <app-calendar-sync-button [event]="ev" />
-              </div>
-            }
-          </div>
-        </li>
+  } @else if (fullscreen()) {
+    <!-- ================= Proyección: la misma tarjeta, a escala --pj-u =================
+         Una por evento de la página (1 ⇒ cartel a toda la diapositiva; 2 ⇒ mitad y mitad). -->
+    <div class="ev ev--pj" [class.ev--pair]="cards().length > 1">
+      @for (c of cards(); track c.ev.id; let first = $first) {
+        <ng-container
+          *ngTemplateOutlet="hero; context: { $implicit: c, next: first && !c.ev.isToday && (!page || page.index === 0), pj: true }"
+        />
       }
-    </ul>
+    </div>
+  } @else {
+    <!-- ================= Web: destacado + agenda por mes ================= -->
+    <div class="ev">
+      @if (featured(); as f) {
+        <ng-container *ngTemplateOutlet="hero; context: { $implicit: f, next: !f.ev.isToday, pj: false }" />
+      }
+
+      @if (agenda().length > 0) {
+        <div class="ev-agenda">
+          <h3 class="ev-agenda__title">{{ 'upcoming.later' | translate }}</h3>
+          @for (g of agenda(); track g.key) {
+            <section class="ev-month" [attr.aria-label]="g.label">
+              <h4 class="ev-month__label">{{ g.label }}</h4>
+              <ol class="ev-rows" role="list">
+                @for (c of g.items; track c.ev.id) {
+                  <li class="ev-row" [id]="'ev-' + c.ev.id" [class.is-today]="c.ev.isToday">
+                    <div class="ev-row__date" aria-hidden="true">
+                      <span class="ev-row__day">{{ c.parts.day }}</span>
+                      <span class="ev-row__weekday">{{ c.parts.weekday }}</span>
+                    </div>
+                    <div class="ev-row__main">
+                      <h5 class="ev-row__title">
+                        <span class="u-sr-only">{{ formatEventDate(c.ev.date) }} · </span>
+                        {{ c.ev.title }}
+                      </h5>
+                      <p class="ev-row__meta">
+                        <span class="ev-row__time">{{ c.times.join(' · ') }}</span>
+                        @if (c.ev.preacher) {
+                          <span>{{ 'upcoming.preacher' | translate }}: <b>{{ c.ev.preacher }}</b></span>
+                        }
+                        @if (c.ev.worshipLead) {
+                          <span>{{ 'upcoming.worship' | translate }}: <b>{{ c.ev.worshipLead }}</b></span>
+                        }
+                      </p>
+                      @if (c.ev.description) {
+                        <p class="ev-row__desc">{{ c.ev.description }}</p>
+                      }
+                    </div>
+                    <span class="ev-row__left">
+                      @if (c.ev.isToday) {
+                        {{ 'upcoming.today_short' | translate }}
+                      } @else if (c.ev.daysLeft === 1) {
+                        {{ 'upcoming.tomorrow' | translate }}
+                      } @else {
+                        {{ 'upcoming.in_days' | translate: { n: c.ev.daysLeft } }}
+                      }
+                    </span>
+                    <div class="ev-row__actions">
+                      @if (c.poster) {
+                        <div class="ev-row__poster" [appViewable]="c.poster">
+                          <img [src]="c.ev.poster" alt="" width="864" height="1080" loading="lazy" decoding="async" />
+                        </div>
+                      }
+                      <app-calendar-sync-button [event]="c.ev" [iconOnly]="true" />
+                    </div>
+                  </li>
+                }
+              </ol>
+            </section>
+          }
+        </div>
+      }
+    </div>
   }
 </section>
+
+<!-- Tarjeta de evento: destacado en la web y cada evento de la diapositiva en proyección. -->
+<ng-template #hero let-f let-next="next" let-pj="pj">
+  <article
+    class="ev-hero"
+    [id]="'ev-' + f.ev.id"
+    [class.has-poster]="!!f.poster"
+    [class.is-today]="f.ev.isToday"
+    [attr.aria-labelledby]="'ev-title-' + f.ev.id"
+  >
+    @if (f.poster) {
+      <div
+        class="ev-hero__poster"
+        [appViewable]="f.poster"
+        [appViewableDisabled]="pj"
+        [style.--poster]="'url(' + f.ev.poster + ')'">
+        <img
+          [src]="f.ev.poster"
+          [alt]="f.ev.title"
+          width="864"
+          height="1080"
+          decoding="async"
+        />
+      </div>
+    }
+
+    <div class="ev-hero__body">
+      <p class="ev-hero__eyebrow">
+        @if (f.ev.isToday) {
+          <span class="ev-chip ev-chip--live">
+            <span class="ev-chip__dot" aria-hidden="true"></span>
+            {{ 'upcoming.today' | translate }}
+          </span>
+        } @else if (next) {
+          <span class="ev-chip">{{ 'upcoming.next' | translate }}</span>
+        }
+        <!-- La fecha ya está en el panel; aquí sólo para lectores de pantalla. -->
+        <span class="u-sr-only">
+          {{ formatEventDate(f.ev.date) }}
+          · {{ f.times.join(' · ') }}
+        </span>
+      </p>
+
+      <h3 class="ev-hero__title" [id]="'ev-title-' + f.ev.id">{{ f.ev.title }}</h3>
+
+      @if (f.ev.description) {
+        <p class="ev-hero__desc">{{ f.ev.description }}</p>
+      }
+
+      @if (f.ev.verse) {
+        <blockquote class="ev-hero__verse">{{ f.ev.verse }}</blockquote>
+      }
+
+      @if (f.ev.preacher || f.ev.worshipLead) {
+        <dl class="ev-facts">
+          @if (f.ev.preacher) {
+            <div class="ev-facts__item">
+              <dt>{{ 'upcoming.preacher' | translate }}</dt>
+              <dd>{{ f.ev.preacher }}</dd>
+            </div>
+          }
+          @if (f.ev.worshipLead) {
+            <div class="ev-facts__item">
+              <dt>{{ 'upcoming.worship' | translate }}</dt>
+              <dd>{{ f.ev.worshipLead }}</dd>
+            </div>
+          }
+        </dl>
+      }
+
+      @if (!pj) {
+        <div class="ev-hero__actions">
+          <app-calendar-sync-button [event]="f.ev" />
+          <app-share-button [url]="shareUrl(f.ev)" [title]="f.ev.title" />
+        </div>
+      }
+    </div>
+
+    <!-- Panel de fecha + cuenta atrás: la «consola» del evento. -->
+    <aside class="ev-panel" [attr.aria-label]="'upcoming.when' | translate">
+      <div class="ev-panel__date">
+        <span class="ev-panel__weekday">{{ f.parts.weekday }}</span>
+        <span class="ev-panel__day">{{ f.parts.day }}</span>
+        <span class="ev-panel__month">{{ f.parts.month }} <span class="ev-panel__year">{{ f.parts.year }}</span></span>
+      </div>
+
+      <div class="ev-panel__times">
+        <app-icon name="clock" aria-hidden="true" />
+        @for (t of f.times; track t) {
+          <span class="ev-panel__time">{{ t }}</span>
+        }
+      </div>
+
+      @if (countdowns().get(f.ev.id); as c) {
+        <div class="ev-panel__count">
+          @if (c.state === 'live') {
+            <span class="ev-panel__label">{{ 'upcoming.today' | translate }}</span>
+            <span class="ev-panel__now">
+              <span class="ev-chip__dot" aria-hidden="true"></span>
+              {{ 'upcoming.started' | translate }}
+            </span>
+          } @else {
+            <span class="ev-panel__label">{{ 'upcoming.starts_in' | translate }}</span>
+            <span class="u-sr-only">
+              @if (c.days > 0) {
+                {{ c.days }} {{ 'upcoming.unit_days' | translate }},
+              }
+              {{ c.hours }} {{ 'upcoming.unit_hours' | translate }},
+              {{ c.minutes }} {{ 'upcoming.unit_minutes' | translate }}
+            </span>
+            <span class="ev-timer" aria-hidden="true">
+              <!-- El mismo día, «0 días» sobra: horas y minutos. -->
+              @if (c.days > 0) {
+                <span class="ev-timer__seg">
+                  <b>{{ c.days }}</b><small>{{ 'upcoming.unit_days' | translate }}</small>
+                </span>
+              }
+              <span class="ev-timer__seg">
+                <b>{{ pad(c.hours) }}</b><small>{{ 'upcoming.unit_hours' | translate }}</small>
+              </span>
+              <span class="ev-timer__seg">
+                <b>{{ pad(c.minutes) }}</b><small>{{ 'upcoming.unit_minutes' | translate }}</small>
+              </span>
+            </span>
+          }
+        </div>
+      }
+    </aside>
+  </article>
+</ng-template>

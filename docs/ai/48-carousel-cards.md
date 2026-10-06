@@ -76,10 +76,10 @@ Todo lo que ya existía en el modelo de datos y no se estaba usando:
 
 | Tarjeta | Titular | Descripción | Pie (línea 2) | Agenda |
 | --- | --- | --- | --- | --- |
-| Programa semanal | Día · hora del próximo culto | Título del culto | Descripción de la sección | El resto de la semana (3 líneas) |
+| Programa semanal | Día · hora del próximo culto | Título del culto | **Cuenta atrás** («Începe în 3 h 57 min», «Acum, în desfășurare», «Mâine») | El resto de la semana (4 líneas) |
 | Anuncios | Título del anuncio | **`lead`**: el resumen de 1-2 frases que ya traía el modelo | Fecha · hora · **lugar** | — |
-| Eventos | Título del evento | `description` del evento | Fecha · hora · **predicador** | — |
-| Lectura bíblica | Pasaje de hoy | **`summary`**: el tramo de toda la semana | Día · fecha | Las 3 lecturas siguientes, con su **Nuevo Testamento** |
+| Eventos | Título del evento | `description` del evento | Días que faltan · hora · **predicador** | — |
+| Lectura bíblica | Pasaje de hoy | **`summary`**: el tramo de toda la semana | «Ziua 2 din 7» | Las 4 lecturas siguientes, con su **Nuevo Testamento** |
 
 ## Cómo se comporta el carrusel
 
@@ -87,10 +87,17 @@ Todo lo que ya existía en el modelo de datos y no se estaba usando:
   interior es el margen real de la página (`--board-gutter`), así la primera
   tarjeta queda alineada con el título de la sección y la última puede llegar
   al borde. Es lo que hace la referencia con sus 40 px.
-- **Cuántas se ven**: el ancho es `clamp(19rem, 38vw, 33rem)`. En la
-  referencia la tarjeta ocupa el 35 % de la ventana; aquí el 38 %, así que se
-  ven dos y media y **asoma la siguiente** — el asomo es lo que invita a
-  deslizar.
+- **Cuántas se ven** (revisión del 06/10/2026): el ancho **sale de la
+  columna de la página**, no de la ventana:
+  `--board-item-w = (columna − (n − 1) · hueco) / n`, con la columna
+  `min(100cqi − 2 · --page-gutter, --page-max)` y `n` = `--board-per`
+  (**3** en escritorio, **2,15** por debajo de 1100 px, **1,12** por debajo
+  de 640 px). Tres tarjetas llenan exactamente los 1440 px de la columna y
+  quedan en la misma vertical que la franja de avisos y el resto de
+  secciones. Antes era `clamp(19rem, 38vw, 33rem)`: a 1912 px tres tarjetas
+  medían 1735 px y desbordaban la columna 147 px por cada lado. Con más
+  tarjetas de las que caben, **asoma la siguiente** y el carrusel avanza.
+  `100cqi` funciona porque `.board app-card-carousel` es contenedor.
 - **Flechas**: aparecen **al apuntar el carrusel** (y se quedan si el foco
   está dentro, para quien navega con teclado). Nunca en táctil: ahí se desliza.
   En el extremo se apagan en vez de desaparecer.
@@ -312,6 +319,41 @@ arriba con un pasaje sin rótulo debajo no situaba nada. El número de semana
 pasa a la descripción —«Semana 91 · Isaia 57-66, Ieremia 1-4»—, donde sitúa sin
 estorbar, y la insignia queda para «AZI» o el día.
 
+## Revisión del 06/10/2026: tarjeta comprimida y viva
+
+Medido a 1912 px antes de tocar nada: franja de avisos + tablero ocupaban
+**588 px** de los 1000 px de la pantalla, las dos secciones no estaban
+alineadas y las tarjetas de agenda tenían **~106 px de tono vacío** (la de
+cartel es 3:2 y la fila las estira a todas). Después: **495 px**, sin vacíos y
+con «Rugăciune pentru familii» asomando en la primera pantalla.
+
+| Pieza | Antes | Ahora | Por qué |
+| --- | --- | --- | --- |
+| Tarjeta | 561 × 468 | 463 × 378 | Ancho derivado de la columna (ver arriba) |
+| Portada de datos | 16:9 fijo + hueco | **crece** hasta el alto de la fila (`flex: 1 0 auto`, mínimo `100cqi · 9/16`), agenda pegada abajo con 4 líneas | El hueco se llena con datos, no con aire |
+| Pie | 94 px · icono 48 · botón «Vezi tot» | **~64 px** · icono 40 · flecha de 36 | Toda la tarjeta ya es el enlace; el botón repetido tres veces cortaba el nombre en móvil («Progra…») |
+| Barra de avance | — | 2 px en oro encima del pie (`--promo-progress`, 0–1) | Culto: últimas 24 h (o lo que va de culto). Lectura: día del plan. Evento: último mes. Es decorativa: `meta` lo dice con palabras |
+| Insignia | texto | **punto vivo** verde que late (`.is-live`) si es hoy; «Acum» durante el culto | Se queda quieto con `prefers-reduced-motion` |
+| Cartel | 300 de 561 px; el resto, desenfoque | con la tarjeta ≥ 26 rem, **panel lateral** (36 %): fecha en grande, día de la semana y botón «Calendar» (`.ics`) | El hueco lleva lo que el cartel no da de un vistazo; la insignia se oculta porque el panel ya tiene la fecha |
+| Agenda en móvil | oculta (y hueco) | **2 líneas** con columnas más justas (`@container (max-width: 24rem)`) | Ninguna tarjeta queda vacía en ningún ancho |
+
+**La tarjeta es contenedor** (`container-type: inline-size` en `.promo`): el
+panel del cartel, la agenda reducida y la altura mínima de la portada se
+deciden por el ancho de la tarjeta, no de la ventana.
+
+**Enlace extendido en vez de `<a>` envolvente.** La tarjeta es un `article`;
+el enlace es el nombre de la sección en el pie y su `::after` (z 3) cubre la
+tarjeta entera. Así el botón «Calendar» (z 4) vive dentro sin anidar
+interactivos. El anillo de foco se pinta en la tarjeta con
+`.promo:has(.promo__link:focus-visible)`. La regla 7 de abajo sigue en pie: un
+solo destino por tarjeta. El botón del panel no es un destino, es una acción.
+
+**Franja de avisos.** Rejilla que pasa a carrusel: el ancho de cada ficha es
+`100% / min(--notice-n, --notice-cols)` (`--notice-n` lo pone la plantilla;
+3 columnas en escritorio, 2 por debajo de 1100 px, 82 % en móvil y 100 % si
+hay un solo aviso). Rótulo a 12 px (antes 10,6) y detalle a 13,5 px con
+opacidad 0,78: **6:1** sobre el crema (antes 3,8:1, no cumplía AA).
+
 ## Reglas para el próximo carrusel
 
 1. **Cuándo sí.** Hay más elementos equivalentes de los que caben y ninguno es
@@ -330,8 +372,8 @@ estorbar, y la insignia queda para «AZI» o el día.
    scroll. El tono se mide (canvas), no se elige a ojo.
 6. **Un titular y nada más.** Lo más importante, grande y de peso normal. Sin
    listas dentro de la tarjeta: lo secundario está en la sección.
-7. **Toda la tarjeta es un enlace** (como en la referencia). Nada de enlaces
-   dentro de enlaces: si un elemento concreto necesita su propio destino, esa
+7. **Toda la tarjeta es un enlace** (como en la referencia; enlace extendido,
+   ver la revisión del 06/10/2026). Nada de enlaces dentro de enlaces: si un elemento concreto necesita su propio destino, esa
    tarjeta no es de promoción, es una lista.
 8. **Accesibilidad**: la ventana del carrusel lleva `tabindex="0"` (WCAG
    2.1.1), el grupo se anuncia con `aria-roledescription="carrusel"`, las

@@ -473,7 +473,7 @@ Cada diapositiva dura lo que su bloque tenga fijado
 | `causes`        | 30 | la lista se lee en voz alta y se ora por ella (04/10/2026; antes 60) |
 | `announcements` | 30 | se leen, y hay que darles tiempo a los más lentos     |
 | `bible`         | 20 | siete lecturas que muchos apuntan                     |
-| `upcoming`      | 15 | dos eventos con fecha, título y descripción por página |
+| `upcoming`      | 15 | uno o dos eventos por página: cartel, título, resumen y cuenta atrás |
 | resto           | 12 | contenido que se reconoce, no se lee                  |
 
 El operador lo ajusta en el panel con `−` / `+` (pasos de 5 s, entre 5 y 120)
@@ -623,18 +623,30 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    apilan a todo el ancho y las listas de personas pasan a texto corrido. Si
    ni a 0,7 cabe, sobra contenido: sección `webOnly` o texto más corto
    (`35-announcements.md`).
-3. **Eventos: dos por diapositiva**, que se reparten el alto. Con dos, la
-   descripción se recorta a dos líneas y los créditos («CUVÂNT Daniel Popa»)
-   van en una; con uno, la tarjeta es un cartel (titular a 8u, fecha a `lead`,
-   resumen entero hasta cuatro líneas).
-
-   La casilla de la cuenta atrás lleva **una cifra**; cuando el evento es hoy
-   lleva una palabra («AZI» / «HOY», clave `upcoming.today_short`; la insignia
-   de la línea de fecha en la web sigue diciendo «ESTE AZI») y por eso tiene su propio tamaño (`lead`, no
-   `display`): a tamaño de cifra medía 298 px en una columna de 216 y se salía
-   por encima del borde de la tarjeta. Las insignias «ESTE AZI» / «URMĂTORUL»
-   de la línea de fecha no se proyectan: la casilla ya lo dice y sólo partían
-   esa línea en dos.
+3. **Eventos: la misma tarjeta que la web** (`.ev--pj`, estilos en
+   `upcoming-block.component.scss`, vigilada por `check:projection`):
+   cartel · texto · consola navy con fecha, hora y cuenta atrás días / horas /
+   min (cambia una vez por minuto, sin animación; el punto «hoy» no late).
+   - **Un evento**: la tarjeta llena la diapositiva. Columnas 38u | ~83u |
+     48u; titular a `title` (3 líneas), resumen a `body` (hasta 3), créditos
+     en una línea; día a 16u, cifras a `title`. Antes la casilla de 160 px y
+     el texto a la izquierda dejaban media diapositiva vacía.
+   - **Dos eventos**: mitad y mitad. Columnas 24u | texto | 60u; titular a
+     `lead` y resumen a `caption` (2 líneas cada uno); la consola pone fecha
+     y hora arriba y la cuenta atrás debajo a todo el ancho (en columnas se
+     salía 47 px a 720p) y omite el año.
+   - Cartel entero (`object-fit: contain`) sobre su copia desenfocada; el
+     visor va desactivado. «URMĂTORUL» sólo en la primera de la página 1;
+     «ESTE AZI» en rojo `--c-live` cuando toca.
+   - Cuenta atrás (igual en la web): sin la casilla «0 zile» el mismo día
+     (sólo ore / min); «În desfășurare» durante 3 h desde la hora de inicio
+     (`LIVE_WINDOW_MS`; los eventos no tienen hora de fin) y después nada:
+     queda «ESTE AZI» con la hora.
+   - **Galería** (de paso, para que `check:projection` pase): carril de 60u
+     (antes 46u) con miniatura de 12u; nombre a 3,6u en hasta dos líneas y
+     fecha a `eyebrow` (antes 3u y 2,3u); filas de 14u como mínimo; el
+     ordinal «01» sobre la miniatura (1,9u, ilegible) no se proyecta; el
+     rótulo sobre la foto grande, a `caption` (antes 2,6u).
 4. **Programa semanal entero**: fila = DÍA | hora (6,6u) | título (`lead`)
    en una subrejilla (la columna del día mide «Duminică»), filas a `1fr`.
 5. **Las imágenes se ven enteras**: las miniaturas de YouTube se piden en 16:9
@@ -699,8 +711,8 @@ Reglas fijas del lienzo proyectado:
   navy. Oro sólo como acento; rojo `--c-live` sólo para «en directo» / «hoy».
 - **Sin chrome**: flecha de las tarjetas, botones de compartir y dock
   flotante ocultos (el dock y la barra reaparecen al acercar el ratón).
-- **Sin movimiento propio**: el resaltado rotatorio de redes sólo existe en
-  la web pública; el único movimiento es el cambio de diapositiva.
+- **Sin movimiento propio**: el único movimiento es el cambio de
+  diapositiva (las redes ya no tienen resaltado rotatorio en ningún sitio).
 - **Tres emisiones** en «Transmisiones» (`PROJECTED_STREAMS`), en lista
   vertical con miniatura + título a cuerpo de lectura.
 
@@ -743,3 +755,37 @@ El pie del escenario **en la web** usa `verse.stage_text` /
 `verse.stage_reference` (Psalmul 84:10); proyectado no se pinta (el sitio es
 del contenido). La portada tiene el suyo propio (`verse.text` /
 `verse.reference`): cambiar uno no cambia el otro.
+
+## Próximos eventos en la web
+
+`UpcomingBlockComponent` tiene **una sola tarjeta** (`<ng-template #hero>`):
+en la web es el destacado; en proyección se pinta una por evento de la página
+con `.ev--pj` (ver punto 3 de «Legibilidad» más arriba). Todo vive en
+`upcoming-block.component.scss`; de `stage.component.scss` y
+`_projection.scss` sólo quedan la cabecera, `__page` y el estado vacío.
+
+Medido antes del cambio (1600 px): la tarjeta medía 1432 px y el texto se
+cortaba en 693 (41 % de la tarjeta vacía a la derecha); la casilla «12 días
+restantes», 160 × 234 px casi toda aire; el `poster` del evento no salía en
+ningún sitio y «Calendario» estaba dos veces.
+
+- **Destacado** (el primer evento): cartel · texto · panel. El panel es navy
+  profundo con retícula fina y halo de oro (rojo vivo si es hoy): fecha
+  partida (DOM · 18 · OCT 2026), hora(s) y **cuenta atrás en vivo** días /
+  horas / min hasta el primer `HH:MM` de `time` (reloj de `ClockService`, un
+  tic por minuto; «En curso» cuando ya empezó). La fecha larga no se repite
+  en el texto: queda sólo para lectores de pantalla. El cartel abre el visor
+  (`[appViewable]`) y nunca se recorta (lleva texto hasta el borde).
+- **Agenda** (el resto): agrupada por mes, filas densas fecha | título + hora
+  + créditos + resumen de una línea | «en N días» | miniatura del cartel +
+  calendario. Con veinte eventos sigue leyéndose como un calendario.
+- **Container queries** (`container: ev`), no media queries: el bloque manda
+  según lo que él mide, en su página o dentro del panel completo.
+  - `< 560 px`: panel arriba como franja; el cartel, banda de 13rem entero
+    sobre una copia desenfocada de sí mismo (en columna estrujaba el texto a
+    230 px); texto a todo el ancho.
+  - `560–899 px`: cartel a la izquierda; texto y franja del panel a la derecha.
+  - `≥ 900 px`: una fila cartel | texto | panel (1440 × 322 px con un evento).
+- Cada evento lleva `id="ev-<id>"`; «Compartir» comparte la página con ese
+  ancla. Claves nuevas en `upcoming.*`: `when`, `starts_in`, `started`,
+  `unit_days|hours|minutes`, `later`, `in_days`, `tomorrow`.

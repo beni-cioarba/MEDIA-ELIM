@@ -52,7 +52,7 @@ export const MAIN_NAV: readonly NavItem[] = [
         labelKey: 'nav.leadership',
         descriptionKey: 'nav.leadership_desc',
         path: `/${APP_PATHS.leadership}`,
-        icon: 'heart',
+        icon: 'network',
       },
     ],
   },

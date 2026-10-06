@@ -1,51 +1,100 @@
-<div class="socials" aria-labelledby="socials-title">
-  <h2 id="socials-title" class="socials__title">{{ (fullscreen() ? 'socials.title_pj' : 'socials.section_title') | translate }}</h2>
-  <ul class="socials__list">
-    @for (link of config.socials; track link.id; let i = $index) {
-      <!-- El resaltado rotatorio sólo existe en la web pública: en proyección
-           distrae y el carrusel ya aporta el movimiento necesario. -->
-      <li class="card" [class.card--highlight]="!fullscreen() && highlightedIndex() === i">
-        <a
-          class="card__link"
-          [href]="link.icon === 'youtube' && youtube.liveStream() ? youtube.liveStream()!.url : link.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          [attr.aria-label]="socialAria()[link.id]"
-        >
-          <span class="card__icon" aria-hidden="true">
+@if (fullscreen()) {
+  <!-- Proyección: maquetación propia (handle gigante, sin descripción ni
+       acciones). La estilizan `stage.component.scss` y `_projection.scss`. -->
+  <div class="socials" aria-labelledby="socials-title">
+    <h2 id="socials-title" class="socials__title">{{ 'socials.title_pj' | translate }}</h2>
+    <ul class="socials__list">
+      @for (link of config.socials; track link.id) {
+        <li class="card">
+          <a class="card__link" [href]="href(link)" target="_blank" rel="noopener noreferrer" [attr.aria-label]="socialAria()[link.id]">
+            <span class="card__icon" aria-hidden="true">
+              <app-social-icon [name]="link.icon" />
+            </span>
+            <span class="card__body">
+              <span class="card__network">
+                {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
+                @if (isLive(link)) {
+                  <span class="card__live" [attr.aria-label]="'streams.live_now' | translate">
+                    <span class="card__live-dot" aria-hidden="true"></span>
+                    {{ 'streams.live_now' | translate }}
+                  </span>
+                }
+              </span>
+              <span class="card__handle">{{ link.handle }}</span>
+            </span>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+} @else {
+  <!-- Web pública: una ficha por red en una sola fila (ver la hoja del
+       componente). El enlace se estira sobre toda la ficha; el botón de
+       copiar queda por encima, para no anidar elementos interactivos. -->
+  <section class="nets" aria-labelledby="nets-title">
+    <header class="nets__head">
+      <h2 id="nets-title" class="nets__title">{{ 'socials.section_title' | translate }}</h2>
+      <span class="nets__count">{{ 'socials.count' | translate: { count: config.socials.length } }}</span>
+    </header>
+
+    <ul class="nets__grid" [style.--nets-cols]="wideColumns">
+      @for (link of config.socials; track link.id; let i = $index) {
+        <li class="net" [class.net--live]="isLive(link)">
+          <span class="net__icon" aria-hidden="true">
             <app-social-icon [name]="link.icon" />
           </span>
-          <!-- Tres piezas con jerarquía propia: la red (qué es), el handle (lo
-               que hay que teclear: protagonista en proyección) y la descripción. -->
-          <span class="card__body">
-            <span class="card__network">
-              {{ 'socials.items.' + link.i18nKey + '.name' | translate }}
-              @if (link.icon === 'youtube' && youtube.liveStream()) {
-                <span class="card__live" [attr.aria-label]="'streams.live_now' | translate">
-                  <span class="card__live-dot" aria-hidden="true"></span>
-                  {{ 'streams.live_now' | translate }}
-                </span>
-              }
-            </span>
-            <span class="card__handle">{{ link.handle }}</span>
-            <span class="card__desc">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
-          </span>
-          <span class="card__cta" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </a>
-      </li>
-    }
-  </ul>
-</div>
 
-<!-- Indicador de scroll (sólo en la web pública, no en la proyección) -->
-@if (!fullscreen()) {
-  <div class="scroll-indicator" aria-hidden="true">
-    <svg viewBox="0 0 24 24">
-      <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </div>
+          <span class="net__meta">
+            <span class="net__network">{{ 'socials.items.' + link.i18nKey + '.name' | translate }}</span>
+            @if (isLive(link)) {
+              <span class="net__live">
+                <span class="net__live-dot" aria-hidden="true"></span>
+                {{ 'streams.live_now' | translate }}
+              </span>
+            }
+          </span>
+
+          <a
+            class="net__link"
+            [href]="href(link)"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="socialAria()[link.id]"
+            [title]="link.handle"
+          >{{ link.handle }}</a>
+
+          <span class="net__desc">{{ 'socials.items.' + link.i18nKey + '.subtitle' | translate }}</span>
+
+          <span class="net__actions">
+            <app-copy-button class="net__copy" [value]="link.handle" [label]="link.handle" />
+            <span class="net__go" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>
+            </span>
+          </span>
+
+          @if (showQr()) {
+            <span class="net__qr" aria-hidden="true">
+              @defer (on viewport) {
+                <qrcode
+                  [qrdata]="href(link)"
+                  [width]="256"
+                  [margin]="0"
+                  [errorCorrectionLevel]="'M'"
+                  [colorDark]="QR_INK"
+                  [colorLight]="QR_PAPER"
+                  [elementType]="'svg'"
+                />
+              } @placeholder {
+                <span class="net__qr-ph"></span>
+              }
+              <span class="net__qr-text">
+                <span class="net__qr-label">{{ 'socials.scan' | translate }}</span>
+                <span class="net__qr-url">{{ displayUrl(link) }}</span>
+              </span>
+            </span>
+          }
+        </li>
+      }
+    </ul>
+  </section>
 }

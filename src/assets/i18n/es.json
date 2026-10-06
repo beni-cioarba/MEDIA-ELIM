@@ -17,6 +17,8 @@
     "section_title": "Síguenos en nuestras redes",
     "title_pj": "Redes sociales",
     "open_aria": "Abrir {{name}} en una nueva pestaña",
+    "count": "{{count}} canales",
+    "scan": "Escanea con el móvil",
     "items": {
       "instagram_main": {
         "name": "Instagram",
@@ -185,6 +187,12 @@
     "title_pj": "Galería de fotos",
     "view_photos": "Ver fotos y vídeos",
     "open_event": "Abrir evento",
+    "controls": "Controles de la galería",
+    "events_label": "Eventos",
+    "pause": "Detener la rotación",
+    "play": "Reanudar la rotación",
+    "prev": "Evento anterior",
+    "next": "Evento siguiente",
     "events": {
       "botez_2025_11_30": {
         "name": "Bautismo",
@@ -265,7 +273,16 @@
     "day_left": "día restante",
     "days_left": "días restantes",
     "preacher": "Predica",
-    "worship": "Alabanza"
+    "worship": "Alabanza",
+    "when": "Fecha y cuenta atrás",
+    "starts_in": "Empieza en",
+    "started": "En curso",
+    "unit_days": "días",
+    "unit_hours": "horas",
+    "unit_minutes": "min",
+    "later": "Más adelante",
+    "in_days": "en {{n}} días",
+    "tomorrow": "Mañana"
   },
   "announcements": {
     "badge": "Anuncio",
@@ -930,6 +947,8 @@
     "board": {
       "title": "Lo que viene",
       "rest_week": "El resto de la semana",
+      "day_of": "Día {{n}} de {{total}}",
+      "calendar": "Calendario",
       "rest_readings": "El resto de las lecturas",
       "all": "Ver todo"
     },

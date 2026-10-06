@@ -1,0 +1,392 @@
+// =====================================================================
+// Redes sociales · web pública (`.nets`). Ver docs/ai/40-styling.md.
+//
+// La proyección usa otro marcado (`.socials` / `.card`) y vive en
+// `stage.component.scss` + `styles/_projection.scss`; nada de aquí la toca.
+//
+// Medidas (1.483 px de ventana, 4 redes):
+//   antes  2 × 2 tarjetas de 686 × 104 px, ~430 px vacíos entre la red y la
+//          flecha, 220 px de alto en total.
+//   ahora  una fila de 4 fichas de ~337 px: icono | red / @handle / descripción
+//          en columnas alineadas, y abajo el QR de esa red (sólo escritorio).
+//
+// El @handle es la pieza principal (es lo que se busca o se teclea). La red
+// va encima en versalitas, como etiqueta.
+// =====================================================================
+@use 'ds' as *;
+
+:host {
+  display: contents;
+}
+
+.nets {
+  container: nets / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3, 0.75rem);
+  min-width: 0;
+}
+
+// Título + filete + recuento en una sola línea: el filete conduce la vista
+// hasta el dato y ocupa el ancho que antes quedaba vacío.
+.nets__head {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 0;
+
+  &::after {
+    content: '';
+    order: 1;
+    flex: 1 1 auto;
+    height: 1px;
+    min-width: 1.5rem;
+    background: linear-gradient(90deg, var(--c-hairline-strong), transparent);
+  }
+}
+
+.nets__title {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--c-primary);
+}
+
+.nets__count {
+  order: 2;
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// Rejilla: 1 columna en móvil, 2 desde 34 rem y la fila ancha desde 72 rem
+// (fichas de ≥ 17,5 rem: lo que pide un @handle de ~19 caracteres). En la
+// fila ancha hay `--nets-cols` columnas, que calcula el componente: todas las
+// redes en una fila hasta 4; con más, el reparto sin huérfanas (6 → 3 + 3).
+// Consultas de contenedor y no de ventana: el bloque no sabe dónde lo ponen.
+// ---------------------------------------------------------------------
+.nets__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+@container nets (min-width: 34rem) {
+  .nets__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container nets (min-width: 72rem) {
+  .nets__grid {
+    grid-template-columns: repeat(var(--nets-cols, 4), minmax(0, 1fr));
+  }
+}
+
+// ---------------------------------------------------------------------
+// Ficha
+//   [icono]  RED · EN DIRECTO           [⧉] ↗
+//            @handle (todo el ancho)
+//            descripción (hasta 2 líneas)
+//   ───────────────────────────────────────────
+//   [QR]     ESCANEA CON EL MÓVIL
+//            instagram.com/elimarganda
+// ---------------------------------------------------------------------
+.net {
+  // Contenedor propio: el @handle escala con el ancho de SU ficha (`cqi`),
+  // no con la ventana, y cabe entero en la fila de cuatro.
+  container-type: inline-size;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'icon meta   actions'
+    'icon handle handle'
+    'icon desc   desc'
+    'qr   qr     qr';
+  align-items: center;
+  column-gap: 0.75rem;
+  padding: 0.875rem 0.875rem 0.875rem 1rem;
+  border-radius: var(--r-card);
+  // Borde de 1 px que al pasar el ratón se vuelve un degradado navy → oro:
+  // dos fondos (relleno + borde) en lugar de un pseudo-elemento con máscara.
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--c-surface), var(--c-surface)) padding-box,
+    linear-gradient(var(--c-hairline), var(--c-hairline)) border-box;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease;
+
+  &:hover,
+  &:focus-within {
+    background:
+      linear-gradient(var(--c-surface), var(--c-surface)) padding-box,
+      linear-gradient(135deg, var(--c-primary) 0%, var(--c-gold) 100%) border-box;
+    box-shadow: var(--shadow-card);
+    transform: translateY(-2px);
+  }
+
+  // El enlace se estira sobre la ficha (`::after`), así que el foco se
+  // dibuja en la ficha entera y no en el texto del @handle.
+  &:has(.net__link:focus-visible) {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 3px;
+  }
+}
+
+.net__icon {
+  grid-area: icon;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.6rem;
+  border-radius: 0.75rem;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  // Filete dorado interior: el único oro de la ficha en reposo.
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.35);
+  transition: background 0.25s ease;
+
+  .net:hover & {
+    background: var(--c-primary-soft);
+  }
+
+  ::ng-deep svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+}
+
+.net__meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.net__network {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+// «EN DIRECTO» es un estado: el único rojo del bloque, siempre plano.
+.net__live {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--c-live);
+  color: var(--c-on-primary);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.net__live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: net-live 1.4s ease-out infinite;
+}
+
+@keyframes net-live {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9); }
+  70%  { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+.net__link {
+  grid-area: handle;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(1rem, 6.2cqi, 1.1875rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// Copiar + flecha arriba a la derecha, para dejar al @handle todo el ancho.
+.net__actions {
+  grid-area: actions;
+  display: inline-flex;
+  align-items: center;
+  margin-block: -0.375rem;
+}
+
+// Por encima del enlace estirado: copiar no abre la red.
+.net__copy {
+  position: relative;
+  z-index: 1;
+  color: var(--c-faint);
+}
+
+.net__desc {
+  grid-area: desc;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+.net__go {
+  display: inline-flex;
+  width: 1.25rem;
+  justify-content: flex-end;
+  color: var(--c-faint);
+  transition: color 0.25s ease, transform 0.25s ease;
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .net:hover & {
+    color: var(--c-gold-deep);
+    transform: translate(2px, -2px);
+  }
+}
+
+// ---------------------------------------------------------------------
+// QR (sólo escritorio con ratón; lo decide el componente)
+// ---------------------------------------------------------------------
+.net__qr {
+  grid-area: qr;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.875rem;
+  margin: 0.75rem -0.875rem -0.875rem -1rem;
+  padding: 0.625rem 0.875rem 0.625rem 1rem;
+  border-top: 1px solid var(--c-hairline);
+  border-radius: 0 0 var(--r-card) var(--r-card);
+  background: var(--c-surface-accent);
+
+  ::ng-deep qrcode,
+  ::ng-deep qrcode > div {
+    display: block;
+    line-height: 0;
+  }
+
+  ::ng-deep svg {
+    display: block;
+    width: 4.5rem;
+    height: 4.5rem;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--c-hairline);
+  }
+}
+
+.net__qr-ph {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.5rem;
+  background: var(--c-surface-2);
+}
+
+.net__qr-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.net__qr-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+}
+
+// La dirección en monoespaciada: se lee como dato, y sirve a quien prefiera
+// teclearla en vez de escanear.
+.net__qr-url {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--c-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .net,
+  .net__icon,
+  .net__go {
+    transition: none;
+  }
+
+  .net:hover,
+  .net:focus-within,
+  .net:hover .net__go {
+    transform: none;
+  }
+
+  .net__live-dot {
+    animation: none;
+  }
+}

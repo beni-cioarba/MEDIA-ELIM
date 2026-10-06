@@ -1,0 +1,1075 @@
+// =====================================================================
+// Próximos eventos · versión web (destacado + agenda por mes).
+//
+// La proyección usa el marcado `.upcoming__*`, que estilizan
+// `stage.component.scss` (base) y `_projection.scss` (escala `--pj-u`).
+// Aquí sólo vive la web: `.ev*`. Todo se recoloca por **container queries**
+// sobre el ancho del bloque, no el de la ventana: el bloque puede estar en
+// su página (1440 px) o dentro del panel completo, y en los dos casos manda
+// lo que él mide. Decisiones y medidas: `docs/ai/30-presentation.md` §
+// «Próximos eventos en la web».
+// =====================================================================
+@use 'ds' as *;
+
+:host {
+  display: contents;
+}
+
+// ---- Piezas compartidas ---------------------------------------------
+
+// Píldora de estado: «PRÓXIMO» en oro, «ES HOY» en rojo vivo.
+.ev-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &--live {
+    background: var(--c-live);
+    color: #fff;
+  }
+
+  &__dot {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+
+    @include motion-safe {
+      animation: ev-pulse 1.6s ease-out infinite;
+    }
+  }
+}
+
+@keyframes ev-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 70%, transparent); }
+  70%  { box-shadow: 0 0 0 0.5rem transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+// Contador junto al título de sección («PRÓXIMOS EVENTOS 4»).
+.ev-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  margin-left: 0.6em;
+  padding: 0 0.45em;
+  border-radius: 999px;
+  background: var(--c-gold-tint);
+  color: var(--c-gold-deep);
+  font-size: 0.72em;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  vertical-align: 0.2em;
+}
+
+.ev {
+  container: ev / inline-size;
+  display: grid;
+  gap: var(--sp-4, 1rem);
+  min-width: 0;
+}
+
+// =====================================================================
+// Destacado: cartel · contenido · panel (fecha + cuenta atrás)
+//
+//   < 560 px    panel arriba como franja; debajo, miniatura + texto
+//   560–899 px  cartel a la izquierda (2 filas); texto y franja a la derecha
+//   ≥ 900 px    tres columnas en una fila: cartel | texto | panel
+// =====================================================================
+.ev-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'panel'
+    'body';
+  border-radius: var(--r-card);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+  box-shadow: var(--e-2);
+  overflow: hidden;
+
+  // Filo de luz arriba: oro que se apaga hacia el navy del panel.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    z-index: 2;
+    background: linear-gradient(90deg, var(--c-gold), var(--c-gold-soft) 45%, transparent 85%);
+    pointer-events: none;
+  }
+
+  &.is-today::before {
+    background: linear-gradient(90deg, var(--c-live), color-mix(in srgb, var(--c-live) 40%, transparent) 50%, transparent 85%);
+  }
+
+  &.has-poster {
+    grid-template-areas:
+      'panel'
+      'poster'
+      'body';
+  }
+
+  // ---- Cartel ----
+  // Móvil: banda de 13rem con el cartel entero sobre una copia desenfocada
+  // de sí mismo (`--poster`); una miniatura al lado del texto lo estrujaba a
+  // 230 px de columna. Desde 560 px vuelve a ser columna propia.
+  &__poster {
+    grid-area: poster;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    height: 13rem;
+    padding: 0.75rem;
+    overflow: hidden;
+    background: var(--c-primary-darkest);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1.5rem;
+      z-index: -1;
+      background: var(--poster) center / cover no-repeat;
+      filter: blur(18px) brightness(0.55) saturate(1.2);
+    }
+
+    img {
+      display: block;
+      // Proporción propia del cartel (los hay 4:5 y cuadrados): nunca se
+      // recorta, que lleva texto hasta el borde.
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      min-height: 0;
+      border-radius: var(--r-md, 8px);
+      box-shadow: var(--e-2);
+    }
+  }
+
+  // ---- Texto ----
+  &__body {
+    grid-area: body;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: var(--sp-4, 1rem);
+  }
+
+  &__eyebrow {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+    color: var(--c-gold-deep);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.6cqi, 1.85rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    color: var(--c-primary);
+    text-wrap: balance;
+  }
+
+  &__desc {
+    margin: 0;
+    max-width: 68ch;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--c-muted);
+    text-wrap: pretty;
+  }
+
+  &__verse {
+    margin: 0;
+    padding-left: 0.8rem;
+    border-left: 3px solid var(--c-gold);
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--c-text);
+  }
+
+  &__actions {
+    margin-top: auto;
+    padding-top: 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+
+    app-calendar-sync-button {
+      --cal-sync-right: auto;
+      --cal-sync-left: 0;
+      --cal-sync-arrow-right: auto;
+      --cal-sync-arrow-left: 1.25rem;
+    }
+  }
+}
+
+// Quién predica / dirige: columnas alineadas bajo una regla fina.
+.ev-facts {
+  margin: 0.15rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--c-hairline);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 2rem;
+
+  &__item {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  dt {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-faint);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--c-text);
+  }
+}
+
+// =====================================================================
+// Panel: la «consola» del evento. Navy profundo con retícula fina y un
+// halo de oro; cifras tabulares en casillas de cristal. Es lo único
+// oscuro de la tarjeta, así la fecha y la cuenta atrás se leen primero.
+// =====================================================================
+.ev-panel {
+  grid-area: panel;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem var(--sp-4, 1rem) 0.9rem;
+  color: var(--c-on-band);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c-gold) 26%, transparent), transparent 60%),
+    linear-gradient(160deg, var(--c-primary-deep), var(--c-primary-darkest));
+
+  // Retícula de 18 px que se desvanece hacia abajo: textura, no ruido.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 18px 18px;
+    mask-image: linear-gradient(180deg, #000, transparent 85%);
+    pointer-events: none;
+  }
+
+  .is-today & {
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c-live) 34%, transparent), transparent 60%),
+      linear-gradient(160deg, var(--c-primary-deep), var(--c-primary-darkest));
+  }
+
+  // ---- Fecha ----
+  &__date {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      'day weekday'
+      'day month';
+    align-items: center;
+    column-gap: 0.6rem;
+    line-height: 1.1;
+  }
+
+  &__day {
+    grid-area: day;
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+  }
+
+  &__weekday {
+    grid-area: weekday;
+    align-self: end;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-gold-soft);
+  }
+
+  &__month {
+    grid-area: month;
+    align-self: start;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-on-band-muted);
+  }
+
+  // ---- Hora(s) ----
+  &__times {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+
+    app-icon {
+      color: var(--c-gold-soft);
+      font-size: 1.05rem;
+    }
+  }
+
+  &__time + &__time::before {
+    content: '·';
+    margin-right: 0.45rem;
+    color: var(--c-on-band-muted);
+  }
+
+  // ---- Cuenta atrás ----
+  &__count {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  &__label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-on-band-muted);
+  }
+
+  &__now {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+
+    .ev-chip__dot {
+      background: var(--c-live);
+      color: var(--c-live);
+    }
+  }
+}
+
+.ev-timer {
+  display: flex;
+  gap: 0.35rem;
+
+  &__seg {
+    display: grid;
+    justify-items: center;
+    min-width: 3.1rem;
+    padding: 0.35rem 0.4rem 0.3rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+
+    b {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+      color: var(--c-gold-soft);
+    }
+
+    small {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--c-on-band-muted);
+    }
+  }
+}
+
+// ---- 560 – 899 px: cartel a la izquierda, franja bajo el texto --------
+@container ev (min-width: 560px) {
+  .ev-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'body'
+      'panel';
+
+    &.has-poster {
+      grid-template-columns: clamp(9.5rem, 26cqi, 12rem) minmax(0, 1fr);
+      grid-template-areas:
+        'poster body'
+        'poster panel';
+    }
+
+    &__poster {
+      height: auto;
+      padding: var(--sp-4, 1rem);
+      padding-right: 0;
+      align-content: start;
+      overflow: visible;
+      background: none;
+
+      &::before {
+        display: none;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    &__body {
+      padding: 1.1rem 1.25rem 1rem;
+    }
+  }
+
+  .ev-panel {
+    margin: 0 var(--sp-4, 1rem) var(--sp-4, 1rem);
+    border-radius: 12px;
+  }
+
+  .ev-hero:not(.has-poster) .ev-panel {
+    margin-top: 0;
+  }
+}
+
+// ---- ≥ 900 px: una sola fila de tres columnas ------------------------
+@container ev (min-width: 900px) {
+  .ev-hero {
+    grid-template-columns: minmax(0, 1fr) clamp(15rem, 22cqi, 17.5rem);
+    grid-template-areas: 'body panel';
+
+    &.has-poster {
+      grid-template-columns:
+        clamp(11rem, 17cqi, 14.5rem)
+        minmax(0, 1fr)
+        clamp(15rem, 22cqi, 17.5rem);
+      grid-template-areas: 'poster body panel';
+    }
+
+    &__poster {
+      padding: 1.1rem 0 1.1rem 1.1rem;
+      align-content: center;
+    }
+
+    &__body {
+      padding: 1.25rem 1.5rem;
+    }
+  }
+
+  // Panel a toda la altura, pegado al borde derecho de la tarjeta.
+  .ev-panel {
+    margin: 0;
+    border-radius: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem 1.15rem;
+    border-left: 1px solid color-mix(in srgb, var(--c-gold) 30%, transparent);
+  }
+
+  .ev-panel__date {
+    grid-template-columns: auto;
+    grid-template-areas:
+      'weekday'
+      'day'
+      'month';
+    row-gap: 0.25rem;
+  }
+
+  .ev-panel__day {
+    font-size: 3.6rem;
+  }
+
+  .ev-timer__seg {
+    min-width: 3.6rem;
+
+    b {
+      font-size: 1.7rem;
+    }
+  }
+}
+
+// =====================================================================
+// Agenda: el resto de eventos, por meses, en filas densas.
+//   fecha (casilla) | título + hora + créditos | «en N días» | acciones
+// =====================================================================
+.ev-agenda {
+  border-radius: var(--r-card);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+  box-shadow: var(--e-1);
+  overflow: hidden;
+
+  &__title {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-primary);
+    border-bottom: 1px solid var(--c-hairline);
+  }
+}
+
+.ev-month__label {
+  margin: 0;
+  padding: 0.4rem 1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+  background: var(--c-veil);
+}
+
+.ev-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ev-row {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  grid-template-areas: 'date main actions';
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 1rem;
+  transition: background-color 0.15s ease;
+
+  & + & {
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  &:hover {
+    background: var(--c-surface-accent);
+  }
+
+  &__date {
+    grid-area: date;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: var(--c-gold-tint);
+    border: 1px solid color-mix(in srgb, var(--c-gold) 30%, transparent);
+    line-height: 1;
+  }
+
+  &__day {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--c-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__weekday {
+    margin-top: 0.15rem;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-gold-deep);
+  }
+
+  &.is-today &__date {
+    background: var(--c-live);
+    border-color: var(--c-live);
+
+    .ev-row__day,
+    .ev-row__weekday {
+      color: #fff;
+    }
+  }
+
+  &__main {
+    grid-area: main;
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 650;
+    line-height: 1.25;
+    color: var(--c-text);
+  }
+
+  &__meta {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--c-muted);
+
+    b {
+      font-weight: 600;
+      color: var(--c-text);
+    }
+  }
+
+  &__time {
+    font-weight: 700;
+    color: var(--c-gold-deep);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--c-muted);
+    @include line-clamp(1);
+  }
+
+  // «en 12 días»: en móvil ya lo dice la casilla de fecha.
+  &__left {
+    display: none;
+  }
+
+  &__actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  // Miniatura del cartel: abre el visor (la directiva pone rol y foco).
+  &__poster {
+    width: 2.1rem;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: var(--e-1);
+    @include focus-ring;
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
+
+    // El control flotante del visor no cabe en 34 px: la miniatura ya invita.
+    ::ng-deep app-viewable-badge {
+      display: none;
+    }
+  }
+}
+
+@container ev (min-width: 560px) {
+  .ev-row {
+    grid-template-columns: 3.1rem minmax(0, 1fr) 7.5rem auto;
+    grid-template-areas: 'date main left actions';
+    gap: 1.1rem;
+    padding: 0.75rem 1.25rem;
+
+    &__left {
+      grid-area: left;
+      display: block;
+      justify-self: end;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: var(--c-veil);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--c-primary);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &.is-today .ev-row__left {
+      background: var(--c-live);
+      color: #fff;
+    }
+  }
+
+  .ev-agenda__title,
+  .ev-month__label {
+    padding-inline: 1.25rem;
+  }
+}
+
+// ---- Movimiento -------------------------------------------------------
+@include motion-reduce {
+  .ev-row {
+    transition: none;
+  }
+}
+
+// ---- Alto contraste: el panel deja la textura y gana borde -------------
+@media (prefers-contrast: more) {
+  .ev-panel::after {
+    display: none;
+  }
+
+  .ev-timer__seg {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// =====================================================================
+// Proyección (`.ev--pj`) — la misma tarjeta, en unidades de lienzo.
+//
+// Sólo `--pj-*` (heredadas de `.stage.is-fullscreen`, ver
+// `_projection.scss`); nada de rem. Lo vigila `npm run check:projection`.
+//
+//   1 evento  → cartel a toda la diapositiva: cartel (38u) | texto (~83u) | consola (48u)
+//   2 eventos → mitad y mitad: cartel (24u) | texto | consola compacta (60u)
+//
+// Presupuesto vertical a 1080p con un evento: ~80u de tarjeta; chip 5 +
+// titular 3 × 8,4 + resumen 3 × 6 + créditos 7 ≈ 56u. Con dos, 39u cada una:
+// titular 2 × 6,2 + resumen 2 × 4,9 + créditos 4,9 ≈ 30u.
+// =====================================================================
+.ev--pj {
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: calc(var(--pj-u) * 1.6);
+
+  .ev-hero,
+  .ev-hero.has-poster {
+    grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 48);
+    grid-template-areas: 'body panel';
+    min-height: 0;
+    border-width: var(--pj-stroke);
+    border-radius: var(--pj-r);
+    box-shadow: none;
+
+    &::before {
+      height: calc(var(--pj-u) * 0.5);
+    }
+  }
+
+  .ev-hero.has-poster {
+    grid-template-columns: calc(var(--pj-u) * 38) minmax(0, 1fr) calc(var(--pj-u) * 48);
+    grid-template-areas: 'poster body panel';
+  }
+
+  // Cartel entero sobre su copia desenfocada, a toda la altura de la tarjeta.
+  .ev-hero__poster {
+    height: auto;
+    min-height: 0;
+    padding: var(--pj-sp-2);
+    overflow: hidden;
+    background: var(--c-primary-darkest);
+
+    &::before {
+      display: block;
+      inset: calc(var(--pj-u) * -3);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--pj-r-sm);
+      box-shadow: 0 calc(var(--pj-u) * 0.8) calc(var(--pj-u) * 2.4) rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  .ev-hero__body {
+    justify-content: center;
+    gap: calc(var(--pj-u) * 1.4);
+    min-height: 0;
+    padding: var(--pj-sp-3) var(--pj-sp-4);
+    overflow: hidden;
+  }
+
+  .ev-hero__eyebrow:not(:has(.ev-chip)) {
+    display: none;
+  }
+
+  .ev-chip {
+    gap: var(--pj-sp-1);
+    padding: calc(var(--pj-u) * 0.5) calc(var(--pj-u) * 1.6);
+    font-size: var(--pj-fs-eyebrow);
+    letter-spacing: 0.12em;
+  }
+
+  .ev-chip__dot {
+    width: calc(var(--pj-u) * 1.4);
+    height: calc(var(--pj-u) * 1.4);
+    animation: none; // en el templo no se mueve nada salvo el carrusel
+  }
+
+  .ev-hero__title {
+    font-size: var(--pj-fs-title);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+  .ev-hero__desc {
+    max-width: none;
+    font-size: var(--pj-fs-body);
+    font-weight: 500;
+    line-height: 1.3;
+    @include line-clamp(3);
+  }
+
+  .ev-hero__verse {
+    padding-left: var(--pj-sp-2);
+    border-left-width: calc(var(--pj-u) * 0.5);
+    font-size: var(--pj-fs-caption);
+  }
+
+  // Créditos en una línea: «PREDICA Simion Bumbar».
+  .ev-facts {
+    margin: 0;
+    padding-top: calc(var(--pj-u) * 1.4);
+    border-top-width: var(--pj-stroke);
+    gap: var(--pj-sp-1) var(--pj-sp-6);
+  }
+
+  .ev-facts__item {
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: baseline;
+    gap: var(--pj-sp-2);
+  }
+
+  .ev-facts {
+
+    dt {
+      font-size: var(--pj-fs-eyebrow);
+    }
+
+    dd {
+      font-size: var(--pj-fs-body);
+      font-weight: 700;
+    }
+  }
+
+  // ---- Consola ----------------------------------------------------------
+  .ev-panel {
+    margin: 0;
+    border-radius: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--pj-sp-3);
+    padding: var(--pj-sp-3);
+    border-left: var(--pj-stroke) solid color-mix(in srgb, var(--c-gold) 30%, transparent);
+
+    &::after {
+      background-size: calc(var(--pj-u) * 3) calc(var(--pj-u) * 3);
+    }
+  }
+
+  .ev-panel__date {
+    grid-template-columns: auto;
+    grid-template-areas:
+      'weekday'
+      'day'
+      'month';
+    row-gap: calc(var(--pj-u) * 0.6);
+  }
+
+  .ev-panel__weekday,
+  .ev-panel__month {
+    font-size: var(--pj-fs-caption);
+  }
+
+  .ev-panel__day {
+    font-size: calc(var(--pj-u) * 16);
+  }
+
+  .ev-panel__times {
+    gap: var(--pj-sp-1);
+    font-size: var(--pj-fs-lead);
+
+    app-icon {
+      font-size: var(--pj-fs-body);
+    }
+  }
+
+  .ev-panel__time + .ev-panel__time::before {
+    margin-right: var(--pj-sp-1);
+  }
+
+  .ev-panel__count {
+    gap: var(--pj-sp-1);
+  }
+
+  .ev-panel__label {
+    font-size: var(--pj-fs-eyebrow);
+  }
+
+  .ev-panel__now {
+    gap: var(--pj-sp-1);
+    font-size: var(--pj-fs-lead);
+  }
+
+  .ev-timer {
+    gap: calc(var(--pj-u) * 1.2);
+  }
+
+  .ev-timer__seg {
+    min-width: calc(var(--pj-u) * 12);
+    padding: calc(var(--pj-u) * 0.8) var(--pj-sp-1) calc(var(--pj-u) * 0.6);
+    border-radius: var(--pj-r-sm);
+    border-width: var(--pj-stroke);
+    backdrop-filter: none;
+
+    b {
+      font-size: var(--pj-fs-title);
+    }
+
+    small {
+      font-size: var(--pj-fs-eyebrow);
+      letter-spacing: 0.08em;
+    }
+  }
+}
+
+// ---- Dos eventos por diapositiva: mitad y mitad -------------------------
+.ev--pj.ev--pair {
+  .ev-hero,
+  .ev-hero.has-poster {
+    grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 60);
+  }
+
+  .ev-hero.has-poster {
+    grid-template-columns: calc(var(--pj-u) * 24) minmax(0, 1fr) calc(var(--pj-u) * 60);
+  }
+
+  .ev-hero__poster {
+    padding: var(--pj-sp-1);
+  }
+
+  .ev-hero__body {
+    gap: calc(var(--pj-u) * 0.8);
+    padding: var(--pj-sp-2) var(--pj-sp-3);
+  }
+
+  .ev-hero__title {
+    font-size: var(--pj-fs-lead);
+    line-height: 1.1;
+    @include line-clamp(2);
+  }
+
+  .ev-hero__desc {
+    font-size: var(--pj-fs-caption);
+    @include line-clamp(2);
+  }
+
+  .ev-hero__verse {
+    display: none;
+  }
+
+  .ev-facts {
+    padding-top: 0;
+    border-top: 0;
+    gap: var(--pj-sp-1) var(--pj-sp-4);
+  }
+
+  .ev-facts dd {
+    font-size: var(--pj-fs-caption);
+  }
+
+  // Consola compacta: fecha («18 SÁB / NOV 2026») y hora arriba; la cuenta
+  // atrás debajo, a todo el ancho. En columnas fecha | cuenta atrás no cabía
+  // en 60u (se salía 47 px a 720p).
+  .ev-panel {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'date times'
+      'count count';
+    align-content: center;
+    align-items: center;
+    column-gap: var(--pj-sp-3);
+    row-gap: calc(var(--pj-u) * 1.4);
+    padding: var(--pj-sp-2) var(--pj-sp-3);
+  }
+
+  .ev-panel__date {
+    grid-area: date;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      'day weekday'
+      'day month';
+    column-gap: var(--pj-sp-2);
+    row-gap: 0;
+  }
+
+  .ev-panel__day {
+    font-size: var(--pj-fs-display);
+  }
+
+  // «OCT 2026» chocaba con la hora en 60u; el año sobra a semanas vista.
+  .ev-panel__year {
+    display: none;
+  }
+
+  .ev-panel__times {
+    grid-area: times;
+    justify-self: end;
+    font-size: var(--pj-fs-lead);
+  }
+
+  .ev-panel__count {
+    grid-area: count;
+  }
+
+  .ev-panel__label {
+    display: none;
+  }
+
+  .ev-timer {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+
+  .ev-timer__seg {
+    min-width: 0;
+
+    b {
+      font-size: var(--pj-fs-lead);
+    }
+  }
+}

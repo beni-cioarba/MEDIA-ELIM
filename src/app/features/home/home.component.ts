@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { CHURCH_CONFIG, WeeklyProgram } from '../../core/church.config';
+import { CHURCH_CONFIG, UpcomingEvent, WeeklyProgram } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { AnnouncementsService } from '../../core/services/announcements.service';
 import { BibleReadingService } from '../../core/services/bible-reading.service';
+import { CalendarService } from '../../core/services/calendar.service';
 import { ClockService } from '../../core/services/clock.service';
 import { LanguageService } from '../../core/services/language.service';
 import { ScheduleService } from '../../core/services/schedule.service';
@@ -141,7 +142,23 @@ interface BoardCard {
   readonly agendaKey: string;
   /** Agenda comprimida: lo que viene después de lo que va en el titular. */
   readonly agenda: readonly BoardAgendaRow[];
+  /**
+   * Avance de 0 a 1 que pinta la barra fina del pie: cuánto falta para el
+   * culto (últimas 24 h), en qué día va el plan de lectura, cuánto queda para
+   * el evento (último mes). Refuerza `meta`, que lo dice con palabras.
+   */
+  readonly progress: number;
+  /** La insignia lleva el punto vivo: es hoy o está pasando ahora. */
+  readonly pulse: boolean;
+  /** Evento de origen (sólo tarjetas de evento): lo que descarga «Calendar». */
+  readonly event: UpcomingEvent | null;
+  /** Fecha partida para el panel lateral del cartel (`null` si no hay panel). */
+  readonly date: { readonly day: string; readonly month: string; readonly weekday: string } | null;
 }
+
+/** Ventanas que llenan la barra de avance de las tarjetas. */
+const MINUTOS_DIA = 24 * 60;
+const DIAS_CUENTA_ATRAS = 30;
 
 /** Tarjeta de acceso rápido a un módulo de la app. */
 interface QuickLink {
@@ -200,6 +217,7 @@ export class HomeComponent {
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
   private readonly clock = inject(ClockService);
+  private readonly calendar = inject(CalendarService);
 
   /**
    * Estado del culto que anuncia la portada, con la hora a la vista:
@@ -317,6 +335,10 @@ export class HomeComponent {
   private weeklyCard(): BoardCard {
     const featured = this.schedule.featuredProgram();
     const rest = this.schedule.weeklyProgram().filter((item) => item.id !== featured?.id);
+    // La sesión concreta del destacado (hora, si está en curso, cuánto falta).
+    // Si el culto de hoy ya terminó, `nextService` es otro y no se usa.
+    const next = this.schedule.nextService();
+    const session = next && featured && next.service.id === featured.id ? next : null;
     return {
       id: 'weekly',
       cover: 'data',
@@ -327,17 +349,30 @@ export class HomeComponent {
       image: '',
       titleKey: 'nav.weekly',
       link: this.links.weekly,
-      badge: this.schedule.todayProgram() ? this.translate.instant('weekly.today') : null,
+      badge: session?.isLive
+        ? this.translate.instant('home.hero.now')
+        : this.schedule.todayProgram()
+          ? this.translate.instant('weekly.today')
+          : null,
+      pulse: session?.isLive === true || this.schedule.todayProgram() !== null,
       headline: featured ? `${featured.dayLabel} · ${featured.time}` : '',
       description: featured?.title ?? this.translate.instant('nav.weekly_desc'),
       // La descripción del culto si la tiene (hoy están vacías en el config) y,
       // si no, la de la sección: es el «editor · información» de la
       // referencia. `||` y no `??` — una cadena vacía también es «sin dato».
-      meta: featured?.description || this.translate.instant('nav.weekly_desc'),
+      // Cuánto falta, no una descripción genérica de la sección: «Începe în
+      // 2 h 15 min» es lo que se viene a buscar a esta tarjeta.
+      meta: session
+        ? this.countdownLabel(session.isLive, session.minutesUntil, session.daysAway)
+        : featured?.description || this.translate.instant('nav.weekly_desc'),
+      progress: session ? this.sessionProgress(session.isLive, session.minutesUntil) : 0,
+      event: null,
+      date: null,
       agendaKey: 'home.board.rest_week',
       // El resto de la semana: lo que hace que la tarjeta responda «¿cuándo
-      // nos reunimos?» sin abrir nada. Tres líneas es lo que cabe legible.
-      agenda: rest.slice(0, 3).map((item) => ({
+      // nos reunimos?» sin abrir nada. Cuatro líneas: la portada se estira
+      // hasta el alto de la tarjeta de cartel y el hueco se llena con datos.
+      agenda: rest.slice(0, 4).map((item) => ({
         id: item.id,
         when: item.dayLabel,
         what: item.title,
@@ -373,9 +408,16 @@ export class HomeComponent {
           badge: evento.isToday
             ? this.translate.instant('upcoming.today')
             : this.schedule.formatEventDateShort(evento.date),
+          pulse: evento.isToday,
           headline: evento.title,
           description: evento.description,
           meta: datos.join(' · '),
+          progress: Math.min(1, Math.max(0.04, 1 - evento.daysLeft / DIAS_CUENTA_ATRAS)),
+          event: evento,
+          date: {
+            ...this.schedule.formatDayParts(evento.date),
+            weekday: this.schedule.formatWeekdayLong(evento.date),
+          },
           agendaKey: '',
           agenda: [],
         };
@@ -410,17 +452,22 @@ export class HomeComponent {
       badge: today?.isToday
         ? this.translate.instant('weekly.today')
         : (today ? this.schedule.formatWeekdayShort(today.date) : null),
+      pulse: today?.isToday === true,
       headline: today?.passage ?? this.translate.instant('bible.empty'),
       // «Semana 91 · Isaia 57-66, Ieremia 1-4»: el tramo suelto se leía como
       // otra lectura más, no como el alcance de la semana.
       description: week
         ? `${this.translate.instant('bible.week_label')} ${week.number} · ${week.summary}`
         : this.translate.instant('nav.bible_desc'),
+      // En qué punto del plan está la semana: la fecha ya la dice la insignia.
       meta: today
-        ? `${this.schedule.formatWeekdayShort(today.date)} · ${this.schedule.formatEventDateShort(today.date)}`
+        ? this.translate.instant('home.board.day_of', { n: todayIndex + 1, total: days.length })
         : this.translate.instant('nav.bible_desc'),
+      progress: days.length ? (todayIndex + 1) / days.length : 0,
+      event: null,
+      date: null,
       agendaKey: 'home.board.rest_readings',
-      agenda: days.slice(todayIndex + 1, todayIndex + 4).map((day) => ({
+      agenda: days.slice(todayIndex + 1, todayIndex + 5).map((day) => ({
         id: day.date,
         when: this.schedule.formatWeekdayShort(day.date),
         what: day.passage,
@@ -472,6 +519,33 @@ export class HomeComponent {
   protected coverFor(card: BoardCard): BoardCard['cover'] {
     if (card.cover !== 'poster') return card.cover;
     return this.postersCaidos().has(card.id) ? 'photo' : 'poster';
+  }
+
+  /** «Calendar» del panel del cartel: el evento como `.ics`. */
+  protected addToCalendar(card: BoardCard): void {
+    if (card.event) this.calendar.downloadEvent(card.event);
+  }
+
+  /** «Acum, în desfășurare» · «Începe în 2 h 15 min» · «Mâine» · «în 3 zile». */
+  private countdownLabel(isLive: boolean, minutesUntil: number, daysAway: number): string {
+    if (isLive) return this.translate.instant('weekly.live');
+    if (daysAway === 0) {
+      const h = Math.floor(minutesUntil / 60);
+      const m = minutesUntil % 60;
+      const partes = [
+        h > 0 ? `${h} ${this.translate.instant('weekly.unit_hour')}` : '',
+        m > 0 ? `${m} ${this.translate.instant('weekly.unit_min')}` : '',
+      ].filter(Boolean);
+      return `${this.translate.instant('weekly.starts_in')} ${partes.join(' ')}`;
+    }
+    if (daysAway === 1) return this.translate.instant('weekly.tomorrow');
+    return this.translate.instant('upcoming.in_days', { n: daysAway });
+  }
+
+  /** En curso: lo que va de culto (2 h). Antes: se llena en las últimas 24 h. */
+  private sessionProgress(isLive: boolean, minutesUntil: number): number {
+    if (isLive) return Math.min(1, -minutesUntil / 120);
+    return Math.min(1, Math.max(0.04, 1 - minutesUntil / MINUTOS_DIA));
   }
 
   protected onPosterError(card: BoardCard): void {

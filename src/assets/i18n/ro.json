@@ -17,6 +17,8 @@
     "section_title": "Urmărește-ne pe rețelele sociale",
     "title_pj": "Rețele sociale",
     "open_aria": "Deschide {{name}} într-o filă nouă",
+    "count": "{{count}} canale",
+    "scan": "Scanează cu telefonul",
     "items": {
       "instagram_main": {
         "name": "Instagram",
@@ -185,6 +187,12 @@
     "title_pj": "Galerie foto",
     "view_photos": "Vezi fotografii și clipuri",
     "open_event": "Deschide evenimentul",
+    "controls": "Controale galerie",
+    "events_label": "Evenimente",
+    "pause": "Oprește derularea",
+    "play": "Reia derularea",
+    "prev": "Evenimentul anterior",
+    "next": "Evenimentul următor",
     "events": {
       "botez_2025_11_30": {
         "name": "Botez",
@@ -265,7 +273,16 @@
     "day_left": "zi rămasă",
     "days_left": "zile rămase",
     "preacher": "Cuvânt",
-    "worship": "Închinare"
+    "worship": "Închinare",
+    "when": "Data și numărătoarea inversă",
+    "starts_in": "Începe în",
+    "started": "În desfășurare",
+    "unit_days": "zile",
+    "unit_hours": "ore",
+    "unit_minutes": "min",
+    "later": "Mai departe",
+    "in_days": "în {{n}} zile",
+    "tomorrow": "Mâine"
   },
   "announcements": {
     "badge": "Anunț",
@@ -930,6 +947,8 @@
     "board": {
       "title": "Ce urmează",
       "rest_week": "Restul săptămânii",
+      "day_of": "Ziua {{n}} din {{total}}",
+      "calendar": "Calendar",
       "rest_readings": "Restul lecturilor",
       "all": "Vezi tot"
     },

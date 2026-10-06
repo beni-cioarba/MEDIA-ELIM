@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   Input,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -56,11 +56,14 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
  * el subtítulo y las acciones mediante `<ng-content>`.
  *
  * Rendimiento y accesibilidad:
- *  - Sólo la primera imagen se carga con prioridad; el resto es `lazy`.
- *  - La rotación se detiene con la pestaña oculta (`ClockService.pageVisible`)
- *    y mientras el puntero o el foco están sobre la portada (WCAG 2.2.2). La
- *    barra de progreso se pausa con ella: si se para, se ve que se para.
- *  - Elegir un punto reinicia la cuenta, para que la barra no mienta.
+ *  - Sólo la primera imagen se carga con prioridad; se montan las fotos ya
+ *    vistas y la siguiente, no las nueve de golpe.
+ *  - Un solo reloj: el final de la animación de la barra (`animationend`)
+ *    cambia de foto, así que barra, zoom y cambio nunca se desacompasan.
+ *  - Se pausa con el botón (WCAG 2.2.2), con foco de teclado dentro, con la
+ *    pestaña oculta y con la portada fuera de pantalla; al volver sigue
+ *    exactamente donde estaba. El ratón encima ya no la para.
+ *  - Elegir un punto empieza la barra de esa foto desde cero.
  *  - Respeta `prefers-reduced-motion`: sin auto-avance, sin zoom y sin fundido.
  */
 @Component({
@@ -68,10 +71,8 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslatePipe, IconComponent],
   host: {
-    '(mouseenter)': 'hold.set(true)',
-    '(mouseleave)': 'hold.set(false)',
-    '(focusin)': 'hold.set(true)',
-    '(focusout)': 'hold.set(false)',
+    '(focusin)': 'onFocusIn($event)',
+    '(focusout)': 'onFocusOut($event)',
     '(pointerdown)': 'swipeStart($event)',
     '(pointerup)': 'swipeEnd($event)',
     '(pointercancel)': 'swipeX = null',
@@ -87,10 +88,16 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       [attr.aria-label]="'home.hero.aria' | translate"
     >
       <div class="hero__stage" [style.background-color]="current()?.tone || null">
+        <!-- Sólo se montan las fotos ya vistas y la siguiente: las nueve a la
+             vez están todas «en el viewport» (apiladas), así que el lazy del
+             navegador no frenaba ninguna y se descargaban de golpe al entrar. -->
         @for (frame of frames(); track frame.slide.id; let i = $index) {
+          @if (mounted().has(i)) {
           <img
             class="hero__image"
             [class.is-active]="i === index()"
+            [class.is-leaving]="i === leaving()"
+            [class.is-alt]="i % 2 === 1"
             [src]="frame.slide.image"
             [srcset]="frame.srcset"
             sizes="100vw"
@@ -103,6 +110,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
             height="1067"
             decoding="async"
           />
+          }
         }
       </div>
 
@@ -134,7 +142,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
                   [attr.aria-label]="captionKey(slide) | translate"
                   (click)="select(i)"
                 >
-                  <span class="hero__dot-fill"></span>
+                  <span class="hero__dot-fill" (animationend)="onProgressEnd($event, i)"></span>
                 </button>
               }
             </div>
@@ -251,8 +259,19 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         animation: hero-zoom-in var(--hero-ms, 6000ms) var(--ea-standard) both;
       }
 
-      .hero__image.is-active:nth-child(even) {
+      /* El sentido alterno va por clase y no por :nth-child, porque las
+         fotos se montan a medida que hacen falta. */
+      .hero__image.is-alt.is-active,
+      .hero__image.is-alt.is-leaving {
         animation-name: hero-zoom-out;
+      }
+
+      /* La que sale conserva su animación, congelada donde estaba: si se
+         quitara, saltaría de golpe a escala 1 en mitad del fundido. Cambiar
+         sólo animation-play-state no reinicia la animación. */
+      .hero__image.is-leaving {
+        animation: hero-zoom-in var(--hero-ms, 6000ms) var(--ea-standard) both;
+        animation-play-state: paused;
       }
 
       .hero.is-paused .hero__image.is-active {
@@ -450,6 +469,8 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
        * pista interior. Las fotos ya vistas quedan llenas a medio tono: se
        * lee de un vistazo por dónde va el pase.
        */
+      /* OJO: la barra es el reloj del carrusel. Si se oculta con display:none
+         su animación no corre y el pase deja de avanzar. */
       .hero__dots {
         display: flex;
         flex-wrap: nowrap;
@@ -629,6 +650,8 @@ export class HeroCarouselComponent {
   set items(value: readonly HeroSlide[] | null) {
     this._slides.set(value ?? []);
     this.index.set(0);
+    this.seen.set(new Set([0]));
+    this.leaving.set(null);
   }
 
   /** Cadencia del auto-avance en milisegundos. */
@@ -636,23 +659,32 @@ export class HeroCarouselComponent {
 
   protected readonly index = signal(0);
 
-  /** Puntero o foco sobre la portada: la rotación espera a que se vaya. */
+  /**
+   * Foco de **teclado** dentro de la portada: la rotación espera a que se vaya
+   * (quien navega con Tab necesita que lo enfocado no cambie bajo sus pies).
+   * El ratón ya no pausa: pasar por encima —o quedarse encima al volver con el
+   * scroll— paraba el pase sin que nadie lo pidiera. Para pararlo de verdad
+   * está el botón de pausa (WCAG 2.2.2).
+   */
   protected readonly hold = signal(false);
 
-  /**
-   * Reinicio manual de la cuenta. Al elegir un punto hay que volver a empezar
-   * el intervalo; si no, la barra de progreso y el cambio real de foto dejan
-   * de ir juntos y la barra miente.
-   */
-  private readonly restart = signal(0);
+  /** La portada se ve en pantalla. Fuera de ella no se anima nada. */
+  private readonly inView = signal(true);
 
   /**
-   * El carrusel está parado (puntero encima, foco dentro o pestaña oculta).
-   * Lo consume la plantilla para pausar también el zoom y la barra: una
-   * portada que se para con la barra corriendo se lee como un fallo.
+   * El carrusel está parado: pausa pedida, foco de teclado dentro, pestaña
+   * oculta o portada fuera de pantalla.
+   *
+   * **Un solo reloj.** El avance lo dispara el final de la animación CSS de
+   * la barra de progreso (`animationend`), no un `setInterval`. Antes había
+   * dos relojes: al reanudar, el temporizador volvía a contar 6 s desde cero
+   * mientras la barra y el zoom seguían por donde iban, así que la barra se
+   * llenaba, el zoom se congelaba y la foto tardaba aún varios segundos en
+   * cambiar. Con `animation-play-state` pausar y reanudar es exacto: la foto
+   * cambia justo cuando la barra se llena, siempre.
    */
   protected readonly paused = computed(
-    () => this.userPaused() || this.hold() || !this.clock.pageVisible(),
+    () => this.userPaused() || this.hold() || !this.inView() || !this.clock.pageVisible(),
   );
 
   /** Pausa pedida con el botón: manda sobre todo lo demás hasta que se reanude. */
@@ -674,35 +706,65 @@ export class HeroCarouselComponent {
     () => this._slides()[this.index()] ?? null,
   );
 
+  /**
+   * Fotos montadas: la activa, las ya vistas y la siguiente (que así está
+   * descargada y decodificada antes de su turno y el fundido no da tirón).
+   */
+  protected readonly mounted = computed<ReadonlySet<number>>(() => {
+    const total = this._slides().length;
+    const set = new Set(this.seen());
+    if (total > 1) set.add((this.index() + 1) % total);
+    return set;
+  });
+
+  private readonly seen = signal<ReadonlySet<number>>(new Set([0]));
+
+  /** La foto que sale, durante su fundido (ver `.is-leaving`). */
+  protected readonly leaving = signal<number | null>(null);
+  private leavingTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   constructor() {
-    let timer: ReturnType<typeof setInterval> | null = null;
-    const stop = (): void => {
-      if (timer !== null) {
-        clearInterval(timer);
-        timer = null;
-      }
-    };
-
-    effect(() => {
-      const total = this._slides().length;
-      const visible = this.clock.pageVisible();
-      const held = this.hold() || this.userPaused();
-      this.restart();
-      stop();
-
-      if (total < 2 || !visible || held || this.reducedMotion) return;
-
-      timer = setInterval(() => {
-        this.index.update((i) => (i + 1) % total);
-      }, this.intervalMs);
+    if (typeof IntersectionObserver === 'function') {
+      const io = new IntersectionObserver(([entry]) => this.inView.set(entry.isIntersecting));
+      io.observe(this.host.nativeElement);
+      this.destroyRef.onDestroy(() => io.disconnect());
+    }
+    this.destroyRef.onDestroy(() => {
+      if (this.leavingTimer !== null) clearTimeout(this.leavingTimer);
     });
+  }
 
-    this.destroyRef.onDestroy(stop);
+  /** Fin de la barra de la foto activa: es la señal de pasar a la siguiente. */
+  protected onProgressEnd(event: AnimationEvent, i: number): void {
+    // `endsWith`: con encapsulación emulada Angular antepone el id del
+    // componente al nombre de los @keyframes.
+    if (!event.animationName.endsWith('hero-progress') || i !== this.index()) return;
+    this.step(1);
   }
 
   protected select(index: number): void {
+    const prev = this.index();
+    if (index === prev) return;
+
+    this.leaving.set(prev);
+    if (this.leavingTimer !== null) clearTimeout(this.leavingTimer);
+    // Lo que dura el fundido (1,2 s) y un margen.
+    this.leavingTimer = setTimeout(() => this.leaving.set(null), 1300);
+
+    this.seen.update((s) => (s.has(index) ? s : new Set(s).add(index)));
     this.index.set(index);
-    this.restart.update((v) => v + 1);
+  }
+
+  protected onFocusIn(event: FocusEvent): void {
+    const target = event.target as HTMLElement | null;
+    this.hold.set(!!target?.matches?.(':focus-visible'));
+  }
+
+  protected onFocusOut(event: FocusEvent): void {
+    const next = event.relatedTarget as Node | null;
+    if (!next || !this.host.nativeElement.contains(next)) this.hold.set(false);
   }
 
   protected step(delta: number): void {

@@ -26,7 +26,7 @@ import { TabNavService } from './tab-nav.service';
  * verá al soltar, colocado donde quedará. Al terminar el gesto se destruye.
  *
  * La posición no pasa por Angular: la fija el CSS con las variables que el
- * gesto escribe en el `<html>` (`--swipe-dx`, `--swipe-top`) y las clases
+ * gesto escribe en este anfitrión (`--swipe-dx`, `--swipe-top`) y las clases
  * `is-swipe-settling` / `is-swipe-reveal`.
  */
 @Component({

@@ -1,69 +1,121 @@
-<div class="gallery" aria-labelledby="gallery-title">
+<section
+  class="gallery"
+  [class.is-paused]="paused()"
+  [class.has-autoplay]="autoplay()"
+  [style.--gallery-ms]="dwellMs() + 'ms'"
+  aria-roledescription="carousel"
+  aria-labelledby="gallery-title"
+  (focusin)="onFocusIn($event)"
+  (focusout)="onFocusOut($event)"
+>
   <header class="gallery__header">
     <h2 id="gallery-title" class="gallery__title">{{ (fullscreen() ? 'gallery.title_pj' : 'gallery.title') | translate }}</h2>
+
+    @if (!fullscreen() && total > 1) {
+      <div class="gallery__controls" role="group" [attr.aria-label]="'gallery.controls' | translate">
+        <span class="gallery__count" aria-hidden="true">
+          <b>{{ pad(index() + 1) }}</b> / {{ pad(total) }}
+        </span>
+        @if (autoplay()) {
+          <button
+            type="button"
+            class="gallery__ctl"
+            [attr.aria-pressed]="userPaused()"
+            [attr.aria-label]="(userPaused() ? 'gallery.play' : 'gallery.pause') | translate"
+            (click)="togglePause()"
+          >
+            <app-icon [name]="userPaused() ? 'play' : 'pause'" />
+          </button>
+        }
+        <button type="button" class="gallery__ctl" [attr.aria-label]="'gallery.prev' | translate" (click)="step(-1)">
+          <app-icon name="chevron-left" />
+        </button>
+        <button type="button" class="gallery__ctl" [attr.aria-label]="'gallery.next' | translate" (click)="step(1)">
+          <app-icon name="chevron-right" />
+        </button>
+        <!-- Repite la acción del dock flotante, que se retira mientras la
+             galería llega al pie de la pantalla (si no, tapa el carril). -->
+        <span class="gallery__sep" aria-hidden="true"></span>
+        <app-share-button class="gallery__share" />
+      </div>
+    }
   </header>
 
-  <!-- Hero destacado: imagen completa del evento que rota automáticamente -->
-  @if (config.mediaEvents[featuredEventIndex()]; as featured) {
-    <a
-      class="gallery__hero"
-      [href]="featured.driveUrl"
-      target="_blank"
-      rel="noopener noreferrer"
-      [style.--card-gradient]="eventGradient(featured)"
-      [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + featured.i18nKey + '.name' | translate)"
-    >
-      <img
-        class="gallery__hero-image"
-        [src]="featured.image"
-        [alt]="'gallery.events.' + featured.i18nKey + '.name' | translate"
-        loading="eager"
-        decoding="async"
-      />
-      <div class="gallery__hero-overlay" aria-hidden="true"></div>
-      <div class="gallery__hero-content">
-        <span class="gallery__hero-name">
-          {{ 'gallery.events.' + featured.i18nKey + '.name' | translate }}
-        </span>
-        <span class="gallery__hero-date">
-          {{ 'gallery.events.' + featured.i18nKey + '.date' | translate }}
-        </span>
-        @if (!fullscreen()) {
-          <span class="gallery__hero-cta">
-            {{ 'gallery.view_photos' | translate }}
-            <span class="gallery__hero-arrow" aria-hidden="true">→</span>
-          </span>
-        }
-      </div>
-    </a>
-  }
-
-  <!-- Mosaico de miniaturas: selecciona el evento destacado -->
-  <ul class="gallery__grid" role="list" [attr.aria-label]="'gallery.title' | translate">
-    @for (ev of config.mediaEvents; track ev.id; let i = $index) {
-      <li class="gallery__tile-wrapper">
-        <button
-          type="button"
-          class="gallery__tile"
-          [class.is-featured]="i === featuredEventIndex()"
-          (click)="selectFeaturedEvent(i)"
-          [attr.aria-selected]="i === featuredEventIndex()"
-          role="tab"
-          [attr.aria-label]="'gallery.events.' + ev.i18nKey + '.name' | translate"
-        >
+  <div class="gallery__body">
+    <!-- Escenario: la foto entera sobre su propio fondo ambiental. -->
+    @if (featured(); as ev) {
+      <a
+        class="gallery__hero"
+        [href]="driveHref(ev)"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-no-swipe
+        [style.background-color]="ev.tone"
+        [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + ev.i18nKey + '.name' | translate)"
+        (keydown.arrowleft)="onArrow($event, -1)"
+        (keydown.arrowright)="onArrow($event, 1)"
+        (pointerdown)="swipeStart($event)"
+        (pointerup)="swipeEnd($event)"
+        (pointercancel)="swipeX = null"
+      >
+        @for (f of featuredList(); track f.id) {
+          <img class="gallery__hero-ambient" [src]="f.thumb" alt="" aria-hidden="true" decoding="async" />
           <img
-            class="gallery__tile-image"
-            [src]="ev.thumb"
-            [alt]="'gallery.events.' + ev.i18nKey + '.name' | translate"
-            loading="lazy"
+            class="gallery__hero-image"
+            [src]="f.image"
+            [srcset]="srcset(f)"
+            sizes="(min-width: 1025px) 75vw, 100vw"
+            [alt]="'gallery.events.' + f.i18nKey + '.name' | translate"
+            fetchpriority="high"
             decoding="async"
           />
-          <div class="gallery__tile-shade" aria-hidden="true"></div>
-          <span class="gallery__tile-name">
+        }
+        <div class="gallery__hero-overlay" aria-hidden="true"></div>
+
+        <div class="gallery__hero-content">
+          <span class="gallery__hero-kicker">
+            {{ 'gallery.events.' + ev.i18nKey + '.date' | translate }}
+          </span>
+          <span class="gallery__hero-name">
             {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
           </span>
-        </button>
-      </li>
+          @if (!fullscreen()) {
+            <span class="gallery__hero-cta">
+              {{ 'gallery.view_photos' | translate }}
+              <app-icon name="external" />
+            </span>
+          }
+        </div>
+      </a>
     }
-  </ul>
-</div>
+
+    <!-- Carril: todos los eventos. Crece con scroll propio, no con la página. -->
+    <ol #rail class="gallery__rail" role="list" [attr.aria-label]="'gallery.events_label' | translate">
+      @for (item of events; track item.id; let i = $index) {
+        <li class="gallery__rail-item">
+          <button
+            type="button"
+            class="gallery__item"
+            [class.is-active]="i === index()"
+            [attr.aria-current]="i === index() ? 'true' : null"
+            (click)="select(i)"
+          >
+            <span class="gallery__item-thumb" [style.background-color]="item.tone">
+              <img [src]="item.thumb" alt="" loading="lazy" decoding="async" />
+            </span>
+            <span class="gallery__item-num" aria-hidden="true">{{ pad(i + 1) }}</span>
+            <span class="gallery__item-text">
+              <span class="gallery__item-name">{{ 'gallery.events.' + item.i18nKey + '.name' | translate }}</span>
+              <span class="gallery__item-date">{{ 'gallery.events.' + item.i18nKey + '.date' | translate }}</span>
+            </span>
+            @if (autoplay() && i === index()) {
+              <span class="gallery__item-progress" aria-hidden="true">
+                <span (animationend)="onProgressEnd($event, i)"></span>
+              </span>
+            }
+          </button>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

@@ -16,7 +16,8 @@
     "posters": "node scripts/optimize-posters.mjs",
     "images": "node scripts/generate-image-sizes.mjs",
     "check:projection": "node scripts/check-projection-sizes.mjs",
-    "check": "npm run i18n:check && npm run check:projection",
+    "check:drive": "node scripts/check-drive-links.mjs",
+    "check": "npm run i18n:check && npm run check:projection && node scripts/check-drive-links.mjs --offline",
     "pdf:familii": "node scripts/generate-family-pdfs.mjs"
   },
   "private": true,

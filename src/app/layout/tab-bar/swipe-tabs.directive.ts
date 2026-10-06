@@ -24,6 +24,12 @@ const MS_FUNDIDO = 180;
 const BORDE_PX = 24;
 /** Barra de pestañas visible: el mismo corte que la propia barra (`< lg`). */
 const CON_BARRA = '(max-width: 1023.98px)';
+/**
+ * Superficies de página: lo que se arrastra y donde puede empezar el gesto.
+ * Hijos directos del shell; la cabecera, la barra de pestañas, el dock y el
+ * cajón quedan fuera. El pie llega con `@defer`: se busca en cada gesto.
+ */
+const SUPERFICIES = ':scope > main, :scope > app-breadcrumb, :scope > app-footer';
 
 /**
  * Lo que ya tiene su propio gesto horizontal y no debe cambiar de pestaña:
@@ -71,13 +77,21 @@ type Estado = 'quieto' | 'decidiendo' | 'arrastrando' | 'asentando';
  * Manejadores pasivos y fuera de Angular. Durante el arrastre sólo se
  * escriben un `transform` y dos variables CSS, una vez por fotograma
  * (`requestAnimationFrame`): nada de detección de cambios por movimiento.
- * El `<main>` lleva `touch-action: pan-y pinch-zoom`: el navegador hace el
- * scroll vertical y el zoom, y el horizontal nos lo deja sin esperar a JS.
+ * Las superficies llevan `touch-action: pan-y pinch-zoom` (lo pone el
+ * shell): el navegador hace el scroll vertical y el zoom, y el horizontal nos
+ * lo deja sin esperar a JS.
+ *
+ * Las variables del arrastre (`--swipe-dx`, `--tab-drag`) se escriben en la
+ * vista previa y en la barra, **no en el `<html>`**: una propiedad
+ * personalizada se hereda, y cambiarla en la raíz obliga a recalcular el
+ * estilo de todo el documento en cada fotograma.
+ *
+ * ── Dónde escucha ─────────────────────────────────────────────────────
+ * En el anfitrión del shell (`hostDirectives` de `MainLayoutComponent`), no
+ * en el `<main>`: así el gesto empieza igual sobre el contenido, la migaja o
+ * el pie, que se mueven juntos como una sola pantalla.
  */
-@Directive({
-  selector: '[appSwipeTabs]',
-  host: { style: 'touch-action: pan-y pinch-zoom' },
-})
+@Directive({ selector: '[appSwipeTabs]' })
 export class SwipeTabsDirective {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly root = inject(DOCUMENT).documentElement;
@@ -86,6 +100,11 @@ export class SwipeTabsDirective {
   private readonly zone = inject(NgZone);
 
   private estado: Estado = 'quieto';
+  private objetivo: Element | null = null;
+  private superficie: HTMLElement | null = null;
+  /** La vista previa y la barra: las únicas que leen las variables del gesto. */
+  private peekEl: HTMLElement | null = null;
+  private barraEl: HTMLElement | null = null;
   private x0 = 0;
   private y0 = 0;
   private dx = 0;
@@ -95,9 +114,9 @@ export class SwipeTabsDirective {
   private fotograma = 0;
   private temporizador: ReturnType<typeof setTimeout> | null = null;
   /**
-   * Lo que se desplaza con el dedo: el `<main>` y sus hermanos de página (la
-   * migaja de pan y el pie), como una pantalla entera de WhatsApp. La
-   * cabecera y la barra de pestañas se quedan.
+   * Lo que se desplaza con el dedo: las superficies (`<main>`, migaja de pan
+   * y pie), como una pantalla entera de WhatsApp. La cabecera y la barra de
+   * pestañas se quedan.
    */
   private movibles: HTMLElement[] = [];
 
@@ -131,7 +150,15 @@ export class SwipeTabsDirective {
     if (this.tabsNav.activeIndex() < 0) return;
     const t = e.touches[0];
     if (!t || t.clientX < BORDE_PX || t.clientX > window.innerWidth - BORDE_PX) return;
-    if (tieneGestoPropio(e.target, this.host)) return;
+    const objetivo = e.target instanceof Element ? e.target : null;
+    const superficie = this.superficies().find((el) => el.contains(objetivo)) ?? null;
+    // Fuera de las superficies (cabecera, barra, dock) o sobre algo con gesto
+    // horizontal propio declarado: no es nuestro. La comprobación cara (cajas
+    // con scroll horizontal, que lee el layout) espera a que el gesto resulte
+    // horizontal: aquí empieza también cada scroll vertical.
+    if (!superficie || objetivo?.closest(EXCLUIDOS)) return;
+    this.objetivo = objetivo;
+    this.superficie = superficie;
     this.estado = 'decidiendo';
     this.x0 = t.clientX;
     this.y0 = t.clientY;
@@ -153,22 +180,23 @@ export class SwipeTabsDirective {
 
     if (this.estado === 'decidiendo') {
       if (Math.hypot(dx, dy) < UMBRAL_DECISION_PX) return;
-      if (Math.abs(dx) < Math.abs(dy) * HORIZONTALIDAD || hayTextoSeleccionado()) {
+      if (
+        Math.abs(dx) < Math.abs(dy) * HORIZONTALIDAD ||
+        hayTextoSeleccionado() ||
+        tieneScrollHorizontal(this.objetivo, this.superficie)
+      ) {
         this.estado = 'quieto';
         return;
       }
       this.estado = 'arrastrando';
       // Se recoloca el origen: el contenido arranca pegado al dedo, sin salto.
       this.x0 = t.clientX;
-      this.movibles = [
-        this.host,
-        ...Array.from(
-          this.host.parentElement?.querySelectorAll<HTMLElement>(':scope > app-breadcrumb, :scope > app-footer') ?? [],
-        ),
-      ];
+      this.movibles = this.superficies();
+      this.peekEl = this.host.querySelector<HTMLElement>('app-swipe-peek');
+      this.barraEl = this.host.querySelector<HTMLElement>('app-tab-bar');
       for (const el of this.movibles) el.style.willChange = 'transform';
       this.root.classList.add('is-swiping');
-      this.root.style.setProperty('--swipe-top', `${pieDeCabecera()}px`);
+      this.peekEl?.style.setProperty('--swipe-top', `${pieDeCabecera()}px`);
     }
 
     this.dx = t.clientX - this.x0;
@@ -207,6 +235,10 @@ export class SwipeTabsDirective {
     }
   }
 
+  private superficies(): HTMLElement[] {
+    return Array.from(this.host.querySelectorAll<HTMLElement>(SUPERFICIES));
+  }
+
   // ── Pintado ────────────────────────────────────────────────────────
   private pintarEnFotograma(): void {
     cancelAnimationFrame(this.fotograma);
@@ -222,21 +254,24 @@ export class SwipeTabsDirective {
     const ancho = window.innerWidth || 1;
     const transform = x === 0 ? '' : `translate3d(${x}px, 0, 0)`;
     for (const el of this.movibles) el.style.transform = transform;
-    this.root.style.setProperty('--swipe-dx', `${x}px`);
+    this.peekEl?.style.setProperty('--swipe-dx', `${x}px`);
     // Progreso del indicador de la barra: +1 = una pestaña a la derecha.
     const progreso = this.hayVecina ? Math.max(-1, Math.min(1, -x / ancho)) : 0;
-    this.root.style.setProperty('--tab-drag', String(progreso));
+    this.barraEl?.style.setProperty('--tab-drag', String(progreso));
   }
 
   /** Lleva el contenido a `x` con transición y luego llama a `hecho`. */
   private asentar(x: number, hecho: () => void): void {
     this.estado = 'asentando';
     this.root.classList.add('is-swipe-settling');
+    // Con movimiento reducido no se anima: el CSS ya quita las transiciones
+    // de la vista previa y la barra, y el contenido salta igual que ellas.
+    const ms = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : MS_ASENTAR;
     for (const el of this.movibles) {
-      el.style.transition = `transform ${MS_ASENTAR}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
+      el.style.transition = ms ? `transform ${ms}ms cubic-bezier(0.2, 0.8, 0.2, 1)` : '';
     }
     this.pintar(x);
-    this.temporizador = setTimeout(hecho, MS_ASENTAR);
+    this.temporizador = setTimeout(hecho, ms);
   }
 
   /**
@@ -258,7 +293,7 @@ export class SwipeTabsDirective {
         }
         // En la misma tarea que el cambio de `activeIndex`: el indicador pasa
         // de «anterior + 1» a «nueva + 0» sin pintar un fotograma intermedio.
-        this.root.style.setProperty('--tab-drag', '0');
+        this.barraEl?.style.setProperty('--tab-drag', '0');
         // Dos fotogramas: el primero pinta la página nueva (ya renderizada por
         // la detección de cambios de la navegación) y en el segundo, con ella
         // debajo, empieza el fundido.
@@ -290,8 +325,14 @@ export class SwipeTabsDirective {
     this.dx = 0;
     this.soltarMovibles();
     this.movibles = [];
+    this.objetivo = null;
+    this.superficie = null;
     this.root.classList.remove('is-swiping', 'is-swipe-settling', 'is-swipe-reveal');
-    for (const prop of ['--swipe-dx', '--tab-drag', '--swipe-top']) this.root.style.removeProperty(prop);
+    this.peekEl?.style.removeProperty('--swipe-dx');
+    this.peekEl?.style.removeProperty('--swipe-top');
+    this.barraEl?.style.removeProperty('--tab-drag');
+    this.peekEl = null;
+    this.barraEl = null;
     if (this.tabsNav.peek() !== null) this.zone.run(() => this.tabsNav.peek.set(null));
   }
 }
@@ -318,14 +359,14 @@ function pieDeCabecera(): number {
 }
 
 /**
- * ¿El toque empieza en algo con desplazamiento horizontal propio? Recorre
- * desde el objetivo hasta el `<main>`: excluidos explícitos y cualquier caja
- * que de verdad se desplace en horizontal (tablas anchas, tiras con scroll).
+ * ¿El toque empezó dentro de una caja que de verdad se desplaza en
+ * horizontal (tablas anchas, tiras con scroll, una migaja larga)? Recorre
+ * desde el objetivo hasta la superficie, ella incluida.
  */
-function tieneGestoPropio(target: EventTarget | null, limite: HTMLElement): boolean {
-  let el = target instanceof Element ? target : null;
-  if (el?.closest(EXCLUIDOS)) return true;
-  while (el && el !== limite) {
+function tieneScrollHorizontal(target: Element | null, limite: HTMLElement | null): boolean {
+  let el = target;
+  const tope = limite?.parentElement ?? null;
+  while (el && el !== tope) {
     if (el.scrollWidth > el.clientWidth + 1) {
       const overflow = getComputedStyle(el).overflowX;
       if (overflow === 'auto' || overflow === 'scroll') return true;

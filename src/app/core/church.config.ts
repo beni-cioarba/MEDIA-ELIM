@@ -21,8 +21,13 @@ export interface MediaEvent {
   readonly tone: string;
   /** Gradient de fondo de la card como tinte de color de marca [from, to]. */
   readonly gradient: readonly [string, string];
-  /** URL pública directa a la subcarpeta de Drive. */
-  readonly driveUrl: string;
+  /**
+   * ID de la subcarpeta pública de Drive del evento (lo que va tras
+   * `/drive/folders/` en su enlace). Sólo el ID, nunca la URL: la construye
+   * `driveFolderUrl()`. Si falta o no es válido, el botón abre la carpeta
+   * principal (`mediaGalleryUrl`). Lo verifica `npm run check:drive`.
+   */
+  readonly driveFolderId?: string;
 }
 
 /**
@@ -435,6 +440,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   //  2. Añade aquí una entrada con `image` apuntando a la nueva ruta.
   //  3. Añade los textos en `assets/i18n/ro.json` y `assets/i18n/es.json`
   //     bajo `gallery.events.<i18nKey>` (campos `name` y `date`).
+  //  4. `driveFolderId`: el ID de su subcarpeta en «ELIM - ACCES PUBLIC»
+  //     (compartida como «cualquiera con el enlace»). Después
+  //     `npm run check:drive`. Receta completa: docs/ai/20-content-i18n.md.
   mediaEvents: [
     {
       id: 'botez_2025_11_30',
@@ -444,8 +452,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       thumb: 'assets/drive-media/botez_2025-thumb.webp',
       tone: '#91979f',
       gradient: ['#1e3a8a', '#3b82f6'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
+      // Drive: «BOTEZ 2025-11-30»
+      driveFolderId: '1neyEzyRpK9wnlSJ4cXp_JMi7jlu5lNfU',
     },
     {
       id: 'concert_colinde_copii',
@@ -455,8 +463,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
       tone: '#797474',
       gradient: ['#7c3aed', '#ec4899'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
+      // Drive: «Concert Colinde Copi»
+      driveFolderId: '1ME9BBG20zQtqm7esd5elx9pwSRdqHHoH',
     },
     {
       id: 'concert_colinde_elim',
@@ -466,8 +474,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
       tone: '#777e7e',
       gradient: ['#b45309', '#f59e0b'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
+      // Drive: «Concert De Colinde Elim»
+      driveFolderId: '1vnZxeXBrojLXcghG6o8HcgE5vbJ7MFUl',
     },
     {
       id: 'seara_revelion',
@@ -477,8 +485,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       thumb: 'assets/drive-media/revelion_2025-thumb.webp',
       tone: '#5e6163',
       gradient: ['#831843', '#f43f5e'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
+      // Drive: «Revelion - 2026»
+      driveFolderId: '1RCc6LWKTb-vG2jxtFSV6fjD9-qEp2rbi',
     },
     {
       id: 'zambetul_din_cutie',
@@ -488,8 +496,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       thumb: 'assets/drive-media/zambetul_cutie_2025-thumb.webp',
       tone: '#736d74',
       gradient: ['#9d174d', '#f472b6'],
-      driveUrl:
-        'https://drive.google.com/drive/folders/1jVMEFjKxfEM1yUcm4aFhGV0AWXwdrXne?usp=sharing',
+      // Drive: «Zambetul din cutie - 2025»
+      driveFolderId: '1ADjG_UdCDXSEthe6Hr1GcYNXIWRKxXw-',
     },
   ],
   // ---------------------------------------------------------------------

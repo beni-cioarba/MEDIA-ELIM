@@ -36,6 +36,7 @@ const FILES = [
   'src/app/features/family-prayer/family-collage/family-collage.component.scss',
   'src/app/features/prayer-causes/causes-board/causes-board.component.scss',
   'src/app/features/stage/blocks/website-block/website-block.component.scss',
+  'src/app/features/stage/blocks/upcoming-block/upcoming-block.component.scss',
 ];
 
 const errors = [];

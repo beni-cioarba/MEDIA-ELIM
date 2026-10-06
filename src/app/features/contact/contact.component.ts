@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
@@ -11,6 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { ContactFormService } from '../../core/services/contact-form.service';
 import { LanguageService } from '../../core/services/language.service';
+import { ScheduleService } from '../../core/services/schedule.service';
 import { telHref, whatsappHref } from '../../core/util/contact-links';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -79,7 +80,19 @@ export class ContactComponent {
     maps: this.config.location.mapsShareUrl,
   } as const;
 
-  protected readonly weeklyProgram = this.config.weeklyProgram;
+  /**
+   * Horario: la semana en curso como calendario (lunes → domingo, con fecha
+   * y días sin culto) y el culto en curso o siguiente. Misma fuente que el
+   * bloque «Program săptămânal»: los dos no pueden decir cosas distintas.
+   */
+  protected readonly schedule = inject(ScheduleService);
+  protected readonly next = this.schedule.nextService;
+
+  /** «Hoy» / «Mañana» se traducen en la plantilla; el resto, día de la semana. */
+  protected readonly nextDayLabel = computed(() => {
+    const next = this.next();
+    return next ? this.schedule.formatWeekdayLong(next.iso) : '';
+  });
 
   /**
    * Vías de contacto. Se construyen aquí (y no en la plantilla) para que el

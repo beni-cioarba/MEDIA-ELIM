@@ -246,6 +246,31 @@ límites y ficheros: `docs/ai/35-announcements.md`** (léelo antes).
    `<nombre>-thumb.webp` (480px).
 3. Nuevo `MediaEvent` en `mediaEvents` apuntando a esos ficheros.
 4. `gallery.events.<i18nKey>.name` y `.date` en ambos idiomas.
+5. **Enlace a sus fotos (`driveFolderId`)**:
+   - Las subcarpetas viven en la carpeta pública «ELIM - ACCES PUBLIC»
+     (`mediaGalleryUrl`). La subcarpeta debe estar compartida como
+     «cualquiera con el enlace»; si cuelga de esa carpeta, ya lo está.
+   - Se guarda **sólo el ID** (lo que va tras `/drive/folders/` y antes de
+     `?`), con un comentario `// Drive: «<nombre de la carpeta>»` encima.
+     Nunca la URL entera: `driveFolderUrl()` (`core/util/drive-folder.ts`)
+     construye siempre `https://drive.google.com/drive/folders/<id>`, así que
+     no puede colarse otro dominio ni un enlace mal pegado.
+   - **Respaldo**: sin `driveFolderId`, o con uno que no tenga forma de ID
+     (`[A-Za-z0-9_-]{10,}`), el botón abre la carpeta principal. Nunca queda
+     roto. Un evento nuevo cuya carpeta aún no existe puede ir sin ID.
+   - Comprobar: `npm run check:drive` (con red) pide cada carpeta sin sesión
+     y falla si da 404 o pide iniciar sesión (privada). El build y la CI
+     ejecutan la versión sin red (`--offline`: forma del ID y que dos eventos
+     no compartan carpeta), que no depende de Drive.
+   - Para sacar los ID de todas las subcarpetas de golpe: abre la carpeta
+     principal en el navegador y lee los `data-id` de las filas (cada fila de
+     carpeta lleva su ID).
+   - Correspondencia actual (oct. 2026): botez → «BOTEZ 2025-11-30»,
+     colinde copii → «Concert Colinde Copi», colinde Elim → «Concert De
+     Colinde Elim», revelion (31-12-2025) → «Revelion - 2026», zâmbetul →
+     «Zambetul din cutie - 2025». En Drive hay además, sin evento en la web
+     todavía: Evanghelizare (13/15-03-2026), Fanfara Tarancón (20-09-2026),
+     Tabăra 2026 (25-26 iulie, Ávila) y Talantul în negoț 2026.
 
 ### Cambiar el programa semanal
 

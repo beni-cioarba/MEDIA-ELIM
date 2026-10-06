@@ -58,6 +58,14 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
     'M22 21v-2a4 4 0 0 0-3-3.87',
     'M16 3.13a4 4 0 0 1 0 7.75',
   ],
+  // Lucide «network»: organigrama (estructura y departamentos).
+  network: [
+    'M10 2h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z',
+    'M3 16h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1z',
+    'M17 16h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1z',
+    'M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3',
+    'M12 12V8',
+  ],
   calendar: [
     'M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
     'M16 2v4M8 2v4M3 10h18',

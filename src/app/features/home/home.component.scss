@@ -477,7 +477,7 @@
  * ===================================================================== */
 
 .notice {
-  padding-block: 0.6rem;
+  padding-block: 0.5rem;
   padding-inline: var(--page-gutter);
   /* Tinte cálido muy bajo: distingue la franja del lienzo sin convertirla en
      un aviso de error. */
@@ -504,9 +504,10 @@
   gap: 0.4rem;
   margin: 0;
   max-width: none;
-  font-size: 0.625rem;
+  /* 12 px (antes 10,6): el rótulo es lo que dice qué es la franja. */
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--c-gold-deep);
 }
@@ -518,12 +519,13 @@
 .notice__count {
   display: grid;
   place-items: center;
-  min-width: 1.05rem;
-  height: 1.05rem;
-  padding-inline: 0.25rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding-inline: 0.3rem;
   border-radius: 999px;
   background: var(--c-gold-deep);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: 0;
   color: #ffffff;
@@ -557,12 +559,15 @@
 
 /* --- Fichas --------------------------------------------------------------- */
 
-/* Carrusel (`app-card-carousel`): dos fichas a la vista, cada una la mitad
-   del ancho, con un filete vertical entre ellas; un solo aviso ocupa todo
-   el ancho (`--carousel-item-max: 100%`). Con más avisos avanza solo.
-   Las flechas del carrusel, más pequeñas: la franja mide ~64 px. */
+/* Rejilla que se convierte en carrusel: el ancho de cada ficha sale del
+   número de avisos (`--notice-n`, desde la plantilla) con un tope de
+   columnas por tamaño —3 en escritorio, 2 en tableta—. Con dos avisos cada
+   uno ocupa la mitad; con tres, un tercio; con cuatro o más, el carrusel
+   enseña tres y avanza solo. Un aviso suelto ocupa todo el ancho.
+   Las flechas del carrusel, más pequeñas: la franja mide ~60 px. */
 .notice {
-  --notice-item-w: 50%;
+  --notice-cols: 3;
+  --notice-item-w: calc(100% / min(var(--notice-n, 2), var(--notice-cols)));
 }
 
 .notice__list {
@@ -664,9 +669,10 @@
 /* El dato: en oro si es cuándo/dónde; en gris si es el resumen. */
 .notice__detail {
   overflow: hidden;
-  font-size: 0.75rem;
+  /* 13,5 px y opacidad 0,78: 6:1 sobre el crema (antes 3,8:1, no AA). */
+  font-size: 0.8125rem;
   line-height: 1.3;
-  color: rgb(26 54 93 / 0.62);
+  color: rgb(26 54 93 / 0.78);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -684,6 +690,10 @@
  * apilarse y empujar la portada hacia abajo.
  */
 @media (max-width: 1099.98px) {
+  .notice {
+    --notice-cols: 2;
+  }
+
   .notice__inner {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
@@ -700,8 +710,9 @@
 // Móvil: una ficha y media a la vista (se nota que hay más) y deslizamiento
 // nativo; el carrusel sigue avanzando solo si nadie lo toca.
 @media (max-width: 719.98px) {
+  /* Un aviso suelto, a todo el ancho; dos o más, uno y medio a la vista. */
   .notice {
-    --notice-item-w: 82%;
+    --notice-item-w: max(82%, calc(100% / var(--notice-n, 2)));
   }
 }
 
@@ -730,6 +741,21 @@
      así la primera tarjeta cae en la misma vertical que el titular de la
      bienvenida, que la etiqueta de los avisos y que la marca de la cabecera. */
   --board-gutter: var(--page-inset);
+  /*
+   * Ancho de tarjeta DERIVADO de la columna, no fijo: `--board-per` tarjetas
+   * llenan exactamente la columna de la página (1440 px), así el tablero
+   * queda en la misma vertical que la franja de avisos y que el resto de
+   * secciones. Antes era `clamp(19rem, 38vw, 33rem)`: a 1912 px tres
+   * tarjetas medían 1735 px y desbordaban la columna 147 px por lado.
+   * Con más tarjetas de las que caben, el carrusel asoma la siguiente.
+   * `100cqi` es el ancho del carrusel (contenedor, ver abajo).
+   */
+  --board-gap: 1.5rem;
+  --board-per: 3;
+  --board-col: min(100cqi - 2 * var(--page-gutter), var(--page-max));
+  --board-item-w: calc(
+    (var(--board-col) - (var(--board-per) - 1) * var(--board-gap)) / var(--board-per)
+  );
   /* El degradado del borde del carrusel se funde con ESTE fondo. */
   --c-carousel-fade: var(--c-bg);
 
@@ -737,6 +763,24 @@
      presenta sola en su pie. */
   padding-block: clamp(0.85rem, 2vh, 1.35rem);
   background: var(--c-bg);
+}
+
+.board app-card-carousel {
+  container-type: inline-size;
+}
+
+/* Tableta: dos y un asomo. Móvil: una y un asomo, con menos hueco. */
+@media (max-width: 1099.98px) {
+  .board {
+    --board-per: 2.15;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .board {
+    --board-per: 1.12;
+    --board-gap: 1rem;
+  }
 }
 
 /* =======================================================================

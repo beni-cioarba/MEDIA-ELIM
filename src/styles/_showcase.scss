@@ -40,15 +40,44 @@
   background: #233143;
   color: #ffffff;
   text-decoration: none;
+  // La tarjeta es contenedor: el panel del cartel, la agenda y la altura
+  // mínima de la portada se deciden por el ancho de la TARJETA, no de la
+  // ventana (la misma tarjeta mide 290 px en móvil y 460 en escritorio).
+  container-type: inline-size;
   transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
 
   &:hover {
     transform: translateY(-2px);
   }
 
-  &:focus-visible {
+  // El foco lo recibe el enlace del pie, pero el anillo se pinta en la
+  // tarjeta entera: es lo que se activa.
+  &:has(.promo__link:focus-visible) {
     outline: 3px solid var(--c-gold);
     outline-offset: 3px;
+  }
+}
+
+/*
+ * Enlace extendido. La tarjeta es un `article` y el enlace es el nombre de la
+ * sección en el pie; su `::after` cubre la tarjeta entera, así todo sigue
+ * siendo un clic sin envolver en un `<a>` el botón «Calendar» del cartel
+ * (interactivos anidados: HTML inválido y foco imprevisible).
+ */
+.promo__link {
+  color: inherit;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+  }
+
+  &:focus-visible {
+    outline: none;
   }
 }
 
@@ -125,6 +154,16 @@
    * rótulo y al final, no se entendía de qué era.
    */
   justify-content: flex-start;
+  /*
+   * Se estira hasta el alto de la tarjeta más alta de la fila (la de cartel,
+   * 3:2) en vez de quedarse en 16:9 y dejar ~100 px de tono vacío entre la
+   * agenda y el pie. El 16:9 queda como mínimo, y la portada crece también
+   * si la agenda lo pide (sin recortarla: no hay `aspect-ratio` que la fije).
+   */
+  flex: 1 0 auto;
+  aspect-ratio: auto;
+  min-height: calc(100cqi * 9 / 16);
+  padding-bottom: 1rem;
   // Transparente: deja ver el tono de la propia tarjeta, así no hay dos
   // colores que mantener sincronizados.
   background-color: transparent;
@@ -162,6 +201,12 @@
   aspect-ratio: 3 / 2;
 }
 
+/* Las portadas de foto también rellenan si la fila es más alta: se ve más
+   foto, nunca un hueco de tono. */
+.promo__cover:not(.promo__cover--data) {
+  flex: 1 0 auto;
+}
+
 .promo__poster-bg {
   position: absolute;
   inset: -8%;
@@ -187,6 +232,105 @@
 
 .promo:hover .promo__poster {
   transform: scale(1.03);
+}
+
+/*
+ * Panel lateral del cartel. Con la tarjeta ancha (≥ 26 rem) un cartel
+ * cuadrado sólo llenaba la mitad del ancho; el resto era desenfoque. Ahora
+ * el cartel ocupa el 64 % izquierdo y la franja derecha lleva lo que el
+ * cartel no da de un vistazo: la fecha en grande y el atajo al calendario.
+ * En tarjeta estrecha no cabe y la fecha vuelve a la insignia.
+ */
+.promo__panel {
+  display: none;
+}
+
+@container (min-width: 26rem) {
+  .promo.has-panel .promo__poster {
+    width: 64%;
+  }
+
+  .promo.has-panel .promo__badge {
+    display: none;
+  }
+
+  .promo.has-panel .promo__panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 36%;
+    padding: 1.25rem 1rem 1rem;
+    border-left: 1px solid rgb(255 255 255 / 0.12);
+    background: rgb(0 0 0 / 0.32);
+    backdrop-filter: blur(10px);
+  }
+}
+
+.promo__panel-date {
+  display: grid;
+  margin: 0;
+  line-height: 1;
+}
+
+.promo__panel-day {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.promo__panel-month {
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold);
+}
+
+.promo__panel-weekday {
+  margin-top: 0.45rem;
+  font-size: 0.875rem;
+  color: rgb(255 255 255 / 0.8);
+  text-transform: capitalize;
+}
+
+/* Por encima del enlace extendido (z 3): es el único control propio. */
+.promo__panel-btn {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.12);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 160ms cubic-bezier(0.2, 0, 0, 1);
+
+  app-icon {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 0.24);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: 2px;
+  }
 }
 
 /*
@@ -221,7 +365,9 @@
 .promo__agenda {
   position: relative;
   z-index: 1;
-  margin: 0 1.5rem;
+  // Pegada abajo: el aire que sobra, si sobra, queda entre el destacado y la
+  // lista, que es donde separa ideas.
+  margin: auto 1.5rem 0;
   padding: 0.85rem 0 0;
   border-top: 1px solid rgb(255 255 255 / 0.16);
   list-style: none;
@@ -246,7 +392,7 @@
   grid-template-columns: 4.75rem minmax(0, 1fr) auto;
   gap: 0.75rem;
   align-items: baseline;
-  padding: 0.3rem 0;
+  padding: 0.25rem 0;
   font-size: 0.9375rem;
   line-height: 1.35;
 }
@@ -288,6 +434,33 @@
   font-weight: 500;
   color: #ffffff;
   white-space: nowrap;
+  pointer-events: none;
+}
+
+/*
+ * Punto vivo: es hoy o está pasando ahora. Verde, como «lo que ocurre hoy»
+ * en el resto de la web; late despacio (se queda quieto con
+ * `prefers-reduced-motion`).
+ */
+.promo__badge.is-live::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgb(74 222 128 / 0.6);
+  animation: promo-pulse 2s cubic-bezier(0.2, 0, 0, 1) infinite;
+}
+
+@keyframes promo-pulse {
+  70% {
+    box-shadow: 0 0 0 0.45rem rgb(74 222 128 / 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(74 222 128 / 0);
+  }
 }
 
 /* --- Titular y descripción (sobre la portada) --------------------------- */
@@ -327,6 +500,7 @@
   line-height: 1.33;
   color: #ffffff;
   text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  font-variant-numeric: tabular-nums;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -350,25 +524,48 @@
 
 /* --- Pie de identidad --------------------------------------------------- */
 
+/*
+ * Compacto: ~64 px (antes 94). Sin botón «Vezi tot»: toda la tarjeta es el
+ * enlace, y el botón repetido tres veces se comía el 40 % del pie en móvil y
+ * cortaba el nombre («Progra…»). En su lugar, una flecha de 36 px.
+ * Encima, la barra de avance de 2 px, que hace de filete con la portada.
+ */
 .promo__foot {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: auto;
-  // Relleno de 24, como en la referencia.
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  background: rgb(255 255 255 / 0.03);
+}
+
+.promo__progress {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: rgb(255 255 255 / 0.1);
+
+  &::after {
+    content: '';
+    display: block;
+    width: calc(var(--promo-progress, 0) * 100%);
+    height: 100%;
+    background: linear-gradient(90deg, var(--c-gold), #f3d98a);
+    box-shadow: 0 0 8px rgb(212 175 55 / 0.55);
+    transition: width 600ms cubic-bezier(0.2, 0, 0, 1);
+  }
 }
 
 .promo__tile {
   display: grid;
   place-items: center;
   flex: none;
-  // 48 px con radio 12: el icono de app de la referencia.
-  width: 3rem;
-  height: 3rem;
-  border-radius: 12px;
-  background: rgb(255 255 255 / 0.14);
-  font-size: 1.35rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.12);
+  font-size: 1.15rem;
   color: #ffffff;
 }
 
@@ -388,52 +585,81 @@
 }
 
 .promo__name {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9375rem;
+  font-weight: 600;
   color: #ffffff;
 }
 
 .promo__sub {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 400;
-  color: rgb(255 255 255 / 0.7);
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.74);
 }
 
-/* El «Descargar» de la referencia: rectángulo de esquina suave con relleno
-   claro sobre el tono, que es lo que le da aspecto de botón de verdad. */
-.promo__cta {
+.promo__go {
+  display: grid;
+  place-items: center;
   flex: none;
-  padding: 0.5625rem 1.125rem;
-  border-radius: 8px;
-  background: rgb(255 255 255 / 0.22);
-  font-size: 0.9375rem;
-  font-weight: 600;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 50%;
+  font-size: 1rem;
   color: #ffffff;
-  white-space: nowrap;
-  transition: background 160ms cubic-bezier(0.2, 0, 0, 1);
+  transition:
+    background 160ms cubic-bezier(0.2, 0, 0, 1),
+    transform 160ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.promo:hover .promo__cta {
-  background: rgb(255 255 255 / 0.34);
+.promo:hover .promo__go {
+  background: rgb(255 255 255 / 0.16);
+  transform: translateX(2px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .promo,
   .promo__image,
-  .promo__cta {
+  .promo__go,
+  .promo__panel-btn,
+  .promo__progress::after {
     transition: none;
   }
 
   .promo:hover,
-  .promo:hover .promo__image {
+  .promo:hover .promo__image,
+  .promo:hover .promo__go {
     transform: none;
+  }
+
+  .promo__badge.is-live::before {
+    animation: none;
   }
 }
 
-/* En pantalla pequeña la agenda sobra: la tarjeta se queda con el titular,
-   la descripción y el pie, que es lo que cabe legible. */
-@media (max-width: 559.98px) {
+/* Tarjeta estrecha (móvil, ~290 px): la agenda se queda en dos líneas y
+   columnas más justas, en vez de desaparecer y dejar el hueco de tono. */
+@container (max-width: 24rem) {
   .promo__agenda {
+    margin-inline: 1.25rem;
+    padding-top: 0.6rem;
+  }
+
+  .promo__agenda-head {
+    margin-bottom: 0.25rem;
+  }
+
+  .promo__agenda-row {
+    grid-template-columns: 4.25rem minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .promo__agenda-row:nth-of-type(n + 4) {
     display: none;
+  }
+
+  .promo__cover--data .promo__lead {
+    padding-inline: 1.25rem;
   }
 }

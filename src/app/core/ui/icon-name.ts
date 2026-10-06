@@ -8,6 +8,7 @@
 export type IconName =
   | 'home'
   | 'users'
+  | 'network'
   | 'calendar'
   | 'clock'
   | 'image'

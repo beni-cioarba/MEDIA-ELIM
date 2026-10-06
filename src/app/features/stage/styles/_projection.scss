@@ -524,21 +524,38 @@
   // -------------------------------------------------------------------
   // 8 · Galería
   // -------------------------------------------------------------------
+  // Escenario + carril a la derecha, como en la web de escritorio pero con
+  // la escala `--pj-u` y sin depender del ancho (un XGA 1024 px también).
+  // Con más de ~6 eventos el carril se desplaza solo hasta el activo.
   .stage.is-fullscreen {
     .gallery {
       gap: var(--pj-sp-2);
     }
 
-    .gallery__header {
-      margin-bottom: var(--pj-sp-1);
+    .gallery__body {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+      // Carril de 60u: con el texto al mínimo legible (3,6u nombre, 3,2u
+      // fecha) a 46u los nombres partían en tres líneas; antes iban a 3u.
+      grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 60);
+      gap: var(--pj-sp-2);
     }
 
     .gallery__hero {
-      flex: 1 1 auto;
-      min-height: 0;
+      height: 100%;
       aspect-ratio: auto;
       border-radius: var(--pj-r);
       border-width: var(--pj-stroke);
+    }
+
+    .gallery__hero-content {
+      padding: var(--pj-sp-4);
+      gap: var(--pj-sp-1);
+    }
+
+    .gallery__hero-kicker {
+      font-size: var(--pj-fs-caption);
     }
 
     .gallery__hero-name {
@@ -547,24 +564,61 @@
       line-height: 1.05;
     }
 
-    .gallery__hero-date {
-      font-size: var(--pj-fs-body);
+    .gallery__rail {
+      grid-auto-flow: row;
+      grid-auto-columns: auto;
+      // 14u: nombre en dos líneas (2 × 4,1u) + fecha (3,7u) + relleno.
+      grid-auto-rows: minmax(calc(var(--pj-u) * 14), 1fr);
+      gap: var(--pj-sp-1);
+      padding: 0;
+      overflow: hidden;
+      scroll-snap-type: none;
     }
 
-    .gallery__grid {
-      flex: 0 0 auto;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: calc(var(--pj-u) * 1.2);
-    }
-
-    .gallery__tile {
-      aspect-ratio: 16 / 10;
+    .gallery__item {
+      grid-template-columns: calc(var(--pj-u) * 12) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      grid-template-areas: 'thumb text';
+      align-content: stretch;
+      column-gap: var(--pj-sp-2);
+      padding: calc(var(--pj-u) * 0.8);
       border-radius: var(--pj-r-sm);
+      border-width: var(--pj-stroke);
     }
 
-    .gallery__tile-name {
-      font-size: calc(var(--pj-u) * 3.2);
+    .gallery__item-thumb {
+      aspect-ratio: auto;
+      height: 100%;
+      margin-bottom: 0;
+      border-radius: calc(var(--pj-r-sm) * 0.7);
+    }
+
+    // El ordinal («01») sobre la miniatura no se lee a distancia (cabía a
+    // 1,9u) y no informa: el orden ya es el del carril.
+    .gallery__item-num {
+      display: none;
+    }
+
+    // Nombre a 3,6u en hasta dos líneas («Concierto de Villancicos · Niños»
+    // no cabe en una) y fecha al mínimo, en una.
+    .gallery__item-name {
+      font-size: calc(var(--pj-u) * 3.6);
       line-height: 1.15;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .gallery__item-date {
+      font-size: var(--pj-fs-eyebrow);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gallery__item-progress {
+      height: calc(var(--pj-u) * 0.5);
     }
   }
 
@@ -677,129 +731,8 @@
       color: var(--c-muted);
     }
 
-    // Las páginas traen 2 eventos como máximo: tarjetas a su altura natural,
-    // ancladas arriba (una sola no se estira hasta llenar la diapositiva ni
-    // se recorta si trae versículo y predicador).
-    .upcoming__list {
-      flex: 1 1 auto;
-      min-height: 0;
-      display: grid;
-      grid-auto-rows: auto;
-      align-content: start;
-
-      // Con un solo evento (lienzo estrecho) la tarjeta ocupa 444 px de los
-      // 697 de la caja: anclada arriba, los 253 restantes se leen como si
-      // faltara contenido. Centrada, la diapositiva es un cartel.
-      &:has(> .upcoming__item:only-child) {
-        align-content: center;
-      }
-      gap: calc(var(--pj-u) * 1.6);
-      padding: 0;
-      overflow: hidden;
-    }
-
-    .upcoming__item {
-      grid-template-columns: calc(var(--pj-u) * 20) minmax(0, 1fr);
-      align-items: center;
-      gap: var(--pj-sp-3);
-      padding: calc(var(--pj-u) * 1.4) var(--pj-sp-3);
-      border-radius: var(--pj-r);
-      border-width: var(--pj-stroke);
-      transform: none;
-    }
-
-    .upcoming__count-num {
-      font-size: var(--pj-fs-display);
-      line-height: 1;
-    }
-
-    // Cuando el evento es hoy, esta casilla no lleva una cifra sino una
-    // palabra («AZI»; antes «ESTE AZI»). A tamaño de cifra (11u) medía 298 px dentro de
-    // una columna de 216 y se salía por los dos lados, encima del borde de
-    // la tarjeta. La web ya tenía esta excepción; la proyección no la copió.
-    .is-today .upcoming__count-num {
-      font-size: var(--pj-fs-lead);
-      line-height: 1.05;
-      font-weight: 800;
-      text-align: center;
-      text-wrap: balance;
-      hyphens: none;
-    }
-
-    .upcoming__count-label {
-      font-size: var(--pj-fs-eyebrow);
-    }
-
-    .upcoming__meta {
-      gap: var(--pj-sp-1);
-      font-size: var(--pj-fs-caption);
-      font-weight: 600;
-      line-height: 1.15;
-    }
-
-    .upcoming__body {
-      gap: calc(var(--pj-u) * 0.7);
-    }
-
-    .upcoming__today-badge {
-      padding: calc(var(--pj-u) * 0.25) calc(var(--pj-u) * 0.9);
-      font-size: calc(var(--pj-u) * 3.2);
-      box-shadow: none;
-    }
-
-    // La cuenta atrás («4 zile rămase», «ESTE AZI») ya dice qué es cada
-    // evento; las dos etiquetas sólo partían la línea de la fecha en dos
-    // (medido: 103 px en vez de 47, en una tarjeta que ya iba justa).
-    .upcoming__next-badge,
-    .upcoming__today-badge {
-      display: none;
-    }
-
-    .upcoming__item-title {
-      font-size: var(--pj-fs-lead);
-      font-weight: 800;
-      line-height: 1.15;
-    }
-
-    .upcoming__item-desc,
-    .upcoming__verse,
-    .upcoming__credit dd {
-      font-size: var(--pj-fs-caption);
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    // Quién predica / dirige, en una línea: «CUVÂNT Daniel Popa · CÂNTARE …».
-    .upcoming__credits {
-      margin: 0;
-      gap: var(--pj-sp-3);
-    }
-
-    .upcoming__credit {
-      flex-direction: row;
-      align-items: baseline;
-      gap: var(--pj-sp-1);
-    }
-
-    // Dos eventos por diapositiva: la descripción es un resumen de dos líneas
-    // (el detalle completo está en la web, a un escaneo del QR).
-    .upcoming__item-desc {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    // Un solo evento en la diapositiva (lienzo estrecho, con QR): sobra
-    // altura, así que el resumen se lee entero. Recortarlo a dos líneas
-    // dejaría media diapositiva vacía y la frase cortada con puntos.
-    .upcoming__item:only-child .upcoming__item-desc {
-      -webkit-line-clamp: 4;
-    }
-
-    .upcoming__credit dt {
-      font-size: var(--pj-fs-eyebrow);
-    }
+    // Las tarjetas (`.ev--pj`) se estilizan en la hoja del propio bloque
+    // (`upcoming-block.component.scss`, sección «Proyección»).
 
     .upcoming__empty {
       font-size: var(--pj-fs-body);
@@ -906,54 +839,6 @@
 
     .weekly__item-title {
       font-size: var(--pj-fs-lead);
-    }
-
-    // Próximos eventos: las tarjetas de la página se reparten el alto (una
-    // sola tarjeta flotaba en el centro de una diapositiva casi vacía).
-    .upcoming__list,
-    .upcoming__list:has(> .upcoming__item:only-child) {
-      grid-auto-rows: minmax(0, 1fr);
-      align-content: stretch;
-    }
-
-    .upcoming__item {
-      grid-template-columns: calc(var(--pj-u) * 26) minmax(0, 1fr);
-      gap: var(--pj-sp-4);
-      padding: var(--pj-sp-2) var(--pj-sp-4);
-    }
-
-    // Un solo evento: la tarjeta es un cartel.
-    .upcoming__item:only-child {
-      .upcoming__item-title {
-        font-size: var(--pj-fs-title);
-        line-height: 1.05;
-      }
-
-      .upcoming__meta {
-        font-size: var(--pj-fs-lead);
-      }
-
-      .upcoming__item-desc,
-      .upcoming__verse,
-      .upcoming__credit dd {
-        font-size: var(--pj-fs-body);
-      }
-
-      .upcoming__credit dt {
-        font-size: var(--pj-fs-caption);
-      }
-
-      .upcoming__body {
-        gap: var(--pj-sp-2);
-      }
-
-      .upcoming__count-num {
-        font-size: calc(var(--pj-u) * 16);
-      }
-
-      .upcoming__count-label {
-        font-size: var(--pj-fs-caption);
-      }
     }
   }
 }

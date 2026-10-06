@@ -4,7 +4,10 @@
     (llamar, escribir, cómo llegar): es lo que se viene a hacer aquí.
   · Dos columnas: el formulario | la tarjeta de contacto navy (mismo lenguaje
     que la de donativos) con los datos, copiar y el MAPA dentro; debajo, el
-    horario compacto.
+    horario (semana en curso, ScheduleService).
+  · Por debajo de lg: horario → tarjeta con mapa → formulario. El mapa va
+    tras el horario para que el iframe (lazy) no cargue arriba ni parpadee
+    al pasar por él camino del menú.
   · Cierre en una línea.
   Antes: hero de 245 px, tres tarjetas sueltas para tres datos, el mapa solo
   al final a todo lo ancho y una sección entera para dos botones.
@@ -223,7 +226,11 @@
         </div>
       </section>
 
-      <!-- ============ Horario compacto ============ -->
+      <!-- ============ Horario: la semana en curso ============
+           Cabecera con el próximo culto (o el que está en curso) y la semana
+           de lunes a domingo, con fecha, hoy marcado y los días sin culto
+           visibles. Filas alineadas en columnas cuando es estrecho; siete
+           columnas cuando el contenedor tiene ancho (container query). -->
       <section class="schedule" aria-labelledby="schedule-title">
         <div class="schedule__head">
           <h2 class="schedule__title" id="schedule-title">{{ 'contact.schedule.title' | translate }}</h2>
@@ -232,15 +239,53 @@
             <app-icon name="arrow-right" />
           </a>
         </div>
-        <ul class="schedule__list" role="list">
-          @for (item of weeklyProgram; track item.id) {
-            <li class="schedule__item">
-              <span class="schedule__day">{{ item.dayLabel }}</span>
-              <span class="schedule__time">{{ item.time }}</span>
-              <span class="schedule__what">{{ item.title }}</span>
+
+        @if (next(); as n) {
+          <p class="schedule__next" [class.is-live]="n.isLive">
+            <span class="schedule__next-dot" aria-hidden="true"></span>
+            <span class="schedule__next-label">{{ (n.isLive ? 'weekly.live' : 'weekly.next') | translate }}</span>
+            <span class="schedule__next-title">{{ n.service.title }}</span>
+            <span class="schedule__next-when">
+              @switch (n.daysAway) {
+                @case (0) { {{ 'weekly.today_label' | translate }} }
+                @case (1) { {{ 'weekly.tomorrow' | translate }} }
+                @default { {{ nextDayLabel() }} }
+              }
+              · <time [attr.datetime]="n.time">{{ n.time }}</time>
+            </span>
+          </p>
+        }
+
+        <ol class="schedule__week" role="list">
+          @for (d of schedule.week(); track d.iso) {
+            <li
+              class="schedule__day"
+              [class.is-today]="d.isToday"
+              [class.is-past]="d.isPast"
+              [class.is-empty]="!d.services.length"
+              [attr.aria-current]="d.isToday ? 'date' : null"
+            >
+              <span class="schedule__when">
+                <span class="schedule__name">{{ schedule.formatWeekdayLong(d.iso) }}</span>
+                <span class="schedule__date">{{ schedule.formatEventDateShort(d.iso) }}</span>
+                @if (d.isToday) {
+                  <span class="schedule__today">{{ 'weekly.today' | translate }}</span>
+                }
+              </span>
+
+              @for (s of d.services; track s.id) {
+                <span class="schedule__times">
+                  @for (t of s.times; track t) {
+                    <time class="schedule__chip" [attr.datetime]="t">{{ t }}</time>
+                  }
+                </span>
+                <span class="schedule__what">{{ s.title }}</span>
+              } @empty {
+                <span class="schedule__none">{{ 'weekly.no_service' | translate }}</span>
+              }
             </li>
           }
-        </ul>
+        </ol>
       </section>
     </div>
   </div>

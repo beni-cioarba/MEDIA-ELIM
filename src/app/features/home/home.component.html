@@ -103,7 +103,7 @@
      fichas se deslizan de lado.
      =================================================================== -->
 @if (noticeItems().length > 0) {
-  <section class="notice" aria-labelledby="notice-label">
+  <section class="notice" aria-labelledby="notice-label" [style.--notice-n]="noticeItems().length">
     <div class="notice__inner">
       <p class="notice__label" id="notice-label">
         <app-icon name="megaphone" />
@@ -111,9 +111,10 @@
         <span class="notice__count">{{ announcements.active().length }}</span>
       </p>
 
-      <!-- Carrusel: dos avisos a la vista (uno y medio en móvil). Si hay más,
-           avanza solo cada 6 s en bucle y se para al apuntar, con foco, con
-           `prefers-reduced-motion` o en cuanto se toca. Si caben, no se mueve. -->
+      <!-- Rejilla que se convierte en carrusel: tantas columnas como avisos,
+           hasta tres en escritorio (dos en tableta, una y media en móvil). Si
+           hay más de los que caben, avanza solo cada 6 s en bucle y se para al
+           apuntar, con foco, con `prefers-reduced-motion` o al tocarlo. -->
       <app-card-carousel
         class="notice__list"
         labelKey="nav.announcements"
@@ -159,7 +160,7 @@
      La anatomía está calcada del carrusel de play.google.com/store/apps
      (medido, no mirado): portada con foto, insignia superpuesta arriba a la
      izquierda, titular grande sobre el fondo tonal de la tarjeta y barra
-     inferior con el icono de la sección, su nombre y el botón de acción.
+     inferior con el icono de la sección, su nombre, el dato vivo y una flecha.
      Cada tarjeta es una sección de la web y lleva delante lo más inmediato
      que tiene; debajo, las dos siguientes.
      Detalle y medidas: docs/ai/48-carousel-cards.md.
@@ -171,11 +172,14 @@
        `h2` se mantiene para que el esquema de la página no pierda el bloque. -->
   <h2 class="u-sr-only" id="board-title">{{ 'home.board.title' | translate }}</h2>
 
+  <!-- Ancho derivado de la columna de la página (`--board-item-w`): tres
+       tarjetas ocupan exactamente la columna de 1440 px, alineadas con la
+       franja de avisos y con el resto de secciones. -->
   <app-card-carousel
     labelKey="home.board.title"
     gutter="var(--board-gutter)"
-    itemWidth="clamp(19rem, 38vw, 33rem)"
-    gap="1.5rem"
+    itemWidth="var(--board-item-w)"
+    gap="var(--board-gap)"
     [autoplayMs]="5000"
     [loop]="true"
   >
@@ -184,7 +188,13 @@
     <ng-template>
       @for (card of boardCards(); track card.id) {
       <li class="ui-carousel__item">
-        <a class="promo" [class]="'promo ' + card.tone" [routerLink]="card.link">
+        <!-- `article` + enlace extendido (`promo__link::after` cubre la
+             tarjeta): toda la tarjeta sigue siendo un clic, y el botón
+             «Calendar» del cartel puede vivir dentro sin anidar interactivos. -->
+        <article
+          [class]="'promo ' + card.tone"
+          [class.has-panel]="coverFor(card) === 'poster' && card.date"
+        >
           <div
             class="promo__cover"
             [class.promo__cover--data]="coverFor(card) === 'data'"
@@ -198,12 +208,31 @@
                    loading="lazy" decoding="async" />
               <img class="promo__poster" [src]="card.poster" [alt]="card.headline"
                    loading="lazy" decoding="async" (error)="onPosterError(card)" />
+
+              <!-- Panel lateral (tarjeta ≥ 26 rem): ocupa la franja que antes
+                   era sólo desenfoque con lo que el cartel no da a la vista
+                   —la fecha en grande y el atajo al calendario—. En tarjeta
+                   estrecha se oculta y la fecha queda en la insignia. -->
+              @if (card.date) {
+                <div class="promo__panel">
+                  <p class="promo__panel-date">
+                    <span class="promo__panel-day">{{ card.date.day }}</span>
+                    <span class="promo__panel-month">{{ card.date.month }}</span>
+                    <span class="promo__panel-weekday">{{ card.date.weekday }}</span>
+                  </p>
+                  <button type="button" class="promo__panel-btn" (click)="addToCalendar(card)"
+                          [attr.aria-label]="('calendar.add_to_calendar' | translate) + ': ' + card.headline">
+                    <app-icon name="calendar" />
+                    {{ 'home.board.calendar' | translate }}
+                  </button>
+                </div>
+              }
             } @else if (coverFor(card) === 'photo') {
               <img
                 class="promo__image"
                 [src]="card.thumb"
                 [srcset]="card.thumb + ' 480w, ' + card.image + ' 1600w'"
-                sizes="(max-width: 860px) 86vw, 33rem"
+                sizes="(max-width: 860px) 86vw, 30rem"
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -231,11 +260,10 @@
             }
 
             @if (card.badge) {
-              <span class="promo__badge">{{ card.badge }}</span>
+              <span class="promo__badge" [class.is-live]="card.pulse">{{ card.badge }}</span>
             }
 
-            <!-- El texto va SOBRE la portada, como en la referencia: titular
-                 de 24 px y descripción de 18 px sobre el degradado. Con
+            <!-- El texto va SOBRE la portada, como en la referencia. Con
                  cartel NO se pone: el cartel ya lo dice todo y el texto le
                  taparía justo lo que hay que leer. -->
             @if (coverFor(card) !== 'poster') {
@@ -249,17 +277,22 @@
           </div>
 
           <div class="promo__foot">
+            <!-- Barra de avance: decorativa, `meta` lo dice con palabras. -->
+            <span class="promo__progress" aria-hidden="true"
+                  [style.--promo-progress]="card.progress"></span>
             <span class="promo__tile"><app-icon [name]="card.icon" /></span>
             <span class="promo__id">
-              <span class="promo__name">{{ card.titleKey | translate }}</span>
+              <a class="promo__name promo__link" [routerLink]="card.link" draggable="false">
+                {{ card.titleKey | translate }}
+              </a>
               @if (card.meta) {
                 <span class="promo__sub">{{ card.meta }}</span>
               }
             </span>
-            <span class="promo__cta">{{ 'home.board.all' | translate }}</span>
+            <span class="promo__go" aria-hidden="true"><app-icon name="arrow-right" /></span>
           </div>
-          </a>
-        </li>
+        </article>
+      </li>
       }
     </ng-template>
   </app-card-carousel>
