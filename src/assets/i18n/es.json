@@ -984,44 +984,10 @@
       "body_2": "No importa de dónde vengas ni en qué punto del camino estés: aquí tienes un sitio. Ven tal y como eres.",
       "cta": "Nuestra historia"
     },
-    "quick": {
-      "title": "Acceso rápido",
-      "items": {
-        "weekly": {
-          "title": "Programa semanal",
-          "desc": "Horario de los cultos de cada día"
-        },
-        "upcoming": {
-          "title": "Eventos",
-          "desc": "Reuniones y actividades especiales"
-        },
-        "streams": {
-          "title": "Directos",
-          "desc": "Síguenos en vivo por YouTube"
-        },
-        "gallery": {
-          "title": "Galería",
-          "desc": "Momentos de la vida de la iglesia"
-        },
-        "socials": {
-          "title": "Redes sociales",
-          "desc": "Mantente conectado cada día"
-        },
-        "location": {
-          "title": "Cómo llegar",
-          "desc": "Dirección e indicaciones en el mapa"
-        }
-      }
-    },
     "ministries": {
       "title": "Un servicio para cada edad",
       "subtitle": "Todo creyente recibe dones para el bien común: cada departamento es una puerta abierta para ponerlos a servir.",
       "cta": "Ver toda la estructura"
-    },
-    "visit": {
-      "title": "Ven a visitarnos",
-      "cta_map": "Abrir en Google Maps",
-      "cta_details": "Ver los detalles de la ubicación"
     }
   },
   "about": {

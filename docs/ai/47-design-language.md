@@ -298,6 +298,24 @@ sale caro.
 
     La portada pasa de ~3.700 px a **3.140** sin perder ni un dato.
 
+    **Segunda auditoría (06/10/2026, medida a 1912 px)**: contenido de 3.348 a
+    **~2.920 px** (−13 %); en móvil la página de 4.347 a **3.754** (−14 %).
+    El hero **no entra en la cuenta**: su alto lo fija el usuario (ver
+    `AGENTS.md`).
+
+    | Bloque | Antes | Ahora | Qué se hizo |
+    | --- | --- | --- | --- |
+    | Hero | 941 px (100 % del alto útil) | **941**, sin cambios | Se probó al 82 % y se revirtió: el alto lo fija el usuario. Sólo la pastilla del próximo culto sube de 11,5 a 14 px |
+    | Accesos rápidos | 90 px (176 en móvil) | **0** | Borrados: repetían tarjetas, emisiones, menú, barra de pestañas y pie |
+    | Banda de cifras | 120 px, ~700 px vacíos en medio | **0** | Las cifras pasan a la columna derecha de «Quiénes somos», bajo el versículo, con filete de oro |
+    | Quiénes somos | 422 px | **381** | Título a 2 rem como máximo y el hueco de la cita lleno con las cifras |
+    | Departamentos | 149 px | **76** | Una fila: el subtítulo pasa al `title` del rótulo |
+    | Visítanos | 95 px (237 en móvil) | **0** | Borrada: el culto de hoy ya sale tres veces arriba y la dirección está en el pie con su enlace a Maps |
+
+    Además: un solo hueco entre secciones (`--home-gap`), nombres de familia
+    siempre en navy y motivo de oración a ~6:1, y «Septembrie2026» →
+    «Septembrie 2026» en los títulos de YouTube (`partirTitulo`).
+
 26. **Un rótulo de sección que repite lo que ya dicen sus piezas, sobra.** Ha
     pasado dos veces en la portada —el carrusel y los accesos rápidos— y las
     dos veces la respuesta fue la misma: **fuera la cabecera, el nombre al

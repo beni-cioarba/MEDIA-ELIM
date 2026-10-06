@@ -49,6 +49,12 @@ lo diga, se actúa como **diseñador experto** y se decide caso por caso.
 La **marca** (navy y oro), la **accesibilidad** (contraste, foco,
 `prefers-reduced-motion`, WCAG) y el **responsive al 100 %**.
 
+**El alto de la portada (hero de `/`) no se toca.** En escritorio ocupa la
+pantalla inicial entera (`calc(100svh - var(--nav-height))`, en
+`hero-carousel.component.ts`) y en móvil sus medidas actuales. Ninguna
+auditoría ni mejora lo cambia —ni para que asome el contenido de debajo—
+salvo que el usuario lo pida expresamente en esa tarea.
+
 ## Cómo trabajar aquí (protocolo de contexto)
 
 1. Lee `docs/ai/00-index.md` — es el mapa y cuesta muy poco.

@@ -984,44 +984,10 @@
       "body_2": "Nu contează de unde vii sau în ce punct al drumului te afli: aici ai un loc. Vino așa cum ești.",
       "cta": "Istoria noastră"
     },
-    "quick": {
-      "title": "Acces rapid",
-      "items": {
-        "weekly": {
-          "title": "Program săptămânal",
-          "desc": "Orarul serviciilor din fiecare zi"
-        },
-        "upcoming": {
-          "title": "Evenimente",
-          "desc": "Întâlniri și activități speciale"
-        },
-        "streams": {
-          "title": "Transmisiuni",
-          "desc": "Urmărește-ne live pe YouTube"
-        },
-        "gallery": {
-          "title": "Galerie",
-          "desc": "Momente din viața bisericii"
-        },
-        "socials": {
-          "title": "Rețele sociale",
-          "desc": "Rămâi conectat zi de zi"
-        },
-        "location": {
-          "title": "Cum ajungi",
-          "desc": "Adresa și indicații pe hartă"
-        }
-      }
-    },
     "ministries": {
       "title": "Slujire pentru fiecare vârstă",
       "subtitle": "Fiecare credincios primește daruri pentru folosul comun: fiecare departament este o ușă deschisă ca să le pui în slujire.",
       "cta": "Vezi toată structura"
-    },
-    "visit": {
-      "title": "Vino să ne vizitezi",
-      "cta_map": "Deschide în Google Maps",
-      "cta_details": "Vezi detaliile locației"
     }
   },
   "about": {

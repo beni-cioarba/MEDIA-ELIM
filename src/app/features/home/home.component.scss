@@ -9,6 +9,9 @@
 
 :host {
   display: block;
+  /* Un solo hueco entre secciones (familias, emisiones, quiénes somos). Antes
+     cada una tenía el suyo, de 20 a 50 px, y la página se leía a trozos. */
+  --home-gap: clamp(1.5rem, 3.2vh, 2rem);
 }
 
 /* --- Hero ----------------------------------------------------------- */
@@ -28,12 +31,14 @@
   gap: 0.45rem;
   max-width: 100%;
   margin: 0 0 0.75rem;
-  padding: 0.22rem 0.4rem 0.22rem 0.65rem;
-  border: 1px solid rgb(247 250 252 / 0.18);
+  /* 14 px (antes 11,5): es el dato más útil de la portada y era la letra
+     más pequeña de la pantalla. */
+  padding: 0.35rem 0.5rem 0.35rem 0.8rem;
+  border: 1px solid rgb(247 250 252 / 0.2);
   border-radius: var(--r-pill);
-  background: rgb(9 20 36 / 0.3);
+  background: rgb(9 20 36 / 0.38);
   backdrop-filter: blur(12px) saturate(140%);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   line-height: 1.3;
   color: rgb(247 250 252 / 0.92);
   text-decoration: none;
@@ -56,8 +61,8 @@
   --dot: var(--c-gold);
   position: relative;
   flex: none;
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
   background: var(--dot);
 }
@@ -121,10 +126,10 @@
    parte del título del culto. */
 .hero-next__in {
   flex: none;
-  padding: 0.08rem 0.45rem;
+  padding: 0.12rem 0.55rem;
   border-radius: var(--r-pill);
-  background: rgb(247 250 252 / 0.12);
-  font-size: 0.6875rem;
+  background: rgb(247 250 252 / 0.14);
+  font-size: 0.75rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--c-on-primary);
@@ -806,7 +811,7 @@
  * ===================================================================== */
 
 .fam {
-  padding-block: clamp(1.5rem, 3.5vh, 2.5rem) 0;
+  padding-block: var(--home-gap) 0;
   padding-inline: var(--page-gutter);
   background: var(--c-bg);
 }
@@ -920,14 +925,17 @@
 .fam-card__name {
   font-family: var(--font-display);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.25;
-  color: var(--c-muted);
+  /* En navy siempre: «Blaj Lucia» (persona sola) salía entera en gris y
+     parecía desactivada al lado de las familias. */
+  color: var(--c-primary);
+}
 
-  b {
-    font-weight: 700;
-    color: var(--c-primary);
-  }
+/* «Familia» atenuada delante del apellido: lo que distingue es el apellido. */
+.fam-card__pre {
+  font-weight: 500;
+  color: rgb(45 55 72 / 0.72);
 }
 
 .fam-card__names {
@@ -947,7 +955,8 @@
   font-size: 0.8125rem;
   font-style: italic;
   line-height: 1.45;
-  color: var(--c-muted);
+  /* 0,8 sobre blanco: ~6:1 (antes `--c-muted`, ~4,4:1, por debajo de AA). */
+  color: rgb(45 55 72 / 0.8);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -962,7 +971,7 @@
 }
 
 .airings {
-  padding-block: clamp(1.5rem, 3.5vh, 2.5rem);
+  padding-block: var(--home-gap);
   padding-inline: var(--page-gutter);
   background: var(--c-bg);
 }
@@ -1237,7 +1246,7 @@
  * ===================================================================== */
 
 .welcome {
-  padding-block: clamp(2rem, 5vh, 3.25rem);
+  padding-block: var(--home-gap);
   padding-inline: var(--page-gutter);
   background: var(--c-bg);
 }
@@ -1271,7 +1280,7 @@
   margin: 0 0 0.75rem;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
   line-height: 1.15;
   letter-spacing: -0.015em;
   color: var(--c-primary);
@@ -1339,161 +1348,53 @@
   color: var(--c-gold-deep);
 }
 
-/* Por debajo de md la cita va detrás del texto, no al lado. */
-@media (max-width: 859.98px) {
-  .welcome__inner {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-/* =====================================================================
- * Accesos rápidos — una sola fila de fichas
- *
- * Seis enlaces que repiten el menú de la cabecera: en escritorio sobran, en
- * móvil son lo que evita abrir el menú. Se quedan, pero al mínimo.
- *
- * Recorrido del bloque: 361 px → 137 (tarjetas apretadas) → **~60** (fuera la
- * cabecera y las descripciones). Lo que se ha ido no era información: el
- * título repetía lo que ya dicen las fichas, y la mitad de las descripciones
- * repetían su propio rótulo.
- * ===================================================================== */
-
-.quick-nav {
-  padding-block: clamp(0.9rem, 2.2vh, 1.4rem);
-  padding-inline: var(--page-gutter);
-  background: var(--c-bg);
-}
-
-.quick {
+/*
+ * Columna derecha: cita arriba y cifras debajo. Las cifras eran una banda
+ * navy propia (120 px a 1912) con el rótulo a la izquierda, los números a la
+ * derecha y ~700 px vacíos en medio. Aquí completan el bloque con datos en el
+ * hueco que dejaba la cita.
+ */
+.welcome__side {
   display: grid;
-  /* Seis en fila cuando hay sitio; si no, tres y luego dos. `auto-fit` con un
-     mínimo se ajusta solo y no hay que mantener breakpoints por número. */
-  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
-  gap: 0.5rem;
-  max-width: var(--page-max);
-  margin-inline: auto;
-  padding: 0;
-  list-style: none;
-}
-
-.quick__card {
-  display: flex;
-  align-items: center;
-  /* Hueco y relleno al mínimo: el rótulo más largo («Program săptămânal»)
-     se recortaba con puntos suspensivos en la primera ficha, que es justo
-     donde peor se ve. Cada píxel que se le quita al adorno se lo gana él. */
-  gap: 0.5rem;
+  gap: clamp(1.25rem, 2.5vw, 1.75rem);
   min-width: 0;
-  height: 100%;
-  padding: 0.5rem 0.6rem;
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-card);
-  background: var(--c-surface);
-  text-decoration: none;
-  transition:
-    border-color var(--mo-fast) var(--ea-standard),
-    background var(--mo-fast) var(--ea-standard);
 }
-
-.quick__card:hover,
-.quick__card:focus-visible {
-  border-color: var(--c-hairline-strong);
-  background: var(--c-surface-2);
-}
-
-.quick__icon {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: var(--r-sm);
-  background: var(--c-gold-tint);
-  font-size: 0.9rem;
-  color: var(--c-gold-deep);
-}
-
-/* `min-width: 0` en la ficha y recorte aquí: sin los dos, un rótulo largo
-   ensancharía su columna y la fila dejaría de estar alineada. */
-.quick__title {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--c-primary);
-}
-
-/* =====================================================================
- * Banda de cifras
- *
- * El problema: tres números centrados en medio de una franja de 1920 px, sin
- * jerarquía entre ellos, con los rótulos a 10 px y sin ser pulsables. Una
- * decoración cara en alto.
- *
- * Ahora: rótulo a la izquierda que le da sentido a la franja, cifras a la
- * derecha ocupando el ancho y separadas por filetes, rótulos legibles, y cada
- * cifra **enlaza a la sección que la respalda** —los años a la historia, los
- * servicios al programa, los departamentos al organigrama—. Un dato que se
- * puede comprobar vale mucho más que un dato que hay que creerse.
- * ===================================================================== */
 
 .figures {
-  padding-block: clamp(1.25rem, 3vh, 2rem);
-  padding-inline: var(--page-gutter);
-  background: #122844;
-  color: #ffffff;
-}
-
-.figures__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem clamp(1.5rem, 4vw, 3rem);
-  max-width: var(--page-max);
-  margin-inline: auto;
-}
-
-.figures__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgb(255 255 255 / 0.55);
-}
-
-.figures__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* Filete entre cifras: las separa sin cajas y mantiene la fila cosida. */
-.figures__list li + li {
-  border-inline-start: 1px solid rgb(255 255 255 / 0.16);
-}
-
+/* Cada cifra: filete de oro arriba (la misma línea fina de la barra de avance
+   de las tarjetas), el número grande y el rótulo. Enlaza a lo que la respalda. */
 .figures__item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding-inline: clamp(1rem, 3vw, 2.25rem);
-  color: inherit;
+  position: relative;
+  display: grid;
+  gap: 0.3rem;
+  padding-top: 0.7rem;
+  color: var(--c-primary);
   text-decoration: none;
-  transition: color 160ms cubic-bezier(0.2, 0, 0, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--c-gold), rgb(212 175 55 / 0.15));
+    transition: background 160ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  &:hover::before {
+    background: var(--c-gold);
+  }
 
   &:hover .figures__value {
-    color: var(--c-gold);
+    color: var(--c-gold-deep);
   }
 
   &:focus-visible {
@@ -1505,7 +1406,7 @@
 
 .figures__value {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -1513,63 +1414,44 @@
   transition: color 160ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* 12 px y sin versalitas apretadas: a 10 px el rótulo no se leía, y es lo que
-   explica qué significa el número. */
 .figures__label {
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.3;
-  color: rgb(255 255 255 / 0.7);
+  color: rgb(45 55 72 / 0.78);
 }
 
-@media (max-width: 719.98px) {
-  .figures__inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+@media (prefers-reduced-motion: reduce) {
+  .figures__item::before,
+  .figures__value {
+    transition: none;
   }
+}
 
-  .figures__list {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .figures__item {
-    padding-inline: 0;
-    padding-inline-end: 0.75rem;
-  }
-
-  .figures__list li + li .figures__item {
-    padding-inline-start: 0.75rem;
+/* Por debajo de md la cita va detrás del texto, no al lado. */
+@media (max-width: 859.98px) {
+  .welcome__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
   }
 }
 
 /* =====================================================================
- * Departamentos y visita — dos bandas de una sola fila
+ * Departamentos — UNA fila
  *
- * Las dos gastaban ~250 px para una línea de contenido: antetítulo, título,
- * subtítulo y luego seis palabras o una dirección. El rótulo pasa a la
- * izquierda y el contenido ocupa la fila: la misma información en un tercio
- * del alto, y sin el aire muerto de una cabecera centrada.
+ * Título a la izquierda y chips a la derecha, sin subtítulo (pasa al
+ * `title`): con él la fila se partía en dos y el bloque medía 149 px a
+ * 1912. Por debajo de 860 px los chips bajan bajo el título y envuelven.
  * ===================================================================== */
 
-.depts,
-.visit {
-  padding-block: clamp(1.1rem, 2.6vh, 1.75rem);
-  padding-inline: var(--page-gutter);
-}
-
 .depts {
+  padding-block: clamp(0.9rem, 2vh, 1.25rem);
+  padding-inline: var(--page-gutter);
   background: var(--c-bg-cool);
   border-block: 1px solid var(--c-hairline);
 }
 
-.visit {
-  background: var(--c-bg);
-}
-
-.depts__inner,
-.visit__inner {
+.depts__inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1579,11 +1461,8 @@
   margin-inline: auto;
 }
 
-.depts__head {
-  min-width: 0;
-}
-
 .depts__title {
+  flex: none;
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.05rem, 1.4vw, 1.25rem);
@@ -1592,25 +1471,10 @@
   color: var(--c-primary);
 }
 
-/* La dirección y la hora dejan de ir a cuerpo de titular: ese papel lo ocupa
-   ahora el título de la banda, y dos datos a 20 px competían con él. */
-.visit__street {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--c-primary);
-}
-
-.depts__sub {
-  margin: 0.1rem 0 0;
-  max-width: none;
-  font-size: 0.8125rem;
-  color: var(--c-muted);
-}
-
 .depts__list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.4rem;
   margin: 0;
   padding: 0;
@@ -1664,65 +1528,8 @@
   }
 }
 
-/* --- Visita: el cierre de la página ------------------------------------ */
-
-.visit__body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem clamp(1rem, 3vw, 2.25rem);
-  min-width: 0;
-}
-
-/* El único título de esta banda. Mismo peso que el de departamentos, que es
-   su vecina: las dos son bandas de una fila y tienen que pesar igual. */
-.visit__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--c-primary);
-}
-
-/* Los dos datos en fila, no apilados: la banda mide una línea y apilarlos la
-   convertiría en un bloque. Con poco ancho envuelven solos. */
-.visit__facts {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem clamp(1rem, 2.5vw, 2rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.visit__fact {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  min-width: 0;
-}
-
-.visit__pin {
-  flex: none;
-  font-size: 1.35rem;
-  color: var(--c-gold-deep);
-}
-
-.visit__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.visit__city {
-  font-size: 0.8125rem;
-  color: var(--c-muted);
-}
-
-.visit__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+@media (max-width: 859.98px) {
+  .depts__list {
+    justify-content: flex-start;
+  }
 }

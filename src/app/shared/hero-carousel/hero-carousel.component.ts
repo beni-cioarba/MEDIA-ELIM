@@ -220,6 +220,12 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         color: var(--c-on-primary);
       }
 
+      /*
+       * ⚠ DIMENSIÓN FIJADA POR EL USUARIO (06/10/2026): en escritorio la
+       * portada ocupa TODO el alto útil (viewport menos la cabecera). No se
+       * toca —ni para «que asome lo de abajo»— salvo que el usuario lo pida
+       * expresamente. Ver AGENTS.md → «Lo que no se negocia».
+       */
       @media (min-width: 860px) {
         .hero {
           min-height: calc(100svh - var(--nav-height));

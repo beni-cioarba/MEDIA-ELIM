@@ -160,13 +160,6 @@ interface BoardCard {
 const MINUTOS_DIA = 24 * 60;
 const DIAS_CUENTA_ATRAS = 30;
 
-/** Tarjeta de acceso rápido a un módulo de la app. */
-interface QuickLink {
-  readonly id: string;
-  readonly icon: IconName;
-  readonly path: string;
-}
-
 /** Minutos que un culto cuenta como «en marcha» desde su hora de inicio. */
 const HERO_NOW_WINDOW_MIN = 120;
 
@@ -281,16 +274,6 @@ export class HomeComponent {
   protected prayerExcerpt(family: PrayerFamilyView): string {
     return family.message[0] ?? family.verse?.text ?? '';
   }
-
-  /** Accesos rápidos de la portada (orden = prioridad para el visitante). */
-  protected readonly quickLinks: readonly QuickLink[] = [
-    { id: 'weekly', icon: 'calendar', path: this.links.weekly },
-    { id: 'upcoming', icon: 'sparkles', path: this.links.upcoming },
-    { id: 'streams', icon: 'play', path: this.links.streams },
-    { id: 'gallery', icon: 'image', path: this.links.gallery },
-    { id: 'socials', icon: 'share', path: this.links.socials },
-    { id: 'location', icon: 'map-pin', path: this.links.location },
-  ];
 
   /** Primeros ministerios a modo de aperitivo de la página de liderazgo. */
   protected readonly featuredMinistries = computed(() =>
@@ -565,14 +548,6 @@ export class HomeComponent {
   /** Años de historia de la congregación, calculados en tiempo real. */
   protected readonly years = computed(
     () => new Date().getFullYear() - this.config.foundedYear,
-  );
-
-  /** Enlace de indicaciones a Google Maps. */
-  protected readonly directionsUrl = computed(
-    () =>
-      `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-        this.config.location.mapsQuery,
-      )}`,
   );
 
   // ====================================================================

@@ -38,7 +38,9 @@ const SEPARADOR = /\s+[-–—]\s+/;
 const TEMA = /\(([^)]+)\)/;
 
 export function partirTitulo(titulo: string): TituloEmision {
-  const limpio = titulo.trim();
+  // «Septembrie2026» → «Septembrie 2026»: en el canal a veces falta el
+  // espacio entre el mes y el año, y la fecha se leía como una sola palabra.
+  const limpio = titulo.trim().replace(/(\p{L})(\d)/gu, '$1 $2');
   if (!limpio) return { tipo: '', titulo: '', meta: '' };
 
   const corte = SEPARADOR.exec(limpio);

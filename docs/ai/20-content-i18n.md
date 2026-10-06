@@ -368,4 +368,5 @@ Borradas en el barrido del rediseño (portada, galería, conducere): el bloque
 `home.today.*` completo, `leadership.ministries_section.*`,
 `leadership.eyebrow`, `leadership.lead`, `gallery.featured_event`,
 `gallery.open_drive` y los `*.subtitle` de `gallery`, `streams`, `upcoming`,
-`weekly`, `home.quick` y `home.visit`.
+`weekly`, `home.quick` y `home.visit`. El 06/10/2026 se borraron enteros
+`home.quick.*` y `home.visit.*` (sus secciones salieron de la portada).

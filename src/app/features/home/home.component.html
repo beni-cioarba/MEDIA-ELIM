@@ -367,7 +367,8 @@
                       @if (familia.single) {
                         {{ familia.fullName }}
                       } @else {
-                        {{ 'family_prayer.family' | translate }} <b>{{ familia.surname }}</b>
+                        <span class="fam-card__pre">{{ 'family_prayer.family' | translate }}</span>
+                        <b>{{ familia.surname }}</b>
                       }
                     </span>
                     @if (!familia.single) {
@@ -468,89 +469,51 @@
       </p>
     </div>
 
-    <figure class="welcome__verse">
-      <blockquote>«{{ 'verse.text' | translate }}»</blockquote>
-      <figcaption>{{ 'verse.reference' | translate }}</figcaption>
-    </figure>
+    <!-- Columna derecha: el versículo y, debajo, las cifras. Antes las
+         cifras eran una banda navy propia (120 px a 1912) con 700 px vacíos
+         en medio; aquí completan el «quiénes somos» con datos y cada una
+         sigue enlazando a la sección que la respalda. -->
+    <div class="welcome__side">
+      <figure class="welcome__verse">
+        <blockquote>«{{ 'verse.text' | translate }}»</blockquote>
+        <figcaption>{{ 'verse.reference' | translate }}</figcaption>
+      </figure>
+
+      <h3 class="u-sr-only">{{ 'home.stats.label' | translate }}</h3>
+      <ul class="figures" role="list">
+        <li>
+          <a class="figures__item" [routerLink]="links.about">
+            <span class="figures__value">{{ years() }}</span>
+            <span class="figures__label">{{ 'about.stats.years' | translate }}</span>
+          </a>
+        </li>
+        <li>
+          <a class="figures__item" [routerLink]="links.weekly">
+            <span class="figures__value">{{ config.stats[0].value }}</span>
+            <span class="figures__label">{{ 'about.stats.services' | translate }}</span>
+          </a>
+        </li>
+        <li>
+          <a class="figures__item" [routerLink]="links.leadership">
+            <span class="figures__value">{{ config.stats[1].value }}</span>
+            <span class="figures__label">{{ 'about.stats.departments' | translate }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>
 
 <!-- ===================================================================
-     Banda de cifras. Antes: tres números flotando centrados en medio de una
-     franja, sin jerarquía, con los rótulos a 10 px y sin ser pulsables —una
-     decoración—. Ahora tiene un rótulo a la izquierda que le da sentido, las
-     cifras ocupan el ancho separadas por filetes, y **cada una enlaza a la
-     sección que la respalda**: el dato deja de ser un adorno y se convierte
-     en una puerta.
-     =================================================================== -->
-<section class="figures">
-  <div class="figures__inner">
-    <h2 class="figures__title">{{ 'home.stats.label' | translate }}</h2>
-
-    <ul class="figures__list" role="list">
-      <li>
-        <a class="figures__item" [routerLink]="links.about">
-          <span class="figures__value">{{ years() }}</span>
-          <span class="figures__label">{{ 'about.stats.years' | translate }}</span>
-        </a>
-      </li>
-      <li>
-        <a class="figures__item" [routerLink]="links.weekly">
-          <span class="figures__value">{{ config.stats[0].value }}</span>
-          <span class="figures__label">{{ 'about.stats.services' | translate }}</span>
-        </a>
-      </li>
-      <li>
-        <a class="figures__item" [routerLink]="links.leadership">
-          <span class="figures__value">{{ config.stats[1].value }}</span>
-          <span class="figures__label">{{ 'about.stats.departments' | translate }}</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- ===================================================================
-     Accesos rápidos. Sin cabecera: «Acces rapid» + «Tot ce ai nevoie, la un
-     click distanță» eran dos líneas que no decían nada que las propias
-     tarjetas no dijeran ya. El nombre de la sección se queda en el
-     `aria-label`, que es donde hace falta.
-     Y sin descripciones: la mitad repetían el rótulo («Galerie — Momente din
-     viața bisericii»). En un acceso rápido el rótulo ES la señal; lo demás
-     dobla el alto sin añadir nada. La descripción pasa al `title`, para quien
-     se pare encima.
-     =================================================================== -->
-<section class="quick-nav" [attr.aria-label]="'home.quick.title' | translate">
-  <ul class="quick" role="list">
-    @for (link of quickLinks; track link.id) {
-      <li>
-        <a
-          class="quick__card"
-          [routerLink]="link.path"
-          [attr.title]="'home.quick.items.' + link.id + '.desc' | translate"
-        >
-          <app-icon class="quick__icon" [name]="link.icon" />
-          <span class="quick__title">
-            {{ 'home.quick.items.' + link.id + '.title' | translate }}
-          </span>
-        </a>
-      </li>
-    }
-  </ul>
-</section>
-
-<!-- ===================================================================
-     Departamentos. Antes: antetítulo + título + subtítulo + chips + botón,
-     250 px para seis palabras. Ahora el rótulo va a la izquierda y los
-     chips ocupan el resto de la fila: misma información, un tercio del alto.
-     Y los chips **enlazan**: antes eran etiquetas muertas.
+     Departamentos: UNA fila, título a la izquierda y chips a la derecha.
+     El subtítulo (una frase que no añadía datos) partía la fila en dos y
+     ahora queda en el `title` del rótulo. Los chips enlazan.
      =================================================================== -->
 <section class="depts" [attr.aria-label]="'home.ministries.title' | translate">
   <div class="depts__inner">
-    <div class="depts__head">
-      <h2 class="depts__title">{{ 'home.ministries.title' | translate }}</h2>
-      <p class="depts__sub">{{ 'home.ministries.subtitle' | translate }}</p>
-    </div>
+    <h2 class="depts__title" [attr.title]="'home.ministries.subtitle' | translate">
+      {{ 'home.ministries.title' | translate }}
+    </h2>
 
     <ul class="depts__list" role="list">
       @for (ministry of featuredMinistries(); track ministry.id) {
@@ -570,68 +533,7 @@
   </div>
 </section>
 
-<!-- ===================================================================
-     Visítanos. Antes: título + subtítulo + tarjeta con una línea de texto,
-     250 px para una dirección. Ahora es una banda de una fila: el dato a la
-     izquierda y las dos acciones a la derecha.
-     =================================================================== -->
-<!-- ===================================================================
-     Cierre de la página.
-
-     Era una dirección suelta sin título: la última impresión de la portada
-     de una iglesia y lo único que decía era una calle. En una web de iglesia
-     el final es el sitio donde se convierte —«ven»—, así que ahora lleva la
-     invitación, **cuándo** (el dato que faltaba y que es el que decide si
-     alguien viene) y dónde, con las dos acciones a la derecha.
-
-     Repetir aquí el próximo culto no sobra aunque esté en la portada: arriba
-     orienta y abajo invita. Es el mismo dato haciendo dos trabajos distintos.
-     =================================================================== -->
-<section class="visit" [attr.aria-label]="'home.visit.title' | translate">
-  <div class="visit__inner">
-    <div class="visit__body">
-      <h2 class="visit__title">{{ 'home.visit.title' | translate }}</h2>
-
-      <ul class="visit__facts" role="list">
-        @if (schedule.featuredProgram(); as culto) {
-          <li class="visit__fact">
-            <app-icon class="visit__pin" name="clock" />
-            <span class="visit__text">
-              <span class="visit__street">
-                @if (schedule.todayProgram()) {
-                  {{ 'weekly.today' | translate }}
-                } @else {
-                  {{ culto.dayLabel }}
-                }
-                · {{ culto.time }}
-              </span>
-              <span class="visit__city">{{ culto.title }}</span>
-            </span>
-          </li>
-        }
-
-        <li class="visit__fact">
-          <app-icon class="visit__pin" name="map-pin" />
-          <span class="visit__text">
-            <span class="visit__street">{{ config.location.address }}</span>
-            <span class="visit__city">{{ config.location.city }}</span>
-          </span>
-        </li>
-      </ul>
-    </div>
-
-    <div class="visit__actions">
-      <a
-        class="btn btn--primary btn--sm"
-        [href]="directionsUrl()"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {{ 'home.visit.cta_map' | translate }}
-      </a>
-      <a class="btn btn--ghost btn--ghost-dark btn--sm" [routerLink]="links.location">
-        {{ 'home.visit.cta_details' | translate }}
-      </a>
-    </div>
-  </div>
-</section>
+<!-- «Ven a visitarnos» ya no está aquí (06/10/2026): repetía el culto de hoy
+     —que la portada da tres veces: hero, tarjeta del programa y avisos— y la
+     dirección, que el pie ya enlaza a Google Maps junto a «Horarios y cómo
+     llegar». 95 px en escritorio y 237 en móvil sin un dato nuevo. -->
