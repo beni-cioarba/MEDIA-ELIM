@@ -106,7 +106,6 @@ const PEOPLE = [
   { id: 'silviu-dobre', name: 'Silviu Dobre' },
   { id: 'aurel-burdet', name: 'Aurel Burdeț' },
   { id: 'ionut-mitoseriu', name: 'Ionuț Mitoșeriu' },
-  { id: 'dorel-bindea', name: 'Dorel Bindea' },
   { id: 'maria-copran', name: 'Maria Copran' },
 ] as const satisfies readonly Person[];
 
@@ -387,7 +386,6 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
     departments: [
       { id: 'welcome', i18nKey: 'welcome', members: [{ person: 'ioan-lauran', roles: ['lead'] }] },
       { id: 'guests', i18nKey: 'guests', members: [{ person: 'ionut-mitoseriu', roles: ['lead'] }] },
-      { id: 'travel', i18nKey: 'travel', members: [{ person: 'dorel-bindea', roles: ['lead'] }] },
     ],
   },
   {

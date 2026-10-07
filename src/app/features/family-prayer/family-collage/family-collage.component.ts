@@ -39,7 +39,7 @@ const PAD_U = 3;
  *   │ RUGĂCIUNE…    │ [   foto   ][  foto  ]        │
  *   │ 28 sept–4 oct │ [ foto ][ foto ][ foto ]       │
  *   │ Bena …        │                               │
- *   │ Bindea …      │  filas de la misma altura,     │
+ *   │ Biriș …       │  filas de la misma altura,     │
  *   │               │  bloque rectangular exacto     │
  *   └───────────────┴──────────────────────────────┘   (a sangre: pantalla entera)
  *

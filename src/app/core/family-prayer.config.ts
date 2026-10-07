@@ -256,16 +256,6 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
         ],
       },
       {
-        id: 'bindea-dorel-ana',
-        surname: 'Bindea',
-        names: 'Dorel și Ana',
-        children: ['David', 'Robert', 'Lucas', 'Samuel'],
-        message: [
-          'Ne dorim ca Dumnezeu să ne ajute să facem voia Lui, El să ne ferească de orice rău, să ne dea înțelepciune, sănătate, iar pacea lui Hristos să locuiască din belșug în inima și casa noastră.',
-          'De asemenea, dorim ca Domnul să facă din copiii noștri niște slujitori ai Săi și cu toții să slujim Domnului pentru mântuirea și salvarea oamenilor.',
-        ],
-      },
-      {
         id: 'biris-florin-anca',
         surname: 'Biriș',
         names: 'Florin și Anca',

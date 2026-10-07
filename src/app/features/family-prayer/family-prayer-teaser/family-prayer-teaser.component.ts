@@ -148,7 +148,7 @@ export class FamilyPrayerTeaserComponent {
 
   protected readonly link = `/${APP_PATHS.familyPrayer}`;
 
-  /** «Bena, Bindea, Biriș și Bîrle»: apellidos de la semana, sin repetir. */
+  /** «Bena, Biriș și Bîrle»: apellidos de la semana, sin repetir. */
   protected readonly surnames = computed<string>(() => {
     const week = this.prayer.current();
     return week ? this.prayer.formatList([...new Set(week.families.map((f) => f.surname))]) : '';

@@ -31,7 +31,6 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-09-20/bena-andreas': { width: 1200, height: 1600, variants: [[480, 360], [960, 720], [1600, 1200]] },
   '2026-09-20/bena-iosua': { width: 1434, height: 1600, variants: [[480, 430], [960, 860], [1600, 1434]] },
   '2026-09-27/bena-maria-mircea': { width: 1600, height: 918, variants: [[480, 480], [960, 960], [1600, 1600]] },
-  '2026-09-27/bindea-dorel-ana': { width: 1457, height: 1600, variants: [[480, 437], [960, 874], [1600, 1457]] },
   '2026-09-27/biris-florin-anca': { width: 1600, height: 1523, variants: [[480, 480], [960, 960], [1600, 1600]] },
   '2026-09-27/birle-otniel-cristina': { width: 1275, height: 1600, variants: [[480, 382], [960, 765], [1600, 1275]] },
   '2026-09-27/birle-sebastian-maria': { width: 1570, height: 1600, variants: [[480, 471], [960, 942], [1600, 1570]] },
