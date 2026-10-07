@@ -68,3 +68,8 @@ No se proyecta: en la proyección del templo la directiva va desactivada
 - Fichas de **Rugăciune pentru familii**: abre la foto en el visor documental con
   todas las familias de la semana (‹ › entre ellas).
 - Retrato del **perfil de la conducere**: se activa solo cuando haya foto real.
+- **Índice de la conducere** (07/10/2026): toda foto real de las tarjetas
+  (destacadas, conducerea, comité, vista por personas) se amplía al pulsarla,
+  tenga la persona perfil o no. Cada bloque es una galería (`photoGallery`,
+  `leadership.view.ts`): ‹ › pasa a las demás fotos del bloque. En las filas de
+  3,2 rem se oculta el control flotante (no cabe); quedan la lupa y el foco.

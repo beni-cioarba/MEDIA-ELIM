@@ -1081,7 +1081,7 @@
       "ref": "Art. {{n}}",
       "ref_long": "Citește articolul {{n}} din Mărturisirea de credință"
     },
-    "hint": "Apasă pe oricine ca să-i vezi profilul complet.",
+    "hint": "Cardurile cu «Vezi profilul» deschid pagina persoanei.",
     "structure": {
       "title": "Structura de conducere",
       "subtitle": "Oficiile de conducere recunoscute de mărturisirea de credință, la care se ajunge prin actul ordinării."
@@ -1256,7 +1256,6 @@
       "pager": "Alte profiluri",
       "prev": "Anterior",
       "next": "Următorul",
-      "placeholder": "Text de probă: biografia reală va fi adăugată în curând.",
       "fact_ministries_one": "slujire",
       "fact_ministries_other": "slujiri",
       "fact_areas_one": "arie",

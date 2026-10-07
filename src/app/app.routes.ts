@@ -114,19 +114,19 @@ export const APP_ROUTES: Routes = [
         },
       },
       {
-        // Perfil propio de cada persona del organigrama (`/conducere/<id>`).
-        // Fuera de los buscadores mientras los textos sean de maqueta.
+        // Perfil propio (`/conducere/<id>`): sólo quien lo tiene habilitado en
+        // `PERSON_PROFILES` (core/leadership-profiles.config.ts).
         path: `${APP_PATHS.leadership}/:id`,
         loadComponent: () =>
           import('./features/leadership/person-profile/person-profile.component').then(
             (m) => m.PersonProfileComponent,
           ),
-        // Id inexistente → al índice, antes de pintar.
+        // Sin perfil → al directorio filtrado por su nombre, antes de pintar.
         canActivate: [
           (route: ActivatedRouteSnapshot) => {
             const router = inject(Router);
             return import('./features/leadership/leadership.guards').then((m) =>
-              m.personExists(route, router),
+              m.personHasProfile(route, router),
             );
           },
         ],
@@ -134,7 +134,6 @@ export const APP_ROUTES: Routes = [
           seo: {
             titleKey: 'seo.leadership.title',
             descriptionKey: 'seo.leadership.description',
-            noindex: true,
           },
         },
       },

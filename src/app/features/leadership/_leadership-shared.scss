@@ -42,8 +42,17 @@ $lead-transition:
   color: var(--c-muted);
 }
 
-/** Tarjeta base: blanca, filete gris, sombra al pasar. */
+/**
+ * Tarjeta base: blanca, filete gris, sombra al pasar.
+ *
+ * Sólo reacciona si enlaza de verdad: o ella misma es un `<a href>`, o lleva
+ * dentro un enlace estirado (`lead-stretch`) con `href`. La persona sin
+ * perfil propio se pinta con la misma tarjeta pero sin `href`
+ * (`[routerLink]="null"`): ni sombra, ni cursor de mano, ni foco; es una
+ * ficha, no una puerta.
+ */
 @mixin lead-card {
+  position: relative;
   border: 1px solid var(--c-hairline);
   border-radius: $lead-radius;
   background: var(--c-surface);
@@ -51,16 +60,67 @@ $lead-transition:
   text-decoration: none;
   transition: $lead-transition;
 
-  &:hover {
+  &:not([href]) {
+    cursor: default;
+  }
+
+  @include lead-card-hover {
     border-color: var(--c-hairline-strong);
     box-shadow: 0 6px 18px -12px color-mix(in srgb, var(--c-primary) 45%, transparent);
   }
 
   @include lead-focus;
 
+  // Enlace estirado: el anillo de foco lo pinta la tarjeta entera.
+  &:has(.lead-stretch:focus-visible) {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 2px;
+  }
+
   @include motion-reduce {
     transition: none;
   }
+}
+
+/** Estado «al pasar» de una tarjeta que enlaza (ella o su enlace estirado). */
+@mixin lead-card-hover {
+  &[href]:hover,
+  &:has(.lead-stretch[href]:hover) {
+    @content;
+  }
+}
+
+/**
+ * Enlace estirado: el nombre es el enlace y su `::after` cubre la tarjeta
+ * entera, así toda ella abre el perfil sin envolver en un `<a>` otros
+ * controles. Lo que deba tener su propio clic (la foto, que abre el visor)
+ * se sube por encima con `lead-above-stretch`. Sin `href` no se estira.
+ */
+@mixin lead-stretch {
+  .lead-stretch {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &[href]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+  }
+}
+
+/** Por encima del enlace estirado: conserva su propio clic. */
+@mixin lead-above-stretch {
+  position: relative;
+  z-index: 2;
 }
 
 /** Título de bloque (h2 de cada sección). */

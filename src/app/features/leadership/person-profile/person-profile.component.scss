@@ -211,6 +211,29 @@
   top: calc(var(--nav-height, 4rem) + 1rem);
 }
 
+// Sin biografía: no hay relato que acompañar, así que los datos dejan de
+// ser columna lateral y ocupan el ancho. Los dos paneles (dónde sirve, con
+// quién) van parejos y, dentro, áreas y personas se reparten en rejilla:
+// crece con más áreas o más compañeros sin rehacer nada.
+.layout--facts {
+  grid-template-columns: minmax(0, 1fr);
+
+  .side {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    align-items: start;
+  }
+
+  .serves {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: 0.9rem 1.25rem;
+  }
+
+  .peers {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  }
+}
+
 .panel {
   padding: clamp(0.9rem, 2vw, 1.25rem);
   border: 1px solid var(--c-hairline);
@@ -293,12 +316,9 @@
   color: var(--c-text);
 }
 
-// Aviso de maqueta.
-.draft {
-  margin: 0;
-  font-size: 0.75rem;
-  font-style: italic;
-  color: var(--c-faint);
+// Versículo sin biografía: es lo único del panel, sin margen de separación.
+.verse--alone {
+  margin-top: 0;
 }
 
 // ---------------------------------------------------------------------
@@ -387,6 +407,12 @@
   border-radius: 8px;
 }
 
+// Sin perfil propio: la fila informa, no enlaza (mismo criterio que el
+// directorio: navy = se abre; color de texto = no).
+.peer:not([href]) .peer__name {
+  color: var(--c-text);
+}
+
 // Foto entera (4:5): marca el alto de la fila.
 .peer__photo {
   @include lead-photo-fill;
@@ -431,6 +457,7 @@
 }
 
 .pager__link--next {
+  grid-column: 2;
   justify-content: flex-end;
   text-align: end;
 }

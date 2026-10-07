@@ -13,7 +13,9 @@ import {
   ServiceRole,
   personTier,
 } from '../../core/leadership.config';
-import { PersonPhoto, personPhoto } from './person-photo';
+import { hasProfile } from '../../core/leadership-profiles.config';
+import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
+import { PersonPhoto, personPhoto, photoSource, photoThumb } from './person-photo';
 
 /**
  * MODELOS DE VISTA DE «CONDUCERE»
@@ -50,9 +52,17 @@ export interface PersonCard {
   readonly departmentKeys: readonly string[];
   /** Nombre en minúsculas y sin diacríticos, para buscar. */
   readonly searchName: string;
-  /** Enlace del router a su perfil. */
-  readonly link: string[];
+  /**
+   * Enlace del router a su perfil, o `null` si no tiene página propia (ver
+   * `PERSON_PROFILES`). Las plantillas lo pasan tal cual a `[routerLink]`:
+   * con `null` el `<a>` se queda sin `href` (texto, no enlace: ni foco ni
+   * clic), así una sola plantilla sirve para las dos clases de persona.
+   */
+  readonly link: string[] | null;
 }
+
+/** Valor de `?vista=` para la vista por personas del directorio. */
+export const PEOPLE_VIEW_PARAM = 'persoane';
 
 /** Enlace del router al perfil de una persona: `/conducere/<id>`. */
 export function personLink(id: string): string[] {
@@ -76,7 +86,7 @@ function toCard(person: PersonProfile): PersonCard {
     firstDepartmentKey: postings[0]?.departmentKey ?? null,
     departmentKeys: postings.map((posting) => posting.departmentKey),
     searchName: normalize(person.name),
-    link: personLink(person.id),
+    link: hasProfile(person.id as PersonId) ? personLink(person.id) : null,
   };
 }
 
@@ -88,6 +98,47 @@ const CARDS_BY_ID = new Map(PERSON_CARDS.map((card) => [card.id, card]));
 /** Tarjeta de una persona. Nunca falla: `PersonId` está tipado. */
 export function cardOf(id: PersonId): PersonCard {
   return CARDS_BY_ID.get(id) as PersonCard;
+}
+
+/** Quienes tienen página propia, en orden de lectura: anterior / siguiente. */
+export const PROFILE_CARDS: readonly PersonCard[] = PERSON_CARDS.filter((card) => card.link !== null);
+
+// ---------------------------------------------------------------------
+// Fotos en el visor
+// ---------------------------------------------------------------------
+
+/**
+ * Retrato de una persona para el visor (todas las variantes), o `null` si
+ * aún no tiene foto: la silueta de maqueta no se amplía.
+ */
+export function photoDocument(card: Pick<PersonCard, 'photo' | 'name'>): ViewerDocument | null {
+  const { photo, name } = card;
+  if (!photo) return null;
+  const { src, srcset } = photoSource(photo, null);
+  return { src, srcset, thumb: photoThumb(photo), name, alt: name };
+}
+
+/**
+ * Las fotos de un bloque de tarjetas como **una sola galería**: al ampliar
+ * una se puede pasar a las demás del bloque con ‹ ›, en el mismo orden en
+ * que se ven. Sólo entran las fotos reales.
+ */
+export interface PhotoGallery {
+  readonly items: readonly ViewerDocument[];
+  /** Posición de cada persona con foto dentro de `items`. */
+  readonly at: ReadonlyMap<PersonId, number>;
+}
+
+export function photoGallery(cards: readonly PersonCard[]): PhotoGallery {
+  const items: ViewerDocument[] = [];
+  const at = new Map<PersonId, number>();
+  for (const card of cards) {
+    const doc = photoDocument(card);
+    if (!doc) continue;
+    at.set(card.id, items.length);
+    items.push(doc);
+  }
+  return { items, at };
 }
 
 /** Pastor y pastor asistente, en ese orden: las tarjetas destacadas. */

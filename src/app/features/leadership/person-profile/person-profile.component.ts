@@ -18,14 +18,13 @@ import {
   ServiceArea,
   coServants,
 } from '../../../core/leadership.config';
-import { PLACEHOLDER_STORIES, PERSON_STORIES, storyOf } from '../../../core/leadership-stories.config';
+import { hasNarrative, storyOf } from '../../../core/leadership-profiles.config';
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { PERSON_CARDS, PersonCard, cardOf, servicePostings } from '../leadership.view';
+import { PROFILE_CARDS, PersonCard, cardOf, photoDocument, servicePostings } from '../leadership.view';
 import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../../shared/viewer/viewable.directive';
 import { PersonAvatarComponent } from '../person-avatar/person-avatar.component';
-import { photoSource, photoThumb } from '../person-photo';
 
 /** Puestos de una persona en un área, para la columna «Unde slujește». */
 interface AreaPostings {
@@ -45,7 +44,19 @@ const COMMITTEE = new Set<PersonId>(CHURCH_COMMITTEE);
  * explicaciones) y datos a la derecha (dónde sirve —cada departamento lleva
  * al directorio filtrado— y con quién); anterior / siguiente al pie.
  *
- * La guarda `personExists` garantiza que el id existe antes de pintar.
+ * Revisión del 07/10/2026: el perfil es **opcional** (`PERSON_PROFILES`).
+ * Hay dos clases de página y la plantilla elige la composición:
+ *
+ *  · **Con biografía** → relato a la izquierda y datos en una columna
+ *    pegajosa a la derecha (lo de siempre).
+ *  · **Sin biografía** → no queda un hueco donde iría el relato: los datos
+ *    (dónde sirve y con quién) pasan a ocupar el ancho, en dos paneles
+ *    parejos con rejillas que se reparten en columnas.
+ *
+ * Con quién sirve enlaza sólo a quien tiene perfil; anterior / siguiente
+ * recorre sólo los perfiles habilitados.
+ *
+ * La guarda `personHasProfile` garantiza que el id tiene perfil antes de pintar.
  * Cambiar de persona con anterior / siguiente reutiliza el componente (sólo
  * cambia el parámetro); el router ya devuelve el scroll arriba.
  */
@@ -79,18 +90,13 @@ export class PersonProfileComponent {
   protected readonly person = computed(() => PEOPLE_INDEX.get(this.id()) as PersonProfile);
   protected readonly card = computed(() => cardOf(this.id()));
 
-  protected readonly story = computed(() => storyOf(this.person()));
+  protected readonly story = computed(() => storyOf(this.id()));
+
+  /** ¿Hay relato que leer (biografía, explicaciones o versículo)? Decide la composición. */
+  protected readonly hasStory = computed(() => hasNarrative(this.story()));
 
   /** Retrato para el visor; sin foto real (silueta de maqueta), nada. */
-  protected readonly photoItem = computed<ViewerDocument | null>(() => {
-    const { photo, name } = this.card();
-    if (!photo) return null;
-    const { src, srcset } = photoSource(photo, null);
-    return { src, srcset, thumb: photoThumb(photo), name, alt: name };
-  });
-
-  /** ¿El texto que se ve es de maqueta? (aviso discreto al pie del relato). */
-  protected readonly isPlaceholder = computed(() => PLACEHOLDER_STORIES && !PERSON_STORIES[this.id()]);
+  protected readonly photoItem = computed<ViewerDocument | null>(() => photoDocument(this.card()));
 
   /** Cargos que no repite el antetítulo (que ya dice «Pastor» o «Pastor asistent»). */
   protected readonly otherTitles = computed(() =>
@@ -113,11 +119,17 @@ export class PersonProfileComponent {
     coServants(this.id()).map((peer) => cardOf(peer.id as PersonId)),
   );
 
-  /** Anterior y siguiente en el orden de la página (en bucle). */
-  protected readonly siblings = computed(() => {
-    const index = PERSON_CARDS.findIndex((card) => card.id === this.id());
-    const n = PERSON_CARDS.length;
-    return { prev: PERSON_CARDS[(index - 1 + n) % n], next: PERSON_CARDS[(index + 1) % n] };
+  /**
+   * Anterior y siguiente entre los perfiles habilitados, en el orden de la
+   * página y en bucle. Con un solo perfil no hay paginador; con dos, sólo
+   * «siguiente» (anterior y siguiente serían la misma persona).
+   */
+  protected readonly siblings = computed<{ prev: PersonCard | null; next: PersonCard } | null>(() => {
+    const n = PROFILE_CARDS.length;
+    const index = PROFILE_CARDS.findIndex((card) => card.id === this.id());
+    if (n < 2 || index < 0) return null;
+    const next = PROFILE_CARDS[(index + 1) % n];
+    return { prev: n > 2 ? PROFILE_CARDS[(index - 1 + n) % n] : null, next };
   });
 
   /** Enlace público del perfil, para copiar o compartir. */

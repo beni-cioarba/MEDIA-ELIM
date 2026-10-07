@@ -27,7 +27,7 @@ src/app/
   core/
     church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
     leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
-    leadership-stories.config.ts  Biografías de los perfiles `/conducere/<id>` (maqueta hasta que lleguen)
+    leadership-profiles.config.ts ⭐ Quién tiene perfil `/conducere/<id>` (`PERSON_PROFILES`) y su biografía (opcional)
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
     family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
@@ -115,7 +115,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
-| «Biografía / foto de alguien de la conducere»       | `core/leadership-stories.config.ts` / `photo` en `PEOPLE` — `docs/ai/20-content-i18n.md` |
+| «Biografía / foto de alguien de la conducere»       | `core/leadership-profiles.config.ts` / `photo` en `PEOPLE` — `docs/ai/20-content-i18n.md` |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
 | «Proyectar en la pantalla del templo» · «en dos pantallas a la vez» | `/media/control` → Pantallas → «Detectar pantallas» → «Proyectar» en cada una (nada de código; `docs/ai/30-presentation.md`) |

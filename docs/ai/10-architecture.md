@@ -47,7 +47,7 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'despre-noi'`      | `AboutComponent`       | Quiénes somos                   |
 | `'marturisirea-de-credinta'` | `CredoComponent` | Confesión de fe (30 artículos) |
 | `'conducere'`       | `LeadershipComponent`  | Estructura de liderazgo        |
-| `'conducere/:id'`   | `PersonProfileComponent` | Perfil propio de cada persona (noindex) |
+| `'conducere/:id'`   | `PersonProfileComponent` | Perfil propio, sólo quien lo tiene en `PERSON_PROFILES` |
 | `'media'`           | `StageComponent`       | Panel completo de la web: los bloques proyectables **menos anuncios y lectura bíblica**, que tienen sección propia (`WEB_PANEL_EXCLUDED`) |
 | `'media/anunturi'`  | redirect → `'anunturi'` | Los anuncios no son un bloque de la web |
 | `'media/:blockId'`  | `StageComponent`       | Un bloque con URL propia (`/media/citirea-bibliei`, `/media/galerie`…) |

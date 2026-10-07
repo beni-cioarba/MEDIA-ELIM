@@ -102,8 +102,8 @@ personas que coinciden, anuncia el resultado (`aria-live`) y se recalcula al
 cambiar de idioma; contador de departamentos por área.
 
 **Revisión del 05/10/2026 — índice + perfiles propios** (estado vigente).
-Cada persona tiene **su página** `/conducere/<id>` (`features/leadership/person-profile/`,
-chunk propio, `noindex` mientras el texto sea de maqueta).
+Quien lo quiere tiene **su página** `/conducere/<id>` (`features/leadership/person-profile/`,
+chunk propio). Ver «Perfiles opcionales» más abajo.
 
 *Diseño* (decisión firme del usuario: «simple y profesional, digno de una app
 escalable»; **sin dorados, brillos, tramas ni degradados**; compacto y
@@ -165,14 +165,45 @@ aprovechando el espacio para imágenes y textos):
   una página de detalle pone su nombre y la migaja lo añade como último eslabón.
   Pestaña y metadatos: `SeoService.setOverride`.
 - En el perfil, cada departamento enlaza al directorio filtrado (`?q=`).
-- Biografías: `core/leadership-stories.config.ts` → `PERSON_STORIES`
-  (`summary`, `bio[]`, `sections[]`, `verse`, `since`); sin entrada, texto de
-  maqueta por nivel mientras `PLACEHOLDER_STORIES` sea `true`.
+**Perfiles opcionales (07/10/2026).** El perfil propio ya no es de todos:
+sólo lo tiene quien lo quiere. Único control: `PERSON_PROFILES` en
+`core/leadership-profiles.config.ts` (hoy: Pavel Negrușier, Grigore Tomoiagă,
+Gabriel Daniel Cifor). Sin texto de relleno, salvo una excepción temporal: el de
+Pavel Negrușier lleva una biografía completa **de maqueta** (lorem ipsum, a
+petición del usuario, 07/10/2026) como muestra hasta que llegue la real.
+
+- **Clave presente** = tiene perfil. Valor `null` = **sin biografía** (aún no la
+  ha entregado); valor `PersonStory` = **con biografía** (`summary`, `bio[]`,
+  `sections[]`, `verse`, `since`; todo opcional, se pinta lo que haya).
+- `PersonCard.link` es `string[] | null`. Las plantillas pasan `null` tal cual a
+  `[routerLink]`: el `<a>` queda **sin `href`** (ni foco, ni clic, ni hover;
+  `lead-card` sólo reacciona con `[href]`). Una plantilla para los dos casos.
+- **Tarjetas con dos acciones, sin anidar controles** (07/10/2026): la tarjeta
+  es un `<article>`; la **foto** abre el visor (`[appViewable]`, para todos los
+  que tienen foto real) y el **nombre** es el enlace al perfil, estirado
+  (`lead-stretch`: su `::after` cubre la tarjeta; la foto va por encima con
+  `lead-above-stretch`). Hover y anillo de foco los pinta la tarjeta con
+  `:has()`. Aplica a destacadas, conducerea, comité y filas por personas.
+- Cómo se distingue quién se abre: tarjetas con la marca «Vezi profilul →» al
+  pie (alineada en la fila); filas del directorio con chevron; en la tabla por
+  departamentos, nombre navy con subrayado tenue (con perfil) o en color de
+  texto (sin él). La nota bajo «Conducerea» sólo sale si alguien del bloque
+  tiene perfil. Tarjetas destacadas: «Vezi profilul» sólo si lo hay.
+- Perfil con biografía: relato + columna lateral pegajosa. **Sin biografía**
+  (`layout--facts`): sin hueco; «Unde slujește» y «Slujește împreună cu» a todo
+  el ancho, parejos y en rejilla (`auto-fill`), crecen con los datos.
+- «Slujește împreună cu» enlaza sólo a compañeros con perfil. Anterior /
+  siguiente recorre sólo los perfiles (`PROFILE_CARDS`); con 2, sólo
+  «siguiente»; con 1, sin paginador.
+- Guarda `personHasProfile`: `/conducere/<id>` de alguien sin perfil (o
+  `/conducere#<id>` antiguo) → `/conducere?vista=persoane&q=<nombre>`, con
+  `replaceUrl`. Id inexistente → índice. La ruta ya no es `noindex`.
 
 | Quiero…                        | Hago                                                                       |
 | ------------------------------ | -------------------------------------------------------------------------- |
-| Poner la biografía de alguien  | Entrada en `PERSON_STORIES` (`leadership-stories.config.ts`)               |
-| Quitar todos los textos de prueba | `PLACEHOLDER_STORIES = false` (y quitar `noindex` de la ruta `conducere/:id`) |
+| Dar perfil a alguien           | `'<id>': null` en `PERSON_PROFILES` (`leadership-profiles.config.ts`)      |
+| Ponerle la biografía           | Cambiar su `null` por un `PersonStory`                                      |
+| Retirar un perfil              | Borrar su clave: los enlaces viejos llevan al directorio filtrado          |
 | Migas con el nombre en otra página de detalle | `BreadcrumbTailService.set(nombre)` y `set(null)` al destruirse |
 
 `Assignment.roles` es una lista: alguien puede ser responsable **y** director

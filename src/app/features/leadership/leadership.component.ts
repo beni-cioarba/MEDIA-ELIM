@@ -12,8 +12,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { LanguageService } from '../../core/services/language.service';
-import { storyOf } from '../../core/leadership-stories.config';
-import { PEOPLE_INDEX, PersonProfile } from '../../core/leadership.config';
+import { storyOf } from '../../core/leadership-profiles.config';
 import { citarArticulo } from '../credo/credo.data';
 import { HighlightPipe } from './highlight.pipe';
 import {
@@ -23,19 +22,19 @@ import {
   FEATURED_CARDS,
   LEADERSHIP_STATS,
   LEADER_CARDS,
+  PEOPLE_VIEW_PARAM,
   PERSON_CARDS,
   PersonCard,
   normalize,
+  photoGallery,
   splitInTwo,
 } from './leadership.view';
+import { ViewableDirective } from '../../shared/viewer/viewable.directive';
 import { PersonAvatarComponent } from './person-avatar/person-avatar.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 /** Vista del directorio: por departamentos (índice) o por personas (tarjetas). */
 type DirectoryView = 'areas' | 'people';
-
-/** Valor de `?vista=` para la vista por personas (la otra es la de defecto). */
-const PEOPLE_VIEW_PARAM = 'persoane';
 
 /**
  * «Conducere» — índice del organigrama.
@@ -58,7 +57,7 @@ const PEOPLE_VIEW_PARAM = 'persoane';
 @Component({
   selector: 'app-leadership',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TranslatePipe, IconComponent, PersonAvatarComponent, HighlightPipe],
+  imports: [RouterLink, TranslatePipe, IconComponent, PersonAvatarComponent, HighlightPipe, ViewableDirective],
   templateUrl: './leadership.component.html',
   styleUrl: './leadership.component.scss',
   host: { '(document:keydown)': 'onShortcut($event)' },
@@ -68,14 +67,31 @@ export class LeadershipComponent {
   private readonly language = inject(LanguageService);
   private readonly location = inject(Location);
 
-  /** Pastor y pastor asistente, con su resumen (texto real o de maqueta). */
+  /** Pastor y pastor asistente, con su resumen si lo han entregado. */
   protected readonly featured = FEATURED_CARDS.map((card) => ({
     card,
-    summary: storyOf(PEOPLE_INDEX.get(card.id) as PersonProfile)?.summary ?? null,
+    summary: storyOf(card.id)?.summary ?? null,
   }));
 
   protected readonly leaders = LEADER_CARDS;
   protected readonly committee = COMMITTEE_CARDS;
+
+  /**
+   * ¿Hay en el bloque alguien con perfil? Sólo entonces se explica la marca
+   * «Vezi profilul» (si nadie la lleva, la nota sobra).
+   */
+  protected readonly leadersHaveProfiles = LEADER_CARDS.some((card) => card.link);
+
+  /**
+   * Fotos de cada bloque como galería del visor. Cualquier foto real se
+   * amplía al pulsarla, tenga la persona perfil o no; dentro del visor se
+   * pasa a las demás del mismo bloque.
+   */
+  protected readonly galleries = {
+    featured: photoGallery(FEATURED_CARDS),
+    leaders: photoGallery(LEADER_CARDS),
+    committee: photoGallery(COMMITTEE_CARDS),
+  } as const;
   protected readonly stats = LEADERSHIP_STATS;
 
   // ------------------------------------------------------------------
@@ -147,6 +163,9 @@ export class LeadershipComponent {
       (card) => card.searchName.includes(q) || card.departmentKeys.some((key) => labels.get(key)?.includes(q)),
     );
   });
+
+  /** Galería de la vista por personas: sigue al filtro de búsqueda. */
+  protected readonly peopleGallery = computed(() => photoGallery(this.people()));
 
   /** Resultados de la vista activa (aviso de resultados y vacío). */
   protected readonly resultCount = computed(() =>

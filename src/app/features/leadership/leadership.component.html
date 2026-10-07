@@ -1,7 +1,15 @@
 <!--
   «Conducere» (revisión del 05/10/2026, tercera): diseño sobrio y compacto.
-  Fotos a sangre en las tarjetas; navy como único acento. Cada persona enlaza
-  a su perfil (`/conducere/<id>`). Ver el componente.
+  Fotos a sangre en las tarjetas; navy como único acento.
+
+  Dos acciones por tarjeta, sin anidar controles (07/10/2026):
+   · La **foto** abre el visor (`[appViewable]`) para todos los que tienen
+     foto real, con perfil o sin él; en el visor se pasa a las demás fotos
+     del bloque. La silueta de maqueta no se amplía.
+   · El **nombre** es el enlace al perfil (`/conducere/<id>`) y se «estira»
+     (`lead-stretch`) para cubrir el resto de la tarjeta. Sólo lo es para
+     quien tiene perfil (`PERSON_PROFILES`): con `[routerLink]="null"` el
+     `<a>` queda sin `href`, como texto. Su tarjeta lleva «Vezi profilul».
 -->
 <div class="page">
   <!-- ================= Cabecera ================= -->
@@ -37,13 +45,18 @@
   <section class="featured" aria-labelledby="featured-title">
     <h2 class="u-sr-only" id="featured-title">{{ 'leadership.pastoral.title' | translate }}</h2>
     @for (item of featured; track item.card.id) {
-      <a class="feature" [class.feature--pastor]="item.card.tier === 'pastor'" [routerLink]="item.card.link">
-        <span class="feature__photo">
+      <article class="feature" [class.feature--pastor]="item.card.tier === 'pastor'">
+        <div
+          class="feature__photo"
+          [appViewable]="galleries.featured.items"
+          [appViewableIndex]="galleries.featured.at.get(item.card.id) ?? 0"
+          [appViewableDisabled]="!item.card.photo"
+        >
           <app-person-avatar slot="card" [photo]="item.card.photo" sizes="(max-width: 860px) 8rem, 12rem" />
-        </span>
-        <span class="feature__body">
+        </div>
+        <div class="feature__body">
           <span class="feature__kicker">{{ 'leadership.tier.' + item.card.tier | translate }}</span>
-          <span class="feature__name">{{ item.card.name }}</span>
+          <a class="feature__name lead-stretch" [routerLink]="item.card.link">{{ item.card.name }}</a>
           @if (item.summary) {
             <span class="feature__summary">{{ item.summary }}</span>
           }
@@ -51,13 +64,15 @@
             <span>
               {{ (item.card.serviceCount === 1 ? 'leadership.serves_one' : 'leadership.serves_other') | translate: { n: item.card.serviceCount } }}
             </span>
-            <span class="feature__cta">
-              {{ 'leadership.view_profile' | translate }}
-              <app-icon name="arrow-right" />
-            </span>
+            @if (item.card.link) {
+              <span class="feature__cta" aria-hidden="true">
+                {{ 'leadership.view_profile' | translate }}
+                <app-icon name="arrow-right" />
+              </span>
+            }
           </span>
-        </span>
-      </a>
+        </div>
+      </article>
     }
   </section>
 
@@ -67,25 +82,38 @@
   <section aria-labelledby="leaders-title">
     <div class="head">
       <h2 class="head__title" id="leaders-title">{{ 'leadership.leaders.title' | translate }}</h2>
-      <p class="head__sub">{{ 'leadership.hint' | translate }}</p>
+      @if (leadersHaveProfiles) {
+        <p class="head__sub">{{ 'leadership.hint' | translate }}</p>
+      }
     </div>
     <div class="tiles-wrap">
     <ul class="tiles" role="list">
       @for (person of leaders; track person.id) {
         <li>
-          <a class="tile" [routerLink]="person.link">
-            <span class="tile__photo">
+          <article class="tile">
+            <div
+              class="tile__photo"
+              [appViewable]="galleries.leaders.items"
+              [appViewableIndex]="galleries.leaders.at.get(person.id) ?? 0"
+              [appViewableDisabled]="!person.photo"
+            >
               <app-person-avatar slot="card" [photo]="person.photo" sizes="(max-width: 860px) 33vw, 12rem" />
-            </span>
-            <span class="tile__body">
-              <span class="tile__name">{{ person.name }}</span>
+            </div>
+            <div class="tile__body">
+              <a class="tile__name lead-stretch" [routerLink]="person.link">{{ person.name }}</a>
               <span class="tile__titles">
                 @for (title of person.titles; track title; let last = $last) {
                   {{ 'leadership.titles.' + title | translate }}{{ last ? '' : ' · ' }}
                 }
               </span>
-            </span>
-          </a>
+              @if (person.link) {
+                <span class="tile__more" aria-hidden="true">
+                  {{ 'leadership.view_profile' | translate }}
+                  <app-icon name="arrow-right" />
+                </span>
+              }
+            </div>
+          </article>
         </li>
       }
     </ul>
@@ -119,19 +147,30 @@
     <ul class="tiles tiles--compact" role="list">
       @for (person of committee; track person.id) {
         <li>
-          <a class="tile" [routerLink]="person.link">
-            <span class="tile__photo">
+          <article class="tile">
+            <div
+              class="tile__photo"
+              [appViewable]="galleries.committee.items"
+              [appViewableIndex]="galleries.committee.at.get(person.id) ?? 0"
+              [appViewableDisabled]="!person.photo"
+            >
               <app-person-avatar slot="card" [photo]="person.photo" sizes="9rem" />
-            </span>
-            <span class="tile__body">
-              <span class="tile__name">{{ person.name }}</span>
+            </div>
+            <div class="tile__body">
+              <a class="tile__name lead-stretch" [routerLink]="person.link">{{ person.name }}</a>
               <span class="tile__titles">
                 @for (title of person.titles; track title; let last = $last) {
                   {{ 'leadership.titles.' + title | translate }}{{ last ? '' : ' · ' }}
                 }
               </span>
-            </span>
-          </a>
+              @if (person.link) {
+                <span class="tile__more" aria-hidden="true">
+                  {{ 'leadership.view_profile' | translate }}
+                  <app-icon name="arrow-right" />
+                </span>
+              }
+            </div>
+          </article>
         </li>
       }
     </ul>
@@ -215,14 +254,19 @@
       <ul class="people" role="list">
         @for (person of people(); track person.id) {
           <li>
-            <a class="row" [routerLink]="person.link">
-              <span class="row__photo">
+            <div class="row">
+              <div
+                class="row__photo"
+                [appViewable]="peopleGallery().items"
+                [appViewableIndex]="peopleGallery().at.get(person.id) ?? 0"
+                [appViewableDisabled]="!person.photo"
+              >
                 <app-person-avatar [photo]="person.photo" sizes="3.2rem" />
-              </span>
+              </div>
               <span class="row__text">
-                <span class="row__name">
+                <a class="row__name lead-stretch" [routerLink]="person.link">
                   @for (part of person.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
-                </span>
+                </a>
                 <span class="row__sub">
                   @if (person.titles[0]; as title) {
                     {{ 'leadership.titles.' + title | translate }}
@@ -238,7 +282,10 @@
                   >{{ person.serviceCount }}</span
                 >
               }
-            </a>
+              @if (person.link) {
+                <app-icon class="row__go" name="chevron-right" />
+              }
+            </div>
           </li>
         }
       </ul>

@@ -102,6 +102,9 @@
   }
 }
 
+// Enlace estirado de las tarjetas (nombre → perfil); ver el mixin.
+@include lead-stretch;
+
 // ---------------------------------------------------------------------
 // Pastor + pastor asistente
 // ---------------------------------------------------------------------
@@ -126,6 +129,7 @@
 
 .feature__photo {
   @include lead-photo-fill;
+  @include lead-above-stretch;
 
   aspect-ratio: 4 / 5;
 }
@@ -190,13 +194,14 @@
   border-color: var(--c-primary);
   background: var(--c-primary);
 
-  &:hover {
+  @include lead-card-hover {
     border-color: var(--c-primary-deep);
     background: var(--c-primary-deep);
   }
 
   // Sobre navy el anillo navy no se ve: foco en blanco con halo navy.
-  &:focus-visible {
+  &:focus-visible,
+  &:has(.lead-stretch:focus-visible) {
     outline-color: var(--c-on-primary);
     box-shadow: 0 0 0 4px var(--c-primary);
   }
@@ -296,13 +301,14 @@
 
 .tile__photo {
   @include lead-photo-fill;
+  @include lead-above-stretch;
 
   aspect-ratio: 4 / 5;
 }
 
 .tile__body {
   display: grid;
-  align-content: start;
+  grid-template-rows: auto auto 1fr;
   gap: 0.1rem;
   padding: 0.55rem 0.7rem 0.65rem;
 }
@@ -319,6 +325,33 @@
   font-size: 0.75rem;
   line-height: 1.35;
   color: var(--c-muted);
+}
+
+// Marca de «tiene perfil»: al pie de la tarjeta (fila 1fr), así en una fila
+// de tarjetas las marcas quedan alineadas aunque los cargos ocupen 1 o 2
+// líneas. Es lo que distingue, sin leer nada más, qué tarjetas se abren.
+.tile__more {
+  display: inline-flex;
+  align-self: end;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--c-primary);
+
+  app-icon {
+    font-size: 0.9rem;
+    transition: translate 140ms ease;
+
+    @include motion-reduce {
+      transition: none;
+    }
+  }
+}
+
+.tile:has(.lead-stretch[href]:hover) .tile__more app-icon {
+  translate: 2px 0;
 }
 
 // Fundamento (art. 17): una línea de contexto.
@@ -653,12 +686,23 @@
   color: inherit;
   text-decoration: none;
 
-  &:hover .who__name {
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
   @include lead-focus(2px);
+}
+
+// Con perfil: subrayado tenue siempre (se ve que se abre), pleno al pasar.
+// Sin perfil: nombre en color de texto, sin subrayado: no promete un clic.
+.who[href] .who__name {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--c-primary) 30%, transparent);
+  text-underline-offset: 3px;
+}
+
+.who[href]:hover .who__name {
+  text-decoration-color: currentColor;
+}
+
+.who:not([href]) .who__name {
+  color: var(--c-text);
 }
 
 // Miniatura en retrato 4:5 (no círculo: el círculo recorta la foto).
@@ -698,7 +742,7 @@
   @include lead-card;
 
   display: grid;
-  grid-template-columns: 3.2rem minmax(0, 1fr) auto;
+  grid-template-columns: 3.2rem minmax(0, 1fr) auto auto;
   align-items: center;
   height: 100%;
   overflow: hidden;
@@ -707,6 +751,13 @@
 // Foto entera (4:5): marca el alto de la fila.
 .row__photo {
   @include lead-photo-fill;
+  @include lead-above-stretch;
+
+  // El control flotante del visor no cabe en 3,2 rem: el cursor de lupa y el
+  // anillo de foco ya invitan (mismo criterio que la agenda del escenario).
+  ::ng-deep app-viewable-badge {
+    display: none;
+  }
 
   align-self: start;
   aspect-ratio: 4 / 5;
@@ -734,6 +785,17 @@
   color: var(--c-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// Flecha de «tiene perfil», en el borde derecho de la fila.
+.row__go {
+  margin-inline-end: 0.6rem;
+  font-size: 1.1rem;
+  color: var(--c-primary);
+}
+
+.row__count + .row__go {
+  margin-inline-start: -0.4rem;
 }
 
 .row__count {

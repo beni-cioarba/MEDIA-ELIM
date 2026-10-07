@@ -1,6 +1,8 @@
 <!--
-  Perfil de una persona del organigrama (`/conducere/<id>`). Sobrio y
-  compacto: foto a sangre y entera (4:5) en la cabecera; el pastor en navy liso.
+  Perfil de una persona del organigrama (`/conducere/<id>`), sólo para
+  quien lo tiene habilitado (`PERSON_PROFILES`). Sobrio y compacto: foto a
+  sangre y entera (4:5) en la cabecera; el pastor en navy liso. Dos
+  composiciones del cuerpo: con biografía y sin ella (ver el componente).
 -->
 <article class="profile">
   <!-- ================= Cabecera ================= -->
@@ -63,25 +65,32 @@
     </div>
   </header>
 
-  <!-- ================= Cuerpo: relato + datos ================= -->
-  <div class="layout">
-    <div class="main">
-      @if (story(); as s) {
-        <section class="panel" aria-labelledby="bio-title">
-          <h2 class="panel__title" id="bio-title">{{ 'leadership.profile.bio' | translate }}</h2>
-          <div class="prose">
-            @for (paragraph of s.bio; track $index) {
-              <p>{{ paragraph }}</p>
+  <!-- ================= Cuerpo =================
+       Con biografía: relato a la izquierda + datos a la derecha.
+       Sin biografía: sólo los datos, repartidos a todo el ancho
+       (`layout--facts`); nunca un hueco donde iría el relato. -->
+  <div class="layout" [class.layout--facts]="!hasStory()">
+    @if (hasStory() && story(); as s) {
+      <div class="main">
+        @if (s.bio?.length || s.verse) {
+          <section class="panel" aria-labelledby="bio-title">
+            <h2 class="panel__title" id="bio-title">{{ 'leadership.profile.bio' | translate }}</h2>
+            @if (s.bio?.length) {
+              <div class="prose">
+                @for (paragraph of s.bio; track $index) {
+                  <p>{{ paragraph }}</p>
+                }
+              </div>
             }
-          </div>
 
-          @if (s.verse; as verse) {
-            <figure class="verse">
-              <blockquote class="verse__text">{{ verse.text }}</blockquote>
-              <figcaption class="verse__ref">{{ verse.ref }}</figcaption>
-            </figure>
-          }
-        </section>
+            @if (s.verse; as verse) {
+              <figure class="verse" [class.verse--alone]="!s.bio?.length">
+                <blockquote class="verse__text">{{ verse.text }}</blockquote>
+                <figcaption class="verse__ref">{{ verse.ref }}</figcaption>
+              </figure>
+            }
+          </section>
+        }
 
         @if (s.sections?.length) {
           <section class="panel" aria-labelledby="about-title">
@@ -96,12 +105,8 @@
             </div>
           </section>
         }
-
-        @if (isPlaceholder()) {
-          <p class="draft">{{ 'leadership.profile.placeholder' | translate }}</p>
-        }
-      }
-    </div>
+      </div>
+    }
 
     <aside class="side">
       <!-- Dónde sirve, por áreas. Cada departamento abre el directorio
@@ -142,7 +147,8 @@
         }
       </section>
 
-      <!-- Con quién comparte departamento. -->
+      <!-- Con quién comparte departamento. Enlaza sólo a quien tiene perfil
+           (`peer.link` nulo → sin `href`, la fila es informativa). -->
       @if (peers().length) {
         <section class="panel" aria-labelledby="peers-title">
           <h2 class="panel__title" id="peers-title">{{ 'leadership.profile.peers' | translate }}</h2>
@@ -163,21 +169,27 @@
     </aside>
   </div>
 
-  <!-- ================= Anterior / siguiente ================= -->
-  <nav class="pager" [attr.aria-label]="'leadership.profile.pager' | translate">
-    <a class="pager__link" [routerLink]="siblings().prev.link" rel="prev">
-      <app-icon name="chevron-left" />
-      <span class="pager__text">
-        <span class="pager__dir">{{ 'leadership.profile.prev' | translate }}</span>
-        <span class="pager__name">{{ siblings().prev.name }}</span>
-      </span>
-    </a>
-    <a class="pager__link pager__link--next" [routerLink]="siblings().next.link" rel="next">
-      <span class="pager__text">
-        <span class="pager__dir">{{ 'leadership.profile.next' | translate }}</span>
-        <span class="pager__name">{{ siblings().next.name }}</span>
-      </span>
-      <app-icon name="chevron-right" />
-    </a>
-  </nav>
+  <!-- ================= Anterior / siguiente =================
+       Sólo entre perfiles habilitados. Con dos, sólo «siguiente» (a la
+       derecha); con uno, nada. -->
+  @if (siblings(); as nav) {
+    <nav class="pager" [attr.aria-label]="'leadership.profile.pager' | translate">
+      @if (nav.prev; as prev) {
+        <a class="pager__link" [routerLink]="prev.link" rel="prev">
+          <app-icon name="chevron-left" />
+          <span class="pager__text">
+            <span class="pager__dir">{{ 'leadership.profile.prev' | translate }}</span>
+            <span class="pager__name">{{ prev.name }}</span>
+          </span>
+        </a>
+      }
+      <a class="pager__link pager__link--next" [routerLink]="nav.next.link" rel="next">
+        <span class="pager__text">
+          <span class="pager__dir">{{ 'leadership.profile.next' | translate }}</span>
+          <span class="pager__name">{{ nav.next.name }}</span>
+        </span>
+        <app-icon name="chevron-right" />
+      </a>
+    </nav>
+  }
 </article>

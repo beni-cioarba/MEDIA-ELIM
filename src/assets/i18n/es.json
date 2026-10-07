@@ -1081,7 +1081,7 @@
       "ref": "Art. {{n}}",
       "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
     },
-    "hint": "Pulsa sobre cualquiera para ver su perfil completo.",
+    "hint": "Las tarjetas con «Ver perfil» abren la página de esa persona.",
     "structure": {
       "title": "Estructura de liderazgo",
       "subtitle": "Los oficios de gobierno reconocidos por la confesión de fe, a los que se accede por la ordenación."
@@ -1256,7 +1256,6 @@
       "pager": "Otros perfiles",
       "prev": "Anterior",
       "next": "Siguiente",
-      "placeholder": "Texto de prueba: la biografía real se añadirá pronto.",
       "fact_ministries_one": "servicio",
       "fact_ministries_other": "servicios",
       "fact_areas_one": "área",
