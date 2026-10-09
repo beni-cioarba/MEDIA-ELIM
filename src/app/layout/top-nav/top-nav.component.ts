@@ -14,6 +14,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
+import { DepartmentsAsideComponent } from './departments-aside.component';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { NavItem, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
@@ -69,6 +70,7 @@ import { FamilyPhotoComponent } from '../../features/family-prayer/family-photo/
         BrandLogoComponent,
         CardCarouselComponent,
         FamilyPhotoComponent,
+        DepartmentsAsideComponent,
     ],
     templateUrl: './top-nav.component.html',
     styleUrl: './top-nav.component.scss'
@@ -110,6 +112,8 @@ export class TopNavComponent {
 
   /** Destino de la tira de álbumes. */
   protected readonly galleryPath = blockPath('gallery');
+
+  protected readonly departmentsPath = `/${APP_PATHS.departments}`;
   protected readonly weeklyPath = blockPath('weekly');
   protected readonly upcomingPath = blockPath('upcoming');
   protected readonly biblePath = blockPath('bible');
@@ -195,7 +199,7 @@ export class TopNavComponent {
    * ese grupo (cuándo y dónde). Un grupo futuro sin destacado sigue siendo
    * válido: el panel cae solo a una rejilla de enlaces a todo el ancho.
    */
-  protected readonly asideKind = computed<'media' | 'program' | 'about' | null>(() => {
+  protected readonly asideKind = computed<'media' | 'program' | 'about' | 'departments' | null>(() => {
     const grupo = this.openGroup();
     switch (grupo?.id) {
       case 'media':
@@ -204,6 +208,8 @@ export class TopNavComponent {
         return 'program';
       case 'about':
         return 'about';
+      case 'departments':
+        return 'departments';
       default:
         return null;
     }

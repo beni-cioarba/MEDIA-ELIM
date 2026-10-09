@@ -10,7 +10,7 @@
     <nav class="nav__desktop u-desktop-only" [attr.aria-label]="'nav.primary' | translate">
       <ul class="nav__list">
         @for (item of items; track item.id) {
-          <li class="nav__item">
+          <li class="nav__item" [class.nav__item--home]="item.id === 'home'">
             @if (isGroup(item)) {
               <button
                 type="button"
@@ -288,6 +288,26 @@
                       </app-card-carousel>
                     </div>
                   }
+                }
+              }
+
+              @case ('departments') {
+                <!-- Los departamentos con su cara: una miniatura por cada uno
+                     (la foto, o el icono sobre navy si no la tiene). -->
+                <div class="nav__aside-head">
+                  <span class="nav__aside-title" id="nav-aside-title">
+                    {{ 'departments.home.eyebrow' | translate }}
+                  </span>
+                  <a class="nav__aside-all" [routerLink]="departmentsPath" (click)="ui.closeAll()">
+                    {{ 'home.board.all' | translate }}
+                  </a>
+                </div>
+                <!-- Diferido: plantilla, estilos y datos se descargan al abrir el
+                     panel (precargados en reposo), no en el arranque. -->
+                @defer (prefetch on idle) {
+                  <app-departments-aside />
+                } @placeholder {
+                  <div class="nav__depts-ph" aria-hidden="true"></div>
                 }
               }
 

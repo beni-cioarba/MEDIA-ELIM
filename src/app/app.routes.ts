@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Route, Router, Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
-import { APP_PATHS } from './core/navigation/app-paths';
+import { APP_PATHS, DEPARTMENT_SLUGS, DepartmentId } from './core/navigation/app-paths';
 import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
 
 /**
@@ -17,6 +17,26 @@ function navHubRoute(path: string, group: string): Route {
     data: {
       navGroup: group,
       seo: { titleKey: `nav.${group}`, descriptionKey: `nav.${group}_desc` },
+    },
+  };
+}
+
+/**
+ * Página de un departamento (`/departamente/<slug>`). Una ruta por
+ * departamento —no `:slug`— para que cada una lleve su título y su
+ * descripción SEO; el componente y el chunk son el mismo para todas.
+ * Lee `data.department` (`DEPARTMENT_ROUTE_KEY` en el componente).
+ */
+function departmentRoute(id: DepartmentId): Route {
+  return {
+    path: `${APP_PATHS.departments}/${DEPARTMENT_SLUGS[id]}`,
+    loadComponent: () =>
+      import('./features/departments/department-page/department-page.component').then(
+        (m) => m.DepartmentPageComponent,
+      ),
+    data: {
+      department: id,
+      seo: { titleKey: `departments.${id}.name`, descriptionKey: `departments.${id}.tagline` },
     },
   };
 }
@@ -73,6 +93,18 @@ export const APP_ROUTES: Routes = [
       navHubRoute(APP_PATHS.churchHub, 'about'),
       navHubRoute(APP_PATHS.programHub, 'program'),
       navHubRoute(APP_PATHS.mediaHub, 'media'),
+      {
+        // Departamente: portada propia (mosaico), no la portada genérica.
+        path: APP_PATHS.departments,
+        loadComponent: () =>
+          import('./features/departments/departments-home/departments-home.component').then(
+            (m) => m.DepartmentsHomeComponent,
+          ),
+        data: {
+          seo: { titleKey: 'nav.departments', descriptionKey: 'nav.departments_desc' },
+        },
+      },
+      ...(Object.keys(DEPARTMENT_SLUGS) as DepartmentId[]).map(departmentRoute),
       {
         path: APP_PATHS.about,
         loadComponent: () =>

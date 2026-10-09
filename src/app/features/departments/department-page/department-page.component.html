@@ -1,0 +1,232 @@
+@if (dept(); as d) {
+  @let base = 'departments.' + d.id;
+  <article class="dept" aria-labelledby="dept-title">
+    <!-- ── Portada ─────────────────────────────────────────────────────── -->
+    <header class="hero" [class.hero--plain]="!d.cover">
+      @if (d.cover; as c) {
+        <img
+          class="hero__img"
+          [src]="c.image"
+          [attr.srcset]="c.thumb + ' 480w, ' + c.medium + ' 960w, ' + c.image + ' 1600w'"
+          sizes="100vw"
+          [style.object-position]="coverFocus()"
+          alt=""
+          fetchpriority="high"
+          decoding="async"
+        />
+      } @else {
+        <app-icon class="hero__mark" [name]="d.icon" />
+      }
+      <div class="hero__veil" aria-hidden="true"></div>
+
+      <div class="hero__inner">
+        <p class="hero__eyebrow">
+          <span class="hero__badge" aria-hidden="true"><app-icon [name]="d.icon" /></span>
+          {{ 'departments.eyebrow' | translate }}
+        </p>
+        <h1 class="hero__title" id="dept-title">{{ base + '.name' | translate }}</h1>
+        <p class="hero__tagline">{{ base + '.tagline' | translate }}</p>
+
+        <div class="hero__actions">
+          @if (hasMeal()) {
+            <a class="hero__cta" href="#masa" (click)="scrollTo($event, 'masa')">
+              <app-icon name="utensils" />
+              {{ 'departments.youth.meal.cta' | translate }}
+            </a>
+          }
+          @if (joinHref(); as href) {
+            <a
+              class="hero__ghost"
+              [class.hero__cta]="!hasMeal()"
+              [href]="href"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <app-icon name="whatsapp" />
+              {{ 'departments.join' | translate }}
+            </a>
+          }
+        </div>
+
+        <!-- Tira de datos: lo que se pregunta antes de entrar. Sólo lo que
+             hay: un departamento sin reunión fija no la inventa. -->
+        <ul class="facts" role="list">
+          @if (meeting(); as m) {
+            <li class="fact" [class.is-live]="meetsToday()">
+              <app-icon name="calendar" />
+              <span class="fact__text">
+                <span class="fact__label">{{ (meetsToday() ? 'nav_hub.today' : 'departments.meets') | translate }}</span>
+                <span class="fact__value">{{ m.dayLabel }} · {{ m.time }}</span>
+              </span>
+            </li>
+          }
+          @if (people().length > 0) {
+            <li class="fact">
+              <app-icon name="users" />
+              <span class="fact__text">
+                <span class="fact__label">{{ 'departments.leaders' | translate }}</span>
+                <span class="fact__value">{{ 'departments.people_count' | translate: { count: people().length } }}</span>
+              </span>
+            </li>
+          }
+          <li class="fact">
+            <app-icon name="sparkles" />
+            <span class="fact__text">
+              <span class="fact__label">{{ 'departments.activities' | translate }}</span>
+              <span class="fact__value">{{ 'departments.activities_count' | translate: { count: d.activities.length } }}</span>
+            </span>
+          </li>
+          @if (events()[0]; as ev) {
+            <li class="fact">
+              <app-icon name="megaphone" />
+              <span class="fact__text">
+                <span class="fact__label">{{ 'nav_hub.upcoming_next' | translate }}</span>
+                <span class="fact__value">{{ schedule.formatEventDateShort(ev.date) }} · {{ ev.title }}</span>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+    </header>
+
+    <app-dept-switcher [active]="d.id" />
+
+    <div class="dept__body">
+      <div class="dept__main">
+        <!-- ── Quiénes somos + pilares ─────────────────────────────────── -->
+        <section class="block" aria-labelledby="dept-about">
+          <h2 class="block__title" id="dept-about">{{ 'departments.about' | translate }}</h2>
+          <p class="block__lead">{{ base + '.intro' | translate }}</p>
+          <ol class="pillars" role="list">
+            @for (pillar of d.pillars; track pillar; let i = $index) {
+              <li class="pillar">
+                <span class="pillar__index" aria-hidden="true">{{ i + 1 < 10 ? '0' + (i + 1) : i + 1 }}</span>
+                <h3 class="pillar__title">{{ base + '.pillars.' + pillar + '.title' | translate }}</h3>
+                <p class="pillar__text">{{ base + '.pillars.' + pillar + '.text' | translate }}</p>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <!-- ── Módulos propios ──────────────────────────────────────────── -->
+        @for (module of d.modules; track module.kind) {
+          @switch (module.kind) {
+            @case ('youth-meal') {
+              <!-- El ancla vive fuera del @defer: así \`#masa\` (enlaces desde la
+                   portada y el botón de arriba) existe antes de cargar el bloque. -->
+              <div class="block__anchor" id="masa">
+                @defer (on viewport) {
+                  <app-youth-meal-block />
+                } @placeholder {
+                  <div class="block__ph" aria-hidden="true"></div>
+                }
+              </div>
+            }
+            @case ('events') {
+              @if (events().length > 0) {
+                <section class="block" aria-labelledby="dept-events">
+                  <div class="block__head">
+                    <h2 class="block__title" id="dept-events">{{ 'departments.events' | translate }}</h2>
+                    <a class="block__more" [routerLink]="upcomingPath">{{ 'home.board.all' | translate }}</a>
+                  </div>
+                  <ul class="events" role="list">
+                    @for (ev of events(); track ev.id + ev.date) {
+                      @let p = schedule.formatDayParts(ev.date);
+                      <li class="event">
+                        <span class="event__date" aria-hidden="true">
+                          <span class="event__day">{{ p.day }}</span>
+                          <span class="event__month">{{ p.month }}</span>
+                        </span>
+                        <span class="event__body">
+                          <span class="event__title">{{ ev.title }}</span>
+                          <span class="event__meta">{{ schedule.formatEventDate(ev.date) }} · {{ ev.time }}</span>
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+            }
+          }
+        }
+
+        <!-- ── Qué hacemos ──────────────────────────────────────────────── -->
+        <section class="block" aria-labelledby="dept-activities">
+          <h2 class="block__title" id="dept-activities">{{ 'departments.what_we_do' | translate }}</h2>
+          <ul class="acts" role="list">
+            @for (act of d.activities; track act.key) {
+              <li class="act">
+                <span class="act__icon" aria-hidden="true"><app-icon [name]="act.icon" /></span>
+                <span class="act__body">
+                  <span class="act__title">{{ base + '.activities.' + act.key + '.title' | translate }}</span>
+                  <span class="act__text">{{ base + '.activities.' + act.key + '.text' | translate }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+      </div>
+
+      <!-- ── Lateral ───────────────────────────────────────────────────── -->
+      <aside class="dept__aside" [attr.aria-label]="'departments.details' | translate">
+        @if (meeting(); as m) {
+          <a class="card card--meet" [class.is-live]="meetsToday()" [routerLink]="weeklyPath">
+            <span class="card__kicker">{{ 'departments.meets' | translate }}</span>
+            <span class="meet__when">{{ m.dayLabel }} · {{ m.time }}</span>
+            <span class="meet__what">{{ m.title }}</span>
+            <span class="card__link">
+              {{ 'nav.weekly' | translate }}
+              <app-icon name="arrow-right" />
+            </span>
+          </a>
+        }
+
+        @if (people().length > 0) {
+          <section class="card" aria-labelledby="dept-people">
+            <h2 class="card__kicker" id="dept-people">{{ 'departments.leaders' | translate }}</h2>
+            <ul class="people" role="list">
+              @for (person of people(); track person.id) {
+                <li>
+                  <a class="person" [routerLink]="person.link ?? leadershipLink">
+                    @if (person.photo; as src) {
+                      <img class="person__avatar" [src]="src" alt="" loading="lazy" decoding="async" width="40" height="50" />
+                    } @else {
+                      <span class="person__avatar person__avatar--initials" aria-hidden="true">{{ person.initials }}</span>
+                    }
+                    <span class="person__text">
+                      <span class="person__name">{{ person.name }}</span>
+                      @if (person.roles.length > 0) {
+                        <span class="person__role">
+                          @for (role of person.roles; track role; let last = $last) {
+                            {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
+                          }
+                        </span>
+                      }
+                    </span>
+                    <app-icon class="person__go" name="chevron-right" />
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        <figure class="card card--verse">
+          <blockquote class="verse__text">{{ base + '.verse.text' | translate }}</blockquote>
+          <figcaption class="verse__ref">{{ base + '.verse.ref' | translate }}</figcaption>
+        </figure>
+
+        <section class="card card--join" aria-labelledby="dept-join">
+          <h2 class="join__title" id="dept-join">{{ 'departments.join_title' | translate }}</h2>
+          <p class="join__text">{{ base + '.join' | translate }}</p>
+          @if (joinHref(); as href) {
+            <a class="join__cta" [href]="href" target="_blank" rel="noopener noreferrer">
+              <app-icon name="whatsapp" />
+              {{ 'departments.join' | translate }}
+            </a>
+          }
+        </section>
+      </aside>
+    </div>
+  </article>
+}

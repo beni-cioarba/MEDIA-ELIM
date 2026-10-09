@@ -37,6 +37,12 @@ export interface NavItem {
    * En móvil siguen dentro del cajón, donde no hay problema de espacio.
    */
   readonly cta?: 'live' | 'support';
+  /**
+   * Rótulo corto para la barra de pestañas del móvil (`nav.*`), cuando el
+   * normal no cabe en ~60 px («Departamente» → «Slujiri»). Sin él se usa
+   * `labelKey`.
+   */
+  readonly tabLabelKey?: string;
 }
 
 /** ¿La entrada abre un destino externo? */

@@ -66,4 +66,11 @@ export type IconName =
   | 'file'
   | 'file-text'
   | 'film'
-  | 'fit';
+  | 'fit'
+  | 'globe'
+  | 'hand-heart'
+  | 'mic-vocal'
+  | 'flame'
+  | 'sprout'
+  | 'utensils'
+  | 'layout-grid';

@@ -1,0 +1,90 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Piezas comunes del módulo Departamente (portada y páginas). Línea
+// propia, documentada en docs/ai/39-departments.md: navy y oro de la marca
+// con dos gestos «de producto tecnológico» medidos y contenidos:
+//  · una retícula de 1 px al 4 % sobre los fondos navy (se lee como
+//    textura, no como dibujo) que se desvanece hacia abajo;
+//  · un filete dorado de luz en el borde superior de las superficies navy.
+// =====================================================================
+
+/** Retícula fina sobre fondos navy. `$size` = lado de la celda. */
+@mixin tech-grid($size: 2rem, $alpha: 0.045) {
+  background-image:
+    linear-gradient(rgb(255 255 255 / #{$alpha}) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / #{$alpha}) 1px, transparent 1px);
+  background-size: $size $size;
+  mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.35) 70%, transparent 100%);
+}
+
+/** Filete dorado superior (requiere `position: relative` en el anfitrión). */
+@mixin gold-edge($inset: 14%) {
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline: $inset;
+    top: 0;
+    z-index: 2;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(212 175 55 / 0.8), transparent);
+    pointer-events: none;
+  }
+}
+
+/** Botón principal dorado sobre navy / foto. */
+@mixin cta-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.2rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 24px -8px rgb(212 175 55 / 0.6);
+  transition:
+    transform var(--mo-fast) var(--ea-standard),
+    box-shadow var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(3px);
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px -8px rgb(212 175 55 / 0.75);
+    }
+  }
+}
+
+/** Botón secundario de cristal sobre navy / foto. */
+@mixin cta-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: var(--r-pill);
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(3px);
+
+  @media (hover: hover) {
+    &:hover {
+      background: rgb(255 255 255 / 0.16);
+    }
+  }
+}

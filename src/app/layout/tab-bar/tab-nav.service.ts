@@ -21,16 +21,21 @@ export interface TabPeek {
  * (`SwipePeekComponent`): los tres tienen que saber **qué pestañas hay, cuál
  * está activa y cuál es la vecina**, y no deben poder discrepar.
  *
- * Las pestañas son **todo el primer nivel de `MAIN_NAV`** —también las dos
- * llamadas a la acción, «Donează» y «În direct»—, en su orden. Sin lista
- * propia: una entrada nueva en el menú aparece aquí sola.
+ * Las pestañas son **el primer nivel de `MAIN_NAV` sin las llamadas a la
+ * acción** («Donează» y «În direct»), en su orden. Sin lista propia: una
+ * entrada nueva en el menú aparece aquí sola. Las `cta` salieron el
+ * 09/10/2026 para dejar sitio a «Departamente» sin pasar de seis pestañas:
+ * «În direct» sigue en la cabecera del móvil (píldora) y las dos en el cajón
+ * y en el pie.
  */
 @Injectable({ providedIn: 'root' })
 export class TabNavService {
   private readonly router = inject(Router);
   private readonly navActive = inject(NavActiveService);
 
-  readonly tabs: readonly NavItem[] = MAIN_NAV.filter((item) => item.path !== undefined);
+  readonly tabs: readonly NavItem[] = MAIN_NAV.filter(
+    (item) => item.path !== undefined && item.cta === undefined,
+  );
 
   /** Pestaña del bloque en el que se está (`-1` = ninguna, p. ej. `/stil`). */
   readonly activeIndex = computed(() => {

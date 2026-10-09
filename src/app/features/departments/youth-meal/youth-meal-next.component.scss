@@ -1,0 +1,134 @@
+@use 'ds' as *;
+@use '../departments' as dept;
+
+:host {
+  display: block;
+}
+
+.strip {
+  --strip-live: color-mix(in srgb, var(--c-success) 62%, #fff);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto auto;
+  gap: var(--sp-4);
+  align-items: center;
+  padding: var(--sp-3) var(--sp-4);
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: linear-gradient(120deg, var(--c-primary-deep), var(--c-primary-darkest));
+  color: rgb(247 250 252 / 0.8);
+  text-decoration: none;
+  box-shadow: var(--e-2);
+
+  @include dept.gold-edge;
+  @include focus-ring(2px);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    @include dept.tech-grid(1.5rem, 0.04);
+    pointer-events: none;
+  }
+
+  @include until('sm') {
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    gap: var(--sp-3);
+    row-gap: var(--sp-2);
+  }
+}
+
+.strip__icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(212 175 55 / 0.45);
+  border-radius: var(--r-md);
+  background: rgb(212 175 55 / 0.1);
+  color: var(--c-gold);
+  font-size: 1.25rem;
+
+  @include until('sm') {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.strip__head {
+  display: grid;
+  min-width: 0;
+}
+
+.strip__kicker {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.strip__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: #fff;
+}
+
+.strip__turn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: var(--r-pill);
+  background: rgb(255 255 255 / 0.06);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+
+  &.is-today {
+    border-color: color-mix(in srgb, var(--strip-live) 55%, transparent);
+    background: color-mix(in srgb, var(--c-success) 26%, transparent);
+
+    .strip__when {
+      color: var(--strip-live);
+    }
+  }
+
+  @include until('sm') {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: space-between;
+    border-radius: var(--r-md);
+  }
+}
+
+.strip__turn--idle {
+  white-space: normal;
+}
+
+.strip__when {
+  font-weight: 800;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.strip__team {
+  font-weight: 700;
+  color: #fff;
+}
+
+.strip__times {
+  font-variant-numeric: tabular-nums;
+  color: rgb(247 250 252 / 0.65);
+}
+
+.strip__go {
+  color: var(--c-gold);
+  font-size: 1.2rem;
+
+  @include until('sm') {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}

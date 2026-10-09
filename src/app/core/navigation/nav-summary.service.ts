@@ -1,5 +1,6 @@
 import { Injectable, Signal, computed, inject } from '@angular/core';
 import { CHURCH_CONFIG } from '../church.config';
+import { departmentById } from '../departments.config';
 import { LEADERSHIP_OFFICES, SERVICE_AREAS } from '../leadership.config';
 import { AnnouncementsService } from '../services/announcements.service';
 import { BibleReadingService } from '../services/bible-reading.service';
@@ -227,7 +228,28 @@ export class NavSummaryService {
       }
 
       default:
-        return null;
+        return this.department(id);
     }
+  }
+
+  /**
+   * Departamentos (`dept-<id>`): su reunión semanal, si la tiene. Genérico:
+   * un departamento nuevo con `weeklyProgramId` lo da solo; marca sólo el día
+   * en que se reúne, como el culto de hoy.
+   */
+  private department(id: string): NavSummary | null {
+    const dept = id.startsWith('dept-') ? departmentById(id.slice('dept-'.length)) : null;
+    const meeting = dept?.weeklyProgramId
+      ? this.config.weeklyProgram.find((p) => p.id === dept.weeklyProgramId)
+      : undefined;
+    if (!meeting) return null;
+    const today = this.schedule.todayProgram()?.id === meeting.id;
+    return {
+      kicker: { key: today ? 'nav_hub.today' : 'departments.meets' },
+      value: `${meeting.dayLabel} · ${meeting.time}`,
+      meta: meeting.title,
+      badge: today ? meeting.time : undefined,
+      live: today,
+    };
   }
 }

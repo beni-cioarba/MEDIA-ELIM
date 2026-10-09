@@ -26,6 +26,8 @@ app.routes.ts
 └── '' → MainLayoutComponent          (eager: hace falta en el primer pintado)
     ├── ''            → HomeComponent        (lazy)
     ├── 'biserica' · 'program' · 'multimedia' → NavHubComponent (lazy, `data.navGroup`)
+    ├── 'departamente' → DepartmentsHomeComponent (portada propia; `39-departments.md`)
+    ├── 'departamente/<slug>' → DepartmentPageComponent (una ruta por departamento)
     ├── 'despre-noi'  → AboutComponent       (lazy)
     ├── 'marturisirea-de-credinta' → CredoComponent (lazy + resolve i18n)
     ├── 'conducere'   → LeadershipComponent  (lazy)
@@ -91,6 +93,11 @@ la ruta hija por coincidencia de prefijo.
   En móvil ambas siguen dentro del cajón, que recorre `MAIN_NAV` entero.
 - Separar navegación de acciones es lo que mantiene la lista en cinco enlaces:
   las entradas con `cta` **no** cuentan para el límite de ~7.
+- **Entre `lg` y `xl`** (09/10/2026, seis enlaces con Departamente): «Acasă»
+  sale de la barra (la marca ya lleva a la portada) y los grupos pierden el
+  chevron. Medido en castellano: a 1024 sobran 41 px antes de las acciones;
+  a 1280, con todo visible, 51. Un enlace más de primer nivel no cabe sin
+  replantear la barra.
 - Las etiquetas viven bajo `nav.*` y deben existir en los dos idiomas.
 
 ## Estado activo: `NavActiveService`
@@ -135,6 +142,9 @@ El panel tiene **dos zonas**, no dos filas:
     `prefers-reduced-motion` o en cuanto se toca). Equilibra el panel: la
     columna de seis enlaces medía ~390 px y el destacado ~270.
   - `about` → tarjeta de invitación (culto, dirección, cómo llegar).
+  - `departments` → miniaturas de los seis departamentos (3 × 2). Es
+    `app-departments-aside` con `@defer (prefetch on idle)`: dentro de la
+    cabecera (eager) costaba ~4 kB del arranque y pasaba el presupuesto.
 
 Por qué en dos zonas y no apilado: medido a 1512 px, con los enlaces arriba y
 el contenido abajo sobraban **568 px a la derecha de la fila de enlaces** y el
@@ -216,7 +226,15 @@ en el idioma activo)—. El icono va a color en reposo (oro / verde WhatsApp,
 32 px con ratón (margen negativo: la fila no crece) y ~41 px en táctil
 (`pointer: coarse`). Sin `whatsapp` en la configuración, sólo sale llamar.
 
-**Rejilla ≥ xl**: identidad y contacto con suelo `max-content`
+**Rejilla derivada del menú** (09/10/2026, cuarto grupo): `--footer-cols`
+= nº de grupos; identidad `minmax(max-content, 1fr)` + una columna
+`max-content` por grupo, y el contacto **siempre** en la fila de abajo a todo
+el ancho (identidad + cuatro grupos + contacto ya no caben ni a 1600). Entre
+`md` y `xl` la identidad sube a su fila, en horizontal; por debajo de `lg`
+los grupos van 2 × 2. Alto medido: ~404 px en escritorio, ~946 a 375
+(reserva del `@defer`: 25 rem / 58 rem). Lo de abajo es histórico.
+
+**Rejilla ≥ xl (29/09)**: identidad y contacto con suelo `max-content`
 (`minmax(max-content, 1fr)` / `minmax(max-content, 1.25fr)`). Con suelo fijo
 de 14,5 rem la identidad reservaba 41 px que no usaba y el contacto, con suelo
 0, se quedaba en 206 px a 1280: el correo real y la fila del teléfono (246 px)
@@ -230,12 +248,21 @@ se salían y el borde del pie los recortaba. A 1280 la rejilla suma ~1.191 de
 1024 px, el mismo corte que `.u-mobile-only`). La cabecera sigue igual; la
 barra la complementa. Fuera en presentación (`fullscreen`).
 
-**Qué pestañas**: todo el primer nivel de `MAIN_NAV`, también las `cta`
-(hoy siete: Acasă, Biserica, Program, Media, Contact, Donează, În direct),
-resueltas en `TabNavService`. Sin lista propia. Siete es el techo (regla 6 de
-`navigation.config.ts`): a 320 px cada pestaña mide ~43 px, así que por
-debajo de 380 sólo la activa lleva rótulo (patrón de Material 3) y puede
-ocupar el hueco de sus vecinas. «În direct» lleva un punto dorado latiendo.
+**Qué pestañas** (09/10/2026): el primer nivel de `MAIN_NAV` **sin las
+`cta`** (hoy seis: Acasă, Biserica, Program, Slujiri, Media, Contact),
+resueltas en `TabNavService`. Sin lista propia. «Donează» e «În direct»
+salieron para dejar sitio a Departamente sin pasar de seis: «În direct» sigue
+en la cabecera del móvil y las dos en el cajón y el pie. Seis es el techo
+(regla 6 de `navigation.config.ts`): a 320 px cada pestaña mide ~51 px, así
+que por debajo de 380 sólo la activa lleva rótulo (patrón de Material 3).
+Rótulo corto con `tabLabelKey` cuando el normal no cabe en ~60 px
+(«Departamente» → «Slujiri» / «Ministerios»).
+**Activa al estilo WhatsApp**: píldora ancha (≈ 64 × 30 px) detrás del icono,
+verde translúcido con contorno fino del mismo verde, icono en verde claro y
+rótulo blanco en negrita. Es el verde «hoy / ahora» de la portada
+(`color-mix(--c-success 62 %, #fff)`, ~7:1 sobre la cápsula); el halo dorado
+anterior competía con el filete de marca. La píldora sigue siendo una sola
+pieza que se desliza (`--i`, `--tab-drag`).
 Cápsula de 3,4 rem (`--tab-bar-height`) con 0,4 rem de margen.
 
 **Arrastrar entre pestañas** (`SwipeTabsDirective` como `hostDirectives` del

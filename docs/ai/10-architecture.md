@@ -55,6 +55,8 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'media/ecran'`     | `ProjectionComponent`  | **Ventana de proyección** / vista previa `?rol=preview` (fuera del shell) |
 | `'anunturi'`        | `AnnouncementsComponent` | Anuncios vigentes             |
 | `'anunturi/:id'`    | `AnnouncementsComponent` | Un anuncio (enlace compartible) |
+| `'departamente'`    | `DepartmentsHomeComponent` | Portada de Departamente (mosaico) — `39-departments.md` |
+| `'departamente/<slug>'` | `DepartmentPageComponent` | Una ruta por departamento (`departmentRoute()`), mismo chunk |
 | `'contact'`         | `ContactComponent`     | Formulario `mailto:`, datos y mapa |
 | `'doneaza'`         | `DonateComponent`      | Donativos y datos bancarios    |
 | `**`                | redirect a `''`        | GitHub Pages sirve 404.html    |

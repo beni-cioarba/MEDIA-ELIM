@@ -857,7 +857,16 @@
     "sections": "Secțiuni",
     "about_desc": "Cine suntem, ce credem și cum ne organizăm.",
     "program_desc": "Anunțuri, serviciile săptămânii, evenimente și rugăciune: tot ce urmează în biserică.",
-    "media_desc": "Panoul complet, fotografiile din viața bisericii și rețelele noastre."
+    "media_desc": "Panoul complet, fotografiile din viața bisericii și rețelele noastre.",
+    "departments": "Departamente",
+    "departments_tab": "Slujiri",
+    "departments_desc": "Tineret, fanfară, cor, misiune, ajutorare și evanghelizare: locurile în care biserica slujește.",
+    "dept_youth_desc": "Seara de vineri, masa și programarea ei",
+    "dept_brass_desc": "Lauda lui Dumnezeu în sunet de alamă",
+    "dept_choir_desc": "Cântări care poartă Cuvântul la inimă",
+    "dept_missions_desc": "Evanghelia dincolo de Arganda",
+    "dept_relief_desc": "Sprijin pentru cei aflați în nevoie",
+    "dept_evangelism_desc": "Vestea bună, spusă cu dragoste"
   },
   "nav_hub": {
     "today": "Astăzi",
@@ -1375,6 +1384,334 @@
       "audio": "Audio",
       "text": "Text",
       "file": "Fișier"
+    }
+  },
+  "departments": {
+    "switcher": "Acces rapid la departamente",
+    "all": "Toate",
+    "eyebrow": "Departament · Biserica Elim",
+    "about": "Cine suntem",
+    "what_we_do": "Ce facem",
+    "events": "Evenimente ale departamentului",
+    "details": "Detalii despre departament",
+    "meets": "Ne întâlnim",
+    "leaders": "Cine coordonează",
+    "people_count": "{{count}} slujitori",
+    "activities": "Activități",
+    "activities_count": "{{count}} direcții",
+    "join": "Vreau să mă implic",
+    "join_title": "Vrei să te implici?",
+    "join_message": "Bună ziua! Aș vrea să aflu cum mă pot implica în departamentul {{name}}.",
+    "join_message_any": "Bună ziua! Aș vrea să aflu cum mă pot implica într-unul dintre departamentele bisericii.",
+    "home": {
+      "eyebrow": "Slujire în Biserica Elim",
+      "lead": "Fiecare dar are un loc. Cunoaște departamentele bisericii, ce face fiecare și cum te poți alătura.",
+      "stat_departments": "Departamente",
+      "stat_people": "Coordonatori",
+      "stat_activities": "Activități",
+      "join_title": "Fiecare dar își are locul lui",
+      "join_lead": "Nu trebuie să știi dinainte unde ți-e locul. Scrie-ne și te ajutăm să găsești departamentul potrivit pentru tine."
+    },
+    "youth": {
+      "name": "Tineret",
+      "tagline": "O generație care Îl caută pe Dumnezeu și slujește cu bucurie.",
+      "intro": "Tineretul Elim este locul în care tinerii cresc împreună în credință: închinare, Cuvânt, prietenie și slujire. Ne întâlnim în fiecare vineri seara și pregătim totul împreună — de la program până la masa de după.",
+      "pillars": {
+        "worship": {
+          "title": "Închinare",
+          "text": "Ne apropiem de Dumnezeu cu toată inima, prin cântare și rugăciune, și învățăm să slujim în închinarea bisericii."
+        },
+        "word": {
+          "title": "Cuvânt",
+          "text": "Studiem Scriptura cu întrebări reale și răspunsuri biblice, pentru o credință care ține în viața de zi cu zi."
+        },
+        "fellowship": {
+          "title": "Părtășie",
+          "text": "Prietenii adevărate, construite în jurul mesei, al discuțiilor și al timpului petrecut împreună."
+        },
+        "service": {
+          "title": "Slujire",
+          "text": "Fiecare tânăr are un loc: echipe, responsabilități și ocazia de a-și pune darurile în lucrare."
+        }
+      },
+      "activities": {
+        "friday": {
+          "title": "Seara de tineret",
+          "text": "Vinerea, cu închinare, mesaj și timp de discuții. Deschisă tuturor tinerilor."
+        },
+        "meal": {
+          "title": "Masa de vineri",
+          "text": "După program mâncăm împreună. Echipele de tineri pregătesc, iar părinții ajută cu mâncarea."
+        },
+        "worship": {
+          "title": "Grupe de laudă",
+          "text": "Tinerii slujesc cu cântarea la serviciile bisericii și se pregătesc împreună."
+        },
+        "conferences": {
+          "title": "Conferințe și seri speciale",
+          "text": "Întâlniri cu invitați, precum conferința «ANCORAT», cu mesaj și sesiuni de întrebări."
+        }
+      },
+      "verse": {
+        "text": "„Nimeni să nu-ți disprețuiască tinerețea; ci fii o pildă pentru credincioși: în vorbire, în purtare, în dragoste, în credință, în curăție.”",
+        "ref": "1 Timotei 4:12"
+      },
+      "join": "Ești tânăr și vrei să crești în credință? Vino vineri seara: nu trebuie să cunoști pe nimeni ca să te simți acasă.",
+      "meal": {
+        "cta": "Programarea mesei",
+        "eyebrow": "Aplicația tineretului",
+        "title": "Programarea mesei de vineri",
+        "lead": "În fiecare vineri o echipă de tineri pregătește masa, iar doi părinți îi ajută aducând mâncarea. Aplicația Departamentului de Tineret arată, pentru tot anul, cui îi vine rândul — fără liste pierdute pe WhatsApp.",
+        "youth": {
+          "title": "Pentru tineri",
+          "points": {
+            "turn": "Vezi când îi vine rândul echipei tale și cine o coordonează.",
+            "team": "Află din ce echipă faci parte și cu cine pregătești.",
+            "arrive": "Ora de sosire, ca masa să fie gata la timp."
+          }
+        },
+        "parents": {
+          "title": "Pentru părinți",
+          "points": {
+            "turn": "Vezi în ce vineri ești programat să ajuți.",
+            "food": "Ora la care se aduce mâncarea și pentru câte persoane.",
+            "plan": "Abonează-te la calendar și primești amintirea pe telefon."
+          }
+        },
+        "links": {
+          "schedule": "Programările",
+          "teams": "Echipele",
+          "parents": "Părinți de sprijin",
+          "rules": "Regulile"
+        },
+        "open": "Deschide aplicația",
+        "subscribe": "Abonează-te la calendar",
+        "board": "Următoarele mese",
+        "next": "Pregătește",
+        "today": "Azi!",
+        "tomorrow": "Mâine",
+        "in_days": "În {{days}} zile",
+        "in_days_short": "{{days}} z",
+        "after": "Turnurile următoare",
+        "step_arrival": "Sosesc tinerii",
+        "step_food": "Părinții aduc mâncarea",
+        "step_program": "Începe programul",
+        "none": "Nu există mese programate în perioada următoare. Verifică aplicația pentru noutăți.",
+        "offline": "Nu am putut încărca programarea acum. O găsești oricând în aplicație.",
+        "all_turns": "Toată programarea",
+        "qr": "Scanează și deschide-o pe telefon",
+        "who": "Vezi cui îi vine rândul"
+      }
+    },
+    "brass": {
+      "name": "Fanfara",
+      "tagline": "Lauda lui Dumnezeu în sunet de alamă.",
+      "intro": "Fanfara bisericii slujește la serviciile de închinare și la ocaziile speciale ale bisericii. Instrumentiști de toate vârstele, uniți de aceeași dorință: ca fiecare notă să-L înalțe pe Dumnezeu.",
+      "pillars": {
+        "preparation": {
+          "title": "Pregătire",
+          "text": "Repetiții constante și disciplină: slujirea bună se pregătește din timp."
+        },
+        "harmony": {
+          "title": "Armonie",
+          "text": "Mai multe instrumente, un singur sunet. Așa învățăm și unitatea în biserică."
+        },
+        "generations": {
+          "title": "Generații",
+          "text": "Cei cu experiență îi formează pe cei tineri, iar tradiția fanfarei merge mai departe."
+        }
+      },
+      "activities": {
+        "services": {
+          "title": "Slujire la servicii",
+          "text": "Cântări de laudă la serviciile de duminică și în zilele de sărbătoare."
+        },
+        "rehearsals": {
+          "title": "Repetiții",
+          "text": "Timp de pregătire în comun pentru fiecare program și pentru repertoriul nou."
+        },
+        "special": {
+          "title": "Ocazii speciale",
+          "text": "Botezuri, aniversări, concerte și evenimentele în care biserica se bucură împreună."
+        },
+        "learners": {
+          "title": "Învățăcei",
+          "text": "Cine vrea să învețe un instrument de alamă poate cere îndrumare și se poate alătura treptat."
+        }
+      },
+      "verse": {
+        "text": "„Lăudați-L cu sunet de trâmbiță, lăudați-L cu alăuta și arfa!”",
+        "ref": "Psalmul 150:3"
+      },
+      "join": "Cânți la un instrument de alamă sau vrei să înveți? Vorbește cu noi și te ajutăm să începi."
+    },
+    "choir": {
+      "name": "Cor",
+      "tagline": "Cântări care poartă Cuvântul la inimă.",
+      "intro": "Corul bisericii slujește prin cântare la serviciile de închinare și la evenimentele bisericii. Credem că o cântare bine pregătită poate deschide inima pentru Cuvânt și poate aduce mângâiere și bucurie.",
+      "pillars": {
+        "worship": {
+          "title": "Închinare",
+          "text": "Cântăm mai întâi pentru Dumnezeu: publicul este biserica, iar ascultătorul este El."
+        },
+        "message": {
+          "title": "Mesaj",
+          "text": "Alegem cântări cu text biblic și profund, care spun ceva celor care ascultă."
+        },
+        "unity": {
+          "title": "Unitate",
+          "text": "Voci diferite, aceeași inimă. Corul este și o familie care se roagă împreună."
+        }
+      },
+      "activities": {
+        "services": {
+          "title": "Slujire la servicii",
+          "text": "Cântări la serviciile de duminică și la sărbătorile bisericii."
+        },
+        "rehearsals": {
+          "title": "Repetiții",
+          "text": "Pregătim repertoriul cu răbdare: tehnică vocală, armonie și înțelegerea textului."
+        },
+        "concerts": {
+          "title": "Concerte",
+          "text": "Seri de cântare, precum concertul de colinde, deschise bisericii și orașului."
+        },
+        "voices": {
+          "title": "Voci noi",
+          "text": "Ești binevenit dacă îți place să cânți: dirijorii te ajută să-ți găsești vocea."
+        }
+      },
+      "verse": {
+        "text": "„Învățați-vă și sfătuiți-vă unii pe alții cu psalmi, cu cântări de laudă și cu cântări duhovnicești, cântând lui Dumnezeu cu mulțumire în inima voastră.”",
+        "ref": "Coloseni 3:16"
+      },
+      "join": "Îți place să cânți? Vino la o repetiție și cunoaște-i pe dirijori."
+    },
+    "missions": {
+      "name": "Misiune externă",
+      "tagline": "Până la marginile pământului, împreună.",
+      "intro": "Susținem lucrarea Evangheliei dincolo de Arganda: prin rugăciune, prin sprijin pentru misionari și biserici partenere și prin echipe care pleacă să slujească acolo unde este nevoie.",
+      "pillars": {
+        "prayer": {
+          "title": "Rugăciune",
+          "text": "Misiunea începe pe genunchi: ne rugăm pe nume pentru misionari și pentru câmpurile lor."
+        },
+        "support": {
+          "title": "Sprijin",
+          "text": "Ajutor concret și constant pentru lucrători și biserici care slujesc în condiții grele."
+        },
+        "sending": {
+          "title": "Trimitere",
+          "text": "Pregătim și trimitem echipe care slujesc pentru o perioadă alături de partenerii noștri."
+        }
+      },
+      "activities": {
+        "prayer": {
+          "title": "Rugăciune pentru misionari",
+          "text": "Motive de rugăciune actualizate, aduse înaintea bisericii."
+        },
+        "partners": {
+          "title": "Biserici partenere",
+          "text": "Legături de durată cu biserici și lucrări din alte țări."
+        },
+        "trips": {
+          "title": "Călătorii misionare",
+          "text": "Echipe scurte de slujire: construcție, evanghelizare, lucrare cu copiii."
+        },
+        "news": {
+          "title": "Vești din misiune",
+          "text": "Ce face Dumnezeu acolo, povestit bisericii de cei care slujesc."
+        }
+      },
+      "verse": {
+        "text": "„…și-Mi veți fi martori în Ierusalim, în toată Iudeea, în Samaria și până la marginile pământului.”",
+        "ref": "Faptele Apostolilor 1:8"
+      },
+      "join": "Simți chemarea pentru misiune sau vrei să susții prin rugăciune? Începe prin a ne scrie."
+    },
+    "relief": {
+      "name": "Ajutorare",
+      "tagline": "Dragoste care se vede în fapte.",
+      "intro": "Ajutorarea înseamnă să fim aproape de cei în nevoie, din biserică și din afara ei. Organizăm sprijin pentru familii aflate în dificultate, colecte și campanii precum «Zâmbetul din Cutie».",
+      "pillars": {
+        "compassion": {
+          "title": "Compasiune",
+          "text": "Vedem omul, nu doar nevoia. Ajutorul începe cu ascultare și rugăciune."
+        },
+        "discretion": {
+          "title": "Discreție",
+          "text": "Ajutorul se dă cu respect și fără expunere: demnitatea fiecăruia contează."
+        },
+        "stewardship": {
+          "title": "Bună administrare",
+          "text": "Fiecare donație ajunge acolo unde a fost dată, cu transparență față de biserică."
+        }
+      },
+      "activities": {
+        "families": {
+          "title": "Sprijin pentru familii",
+          "text": "Alimente, lucruri necesare și ajutor punctual în momente grele."
+        },
+        "campaigns": {
+          "title": "Campanii",
+          "text": "«Zâmbetul din Cutie» și alte acțiuni în care toată biserica poate participa."
+        },
+        "collections": {
+          "title": "Colecte",
+          "text": "Strângem ce este nevoie pentru situații concrete, anunțate în biserică."
+        },
+        "visits": {
+          "title": "Vizite",
+          "text": "Aproape de bolnavi, de vârstnici și de cei singuri, acasă sau în spital."
+        }
+      },
+      "verse": {
+        "text": "„Purtați-vă sarcinile unii altora și veți împlini astfel Legea lui Hristos.”",
+        "ref": "Galateni 6:2"
+      },
+      "join": "Știi pe cineva care are nevoie de ajutor sau vrei să ajuți? Scrie-ne: totul rămâne între noi."
+    },
+    "evangelism": {
+      "name": "Evanghelizare",
+      "tagline": "Vestea bună, spusă cu dragoste.",
+      "intro": "Ducem Evanghelia în Arganda del Rey și în împrejurimi: serii de evanghelizare, concerte, materiale tipărite și, mai ales, oameni dispuși să-și spună povestea cu Dumnezeu.",
+      "pillars": {
+        "message": {
+          "title": "Mesaj",
+          "text": "Hristos, răstignit și înviat: o veste simplă, spusă clar și fără compromis."
+        },
+        "love": {
+          "title": "Dragoste",
+          "text": "Evanghelizăm prin cuvinte și prin viață: cu respect, răbdare și bunătate."
+        },
+        "discipleship": {
+          "title": "Ucenicie",
+          "text": "Nu ne oprim la prima întâlnire: îi însoțim pe cei noi în primii pași."
+        }
+      },
+      "activities": {
+        "evenings": {
+          "title": "Serii de evanghelizare",
+          "text": "Programe speciale cu invitați, deschise oricui vrea să audă Evanghelia."
+        },
+        "concerts": {
+          "title": "Concerte",
+          "text": "Cântarea ca punte: concerte de colinde și seri muzicale pentru oraș."
+        },
+        "materials": {
+          "title": "Materiale",
+          "text": "Pliante și invitații pregătite pentru a fi împărțite cu cei din jur."
+        },
+        "invitations": {
+          "title": "Invitații",
+          "text": "Fiecare membru, un invitat: aducem prieteni, colegi și vecini la biserică."
+        }
+      },
+      "verse": {
+        "text": "„Duceți-vă în toată lumea și propovăduiți Evanghelia la orice făptură.”",
+        "ref": "Marcu 16:15"
+      },
+      "join": "Vrei să împarți pliante, să inviți sau să ajuți la serile de evanghelizare? Avem loc pentru tine."
     }
   }
 }

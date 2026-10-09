@@ -65,27 +65,57 @@
 // 1.194 disponibles: si el contenido crece, adelantar el apilado de `xl`.
 .footer__main {
   display: grid;
-  grid-template-columns: minmax(max-content, 1fr) auto auto auto minmax(max-content, 1.25fr);
+  // Rejilla derivada del menú (09/10/2026): identidad + una columna por grupo
+  // de `MAIN_NAV` (`--footer-cols` lo pone la plantilla). Con el cuarto grupo
+  // (Departamente) identidad + cuatro grupos + contacto ya no caben en una
+  // fila ni a 1600 px (~1.530 px de contenido), así que el contacto va
+  // siempre en la fila de abajo, a todo el ancho y con sus datos en dos
+  // columnas. Un grupo más entra solo.
+  grid-template-columns: minmax(max-content, 1fr) repeat(var(--footer-cols, 3), max-content);
   gap: var(--sp-5) clamp(1.25rem, 2.5vw, 3.5rem);
   padding-block-end: var(--sp-4);
+
+  .footer__contact {
+    grid-column: 1 / -1;
+    padding-block-start: var(--sp-4);
+    border-block-start: 1px solid rgba(247, 250, 252, 0.1);
+  }
+
+  .footer__data {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--sp-6);
+  }
 }
 
+// Entre `md` y `xl` la identidad sube a su propia fila: los cuatro grupos
+// (dos partidos en subcolumnas) llenan el ancho sin partir rótulos.
 @include until('xl') {
   .footer__main {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: repeat(var(--footer-cols, 3), max-content);
+    justify-content: space-between;
 
-    // El contacto pasa a la fila de abajo, a todo el ancho y con sus datos
-    // en dos columnas: partidos en una columna estrecha se leían fatal.
-    .footer__contact {
+    .footer__identity {
       grid-column: 1 / -1;
-      padding-block-start: var(--sp-4);
-      border-block-start: 1px solid rgba(247, 250, 252, 0.1);
     }
+  }
+}
 
-    .footer__data {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: var(--sp-6);
-    }
+// En su fila, la identidad va en horizontal (marca · redes · acciones):
+// apilada gastaba ~130 px de alto en un hueco de 1.000 de ancho. En el
+// teléfono no: ahí no caben las tres piezas en una línea.
+@include between('md', 'xl') {
+  .footer__main .footer__identity {
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: center;
+    column-gap: var(--sp-6);
+  }
+}
+
+// Por debajo de `lg` cuatro grupos (~880 px) ya no caben en fila: 2 × 2.
+@include until('lg') {
+  .footer__main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

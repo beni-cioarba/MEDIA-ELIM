@@ -2,8 +2,8 @@
 
 // =====================================================================
 // Barra de pestañas inferior (03/10/2026). Diseño propio, fuera del
-// catálogo a propósito: cápsula flotante de cristal navy, indicador dorado
-// que se desliza y rótulo bajo el icono (patrón de barra de navegación de
+// catálogo a propósito: cápsula flotante de cristal navy, indicador verde
+// que se desliza (09/10/2026, patrón de WhatsApp) y rótulo bajo el icono (patrón de barra de navegación de
 // las apps nativas). Medidas: `--tab-bar-height` y `--tab-bar-gap` se
 // declaran en `_base.scss` (`body.has-tab-bar`), que es quien las comparte
 // con el pie, el dock y las barras de documento.
@@ -39,6 +39,11 @@
 }
 
 .tabs {
+  /* Verde de la pestaña activa: el mismo «hoy / ahora» de la portada
+     (`--hero-next-accent`, «AZI · 20:30»), así el verde significa en toda la
+     app «aquí / ahora». Sobre el navy de la cápsula da ~7:1. */
+  --tab-accent: color-mix(in srgb, var(--c-success) 62%, #fff);
+
   /* Las columnas las deriva la rejilla; `--tab-count` (lo pone la plantilla)
      sólo lo usa el indicador para medir una columna. */
   position: relative;
@@ -80,7 +85,7 @@
   position: absolute;
   inset-block: 0;
   left: 0.2rem;
-  width: calc((100% - 0.4rem) / var(--tab-count, 7));
+  width: calc((100% - 0.4rem) / var(--tab-count, 6));
   /* `--tab-drag` (lo escribe el gesto de arrastre en este anfitrión) lo lleva
      hacia la vecina en proporción a lo arrastrado, como en WhatsApp. */
   transform: translateX(calc((var(--i, 0) + var(--tab-drag, 0)) * 100%));
@@ -91,18 +96,20 @@
 }
 
 .tabs__indicator::before {
+  /* Píldora de la activa, como la barra inferior de WhatsApp: ancha
+     (≈ 64 × 30 px) detrás del icono, verde translúcido con un contorno fino
+     del mismo verde. Sin halo: el resplandor dorado de antes ensuciaba la
+     cápsula y competía con el filete de marca. */
   content: '';
   position: absolute;
-  top: 0.4rem;
+  top: 0.32rem;
   left: 50%;
-  width: min(3rem, calc(100% - 0.4rem));
-  height: 1.6rem;
-  border: 1px solid rgb(212 175 55 / 0.45);
+  width: min(3.9rem, calc(100% - 0.5rem));
+  height: 1.85rem;
+  border: 1px solid color-mix(in srgb, var(--tab-accent) 55%, transparent);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgb(212 175 55 / 0.28), rgb(212 175 55 / 0.12));
-  box-shadow:
-    0 0 18px rgb(212 175 55 / 0.28),
-    inset 0 1px 0 rgb(255 255 255 / 0.12);
+  background: color-mix(in srgb, var(--c-success) 34%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
   transform: translateX(-50%);
 }
 
@@ -138,7 +145,7 @@
   justify-content: flex-start;
   gap: 0.15rem;
   min-width: 0;
-  padding-top: 0.4rem;
+  padding-top: 0.32rem;
   border-radius: 1rem;
   color: rgb(247 250 252 / 0.64);
   text-decoration: none;
@@ -152,7 +159,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  height: 1.6rem;
+  height: 1.85rem;
   font-size: 1.2rem;
   transition: transform var(--mo-base) var(--ea-standard);
 }
@@ -173,28 +180,15 @@
 }
 
 .tab.is-active .tab__icon {
-  color: var(--c-gold);
+  color: var(--tab-accent);
 }
 
 .tab.is-active .tab__label {
   font-weight: 700;
+  color: #fff;
 }
 
-/* «În direct»: punto dorado latiendo sobre el icono, el mismo gesto que la
-   píldora de la cabecera. */
-.tab__dot {
-  position: absolute;
-  top: 0.05rem;
-  right: -0.3rem;
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: var(--c-gold);
-  box-shadow: 0 0 0 0 rgb(212 175 55 / 0.6);
-  animation: live 2s var(--ea-standard) infinite;
-}
-
-/* Siete pestañas no caben con rótulo por debajo de 380 px (~43 px cada
+/* Seis pestañas no caben con rótulo por debajo de 380 px (~51 px cada
    una a 320): sólo lo lleva la activa; el resto se reconoce por el icono. */
 @media (max-width: 379.98px) {
   .tab:not(.is-active) .tab__label {
@@ -219,24 +213,10 @@
   }
 }
 
-@keyframes live {
-  70% {
-    box-shadow: 0 0 0 0.35rem rgb(212 175 55 / 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgb(212 175 55 / 0);
-  }
-}
-
 @include motion-reduce {
   :host,
   .tabs__indicator,
   .tab__icon {
     transition: none;
-  }
-
-  .tab__dot {
-    animation: none;
   }
 }

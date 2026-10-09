@@ -18,15 +18,16 @@ import { TabNavService } from './tab-nav.service';
  * la sustituye, la complementa.
  *
  * ── Qué hay en cada pestaña ───────────────────────────────────────────
- * Todo el primer nivel de `MAIN_NAV` (`TabNavService`), también «Donează» y
- * «În direct». Una hoja enlaza a su página; un grupo, a su **portada de
+ * El primer nivel de `MAIN_NAV` sin las llamadas a la acción
+ * (`TabNavService`): «Donează» e «În direct» viven en la cabecera, el cajón
+ * y el pie. Una hoja enlaza a su página; un grupo, a su **portada de
  * sección** (`NavHubComponent`), que resume sus páginas. Volver a pulsar la
  * pestaña de la página en la que ya se está sube al principio, y arrastrar
  * la página lleva a la pestaña contigua siguiendo al dedo
  * (`SwipeTabsDirective`), como en WhatsApp.
  *
- * ── Siete pestañas en 320 px ──────────────────────────────────────────
- * Cada una mide ~43 px a 320. Con todos los rótulos no caben, así que por
+ * ── Seis pestañas en 320 px ───────────────────────────────────────────
+ * Cada una mide ~51 px a 320. Con todos los rótulos no caben, así que por
  * debajo de 380 px sólo lleva rótulo la activa (el patrón de las barras de
  * navegación de Material 3) y el resto se reconoce por el icono.
  *
@@ -64,7 +65,6 @@ import { TabNavService } from './tab-nav.service';
       @for (tab of tabs; track tab.id; let i = $index) {
         <a
           class="tab"
-          [class.tab--live]="tab.cta === 'live'"
           [routerLink]="tab.path"
           [attr.aria-label]="tab.labelKey | translate"
           [class.is-active]="i === activeIndex()"
@@ -73,11 +73,8 @@ import { TabNavService } from './tab-nav.service';
         >
           <span class="tab__icon">
             <app-icon [name]="tab.icon ?? 'arrow-right'" />
-            @if (tab.cta === 'live') {
-              <span class="tab__dot" aria-hidden="true"></span>
-            }
           </span>
-          <span class="tab__label" aria-hidden="true">{{ tab.labelKey | translate }}</span>
+          <span class="tab__label" aria-hidden="true">{{ (tab.tabLabelKey ?? tab.labelKey) | translate }}</span>
         </a>
       }
     </nav>

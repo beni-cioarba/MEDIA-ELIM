@@ -1,4 +1,4 @@
-import { APP_PATHS, blockPath } from './app-paths';
+import { APP_PATHS, blockPath, departmentPath } from './app-paths';
 import { NavItem } from './nav.model';
 
 /**
@@ -15,9 +15,10 @@ import { NavItem } from './nav.model';
  *  5. Todo grupo lleva `path` (su portada de sección, que monta
  *     `NavHubComponent` desde `app.routes.ts`) y `descriptionKey` (la
  *     entradilla de esa portada). La barra de pestañas del móvil enlaza ahí.
- *  6. Todo el primer nivel (también las `cta`) son las pestañas del móvil,
- *     en este orden. Siete es el techo: a 320 px cada una mide ~43 px y por
- *     debajo de 380 sólo la activa lleva rótulo.
+ *  6. El primer nivel **sin las `cta`** son las pestañas del móvil, en este
+ *     orden (hoy seis). Seis es el techo: a 320 px cada una mide ~51 px y
+ *     por debajo de 380 sólo la activa lleva rótulo. Si un rótulo no cabe
+ *     en ~60 px, `tabLabelKey` le da uno corto.
  */
 export const MAIN_NAV: readonly NavItem[] = [
   {
@@ -115,6 +116,60 @@ export const MAIN_NAV: readonly NavItem[] = [
         descriptionKey: 'nav.talent_contest_desc',
         path: `/${APP_PATHS.talentContest}`,
         icon: 'trophy',
+      },
+    ],
+  },
+  {
+    // Ministerios de la iglesia. Portada propia (mosaico) y una página por
+    // departamento, todas desde `core/departments.config.ts`.
+    id: 'departments',
+    labelKey: 'nav.departments',
+    tabLabelKey: 'nav.departments_tab',
+    descriptionKey: 'nav.departments_desc',
+    path: `/${APP_PATHS.departments}`,
+    icon: 'layout-grid',
+    children: [
+      {
+        id: 'dept-youth',
+        labelKey: 'departments.youth.name',
+        descriptionKey: 'nav.dept_youth_desc',
+        path: departmentPath('youth'),
+        icon: 'flame',
+      },
+      {
+        id: 'dept-brass',
+        labelKey: 'departments.brass.name',
+        descriptionKey: 'nav.dept_brass_desc',
+        path: departmentPath('brass'),
+        icon: 'music',
+      },
+      {
+        id: 'dept-choir',
+        labelKey: 'departments.choir.name',
+        descriptionKey: 'nav.dept_choir_desc',
+        path: departmentPath('choir'),
+        icon: 'mic-vocal',
+      },
+      {
+        id: 'dept-missions',
+        labelKey: 'departments.missions.name',
+        descriptionKey: 'nav.dept_missions_desc',
+        path: departmentPath('missions'),
+        icon: 'globe',
+      },
+      {
+        id: 'dept-relief',
+        labelKey: 'departments.relief.name',
+        descriptionKey: 'nav.dept_relief_desc',
+        path: departmentPath('relief'),
+        icon: 'hand-heart',
+      },
+      {
+        id: 'dept-evangelism',
+        labelKey: 'departments.evangelism.name',
+        descriptionKey: 'nav.dept_evangelism_desc',
+        path: departmentPath('evangelism'),
+        icon: 'sprout',
       },
     ],
   },

@@ -1,0 +1,164 @@
+<section class="meal" aria-labelledby="meal-title">
+  <!-- ── Qué es y para quién ─────────────────────────────────────────── -->
+  <div class="meal__info">
+    <p class="meal__eyebrow">
+      <app-icon name="utensils" />
+      {{ 'departments.youth.meal.eyebrow' | translate }}
+    </p>
+    <h2 class="meal__title" id="meal-title">{{ 'departments.youth.meal.title' | translate }}</h2>
+    <p class="meal__lead">{{ 'departments.youth.meal.lead' | translate }}</p>
+
+    <div class="meal__audiences">
+      @for (aud of audiences; track aud.id) {
+        <article class="aud" [attr.aria-labelledby]="'aud-' + aud.id">
+          <header class="aud__head">
+            <span class="aud__icon" aria-hidden="true"><app-icon [name]="aud.icon" /></span>
+            <h3 class="aud__title" [id]="'aud-' + aud.id">
+              {{ 'departments.youth.meal.' + aud.id + '.title' | translate }}
+            </h3>
+          </header>
+          <ul class="aud__points" role="list">
+            @for (point of aud.points; track point) {
+              <li>
+                <app-icon name="check" />
+                <span>{{ 'departments.youth.meal.' + aud.id + '.points.' + point | translate }}</span>
+              </li>
+            }
+          </ul>
+          <div class="aud__links">
+            @for (link of aud.links; track link.section) {
+              <a class="aud__link" [href]="url(link.section)" target="_blank" rel="noopener noreferrer">
+                <app-icon [name]="link.icon" />
+                <span>{{ link.labelKey | translate }}</span>
+              </a>
+            }
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="meal__actions">
+      <a class="meal__cta" [href]="appUrl" target="_blank" rel="noopener noreferrer">
+        {{ 'departments.youth.meal.open' | translate }}
+        <app-icon name="external" />
+      </a>
+      <a class="meal__ghost" [href]="webcal">
+        <app-icon name="calendar" />
+        {{ 'departments.youth.meal.subscribe' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Tablero en vivo ─────────────────────────────────────────────── -->
+  <aside class="board" [attr.aria-label]="'departments.youth.meal.board' | translate" aria-live="polite">
+    <header class="board__head">
+      <span class="board__label">
+        <span class="board__pulse" aria-hidden="true"></span>
+        {{ 'departments.youth.meal.board' | translate }}
+      </span>
+      <span class="board__source">ADM-TINERET</span>
+    </header>
+
+    @switch (meal.state()) {
+      @case ('ready') {
+        @if (meal.next(); as next) {
+          @let parts = schedule.formatDayParts(next.date);
+          <div class="next" [class.is-today]="next.isToday">
+            <div class="next__date" aria-hidden="true">
+              <span class="next__wd">{{ schedule.formatWeekdayShort(next.date) }}</span>
+              <span class="next__day">{{ parts.day }}</span>
+              <span class="next__month">{{ parts.month }}</span>
+            </div>
+            <div class="next__body">
+              <span class="next__kicker">{{ 'departments.youth.meal.next' | translate }}</span>
+              <span class="next__team">
+                @if (next.teamNumber !== null) {
+                  <span class="team-badge">{{ next.teamNumber }}</span>
+                }
+                {{ next.team }}
+              </span>
+              <span class="next__when" [class.is-live]="next.isToday">
+                @if (next.isToday) {
+                  {{ 'departments.youth.meal.today' | translate }}
+                } @else if (next.daysLeft === 1) {
+                  {{ 'departments.youth.meal.tomorrow' | translate }}
+                } @else {
+                  {{ 'departments.youth.meal.in_days' | translate: { days: next.daysLeft } }}
+                }
+              </span>
+            </div>
+          </div>
+
+          <!-- Horario de la tarde: tres hitos en una línea. -->
+          <ol class="timeline" role="list">
+            @if (next.arrival) {
+              <li class="timeline__step">
+                <span class="timeline__time">{{ next.arrival }}</span>
+                <span class="timeline__what">{{ 'departments.youth.meal.step_arrival' | translate }}</span>
+              </li>
+            }
+            @if (next.food) {
+              <li class="timeline__step">
+                <span class="timeline__time">{{ next.food }}</span>
+                <span class="timeline__what">{{ 'departments.youth.meal.step_food' | translate }}</span>
+              </li>
+            }
+            @if (next.program) {
+              <li class="timeline__step">
+                <span class="timeline__time">{{ next.program }}</span>
+                <span class="timeline__what">{{ 'departments.youth.meal.step_program' | translate }}</span>
+              </li>
+            }
+          </ol>
+
+          @if (meal.upcoming().length > 1) {
+            <ul class="turns" role="list" [attr.aria-label]="'departments.youth.meal.after' | translate">
+              @for (turn of meal.upcoming().slice(1, turnsShown); track turn.date) {
+                @let p = schedule.formatDayParts(turn.date);
+                <li class="turn">
+                  <span class="turn__date">{{ p.day }} {{ p.month }}</span>
+                  <span class="turn__team">
+                    @if (turn.teamNumber !== null) {
+                      <span class="team-badge team-badge--sm">{{ turn.teamNumber }}</span>
+                    }
+                    {{ turn.team }}
+                  </span>
+                  <span class="turn__in">{{ 'departments.youth.meal.in_days_short' | translate: { days: turn.daysLeft } }}</span>
+                </li>
+              }
+            </ul>
+          }
+        } @else {
+          <p class="board__empty">{{ 'departments.youth.meal.none' | translate }}</p>
+        }
+      }
+      @case ('error') {
+        <p class="board__empty">{{ 'departments.youth.meal.offline' | translate }}</p>
+      }
+      @default {
+        <div class="board__skeleton" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      }
+    }
+
+    <footer class="board__foot">
+      <a class="board__all" [href]="appUrl" target="_blank" rel="noopener noreferrer">
+        {{ 'departments.youth.meal.all_turns' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+      <div class="board__qr">
+        <qrcode
+          [qrdata]="appUrl"
+          [width]="256"
+          [margin]="0"
+          [errorCorrectionLevel]="'M'"
+          [colorDark]="'#0f2440'"
+          [colorLight]="'#ffffff'"
+          [elementType]="'svg'"
+        ></qrcode>
+        <span>{{ 'departments.youth.meal.qr' | translate }}</span>
+      </div>
+    </footer>
+  </aside>
+</section>

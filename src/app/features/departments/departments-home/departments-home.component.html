@@ -1,0 +1,91 @@
+<section class="home" aria-labelledby="depts-title">
+  <!-- ── Cabecera ──────────────────────────────────────────────────────── -->
+  <header class="head">
+    <div class="head__inner">
+      <div class="head__text">
+        <p class="head__eyebrow">{{ 'departments.home.eyebrow' | translate }}</p>
+        <h1 class="head__title" id="depts-title">{{ 'nav.departments' | translate }}</h1>
+        <p class="head__lead">{{ 'departments.home.lead' | translate }}</p>
+      </div>
+      <dl class="stats">
+        <div class="stat">
+          <dt>{{ 'departments.home.stat_departments' | translate }}</dt>
+          <dd>{{ stats.departments }}</dd>
+        </div>
+        @if (stats.people > 0) {
+          <div class="stat">
+            <dt>{{ 'departments.home.stat_people' | translate }}</dt>
+            <dd>{{ stats.people }}</dd>
+          </div>
+        }
+        <div class="stat">
+          <dt>{{ 'departments.home.stat_activities' | translate }}</dt>
+          <dd>{{ stats.activities }}</dd>
+        </div>
+      </dl>
+    </div>
+  </header>
+
+  <app-dept-switcher />
+
+  <div class="body">
+    <!-- ── Mosaico ──────────────────────────────────────────────────────── -->
+    <ul class="mosaic" role="list">
+      @for (tile of tiles; track tile.dept.id) {
+        @let d = tile.dept;
+        <li class="tile" [class.tile--featured]="d.featured" [class.tile--plain]="!d.cover">
+          <a class="tile__link" [routerLink]="tile.path">
+            @if (d.cover; as c) {
+              <img
+                class="tile__img"
+                [src]="d.featured ? c.medium : c.thumb"
+                [attr.srcset]="c.thumb + ' 480w, ' + c.medium + ' 960w'"
+                [attr.sizes]="d.featured ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 25vw, (min-width: 720px) 50vw, 8rem'"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            } @else {
+              <app-icon class="tile__mark" [name]="d.icon" />
+            }
+            <span class="tile__veil" aria-hidden="true"></span>
+
+            <span class="tile__badge" aria-hidden="true"><app-icon [name]="d.icon" /></span>
+            <span class="tile__body">
+              <span class="tile__name">{{ 'departments.' + d.id + '.name' | translate }}</span>
+              <span class="tile__tagline">{{ 'departments.' + d.id + '.tagline' | translate }}</span>
+              @if (tile.meeting) {
+                <span class="tile__chip" [class.is-live]="tile.meetingId === todayId()">
+                  <app-icon name="calendar" />
+                  {{ tile.meeting }}
+                </span>
+              }
+            </span>
+            <app-icon class="tile__go" name="arrow-right" />
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- ── La masa de tineret, en vivo ───────────────────────────────────── -->
+    @defer (on viewport) {
+      <app-youth-meal-next [link]="youthPath" />
+    } @placeholder {
+      <div class="meal-ph" aria-hidden="true"></div>
+    }
+
+    <!-- ── Implicarse ───────────────────────────────────────────────────── -->
+    <section class="join" aria-labelledby="depts-join">
+      <div class="join__text">
+        <h2 class="join__title" id="depts-join">{{ 'departments.home.join_title' | translate }}</h2>
+        <p class="join__lead">{{ 'departments.home.join_lead' | translate }}</p>
+      </div>
+      @if (joinHref(); as href) {
+        <a class="join__cta" [href]="href" target="_blank" rel="noopener noreferrer">
+          <app-icon name="whatsapp" />
+          {{ 'departments.join' | translate }}
+        </a>
+      }
+    </section>
+  </div>
+</section>

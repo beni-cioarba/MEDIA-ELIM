@@ -20,6 +20,12 @@ export const APP_PATHS = {
   churchHub: 'biserica',
   programHub: 'program',
   mediaHub: 'multimedia',
+  /**
+   * Departamente: portada propia (`DepartmentsHomeComponent`, no la portada
+   * genérica) y una página por departamento en `/departamente/<slug>`
+   * (`DEPARTMENT_SLUGS`).
+   */
+  departments: 'departamente',
   about: 'despre-noi',
   leadership: 'conducere',
   /** Mărturisirea de credință completa (30 artículos). */
@@ -84,6 +90,28 @@ export const STAGE_BLOCK_SLUGS = {
   website: 'site',
   location: 'locatie',
 } as const satisfies Record<StageBlockId, string>;
+
+/**
+ * Slug de cada departamento (`/departamente/<slug>`). Como los de los
+ * bloques: en rumano y parte de la marca, no se traducen. Añadir un
+ * departamento empieza aquí; el compilador obliga a darle datos en
+ * `core/departments.config.ts`.
+ */
+export const DEPARTMENT_SLUGS = {
+  youth: 'tineret',
+  brass: 'fanfara',
+  choir: 'cor',
+  missions: 'misiune-externa',
+  relief: 'ajutorare',
+  evangelism: 'evanghelizare',
+} as const;
+
+export type DepartmentId = keyof typeof DEPARTMENT_SLUGS;
+
+/** Ruta absoluta de la página de un departamento. */
+export function departmentPath(id: DepartmentId): string {
+  return `/${APP_PATHS.departments}/${DEPARTMENT_SLUGS[id]}`;
+}
 
 export type StageBlockSlug = (typeof STAGE_BLOCK_SLUGS)[StageBlockId];
 

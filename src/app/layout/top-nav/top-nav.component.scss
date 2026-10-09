@@ -254,6 +254,26 @@
   .nav__list {
     gap: 0;
   }
+
+  // Con «Departamente» (09/10/2026) la lista pasó a seis enlaces y a 1024
+  // invadía la zona de acciones en ~120 px (medido en castellano). Se
+  // recuperan sin tocar las acciones ni la letra:
+  //  · «Acasă» sale de la barra: la marca de la izquierda ya enlaza a la
+  //    portada (el patrón de casi toda web profesional); sigue en el cajón,
+  //    en las pestañas y en el pie.
+  //  · los grupos pierden el chevron (≈ 24 px cada uno): se reconocen por
+  //    abrir su panel al apuntar y por `aria-expanded`.
+  .nav__item--home {
+    display: none;
+  }
+
+  .nav__link--group {
+    gap: 0;
+  }
+
+  .nav__caret {
+    display: none;
+  }
 }
 
 // ---- CTA de directo --------------------------------------------------
@@ -615,6 +635,12 @@
  * segunda fila aparece sola. El tope de ancho no hace falta porque la
  * columna del destacado ya lo acota.
  */
+// Departamente: el destacado vive en `departments-aside.component` (diferido).
+// Hueco reservado mientras llega: dos filas de miniaturas 16:7.
+.nav__depts-ph {
+  min-height: 10rem;
+}
+
 .nav__albums {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));

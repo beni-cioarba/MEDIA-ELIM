@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { SocialLink } from './social-link.model';
 import { IconName } from './ui/icon-name';
+import type { DepartmentId } from './navigation/app-paths';
 
 /**
  * Evento del directorio público de fotos/vídeos de la iglesia.
@@ -92,6 +93,11 @@ export interface UpcomingEvent {
    * sí mismos (`promo__cover--poster`): recortarlos les cortaría el texto.
    */
   readonly poster?: string;
+  /**
+   * Departamentos que organizan el evento. La página de cada departamento
+   * enseña sus eventos futuros (`/departamente/<slug>` → «Evenimente»).
+   */
+  readonly departments?: readonly DepartmentId[];
 }
 
 /**
@@ -564,6 +570,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   upcomingEvents: [
     {
       id: 'ancorat_2026_09_26',
+      departments: ['youth'],
       poster: 'assets/posters/conferinta-ancorat-2026.webp',
       date: '2026-09-26',
       time: '18:00',
@@ -576,6 +583,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: 'evanghelizare_2026_09_27',
+      departments: ['evangelism'],
       poster: 'assets/posters/conferinta-ancorat-2026.webp',
       date: '2026-09-27',
       time: '10:00 & 18:00',
@@ -629,6 +637,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: '4',
+      departments: ['youth'],
       date: '2026-07-05',
       time: '18:00',
       title: 'Seară de tineret',
@@ -662,6 +671,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     },
     {
       id: 'evanghelizare_2026_06_07',
+      departments: ['evangelism'],
       date: '2026-06-07',
       time: '18:00',
       title: 'Evanghelizare',

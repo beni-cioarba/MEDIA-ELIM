@@ -113,14 +113,16 @@ import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
       /* Reserva la altura aproximada del pie para que no haya salto de
          layout (CLS) cuando entra en el viewport y se hidrata. El pie es
          mucho más alto en móvil (las columnas se apilan). Medido tras
-         compactarlo (29/09/2026): ~280-300 px en escritorio y ~730 px a 390. */
+         compactarlo (29/09/2026): ~280-300 px en escritorio y ~730 px a 390.
+         Re-medido con el cuarto grupo (Departamente, 09/10/2026): ~404 px
+         en escritorio y ~946 a 375. */
       .shell__footer-ph {
-        min-height: 17rem;
+        min-height: 25rem;
       }
 
       @media (max-width: 767.98px) {
         .shell__footer-ph {
-          min-height: 48rem;
+          min-height: 58rem;
         }
       }
     `,

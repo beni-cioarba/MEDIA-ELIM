@@ -33,6 +33,7 @@ src/app/
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
     talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
+    departments.config.ts   ⭐ Departamente: estructura de cada uno + la app de la masa de tineret (ADM-TINERET)
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -77,6 +78,7 @@ src/app/
     family-prayer/          ⭐ Rugăciune pentru familii: página, resumen, ficha, foto entera, acceso desde anuncios
     prayer-causes/          ⭐ Cauzele Bisericii Elim: página + tablero (web y proyección)
     talent-contest/         ⭐ Talantul în Negoț: página para participantes + selector de categoría
+    departments/            ⭐ Departamente: portada `/departamente` + página por departamento + bloque de la masa de tineret
     presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
     styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
     projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)
@@ -115,6 +117,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
+| «Nuevo departamento» · «más contenido en Tineret / Cor…» · «la app de la masa» | `docs/ai/39-departments.md` → `core/departments.config.ts` + `departments.*` |
 | «Biografía / foto de alguien de la conducere»       | `core/leadership-profiles.config.ts` / `photo` en `PEOPLE` — `docs/ai/20-content-i18n.md` |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |
