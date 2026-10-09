@@ -221,6 +221,10 @@
       "zambetul_din_cutie": {
         "name": "La Sonrisa de la Caja",
         "date": "Campaña solidaria"
+      },
+      "ancorat_2026": {
+        "name": "ANCORAT · Conferencia de jóvenes",
+        "date": "26 de septiembre de 2026"
       }
     }
   },
@@ -1387,331 +1391,33 @@
     }
   },
   "departments": {
-    "switcher": "Acceso rápido a los departamentos",
-    "all": "Todos",
-    "eyebrow": "Departamento · Iglesia Elim",
-    "about": "Quiénes somos",
-    "what_we_do": "Qué hacemos",
-    "events": "Eventos del departamento",
-    "details": "Detalles del departamento",
     "meets": "Nos reunimos",
-    "leaders": "Quién coordina",
-    "people_count": "{{count}} servidores",
-    "activities": "Actividades",
-    "activities_count": "{{count}} áreas",
-    "join": "Quiero participar",
-    "join_title": "¿Quieres participar?",
-    "join_message": "¡Hola! Me gustaría saber cómo puedo participar en el departamento de {{name}}.",
-    "join_message_any": "¡Hola! Me gustaría saber cómo puedo participar en alguno de los departamentos de la iglesia.",
     "home": {
-      "eyebrow": "Servir en la Iglesia Elim",
-      "lead": "Cada don tiene su lugar. Conoce los departamentos de la iglesia, qué hace cada uno y cómo puedes unirte.",
-      "stat_departments": "Departamentos",
-      "stat_people": "Coordinadores",
-      "stat_activities": "Actividades",
-      "join_title": "Cada don tiene su lugar",
-      "join_lead": "No necesitas saber de antemano dónde encajas. Escríbenos y te ayudamos a encontrar el departamento adecuado para ti."
+      "eyebrow": "Servir en la Iglesia Elim"
     },
     "youth": {
       "name": "Jóvenes",
-      "tagline": "Una generación que busca a Dios y sirve con alegría.",
-      "intro": "Los jóvenes de Elim son el lugar donde crecemos juntos en la fe: adoración, Palabra, amistad y servicio. Nos reunimos cada viernes por la noche y lo preparamos todo juntos, desde el programa hasta la cena de después.",
-      "pillars": {
-        "worship": {
-          "title": "Adoración",
-          "text": "Nos acercamos a Dios de todo corazón, con canto y oración, y aprendemos a servir en la adoración de la iglesia."
-        },
-        "word": {
-          "title": "Palabra",
-          "text": "Estudiamos la Escritura con preguntas reales y respuestas bíblicas, para una fe que se sostiene en el día a día."
-        },
-        "fellowship": {
-          "title": "Comunión",
-          "text": "Amistades de verdad, construidas alrededor de la mesa, las conversaciones y el tiempo compartido."
-        },
-        "service": {
-          "title": "Servicio",
-          "text": "Cada joven tiene su sitio: equipos, responsabilidades y la ocasión de poner sus dones en práctica."
-        }
-      },
-      "activities": {
-        "friday": {
-          "title": "Noche de jóvenes",
-          "text": "Los viernes, con adoración, mensaje y tiempo de conversación. Abierta a todos los jóvenes."
-        },
-        "meal": {
-          "title": "La cena del viernes",
-          "text": "Después del programa cenamos juntos. Los equipos de jóvenes la preparan y los padres ayudan con la comida."
-        },
-        "worship": {
-          "title": "Grupos de alabanza",
-          "text": "Los jóvenes sirven con el canto en los cultos de la iglesia y se preparan juntos."
-        },
-        "conferences": {
-          "title": "Conferencias y noches especiales",
-          "text": "Encuentros con invitados, como la conferencia «ANCORAT», con mensaje y turno de preguntas."
-        }
-      },
-      "verse": {
-        "text": "«Ninguno tenga en poco tu juventud, sino sé ejemplo de los creyentes en palabra, conducta, amor, espíritu, fe y pureza.»",
-        "ref": "1 Timoteo 4:12"
-      },
-      "join": "¿Eres joven y quieres crecer en la fe? Ven el viernes por la noche: no hace falta conocer a nadie para sentirte en casa.",
-      "meal": {
-        "cta": "Programación de la cena",
-        "eyebrow": "La app de los jóvenes",
-        "title": "Programación de la cena del viernes",
-        "lead": "Cada viernes un equipo de jóvenes prepara la cena y dos padres les ayudan trayendo la comida. La app del departamento de jóvenes muestra, para todo el año, a quién le toca, sin listas perdidas en WhatsApp.",
-        "youth": {
-          "title": "Para los jóvenes",
-          "points": {
-            "turn": "Mira cuándo le toca a tu equipo y quién lo coordina.",
-            "team": "Consulta en qué equipo estás y con quién preparas.",
-            "arrive": "La hora de llegada, para que la cena esté lista a tiempo."
-          }
-        },
-        "parents": {
-          "title": "Para los padres",
-          "points": {
-            "turn": "Mira qué viernes te toca ayudar.",
-            "food": "A qué hora se trae la comida y para cuántas personas.",
-            "plan": "Suscríbete al calendario y recibe el recordatorio en el móvil."
-          }
-        },
-        "links": {
-          "schedule": "Programación",
-          "teams": "Equipos",
-          "parents": "Padres de apoyo",
-          "rules": "Normas"
-        },
-        "open": "Abrir la app",
-        "subscribe": "Suscribirse al calendario",
-        "board": "Próximas cenas",
-        "next": "Prepara",
-        "today": "¡Hoy!",
-        "tomorrow": "Mañana",
-        "in_days": "En {{days}} días",
-        "in_days_short": "{{days}} d",
-        "after": "Turnos siguientes",
-        "step_arrival": "Llegan los jóvenes",
-        "step_food": "Los padres traen la comida",
-        "step_program": "Empieza el programa",
-        "none": "No hay cenas programadas próximamente. Consulta la app para ver novedades.",
-        "offline": "No hemos podido cargar la programación ahora. La tienes siempre en la app.",
-        "all_turns": "Toda la programación",
-        "qr": "Escanéalo y ábrela en el móvil",
-        "who": "Mira a quién le toca"
-      }
+      "tagline": "Una generación que busca a Dios y sirve con alegría."
     },
     "brass": {
       "name": "Banda de música",
-      "tagline": "La alabanza a Dios con sonido de metales.",
-      "intro": "La banda de la iglesia sirve en los cultos de adoración y en las ocasiones especiales de la iglesia. Músicos de todas las edades unidos por el mismo deseo: que cada nota exalte a Dios.",
-      "pillars": {
-        "preparation": {
-          "title": "Preparación",
-          "text": "Ensayos constantes y disciplina: un buen servicio se prepara con tiempo."
-        },
-        "harmony": {
-          "title": "Armonía",
-          "text": "Muchos instrumentos, un solo sonido. Así aprendemos también la unidad en la iglesia."
-        },
-        "generations": {
-          "title": "Generaciones",
-          "text": "Los veteranos forman a los jóvenes y la tradición de la banda sigue adelante."
-        }
-      },
-      "activities": {
-        "services": {
-          "title": "Servicio en los cultos",
-          "text": "Alabanza en los cultos del domingo y en los días de fiesta."
-        },
-        "rehearsals": {
-          "title": "Ensayos",
-          "text": "Tiempo de preparación en común para cada programa y para el repertorio nuevo."
-        },
-        "special": {
-          "title": "Ocasiones especiales",
-          "text": "Bautismos, aniversarios, conciertos y los eventos en los que la iglesia se alegra junta."
-        },
-        "learners": {
-          "title": "Aprendices",
-          "text": "Quien quiera aprender un instrumento de metal puede pedir orientación e incorporarse poco a poco."
-        }
-      },
-      "verse": {
-        "text": "«Alabadle a son de bocina; alabadle con salterio y arpa.»",
-        "ref": "Salmo 150:3"
-      },
-      "join": "¿Tocas un instrumento de metal o quieres aprender? Habla con nosotros y te ayudamos a empezar."
+      "tagline": "La alabanza a Dios con sonido de metales."
     },
     "choir": {
       "name": "Coro",
-      "tagline": "Cantos que llevan la Palabra al corazón.",
-      "intro": "El coro de la iglesia sirve con el canto en los cultos de adoración y en los eventos de la iglesia. Creemos que un canto bien preparado abre el corazón a la Palabra y trae consuelo y alegría.",
-      "pillars": {
-        "worship": {
-          "title": "Adoración",
-          "text": "Cantamos primero para Dios: el público es la iglesia y el oyente es Él."
-        },
-        "message": {
-          "title": "Mensaje",
-          "text": "Elegimos cantos de letra bíblica y profunda, que digan algo a quien escucha."
-        },
-        "unity": {
-          "title": "Unidad",
-          "text": "Voces distintas, un mismo corazón. El coro es también una familia que ora junta."
-        }
-      },
-      "activities": {
-        "services": {
-          "title": "Servicio en los cultos",
-          "text": "Cantos en los cultos del domingo y en las fiestas de la iglesia."
-        },
-        "rehearsals": {
-          "title": "Ensayos",
-          "text": "Preparamos el repertorio con paciencia: técnica vocal, armonía y comprensión del texto."
-        },
-        "concerts": {
-          "title": "Conciertos",
-          "text": "Noches de canto, como el concierto de villancicos, abiertas a la iglesia y a la ciudad."
-        },
-        "voices": {
-          "title": "Voces nuevas",
-          "text": "Eres bienvenido si te gusta cantar: los directores te ayudan a encontrar tu voz."
-        }
-      },
-      "verse": {
-        "text": "«Enseñándoos y exhortándoos unos a otros en toda sabiduría, cantando con gracia en vuestros corazones al Señor con salmos e himnos y cánticos espirituales.»",
-        "ref": "Colosenses 3:16"
-      },
-      "join": "¿Te gusta cantar? Ven a un ensayo y conoce a los directores."
+      "tagline": "Cantos que llevan la Palabra al corazón."
     },
     "missions": {
       "name": "Misión exterior",
-      "tagline": "Hasta lo último de la tierra, juntos.",
-      "intro": "Apoyamos la obra del evangelio más allá de Arganda: con oración, con apoyo a misioneros e iglesias hermanas y con equipos que salen a servir allí donde hace falta.",
-      "pillars": {
-        "prayer": {
-          "title": "Oración",
-          "text": "La misión empieza de rodillas: oramos por nombre por los misioneros y sus campos."
-        },
-        "support": {
-          "title": "Apoyo",
-          "text": "Ayuda concreta y constante para obreros e iglesias que sirven en condiciones difíciles."
-        },
-        "sending": {
-          "title": "Envío",
-          "text": "Preparamos y enviamos equipos que sirven una temporada junto a nuestros compañeros."
-        }
-      },
-      "activities": {
-        "prayer": {
-          "title": "Oración por los misioneros",
-          "text": "Motivos de oración actualizados, presentados ante la iglesia."
-        },
-        "partners": {
-          "title": "Iglesias hermanas",
-          "text": "Vínculos duraderos con iglesias y obras de otros países."
-        },
-        "trips": {
-          "title": "Viajes misioneros",
-          "text": "Equipos cortos de servicio: construcción, evangelización, trabajo con niños."
-        },
-        "news": {
-          "title": "Noticias de la misión",
-          "text": "Lo que Dios hace allí, contado a la iglesia por quienes sirven."
-        }
-      },
-      "verse": {
-        "text": "«…y me seréis testigos en Jerusalén, en toda Judea, en Samaria, y hasta lo último de la tierra.»",
-        "ref": "Hechos 1:8"
-      },
-      "join": "¿Sientes el llamado a la misión o quieres apoyar en oración? Empieza escribiéndonos."
+      "tagline": "Hasta lo último de la tierra, juntos."
     },
     "relief": {
       "name": "Ayuda social",
-      "tagline": "Un amor que se ve en los hechos.",
-      "intro": "La ayuda social es estar cerca de quien lo necesita, dentro y fuera de la iglesia. Organizamos apoyo para familias en dificultad, colectas y campañas como «La sonrisa en una caja».",
-      "pillars": {
-        "compassion": {
-          "title": "Compasión",
-          "text": "Vemos a la persona, no solo la necesidad. La ayuda empieza escuchando y orando."
-        },
-        "discretion": {
-          "title": "Discreción",
-          "text": "La ayuda se da con respeto y sin exponer a nadie: la dignidad de cada uno importa."
-        },
-        "stewardship": {
-          "title": "Buena administración",
-          "text": "Cada donativo llega a donde se dio, con transparencia ante la iglesia."
-        }
-      },
-      "activities": {
-        "families": {
-          "title": "Apoyo a familias",
-          "text": "Alimentos, cosas necesarias y ayuda puntual en momentos difíciles."
-        },
-        "campaigns": {
-          "title": "Campañas",
-          "text": "«La sonrisa en una caja» y otras acciones en las que puede participar toda la iglesia."
-        },
-        "collections": {
-          "title": "Colectas",
-          "text": "Reunimos lo necesario para situaciones concretas, anunciadas en la iglesia."
-        },
-        "visits": {
-          "title": "Visitas",
-          "text": "Cerca de los enfermos, los mayores y quienes están solos, en casa o en el hospital."
-        }
-      },
-      "verse": {
-        "text": "«Sobrellevad los unos las cargas de los otros, y cumplid así la ley de Cristo.»",
-        "ref": "Gálatas 6:2"
-      },
-      "join": "¿Conoces a alguien que necesita ayuda o quieres ayudar? Escríbenos: todo queda entre nosotros."
+      "tagline": "Un amor que se ve en los hechos."
     },
     "evangelism": {
       "name": "Evangelización",
-      "tagline": "La buena noticia, contada con amor.",
-      "intro": "Llevamos el evangelio a Arganda del Rey y alrededores: noches de evangelización, conciertos, material impreso y, sobre todo, personas dispuestas a contar su historia con Dios.",
-      "pillars": {
-        "message": {
-          "title": "Mensaje",
-          "text": "Cristo, crucificado y resucitado: una noticia sencilla, contada con claridad y sin rebajas."
-        },
-        "love": {
-          "title": "Amor",
-          "text": "Evangelizamos con palabras y con la vida: con respeto, paciencia y bondad."
-        },
-        "discipleship": {
-          "title": "Discipulado",
-          "text": "No nos quedamos en el primer encuentro: acompañamos a los nuevos en sus primeros pasos."
-        }
-      },
-      "activities": {
-        "evenings": {
-          "title": "Noches de evangelización",
-          "text": "Programas especiales con invitados, abiertos a cualquiera que quiera oír el evangelio."
-        },
-        "concerts": {
-          "title": "Conciertos",
-          "text": "La música como puente: conciertos de villancicos y noches musicales para la ciudad."
-        },
-        "materials": {
-          "title": "Materiales",
-          "text": "Folletos e invitaciones preparados para compartir con quienes nos rodean."
-        },
-        "invitations": {
-          "title": "Invitaciones",
-          "text": "Cada miembro, un invitado: traemos amigos, compañeros y vecinos a la iglesia."
-        }
-      },
-      "verse": {
-        "text": "«Id por todo el mundo y predicad el evangelio a toda criatura.»",
-        "ref": "Marcos 16:15"
-      },
-      "join": "¿Quieres repartir folletos, invitar o ayudar en las noches de evangelización? Hay sitio para ti."
+      "tagline": "La buena noticia, contada con amor."
     }
   }
 }

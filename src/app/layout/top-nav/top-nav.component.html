@@ -303,8 +303,11 @@
                   </a>
                 </div>
                 <!-- Diferido: plantilla, estilos y datos se descargan al abrir el
-                     panel (precargados en reposo), no en el arranque. -->
-                @defer (prefetch on idle) {
+                     panel, no en el arranque. `on immediate` y no `prefetch on
+                     idle`: este bloque sólo existe con el panel abierto, así que
+                     una precarga «en reposo» nunca llegaba antes (y Angular
+                     avisa, NG8021, de que sin disparador principal no actúa). -->
+                @defer (on immediate) {
                   <app-departments-aside />
                 } @placeholder {
                   <div class="nav__depts-ph" aria-hidden="true"></div>

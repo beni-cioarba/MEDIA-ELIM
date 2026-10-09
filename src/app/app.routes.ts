@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, Route, Router, Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { APP_PATHS, DEPARTMENT_SLUGS, DepartmentId } from './core/navigation/app-paths';
 import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
+import { departmentsTranslationsResolver } from './features/departments/departments-translations.resolver';
 
 /**
  * Portada de sección de un grupo de `MAIN_NAV` (`/biserica`, `/program`,
@@ -34,6 +35,7 @@ function departmentRoute(id: DepartmentId): Route {
       import('./features/departments/department-page/department-page.component').then(
         (m) => m.DepartmentPageComponent,
       ),
+    resolve: { i18n: departmentsTranslationsResolver },
     data: {
       department: id,
       seo: { titleKey: `departments.${id}.name`, descriptionKey: `departments.${id}.tagline` },
@@ -100,6 +102,7 @@ export const APP_ROUTES: Routes = [
           import('./features/departments/departments-home/departments-home.component').then(
             (m) => m.DepartmentsHomeComponent,
           ),
+        resolve: { i18n: departmentsTranslationsResolver },
         data: {
           seo: { titleKey: 'nav.departments', descriptionKey: 'nav.departments_desc' },
         },

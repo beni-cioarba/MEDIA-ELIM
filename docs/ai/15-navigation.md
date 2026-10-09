@@ -100,6 +100,13 @@ la ruta hija por coincidencia de prefijo.
   replantear la barra.
 - Las etiquetas viven bajo `nav.*` y deben existir en los dos idiomas.
 
+## Grupos sin migaja: `noBreadcrumb`
+
+Un grupo de `MAIN_NAV` con `noBreadcrumb: true` no pinta migaja en ninguna
+de sus páginas (tampoco en la vista previa del arrastre). Hoy sólo
+Departamente: su portada (carrusel con el nombre + fila de acceso rápido) ya
+dice dónde se está. El resto de la web la conserva.
+
 ## Estado activo: `NavActiveService`
 
 Quién está activo **no** se decide con `routerLinkActive`, sino con
@@ -143,7 +150,7 @@ El panel tiene **dos zonas**, no dos filas:
     columna de seis enlaces medía ~390 px y el destacado ~270.
   - `about` → tarjeta de invitación (culto, dirección, cómo llegar).
   - `departments` → miniaturas de los seis departamentos (3 × 2). Es
-    `app-departments-aside` con `@defer (prefetch on idle)`: dentro de la
+    `app-departments-aside` con `@defer (on immediate)` (el bloque sólo existe con el panel abierto): dentro de la
     cabecera (eager) costaba ~4 kB del arranque y pasaba el presupuesto.
 
 Por qué en dos zonas y no apilado: medido a 1512 px, con los enlaces arriba y
@@ -277,7 +284,10 @@ vuelve. Lo que asoma es **la página vecina real** (`SwipePeekComponent` +
 árbol) y lleva los datos/parámetros de su ruta, precedido de su migaja
 (`app-breadcrumb [trail]`), colocado bajo la cabecera, donde quedará. Un
 esqueleto genérico no coincidía con ninguna página (rechazado por el
-usuario). Las vecinas se cargan en reposo tras cada navegación (`warm`).
+usuario). Las vecinas se cargan en reposo tras cada navegación (`warm`), **y con
+ellas se ejecutan los `resolve` de su ruta** (09/10/2026): la vista previa
+monta la página fuera del router y, sin eso, una pestaña con paquete de
+textos (`/departamente`) asomaba con las claves en crudo.
 Se desplazan juntos `<main>`, migaja y pie; la cabecera y la barra se
 quedan. Al completar: subida **instantánea** a 0 (el `html` tiene scroll
 suave), navegar, dos fotogramas y fundido de 160 ms sobre la página real.

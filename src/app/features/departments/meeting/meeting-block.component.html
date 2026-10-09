@@ -1,0 +1,55 @@
+@if (view(); as v) {
+  @let b = v.base;
+  <section class="meeting" [attr.aria-labelledby]="'meeting-' + v.key">
+    <!-- Billete: la próxima fecha. -->
+    @if (v.dates[0]; as next) {
+      <app-date-ticket [date]="next" [time]="v.time" />
+    }
+
+    <div class="body">
+      <p class="eyebrow">
+        <app-icon name="calendar" />
+        {{ b + '.eyebrow' | translate }}
+      </p>
+      <h2 class="title" [id]="'meeting-' + v.key">{{ b + '.title' | translate }}</h2>
+      <p class="when">{{ b + '.when' | translate: { time: v.time } }}</p>
+      <p class="lead">{{ b + '.lead' | translate }}</p>
+
+      <ul class="parts" role="list">
+        @for (part of meeting().parts; track part.key) {
+          <li class="part">
+            <span class="part__icon" aria-hidden="true"><app-icon [name]="part.icon" /></span>
+            <span class="part__text">
+              <span class="part__title">{{ b + '.parts.' + part.key + '.title' | translate }}</span>
+              <span class="part__desc">{{ b + '.parts.' + part.key + '.text' | translate }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+
+      <div class="foot">
+        @if (!hideAfter() && v.dates.length > 1) {
+          <div class="after">
+            <span class="after__label">{{ 'departments.ticket.after' | translate }}</span>
+            <ul class="after__list" role="list">
+              @for (date of v.dates.slice(1); track date) {
+                @let q = schedule.formatDayParts(date);
+                <li class="after__chip">{{ q.day }} {{ q.month }}</li>
+              }
+            </ul>
+          </div>
+        }
+        <button type="button" class="cal" (click)="addToCalendar()">
+          <app-icon name="calendar" />
+          {{ 'departments.add_calendar' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Pieza propia de esta reunión (la masa de tineret con su app), a
+         todo el ancho del bloque, bajo el billete y el cuerpo. -->
+    <div class="companion">
+      <ng-content />
+    </div>
+  </section>
+}

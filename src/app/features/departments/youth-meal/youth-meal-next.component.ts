@@ -17,7 +17,7 @@ import { YouthMealService } from './youth-meal.service';
   imports: [RouterLink, TranslatePipe, IconComponent],
   template: `
     <a class="strip" [routerLink]="link()" fragment="masa">
-      <span class="strip__icon" aria-hidden="true"><app-icon name="utensils" /></span>
+      <span class="strip__icon" aria-hidden="true"><app-icon name="calendar" /></span>
       <span class="strip__head">
         <span class="strip__kicker">{{ 'departments.youth.meal.eyebrow' | translate }}</span>
         <span class="strip__title">{{ 'departments.youth.meal.title' | translate }}</span>

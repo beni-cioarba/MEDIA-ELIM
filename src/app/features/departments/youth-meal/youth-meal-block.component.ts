@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { QRCodeComponent } from 'angularx-qrcode';
 import {
   YOUTH_MEAL_APP,
   YouthMealSection,
@@ -21,29 +20,25 @@ interface AudienceLink {
 interface Audience {
   readonly id: 'youth' | 'parents';
   readonly icon: IconName;
-  /** Cuántos puntos tiene `departments.youth.meal.<id>.points.*`. */
-  readonly points: readonly string[];
   readonly links: readonly AudienceLink[];
 }
 
 /**
- * «Programarea mesei»: presenta la app ADM-TINERET dentro de la página de
- * Tineret, para que quien está implicado sepa que existe y entre en un toque.
+ * «Masa de după program»: la pieza propia del encuentro de vineri
+ * (`companion: 'youth-meal'`, proyectada en `app-meeting-block`).
  *
- * Dos mitades:
- *  · **Qué es y para quién** — tineri (cuándo prepara su equipo) y părinți
- *    (cuándo ayudan y a qué hora traen la comida), cada uno con el enlace
- *    directo a su pestaña de la app.
- *  · **Tablero en vivo** — el próximo turno con su horario y los
- *    siguientes, leídos del calendario público de la app (sin nombres).
- *
- * Accesos: abrir la app, suscribirse al calendario (`webcal:`, el teléfono lo
- * mantiene al día solo) y, en escritorio, el QR para abrirla en el móvil.
+ * **Deliberadamente secundaria** (10/10/2026, a petición del usuario): una
+ * franja de consola navy de ~140 px al pie del bloque, no un bloque propio.
+ * Tres líneas: título + fuente en vivo + abrir la app / calendario · quién
+ * prepara los próximos cuatro vineri (fichas; datos del calendario público
+ * de ADM-TINERET, sin nombres de personas; hoy en verde) · la tarde en una
+ * línea y los accesos directos para tineri y părinți. El protagonismo es del
+ * encuentro, arriba.
  */
 @Component({
   selector: 'app-youth-meal-block',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslatePipe, IconComponent, QRCodeComponent],
+  imports: [TranslatePipe, IconComponent],
   templateUrl: './youth-meal-block.component.html',
   styleUrl: './youth-meal-block.component.scss',
 })
@@ -59,7 +54,6 @@ export class YouthMealBlockComponent implements OnInit {
     {
       id: 'youth',
       icon: 'users',
-      points: ['turn', 'team', 'arrive'],
       links: [
         { section: 'schedule', labelKey: 'departments.youth.meal.links.schedule', icon: 'calendar' },
         { section: 'teams', labelKey: 'departments.youth.meal.links.teams', icon: 'users' },
@@ -68,7 +62,6 @@ export class YouthMealBlockComponent implements OnInit {
     {
       id: 'parents',
       icon: 'family',
-      points: ['turn', 'food', 'plan'],
       links: [
         { section: 'parents', labelKey: 'departments.youth.meal.links.parents', icon: 'family' },
         { section: 'rules', labelKey: 'departments.youth.meal.links.rules', icon: 'file-text' },

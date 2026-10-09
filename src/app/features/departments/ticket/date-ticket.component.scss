@@ -1,0 +1,119 @@
+@use 'ds' as *;
+@use '../departments' as dept;
+
+// Billete navy con retícula y perforación dorada hacia el cuerpo. Verde = hoy.
+
+:host {
+  --ticket-live: color-mix(in srgb, var(--c-success) 62%, #fff);
+
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: var(--sp-5) var(--sp-3);
+  overflow: hidden;
+  background: linear-gradient(165deg, var(--c-primary-deep), var(--c-primary-darkest));
+  color: rgb(247 250 252 / 0.78);
+  line-height: 1;
+  text-align: center;
+
+  @include dept.gold-edge(10%);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    @include dept.tech-grid(1.25rem, 0.05);
+    pointer-events: none;
+  }
+
+  // Perforación: filete punteado en el borde que toca el cuerpo.
+  @include from('md') {
+    border-right: 2px dashed rgb(212 175 55 / 0.45);
+  }
+
+  // Teléfono: una franja en fila (fecha · hora · cuenta atrás).
+  @include until('md') {
+    grid-auto-flow: column;
+    grid-template-columns: auto auto auto auto 1fr;
+    align-items: baseline;
+    justify-items: start;
+    column-gap: 0.6rem;
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 2px dashed rgb(212 175 55 / 0.45);
+    text-align: start;
+  }
+}
+
+.label {
+  margin-bottom: 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+
+  @include until('md') {
+    display: none;
+  }
+}
+
+.wd,
+.month {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.day {
+  margin: 0.2rem 0;
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: #fff;
+
+  @include until('md') {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+}
+
+.time {
+  margin-top: 0.6rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgb(212 175 55 / 0.5);
+  border-radius: var(--r-pill);
+  color: var(--c-gold);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+
+  @include until('md') {
+    margin: 0;
+  }
+}
+
+.left {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  @include until('md') {
+    margin: 0;
+    justify-self: end;
+  }
+}
+
+:host(.is-today) {
+  .left {
+    color: var(--ticket-live);
+    font-weight: 800;
+  }
+
+  .time {
+    border-color: var(--ticket-live);
+    color: var(--ticket-live);
+  }
+}

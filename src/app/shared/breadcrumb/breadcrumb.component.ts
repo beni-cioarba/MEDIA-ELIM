@@ -29,7 +29,9 @@ const HOME = MAIN_NAV.find((item) => item.id === 'home');
  * migaja no pueden discrepar nunca.
  *
  * Decisiones de diseño:
- *  - Se oculta en la portada: una migaja de un solo nivel es ruido.
+ *  - Se oculta en la portada: una migaja de un solo nivel es ruido. Y en
+ *    los grupos con `noBreadcrumb` (Departamente), cuya portada ya dice
+ *    dónde se está.
  *  - Los grupos («Biserica», «Media») no son enlaces porque no tienen
  *    página índice; se pintan como texto para no prometer un destino que
  *    no existe.
@@ -89,7 +91,9 @@ export class BreadcrumbComponent {
   protected readonly crumbs = computed<readonly Crumb[]>(() => {
     const trail = this.trail() ?? this.activeTrail();
     // Portada o ruta desconocida: nada que migar.
-    if (trail.length === 0 || trail[0]?.id === 'home') return [];
+    // Sin migaja en la portada ni en los grupos que la desactivan
+    // (`NavItem.noBreadcrumb`: Departamente).
+    if (trail.length === 0 || trail[0]?.id === 'home' || trail[0]?.noBreadcrumb) return [];
 
     // Eslabón de detalle (sólo en la página real, no en la vista previa del
     // arrastre): la sección pasa a ser enlace y el detalle es la página actual.

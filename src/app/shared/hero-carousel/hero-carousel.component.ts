@@ -109,6 +109,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
             width="1600"
             height="1067"
             decoding="async"
+            (error)="onImageError($event)"
           />
           }
         }
@@ -663,6 +664,13 @@ export class HeroCarouselComponent {
   /** Cadencia del auto-avance en milisegundos. */
   @Input() intervalMs = HERO_SLIDE_MS;
 
+  /**
+   * Dónde viven los rótulos de las fotos (`<prefijo>.<i18nKey>`). La portada
+   * usa `home.hero.slides`; un departamento, los suyos
+   * (`departments.youth.hero.slides`).
+   */
+  @Input() captionPrefix = 'home.hero.slides';
+
   protected readonly index = signal(0);
 
   /**
@@ -801,12 +809,22 @@ export class HeroCarouselComponent {
     if (Math.abs(dx) >= 48) this.step(dx < 0 ? 1 : -1);
   }
 
+  /**
+   * Foto que no carga (404, red caída, un fichero nuevo que el servidor de
+   * desarrollo aún no publica): se oculta y queda el tono de la diapositiva
+   * de fondo. Sin esto el navegador pintaba el icono roto y el `alt` encima
+   * de la portada.
+   */
+  protected onImageError(event: Event): void {
+    (event.target as HTMLImageElement).style.visibility = 'hidden';
+  }
+
   protected pad(n: number): string {
     return String(n).padStart(2, '0');
   }
 
   protected captionKey(slide: HeroSlide): string {
-    return `home.hero.slides.${slide.i18nKey}`;
+    return `${this.captionPrefix}.${slide.i18nKey}`;
   }
 }
 

@@ -505,6 +505,19 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       // Drive: «Zambetul din cutie - 2025»
       driveFolderId: '1ADjG_UdCDXSEthe6Hr1GcYNXIWRKxXw-',
     },
+    {
+      id: 'ancorat_2026',
+      // También es la crónica de Tineret (`departments.config.ts`): mismas
+      // fotos optimizadas, sin duplicar peso.
+      i18nKey: 'ancorat_2026',
+      image: 'assets/drive-media/ancorat_2026_sala.webp',
+      medium: 'assets/drive-media/ancorat_2026_sala-960.webp',
+      thumb: 'assets/drive-media/ancorat_2026_sala-thumb.webp',
+      tone: '#776760',
+      gradient: ['#0f2440', '#d4af37'],
+      // Drive: «ELIM - MEDIA POZE › ANCORAT › POZE CONFERINTA - NAOMI»
+      driveFolderId: '1bzwggHsitKUKdterJ_wkie7vbQsXdpQO',
+    },
   ],
   // ---------------------------------------------------------------------
   // Programare săptămânală a serviciilor religioase fixe.

@@ -43,6 +43,12 @@ export interface NavItem {
    * `labelKey`.
    */
   readonly tabLabelKey?: string;
+  /**
+   * Sólo en grupos: sus páginas no llevan migaja de pan, porque su portada ya
+   * dice dónde se está (Departamente: carrusel con el nombre del
+   * departamento y fila de acceso rápido). El resto de la web la conserva.
+   */
+  readonly noBreadcrumb?: boolean;
 }
 
 /** ¿La entrada abre un destino externo? */

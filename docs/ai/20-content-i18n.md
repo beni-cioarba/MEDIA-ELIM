@@ -296,10 +296,17 @@ límites y ficheros: `docs/ai/35-announcements.md`** (léelo antes).
    - Para sacar los ID de todas las subcarpetas de golpe: abre la carpeta
      principal en el navegador y lee los `data-id` de las filas (cada fila de
      carpeta lleva su ID).
+   - **El `id:` debe ser la primera línea de la entrada**: `check:drive` lee
+     el fichero con una expresión regular que corta por `{ id:`; un
+     comentario antes del `id` funde la entrada con la anterior.
+   - Hay una segunda carpeta pública, «ELIM - MEDIA POZE»
+     (`1M7tbr2lZuzhJDGLw63KlcqGSHTctaYox`), con las fotos originales por
+     evento (ANCORAT, Aniversar, Botez 31/05/2026, Fanfara Tarancón…).
    - Correspondencia actual (oct. 2026): botez → «BOTEZ 2025-11-30»,
      colinde copii → «Concert Colinde Copi», colinde Elim → «Concert De
      Colinde Elim», revelion (31-12-2025) → «Revelion - 2026», zâmbetul →
-     «Zambetul din cutie - 2025». En Drive hay además, sin evento en la web
+     «Zambetul din cutie - 2025», ancorat_2026 → «MEDIA POZE › ANCORAT ›
+     POZE CONFERINTA - NAOMI». En Drive hay además, sin evento en la web
      todavía: Evanghelizare (13/15-03-2026), Fanfara Tarancón (20-09-2026),
      Tabăra 2026 (25-26 iulie, Ávila) y Talantul în negoț 2026.
 

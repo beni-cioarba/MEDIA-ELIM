@@ -53,7 +53,7 @@ interface FilledIcon {
 const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   // Departamentos (Lucide): «globe» misiune externă, «hand-heart» ajutorare,
   // «mic-vocal» cor, «flame» tineret, «sprout» evanghelizare (la sămânța
-  // semănătorului), «utensils» la masa de tineret y «layout-grid» el grupo.
+  // semănătorului) y «layout-grid» el grupo.
   globe: [
     'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20',
     'M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20',
@@ -78,11 +78,6 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
     'M10 20c5.5-2.5.8-6.4 3-10',
     'M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z',
     'M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z',
-  ],
-  utensils: [
-    'M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2',
-    'M7 2v20',
-    'M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7',
   ],
   'layout-grid': [
     'M4 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z',

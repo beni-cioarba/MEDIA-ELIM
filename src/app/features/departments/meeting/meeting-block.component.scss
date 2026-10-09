@@ -1,0 +1,212 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Reunión fija, semanal o mensual (09/10/2026): el billete
+// (`app-date-ticket`) con la próxima fecha unido a la explicación sobre la
+// superficie clara; debajo, a todo el ancho, la pieza propia si la hay.
+// =====================================================================
+
+:host {
+  display: block;
+}
+
+.meeting {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(90% 120% at 100% 0%, var(--c-gold-tint), transparent 55%),
+    var(--c-surface);
+  box-shadow: var(--e-2);
+
+  @include from('md') {
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Cuerpo
+// ---------------------------------------------------------------------
+.body {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  min-width: 0;
+
+  @include until('sm') {
+    padding: var(--sp-4);
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  @include eyebrow;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary-deep);
+}
+
+.when {
+  margin: -0.35rem 0 0;
+  font-weight: 700;
+  color: var(--c-gold-deep);
+}
+
+.lead {
+  max-width: 46rem;
+  margin: 0;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+
+.parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: var(--sp-2);
+  margin: var(--sp-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.part {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-3);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-bg);
+}
+
+// Teléfono: filas sin caja (tres cajas apiladas medían ~310 px).
+@include until('sm') {
+  .parts {
+    gap: var(--sp-3);
+  }
+
+  .part {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+}
+
+.part__icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--r-md);
+  background: var(--c-primary-deep);
+  color: var(--c-gold);
+}
+
+.part__text {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.part__title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary-deep);
+}
+
+.part__desc {
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.after {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.after__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.after__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.after__chip {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-primary-deep);
+}
+
+.cal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--c-primary-deep);
+  color: #fff;
+  font: 700 0.875rem/1 var(--font-display);
+  cursor: pointer;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(2px);
+
+  app-icon {
+    color: var(--c-gold);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--c-primary);
+    }
+  }
+}
+
+// Pieza proyectada (la masa de tineret): fila propia a todo el ancho.
+.companion {
+  grid-column: 1 / -1;
+  min-width: 0;
+
+  &:empty {
+    display: none;
+  }
+}

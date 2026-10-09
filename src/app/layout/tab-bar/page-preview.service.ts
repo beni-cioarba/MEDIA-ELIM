@@ -1,13 +1,14 @@
-import { Injectable, Type, inject } from '@angular/core';
+import { EnvironmentInjector, Injectable, Type, inject, runInInjectionContext } from '@angular/core';
 import {
   ActivatedRoute,
   Data,
   Params,
+  ResolveFn,
   Route,
   Router,
   convertToParamMap,
 } from '@angular/router';
-import { of } from 'rxjs';
+import { firstValueFrom, isObservable, of } from 'rxjs';
 
 /** Una página lista para montarse fuera del router. */
 export interface PreviewPage {
@@ -41,6 +42,7 @@ interface Resolved {
 @Injectable({ providedIn: 'root' })
 export class PagePreviewService {
   private readonly router = inject(Router);
+  private readonly injector = inject(EnvironmentInjector);
   private readonly components = new Map<Route, Type<unknown>>();
 
   /** La página de esa URL si su componente ya está cargado; si no, `null`. */
@@ -51,17 +53,38 @@ export class PagePreviewService {
     return component ? { component, route: this.routeFor(resolved) } : null;
   }
 
-  /** Carga en reposo los componentes de esas URLs (idempotente). */
+  /**
+   * Carga en reposo los componentes de esas URLs (idempotente) **y ejecuta
+   * los `resolve` de su ruta**: la vista previa monta la página fuera del
+   * router, así que nadie más los correría. Hoy lo que resuelven son paquetes
+   * de traducciones (`/departamente`): sin esto asomaba con las claves en
+   * crudo. La página sólo se ofrece cuando ha terminado todo.
+   */
   warm(urls: readonly string[]): void {
     for (const url of urls) {
       const resolved = this.resolve(url);
       const load = resolved?.config.loadComponent;
       if (!resolved || !load || this.components.has(resolved.config)) continue;
-      void Promise.resolve(load()).then((loaded) => {
-        const type = (loaded as { default?: Type<unknown> }).default ?? (loaded as Type<unknown>);
-        this.components.set(resolved.config, type);
-      });
+      void Promise.all([Promise.resolve(load()), ...this.runResolvers(resolved.config)]).then(
+        ([loaded]) => {
+          const type = (loaded as { default?: Type<unknown> }).default ?? (loaded as Type<unknown>);
+          this.components.set(resolved.config, type);
+        },
+      );
     }
+  }
+
+  /** Los `ResolveFn` de la ruta, en el contexto de inyección raíz. */
+  private runResolvers(config: Route): Promise<unknown>[] {
+    const { snapshot } = this.router.routerState;
+    return Object.values(config.resolve ?? {})
+      .filter((fn): fn is ResolveFn<unknown> => typeof fn === 'function')
+      .map((fn) =>
+        runInInjectionContext(this.injector, () => {
+          const result = fn(snapshot.root, snapshot);
+          return isObservable(result) ? firstValueFrom(result) : Promise.resolve(result);
+        }),
+      );
   }
 
   /**

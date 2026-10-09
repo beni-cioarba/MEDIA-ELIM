@@ -1,0 +1,474 @@
+{
+  "departments": {
+    "switcher": "Acceso rápido a los departamentos",
+    "all": "Todos",
+    "eyebrow": "Departamento · Iglesia Elim",
+    "about": "Quiénes somos",
+    "what_we_do": "Qué hacemos",
+    "events": "Eventos del departamento",
+    "details": "Detalles del departamento",
+    "leaders": "Quién coordina",
+    "people_count": "{{count}} servidores",
+    "activities": "Actividades",
+    "activities_count": "{{count}} áreas",
+    "join": "Quiero participar",
+    "join_title": "¿Quieres participar?",
+    "join_message": "¡Hola! Me gustaría saber cómo puedo participar en el departamento de {{name}}.",
+    "join_message_any": "¡Hola! Me gustaría saber cómo puedo participar en alguno de los departamentos de la iglesia.",
+    "home": {
+      "lead": "Cada don tiene su lugar. Conoce los departamentos de la iglesia, qué hace cada uno y cómo puedes unirte.",
+      "stat_departments": "Departamentos",
+      "stat_people": "Coordinadores",
+      "stat_activities": "Actividades",
+      "join_title": "Cada don tiene su lugar",
+      "join_lead": "No necesitas saber de antemano dónde encajas. Escríbenos y te ayudamos a encontrar el departamento adecuado para ti."
+    },
+    "youth": {
+      "intro": "Los jóvenes de Elim son el lugar donde crecemos juntos en la fe: adoración, Palabra, amistad y servicio. Nos reunimos cada viernes por la noche y lo preparamos todo juntos, desde el programa hasta la cena de después.",
+      "pillars": {
+        "worship": {
+          "title": "Adoración",
+          "text": "Nos acercamos a Dios de todo corazón, con canto y oración, y aprendemos a servir en la adoración de la iglesia."
+        },
+        "word": {
+          "title": "Palabra",
+          "text": "Estudiamos la Escritura con preguntas reales y respuestas bíblicas, para una fe que se sostiene en el día a día."
+        },
+        "fellowship": {
+          "title": "Comunión",
+          "text": "Amistades de verdad, construidas alrededor de la mesa, las conversaciones y el tiempo compartido."
+        },
+        "service": {
+          "title": "Servicio",
+          "text": "Cada joven tiene su sitio: equipos, responsabilidades y la ocasión de poner sus dones en práctica."
+        }
+      },
+      "activities": {
+        "worship": {
+          "title": "Grupos de alabanza",
+          "text": "Los jóvenes sirven con el canto en los cultos de la iglesia y se preparan juntos."
+        },
+        "conferences": {
+          "title": "Conferencias y noches especiales",
+          "text": "Encuentros con invitados, como la conferencia «ANCORAT», con mensaje y turno de preguntas."
+        },
+        "camp": {
+          "title": "Campamentos y salidas",
+          "text": "Días juntos lejos de la ciudad, como el campamento en la Granja Casavieja (Ávila)."
+        }
+      },
+      "verse": {
+        "text": "«Ninguno tenga en poco tu juventud, sino sé ejemplo de los creyentes en palabra, conducta, amor, espíritu, fe y pureza.»",
+        "ref": "1 Timoteo 4:12"
+      },
+      "join": "¿Eres joven y quieres crecer en la fe? Ven el viernes por la noche: no hace falta conocer a nadie para sentirte en casa.",
+      "meal": {
+        "cta": "Programación de la cena",
+        "eyebrow": "La app de los jóvenes",
+        "title": "Programación de la cena del viernes",
+        "youth": {
+          "short": "Jóvenes"
+        },
+        "parents": {
+          "short": "Padres"
+        },
+        "links": {
+          "schedule": "Programación",
+          "teams": "Equipos",
+          "parents": "Padres de apoyo",
+          "rules": "Normas"
+        },
+        "open": "Abrir la app",
+        "subscribe": "Suscribirse al calendario",
+        "board": "Próximos viernes",
+        "today": "¡Hoy!",
+        "in_days_short": "{{days}} d",
+        "step_arrival": "Llegan los jóvenes",
+        "step_food": "Los padres traen la comida",
+        "step_program": "Empieza el programa",
+        "none": "No hay cenas programadas próximamente. Consulta la app para ver novedades.",
+        "offline": "No hemos podido cargar la programación ahora. La tienes siempre en la app.",
+        "who": "Mira a quién le toca",
+        "section_title": "La cena después del programa"
+      },
+      "monthly": {
+        "sunday": {
+          "eyebrow": "Cada mes",
+          "title": "Noche de jóvenes en la iglesia",
+          "when": "Primer domingo del mes · {{time}}",
+          "lead": "Al comienzo de cada mes, el culto del domingo por la tarde lo preparan y lo dirigen en gran parte los jóvenes. Es la noche en que toda la iglesia ve a los jóvenes sirviendo, y el mejor momento para traer a un amigo.",
+          "parts": {
+            "worship": {
+              "title": "Alabanza y adoración",
+              "text": "Los cantos y los grupos de alabanza de los jóvenes."
+            },
+            "testimonies": {
+              "title": "Poesías y testimonios",
+              "text": "Lo que Dios ha hecho en su vida, contado por ellos."
+            },
+            "word": {
+              "title": "La Palabra",
+              "text": "Un mensaje de la Escritura para toda la iglesia."
+            }
+          },
+          "calendar_title": "Noche de jóvenes · Iglesia Elim",
+          "calendar_desc": "Primer domingo del mes: el programa de la noche lo dirigen en gran parte los jóvenes."
+        }
+      },
+      "stories": {
+        "ancorat_2026": {
+          "title": "ANCORAT · Conferencia de jóvenes",
+          "lead": "El 26 de septiembre la sala se llenó de jóvenes para la conferencia «ANCORAT» (anclado). El hermano Daniel Popa (Timișoara) trajo el mensaje y la noche siguió con preguntas y respuestas abiertas. Y en la entrada, cada uno dejó una nota en el muro del ancla.",
+          "points": {
+            "message": {
+              "title": "El mensaje",
+              "text": "El hermano Daniel Popa, sobre lo que significa seguir anclado en Cristo."
+            },
+            "qa": {
+              "title": "Preguntas y respuestas",
+              "text": "Los jóvenes hicieron sus preguntas y las respuestas llegaron desde la Escritura."
+            },
+            "wall": {
+              "title": "El muro del ancla",
+              "text": "«Dios es mi ancla cuando…»: cada uno escribió su respuesta."
+            },
+            "sunday": {
+              "title": "Domingo, evangelización",
+              "text": "Al día siguiente, en los dos cultos, también con el hermano Daniel Popa."
+            }
+          },
+          "verse": {
+            "text": "«La cual tenemos como segura y firme ancla del alma.»",
+            "ref": "Hebreos 6:19"
+          },
+          "caption": "La entrada: el muro «Dios es mi ancla cuando…»"
+        },
+        "tabara_2026": {
+          "title": "Campamento de jóvenes 2026",
+          "lead": "Dos días lejos de la ciudad, en la Granja Casavieja (Ávila): comunión, Palabra y tiempo juntos en la naturaleza.",
+          "points": {
+            "together": {
+              "title": "Dos días juntos",
+              "text": "Amistades que se forjan de otra manera cuando convives, comes y oras con los demás."
+            },
+            "word": {
+              "title": "Palabra y oración",
+              "text": "Momentos de estudio y de oración, lejos de las prisas."
+            },
+            "nature": {
+              "title": "En plena naturaleza",
+              "text": "Juegos, paseos y la calma de la sierra de Ávila."
+            }
+          }
+        }
+      },
+      "weekly": {
+        "friday": {
+          "eyebrow": "Cada semana",
+          "title": "Encuentro de jóvenes",
+          "when": "Viernes · {{time}}",
+          "lead": "Los viernes por la noche los jóvenes de la iglesia se reúnen para la adoración, la Palabra y la comunión. La noche la preparamos juntos: los equipos de jóvenes se encargan de la cena y, después del programa, cenamos juntos. Quien quiera venir es bienvenido: no hace falta conocer a nadie.",
+          "parts": {
+            "worship": {
+              "title": "Adoración",
+              "text": "Cantos y oración dirigidos por los grupos de alabanza de los jóvenes."
+            },
+            "word": {
+              "title": "Palabra y conversación",
+              "text": "Un mensaje de la Escritura y tiempo para preguntas, en grupo."
+            },
+            "table": {
+              "title": "La cena juntos",
+              "text": "Después del programa cenamos juntos: la prepara un equipo de jóvenes."
+            }
+          },
+          "calendar_title": "Encuentro de jóvenes · Iglesia Elim",
+          "calendar_desc": "Cada viernes: adoración, Palabra y la cena juntos."
+        }
+      },
+      "hero": {
+        "slides": {
+          "worship": "Los jóvenes en adoración",
+          "ancorat_hall": "Conferencia ANCORAT · la sala llena",
+          "ancorat_worship": "Conferencia ANCORAT · alabanza y adoración",
+          "ancorat_singing": "Conferencia ANCORAT · los jóvenes cantan",
+          "ancorat_sermon": "Conferencia ANCORAT · la Palabra",
+          "ancorat_interview": "Conferencia ANCORAT · preguntas y respuestas"
+        }
+      }
+    },
+    "brass": {
+      "intro": "La banda de la iglesia sirve en los cultos de adoración y en las ocasiones especiales de la iglesia. Músicos de todas las edades unidos por el mismo deseo: que cada nota exalte a Dios.",
+      "pillars": {
+        "preparation": {
+          "title": "Preparación",
+          "text": "Ensayos constantes y disciplina: un buen servicio se prepara con tiempo."
+        },
+        "harmony": {
+          "title": "Armonía",
+          "text": "Muchos instrumentos, un solo sonido. Así aprendemos también la unidad en la iglesia."
+        },
+        "generations": {
+          "title": "Generaciones",
+          "text": "Los veteranos forman a los jóvenes y la tradición de la banda sigue adelante."
+        }
+      },
+      "activities": {
+        "services": {
+          "title": "Servicio en los cultos",
+          "text": "Alabanza en los cultos del domingo y en los días de fiesta."
+        },
+        "rehearsals": {
+          "title": "Ensayos",
+          "text": "Tiempo de preparación en común para cada programa y para el repertorio nuevo."
+        },
+        "special": {
+          "title": "Ocasiones especiales",
+          "text": "Bautismos, aniversarios, conciertos y los eventos en los que la iglesia se alegra junta."
+        },
+        "learners": {
+          "title": "Aprendices",
+          "text": "Quien quiera aprender un instrumento de metal puede pedir orientación e incorporarse poco a poco."
+        }
+      },
+      "verse": {
+        "text": "«Alabadle a son de bocina; alabadle con salterio y arpa.»",
+        "ref": "Salmo 150:3"
+      },
+      "join": "¿Tocas un instrumento de metal o quieres aprender? Habla con nosotros y te ayudamos a empezar.",
+      "hero": {
+        "slides": {
+          "band": "La banda de la iglesia"
+        }
+      },
+      "stories": {
+        "tarancon_2026": {
+          "title": "La banda en Tarancón",
+          "lead": "El 20 de septiembre de 2026 la banda sirvió en Tarancón. Las fotos del día están en la galería de la iglesia."
+        }
+      }
+    },
+    "choir": {
+      "intro": "El coro de la iglesia sirve con el canto en los cultos de adoración y en los eventos de la iglesia. Creemos que un canto bien preparado abre el corazón a la Palabra y trae consuelo y alegría.",
+      "pillars": {
+        "worship": {
+          "title": "Adoración",
+          "text": "Cantamos primero para Dios: el público es la iglesia y el oyente es Él."
+        },
+        "message": {
+          "title": "Mensaje",
+          "text": "Elegimos cantos de letra bíblica y profunda, que digan algo a quien escucha."
+        },
+        "unity": {
+          "title": "Unidad",
+          "text": "Voces distintas, un mismo corazón. El coro es también una familia que ora junta."
+        }
+      },
+      "activities": {
+        "services": {
+          "title": "Servicio en los cultos",
+          "text": "Cantos en los cultos del domingo y en las fiestas de la iglesia."
+        },
+        "rehearsals": {
+          "title": "Ensayos",
+          "text": "Preparamos el repertorio con paciencia: técnica vocal, armonía y comprensión del texto."
+        },
+        "concerts": {
+          "title": "Conciertos",
+          "text": "Noches de canto, como el concierto de villancicos, abiertas a la iglesia y a la ciudad."
+        },
+        "voices": {
+          "title": "Voces nuevas",
+          "text": "Eres bienvenido si te gusta cantar: los directores te ayudan a encontrar tu voz."
+        }
+      },
+      "verse": {
+        "text": "«Enseñándoos y exhortándoos unos a otros en toda sabiduría, cantando con gracia en vuestros corazones al Señor con salmos e himnos y cánticos espirituales.»",
+        "ref": "Colosenses 3:16"
+      },
+      "join": "¿Te gusta cantar? Ven a un ensayo y conoce a los directores.",
+      "hero": {
+        "slides": {
+          "service": "El coro de la iglesia",
+          "carols": "El concierto de villancicos"
+        }
+      },
+      "stories": {
+        "colinde_2025": {
+          "title": "El concierto de villancicos",
+          "period": "Diciembre de 2025",
+          "lead": "Una noche de villancicos del nacimiento de Jesús, cantada por el coro y la iglesia y abierta a todos los invitados."
+        }
+      }
+    },
+    "missions": {
+      "intro": "Apoyamos la obra del evangelio más allá de Arganda: con oración, con apoyo a misioneros e iglesias hermanas y con equipos que salen a servir allí donde hace falta.",
+      "pillars": {
+        "prayer": {
+          "title": "Oración",
+          "text": "La misión empieza de rodillas: oramos por nombre por los misioneros y sus campos."
+        },
+        "support": {
+          "title": "Apoyo",
+          "text": "Ayuda concreta y constante para obreros e iglesias que sirven en condiciones difíciles."
+        },
+        "sending": {
+          "title": "Envío",
+          "text": "Preparamos y enviamos equipos que sirven una temporada junto a nuestros compañeros."
+        }
+      },
+      "activities": {
+        "prayer": {
+          "title": "Oración por los misioneros",
+          "text": "Motivos de oración actualizados, presentados ante la iglesia."
+        },
+        "partners": {
+          "title": "Iglesias hermanas",
+          "text": "Vínculos duraderos con iglesias y obras de otros países."
+        },
+        "trips": {
+          "title": "Viajes misioneros",
+          "text": "Equipos cortos de servicio: construcción, evangelización, trabajo con niños."
+        },
+        "news": {
+          "title": "Noticias de la misión",
+          "text": "Lo que Dios hace allí, contado a la iglesia por quienes sirven."
+        }
+      },
+      "verse": {
+        "text": "«…y me seréis testigos en Jerusalén, en toda Judea, en Samaria, y hasta lo último de la tierra.»",
+        "ref": "Hechos 1:8"
+      },
+      "join": "¿Sientes el llamado a la misión o quieres apoyar en oración? Empieza escribiéndonos."
+    },
+    "relief": {
+      "intro": "La ayuda social es estar cerca de quien lo necesita, dentro y fuera de la iglesia. Organizamos apoyo para familias en dificultad, colectas y campañas como «La sonrisa en una caja».",
+      "pillars": {
+        "compassion": {
+          "title": "Compasión",
+          "text": "Vemos a la persona, no solo la necesidad. La ayuda empieza escuchando y orando."
+        },
+        "discretion": {
+          "title": "Discreción",
+          "text": "La ayuda se da con respeto y sin exponer a nadie: la dignidad de cada uno importa."
+        },
+        "stewardship": {
+          "title": "Buena administración",
+          "text": "Cada donativo llega a donde se dio, con transparencia ante la iglesia."
+        }
+      },
+      "activities": {
+        "families": {
+          "title": "Apoyo a familias",
+          "text": "Alimentos, cosas necesarias y ayuda puntual en momentos difíciles."
+        },
+        "campaigns": {
+          "title": "Campañas",
+          "text": "«La sonrisa en una caja» y otras acciones en las que puede participar toda la iglesia."
+        },
+        "collections": {
+          "title": "Colectas",
+          "text": "Reunimos lo necesario para situaciones concretas, anunciadas en la iglesia."
+        },
+        "visits": {
+          "title": "Visitas",
+          "text": "Cerca de los enfermos, los mayores y quienes están solos, en casa o en el hospital."
+        }
+      },
+      "verse": {
+        "text": "«Sobrellevad los unos las cargas de los otros, y cumplid así la ley de Cristo.»",
+        "ref": "Gálatas 6:2"
+      },
+      "join": "¿Conoces a alguien que necesita ayuda o quieres ayudar? Escríbenos: todo queda entre nosotros.",
+      "hero": {
+        "slides": {
+          "boxes": "La sonrisa en una caja"
+        }
+      },
+      "stories": {
+        "zambetul_2025": {
+          "title": "La sonrisa en una caja",
+          "period": "Campaña solidaria · 2025",
+          "lead": "La campaña en la que las familias de la iglesia prepararon cajas con regalos para quienes necesitan una alegría."
+        }
+      }
+    },
+    "evangelism": {
+      "intro": "Llevamos el evangelio a Arganda del Rey y alrededores: noches de evangelización, conciertos, material impreso y, sobre todo, personas dispuestas a contar su historia con Dios.",
+      "pillars": {
+        "message": {
+          "title": "Mensaje",
+          "text": "Cristo, crucificado y resucitado: una noticia sencilla, contada con claridad y sin rebajas."
+        },
+        "love": {
+          "title": "Amor",
+          "text": "Evangelizamos con palabras y con la vida: con respeto, paciencia y bondad."
+        },
+        "discipleship": {
+          "title": "Discipulado",
+          "text": "No nos quedamos en el primer encuentro: acompañamos a los nuevos en sus primeros pasos."
+        }
+      },
+      "activities": {
+        "evenings": {
+          "title": "Noches de evangelización",
+          "text": "Programas especiales con invitados, abiertos a cualquiera que quiera oír el evangelio."
+        },
+        "concerts": {
+          "title": "Conciertos",
+          "text": "La música como puente: conciertos de villancicos y noches musicales para la ciudad."
+        },
+        "materials": {
+          "title": "Materiales",
+          "text": "Folletos e invitaciones preparados para compartir con quienes nos rodean."
+        },
+        "invitations": {
+          "title": "Invitaciones",
+          "text": "Cada miembro, un invitado: traemos amigos, compañeros y vecinos a la iglesia."
+        }
+      },
+      "verse": {
+        "text": "«Id por todo el mundo y predicad el evangelio a toda criatura.»",
+        "ref": "Marcos 16:15"
+      },
+      "join": "¿Quieres repartir folletos, invitar o ayudar en las noches de evangelización? Hay sitio para ti.",
+      "hero": {
+        "slides": {
+          "carols": "El concierto de villancicos, abierto a la ciudad",
+          "candidates": "Los candidatos al bautismo",
+          "baptism": "Bautismo"
+        }
+      },
+      "stories": {
+        "martie_2026": {
+          "title": "Las noches de evangelización de marzo",
+          "lead": "Tres noches, del 13 al 15 de marzo de 2026, con el hermano Gabi Zagrean y los Hermanos Strugariu: el evangelio predicado y cantado para todos los invitados."
+        }
+      }
+    },
+    "stories_title": "La vida de los jóvenes",
+    "photos_all": "Todas las fotos",
+    "photos_count": "{{count}} fotos",
+    "photos_soon": "Las fotos aparecerán aquí muy pronto.",
+    "video_label": "Vídeo",
+    "open_gallery": "Ver las fotos",
+    "add_calendar": "Añadir al calendario",
+    "story_kind": {
+      "conference": "Conferencia",
+      "camp": "Campamento",
+      "concert": "Concierto",
+      "campaign": "Campaña",
+      "visit": "Servicio",
+      "evangelism": "Evangelización"
+    },
+    "ticket": {
+      "next": "La próxima",
+      "today": "¡Hoy!",
+      "tomorrow": "Mañana",
+      "in_days": "Dentro de {{days}} días",
+      "after": "Después"
+    },
+    "cta_stories": "Fotos y momentos",
+    "cta_all": "Todos los departamentos"
+  }
+}

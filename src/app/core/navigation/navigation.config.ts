@@ -125,6 +125,8 @@ export const MAIN_NAV: readonly NavItem[] = [
     id: 'departments',
     labelKey: 'nav.departments',
     tabLabelKey: 'nav.departments_tab',
+    // La portada de cada departamento ya dice dónde se está: sin migaja.
+    noBreadcrumb: true,
     descriptionKey: 'nav.departments_desc',
     path: `/${APP_PATHS.departments}`,
     icon: 'layout-grid',

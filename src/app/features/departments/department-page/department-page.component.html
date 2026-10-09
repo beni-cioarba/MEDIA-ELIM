@@ -1,93 +1,137 @@
 @if (dept(); as d) {
   @let base = 'departments.' + d.id;
   <article class="dept" aria-labelledby="dept-title">
-    <!-- ── Portada ─────────────────────────────────────────────────────── -->
-    <header class="hero" [class.hero--plain]="!d.cover">
-      @if (d.cover; as c) {
-        <img
-          class="hero__img"
-          [src]="c.image"
-          [attr.srcset]="c.thumb + ' 480w, ' + c.medium + ' 960w, ' + c.image + ' 1600w'"
-          sizes="100vw"
-          [style.object-position]="coverFocus()"
-          alt=""
-          fetchpriority="high"
-          decoding="async"
-        />
-      } @else {
-        <app-icon class="hero__mark" [name]="d.icon" />
+    <!-- Datos clave (una plantilla, dos sitios: dentro de la portada fija o
+         en franja bajo el carrusel). -->
+    <ng-template #factsTpl>
+    <!-- Tira de datos: lo que se pregunta antes de entrar. Sólo lo que
+         hay: un departamento sin reunión fija no la inventa. -->
+    <ul class="facts" role="list">
+      @if (meeting(); as m) {
+        <li class="fact" [class.is-live]="meetsToday()">
+          <app-icon name="calendar" />
+          <span class="fact__text">
+            <span class="fact__label">{{ (meetsToday() ? 'nav_hub.today' : 'departments.meets') | translate }}</span>
+            <span class="fact__value">{{ m.dayLabel }} · {{ m.time }}</span>
+          </span>
+        </li>
       }
-      <div class="hero__veil" aria-hidden="true"></div>
+      @if (people().length > 0) {
+        <li class="fact">
+          <app-icon name="users" />
+          <span class="fact__text">
+            <span class="fact__label">{{ 'departments.leaders' | translate }}</span>
+            <span class="fact__value">{{ 'departments.people_count' | translate: { count: people().length } }}</span>
+          </span>
+        </li>
+      }
+      @if (monthlyNext(); as mn) {
+        <li class="fact" [class.is-live]="mn.isToday">
+          <app-icon name="sparkles" />
+          <span class="fact__text">
+            <span class="fact__label">{{ base + '.monthly.' + mn.key + '.title' | translate }}</span>
+            <span class="fact__value">{{ mn.label }}</span>
+          </span>
+        </li>
+      } @else {
+        <li class="fact">
+          <app-icon name="sparkles" />
+          <span class="fact__text">
+            <span class="fact__label">{{ 'departments.activities' | translate }}</span>
+            <span class="fact__value">{{ 'departments.activities_count' | translate: { count: d.activities.length } }}</span>
+          </span>
+        </li>
+      }
+      @if (events()[0]; as ev) {
+        <li class="fact">
+          <app-icon name="megaphone" />
+          <span class="fact__text">
+            <span class="fact__label">{{ 'nav_hub.upcoming_next' | translate }}</span>
+            <span class="fact__value">{{ schedule.formatEventDateShort(ev.date) }} · {{ ev.title }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+    </ng-template>
 
-      <div class="hero__inner">
-        <p class="hero__eyebrow">
-          <span class="hero__badge" aria-hidden="true"><app-icon [name]="d.icon" /></span>
-          {{ 'departments.eyebrow' | translate }}
-        </p>
-        <h1 class="hero__title" id="dept-title">{{ base + '.name' | translate }}</h1>
-        <p class="hero__tagline">{{ base + '.tagline' | translate }}</p>
+    <!-- ── Portada: el carrusel de la portada de inicio ─────────────────
+         Mismo componente, mismo chip de «lo próximo», mismo titular y mismos
+         botones (`shared/styles/_hero-content.scss`). Sin fotos (Misiune
+         externă), la misma portada en navy con el icono del departamento. -->
+    <app-hero-carousel
+      class="dept__carousel"
+      [class.dept__carousel--plain]="!d.heroSlides?.length"
+      [items]="d.heroSlides ?? []"
+      [captionPrefix]="base + '.hero.slides'"
+    >
+      @if (!d.heroSlides?.length) {
+        <app-icon class="hero-mark" [name]="d.icon" aria-hidden="true" />
+      }
 
-        <div class="hero__actions">
-          @if (hasMeal()) {
-            <a class="hero__cta" href="#masa" (click)="scrollTo($event, 'masa')">
-              <app-icon name="utensils" />
-              {{ 'departments.youth.meal.cta' | translate }}
+      @if (heroNext(); as next) {
+        <a
+          class="hero-next"
+          [class.is-now]="next.state === 'now'"
+          [class.is-today]="next.state === 'today'"
+          [href]="'#' + next.anchor"
+          (click)="scrollTo($event, next.anchor)"
+        >
+          <span class="hero-next__dot" aria-hidden="true"></span>
+          <span class="hero-next__when">
+            @switch (next.state) {
+              @case ('now') { {{ 'home.hero.now' | translate }} · {{ next.time }} }
+              @case ('today') { {{ 'weekly.today' | translate }} · {{ next.time }} }
+              @default { {{ next.dayLabel }} · {{ next.time }} }
+            }
+          </span>
+          <span class="hero-next__what">{{ next.title ?? (next.titleKey | translate) }}</span>
+          @if (next.inLabel; as inLabel) {
+            <span class="hero-next__in">{{ 'home.hero.in' | translate: { time: inLabel } }}</span>
+          }
+          <app-icon class="hero-next__go" name="chevron-right" />
+        </a>
+      }
+
+      <p class="hero-eyebrow">
+        <span class="hero-eyebrow__badge" aria-hidden="true"><app-icon [name]="d.icon" /></span>
+        {{ 'departments.eyebrow' | translate }}
+      </p>
+      <h1 class="hero-title" id="dept-title">{{ base + '.name' | translate }}</h1>
+      <p class="hero-subtitle">{{ base + '.tagline' | translate }}</p>
+
+      <!-- Acción principal: la propia del departamento (la masa en Tineret) o
+           implicarse. Secundaria: sus momentos (crónicas) o los demás
+           departamentos. -->
+      <div class="hero-actions">
+        @if (hasMeal()) {
+          <a class="btn btn--gold hero-actions__main" href="#masa" (click)="scrollTo($event, 'masa')">
+            {{ 'departments.youth.meal.cta' | translate }}
+            <app-icon name="chevron-right" />
+          </a>
+        }
+        @if (joinHref(); as href) {
+          <a class="btn" [class.btn--ghost]="hasMeal()" [class.btn--gold]="!hasMeal()" [href]="href" target="_blank" rel="noopener noreferrer">
+            <app-icon name="whatsapp" />
+            {{ 'departments.join' | translate }}
+          </a>
+        }
+        @if (!hasMeal()) {
+          @if (hasStories()) {
+            <a class="btn btn--ghost" href="#stories" (click)="scrollTo($event, 'stories')">
+              <app-icon name="image" />
+              {{ 'departments.cta_stories' | translate }}
+            </a>
+          } @else {
+            <a class="btn btn--ghost" [routerLink]="hubPath">
+              <app-icon name="layout-grid" />
+              {{ 'departments.cta_all' | translate }}
             </a>
           }
-          @if (joinHref(); as href) {
-            <a
-              class="hero__ghost"
-              [class.hero__cta]="!hasMeal()"
-              [href]="href"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <app-icon name="whatsapp" />
-              {{ 'departments.join' | translate }}
-            </a>
-          }
-        </div>
-
-        <!-- Tira de datos: lo que se pregunta antes de entrar. Sólo lo que
-             hay: un departamento sin reunión fija no la inventa. -->
-        <ul class="facts" role="list">
-          @if (meeting(); as m) {
-            <li class="fact" [class.is-live]="meetsToday()">
-              <app-icon name="calendar" />
-              <span class="fact__text">
-                <span class="fact__label">{{ (meetsToday() ? 'nav_hub.today' : 'departments.meets') | translate }}</span>
-                <span class="fact__value">{{ m.dayLabel }} · {{ m.time }}</span>
-              </span>
-            </li>
-          }
-          @if (people().length > 0) {
-            <li class="fact">
-              <app-icon name="users" />
-              <span class="fact__text">
-                <span class="fact__label">{{ 'departments.leaders' | translate }}</span>
-                <span class="fact__value">{{ 'departments.people_count' | translate: { count: people().length } }}</span>
-              </span>
-            </li>
-          }
-          <li class="fact">
-            <app-icon name="sparkles" />
-            <span class="fact__text">
-              <span class="fact__label">{{ 'departments.activities' | translate }}</span>
-              <span class="fact__value">{{ 'departments.activities_count' | translate: { count: d.activities.length } }}</span>
-            </span>
-          </li>
-          @if (events()[0]; as ev) {
-            <li class="fact">
-              <app-icon name="megaphone" />
-              <span class="fact__text">
-                <span class="fact__label">{{ 'nav_hub.upcoming_next' | translate }}</span>
-                <span class="fact__value">{{ schedule.formatEventDateShort(ev.date) }} · {{ ev.title }}</span>
-              </span>
-            </li>
-          }
-        </ul>
+        }
       </div>
-    </header>
+    </app-hero-carousel>
+
+    <ng-container [ngTemplateOutlet]="factsTpl" />
 
     <app-dept-switcher [active]="d.id" />
 
@@ -108,23 +152,60 @@
           </ol>
         </section>
 
+        <!-- ── Qué hacemos (presentación: junto a «Quiénes somos», antes de
+             las reuniones y crónicas) ──────────────────────────────────────────────── -->
+        <section class="block" aria-labelledby="dept-activities">
+          <h2 class="block__title" id="dept-activities">{{ 'departments.what_we_do' | translate }}</h2>
+          <ul class="acts" [class.acts--three]="d.activities.length % 3 === 0" role="list">
+            @for (act of d.activities; track act.key) {
+              <li class="act">
+                <span class="act__icon" aria-hidden="true"><app-icon [name]="act.icon" /></span>
+                <span class="act__body">
+                  <span class="act__title">{{ base + '.activities.' + act.key + '.title' | translate }}</span>
+                  <span class="act__text">{{ base + '.activities.' + act.key + '.text' | translate }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+
         <!-- ── Módulos propios ──────────────────────────────────────────── -->
         @for (module of d.modules; track module.kind) {
           @switch (module.kind) {
-            @case ('youth-meal') {
-              <!-- El ancla vive fuera del @defer: así \`#masa\` (enlaces desde la
-                   portada y el botón de arriba) existe antes de cargar el bloque. -->
-              <div class="block__anchor" id="masa">
+            @case ('weekly') {
+              <div class="block__anchor" [id]="'meet-' + module.key">
+                <app-meeting-block [department]="d.id" [meeting]="module" [hideAfter]="module.companion === 'youth-meal'">
+                  @if (module.companion === 'youth-meal') {
+                    <!-- El ancla vive fuera del @defer: así \`#masa\` (enlaces
+                         desde las portadas) existe antes de cargar la pieza. -->
+                    <div class="block__anchor" id="masa">
+                      @defer (on viewport) {
+                        <app-youth-meal-block />
+                      } @placeholder {
+                        <div class="block__ph block__ph--meal" aria-hidden="true"></div>
+                      }
+                    </div>
+                  }
+                </app-meeting-block>
+              </div>
+            }
+            @case ('monthly') {
+              <div class="block__anchor" [id]="'meet-' + module.key">
+                <app-meeting-block [department]="d.id" [meeting]="module" />
+              </div>
+            }
+            @case ('stories') {
+              <div class="block__anchor" id="stories">
                 @defer (on viewport) {
-                  <app-youth-meal-block />
+                  <app-stories-block [department]="d.id" [stories]="module.stories" />
                 } @placeholder {
-                  <div class="block__ph" aria-hidden="true"></div>
+                  <div class="block__ph block__ph--stories" aria-hidden="true"></div>
                 }
               </div>
             }
             @case ('events') {
               @if (events().length > 0) {
-                <section class="block" aria-labelledby="dept-events">
+                <section class="block block__anchor" id="events" aria-labelledby="dept-events">
                   <div class="block__head">
                     <h2 class="block__title" id="dept-events">{{ 'departments.events' | translate }}</h2>
                     <a class="block__more" [routerLink]="upcomingPath">{{ 'home.board.all' | translate }}</a>
@@ -150,26 +231,13 @@
           }
         }
 
-        <!-- ── Qué hacemos ──────────────────────────────────────────────── -->
-        <section class="block" aria-labelledby="dept-activities">
-          <h2 class="block__title" id="dept-activities">{{ 'departments.what_we_do' | translate }}</h2>
-          <ul class="acts" role="list">
-            @for (act of d.activities; track act.key) {
-              <li class="act">
-                <span class="act__icon" aria-hidden="true"><app-icon [name]="act.icon" /></span>
-                <span class="act__body">
-                  <span class="act__title">{{ base + '.activities.' + act.key + '.title' | translate }}</span>
-                  <span class="act__text">{{ base + '.activities.' + act.key + '.text' | translate }}</span>
-                </span>
-              </li>
-            }
-          </ul>
-        </section>
       </div>
 
       <!-- ── Lateral ───────────────────────────────────────────────────── -->
       <aside class="dept__aside" [attr.aria-label]="'departments.details' | translate">
-        @if (meeting(); as m) {
+        <!-- Con encuentro semanal en la página (bloque con billete), esta
+             tarjeta lo repetía: sólo sale si no lo hay. -->
+        @if (!hasWeekly() && meeting(); as m) {
           <a class="card card--meet" [class.is-live]="meetsToday()" [routerLink]="weeklyPath">
             <span class="card__kicker">{{ 'departments.meets' | translate }}</span>
             <span class="meet__when">{{ m.dayLabel }} · {{ m.time }}</span>

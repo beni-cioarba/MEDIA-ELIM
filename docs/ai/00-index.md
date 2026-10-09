@@ -96,7 +96,7 @@ src/app/
     page-section/ hero-carousel/ card-carousel/
     doc-toc/                ⭐ Índice lateral con seguimiento del apartado activo (documentos largos)
     viewer/                 ⭐ Visor documental (imagen/PDF/vídeo/texto) + galería + `[appViewable]` — `49-viewer.md`
-    styles/                 Parciales SCSS compartidos (botones, page-hero)
+    styles/                 Parciales SCSS compartidos (botones, page-hero, hero-content: contenido del carrusel de portada)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
 src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
 scripts/                      Utilidades Node (imágenes, icono de la app, YouTube)

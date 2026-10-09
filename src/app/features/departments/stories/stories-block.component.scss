@@ -1,0 +1,536 @@
+@use 'ds' as *;
+@use '../departments' as dept;
+
+// =====================================================================
+// «Din viața tineretului» (09/10/2026). Crónica completa: texto | medios
+// (reel vertical 9:16 + mosaico que respeta la orientación). Crónica sin
+// fotos: tarjeta compacta con un bloque navy en lugar de la foto.
+// =====================================================================
+
+:host {
+  display: block;
+}
+
+.stories {
+  // Las crónicas viven en columnas de ancho variable (la principal de la
+  // página, quizá mañana una portada): se adaptan a su **contenedor**, no a
+  // la ventana. Cortes: 560 px (reel + mosaico) y 1100 px (texto | medios).
+  container-type: inline-size;
+  display: grid;
+  gap: var(--sp-4);
+}
+
+// ---------------------------------------------------------------------
+// Piezas comunes
+// ---------------------------------------------------------------------
+.story__kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+.story__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--r-pill);
+  background: var(--c-primary-deep);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  app-icon {
+    color: var(--c-gold);
+  }
+}
+
+.story__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary-deep);
+}
+
+.story__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+
+  app-icon {
+    color: var(--c-gold-deep);
+  }
+}
+
+.story__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.story__sep {
+  margin-inline: 0.2rem;
+}
+
+.story__lead {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+.points {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @container (min-width: 560px) and (max-width: 1099.98px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.points--inline {
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+}
+
+.point {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+}
+
+.point__icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-md);
+  background: var(--c-veil-strong);
+  color: var(--c-primary);
+  font-size: 1rem;
+}
+
+.point__text {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.point__title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary-deep);
+}
+
+.point__desc {
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+.verse {
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border-left: 3px solid var(--c-gold);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: var(--c-surface-accent);
+
+  blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--c-primary-deep);
+  }
+
+  figcaption {
+    margin-top: 0.3rem;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--c-gold-deep);
+  }
+}
+
+.story__drive {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  color: var(--c-primary);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(2px);
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--c-veil);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Crónica completa
+// ---------------------------------------------------------------------
+.story {
+  // Áreas: en estrecho cabecera → medios → texto (las fotos justo bajo el
+  // título); en ancho, cabecera y texto a la izquierda, medios a la derecha.
+  display: grid;
+  grid-template-areas: 'head' 'media' 'text';
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-xl);
+  background: var(--c-surface);
+  box-shadow: var(--e-2);
+
+  @container (min-width: 560px) {
+    grid-template-areas: 'head' 'text' 'media';
+  }
+
+  @container (min-width: 1100px) {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-areas: 'head media' 'text media';
+    grid-template-rows: auto 1fr;
+    align-items: start;
+  }
+
+  @container (max-width: 559.98px) {
+    padding: var(--sp-4);
+    border-radius: var(--r-lg);
+  }
+}
+
+.story__head {
+  grid-area: head;
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.story__text {
+  grid-area: text;
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+// Medios: reel (ancho fijo, 9:16) + mosaico del mismo alto.
+.story__media {
+  grid-area: media;
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+
+  // El mosaico se estira al alto del reel (filas `1fr`).
+  &.has-video {
+    @container (min-width: 560px) {
+      grid-template-columns: 12.5rem minmax(0, 1fr);
+      align-items: stretch;
+    }
+  }
+}
+
+.reel {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--c-primary-darkest);
+  box-shadow: var(--e-2);
+
+  @include dept.gold-edge(15%);
+
+}
+
+.reel__video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  background: var(--c-primary-darkest);
+}
+
+// Pantalla completa: el vídeo **entero** sobre negro. Las reglas del reel
+// (9:16 + `cover`, para encajar en el mosaico) se mantenían y, en una
+// pantalla apaisada o un teléfono girado, recortaban el vídeo. Reglas
+// separadas: un selector desconocido invalidaría la lista entera.
+@mixin reel-fullscreen {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: #000;
+}
+
+.reel__video:fullscreen {
+  @include reel-fullscreen;
+}
+
+.reel__video:-webkit-full-screen {
+  @include reel-fullscreen;
+}
+
+.reel__caption {
+  padding: 0.55rem 0.7rem 0.65rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: rgb(247 250 252 / 0.78);
+}
+
+.reel__tag {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--r-xs);
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// Mosaico: cuatro columnas; las verticales ocupan dos filas y las
+// apaisadas dos columnas. `dense` rellena huecos con cualquier mezcla (hoy
+// 4 verticales + 2 apaisadas = 4 × 3 exacto). Filas `1fr` con suelo: junto
+// al reel se estiran a su alto; solo, mantienen el suelo.
+.mosaic {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(6.5rem, 1fr);
+  grid-auto-flow: dense;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+}
+
+// Una sola foto (sin reel): ocupa el ancho, en 16:9.
+.mosaic--single {
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+
+  .tile {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.tile {
+  grid-column: span 2;
+  min-width: 0;
+  min-height: 0;
+
+  &--portrait {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+
+  &--featured {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Estrecho (teléfono): reel y fotos en **una sola tira** deslizable, todas
+// a 17 rem de alto (el vídeo primero, 9:16). El reel suelto medía 260 × 460
+// px a 375: casi una pantalla para un vídeo. El `ul` pasa a
+// `display: contents` para que sus fotos entren en la misma fila.
+// ---------------------------------------------------------------------
+@container (max-width: 559.98px) {
+  .story__media {
+    --strip-h: 17rem;
+
+    display: flex;
+    gap: var(--sp-2);
+    margin-inline: calc(-1 * var(--sp-4));
+    padding-inline: var(--sp-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--sp-4);
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .mosaic {
+    display: contents;
+  }
+
+  .reel {
+    flex: none;
+    height: var(--strip-h);
+    aspect-ratio: 9 / 16;
+    scroll-snap-align: start;
+  }
+
+  .reel__video {
+    height: 100%;
+  }
+
+  // El pie va en el `aria-label` del vídeo; en la tira no cabe.
+  .reel__caption {
+    display: none;
+  }
+
+  .tile {
+    flex: none;
+    height: var(--strip-h);
+    aspect-ratio: 3 / 2;
+    scroll-snap-align: start;
+
+    &--portrait {
+      aspect-ratio: 2 / 3;
+    }
+  }
+}
+
+.tile__frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+
+  // Fuera del flujo: el alto lo decide la rejilla, no el tamaño de la foto
+  // (con la imagen en flujo, las filas `1fr` crecían a su alto intrínseco).
+  img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--mo-slow) var(--ea-standard);
+  }
+}
+
+@media (hover: hover) {
+  .tile__frame:hover img {
+    transform: scale(1.04);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Crónica compacta (sin fotos)
+// ---------------------------------------------------------------------
+.brief {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-xl);
+  background: var(--c-surface);
+  box-shadow: var(--e-1);
+
+  @container (min-width: 560px) {
+    grid-template-columns: 10rem minmax(0, 1fr);
+  }
+}
+
+.brief__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--sp-2);
+  min-height: 7rem;
+  padding: var(--sp-4);
+  overflow: hidden;
+  background:
+    radial-gradient(80% 80% at 100% 0%, rgb(212 175 55 / 0.2), transparent 60%),
+    linear-gradient(160deg, var(--c-primary-deep), var(--c-primary-darkest));
+  color: var(--c-gold);
+  text-align: center;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    @include dept.tech-grid(1.25rem, 0.05);
+  }
+
+  > app-icon {
+    font-size: 2.5rem;
+  }
+
+  @container (max-width: 559.98px) {
+    grid-auto-flow: column;
+    justify-content: start;
+    min-height: 0;
+    padding: var(--sp-3) var(--sp-4);
+
+    > app-icon {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.brief__dates {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.brief__body {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  min-width: 0;
+
+  @container (max-width: 559.98px) {
+    padding: var(--sp-4);
+  }
+}
+
+.brief__place {
+  color: var(--c-gold-deep);
+}
+
+.brief__soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+@include motion-reduce {
+  .tile__frame img {
+    transition: none;
+  }
+}

@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 
 /** Pares de ficheros que deben tener idéntica estructura. */
-const BUNDLES = ['{lang}.json', 'credo-articles.{lang}.json'];
+const BUNDLES = ['{lang}.json', 'credo-articles.{lang}.json', 'departments.{lang}.json'];
 
 const flatten = (obj, prefix = '') =>
   Object.entries(obj).flatMap(([key, value]) => {

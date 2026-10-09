@@ -63,7 +63,24 @@ En móvil se ocultan imprimir y abrir fuera y los datos de la barra.
 No se proyecta: en la proyección del templo la directiva va desactivada
 (`[appViewableDisabled]="fullscreen()"` en la ficha de familia).
 
+## Galería: la foto siempre entera (09/10/2026)
+
+`.mv__img` ocupa el escenario entero (`position: absolute; inset: 0`) con
+`object-fit: contain`. Antes era `max-width/max-height: 100%` dentro de una
+celda de rejilla de alto `auto`: el porcentaje no se resolvía y, con
+`sizes="100vw"`, una foto **vertical** (1080 × 1620) se pintaba a 1920 × 2880
+en un escenario de ~810 px —sólo se veía su franja central (una pared)—; las
+apaisadas también se recortaban por arriba y abajo. Los límites del
+desplazamiento con zoom se calculan sobre la **foto pintada**
+(`paintedSize()`), no sobre la caja. Y el doble clic sólo amplía si es
+**sobre la foto**: dos clics rápidos en ‹ › también son un `dblclick` que
+subía al escenario y abría la foto siguiente al 250 % (10/10/2026). El visor documental no lo sufría (limita
+con `--cw`/`--ch` medidos).
+
 ## Dónde está puesto hoy
+
+- **Crónicas de departamentos** (`stories`, `39-departments.md`): cada foto
+  del mosaico abre la galería con todas las de la crónica.
 
 - Fichas de **Rugăciune pentru familii**: abre la foto en el visor documental con
   todas las familias de la semana (‹ › entre ellas).

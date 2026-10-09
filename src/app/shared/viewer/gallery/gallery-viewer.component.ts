@@ -200,8 +200,11 @@ export class GalleryViewerComponent {
     const img = this.image()?.nativeElement;
     const stage = this.stage().nativeElement;
     if (!img) return;
-    const maxX = Math.max(0, (img.offsetWidth * this.scale() - stage.clientWidth) / 2);
-    const maxY = Math.max(0, (img.offsetHeight * this.scale() - stage.clientHeight) / 2);
+    // La caja de la imagen ocupa el escenario entero (`object-fit:
+    // contain`): lo que cuenta es la foto pintada dentro, no la caja.
+    const { width, height } = paintedSize(img);
+    const maxX = Math.max(0, (width * this.scale() - stage.clientWidth) / 2);
+    const maxY = Math.max(0, (height * this.scale() - stage.clientHeight) / 2);
     this.tx.set(clamp(x, -maxX, maxX));
     this.ty.set(clamp(y, -maxY, maxY));
   }
@@ -333,6 +336,10 @@ export class GalleryViewerComponent {
 
   protected onDoubleClick(event: MouseEvent): void {
     if (this.kind() !== 'image') return;
+    // Dos clics seguidos en ‹ › (pasar fotos deprisa) también son un
+    // `dblclick` que sube hasta el escenario: sin esto, la foto nueva se
+    // abría ampliada al 250 %. Sólo amplía el doble clic sobre la foto.
+    if ((event.target as Element).closest('button, a')) return;
     if (this.zoomed()) this.resetZoom();
     else this.zoomAt(2.5, event.clientX, event.clientY);
   }
@@ -413,4 +420,12 @@ function saveFlag(key: string, value: boolean): void {
   } catch {
     // Almacenamiento bloqueado o lleno: la preferencia dura sólo esta sesión.
   }
+}
+
+/** Tamaño de la foto pintada dentro de una caja con `object-fit: contain`. */
+function paintedSize(img: HTMLImageElement): { width: number; height: number } {
+  const box = { width: img.clientWidth, height: img.clientHeight };
+  if (!img.naturalWidth || !img.naturalHeight) return box;
+  const fit = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight);
+  return { width: img.naturalWidth * fit, height: img.naturalHeight * fit };
 }

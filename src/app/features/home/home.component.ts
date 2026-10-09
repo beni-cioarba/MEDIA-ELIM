@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { NOW_WINDOW_MIN, formatIn } from '../../core/util/countdown';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent, WeeklyProgram } from '../../core/church.config';
@@ -161,21 +162,13 @@ const MINUTOS_DIA = 24 * 60;
 const DIAS_CUENTA_ATRAS = 30;
 
 /** Minutos que un culto cuenta como «en marcha» desde su hora de inicio. */
-const HERO_NOW_WINDOW_MIN = 120;
+const HERO_NOW_WINDOW_MIN = NOW_WINDOW_MIN;
 
 interface HeroNext {
   readonly program: WeeklyProgram;
   readonly state: 'now' | 'today' | 'later';
   /** «2 h 15 min» hasta que empiece; sólo en `today`. */
   readonly inLabel: string | null;
-}
-
-/** Duración corta y neutra en ambos idiomas: «45 min», «2 h», «2 h 15 min». */
-function formatIn(min: number): string {
-  const h = Math.floor(min / 60);
-  const m = min % 60;
-  if (h === 0) return `${m} min`;
-  return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }
 
 /**

@@ -4,6 +4,20 @@ import { CHURCH_CONFIG, UpcomingEvent } from '../church.config';
 import { LoggerService } from './logger.service';
 import { addDays, parseIsoDate, toIsoDate } from '../util/iso-date';
 
+/** Reunión fija para `CalendarService.downloadRecurring`. */
+export interface RecurringEntry {
+  readonly id: string;
+  /** Regla iCalendar sin el prefijo: `FREQ=WEEKLY;BYDAY=FR` (ver `core/util/recurrence.ts`). */
+  readonly rrule: string;
+  /** Primera fecha (`YYYY-MM-DD`): la próxima ocurrencia. */
+  readonly firstDate: string;
+  /** `HH:MM`. */
+  readonly time: string;
+  readonly durationMin: number;
+  readonly title: string;
+  readonly description: string;
+}
+
 /** Evento de día completo para `CalendarService.downloadAllDay`. */
 export interface AllDayEntry {
   readonly id: string;
@@ -96,6 +110,43 @@ export class CalendarService {
     }
     lines.push('END:VCALENDAR');
     this.triggerDownload(this.foldLines(lines).join('\r\n') + '\r\n', fileName);
+  }
+
+  /**
+   * Descarga una reunión fija (semanal o mensual) como un único evento
+   * recurrente (`RRULE`): se añade una vez y el calendario la repite solo,
+   * sin fecha de fin. Avisa 3 h antes.
+   */
+  downloadRecurring(entry: RecurringEntry): void {
+    const start = this.combineDateAndTime(entry.firstDate, entry.time);
+    const end = new Date(start.getTime() + entry.durationMin * 60_000);
+    const location = this.t('calendar.location_default', 'Biserica Elim Arganda del Rey');
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      `PRODID:${CalendarService.PRODID}`,
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:${this.slug(entry.id)}-recurring@elim-arganda`,
+      `DTSTAMP:${this.formatUtc(new Date())}`,
+      `DTSTART:${this.formatLocal(start)}`,
+      `DTEND:${this.formatLocal(end)}`,
+      `RRULE:${entry.rrule}`,
+      `SUMMARY:${this.escape(entry.title)}`,
+      `LOCATION:${this.escape(location)}`,
+      `DESCRIPTION:${this.escape(entry.description)}`,
+      `URL:${this.escape(this.config.publicUrl)}`,
+      'STATUS:CONFIRMED',
+      'BEGIN:VALARM',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:${this.escape(entry.title)}`,
+      'TRIGGER:-PT3H',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ];
+    this.triggerDownload(this.foldLines(lines).join('\r\n') + '\r\n', `${this.slug(entry.id)}.ics`);
   }
 
   /**

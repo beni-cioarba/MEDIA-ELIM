@@ -1,0 +1,146 @@
+<!-- Sin cabecera visible (la crónica ya se presenta sola): el nombre de la
+     sección queda para los lectores de pantalla. -->
+<section class="stories" [attr.aria-label]="'departments.stories_title' | translate">
+
+  @for (v of views(); track v.story.id) {
+    @let s = v.story;
+    @if (v.photos.length > 0) {
+      <!-- ── Crónica completa ─────────────────────────────────────────── -->
+      <article class="story" [attr.aria-labelledby]="'story-' + s.id">
+        <header class="story__head">
+          <p class="story__kicker">
+            <span class="story__badge"><app-icon [name]="s.icon" /> {{ 'departments.story_kind.' + s.kind | translate }}</span>
+            <span>{{ v.range ?? (v.base + '.period' | translate) }}</span>
+          </p>
+          <h3 class="story__title" [id]="'story-' + s.id">{{ v.base + '.title' | translate }}</h3>
+          <p class="story__meta">
+            <span class="story__meta-item"><app-icon name="map-pin" /> {{ s.place }}</span>
+            @if (s.guest) {
+              <span class="story__sep" aria-hidden="true">·</span>
+              <span class="story__meta-item"><app-icon name="users" /> {{ s.guest }}</span>
+            }
+          </p>
+        </header>
+
+        <div class="story__text">
+          <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
+
+          @if (s.points.length > 0) {
+          <ul class="points" role="list">
+            @for (point of s.points; track point.key) {
+              <li class="point">
+                <span class="point__icon" aria-hidden="true"><app-icon [name]="point.icon" /></span>
+                <span class="point__text">
+                  <span class="point__title">{{ v.base + '.points.' + point.key + '.title' | translate }}</span>
+                  <span class="point__desc">{{ v.base + '.points.' + point.key + '.text' | translate }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+          }
+
+          @if (s.verse) {
+            <figure class="verse">
+              <blockquote>{{ v.base + '.verse.text' | translate }}</blockquote>
+              <figcaption>{{ v.base + '.verse.ref' | translate }}</figcaption>
+            </figure>
+          }
+
+          @if (v.driveUrl) {
+            <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
+              <app-icon name="image" />
+              {{ 'departments.photos_all' | translate }}
+              <app-icon name="external" />
+            </a>
+          }
+        </div>
+
+        <div class="story__media" [class.has-video]="!!s.video" data-no-swipe>
+          @if (s.video; as video) {
+            <figure class="reel">
+              <video
+                class="reel__video"
+                [src]="video.start ? video.src + '#t=' + video.start : video.src"
+                [poster]="video.poster"
+                (seeking)="clampStart($event, video.start)"
+                (timeupdate)="clampStart($event, video.start)"
+                [attr.width]="video.width"
+                [attr.height]="video.height"
+                preload="none"
+                controls
+                playsinline
+                controlslist="nodownload"
+                [attr.aria-label]="v.base + '.caption' | translate"
+              ></video>
+              <figcaption class="reel__caption">
+                <span class="reel__tag">{{ 'departments.video_label' | translate }}</span>
+                {{ v.base + '.caption' | translate }}
+              </figcaption>
+            </figure>
+          }
+
+          <ul class="mosaic" [class.mosaic--single]="v.photos.length === 1 && !s.video" role="list" [attr.aria-label]="'departments.open_gallery' | translate">
+            @for (photo of v.photos; track photo.src; let i = $index) {
+              <li class="tile" [class.tile--portrait]="photo.portrait" [class.tile--featured]="photo.featured">
+                <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="i" appViewableMode="gallery">
+                  <img
+                    [src]="photo.medium"
+                    [attr.srcset]="photo.thumb + ' 480w, ' + photo.medium + ' 960w'"
+                    sizes="(min-width: 1024px) 16vw, (min-width: 720px) 30vw, 60vw"
+                    [attr.width]="photo.width"
+                    [attr.height]="photo.height"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </article>
+    } @else {
+      <!-- ── Crónica compacta (aún sin fotos) ─────────────────────────── -->
+      <article class="brief" [attr.aria-labelledby]="'story-' + s.id">
+        <div class="brief__visual" aria-hidden="true">
+          <app-icon [name]="s.icon" />
+          <span class="brief__dates">{{ v.range ?? (v.base + '.period' | translate) }}</span>
+        </div>
+        <div class="brief__body">
+          <p class="story__kicker">
+            <span class="story__badge"><app-icon [name]="s.icon" /> {{ 'departments.story_kind.' + s.kind | translate }}</span>
+            <span class="brief__place">{{ s.place }}</span>
+          </p>
+          <h3 class="story__title" [id]="'story-' + s.id">{{ v.base + '.title' | translate }}</h3>
+          <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
+          @if (s.points.length > 0) {
+          <ul class="points points--inline" role="list">
+            @for (point of s.points; track point.key) {
+              <li class="point">
+                <span class="point__icon" aria-hidden="true"><app-icon [name]="point.icon" /></span>
+                <span class="point__text">
+                  <span class="point__title">{{ v.base + '.points.' + point.key + '.title' | translate }}</span>
+                  <span class="point__desc">{{ v.base + '.points.' + point.key + '.text' | translate }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+          }
+          @if (v.driveUrl) {
+            <!-- Fotos en Drive, aún no optimizadas para la web: enlace directo. -->
+            <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
+              <app-icon name="image" />
+              {{ 'departments.photos_all' | translate }}
+              <app-icon name="external" />
+            </a>
+          } @else {
+            <p class="brief__soon">
+              <app-icon name="image" />
+              {{ 'departments.photos_soon' | translate }}
+            </p>
+          }
+        </div>
+      </article>
+    }
+  }
+</section>
