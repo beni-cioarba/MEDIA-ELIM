@@ -96,7 +96,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     // La URL de ESTA página, no la portada. Con la portada, Facebook /
     // Messenger / WhatsApp tomaban `og:url` como la dirección «canónica» y
-    // reescribían el enlace compartido a `…/MEDIA-ELIM/#<familia>`: se
+    // reescribían el enlace compartido a `…/#<familia>` (la portada): se
     // perdía la ruta, se abría la portada y el ancla no encontraba nada.
     this.meta.updateTag({ property: 'og:url', content: this.pageUrl() });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });

@@ -3,6 +3,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../core/church.config';
 import { DepartmentStory, StoryPhoto } from '../../../core/departments.config';
 import { DepartmentId } from '../../../core/navigation/app-paths';
+import { youtubeThumbFallback } from '../../../core/youtube-thumb';
 import { LanguageService } from '../../../core/services/language.service';
 import { driveFolderUrl } from '../../../core/util/drive-folder';
 import { formatIsoRange, parseIsoDate } from '../../../core/util/iso-date';
@@ -34,6 +35,7 @@ interface StoryView {
   readonly gallery: readonly ViewerDocument[];
   readonly driveUrl: string | null;
   readonly youtubeUrl: string | null;
+  readonly youtubeThumb: string | null;
 }
 
 /** «20 septembrie 2026» o «13 – 15 martie 2026». */
@@ -109,9 +111,13 @@ export class StoriesBlockComponent {
           ? driveFolderUrl(story.driveFolderId, this.config.mediaGalleryUrl)
           : null,
         youtubeUrl: story.youtubeId ? `https://www.youtube.com/live/${story.youtubeId}` : null,
+        youtubeThumb: story.youtubeId ? `https://i.ytimg.com/vi/${story.youtubeId}/hq720.jpg` : null,
       };
     });
   });
+
+  /** `hq720` no existe en todos los directos: respaldo a `mqdefault` (16:9). */
+  protected readonly thumbFallback = youtubeThumbFallback;
 
   /**
    * Recorte del arranque (`StoryVideo.start`): si se arrastra la barra antes

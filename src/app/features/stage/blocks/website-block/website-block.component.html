@@ -16,5 +16,10 @@
     </ul>
   </div>
 
-  <app-qr-panel class="site__qr" [data]="siteUrl" captionKey="website_slide.qr_caption" />
+  <app-qr-panel
+    class="site__qr"
+    [data]="siteUrl"
+    [address]="siteHost"
+    captionKey="website_slide.qr_caption"
+  />
 </section>

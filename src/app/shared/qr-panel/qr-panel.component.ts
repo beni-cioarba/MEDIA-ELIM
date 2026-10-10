@@ -15,7 +15,8 @@ import { TranslatePipe } from '@ngx-translate/core';
  * pantalla, menos módulos = módulos más grandes = más alcance. Por eso la
  * corrección de errores es `M` (15 %) y no `H` (30 %): `H` existe para
  * códigos impresos que se ensucian o se rompen; en una pantalla limpia sólo
- * añade módulos (con esta URL, de 41×41 a 33×33: cada módulo un 24 % mayor).
+ * añade módulos (con `https://elimarganda.com/`, 29×29 en vez de 33×33,
+ * contando el margen: cada módulo un 14 % mayor).
  * El navy de marca sobre blanco da un contraste de ~12:1, de sobra para
  * cualquier cámara.
  *
@@ -27,6 +28,8 @@ import { TranslatePipe } from '@ngx-translate/core';
  *  - `--qr-caption-size`    cuerpo de la leyenda
  *  - `--qr-caption-color`   color de la leyenda
  *  - `--qr-gap`             separación marco ↔ leyenda
+ *  - `--qr-address-size`    cuerpo de la dirección escrita
+ *  - `--qr-address-color`   color de la dirección escrita
  * Sin ellas, los valores por defecto sirven para la web pública.
  *
  * Cargado vía `@defer` desde `StageComponent` para no inflar el bundle
@@ -48,6 +51,9 @@ import { TranslatePipe } from '@ngx-translate/core';
         [elementType]="'svg'"
       ></qrcode>
     </div>
+    @if (address) {
+      <p class="qr-panel__address">{{ address }}</p>
+    }
     @if (captionKey) {
       <p class="qr-panel__caption">{{ captionKey | translate }}</p>
     }
@@ -95,6 +101,21 @@ import { TranslatePipe } from '@ngx-translate/core';
         height: 100% !important;
       }
 
+      /* La dirección para quien no escanea: se lee y se teclea. Va pegada al
+         código (la separación la da gap) y por encima de la leyenda. */
+      .qr-panel__address {
+        flex: 0 0 auto;
+        margin: 0;
+        text-align: center;
+        font-family: var(--font-display);
+        font-size: var(--qr-address-size, clamp(1rem, 1.8vh, 1.5rem));
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        color: var(--qr-address-color, var(--c-primary));
+      }
+
       .qr-panel__caption {
         flex: 0 0 auto;
         margin: 0;
@@ -115,6 +136,11 @@ export class QrPanelComponent {
    * `null` = sin leyenda (quien lo usa la pinta fuera, p. ej. a otro ancho).
    */
   @Input() captionKey: string | null = 'qr.caption';
+  /**
+   * Dirección escrita bajo el código (p. ej. `elimarganda.com`), para quien
+   * no escanea. `null` = sin dirección.
+   */
+  @Input() address: string | null = null;
 
   /**
    * Colores del QR. La librería los necesita como literales (los pinta en el

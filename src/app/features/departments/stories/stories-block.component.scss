@@ -175,20 +175,24 @@
   gap: var(--sp-2) var(--sp-3);
 }
 
-// Retransmisión completa: ficha navy compacta con disco dorado de «play».
-// Enlace, no iframe (horas de directo; ver `DepartmentStory.youtubeId`).
-.story__watch {
-  display: inline-grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+// Retransmisión completa: ficha horizontal navy con la miniatura de YouTube
+// **entera** a la izquierda (16:9 exacto: lleva título, fecha e invitado; no
+// se recorta) y el texto a la derecha. Ocupa la fila; «Toate fotografiile»
+// queda debajo como acceso secundario. Enlace, no iframe
+// (`DepartmentStory.youtubeId`).
+.watch {
+  display: grid;
+  grid-template-columns: min(44%, 13rem) minmax(0, 1fr);
   align-items: center;
-  gap: 0.65rem;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.85rem 0.35rem 0.4rem;
-  border-radius: var(--r-pill);
+  gap: var(--sp-3);
+  flex: 1 1 100%;
+  padding: 0.4rem;
+  padding-right: var(--sp-3);
+  border-radius: var(--r-md);
   background: linear-gradient(160deg, var(--c-primary-deep), var(--c-primary-darkest));
   color: #fff;
   text-decoration: none;
-  box-shadow: inset 0 0 0 1px rgb(212 175 55 / 0.35);
+  box-shadow: inset 0 0 0 1px rgb(212 175 55 / 0.3);
   transition: box-shadow var(--mo-fast) var(--ea-standard);
 
   @include focus-ring(2px);
@@ -197,51 +201,114 @@
     &:hover {
       box-shadow: inset 0 0 0 1px var(--c-gold);
 
-      .story__watch-play {
-        transform: scale(1.06);
+      .watch__thumb img {
+        transform: scale(1.03);
+      }
+
+      .watch__play {
+        background: var(--c-gold);
+        color: var(--c-on-gold);
+      }
+
+      .watch__cta {
+        color: #fff;
       }
     }
   }
 }
 
-.story__watch-play {
+.watch__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: calc(var(--r-md) - 0.25rem);
+  background: var(--c-primary-darkest);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--mo-base) var(--ea-standard);
+  }
+}
+
+// «Play» discreto en la esquina: el centro de la miniatura es el rótulo
+// ANCORAT y no se tapa.
+.watch__play {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.35rem;
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 50%;
-  background: var(--c-gold);
-  color: var(--c-on-gold);
-  font-size: 0.9rem;
-  transition: transform var(--mo-fast) var(--ea-standard);
+  background: rgb(9 20 36 / 0.78);
+  color: var(--c-gold-soft);
+  font-size: 0.8rem;
+  box-shadow: 0 0 0 1px rgb(212 175 55 / 0.55);
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
 }
 
-.story__watch-text {
+.watch__text {
   display: grid;
-  line-height: 1.2;
+  gap: 0.15rem;
+  min-width: 0;
+  line-height: 1.25;
 }
 
-.story__watch-title {
+.watch__src {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(247 250 252 / 0.6);
+}
+
+// Punto rojo de YouTube: reconocible de un vistazo sin usar su logotipo.
+.watch__dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: #ff3b30;
+}
+
+.watch__title {
   font-family: var(--font-display);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 700;
 }
 
-.story__watch-src {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgb(247 250 252 / 0.62);
-}
-
-.story__watch-ext {
-  font-size: 0.8rem;
+.watch__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--c-gold-soft);
+  transition: color var(--mo-fast) var(--ea-standard);
+
+  app-icon {
+    font-size: 0.75rem;
+  }
 }
 
 @include motion-reduce {
-  .story__watch-play {
+  .watch__thumb img,
+  .watch__play {
     transition: none;
+  }
+
+  .watch:hover .watch__thumb img {
+    transform: none;
   }
 }
 

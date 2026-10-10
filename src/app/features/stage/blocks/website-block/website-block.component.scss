@@ -5,7 +5,9 @@
 //   [texto: qué es · por qué escanear · qué hay]      [QR grande]
 //
 // Un solo QR de 64u (≈ 70 cm en una pantalla de 3 m): se escanea desde el
-// fondo del templo (regla 1:10). Con el directo sólo cambia la entradilla.
+// fondo del templo (regla 1:10). Debajo, la dirección escrita
+// (`elimarganda.com`) para quien no escanea, y la leyenda. Con el directo
+// sólo cambia la entradilla.
 // =====================================================================
 
 :host {
@@ -99,5 +101,8 @@
   --qr-gap: var(--pj-sp-2);
   --qr-caption-size: var(--pj-fs-body);
   --qr-caption-weight: 700;
-  --qr-caption-color: var(--c-primary);
+  --qr-caption-color: var(--c-muted);
+  // La dirección manda sobre la leyenda: es lo que se teclea.
+  --qr-address-size: var(--pj-fs-lead);
+  --qr-address-color: var(--c-primary);
 }

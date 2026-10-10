@@ -179,10 +179,13 @@ Worker de Angular no sirve bien peticiones por rangos (`Range`), que es como
 pide vídeo el navegador (Safari falla); además 14 MB no deben entrar en la
 caché de la app. Se sirve directo de GitHub Pages.
 
-**Retransmisión completa** (`DepartmentStory.youtubeId`): ficha navy con
-disco dorado de «play» junto a «Toate fotografiile», que abre
-`youtube.com/live/<id>`. Es un enlace, no un iframe: son horas de directo y el
-reel ya cubre el vídeo corto. ANCORAT 2026 → `5_4N6Ja0OdU`.
+**Retransmisión completa** (`DepartmentStory.youtubeId`): ficha horizontal
+navy (`.watch`) que ocupa la fila, sobre «Toate fotografiile». A la izquierda,
+la miniatura de YouTube **entera** (`hq720`, 16:9 exacto, con respaldo a
+`mqdefault` vía `youtubeThumbFallback`); el «play» va en la esquina para no
+tapar el rótulo. A la derecha, «YouTube · live», el título y «Deschide pe
+YouTube». Abre `youtube.com/live/<id>`. Es un enlace, no un iframe: son horas
+de directo. ANCORAT 2026 → `5_4N6Ja0OdU`.
 
 **Vídeo en pantalla completa**: en el mosaico el reel es 9:16 con
 `object-fit: cover`; en `:fullscreen` / `:-webkit-full-screen` pasa a

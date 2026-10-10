@@ -36,8 +36,9 @@ const SECTIONS: readonly WebsiteSection[] = [
  *
  * Un solo código, siempre a la web: dos códigos obligan a elegir cuál escanear
  * y parten el tamaño a la mitad. Con el aviso de directo cambia sólo la
- * entradilla (el directo se abre desde la propia web). La dirección no se
- * escribe en pantalla mientras sea provisional: el QR basta.
+ * entradilla (el directo se abre desde la propia web). Bajo el código va la
+ * dirección escrita (`elimarganda.com`, sin `https://` ni barra final) para
+ * quien no escanea: sale de `publicUrl`, así que no puede discrepar del QR.
  */
 @Component({
   selector: 'app-website-block',
@@ -52,5 +53,6 @@ export class WebsiteBlockComponent {
 
   protected readonly sections = SECTIONS;
   protected readonly siteUrl = this.config.publicUrl;
+  protected readonly siteHost = new URL(this.config.publicUrl).host;
   protected readonly live = this.display.liveNotice;
 }

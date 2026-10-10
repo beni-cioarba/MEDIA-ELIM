@@ -107,6 +107,17 @@ allí, no en GitHub. Configurado el 10/10/2026:
   `Referer` de `scripts/fetch-youtube.js`.
 - La clave de la YouTube Data API está restringida por referrer en Google
   Cloud: debe incluir `https://elimarganda.com/*` y `https://www.elimarganda.com/*`.
+- **Caché de GitHub tras activar el dominio** (10/10/2026): la portada
+  `http://elimarganda.com/` siguió dando el 404 «There isn't a GitHub Pages
+  site here» de antes del dominio (sólo la variante comprimida que piden los
+  navegadores; `curl` sin `--compressed` daba 200). Se arregla **volviendo a
+  desplegar** (*Actions → Deploy to GitHub Pages → Run workflow*): cada
+  despliegue purga la caché del CDN.
+- **PWA instaladas desde `github.io`**: su service worker vive en el origen
+  antiguo y no puede actualizarse (el `ngsw.json` nuevo redirige al dominio,
+  pero sus recursos `/main-….js` se resolverían en la raíz de `github.io`,
+  que no existe). Siguen abriendo la última versión que guardaron. Remedio:
+  desinstalar y volver a instalar desde `https://elimarganda.com`.
 
 ## Datos de YouTube — `.github/workflows/youtube-data.yml`
 

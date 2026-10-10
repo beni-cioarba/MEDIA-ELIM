@@ -47,9 +47,11 @@ no hace falta tocar plantillas.
 
 Los textos visibles están en `src/assets/i18n/es.json` y `ro.json`.
 
-> Actualiza `publicUrl` con el dominio real desplegado. El QR usa
-> `window.location.href` en runtime, por lo que en producción apuntará solo
-> si la web se sirve desde una URL pública (HTTPS recomendado).
+> `publicUrl` es la dirección pública de la web (**`https://elimarganda.com/`**).
+> De ella salen los QR de la proyección, la dirección escrita bajo el QR, los
+> enlaces que se comparten, `og:url` y el calendario. Si cambia el dominio, se
+> cambia ahí (y en `og:image` de `src/index.html`); ver
+> `docs/ai/50-build-deploy.md` → «Dominio».
 
 ### Añadir nuevas transmisiones de YouTube
 

@@ -739,16 +739,20 @@ Reglas fijas del lienzo proyectado:
 `shared/qr-panel`, en la diapositiva `website` (ver «Lienzo»). Codifica
 siempre `config.publicUrl` (no la URL del navegador) para que apunte a
 producción aunque se esté proyectando desde `localhost`. Siempre un único
-código, y **sin la dirección escrita** (se decidió cuando el dominio era el
-provisional `github.io`). Ya hay dominio propio (`elimarganda.com`): se puede
-volver a rotular si se quiere.
+código. Debajo, la **dirección escrita** (`elimarganda.com`, input `address`
+del panel, derivada de `publicUrl` con `new URL(...).host`) a `--pj-fs-lead`
+y en navy, y la leyenda «Escanea el código…» en gris: quien no escanea, la
+teclea. (Mientras el dominio fue el provisional `github.io` no se rotulaba.)
 
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
-  corregir y `H` sólo añade módulos (41×41 → 33×33 con esta URL). A igual
-  tamaño, módulos un 24 % mayores = se escanea desde más lejos.
+  corregir y `H` sólo añade módulos (con `https://elimarganda.com/`, 33×33 →
+  29×29 contando el margen). A igual tamaño, módulos un 14 % mayores = se
+  escanea desde más lejos. La URL corta del dominio propio ya ganó lo mismo
+  frente a la de `github.io` (33×33 → 29×29).
 - El componente está encapsulado: se escala por variables (`--qr-frame-pad`,
   `--qr-frame-radius`, `--qr-gap`, `--qr-caption-size`, `--qr-caption-weight`,
-  `--qr-caption-color`), fijadas en `website-block.component.scss`.
+  `--qr-caption-color`, `--qr-address-size`, `--qr-address-color`), fijadas
+  en `website-block.component.scss`.
 
 ## Versículo del panel
 
