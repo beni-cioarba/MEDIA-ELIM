@@ -63,7 +63,9 @@ pedir cuando alguien reporta un fallo.
 - `stylePreprocessorOptions.includePaths: ["src", "src/styles"]` — es lo que
   permite `@use 'ds' as *;` desde cualquier hoja de componente.
 - `outputHashing: all` para cache-busting.
-- Base href de producción: `/MEDIA-ELIM/` (GitHub Pages).
+- Base href de producción: `/` — dominio propio **`https://elimarganda.com/`**
+  (GitHub Pages del repo `MEDIA-ELIM`; el antiguo
+  `beni-cioarba.github.io/MEDIA-ELIM/` redirige solo).
 
 Sólo `MainLayoutComponent` es eager; todas las páginas (incluido el escenario)
 son `loadComponent`, y el drawer móvil, el pie y el dock flotante usan `@defer`.
@@ -76,12 +78,35 @@ Medido tras la subida a Angular 22 + tema M3 + idioma activo: **585 kB raw /
 
 ## Despliegue — `.github/workflows/deploy.yml`
 
-Node 20 → `npm ci` → `ng build --configuration production --base-href /MEDIA-ELIM/`
+Node 24 → `npm ci` → `ng build --configuration production --base-href /`
 → copia `index.html` a `404.html` (fallback SPA, imprescindible ahora que hay
 router) → crea `.nojekyll` → publica en GitHub Pages.
 
 > Si añades rutas nuevas, el fallback `404.html` ya las cubre. No hace falta
 > `withHashLocation()`.
+
+## Dominio — `elimarganda.com`
+
+Registrado en **IONOS** (contrato «IONOS Pack Dominio»); el DNS se gestiona
+allí, no en GitHub. Configurado el 10/10/2026:
+
+| Registro | Host | Valor |
+| --- | --- | --- |
+| A ×4 | `@` y `www` | `185.199.108.153` … `185.199.111.153` (GitHub Pages) |
+| TXT | `_github-pages-challenge-beni-cioarba` | verificación del dominio en la cuenta de GitHub |
+| MX, DKIM, SPF, DMARC, `autodiscover` | — | **correo `elim@elimarganda.com`: no tocar** |
+
+- En el repo: *Settings → Pages → Custom domain* = `elimarganda.com`,
+  *Enforce HTTPS* activado (certificado de GitHub; el SSL de IONOS no hace
+  falta). Con despliegue por Actions no se usa fichero `CNAME`.
+- `www` lleva registros A (no CNAME) porque IONOS no admite CNAME junto a los
+  MX que tiene `www`.
+- La URL pública vive en **un solo sitio**: `publicUrl` en
+  `core/church.config.ts` (QR, enlaces compartidos, `og:url`, calendario,
+  formulario). Además: `og:image`/`twitter:image` en `src/index.html` y el
+  `Referer` de `scripts/fetch-youtube.js`.
+- La clave de la YouTube Data API está restringida por referrer en Google
+  Cloud: debe incluir `https://elimarganda.com/*` y `https://www.elimarganda.com/*`.
 
 ## Datos de YouTube — `.github/workflows/youtube-data.yml`
 
@@ -127,7 +152,7 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
   baja a la ficha (**pero con estado HTTP 404**, que algunas vistas previas de
   redes pueden rechazar; pendiente: generar `index.html` por ruta en el
   despliegue). `og:url` = URL de la página, no la portada (con la portada las
-  redes reescribían el enlace a `…/MEDIA-ELIM/#<familia>`). Las anclas bajan
+  redes reescribían el enlace a `…/#<familia>`). Las anclas bajan
   con el desplazamiento del alto de la cabecera (`ViewportScroller.setOffset`
   en `app.config.ts`: el router ignora `scroll-padding-top`).
 - Versionado: **MAYOR.MENOR manual** en `package.json` (el usuario dice

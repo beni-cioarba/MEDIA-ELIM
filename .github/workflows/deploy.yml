@@ -39,8 +39,8 @@ jobs:
       - name: Checks (i18n parity, projection sizes)
         run: npm run check
 
-      - name: Build (production, base href = /MEDIA-ELIM/)
-        run: npx ng build --configuration production --base-href /MEDIA-ELIM/
+      - name: Build (production, base href = / (dominio propio elimarganda.com))
+        run: npx ng build --configuration production --base-href /
 
       - name: Add SPA fallback (404 -> index)
         run: cp dist/iglesia-redes/browser/index.html dist/iglesia-redes/browser/404.html

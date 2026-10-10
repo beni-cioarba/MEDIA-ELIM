@@ -179,6 +179,11 @@ Worker de Angular no sirve bien peticiones por rangos (`Range`), que es como
 pide vídeo el navegador (Safari falla); además 14 MB no deben entrar en la
 caché de la app. Se sirve directo de GitHub Pages.
 
+**Retransmisión completa** (`DepartmentStory.youtubeId`): ficha navy con
+disco dorado de «play» junto a «Toate fotografiile», que abre
+`youtube.com/live/<id>`. Es un enlace, no un iframe: son horas de directo y el
+reel ya cubre el vídeo corto. ANCORAT 2026 → `5_4N6Ja0OdU`.
+
 **Vídeo en pantalla completa**: en el mosaico el reel es 9:16 con
 `object-fit: cover`; en `:fullscreen` / `:-webkit-full-screen` pasa a
 `contain` sobre negro, con `aspect-ratio: auto`. Así no se recorta en un

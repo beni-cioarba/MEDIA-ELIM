@@ -18,7 +18,7 @@ function fetchJSON(url) {
     // burlamos la restricción de Google Cloud. (Reemplaza con tu URL real si es distinta)
     const options = {
       headers: {
-        'Referer': 'https://beni-cioarba.github.io/MEDIA-ELIM/'
+        'Referer': 'https://elimarganda.com/'
       }
     };
     

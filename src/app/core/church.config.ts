@@ -403,7 +403,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   youtubeLiveUrl: 'https://www.youtube.com/@ElimArganda/live',
   youtubeChannelId: 'UCJqLlk6CS6uNtJWS5r-7P9g',
   youtubeApiKey: 'AIzaSyCliQqAiyf0qZuKoOi76MbU-NOrQrDcCoA',
-  publicUrl: 'https://beni-cioarba.github.io/MEDIA-ELIM/',
+  publicUrl: 'https://elimarganda.com/',
   socials: [
     {
       id: 'instagram_main',

@@ -739,8 +739,9 @@ Reglas fijas del lienzo proyectado:
 `shared/qr-panel`, en la diapositiva `website` (ver «Lienzo»). Codifica
 siempre `config.publicUrl` (no la URL del navegador) para que apunte a
 producción aunque se esté proyectando desde `localhost`. Siempre un único
-código, y **sin la dirección escrita** mientras el dominio sea provisional
-(`github.io`): cuando haya dominio propio se puede volver a rotular.
+código, y **sin la dirección escrita** (se decidió cuando el dominio era el
+provisional `github.io`). Ya hay dominio propio (`elimarganda.com`): se puede
+volver a rotular si se quiere.
 
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
   corregir y `H` sólo añade módulos (41×41 → 33×33 con esta URL). A igual
