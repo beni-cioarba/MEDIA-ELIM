@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, NgZone, computed, inject, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { PresentationDisplayService } from '../../core/services/presentation-display.service';
 
 /**
- * Reloj de la proyección (hora actual, `HH:MM:SS`), **arriba a la derecha**.
+ * Reloj de la proyección (hora actual, `HH:MM` o, si el operador lo pide,
+ * `HH:MM:SS`), **arriba a la derecha**.
  *
  * Lo enciende el operador desde el panel (`PresentationDisplayService.
  * showClock`); apagado por defecto. Es una ayuda para quien dirige —saber la
@@ -21,7 +23,10 @@ import { TranslatePipe } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="clock" role="timer" [attr.aria-label]="'presenter.clock_show' | translate">
-      <span class="clock__hm">{{ hm() }}</span><span class="clock__s">:{{ ss() }}</span>
+      <span class="clock__hm">{{ hm() }}</span>
+      @if (display.clockSeconds()) {
+        <span class="clock__s">:{{ ss() }}</span>
+      }
     </div>
   `,
   styles: `
@@ -65,6 +70,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   `,
 })
 export class StageClockComponent {
+  protected readonly display = inject(PresentationDisplayService);
   private readonly now = signal<Date>(new Date());
 
   protected readonly hm = computed(() => `${two(this.now().getHours())}:${two(this.now().getMinutes())}`);

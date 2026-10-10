@@ -144,6 +144,17 @@ Maquetación (`announcement-card.component.scss`, bloque `.stage.is-fullscreen`)
 - `appFitToBox` ajusta la tarjeta entre **1 y 0,7**. Es la red de seguridad,
   no la norma: a 0,7 el cuerpo queda en 3,2u (el mínimo absoluto) y el titular
   en 5,6u; etiquetas y secundarios no bajan de 3,2u (`max()` en la hoja).
+- **Listas en columna** (`kind: 'list'`, hasta dos secciones): cada línea
+  lleva un **rombo oro** colgado a la izquierda, con sangría francesa. Una
+  línea larga se parte en renglones parejos (`text-wrap: balance` en
+  `__item`, también en la web), nunca con una palabra suelta debajo.
+- **`highlight: true`** en una sección (con dos en columnas): **panel navy a
+  toda la altura** con epígrafe oro y los puntos repartidos en el alto; la
+  otra columna baja lo mismo que el relleno del panel para que epígrafes y
+  primeras líneas queden alineados. Para «lo que se pide» o el dato clave, y
+  para que una columna más corta no deje un hueco debajo. Las secciones
+  llegan siempre hasta el pie de la diapositiva (`flex: 1`). Primer uso:
+  «Ce cerem pentru ei» de la semana de mijlocire del 11/10/2026.
 - **`webOnly: true`** en una sección la deja sólo para la web (`/anunturi`),
   no para el cartel: es la válvula para el detalle que no cabe legible (listas
   largas de nombres, condiciones).

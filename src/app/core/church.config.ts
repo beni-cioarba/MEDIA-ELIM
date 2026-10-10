@@ -149,6 +149,13 @@ export interface AnnouncementSection {
    * una. La parte 1 lleva el resumen; la última, la nota y el versículo.
    */
   readonly part?: number;
+  /**
+   * Sección destacada: en proyección, panel navy a toda la altura de la
+   * diapositiva (sólo con dos secciones en columnas). Para lo que se pide o el
+   * dato clave («Ce cerem pentru ei»), y para que una columna más corta no
+   * deje un hueco vacío debajo.
+   */
+  readonly highlight?: boolean;
 }
 
 /**
@@ -797,6 +804,47 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       footnote: 'Continuăm să ne rugăm pentru o înviorare în Biserica Elim, prin Duhul Sfânt.',
       publishedOn: '2026-10-04',
       expiresOn: '2026-10-10',
+    },
+    /*
+     * Semana de intercesión por traducción, administración, recepción de
+     * invitados y las hermanas que preparan los eventos (11/10 → 17/10).
+     *
+     * Erratas del original: «Dragi frații»→frați, acesta→aceasta, «traducere
+     * ,cei»→«traducere, cei», oaspeți→oaspeților, «să le de»→dea,
+     * familile→familiile, «pregătirea când sunt evenimente»→pregătirea
+     * evenimentelor. Misma estructura que las semanas anteriores: a quién se
+     * ora y qué se pide en dos listas, cada línea en un renglón (≤ 30
+     * caracteres a lo ancho de media diapositiva: así el autoajuste crece en
+     * vez de partir palabras sueltas). El original no trae nota ni versículo.
+     */
+    {
+      id: 'mijlocire_traducere_administratie_primire',
+      title: 'Săptămână de rugăciune pentru traducere, administrație și primire',
+      lead: 'Dragi frați și surori, în săptămâna aceasta îi aducem în rugăciune pe cei care slujesc în aceste lucrări.',
+      sections: [
+        {
+          heading: 'Îi aducem înaintea Domnului',
+          kind: 'list',
+          items: [
+            { label: 'Cei de la traducere' },
+            { label: 'Cei de la administrație' },
+            { label: 'Cei de la primirea oaspeților' },
+            { label: 'Surorile care se implică în pregătirea evenimentelor' },
+          ],
+        },
+        {
+          heading: 'Ce cerem pentru ei',
+          kind: 'list',
+          highlight: true,
+          items: [
+            { label: 'Domnul să îi binecuvânteze' },
+            { label: 'Să le dea multă putere în slujire' },
+            { label: 'Să binecuvânteze și familiile lor' },
+          ],
+        },
+      ],
+      publishedOn: '2026-10-11',
+      expiresOn: '2026-10-17',
     },
     {
       id: 'aniversare_25_ani',

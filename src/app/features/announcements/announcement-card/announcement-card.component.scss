@@ -234,6 +234,10 @@ app-announcement-card {
   row-gap: 0.15rem;
   font-size: var(--fs-body);
   line-height: 1.35;
+  // Una línea larga se parte en renglones parejos, no en uno lleno y una
+  // palabra suelta debajo («…putere în / slujire»). Va en la fila (bloque):
+  // en las listas la etiqueta es `inline` y ahí `balance` no actúa.
+  text-wrap: balance;
 }
 
 .announcement__item-label {
@@ -514,9 +518,12 @@ app-announcement-card {
   // Sin `min-height: 0`: la caja nunca se encoge por debajo de su contenido,
   // así el desbordamiento sale por abajo del `__inner` y el autoajuste lo
   // detecta.
+  // Las columnas llegan hasta el pie de la diapositiva (`flex: 1`): el filete
+  // que las separa y el panel destacado ocupan todo el alto disponible.
   .announcement__sections {
+    flex: 1 1 auto;
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 0;
   }
 
@@ -535,6 +542,70 @@ app-announcement-card {
     &:last-child {
       padding-right: 0;
     }
+  }
+
+  // Listas en columna: una línea por punto con un rombo oro colgado a la
+  // izquierda (sangría francesa: si la línea parte, el texto sigue alineado).
+  .announcement__sections:not(.announcement__sections--stacked) .announcement__section--list {
+    .announcement__item {
+      position: relative;
+      padding-left: fit(calc(var(--pj-u) * 3.4));
+    }
+
+    .announcement__item::before {
+      content: '';
+      position: absolute;
+      left: fit(calc(var(--pj-u) * 0.3));
+      top: 0.62em;
+      width: fit(calc(var(--pj-u) * 1.2));
+      height: fit(calc(var(--pj-u) * 1.2));
+      border-radius: fit(calc(var(--pj-u) * 0.25));
+      background: var(--c-gold);
+      transform: translateY(-50%) rotate(45deg);
+    }
+  }
+
+  // Sección destacada (`highlight`): panel navy a toda la altura. Lo que se
+  // pide queda como una pieza propia, y la columna corta ya no deja hueco.
+  .announcement__sections:not(.announcement__sections--stacked) .announcement__section--highlight {
+    display: flex;
+    flex-direction: column;
+    // El hueco entre columnas ya lo pone el relleno derecho de la primera.
+    padding: fit(var(--pj-sp-3));
+    border-left: 0;
+    border-radius: fit(var(--pj-r));
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(212, 175, 55, 0.18), transparent 60%),
+      var(--c-primary);
+    color: var(--c-on-primary);
+
+    .announcement__section-title {
+      color: var(--c-gold-soft);
+      border-bottom-color: rgba(212, 175, 55, 0.55);
+    }
+
+    // Los puntos se reparten el alto del panel: lo llenan sin apretarse.
+    .announcement__items {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+    }
+
+    .announcement__item {
+      color: var(--c-on-primary);
+    }
+
+    .announcement__item::before {
+      background: var(--c-gold-soft);
+    }
+  }
+
+  // Junto a un panel, la otra columna baja lo mismo que el relleno del panel:
+  // epígrafes y primeras líneas de las dos columnas en la misma horizontal.
+  .announcement__sections:not(.announcement__sections--stacked):has(.announcement__section--highlight)
+    .announcement__section:not(.announcement__section--highlight) {
+    padding-top: fit(var(--pj-sp-3));
   }
 
   // Tres secciones o más: apiladas a todo el ancho del lienzo. Tres columnas

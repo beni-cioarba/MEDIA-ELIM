@@ -27,11 +27,32 @@
       }
     </div>
 
+    <!-- Idioma de la consola y de toda la proyección (las ventanas abiertas
+         lo siguen al momento, ver `LanguageService`). Nombres en su propio
+         idioma: quien busca el otro idioma no tiene por qué leer éste. -->
+    <div class="lang" role="group" [attr.aria-label]="'presenter.lang_aria' | translate">
+      @for (lang of languages; track lang.code) {
+        <button
+          type="button"
+          class="lang__btn"
+          [attr.aria-pressed]="language.current() === lang.code"
+          [attr.lang]="lang.code"
+          [title]="lang.name"
+          (click)="language.use(lang.code)"
+        >
+          <span aria-hidden="true">{{ lang.code }}</span>
+          <span class="u-sr-only">{{ lang.name }}</span>
+        </button>
+      }
+    </div>
+
     <div class="bar__clock" aria-hidden="true">{{ clock() }}</div>
   </header>
 
   @if (popupBlocked()) {
-    <p class="alert" role="alert">{{ 'presenter.blocked' | translate }}</p>
+    <p class="alert" role="alert">
+      {{ (popupBlockedMulti() ? 'presenter.blocked_multi' : 'presenter.blocked') | translate }}
+    </p>
   }
   @if (projection.fullscreenDenied()) {
     <p class="alert alert--soft" role="status">{{ 'presenter.fullscreen_denied' | translate }}</p>
@@ -116,8 +137,15 @@
                 <span class="group__name">{{ group.state.titleKey | translate }}</span>
               </label>
 
+              <!-- Estado sólo cuando informa: en automático y con contenido (lo
+                   normal) no se rotula; apagado por estar vacío, una nota
+                   atenuada que no parece botón; cambiado a mano, el botón ↺. -->
               @if (group.state.isAuto) {
-                <span class="tag">{{ 'blocks.auto' | translate }}</span>
+                @if (!group.state.autoAvailable) {
+                  <span class="tag tag--note" [title]="'blocks.empty_hint' | translate">
+                    {{ 'blocks.empty' | translate }}
+                  </span>
+                }
               } @else {
                 <button
                   type="button"
@@ -497,12 +525,17 @@
           <ul class="screens" role="list">
             @for (screen of projection.screens(); track screen.key) {
               @let out = outputOn(screen);
-              <li class="screen" [class.is-live]="out !== null">
+              <li class="screen" [class.is-live]="out !== null" [class.is-console]="screen.isCurrent">
                 <span class="screen__icon" aria-hidden="true">
                   @if (out) { {{ outputNumber(out) }} } @else { <span class="screen__glyph"></span> }
                 </span>
                 <span class="screen__info">
-                  <span class="screen__name">{{ screen.label }}</span>
+                  <span class="screen__name">
+                    {{ screen.label }}
+                    @if (screen.isCurrent) {
+                      <span class="screen__badge">{{ 'presenter.screen_console' | translate }}</span>
+                    }
+                  </span>
                   <span class="screen__meta">
                     {{ screen.width }}×{{ screen.height }}
                     @if (screen.isPrimary) { · {{ 'presenter.screen_primary' | translate }} }
@@ -622,6 +655,20 @@
             <span id="clock-hint" class="switch__hint">{{ 'presenter.clock_hint' | translate }}</span>
           </span>
         </label>
+        <!-- Subopción del reloj: sólo tiene sentido con el reloj encendido. -->
+        @if (display.showClock()) {
+          <label class="switch switch--row switch--sub">
+            <input
+              type="checkbox"
+              [checked]="display.clockSeconds()"
+              (change)="setClockSeconds($event)"
+            />
+            <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+            <span class="switch__text">
+              <span class="switch__label">{{ 'presenter.clock_seconds' | translate }}</span>
+            </span>
+          </label>
+        }
         <!-- Aviso de directo: «ÎN DIRECT» en la esquina y el QR del directo. -->
         <label class="switch switch--row">
           <input

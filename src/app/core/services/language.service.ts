@@ -32,6 +32,7 @@ export class LanguageService {
    */
   init(): Promise<void> {
     this.translate.addLangs([...SUPPORTED]);
+    this.followOtherWindows();
     const initial = this.readFromStorage() || this.detectFromBrowser() || DEFAULT_LANG;
     return this.use(initial);
   }
@@ -51,6 +52,22 @@ export class LanguageService {
 
   toggle(): Promise<void> {
     return this.use(this.current() === 'es' ? 'ro' : 'es');
+  }
+
+  /**
+   * Un cambio de idioma en otra ventana del mismo origen (el selector del
+   * panel de control) se aplica aquí al momento: así las ventanas de
+   * proyección ya abiertas cambian con la consola, por el mismo canal
+   * (`storage`) que el resto de ajustes de proyección. El evento no se
+   * dispara en la ventana que escribe, así que no hay bucle.
+   */
+  private followOtherWindows(): void {
+    if (typeof window === 'undefined') return;
+    window.addEventListener('storage', (event) => {
+      if (event.key !== STORAGE_KEY) return;
+      const lang = event.newValue;
+      if ((lang === 'es' || lang === 'ro') && lang !== this.current()) void this.use(lang);
+    });
   }
 
   private detectFromBrowser(): AppLanguage | null {

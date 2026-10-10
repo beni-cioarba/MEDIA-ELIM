@@ -64,7 +64,7 @@
         @for (section of sections(); track section.heading) {
           <section
             class="announcement__section"
-            [class]="'announcement__section announcement__section--' + (section.kind ?? 'list')"
+            [class]="'announcement__section announcement__section--' + (section.kind ?? 'list') + (section.highlight ? ' announcement__section--highlight' : '')"
           >
             <h3 class="announcement__section-title">{{ section.heading }}</h3>
             <ul

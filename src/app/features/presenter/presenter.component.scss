@@ -179,6 +179,48 @@ button:disabled {
   border-left: 1px solid var(--line-2);
 }
 
+/* Idioma: control segmentado a la altura de los chips (22px), el activo en
+   oro como el resto de estados encendidos de la consola. */
+.lang {
+  display: inline-flex;
+  height: 22px;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+
+  &__btn {
+    min-width: 30px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    cursor: pointer;
+
+    &:hover:not([aria-pressed='true']) {
+      color: var(--ink);
+      background: var(--line);
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--gold);
+      color: #10182b;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--gold-2);
+      outline-offset: 2px;
+    }
+  }
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -463,6 +505,19 @@ button:disabled {
     }
   }
 
+  // Subopción de la fila de arriba: sangrada bajo su etiqueta, con un filete
+  // que la cuelga de ella.
+  &--sub {
+    margin: -2px 0 2px 13px;
+    padding: 2px 0 2px 21px;
+    border-left: 1px solid var(--line-2);
+
+    .switch__label {
+      font-size: 0.95em;
+      font-weight: 600;
+    }
+  }
+
   &__text {
     display: flex;
     flex-direction: column;
@@ -566,6 +621,15 @@ button:disabled {
     &:hover {
       background: var(--gold-a);
     }
+  }
+
+  // Nota de estado (no es un control): sin borde, atenuada.
+  &--note {
+    padding: 0;
+    border-color: transparent;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: help;
   }
 }
 
@@ -1245,6 +1309,49 @@ button:disabled {
 
   &.is-live {
     border-color: rgba(43, 212, 125, 0.4);
+  }
+
+  // La pantalla donde está esta consola: oro, con filete a la izquierda y
+  // la insignia «CONSOLA». Se distingue de un vistazo de las de proyección
+  // (verdes) y de las libres (grises).
+  &.is-console {
+    position: relative;
+    padding-left: 10px;
+    border-color: rgba(212, 175, 55, 0.5);
+    background: linear-gradient(90deg, var(--gold-a), transparent 70%), var(--s2);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 4px auto 4px 0;
+      width: 3px;
+      border-radius: 0 2px 2px 0;
+      background: var(--gold);
+    }
+  }
+
+  &.is-console:not(.is-live) &__icon {
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+  }
+
+  &.is-console:not(.is-live) &__glyph {
+    background: var(--gold);
+  }
+
+  &__badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--bg);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    vertical-align: 1px;
   }
 
   &__icon {

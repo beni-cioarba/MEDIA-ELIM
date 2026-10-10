@@ -102,7 +102,13 @@ las lista solo) y muestra cada una con nombre, resolución, «principal» y «es
 panel»; se actualiza al conectar o desconectar una (`screenschange`). Por
 pantalla: **Proyectar** (abre la ventana sobre ella, a pantalla completa donde
 se admite) y, en directo, pantalla completa / traer al frente / cerrar.
-«Proyectar en todas» abre una en cada pantalla que no es la del panel.
+«Proyectar en todas» abre una en cada pantalla que no es la del panel:
+todas se piden **en el mismo clic**, sin `await` entre ellas
+(`openAllExternal`). Chrome sólo concede **una ventana emergente por clic**
+salvo que el sitio tenga las emergentes permitidas: en el equipo del templo,
+«Permitir siempre» en el icono de ventanas bloqueadas de la barra de
+direcciones (o la política `PopupsAllowedForUrls` = `https://elimarganda.com`).
+Si se abre alguna pero no todas, el panel lo explica (`presenter.blocked_multi`).
 «Nueva ventana» abre una suelta (sin API, o para arrastrarla a mano).
 
 Cada ventana se llama `elim-proiectie-<pantalla>` (`<left>_<top>`) o
@@ -123,6 +129,33 @@ ventana y el gesto viaja con el mensaje. `ProjectionComponent` (sólo con
 contesta `fullscreenResult {ok}`. Con `ok: false` (Firefox/Safari) el panel
 muestra «pulsa F en la proyección». El estado real llega en el saludo de cada
 ventana (`PeerInfo.fullscreen`).
+
+### Pantalla completa automática (10/10/2026)
+
+La ventana (`role === 'window'`) **nace a pantalla completa** donde se pueda
+(`ProjectionComponent.autoFullscreen`):
+
+1. Al abrirse llama a `requestFullscreen()`. Sin gesto, Chrome/Edge sólo lo
+   conceden con la política **`AutomaticFullscreenAllowedForUrls`** (Chrome ≥
+   124 en Windows). En el **equipo del templo** se configura una vez:
+   `HKLM\SOFTWARE\Policies\Google\Chrome\AutomaticFullscreenAllowedForUrls`,
+   valor de cadena `1` = `https://elimarganda.com` (en Edge, la misma clave
+   bajo `Microsoft\Edge`). Comprobación: `chrome://policy`. Con ella, cada
+   «Proyectar» abre la ventana ya a pantalla completa en su pantalla.
+2. Sin la política, el **primer clic o tecla** dentro de la ventana la pone a
+   pantalla completa (una vez; `F` y `Esc` se excluyen porque ya la alternan,
+   y si el operador sale después con Esc se respeta). El botón ⛶ de cada
+   pantalla en el panel sigue funcionando como antes.
+
+La feature `fullscreen` de `window.open` (en `featuresFor`) sólo actúa en el
+*origin trial* de Chrome («fullscreen popups»); fuera de él se ignora.
+
+### Pantalla de la consola
+
+En «Pantallas», la fila de la pantalla donde está el panel (`isCurrent`) va
+**en oro**: filete a la izquierda, fondo dorado tenue, icono oro e insignia
+«CONSOLA» junto al nombre (`presenter.screen_console`). Verde = proyectando,
+gris = libre.
 
 ## Anuncios programados: verlos antes del día
 
@@ -171,7 +204,10 @@ esquina son `flex` (sin el hueco de la línea de texto bajo la píldora).
 
 ## Reloj en la proyección (04/10/2026)
 
-`shared/stage-clock` (`app-stage-clock`): la hora actual `HH:MM:SS` (segundos
+`shared/stage-clock` (`app-stage-clock`): la hora actual, **`HH:MM` por
+defecto**; con la subopción «Con segundos» del panel (debajo de «Mostrar la
+hora», sólo visible con el reloj encendido; `clockSeconds`, apagada por
+defecto desde el 10/10/2026) pasa a `HH:MM:SS` (segundos
 a 3,2u y atenuados) en la **esquina superior derecha**, la que queda libre
 (abajo están la cuenta atrás y la firma). Mismo lenguaje que la píldora de la
 cuenta atrás (clara / oscura a sangre). Se enciende en el panel → «Ritm și
@@ -179,6 +215,17 @@ ecran» → «Arată ora» (`PresentationDisplayService.showClock`, preferencia
 `clock` en `localStorage`, **apagado por defecto**, no caduca). No sale en la
 vista fija `solo` (ni, por tanto, en el PDF de las familias). Un `setInterval`
 de 1 s fuera de Angular, alineado con el cambio de segundo.
+
+## Idioma de la consola y la proyección (10/10/2026)
+
+Selector `RO | ES` en la barra superior del panel, entre los chips de estado y
+el reloj (control segmentado a 22px, activo en oro, `aria-pressed`; nombres
+«Română» / «Español» en su propio idioma para lectores de pantalla y `title`).
+Cambia el idioma de **toda la app en ese navegador**: `LanguageService`
+escucha el evento `storage` de su clave (`iglesia-redes.lang`), así que las
+ventanas de proyección ya abiertas lo siguen al momento, por el mismo canal
+que el resto de ajustes. No hay idiomas distintos para consola y proyección:
+el operador ve en la vista previa exactamente lo que se proyecta.
 
 ## Atajo «Familii» (04/10/2026)
 
@@ -363,6 +410,13 @@ Cada bloque tiene tres estados:
 - **Forzado OFF**: nunca se proyecta.
 
 Resolución: `enabled = override ?? autoAvailable`.
+
+En el panel de control el estado se rotula **sólo cuando informa**
+(10/10/2026): en automático y con contenido (lo normal) no lleva etiqueta;
+en automático pero vacío, la nota atenuada «Sin contenido» (no es un
+control; el *tooltip* explica que se encenderá solo); cambiado a mano, el
+botón «MANUAL ↺» que lo devuelve a automático. Antes cada bloque llevaba una
+pastilla «AUTO» con el mismo aspecto que ese botón, pero inerte.
 
 Persistencia: `localStorage['iglesia-redes.presentation.blocks']`, sólo los
 overrides manuales (`{"upcoming": true}`). El botón ↺ devuelve un bloque a auto;
@@ -750,8 +804,13 @@ sin `https://`, `www.` ni barra final) y aparece en **tres diapositivas**
 (`elimarganda.com` + `/talantul-in-negot` en dos líneas, ver
 `38-talent-contest.md`) y como **última tarjeta de `socials`** («Site-ul
 bisericii · elimarganda.com», icono `web`), sólo en proyección: en la web ya
-se está en ella. Con cinco tarjetas cada una mide ~14,6u (antes ~19u) y el
-@handle sigue a `hero` sin cortarse. No se pinta en todas las diapositivas:
+se está en ella. Con cinco tarjetas cada una mide ~14,5u (antes ~19u). Cada
+tarjeta es un contenedor de tamaño (`container-type: size`): icono (72cqh,
+tope 11u) y @handle (50cqh, tope 8u ≈ 7,1u con cinco filas) se derivan del alto
+de su fila, el bloque rótulo + @handle va centrado (1,1u arriba y abajo) y ya
+no desborda la tarjeta (antes 13,6u de contenido en 10,5u útiles recortaban
+la «g»). La tarjeta de la web lleva el icono en oro: es el cierre, no una red
+más. Por encima de siete filas el @handle bajaría de 4,8u: paginar. No se pinta en todas las diapositivas:
 la proyección va sin marca fija desde el 04/10/2026.
 
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que

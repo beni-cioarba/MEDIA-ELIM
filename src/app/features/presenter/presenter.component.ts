@@ -37,6 +37,7 @@ import {
 } from '../../core/services/presentation-display.service';
 import { Announcement } from '../../core/church.config';
 import { AnnouncementsService, announcementParts } from '../../core/services/announcements.service';
+import { AppLanguage, LanguageService } from '../../core/services/language.service';
 import { SlideTiming } from '../../core/services/carousel.service';
 import { FamilyPrayerService } from '../../core/services/family-prayer.service';
 import { ServiceCountdownService } from '../../core/services/service-countdown.service';
@@ -88,6 +89,7 @@ export class PresenterComponent implements OnInit {
   protected readonly projection = inject(ProjectionWindowService);
   protected readonly announcements = inject(AnnouncementsService);
   protected readonly familyPrayer = inject(FamilyPrayerService);
+  protected readonly language = inject(LanguageService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly zone = inject(NgZone);
   private readonly translate = inject(TranslateService);
@@ -97,8 +99,16 @@ export class PresenterComponent implements OnInit {
   protected readonly durationMax = DURATION_MAX_S;
   protected readonly mediaLink = `/${APP_PATHS.media}`;
 
+  /** Selector de idioma de la barra: código visible, nombre en su idioma. */
+  protected readonly languages: readonly { code: AppLanguage; name: string }[] = [
+    { code: 'ro', name: 'Română' },
+    { code: 'es', name: 'Español' },
+  ];
+
   /** El navegador bloqueó la ventana emergente: hay que permitir pop-ups. */
   protected readonly popupBlocked = signal<boolean>(false);
+  /** «Proyectar en todas» abrió alguna ventana pero el navegador bloqueó el resto. */
+  protected readonly popupBlockedMulti = signal<boolean>(false);
 
   /** URL de la vista previa (misma ruta de proyección en modo `preview`). */
   protected readonly previewUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
@@ -255,13 +265,25 @@ export class PresenterComponent implements OnInit {
   protected async open(screen?: DisplayScreen): Promise<void> {
     const result = await this.projection.open(screen);
     this.popupBlocked.set(result === 'blocked');
+    this.popupBlockedMulti.set(false);
   }
 
-  /** Proyectar a la vez en todas las pantallas que no son la del panel. */
+  /**
+   * Proyectar a la vez en todas las pantallas que no son la del panel.
+   *
+   * Todas las ventanas se piden **en el mismo instante del clic**, sin `await`
+   * entre una y otra (`open()` llama a `window.open` antes de su primer
+   * `await`). Aun así, Chrome sólo concede **una ventana emergente por clic**
+   * salvo que el sitio tenga las ventanas emergentes permitidas («Permitir
+   * siempre» en la barra de direcciones, o la política `PopupsAllowedForUrls`
+   * en el equipo del templo). Si alguna se bloquea, el aviso lo explica.
+   */
   protected async openAllExternal(): Promise<void> {
-    for (const screen of this.projection.screens()) {
-      if (!screen.isCurrent && !this.outputOn(screen)) await this.open(screen);
-    }
+    const free = this.projection.screens().filter((s) => !s.isCurrent && !this.outputOn(s));
+    const results = await Promise.all(free.map((screen) => this.projection.open(screen)));
+    const blocked = results.filter((r) => r === 'blocked').length;
+    this.popupBlocked.set(blocked > 0);
+    this.popupBlockedMulti.set(blocked > 0 && blocked < results.length);
   }
 
   /** Hay alguna pantalla externa sin proyectar todavía. */
@@ -555,6 +577,10 @@ export class PresenterComponent implements OnInit {
 
   protected setShowClock(event: Event): void {
     this.display.setShowClock((event.target as HTMLInputElement).checked);
+  }
+
+  protected setClockSeconds(event: Event): void {
+    this.display.setClockSeconds((event.target as HTMLInputElement).checked);
   }
 
   protected setLiveNotice(event: Event): void {

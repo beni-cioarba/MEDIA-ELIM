@@ -65,6 +65,7 @@
     "open_control": "Deschide panoul de control al proiecției"
   },
   "presenter": {
+    "lang_aria": "Limba panoului și a proiecției",
     "title": "Panou de control",
     "subtitle": "Proiecție",
     "window_title": "Proiecție · Biserica Elim",
@@ -78,6 +79,7 @@
     "fullscreen_exit": "Ieși din ecran complet",
     "fullscreen_denied": "Acest browser cere gestul în fereastra însăși: apasă F în proiecție.",
     "blocked": "Browserul a blocat fereastra. Permite ferestrele pop-up pentru acest site și apasă din nou.",
+    "blocked_multi": "Browserul a deschis o singură fereastră: Chrome permite una pe clic. Ca să le deschizi pe toate odată, apasă iconița de ferestre blocate din bara de adrese, alege „Permite întotdeauna” și apasă din nou „Proiectează pe toate”.",
     "slides": "Diapozitive",
     "preview": "Previzualizarea proiecției",
     "preview_only": "Previzualizare",
@@ -118,6 +120,7 @@
     "screens_unsupported": "Acest browser nu detectează ecranele: deschide o fereastră și trage-o pe ecran (F = ecran complet). Chrome și Edge o fac singure.",
     "screen_primary": "principal",
     "screen_this": "acest panou",
+    "screen_console": "Consolă",
     "screen_project": "Proiectează",
     "output_hidden": "ascunsă",
     "loose_window": "Fereastră liberă",
@@ -153,6 +156,7 @@
     "countdown_from_always": "Mereu, de la {{time}} (nu în timpul unui serviciu)",
     "clock_show": "Arată ora",
     "clock_hint": "Ceas în colțul din dreapta sus al proiecției",
+    "clock_seconds": "Cu secunde",
     "select_families": "Familii",
     "select_families_hint": "Prezentarea familiilor: doar familiile din săptămâna aceasta (rezumat + fiecare familie), pe avans manual, de la rezumat"
   },
@@ -169,6 +173,8 @@
     "subtitle": "Alege ce secțiuni intră în rotație când apeși Play.",
     "auto": "Auto",
     "manual": "Manual",
+    "empty": "Fără conținut",
+    "empty_hint": "Automat: se va proiecta singur când are conținut. Pornește-l ca să apară oricum.",
     "auto_on": "Se afișează: există conținut.",
     "auto_off": "Ascuns: nu există conținut.",
     "forced_on": "Forțat vizibil.",

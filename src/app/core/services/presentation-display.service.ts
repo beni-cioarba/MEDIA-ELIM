@@ -96,6 +96,11 @@ interface DisplayPrefs {
    * caduca, como el modo de avance.
    */
   readonly clock: boolean;
+  /**
+   * El reloj con segundos (`HH:MM:SS`) o sólo hora y minutos (`HH:MM`, por
+   * defecto desde el 10/10/2026: los segundos sólo distraían).
+   */
+  readonly clockSeconds: boolean;
 }
 
 /** Ajustes de la cuenta atrás hasta el comienzo del culto. */
@@ -131,6 +136,7 @@ const DEFAULTS: DisplayPrefs = {
   autoAdvance: true,
   countdown: COUNTDOWN_DEFAULTS,
   clock: false,
+  clockSeconds: false,
 };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -310,6 +316,13 @@ export class PresentationDisplayService {
     this.update({ clock: on });
   }
 
+  /** Segundos en el reloj (`HH:MM:SS`) o sólo `HH:MM`. */
+  readonly clockSeconds = computed<boolean>(() => this.prefs().clockSeconds);
+
+  setClockSeconds(on: boolean): void {
+    this.update({ clockSeconds: on });
+  }
+
   /** Avance automático por tiempos (`true`) o sólo manual (`false`). */
   setAutoAdvance(on: boolean): void {
     this.update({ autoAdvance: on });
@@ -338,7 +351,8 @@ function readStoredPrefs(): DisplayPrefs {
     if (!parsed || typeof parsed !== 'object') return DEFAULTS;
     // Las claves antiguas (`qrVisible`, `qrSize`) se ignoran y desaparecen al
     // guardar la próxima preferencia.
-    const { durations, slideDurations, liveNoticeDate, autoAdvance, countdown, clock } = parsed as Record<string, unknown>;
+    const { durations, slideDurations, liveNoticeDate, autoAdvance, countdown, clock, clockSeconds } =
+      parsed as Record<string, unknown>;
     return {
       durations: readDurations(durations),
       slideDurations: readSlideDurations(slideDurations),
@@ -350,6 +364,8 @@ function readStoredPrefs(): DisplayPrefs {
       countdown: readCountdown(countdown),
       // Sólo un `true` explícito lo enciende: apagado por defecto.
       clock: clock === true,
+      // Igual: sin segundos salvo que se pidan.
+      clockSeconds: clockSeconds === true,
     };
   } catch {
     return DEFAULTS;

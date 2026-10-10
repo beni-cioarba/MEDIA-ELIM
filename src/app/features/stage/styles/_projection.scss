@@ -758,31 +758,57 @@
       gap: var(--pj-sp-2);
     }
 
+    // Cada tarjeta es un contenedor de tamaño: icono y @handle se derivan del
+    // alto de *su* fila (`cqh`), no de medidas fijas. Con cinco filas (~14,5u)
+    // el contenido cabe entero y centrado; con más redes encoge en proporción
+    // en vez de desbordar y recortar los rasgos descendentes («g», «p») contra
+    // el `overflow: hidden` de la tarjeta, que es lo que pasaba con 8,6u fijos.
     .socials__list > .card {
       align-self: stretch;
       max-height: none;
+      container-type: size;
     }
 
     .card__link {
+      height: 100%;
       gap: var(--pj-sp-4);
-      padding: var(--pj-sp-2) var(--pj-sp-4);
+      padding: 0 var(--pj-sp-4);
     }
 
     .card__icon {
-      width: calc(var(--pj-u) * 11);
-      height: calc(var(--pj-u) * 11);
-      padding: calc(var(--pj-u) * 2.2);
+      width: min(calc(var(--pj-u) * 11), 72cqh);
+      height: min(calc(var(--pj-u) * 11), 72cqh);
+      padding: min(calc(var(--pj-u) * 2.2), 15cqh);
+    }
+
+    // Rótulo + @handle como un bloque compacto: ~0,5u de separación (antes
+    // 0,45u más la caja de línea de cada uno), centrado en la fila.
+    .card__body {
+      gap: min(calc(var(--pj-u) * 0.6), 4cqh);
+      justify-content: center;
     }
 
     .card__network {
       font-size: var(--pj-fs-caption);
+      line-height: 1;
     }
 
+    // 50cqh ≈ 7,3u con cinco filas; tope 8u (con cuatro). Hasta siete filas
+    // (seis redes + la web) sigue por encima de 4,8u, el mínimo del dato
+    // clave a 15-20 m; a partir de ahí habría que paginar el bloque.
     .card__handle {
-      font-size: var(--pj-fs-hero);
+      font-size: min(calc(var(--pj-u) * 8), 50cqh);
+      line-height: 1.12;
       white-space: nowrap;
       overflow: visible;
       text-overflow: clip;
+    }
+
+    // La web no es una red más: es la casa de todas. Mismo molde, icono en
+    // oro (el único acento de la diapositiva) para que se lea como cierre.
+    .card--site .card__icon {
+      background: $color-gold;
+      color: $color-primary;
     }
 
     // Transmisiones: tres tarjetas en fila con la miniatura arriba, a su

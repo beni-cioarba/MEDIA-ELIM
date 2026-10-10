@@ -65,6 +65,7 @@
     "open_control": "Abrir el panel de control de la proyección"
   },
   "presenter": {
+    "lang_aria": "Idioma de la consola y de la proyección",
     "title": "Panel de control",
     "subtitle": "Proyección",
     "window_title": "Proyección · Iglesia Elim",
@@ -78,6 +79,7 @@
     "fullscreen_exit": "Salir de pantalla completa",
     "fullscreen_denied": "Este navegador exige el gesto en la propia ventana: pulsa F en la proyección.",
     "blocked": "El navegador ha bloqueado la ventana. Permite las ventanas emergentes para este sitio y vuelve a pulsar.",
+    "blocked_multi": "El navegador sólo ha abierto una ventana: Chrome permite una por clic. Para abrir todas a la vez, pulsa el icono de ventanas bloqueadas de la barra de direcciones, elige «Permitir siempre» y vuelve a pulsar «Proyectar en todas».",
     "slides": "Diapositivas",
     "preview": "Vista previa de la proyección",
     "preview_only": "Vista previa",
@@ -118,6 +120,7 @@
     "screens_unsupported": "Este navegador no detecta pantallas: abre una ventana y arrástrala a la pantalla (F = pantalla completa). Chrome y Edge lo hacen solos.",
     "screen_primary": "principal",
     "screen_this": "este panel",
+    "screen_console": "Consola",
     "screen_project": "Proyectar",
     "output_hidden": "oculta",
     "loose_window": "Ventana suelta",
@@ -153,6 +156,7 @@
     "countdown_from_always": "Siempre, desde las {{time}} (no durante un culto)",
     "clock_show": "Mostrar la hora",
     "clock_hint": "Reloj en la esquina superior derecha de la proyección",
+    "clock_seconds": "Con segundos",
     "select_families": "Familias",
     "select_families_hint": "Presentación de las familias: sólo las de esta semana (resumen + cada familia), en avance manual, desde el resumen"
   },
@@ -169,6 +173,8 @@
     "subtitle": "Elige qué secciones entran en la rotación al pulsar Play.",
     "auto": "Auto",
     "manual": "Manual",
+    "empty": "Sin contenido",
+    "empty_hint": "En automático: se proyectará solo cuando tenga contenido. Enciéndelo para mostrarlo igualmente.",
     "auto_on": "Se muestra: hay contenido.",
     "auto_off": "Oculto: no hay contenido.",
     "forced_on": "Forzado visible.",

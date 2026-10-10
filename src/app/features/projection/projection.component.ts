@@ -72,6 +72,37 @@ export class ProjectionComponent implements OnInit, OnDestroy {
   private readonly presentation = inject(PresentationService);
   private readonly translate = inject(TranslateService);
   private readonly document = inject(DOCUMENT);
+  private disarmFullscreen?: () => void;
+
+  /**
+   * La ventana de proyección **nace a pantalla completa** siempre que el
+   * navegador lo permita:
+   *  1. Al abrirse lo pide directamente. Sin gesto del usuario Chrome sólo lo
+   *     concede con la política `AutomaticFullscreenAllowedForUrls` (equipo
+   *     del templo, ver `docs/ai/30-presentation.md`); si no, lo rechaza sin
+   *     más.
+   *  2. Si no se concedió, el **primer clic o tecla** dentro de la ventana la
+   *     pone a pantalla completa (una sola vez: si después el operador sale
+   *     con Esc, se respeta). `F` y `Esc` se excluyen: ya alternan la
+   *     pantalla completa por su cuenta.
+   */
+  private async autoFullscreen(): Promise<void> {
+    if (await this.presentation.requestNative()) return;
+    const view = this.document.defaultView;
+    if (!view) return;
+    const onGesture = (event: Event) => {
+      if (event instanceof KeyboardEvent && /^(f|escape)$/i.test(event.key)) return;
+      this.disarmFullscreen?.();
+      if (!this.presentation.isNativeFullscreen()) void this.presentation.requestNative();
+    };
+    view.addEventListener('pointerdown', onGesture, true);
+    view.addEventListener('keydown', onGesture, true);
+    this.disarmFullscreen = () => {
+      view.removeEventListener('pointerdown', onGesture, true);
+      view.removeEventListener('keydown', onGesture, true);
+      this.disarmFullscreen = undefined;
+    };
+  }
 
   ngOnInit(): void {
     const rol = this.route.snapshot.queryParamMap.get(PROJECTION_PREVIEW_PARAM);
@@ -83,9 +114,11 @@ export class ProjectionComponent implements OnInit, OnDestroy {
     this.presentation.enterProjectionRoute(role);
     // Título propio: es la ventana que el operador ve en la barra de tareas.
     this.document.title = this.translate.instant('presenter.window_title');
+    if (role === 'window') void this.autoFullscreen();
   }
 
   ngOnDestroy(): void {
+    this.disarmFullscreen?.();
     this.presentation.leaveProjectionRoute();
   }
 
