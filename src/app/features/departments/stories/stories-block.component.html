@@ -46,12 +46,26 @@
             </figure>
           }
 
-          @if (v.driveUrl) {
-            <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
-              <app-icon name="image" />
-              {{ 'departments.photos_all' | translate }}
-              <app-icon name="external" />
-            </a>
+          @if (v.youtubeUrl || v.driveUrl) {
+            <div class="story__links">
+              @if (v.youtubeUrl) {
+                <a class="story__watch" [href]="v.youtubeUrl" target="_blank" rel="noopener noreferrer">
+                  <span class="story__watch-play" aria-hidden="true"><app-icon name="play" /></span>
+                  <span class="story__watch-text">
+                    <span class="story__watch-title">{{ 'departments.watch_full' | translate }}</span>
+                    <span class="story__watch-src">YouTube · {{ 'departments.watch_src' | translate }}</span>
+                  </span>
+                  <app-icon class="story__watch-ext" name="external" />
+                </a>
+              }
+              @if (v.driveUrl) {
+                <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
+                  <app-icon name="image" />
+                  {{ 'departments.photos_all' | translate }}
+                  <app-icon name="external" />
+                </a>
+              }
+            </div>
           }
         </div>
 

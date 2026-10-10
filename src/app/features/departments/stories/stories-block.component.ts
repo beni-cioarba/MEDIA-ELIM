@@ -33,6 +33,7 @@ interface StoryView {
   /** Las mismas fotos para la galería del visor (‹ › entre ellas). */
   readonly gallery: readonly ViewerDocument[];
   readonly driveUrl: string | null;
+  readonly youtubeUrl: string | null;
 }
 
 /** «20 septembrie 2026» o «13 – 15 martie 2026». */
@@ -107,6 +108,7 @@ export class StoriesBlockComponent {
         driveUrl: story.driveFolderId
           ? driveFolderUrl(story.driveFolderId, this.config.mediaGalleryUrl)
           : null,
+        youtubeUrl: story.youtubeId ? `https://www.youtube.com/live/${story.youtubeId}` : null,
       };
     });
   });

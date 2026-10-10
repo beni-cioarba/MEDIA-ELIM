@@ -134,6 +134,12 @@ export interface DepartmentStory {
   readonly video?: StoryVideo;
   /** Carpeta pública de Drive con todas las fotos (sólo el ID). */
   readonly driveFolderId?: string;
+  /**
+   * Retransmisión completa en YouTube (sólo el ID del vídeo o directo).
+   * Se enlaza, no se incrusta: son horas de programa y un iframe pesaría
+   * en la página por un vídeo que casi nadie verá entero.
+   */
+  readonly youtubeId?: string;
   /** Cita bíblica: `departments.<id>.stories.<storyId>.verse.{text,ref}`. */
   readonly verse?: boolean;
 }
@@ -227,6 +233,8 @@ const YOUTH_STORIES: readonly DepartmentStory[] = [
     },
     // Drive: «ELIM - MEDIA POZE › ANCORAT › POZE CONFERINTA - NAOMI» (50 fotos)
     driveFolderId: '1bzwggHsitKUKdterJ_wkie7vbQsXdpQO',
+    // Directo de la conferencia en el canal de la iglesia.
+    youtubeId: '5_4N6Ja0OdU',
     verse: true,
   },
   {
