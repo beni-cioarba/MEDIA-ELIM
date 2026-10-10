@@ -50,7 +50,10 @@ features/talent-contest/
   proyecta: le cedió el sitio a los contactos (en la columna lateral dejaban
   el QR en 15 px). El QR se dimensiona con container query (`min(100cqw, 100cqh)`)
   y va sin la leyenda del componente (`[captionKey]="null"`): dentro heredaba
-  el ancho del código y se partía. Auto: mientras quede alguna fase. Prueba
+  el ancho del código y se partía. Bajo el código, la **dirección escrita**
+  en dos líneas (`elimarganda.com` en blanco a cuerpo, `/talantul-in-negot`
+  en oro a `caption`; `displayAddress` de `church.config.ts`) y después la
+  leyenda (10/10/2026). Auto: mientras quede alguna fase. Prueba
   de banco (960 × 540, ES y RO): sin desbordes ni solapes, mínimo 3,2u. En la
   web, `/media/talantul-in-negot` redirige a la página.
 - **Web oficial** (último bloque): botón con el dominio a la vista y los

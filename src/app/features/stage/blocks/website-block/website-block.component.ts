@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CHURCH_CONFIG } from '../../../../core/church.config';
+import { CHURCH_CONFIG, displayAddress } from '../../../../core/church.config';
 import { PresentationDisplayService } from '../../../../core/services/presentation-display.service';
 import type { IconName } from '../../../../core/ui/icon-name';
 import { IconComponent } from '../../../../shared/icon/icon.component';
@@ -53,6 +53,6 @@ export class WebsiteBlockComponent {
 
   protected readonly sections = SECTIONS;
   protected readonly siteUrl = this.config.publicUrl;
-  protected readonly siteHost = new URL(this.config.publicUrl).host;
+  protected readonly siteHost = displayAddress(this.config.publicUrl);
   protected readonly live = this.display.liveNotice;
 }

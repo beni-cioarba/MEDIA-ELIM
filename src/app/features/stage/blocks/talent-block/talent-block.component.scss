@@ -329,8 +329,34 @@
   --qr-frame-radius: var(--pj-r-sm);
 }
 
+.tb__qr-text {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--pj-u) * 1);
+  margin-top: calc(var(--pj-u) * -0.6);
+}
+
+// Dominio a cuerpo en blanco, ruta debajo en oro: lo que se teclea.
+.tb__qr-url {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--pj-fs-body);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: #fff;
+}
+
+.tb__qr-path {
+  display: block;
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+  color: var(--c-gold-soft);
+}
+
 .tb__qr-caption {
-  margin: calc(var(--pj-u) * -0.6) 0 0;
+  margin: 0;
   font-size: var(--pj-fs-eyebrow);
   font-weight: 700;
   line-height: 1.25;

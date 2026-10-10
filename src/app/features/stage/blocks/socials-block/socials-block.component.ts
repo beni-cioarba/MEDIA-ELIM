@@ -9,7 +9,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { QRCodeComponent } from 'angularx-qrcode';
-import { CHURCH_CONFIG } from '../../../../core/church.config';
+import { CHURCH_CONFIG, displayAddress } from '../../../../core/church.config';
 import { SocialLink } from '../../../../core/social-link.model';
 import { YouTubeService } from '../../../../core/youtube.service';
 import { PresentationService } from '../../../../core/presentation.service';
@@ -52,7 +52,9 @@ function wideColumnsFor(count: number): number {
  *    botón de copiar y, en escritorio, un QR por red para seguirla desde el
  *    móvil. Estilos en la hoja del componente.
  *  - **Proyección**: tarjetas `.card` con el handle gigante y nada pulsable;
- *    la estilizan `stage.component.scss` y `styles/_projection.scss`.
+ *    la estilizan `stage.component.scss` y `styles/_projection.scss`. Cierra
+ *    la lista una tarjeta con la web (`elimarganda.com`), sólo aquí: en la web
+ *    ya se está en ella.
  *
  * Sin movimiento propio: ni resaltado rotatorio en la web ni animaciones en
  * proyección (el carrusel ya aporta el movimiento).
@@ -79,6 +81,9 @@ export class SocialsBlockComponent {
   protected readonly QR_PAPER = '#ffffff';
 
   protected readonly wideColumns = wideColumnsFor(this.config.socials.length);
+
+  /** Proyección: la web como última tarjeta (`elimarganda.com`). */
+  protected readonly siteAddress = displayAddress(this.config.publicUrl);
 
   /** ¿Se dibuja el QR de cada red? (escritorio con ratón, ver `QR_MEDIA`). */
   protected readonly showQr = signal(false);

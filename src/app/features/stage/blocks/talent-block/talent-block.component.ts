@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CHURCH_CONFIG } from '../../../../core/church.config';
+import { CHURCH_CONFIG, displayAddress } from '../../../../core/church.config';
 import { APP_PATHS } from '../../../../core/navigation/app-paths';
 import { LanguageService } from '../../../../core/services/language.service';
 import { TalentContestService } from '../../../../core/services/talent-contest.service';
@@ -42,6 +42,9 @@ export class TalentBlockComponent {
 
   /** QR a la página del concurso en producción (no a la URL del navegador). */
   protected readonly qrUrl = `${inject(CHURCH_CONFIG).publicUrl.replace(/\/$/, '')}/${APP_PATHS.talentContest}`;
+  /** La misma dirección escrita bajo el código, partida en dominio y ruta. */
+  protected readonly qrHost = displayAddress(this.qrUrl).split('/')[0];
+  protected readonly qrPath = `/${APP_PATHS.talentContest}`;
 
   /**
    * «20 mar.» o, si dura varios días, «6 – 8 aug.»: corta, en una línea. La

@@ -25,6 +25,19 @@
           </a>
         </li>
       }
+      <!-- La web, como un sitio más donde encontrarnos: su dirección escrita,
+           para teclearla (el QR tiene su propia diapositiva). -->
+      <li class="card card--site">
+        <a class="card__link" [href]="config.publicUrl" target="_blank" rel="noopener noreferrer">
+          <span class="card__icon" aria-hidden="true">
+            <app-social-icon name="web" />
+          </span>
+          <span class="card__body">
+            <span class="card__network">{{ 'socials.site_pj' | translate }}</span>
+            <span class="card__handle">{{ siteAddress }}</span>
+          </span>
+        </a>
+      </li>
     </ul>
   </div>
 } @else {

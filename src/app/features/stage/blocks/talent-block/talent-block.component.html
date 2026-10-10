@@ -73,6 +73,11 @@
     <div class="tb__qr">
       <app-qr-panel [data]="qrUrl" [captionKey]="null" />
     </div>
-    <p class="tb__qr-caption">{{ 'talent_contest.slide.qr' | translate }}</p>
+    <div class="tb__qr-text">
+      <!-- La dirección para quien no escanea: dominio y ruta en dos líneas
+           (en una no cabe a lo ancho de la columna). -->
+      <p class="tb__qr-url">{{ qrHost }}<span class="tb__qr-path">{{ qrPath }}</span></p>
+      <p class="tb__qr-caption">{{ 'talent_contest.slide.qr' | translate }}</p>
+    </div>
   </aside>
 </section>

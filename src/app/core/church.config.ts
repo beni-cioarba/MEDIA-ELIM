@@ -353,7 +353,11 @@ export interface ChurchConfig {
   readonly youtubeChannelId: string;
   /** API Key restringida por HTTP referrer; segura para uso en cliente. */
   readonly youtubeApiKey: string;
-  /** URL pública canónica — fallback para el QR si no hay `window`. */
+  /**
+   * URL pública canónica (`https://elimarganda.com/`). De ella salen los QR,
+   * la dirección escrita en la proyección (`publicHost`), los enlaces que se
+   * comparten, `og:url` y el calendario.
+   */
   readonly publicUrl: string;
   readonly socials: readonly SocialLink[];
   /** URL raíz al directorio público de fotos en Google Drive. */
@@ -396,6 +400,15 @@ export interface ChurchConfig {
 }
 
 export const CHURCH_CONFIG = new InjectionToken<ChurchConfig>('CHURCH_CONFIG');
+
+/**
+ * La dirección como se escribe en pantalla: sin `https://`, `www.` ni barra
+ * final (`elimarganda.com`, `elimarganda.com/talantul-in-negot`). Para que
+ * quien no escanea el QR la pueda teclear.
+ */
+export function displayAddress(url: string): string {
+  return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+}
 
 export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   youtubeChannelUrl: 'https://www.youtube.com/@ElimArganda',

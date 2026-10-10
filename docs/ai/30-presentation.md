@@ -744,6 +744,16 @@ del panel, derivada de `publicUrl` con `new URL(...).host`) a `--pj-fs-lead`
 y en navy, y la leyenda «Escanea el código…» en gris: quien no escanea, la
 teclea. (Mientras el dominio fue el provisional `github.io` no se rotulaba.)
 
+La dirección escrita sale siempre de `displayAddress(url)` (`church.config.ts`:
+sin `https://`, `www.` ni barra final) y aparece en **tres diapositivas**
+(10/10/2026): bajo el QR de `website`, bajo el QR de `talent`
+(`elimarganda.com` + `/talantul-in-negot` en dos líneas, ver
+`38-talent-contest.md`) y como **última tarjeta de `socials`** («Site-ul
+bisericii · elimarganda.com», icono `web`), sólo en proyección: en la web ya
+se está en ella. Con cinco tarjetas cada una mide ~14,6u (antes ~19u) y el
+@handle sigue a `hero` sin cortarse. No se pinta en todas las diapositivas:
+la proyección va sin marca fija desde el 04/10/2026.
+
 - Corrección de errores **`M`**, no `H`: en pantalla no hay roturas que
   corregir y `H` sólo añade módulos (con `https://elimarganda.com/`, 33×33 →
   29×29 contando el margen). A igual tamaño, módulos un 14 % mayores = se
