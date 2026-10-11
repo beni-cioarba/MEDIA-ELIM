@@ -220,6 +220,12 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
     (`display: contents`); foto arriba a la izquierda (≤ 62 % de ancho, ≤ 64 %
     de alto, alto por `aspect-ratio`), quiénes son justo debajo y el mensaje a
     la derecha, desde arriba, con su propio autoajuste (relleno en `.fcard__inner`).
+    **Apaisada con poco texto** (`.fcard--roomy`, ≤ 260 caracteres; 11/10/2026,
+    Bolfă): el tope del 64 % de alto dejaba aire bajo los nombres y media
+    pantalla vacía. La foto crece hasta el alto que deja quiénes son
+    (`--fcard-id-h`, medido con `ResizeObserver` a su alto natural,
+    `align-self: start`), con el mismo tope del 62 % de ancho. Bolfă:
+    963×691 → 1056×758 en 1920×1080.
   - Rótulo «RUGĂCIUNE PENTRU FAMILII»: **firma pegada a la esquina inferior
     derecha** de la diapositiva (absoluto sobre `.fcard`, siempre navy),
     3,2u (el suelo legible; se compacta con interletra 0,04em y peso 600), a 1,6u/1,4u del rincón, versalitas oro al 55 %, fuera del flujo y sin `--fit`. El relleno

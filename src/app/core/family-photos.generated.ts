@@ -39,4 +39,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-10-04/blaj-lucia': { width: 370, height: 658, variants: [[480, 270], [658, 370]] },
   '2026-10-04/bloch-elena-liliana': { width: 784, height: 1600, variants: [[480, 235], [960, 470], [1600, 784]] },
   '2026-10-04/bodnariu-petrica-luminita': { width: 1397, height: 1600, variants: [[480, 419], [960, 838], [1600, 1397]] },
+  '2026-10-11/bogdan-samuel-naomi': { width: 528, height: 1202, variants: [[480, 211], [960, 422], [1202, 528]] },
+  '2026-10-11/bolbos-alex-monica': { width: 1138, height: 1600, variants: [[480, 341], [960, 683], [1600, 1138]] },
+  '2026-10-11/bolfa-silviu-valeria': { width: 1600, height: 1148, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-10-11/bontas-dorut-saveta': { width: 697, height: 1124, variants: [[480, 298], [960, 595], [1124, 697]] },
+  '2026-10-11/bosancu-beniamin': { width: 1172, height: 700, variants: [[480, 480], [960, 960], [1172, 1172]] },
 };

@@ -713,4 +713,19 @@ app-family-card {
       padding: var(--fcard-pad-top) var(--fcard-pad-x) var(--fcard-pad-bottom) var(--fcard-pad-left);
     }
   }
+
+  // Apaisada con poco texto (≤ 260 caracteres, 11/10/2026): con el tope
+  // del 64 % de alto, bajo la foto sobraban ~100 px y a la derecha media
+  // pantalla vacía (Bolfă: foto 963 × 691 en 1920 × 1080). Aquí la foto
+  // llega hasta el alto que deja quiénes son (`--fcard-id-h`, medido por
+  // `FamilyCardComponent` a su alto natural: `align-self: start`), con el
+  // mismo tope de ancho del 62 %. Mensaje largo: sigue la regla de arriba.
+  .fcard--landscape.fcard--roomy {
+    --fcard-photo-w: min(62cqw, calc((100cqh - var(--fcard-id-h, 36cqh)) * var(--ar, 1.5)));
+
+    .fcard__id {
+      align-self: start;
+      padding-bottom: calc(var(--pj-u) * 4);
+    }
+  }
 }

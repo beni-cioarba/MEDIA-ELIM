@@ -130,11 +130,24 @@ export class FamilyCardComponent {
         this.schedulePhotoColumn();
       });
       observer.observe(card);
+
+      // Apaisada con poco texto (`.fcard--roomy`): la foto crece hasta el
+      // alto que deja el bloque de quiénes son, medido a su alto natural.
+      const id = card.querySelector<HTMLElement>('.fcard__id');
+      let lastIdHeight = -1;
+      const idObserver = new ResizeObserver(([entry]) => {
+        const height = Math.ceil(entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height);
+        if (Math.abs(height - lastIdHeight) < 1) return;
+        lastIdHeight = height;
+        card.style.setProperty('--fcard-id-h', `${height}px`);
+      });
+      if (id) idObserver.observe(id);
       // Con la fuente definitiva el texto ocupa otro alto.
       void document.fonts?.ready.then(() => this.schedulePhotoColumn());
 
       destroyRef.onDestroy(() => {
         observer.disconnect();
+        idObserver.disconnect();
         cancelAnimationFrame(this.scheduled);
       });
     });

@@ -15,6 +15,7 @@
   [class.fcard--landscape]="landscape"
   [class.fcard--banner]="panoramic"
   [class.fcard--long]="longText"
+  [class.fcard--roomy]="landscape && !longText"
   [class.fcard--web]="!fullscreen()"
   [class.fcard--photo-compact]="family.photo?.size === 'compact'"
   [class.fcard--photo-large]="family.photo?.size === 'large'"

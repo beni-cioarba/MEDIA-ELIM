@@ -355,4 +355,62 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 6,
+    presentedOn: '2026-10-11',
+    families: [
+      {
+        id: 'bogdan-samuel-naomi',
+        surname: 'Bogdan',
+        names: 'Samuel și Naomi',
+        message: [
+          'Dorința noastră este ca Dumnezeu să ne dea înțelepciune, lumină, călăuzire în toate aspectele vieții și mult har în slujire.',
+          'El să binecuvânteze familia noastră în toate lucrurile și mâna Lui să ne ocrotească totdeauna.',
+        ],
+      },
+      {
+        id: 'bolbos-alex-monica',
+        surname: 'Bolbos',
+        names: 'Alex și Mónica',
+        children: ['Nathanael'],
+        message: [
+          'Mulțumim lui Dumnezeu pentru fiecare binecuvântare, pentru dragostea Sa și pentru că ne ocrotește în fiecare zi.',
+          'Suntem recunoscători Domnului pentru tot și toate!',
+          'Toată slava și cinstea să fie a Domnului nostru!',
+        ],
+        verse: {
+          text: 'Mulțumiți lui Dumnezeu pentru toate lucrurile; căci aceasta este voia lui Dumnezeu, în Hristos Isus, cu privire la voi.',
+          reference: '1 Tesaloniceni 5:18',
+        },
+      },
+      {
+        id: 'bolfa-silviu-valeria',
+        surname: 'Bolfă',
+        names: 'Silviu și Valeria',
+        children: ['Sara', 'Daniel', 'Marta', 'David', 'Maria'],
+        message: [
+          'Dorința noastră de familie este de a ne apropia tot mai mult de Domnul, de a fi credincioși față de marea Sa îndurare și toată familia să aducem roadă pentru gloria Domnului!',
+        ],
+      },
+      {
+        id: 'bontas-dorut-saveta',
+        surname: 'Bontaș',
+        names: 'Doruț și Saveta',
+        message: [
+          'Mulțumim lui Dumnezeu pentru toată familia pe care am primit-o de la Domnul, atât copii, cât și nepoți.',
+          'Dorința noastră este ca Dumnezeu să ne umple de dragoste, pace, bucurie și putere să-L slujim pe El în fiecare zi și să fim călăuziți de Duhul Domnului!',
+        ],
+      },
+      {
+        id: 'bosancu-beniamin',
+        surname: 'Bosancu',
+        names: 'Beniamin',
+        single: true,
+        children: ['David'],
+        message: [
+          'Dorința mea este ca Domnul să-mi dea o inimă bună, El să lucreze la inima lui David ca să-L cunoască personal pe Dumnezeu și Domnul să strălucească prin viața noastră.',
+        ],
+      },
+    ],
+  },
 ];
