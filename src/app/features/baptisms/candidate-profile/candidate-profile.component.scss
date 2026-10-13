@@ -1,0 +1,417 @@
+@use 'ds' as *;
+@use '../baptisms-shared' as bz;
+
+// =====================================================================
+// Botezuri — perfil del candidato. Misma línea que la portada del módulo
+// (cabecera «de agua», oro para lo destacado) y la anatomía del perfil de
+// `conducere` adaptada: retrato 4:5 + datos en columnas + grupo del día.
+// =====================================================================
+
+:host {
+  display: block;
+  background: var(--c-bg);
+}
+
+.cp-wrap {
+  @include container;
+}
+
+@include bz.buttons;
+
+// ---------------------------------------------------------------------
+// Cabecera
+// ---------------------------------------------------------------------
+.cp-hero {
+  @include bz.water-surface;
+  padding-block: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.cp-hero__ripples {
+  @include bz.ripples(18% 50%);
+}
+
+// Móvil: retrato pequeño al lado del nombre; datos y acciones debajo.
+// Escritorio: retrato a la izquierda a toda altura; a la derecha, identidad,
+// datos y acciones apilados.
+.cp-hero__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  grid-template-areas:
+    'photo id'
+    'facts facts'
+    'actions actions';
+  gap: 1rem 1.1rem;
+  align-items: center;
+
+  @include from('sm') {
+    grid-template-columns: clamp(12rem, 22vw, 17rem) minmax(0, 1fr);
+    grid-template-areas:
+      'photo id'
+      'photo facts'
+      'photo actions';
+    grid-template-rows: auto auto 1fr;
+    gap: 1rem clamp(1.25rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+}
+
+.cp-hero__photo {
+  grid-area: photo;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background: var(--c-primary-deep);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 0 0 5px rgba(212, 175, 55, 0.22),
+    0 24px 50px rgba(4, 14, 30, 0.5);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.cp-hero__id {
+  grid-area: id;
+  min-width: 0;
+
+  @include from('sm') {
+    padding-top: 0.25rem;
+  }
+}
+
+.cp-eyebrow {
+  @include bz.eyebrow;
+}
+
+.cp-eyebrow__ord {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-hero__name {
+  margin: 0.55rem 0 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4.2vw, 3.1rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.cp-hero__summary {
+  margin: 0.6rem 0 0;
+  max-width: 60ch;
+  color: var(--c-on-band-muted);
+  line-height: 1.55;
+}
+
+.cp-facts {
+  grid-area: facts;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0;
+  margin: 0;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.cp-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0.95rem;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  dt {
+    color: var(--c-gold-soft);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+    color: #fff;
+    font-size: 1.02rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--wide {
+    grid-column: span 2;
+
+    @include until('xs') {
+      grid-column: auto;
+    }
+  }
+}
+
+.cp-fact__sub {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--c-on-band-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.cp-hero__actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+
+  .bz-btn {
+    min-height: 2.4rem;
+    font-size: 0.85rem;
+  }
+}
+
+// Copiar enlace en la superficie oscura: sólo se le dan las tintas.
+.cp-copy {
+  --c-muted: rgba(255, 255, 255, 0.85);
+  --c-hairline: rgba(255, 255, 255, 0.3);
+  --c-text: #fff;
+}
+
+// ---------------------------------------------------------------------
+// Cuerpo
+// ---------------------------------------------------------------------
+.cp-layout {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding-block: clamp(1.25rem, 3vw, 2rem);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  &--solo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cp-panel {
+  padding: clamp(1rem, 2vw, 1.4rem);
+  border: 1px solid var(--c-hairline);
+  border-radius: 1rem;
+  background: var(--c-surface);
+  box-shadow: 0 1px 2px rgba(15, 36, 64, 0.05);
+}
+
+.cp-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.9rem;
+
+  .cp-panel__title {
+    margin: 0;
+  }
+}
+
+.cp-panel__title {
+  @include bz.kicker;
+  margin-bottom: 0.9rem;
+}
+
+.cp-panel__count {
+  color: var(--c-muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-prose p {
+  margin: 0 0 0.85rem;
+  color: var(--c-text);
+  line-height: 1.7;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.cp-verse {
+  margin: 1rem 0 0;
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid var(--c-gold);
+  border-radius: 0 0.6rem 0.6rem 0;
+  background: var(--c-gold-tint);
+
+  blockquote {
+    margin: 0;
+    color: var(--c-primary);
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  figcaption {
+    margin-top: 0.4rem;
+    color: var(--c-gold-deep);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+// Grupo del día: rejilla de retratos que se rellena sola.
+.cp-peers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  gap: 0.85rem 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cp-peer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    .cp-peer__photo {
+      box-shadow: 0 0 0 2px var(--c-gold);
+    }
+
+    .cp-peer__name {
+      color: var(--c-gold-deep);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    .cp-peer__photo {
+      box-shadow: var(--focus-ring);
+    }
+  }
+
+  &.is-current {
+    .cp-peer__photo {
+      box-shadow: 0 0 0 2px var(--c-primary), 0 0 0 5px var(--c-gold-tint);
+    }
+
+    .cp-peer__name {
+      font-weight: 800;
+    }
+  }
+}
+
+.cp-peer__photo {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 0.65rem;
+  background: var(--c-surface-3);
+  box-shadow: 0 0 0 1px var(--c-hairline);
+  transition: box-shadow 0.2s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.cp-peer__name {
+  @include line-clamp(2);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.25;
+  transition: color 0.2s ease;
+}
+
+// ---------------------------------------------------------------------
+// Anterior / siguiente
+// ---------------------------------------------------------------------
+.cp-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.cp-pager__link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 0.9rem;
+  background: var(--c-surface);
+  color: var(--c-primary);
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  > app-icon {
+    flex: none;
+    font-size: 1.2rem;
+  }
+
+  &:hover {
+    border-color: var(--c-gold);
+    box-shadow: 0 8px 22px rgba(15, 36, 64, 0.1);
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+
+  &--next {
+    justify-content: flex-end;
+    text-align: right;
+  }
+}
+
+.cp-pager__thumb {
+  flex: none;
+  width: 2.6rem;
+  height: 3.25rem;
+  border-radius: 0.45rem;
+  object-fit: cover;
+
+  @include until('xs') {
+    display: none;
+  }
+}
+
+.cp-pager__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cp-pager__dir {
+  color: var(--c-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cp-pager__name {
+  overflow: hidden;
+  font-size: 0.92rem;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

@@ -72,4 +72,6 @@ export type IconName =
   | 'mic-vocal'
   | 'flame'
   | 'sprout'
-  | 'layout-grid';
+  | 'layout-grid'
+  | 'layers'
+  | 'droplet';

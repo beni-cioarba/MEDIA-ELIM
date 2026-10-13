@@ -3,6 +3,7 @@ import { CHURCH_CONFIG } from '../church.config';
 import { departmentById } from '../departments.config';
 import { LEADERSHIP_OFFICES, SERVICE_AREAS } from '../leadership.config';
 import { AnnouncementsService } from '../services/announcements.service';
+import { BaptismsService } from '../services/baptisms.service';
 import { BibleReadingService } from '../services/bible-reading.service';
 import { FamilyPrayerService } from '../services/family-prayer.service';
 import { ClockService } from '../services/clock.service';
@@ -76,6 +77,7 @@ export class NavSummaryService {
   private readonly families = inject(FamilyPrayerService);
   private readonly causes = inject(PrayerCausesService);
   private readonly contest = inject(TalentContestService);
+  private readonly baptisms = inject(BaptismsService);
 
   /** Un `computed` por entrada, creado la primera vez que se pide. */
   private readonly cache = new Map<string, Signal<NavSummary | null>>();
@@ -153,6 +155,25 @@ export class NavSummaryService {
           value: next.time ? `${date} · ${next.time}` : date,
           meta: next.title,
           badge: date,
+        };
+      }
+      case 'baptisms': {
+        // El próximo, con su fecha en la marca; si no hay, el último.
+        const next = this.baptisms.next();
+        if (next) {
+          const date = this.schedule.formatEventDateShort(next.date);
+          return {
+            kicker: { key: 'nav_hub.baptisms_next' },
+            value: this.baptisms.formatDate(next.date),
+            badge: date,
+            live: next.status === 'today',
+          };
+        }
+        const latest = this.baptisms.latest();
+        if (!latest) return null;
+        return {
+          kicker: { key: 'nav_hub.baptisms_latest' },
+          value: this.baptisms.formatDate(latest.date),
         };
       }
       case 'bible': {

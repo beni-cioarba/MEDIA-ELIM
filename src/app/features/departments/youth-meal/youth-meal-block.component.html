@@ -1,78 +1,18 @@
 <section class="meal" aria-labelledby="meal-title">
-  <!-- 1 · Título + fuente en vivo + acciones -->
-  <div class="meal__bar">
-    <h3 class="meal__title" id="meal-title">{{ 'departments.youth.meal.section_title' | translate }}</h3>
-    <span class="meal__src" aria-hidden="true"><span class="meal__pulse"></span>ADM-TINERET</span>
-    <span class="meal__actions">
-      <a class="meal__open" [href]="appUrl" target="_blank" rel="noopener noreferrer">
-        {{ 'departments.youth.meal.open' | translate }}
-        <app-icon name="external" />
-      </a>
-      <a
-        class="meal__icon-btn"
-        [href]="webcal"
-        [attr.aria-label]="'departments.youth.meal.subscribe' | translate"
-        [title]="'departments.youth.meal.subscribe' | translate"
-      >
-        <app-icon name="calendar" />
-      </a>
-    </span>
-  </div>
+  <span class="meal__badge" aria-hidden="true"><app-icon name="heart" /></span>
 
-  <!-- 2 · Quién prepara los próximos vineri (datos de la app, sin nombres) -->
-  @switch (meal.state()) {
-    @case ('ready') {
-      @if (meal.upcoming().length > 0) {
-        <ol class="turns" role="list" data-no-swipe [attr.aria-label]="'departments.youth.meal.board' | translate">
-          @for (turn of meal.upcoming().slice(0, turnsShown); track turn.date) {
-            @let p = schedule.formatDayParts(turn.date);
-            <li class="turn" [class.is-today]="turn.isToday">
-              <span class="turn__date">{{ p.day }} {{ p.month }}</span>
-              @if (turn.teamNumber !== null) {
-                <span class="turn__badge" aria-hidden="true">{{ turn.teamNumber }}</span>
-              }
-              <span class="turn__team">{{ turn.team }}</span>
-              <span class="turn__in">
-                @if (turn.isToday) {
-                  {{ 'departments.ticket.today' | translate }}
-                } @else {
-                  {{ 'departments.youth.meal.in_days_short' | translate: { days: turn.daysLeft } }}
-                }
-              </span>
-            </li>
-          }
-        </ol>
-      } @else {
-        <p class="meal__note">{{ 'departments.youth.meal.none' | translate }}</p>
-      }
-    }
-    @case ('error') {
-      <p class="meal__note">{{ 'departments.youth.meal.offline' | translate }}</p>
-    }
-    @default {
-      <div class="turns turns--skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-    }
-  }
+  <div class="meal__text">
+    <p class="meal__kicker">{{ 'departments.youth.meal.kicker' | translate }}</p>
+    <h3 class="meal__title" id="meal-title">{{ 'departments.youth.meal.title' | translate }}</h3>
+    <p class="meal__lead">{{ 'departments.youth.meal.lead' | translate }}</p>
 
-  <!-- 3 · La tarde en una línea + accesos por público -->
-  <div class="meal__meta">
-    @if (meal.next(); as next) {
-      <span class="steps">
-        <app-icon name="clock" />
-        @if (next.arrival) { <span><b>{{ next.arrival }}</b> {{ 'departments.youth.meal.step_arrival' | translate }}</span> }
-        @if (next.food) { <span><b>{{ next.food }}</b> {{ 'departments.youth.meal.step_food' | translate }}</span> }
-        @if (next.program) { <span><b>{{ next.program }}</b> {{ 'departments.youth.meal.step_program' | translate }}</span> }
-      </span>
-    }
-    <span class="links">
-      @for (aud of audiences; track aud.id) {
-        <span class="links__group">
-          <span class="links__who">{{ 'departments.youth.meal.' + aud.id + '.short' | translate }}</span>
-          @for (link of aud.links; track link.section) {
-            <a class="links__a" [href]="url(link.section)" target="_blank" rel="noopener noreferrer">{{ link.labelKey | translate }}</a>
-          }
-        </span>
+    <ul class="meal__chips" role="list">
+      @for (chip of chips; track chip) {
+        <li class="meal__chip">
+          <app-icon name="check" />
+          {{ 'departments.youth.meal.chips.' + chip | translate }}
+        </li>
       }
-    </span>
+    </ul>
   </div>
 </section>

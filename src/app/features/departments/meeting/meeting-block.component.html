@@ -28,7 +28,7 @@
       </ul>
 
       <div class="foot">
-        @if (!hideAfter() && v.dates.length > 1) {
+        @if (v.dates.length > 1) {
           <div class="after">
             <span class="after__label">{{ 'departments.ticket.after' | translate }}</span>
             <ul class="after__list" role="list">
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <!-- Pieza propia de esta reunión (la masa de tineret con su app), a
+    <!-- Pieza propia de esta reunión (la invitación a la masa de tineret), a
          todo el ancho del bloque, bajo el billete y el cuerpo. -->
     <div class="companion">
       <ng-content />

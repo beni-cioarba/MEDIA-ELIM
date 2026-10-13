@@ -1,0 +1,912 @@
+@use 'ds' as *;
+@use './baptisms-shared' as bz;
+
+// =====================================================================
+// Botezuri — portada del módulo (`/botezuri`)
+// ---------------------------------------------------------------------
+// Línea visual propia (petición expresa: fuera de la guía de `/stil`).
+// Marca navy + oro con un segundo acento «agua» (azul claro) que sólo vive
+// en este módulo. Densidad por columnas: cifras tabulares, rejillas que se
+// rellenan solas (`auto-fill`) y medidas derivadas del ancho, para que el
+// registro aguante el doble de botezuri sin rediseñarse.
+// Ver `docs/ai/34-baptisms.md`.
+// =====================================================================
+
+:host {
+  display: block;
+  background: var(--c-bg);
+}
+
+.bz-wrap {
+  @include container;
+}
+
+@include bz.buttons;
+
+// ---------------------------------------------------------------------
+// 1 · Cabecera «de agua»
+// ---------------------------------------------------------------------
+.bz-hero {
+  @include bz.water-surface;
+  padding-block: clamp(1.75rem, 4vw, 3.25rem);
+}
+
+.bz-hero__ripples {
+  @include bz.ripples(76% 46%);
+}
+
+.bz-hero__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: center;
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
+  }
+}
+
+.bz-eyebrow {
+  @include bz.eyebrow;
+}
+
+.bz-hero__title {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4.4vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.bz-hero__lead {
+  margin: 0.85rem 0 0;
+  max-width: 58ch;
+  color: var(--c-on-band-muted);
+  font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+  line-height: 1.6;
+}
+
+// Cifras: número grande arriba, rótulo debajo, en columnas con filete.
+.bz-stats {
+  display: grid;
+  // Dos por fila en móvil, las cuatro en una desde tablet.
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 0;
+
+  @include from('sm') {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  max-width: 40rem;
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+}
+
+.bz-stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.2rem;
+  padding-inline: 0.9rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+
+  &:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  @include until('sm') {
+    &:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 2.8vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  dt {
+    color: var(--c-on-band-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  &:first-child dd {
+    color: var(--c-gold-soft);
+  }
+}
+
+.bz-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+// Tarjeta del próximo / último botez: cristal sobre el agua.
+.bz-feature {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 24px 60px rgba(4, 14, 30, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  &--next {
+    border-color: rgba(212, 175, 55, 0.55);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 24px 60px rgba(4, 14, 30, 0.45);
+  }
+}
+
+.bz-feature__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--c-primary-deep);
+
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // Funde la foto con el cuerpo de la tarjeta.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 45%;
+    background: linear-gradient(to top, rgba(10, 26, 48, 0.75), transparent);
+    pointer-events: none;
+  }
+}
+
+.bz-feature__mosaic {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.bz-feature__empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 4rem;
+}
+
+.bz-feature__badge {
+  position: absolute;
+  z-index: 1;
+  top: 0.85rem;
+  left: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--c-gold);
+  color: var(--c-primary-darkest);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.bz-feature__body {
+  padding: 1rem 1.25rem 1.15rem;
+}
+
+.bz-feature__kicker {
+  margin: 0;
+  color: var(--c-gold-soft);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.bz-feature__date {
+  margin: 0.25rem 0 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.bz-feature__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.6rem;
+  margin: 0.3rem 0 0;
+  color: var(--c-on-band-muted);
+  font-size: 0.85rem;
+
+  span:first-child {
+    text-transform: capitalize;
+  }
+
+  span + span::before {
+    content: '·';
+    margin-right: 0.6rem;
+    opacity: 0.6;
+  }
+}
+
+.bz-feature__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin-top: 0.85rem;
+
+  .bz-link {
+    color: #fff;
+
+    &:hover {
+      color: var(--c-gold-soft);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Secciones claras: cabecera común
+// ---------------------------------------------------------------------
+.bz-section {
+  padding-block: clamp(1.75rem, 3.5vw, 3rem) 0;
+
+  &:last-child {
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+}
+
+.bz-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: clamp(0.9rem, 1.8vw, 1.25rem);
+}
+
+.bz-kicker {
+  @include bz.kicker;
+}
+
+.bz-head__title {
+  margin: 0.2rem 0 0;
+  color: var(--c-primary);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.bz-head__note {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--c-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.bz-head__tools {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+// Filtro por año
+.bz-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+
+  // Móvil: una sola fila que se desliza, no dos líneas de botones.
+  @include until('sm') {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding-inline: var(--page-gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.bz-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.1rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 999px;
+  background: var(--c-surface);
+  color: var(--c-primary);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    color: #fff;
+
+    .bz-chip__n {
+      color: var(--c-gold-soft);
+    }
+  }
+}
+
+.bz-chip__n {
+  color: var(--c-muted);
+  font-size: 0.74rem;
+}
+
+.bz-arrows {
+  display: none;
+  gap: 0.35rem;
+
+  // En táctil se desliza: las flechas sólo con puntero fino.
+  @media (hover: hover) and (pointer: fine) {
+    display: flex;
+  }
+}
+
+.bz-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  padding: 0;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 999px;
+  background: var(--c-surface);
+  color: var(--c-primary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+
+  app-icon {
+    font-size: 1.15rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--c-primary);
+    color: #fff;
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 2 · Carrusel de candidatos
+// ---------------------------------------------------------------------
+// La pista sangra hasta el borde de la pantalla; su relleno es el margen
+// real de la página (`--page-inset`): la primera tarjeta cae en la vertical
+// del título. Ancho de tarjeta derivado de la ventana, acotado.
+.bz-track {
+  --card-w: clamp(9.25rem, 14.2vw, 12.75rem);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--card-w);
+  gap: clamp(0.6rem, 1vw, 0.9rem);
+  margin: 0;
+  padding: 0.35rem var(--page-inset) 0.9rem;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--page-inset);
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-hairline-strong) transparent;
+}
+
+.bz-card {
+  scroll-snap-align: start;
+}
+
+.bz-card__link {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--c-primary-deep);
+  color: #fff;
+  text-decoration: none;
+  isolation: isolate;
+  box-shadow: 0 1px 2px rgba(15, 36, 64, 0.08), 0 8px 24px rgba(15, 36, 64, 0.1);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+
+  // Velo inferior para el texto + filo de luz.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background: linear-gradient(to top, rgba(10, 26, 48, 0.92) 0%, rgba(10, 26, 48, 0.45) 28%, transparent 55%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    transition: box-shadow 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 4px rgba(15, 36, 64, 0.1), 0 16px 36px rgba(15, 36, 64, 0.2);
+
+    &::after {
+      box-shadow: inset 0 0 0 2px rgba(212, 175, 55, 0.85);
+    }
+
+    img {
+      transform: scale(1.05);
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+.bz-card__photo {
+  position: absolute;
+  inset: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+.bz-card__date {
+  position: absolute;
+  z-index: 2;
+  top: 0.55rem;
+  left: 0.55rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(10, 26, 48, 0.62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bz-card__text {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0.8rem 0.8rem;
+}
+
+.bz-card__name {
+  @include line-clamp(2);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+
+.bz-card__meta {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.74rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 3 · Registro: línea de tiempo
+// ---------------------------------------------------------------------
+// La línea vertical une los nodos de cada botez: agua arriba (los más
+// antiguos), oro abajo (el próximo). Columna de la fecha pegajosa en
+// escritorio; en móvil, la fecha va en una fila encima de la rejilla.
+.bz-timeline {
+  --node-x: 0.45rem;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    left: var(--node-x);
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, rgba(79, 143, 216, 0.15), rgba(79, 143, 216, 0.6) 40%, var(--c-gold));
+  }
+}
+
+.bz-entry {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.1rem 0 1.25rem;
+  scroll-margin-top: calc(var(--nav-height) + 1rem);
+  border-radius: 0.75rem;
+
+  & + & {
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  @include from('md') {
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    gap: clamp(1rem, 2.5vw, 2rem);
+    padding-block: 1.5rem;
+  }
+
+  // Llegada por enlace (`/botezuri/<fecha>`): un destello que se apaga.
+  &--focus {
+    @include motion-safe {
+      animation: bz-focus 2.4s ease-out 0.4s both;
+    }
+  }
+}
+
+@keyframes bz-focus {
+  0%,
+  35% {
+    background: var(--c-gold-tint);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.bz-entry__when {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  padding-left: calc(var(--node-x) * 2 + 1rem);
+
+  @include from('md') {
+    position: sticky;
+    top: calc(var(--nav-height) + 1rem);
+    align-self: start;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+}
+
+.bz-entry__node {
+  position: absolute;
+  top: 0.15rem;
+  left: calc(var(--node-x) - 0.5rem + 1px);
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--c-bg);
+  border: 3px solid rgb(79, 143, 216);
+  box-shadow: 0 0 0 4px var(--c-bg);
+
+  @include until('md') {
+    top: 50%;
+    translate: 0 -50%;
+  }
+
+  .bz-entry--next &,
+  .bz-entry--tbd & {
+    border-color: var(--c-gold);
+  }
+
+  .bz-entry--next & {
+    @include motion-safe {
+      animation: bz-pulse 2.2s ease-out infinite;
+    }
+  }
+}
+
+@keyframes bz-pulse {
+  0% {
+    box-shadow: 0 0 0 4px var(--c-bg), 0 0 0 4px rgba(212, 175, 55, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 4px var(--c-bg), 0 0 0 14px rgba(212, 175, 55, 0);
+  }
+}
+
+.bz-entry__ordinal {
+  color: var(--c-gold-deep);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bz-entry__date {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  color: var(--c-primary);
+}
+
+.bz-entry__day {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bz-entry__my {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+
+  span:first-child {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  span:last-child {
+    color: var(--c-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.bz-entry__weekday {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.78rem;
+  text-transform: capitalize;
+
+  @include until('md') {
+    display: none;
+  }
+}
+
+.bz-entry__tbd {
+  margin: 0;
+  color: var(--c-primary);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.bz-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--c-veil);
+  color: var(--c-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &--gold {
+    background: var(--c-gold);
+    color: var(--c-primary-darkest);
+  }
+}
+
+.bz-entry__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+
+  @include until('md') {
+    padding-left: calc(var(--node-x) * 2 + 1rem);
+  }
+}
+
+// Rejilla compacta: se rellena sola, sea cual sea el número de candidatos.
+.bz-grid {
+  display: grid;
+  // `auto-fill` conserva las pistas vacías: con pocos candidatos las fotos
+  // no se inflan, y caben diez por fila en escritorio y tres en móvil.
+  grid-template-columns: repeat(auto-fill, minmax(min(25vw, 6.25rem), 1fr));
+  gap: 0.9rem 0.65rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bz-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    .bz-tile__photo {
+      box-shadow: 0 0 0 2px var(--c-gold), 0 10px 24px rgba(15, 36, 64, 0.18);
+    }
+
+    .bz-tile__photo img {
+      transform: scale(1.05);
+    }
+
+    .bz-tile__name {
+      color: var(--c-gold-deep);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    .bz-tile__photo {
+      box-shadow: var(--focus-ring);
+    }
+  }
+}
+
+.bz-tile__photo {
+  display: block;
+  aspect-ratio: 4 / 5;
+  margin-bottom: 0.35rem;
+  overflow: hidden;
+  border-radius: 0.7rem;
+  background: var(--c-surface-3);
+  box-shadow: 0 0 0 1px var(--c-hairline);
+  transition: box-shadow 0.25s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+.bz-tile__name {
+  @include line-clamp(2);
+  color: var(--c-primary);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.25;
+  transition: color 0.2s ease;
+}
+
+.bz-tile__meta {
+  overflow: hidden;
+  color: var(--c-muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// Botez sin lista todavía: foto de grupo + nota.
+.bz-pending {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  width: 100%;
+}
+
+.bz-pending__photo {
+  flex: 0 1 26rem;
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.85rem;
+  cursor: zoom-in;
+  box-shadow: 0 0 0 1px var(--c-hairline), 0 10px 28px rgba(15, 36, 64, 0.14);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &:hover img {
+    transform: scale(1.03);
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+}
+
+.bz-pending__text {
+  flex: 1 1 16rem;
+}
+
+.bz-pending__title {
+  margin: 0;
+  color: var(--c-primary);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.bz-pending__body {
+  margin: 0.3rem 0 0;
+  max-width: 52ch;
+  color: var(--c-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.bz-entry__photos {
+  color: var(--c-primary);
+}
+
+// Cierre: el próximo botez, aún sin fecha.
+.bz-tbd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  border: 1.5px dashed rgba(212, 175, 55, 0.6);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--c-gold-tint), transparent 70%);
+}

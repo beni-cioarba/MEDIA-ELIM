@@ -42,51 +42,86 @@
   </header>
 
   <div class="gallery__body">
-    <!-- Escenario: la foto entera sobre su propio fondo ambiental. -->
+    <!-- Escenario: la foto entera sobre su propio fondo ambiental. La línea
+         de ediciones va fuera del enlace (no se anidan controles en un <a>). -->
     @if (featured(); as ev) {
-      <a
-        class="gallery__hero"
-        [href]="driveHref(ev)"
-        target="_blank"
-        rel="noopener noreferrer"
-        data-no-swipe
-        [style.background-color]="ev.tone"
-        [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + ev.i18nKey + '.name' | translate)"
-        (keydown.arrowleft)="onArrow($event, -1)"
-        (keydown.arrowright)="onArrow($event, 1)"
-        (pointerdown)="swipeStart($event)"
-        (pointerup)="swipeEnd($event)"
-        (pointercancel)="swipeX = null"
-      >
-        @for (f of featuredList(); track f.id) {
-          <img class="gallery__hero-ambient" [src]="f.thumb" alt="" aria-hidden="true" decoding="async" />
-          <img
-            class="gallery__hero-image"
-            [src]="f.image"
-            [srcset]="srcset(f)"
-            sizes="(min-width: 1025px) 75vw, 100vw"
-            [alt]="'gallery.events.' + f.i18nKey + '.name' | translate"
-            fetchpriority="high"
-            decoding="async"
-          />
-        }
-        <div class="gallery__hero-overlay" aria-hidden="true"></div>
+      @if (edition(); as ed) {
+        <div class="gallery__stage">
+          <a
+            class="gallery__hero"
+            [href]="driveHref(ed)"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-no-swipe
+            [style.background-color]="ed.tone"
+            [attr.aria-label]="('gallery.open_event' | translate) + ': ' + ('gallery.events.' + ev.i18nKey + '.name' | translate) + ' · ' + (editionKicker(ev, ed) ?? ('gallery.events.' + ev.i18nKey + '.date' | translate))"
+            (keydown.arrowleft)="onArrow($event, -1)"
+            (keydown.arrowright)="onArrow($event, 1)"
+            (pointerdown)="swipeStart($event)"
+            (pointerup)="swipeEnd($event)"
+            (pointercancel)="swipeX = null"
+          >
+            @for (f of editionList(); track f.id) {
+              <img class="gallery__hero-ambient" [src]="f.thumb" alt="" aria-hidden="true" decoding="async" />
+              <img
+                class="gallery__hero-image"
+                [src]="f.image"
+                [srcset]="srcset(f)"
+                sizes="(min-width: 1025px) 75vw, 100vw"
+                [alt]="'gallery.events.' + ev.i18nKey + '.name' | translate"
+                fetchpriority="high"
+                decoding="async"
+              />
+            }
+            <div class="gallery__hero-overlay" aria-hidden="true"></div>
 
-        <div class="gallery__hero-content">
-          <span class="gallery__hero-kicker">
-            {{ 'gallery.events.' + ev.i18nKey + '.date' | translate }}
-          </span>
-          <span class="gallery__hero-name">
-            {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
-          </span>
-          @if (!fullscreen()) {
-            <span class="gallery__hero-cta">
-              {{ 'gallery.view_photos' | translate }}
-              <app-icon name="external" />
-            </span>
+            <div class="gallery__hero-content">
+              <span class="gallery__hero-kicker">
+                {{ editionKicker(ev, ed) ?? ('gallery.events.' + ev.i18nKey + '.date' | translate) }}
+              </span>
+              <span class="gallery__hero-name">
+                {{ 'gallery.events.' + ev.i18nKey + '.name' | translate }}
+              </span>
+              @if (!fullscreen()) {
+                <span class="gallery__hero-cta">
+                  {{ 'gallery.view_photos' | translate }}
+                  <app-icon name="external" />
+                </span>
+              }
+            </div>
+          </a>
+
+          <!-- Ediciones del álbum: una línea de tiempo, de la más reciente a
+               la más antigua. Sólo en la web (proyectando no hay interacción). -->
+          @if (!fullscreen() && editions().length > 1) {
+            <div class="gallery__editions" role="group" [attr.aria-label]="'gallery.editions' | translate">
+              <span class="gallery__editions-label" aria-hidden="true">
+                <app-icon name="layers" />
+                {{ 'gallery.editions' | translate }}
+              </span>
+              <ol class="gallery__editions-track" role="list">
+                @for (e of editions(); track e.id; let j = $index) {
+                  <li>
+                    <button
+                      type="button"
+                      class="gallery__edition"
+                      [class.is-active]="j === editionIndex()"
+                      [attr.aria-pressed]="j === editionIndex()"
+                      [attr.aria-label]="'gallery.edition_of' | translate: { name: ('gallery.events.' + ev.i18nKey + '.name' | translate), date: editionLongLabel(e) }"
+                      (click)="selectEdition(j)"
+                    >
+                      <span class="gallery__edition-thumb" [style.background-color]="e.tone">
+                        <img [src]="e.thumb" alt="" loading="lazy" decoding="async" />
+                      </span>
+                      <span class="gallery__edition-date">{{ editionLabel(e) }}</span>
+                    </button>
+                  </li>
+                }
+              </ol>
+            </div>
           }
         </div>
-      </a>
+      }
     }
 
     <!-- Carril: todos los eventos. Crece con scroll propio, no con la página. -->
@@ -100,13 +135,24 @@
             [attr.aria-current]="i === index() ? 'true' : null"
             (click)="select(i)"
           >
-            <span class="gallery__item-thumb" [style.background-color]="item.tone">
+            <!-- Con ediciones, la miniatura es una pila: se lee «hay más» sin texto. -->
+            <span
+              class="gallery__item-thumb"
+              [class.is-stack]="editionCount(item) > 1"
+              [style.background-color]="item.tone"
+            >
               <img [src]="item.thumb" alt="" loading="lazy" decoding="async" />
             </span>
             <span class="gallery__item-num" aria-hidden="true">{{ pad(i + 1) }}</span>
             <span class="gallery__item-text">
               <span class="gallery__item-name">{{ 'gallery.events.' + item.i18nKey + '.name' | translate }}</span>
               <span class="gallery__item-date">{{ 'gallery.events.' + item.i18nKey + '.date' | translate }}</span>
+              @if (editionCount(item) > 1) {
+                <span class="gallery__item-editions">
+                  <app-icon name="layers" aria-hidden="true" />
+                  {{ 'gallery.editions_count' | translate: { count: editionCount(item) } }}
+                </span>
+              }
             </span>
             @if (autoplay() && i === index()) {
               <span class="gallery__item-progress" aria-hidden="true">

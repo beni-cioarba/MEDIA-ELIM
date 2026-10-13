@@ -1,13 +1,13 @@
 # 39 · Departamente
 
 > Lee este shard si vas a **añadir un departamento, cambiar su contenido o
-> tocar el bloque de la app de la masa de tineret** (ADM-TINERET).
+> tocar la invitación a la masa de tineret** (o el enlace a ADM-TINERET).
 
 ## Qué hay (09/10/2026)
 
 | Ruta                          | Componente                     | Qué es |
 | ----------------------------- | ------------------------------ | ------ |
-| `/departamente`               | `DepartmentsHomeComponent`     | Portada propia: cabecera con cifras, acceso rápido, mosaico de fotos, franja viva de la masa e «Implícate» |
+| `/departamente`               | `DepartmentsHomeComponent`     | Portada propia: cabecera con cifras, acceso rápido, mosaico de fotos e «Implícate» |
 | `/departamente/<slug>`        | `DepartmentPageComponent`      | Una plantilla para todos: portada (carrusel si hay `heroSlides`, fija si no), acceso rápido, contenido + lateral |
 
 Slugs (`DEPARTMENT_SLUGS`, `app-paths.ts`): `tineret` · `fanfara` · `cor` ·
@@ -22,7 +22,6 @@ propia y un mosaico de fotos dice más que una lista de filas.
 
 ```
 core/departments.config.ts      ⭐ DEPARTMENTS (estructura, módulos, crónicas) + YOUTH_MEAL_APP (la app hermana)
-core/util/meal-feed.ts             Lector puro del calendario .ics de ADM-TINERET (sin nombres)
 core/util/monthly-recurrence.ts    «n-ésimo día de la semana del mes» (próximas fechas, BYDAY del .ics)
 assets/i18n/departments.{ro,es}.json  Paquete de textos largos (resolver en las rutas del módulo)
 assets/video/                      Vídeos propios + su portada (fuera de la caché de la PWA)
@@ -35,7 +34,7 @@ features/departments/
   meeting/                         Reunión fija semanal o mensual (`app-meeting-block`) + hueco para su pieza propia
   ticket/                          Billete de la próxima fecha (`app-date-ticket`), común a las reuniones
   stories/                         Crónicas: texto + reel vertical + mosaico (galería del visor)
-  youth-meal/                      Servicio del feed + pieza «masa de după program» + franja compacta
+  youth-meal/                      Invitación «Rămâi la masă» (texto, sin datos)
   departments-translations.resolver.ts  Carga el paquete de textos
 layout/top-nav/departments-aside.component.ts   Destacado del panel de escritorio (@defer)
 ```
@@ -78,7 +77,7 @@ reuniones y crónicas; en Tineret sólo lo que no cuentan sus bloques
 Hoy: Tineret 6 fotos · Cor 2 (cor, colinde) · Evanghelizare 3 (colinde,
 candidații, botez) · Fanfara 1 · Ajutorare 1 · Misiune 0. Chip de «lo
 próximo»: reunión fija más cercana **o** evento del departamento
-(`#meet-<key>` / `#events`). Acciones: la propia (masa) o «Vreau să mă
+(`#meet-<key>` / `#events`). Acciones: la propia («Vino vineri») o «Vreau să mă
 implic» + «Fotografii și momente» (`#stories`) o «Toate departamentele».
 **Sin migaja de pan** en todo el grupo (`noBreadcrumb` en `MAIN_NAV`): la
 portada ya dice dónde se está; el carrusel ocupa `100svh − cabecera`, como
@@ -111,9 +110,9 @@ Unión discriminada: cada `kind` es una pieza que la página sabe pintar.
   programa semanal, no se repiten; `durationMin`, `parts`, `companion?`).
   Mismo bloque que el mensual (`app-meeting-block`) y `.ics` con
   `RRULE:FREQ=WEEKLY;BYDAY=FR`. `companion: 'youth-meal'` proyecta dentro, a
-  todo el ancho, la **masa de după program** (abajo) y oculta la fila
-  «Después» (los turnos ya dan las fechas). Tineret: **Întâlnirea de
-  tineret, vineri 20:30**. Con encuentro semanal, la tarjeta lateral «Ne
+  todo el ancho, la **invitación a quedarse a la masa** (abajo). Tineret:
+  **Întâlnirea de tineret, vineri 20:30** (partes: închinare · Cuvânt; la
+  masa no es una parte, la cuenta la invitación). Con encuentro semanal, la tarjeta lateral «Ne
   întâlnim» no se pinta (lo repetía).
 - `monthly` → reunión mensual fija (`rule: { weekday, nth }`, `time`,
   `durationMin`, `parts`). Fechas **calculadas** (`nextMonthlyDates`), no
@@ -192,42 +191,25 @@ de directo. ANCORAT 2026 → `5_4N6Ja0OdU`.
 `contain` sobre negro, con `aspect-ratio: auto`. Así no se recorta en un
 teléfono girado ni en una pantalla apaisada (`stories-block.component.scss`).
 
-## La app de la masa de tineret (ADM-TINERET)
+## La masa de după program y ADM-TINERET
 
-Se presenta **dentro del encuentro de vineri** (`companion`), no en un
-bloque suelto, y **deliberadamente secundaria** (10/10/2026, a petición del
-usuario: el protagonista es el encuentro): una franja de consola navy al pie
-del bloque, ~164 px en escritorio y ~224 en el teléfono (antes ~470). Tres
-líneas: título + fuente en vivo («ADM-TINERET») + «Abrir la app» y
-suscribirse (icono) · quién prepara los próximos cuatro vineri en fichas
-(hoy en verde; deslizables si no caben) · la tarde en una línea (19:30 ·
-20:00 · 20:30) y los accesos directos «Tineri: Programări · Echipe —
-Părinți: Sprijin · Reguli». Sin QR ni tarjeta grande. Ancla `#masa` fuera
-del `@defer`.
+**Invitación, no herramienta** (13/10/2026, a petición del usuario). Al pie
+del encuentro de vineri (`companion`, ancla `#masa`), una franja clara con
+velo dorado: «După întâlnire» · **Rămâi la masă** · dos frases (al acabar se
+pone la mesa, la prepara un equipo de tineri, quédate y alarga la noche) ·
+tres píldoras (loc pentru toți · adu un prieten · mai rămâi puțin). ~178 px
+en escritorio; en el teléfono sin insignia. Texto puro: sin red ni estado.
 
-App hermana: `C:\workspace\INEB_ELIM_Administrativ\elim-admin` (Angular 22
-zoneless, sin backend), publicada en
-`https://beni-cioarba.github.io/ADM-TINERET/`. Cada vineri un equipo de
-tineri prepara la masa y dos părinți traen la comida.
+**Nada de la app interna en la web pública**: ni turnos, ni equipos, ni
+părinți, ni QR, ni franja en la portada de Departamente (se quitaron el
+lector del feed `meal-feed.ts`, `YouthMealService` y `app-youth-meal-next`).
+La acción principal del hero de Tineret es «Vino vineri» → `#meet-friday`.
 
-La web **no copia sus datos**: lee el calendario público que la app genera en
-cada despliegue (`assets/calendars/toate.ics`; mismo dominio de GitHub Pages
-y `Access-Control-Allow-Origin: *`). `parseMealFeed` sólo extrae fecha,
-equipo y horas (sosire / mâncare / program); **coordinador y personas se
-ignoran a propósito**: los nombres se quedan en la app.
-
-- `YouthMealService`: un `fetch` por sesión, al entrar el bloque en pantalla
-  (`@defer (on viewport)`); «hoy» con `ClockService`. Si falla, el bloque se
-  queda en la explicación y los accesos.
-- Bloque completo (`#masa` en Tineret): qué es · para tineri / para părinți
-  con enlace directo a su pestaña · tablero vivo (próximo turno + horario +
-  siguientes 3) · abrir la app · suscribirse (`webcal:`) · QR (sólo con ratón).
-  Por debajo de `lg` el tablero va **primero**: desde el teléfono se busca
-  «¿a quién le toca?».
-- Franja compacta en la portada de Departamente → `#masa`. El ancla vive
-  fuera del `@defer` para que exista al llegar por enlace.
-
-Si la app cambia de URL o de pestañas: `YOUTH_MEAL_APP` (un sitio).
+ADM-TINERET (`C:\workspace\INEB_ELIM_Administrativ\elim-admin`, publicada en
+`https://beni-cioarba.github.io/ADM-TINERET/`) **sólo se enlaza desde el
+pie**: icono `layout-grid` en la barra de herramientas, junto al panel de
+control y la guía de estilos (`footer.youth_admin`). URL en un sitio:
+`YOUTH_ADMIN_APP_URL` (`departments.config.ts`).
 
 ## Diseño (línea propia, no catálogo)
 

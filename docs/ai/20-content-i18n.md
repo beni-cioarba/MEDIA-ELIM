@@ -310,6 +310,25 @@ límites y ficheros: `docs/ai/35-announcements.md`** (léelo antes).
      todavía: Evanghelizare (13/15-03-2026), Fanfara Tarancón (20-09-2026),
      Tabăra 2026 (25-26 iulie, Ávila) y Talantul în negoț 2026.
 
+
+### Nueva edición de un álbum que ya existe (otro bautizo…)
+
+No se añade otra entrada: el álbum (`id: 'botez'`) es siempre la edición
+**más reciente** y `pastEditions` el registro de las anteriores.
+
+1. Fotos optimizadas como en la receta anterior.
+2. Copia los campos de imagen, `date` y `driveFolderId` actuales del álbum a
+   un `MediaEdition` nuevo **al principio** de `pastEditions` (con su `id:`
+   en la primera línea, para `check:drive`).
+3. Pon en el álbum la foto, `date` (`YYYY-MM-DD`) y `driveFolderId` de la
+   nueva edición, y actualiza `gallery.events.<i18nKey>.date` en ambos
+   idiomas (es el rótulo de la más reciente; las anteriores se rotulan solas
+   desde `date`).
+4. `pastEditions` va **al final** de la entrada. `npm run check:drive`.
+
+Un álbum que hoy tiene una sola edición se convierte igual: se le añade
+`date` y `pastEditions`. Diseño: `40-styling.md` § Galería.
+
 ### Cambiar el programa semanal
 
 Edita `weeklyProgram`. `day` usa la convención de `Date.getDay()`

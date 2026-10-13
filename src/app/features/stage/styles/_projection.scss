@@ -542,6 +542,16 @@
       gap: var(--pj-sp-2);
     }
 
+    .gallery__stage {
+      height: 100%;
+    }
+
+    // El carril de proyección va justo (14u por fila): el número de
+    // ediciones no cabe ni se puede usar a distancia.
+    .gallery__item-editions {
+      display: none;
+    }
+
     .gallery__hero {
       height: 100%;
       aspect-ratio: auto;

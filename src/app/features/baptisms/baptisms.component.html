@@ -1,0 +1,303 @@
+<!-- ===================================================================
+     1 · Cabecera: qué es, cifras del registro y el próximo (o el último)
+     botez. Superficie oscura «de agua»: es la portada del módulo; el resto
+     vuelve a la superficie clara.
+     =================================================================== -->
+<section class="bz-hero">
+  <div class="bz-hero__ripples" aria-hidden="true"></div>
+  <div class="bz-wrap bz-hero__grid">
+    <div class="bz-hero__main">
+      <p class="bz-eyebrow">
+        <app-icon name="droplet" />
+        {{ 'baptisms.eyebrow' | translate }}
+      </p>
+      <h1 class="bz-hero__title">{{ 'baptisms.title' | translate }}</h1>
+      <p class="bz-hero__lead">{{ 'baptisms.lead' | translate }}</p>
+
+      <!-- Cifras en columnas alineadas: lo que cuenta el registro. -->
+      <dl class="bz-stats">
+        <div class="bz-stat">
+          <dt>{{ 'baptisms.stats.baptisms' | translate }}</dt>
+          <dd>{{ stats().baptisms }}</dd>
+        </div>
+        <div class="bz-stat">
+          <dt>{{ 'baptisms.stats.candidates' | translate }}</dt>
+          <dd>{{ stats().candidates }}</dd>
+        </div>
+        @if (stats().since; as since) {
+          <div class="bz-stat">
+            <dt>{{ 'baptisms.stats.since' | translate }}</dt>
+            <dd>{{ since }}</dd>
+          </div>
+        }
+        <div class="bz-stat">
+          <dt>{{ 'baptisms.stats.years' | translate }}</dt>
+          <dd>{{ stats().years }}</dd>
+        </div>
+      </dl>
+
+      <div class="bz-hero__ctas">
+        <a class="bz-btn bz-btn--gold" [routerLink]="contactPath">
+          {{ 'baptisms.cta_join' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+        <a class="bz-btn bz-btn--ghost" [routerLink]="[]" fragment="registru">
+          {{ 'baptisms.cta_register' | translate }}
+          <app-icon name="chevron-down" />
+        </a>
+      </div>
+    </div>
+
+    @if (feature(); as f) {
+      <!-- Próximo botez (cuenta atrás) o, si no hay ninguno anunciado, el último. -->
+      <article class="bz-feature" [class.bz-feature--next]="f.kind === 'next'">
+        <div class="bz-feature__media" [style.background-color]="f.baptism.cover?.tone">
+          @if (f.baptism.cover; as cover) {
+            <img
+              [src]="cover.medium"
+              [srcset]="cover.medium + ' 960w, ' + cover.image + ' 1600w'"
+              sizes="(min-width: 1024px) 34rem, 100vw"
+              alt=""
+              fetchpriority="high"
+              decoding="async"
+            />
+          } @else if (featureMosaic().length) {
+            <div class="bz-feature__mosaic">
+              @for (c of featureMosaic(); track c.key) {
+                @if (c.photo; as p) {
+                  <img [src]="p.small" alt="" decoding="async" />
+                }
+              }
+            </div>
+          } @else {
+            <div class="bz-feature__empty" aria-hidden="true">
+              <app-icon name="droplet" />
+            </div>
+          }
+          <span class="bz-feature__badge">
+            @if (f.kind === 'next') {
+              {{ countdownKey(f.baptism) | translate: { days: f.baptism.daysLeft } }}
+            } @else {
+              {{ 'baptisms.ordinal' | translate: { n: pad(f.baptism.ordinal) } }}
+            }
+          </span>
+        </div>
+
+        <div class="bz-feature__body">
+          <p class="bz-feature__kicker">
+            {{ (f.kind === 'next' ? 'baptisms.next' : 'baptisms.latest') | translate }}
+          </p>
+          <p class="bz-feature__date">{{ date(f.baptism.date) }}</p>
+          <p class="bz-feature__meta">
+            <span>{{ parts(f.baptism.date).weekday }}</span>
+            @if (f.baptism.time) {
+              <span>{{ f.baptism.time }}</span>
+            }
+            @if (f.baptism.candidates.length) {
+              <span>{{ 'baptisms.candidates_count' | translate: { count: f.baptism.candidates.length } }}</span>
+            }
+          </p>
+          <div class="bz-feature__actions">
+            <a class="bz-link" [routerLink]="f.baptism.link">
+              {{ 'baptisms.open_register' | translate }}
+              <app-icon name="arrow-right" />
+            </a>
+            @if (f.baptism.photosUrl; as url) {
+              <a class="bz-link" [href]="url" target="_blank" rel="noopener noreferrer">
+                {{ 'baptisms.photos' | translate }}
+                <app-icon name="external" />
+              </a>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>
+
+<!-- ===================================================================
+     2 · Candidații: carrusel de retratos, del más reciente al más antiguo.
+     El filtro por año reduce la pista; la tarjeta abre el perfil.
+     =================================================================== -->
+<section class="bz-section bz-cands" id="candidati" aria-labelledby="bz-cands-title">
+  <div class="bz-wrap">
+    <header class="bz-head">
+      <div class="bz-head__text">
+        <p class="bz-kicker">{{ 'baptisms.cands_kicker' | translate }}</p>
+        <h2 class="bz-head__title" id="bz-cands-title">{{ 'baptisms.cands_title' | translate }}</h2>
+      </div>
+
+      <div class="bz-head__tools">
+        <div class="bz-chips" role="group" [attr.aria-label]="'baptisms.filter_year' | translate">
+          <button type="button" class="bz-chip" [attr.aria-pressed]="year() === null" (click)="pickYear(null)">
+            {{ 'baptisms.all' | translate }}
+            <span class="bz-chip__n">{{ baptisms.candidates().length }}</span>
+          </button>
+          @for (y of years(); track y) {
+            <button type="button" class="bz-chip" [attr.aria-pressed]="year() === y" (click)="pickYear(y)">
+              {{ y }}
+              <span class="bz-chip__n">{{ countIn(y) }}</span>
+            </button>
+          }
+        </div>
+        <div class="bz-arrows">
+          <button type="button" class="bz-arrow" [disabled]="atStart()" [attr.aria-label]="'baptisms.prev' | translate" (click)="scrollTrack(-1)">
+            <app-icon name="chevron-left" />
+          </button>
+          <button type="button" class="bz-arrow" [disabled]="atEnd()" [attr.aria-label]="'baptisms.next_page' | translate" (click)="scrollTrack(1)">
+            <app-icon name="chevron-right" />
+          </button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <ol #track class="bz-track" role="list" (scroll)="onTrackScroll()" data-no-swipe>
+    @for (c of shown(); track c.key; let i = $index) {
+      <li class="bz-card">
+        <a class="bz-card__link" [routerLink]="c.link">
+          <span class="bz-card__photo" [style.--i]="i">
+            @if (c.photo; as p) {
+              <img [src]="p.medium" [srcset]="p.srcset" sizes="13rem" [alt]="c.name" loading="lazy" decoding="async" />
+            }
+          </span>
+          <span class="bz-card__date">{{ date(c.baptism.date, 'short') }}</span>
+          <span class="bz-card__text">
+            <span class="bz-card__name">{{ c.name }}</span>
+            <span class="bz-card__meta">
+              @if (c.age) {
+                {{ 'baptisms.age' | translate: { age: c.age } }}
+              }
+              @if (c.age && c.origin) { · }
+              {{ c.origin }}
+            </span>
+          </span>
+        </a>
+      </li>
+    }
+  </ol>
+</section>
+
+<!-- ===================================================================
+     3 · Registrul: todos los botezuri en orden cronológico. Columna de la
+     fecha (pegajosa en escritorio) + rejilla compacta de candidatos.
+     =================================================================== -->
+<section class="bz-section bz-reg" id="registru" aria-labelledby="bz-reg-title">
+  <div class="bz-wrap">
+    <header class="bz-head">
+      <div class="bz-head__text">
+        <p class="bz-kicker">{{ 'baptisms.reg_kicker' | translate }}</p>
+        <h2 class="bz-head__title" id="bz-reg-title">{{ 'baptisms.reg_title' | translate }}</h2>
+      </div>
+      <p class="bz-head__note">{{ 'baptisms.reg_note' | translate }}</p>
+    </header>
+
+    <ol class="bz-timeline" role="list">
+      @for (b of all(); track b.date) {
+        <li
+          class="bz-entry"
+          [id]="'botez-' + b.date"
+          [class.bz-entry--focus]="focusDate() === b.date"
+          [class.bz-entry--next]="b.status !== 'past'"
+        >
+          <!-- Fecha: día grande, mes y año; ordinal y número de candidatos. -->
+          <div class="bz-entry__when">
+            <span class="bz-entry__node" aria-hidden="true"></span>
+            <span class="bz-entry__ordinal">#{{ pad(b.ordinal) }}</span>
+            <p class="bz-entry__date">
+              <span class="bz-entry__day">{{ parts(b.date).day }}</span>
+              <span class="bz-entry__my">
+                <span>{{ parts(b.date).month }}</span>
+                <span>{{ parts(b.date).year }}</span>
+              </span>
+            </p>
+            <p class="bz-entry__weekday">{{ parts(b.date).weekday }}</p>
+            @if (b.status !== 'past') {
+              <span class="bz-pill bz-pill--gold">
+                {{ countdownKey(b) | translate: { days: b.daysLeft } }}
+              </span>
+            } @else if (b.candidates.length) {
+              <span class="bz-pill">{{ 'baptisms.candidates_count' | translate: { count: b.candidates.length } }}</span>
+            }
+          </div>
+
+          <div class="bz-entry__body">
+            @if (b.candidates.length) {
+              <ul class="bz-grid" role="list">
+                @for (c of candidatesOf(b); track c.key) {
+                  <li>
+                    <a class="bz-tile" [routerLink]="c.link">
+                      <span class="bz-tile__photo">
+                        @if (c.photo; as p) {
+                          <img [src]="p.small" [srcset]="p.srcset" sizes="8rem" [alt]="c.name" loading="lazy" decoding="async" />
+                        }
+                      </span>
+                      <span class="bz-tile__name">{{ c.name }}</span>
+                      @if (c.age || c.origin) {
+                        <span class="bz-tile__meta">
+                          @if (c.age) {
+                            {{ 'baptisms.age' | translate: { age: c.age } }}
+                          }
+                          @if (c.age && c.origin) { · }
+                          {{ c.origin }}
+                        </span>
+                      }
+                    </a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <!-- Sin lista todavía: la foto de grupo y la carpeta del día. -->
+              <div class="bz-pending">
+                @if (b.cover; as cover) {
+                  <button type="button" class="bz-pending__photo" [appViewable]="coverDoc(b)" [style.background-color]="cover.tone">
+                    <img [src]="cover.medium" alt="" loading="lazy" decoding="async" />
+                  </button>
+                }
+                <div class="bz-pending__text">
+                  <p class="bz-pending__title">
+                    {{ (b.status === 'past' ? 'baptisms.pending_title' : 'baptisms.upcoming_title') | translate }}
+                  </p>
+                  <p class="bz-pending__body">
+                    {{ (b.status === 'past' ? 'baptisms.pending_body' : 'baptisms.upcoming_body') | translate }}
+                  </p>
+                </div>
+              </div>
+            }
+
+            @if (b.photosUrl; as url) {
+              <a class="bz-link bz-entry__photos" [href]="url" target="_blank" rel="noopener noreferrer">
+                <app-icon name="image" />
+                {{ 'baptisms.photos' | translate }}
+                <app-icon name="external" />
+              </a>
+            }
+          </div>
+        </li>
+      }
+
+      <!-- Cierre de la línea: el próximo, si aún no está anunciado. -->
+      @if (!hasNext()) {
+        <li class="bz-entry bz-entry--tbd">
+          <div class="bz-entry__when">
+            <span class="bz-entry__node" aria-hidden="true"></span>
+            <span class="bz-entry__ordinal">#{{ pad(all().length + 1) }}</span>
+            <p class="bz-entry__tbd">{{ 'baptisms.tbd_date' | translate }}</p>
+          </div>
+          <div class="bz-entry__body">
+            <div class="bz-tbd">
+              <div>
+                <p class="bz-pending__title">{{ 'baptisms.tbd_title' | translate }}</p>
+                <p class="bz-pending__body">{{ 'baptisms.tbd_body' | translate }}</p>
+              </div>
+              <a class="bz-btn bz-btn--navy" [routerLink]="contactPath">
+                {{ 'baptisms.cta_join' | translate }}
+                <app-icon name="arrow-right" />
+              </a>
+            </div>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

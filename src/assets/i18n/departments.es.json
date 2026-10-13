@@ -62,34 +62,16 @@
         "ref": "1 Timoteo 4:12"
       },
       "join": "¿Eres joven y quieres crecer en la fe? Ven el viernes por la noche: no hace falta conocer a nadie para sentirte en casa.",
+      "cta_friday": "Ven el viernes",
       "meal": {
-        "cta": "Programación de la cena",
-        "eyebrow": "La app de los jóvenes",
-        "title": "Programación de la cena del viernes",
-        "youth": {
-          "short": "Jóvenes"
-        },
-        "parents": {
-          "short": "Padres"
-        },
-        "links": {
-          "schedule": "Programación",
-          "teams": "Equipos",
-          "parents": "Padres de apoyo",
-          "rules": "Normas"
-        },
-        "open": "Abrir la app",
-        "subscribe": "Suscribirse al calendario",
-        "board": "Próximos viernes",
-        "today": "¡Hoy!",
-        "in_days_short": "{{days}} d",
-        "step_arrival": "Llegan los jóvenes",
-        "step_food": "Los padres traen la comida",
-        "step_program": "Empieza el programa",
-        "none": "No hay cenas programadas próximamente. Consulta la app para ver novedades.",
-        "offline": "No hemos podido cargar la programación ahora. La tienes siempre en la app.",
-        "who": "Mira a quién le toca",
-        "section_title": "La cena después del programa"
+        "kicker": "Después del encuentro",
+        "title": "Quédate a cenar",
+        "lead": "Al terminar el programa ponemos la mesa y cenamos todos juntos: cada viernes la prepara un equipo de jóvenes. No te vayas con prisa; siéntate con alguien nuevo y alarga la noche.",
+        "chips": {
+          "everyone": "Hay sitio para todos",
+          "friend": "Trae a un amigo",
+          "stay": "Quédate un rato más"
+        }
       },
       "monthly": {
         "sunday": {
@@ -118,7 +100,7 @@
       "stories": {
         "ancorat_2026": {
           "title": "ANCORAT · Conferencia de jóvenes",
-          "lead": "El 26 de septiembre la sala se llenó de jóvenes para la conferencia «ANCORAT» (anclado). El hermano Daniel Popa (Timișoara) trajo el mensaje y la noche siguió con preguntas y respuestas abiertas. Y en la entrada, cada uno dejó una nota en el muro del ancla.",
+          "lead": "El 26 de septiembre la sala se llenó de jóvenes para la conferencia «ANCORAT» (anclado). El hermano Daniel Popa (Timișoara) trajo el mensaje y la noche siguió con preguntas y respuestas abiertas.",
           "points": {
             "message": {
               "title": "El mensaje",
@@ -167,7 +149,7 @@
           "eyebrow": "Cada semana",
           "title": "Encuentro de jóvenes",
           "when": "Viernes · {{time}}",
-          "lead": "Los viernes por la noche los jóvenes de la iglesia se reúnen para la adoración, la Palabra y la comunión. La noche la preparamos juntos: los equipos de jóvenes se encargan de la cena y, después del programa, cenamos juntos. Quien quiera venir es bienvenido: no hace falta conocer a nadie.",
+          "lead": "Los viernes por la noche los jóvenes de la iglesia se reúnen para la adoración, la Palabra y la comunión. Quien quiera venir es bienvenido: no hace falta conocer a nadie.",
           "parts": {
             "worship": {
               "title": "Adoración",
@@ -176,10 +158,6 @@
             "word": {
               "title": "Palabra y conversación",
               "text": "Un mensaje de la Escritura y tiempo para preguntas, en grupo."
-            },
-            "table": {
-              "title": "La cena juntos",
-              "text": "Después del programa cenamos juntos: la prepara un equipo de jóvenes."
             }
           },
           "calendar_title": "Encuentro de jóvenes · Iglesia Elim",

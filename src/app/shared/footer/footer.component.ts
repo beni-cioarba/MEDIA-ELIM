@@ -10,6 +10,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { YOUTH_ADMIN_APP_URL } from '../../core/departments.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
@@ -110,6 +111,11 @@ export class FooterComponent {
     /** Panel de control de la proyección (herramienta del operador). */
     control: `/${APP_PATHS.media}/${APP_PATHS.control}`,
     styleguide: `/${APP_PATHS.styleguide}`,
+    /**
+     * App interna de tineret (ADM-TINERET: turnos de la masa, părinți de
+     * sprijin). Herramienta de organización: su único sitio en la web es aquí.
+     */
+    youthAdmin: YOUTH_ADMIN_APP_URL,
     /**
      * Crédito del pie (logo de INEB): perfil de LinkedIn del desarrollador
      * hasta que exista la web de la consultora. Mismo enlace que Administrativ.

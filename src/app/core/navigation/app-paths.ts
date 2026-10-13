@@ -47,6 +47,12 @@ export const APP_PATHS = {
   familyPrayer: 'rugaciune-pentru-familii',
   /** Cauzele Bisericii Elim: la lista vigente de causas de oración. */
   prayerCauses: 'cauze-de-rugaciune',
+  /**
+   * Botezuri: el registro de bautismos (portada + registro cronológico) y el
+   * perfil de cada candidato. `/botezuri/<fecha>` lleva a un botez del
+   * registro; `/botezuri/<fecha>/<candidato>`, a su perfil.
+   */
+  baptisms: 'botezuri',
   /** Talantul în Negoț: el concurso bíblico, contado para quien quiera participar. */
   talentContest: 'talantul-in-negot',
   /** Página de contacto: formulario, datos directos y cómo llegar. */

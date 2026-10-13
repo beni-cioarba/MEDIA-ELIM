@@ -89,6 +89,14 @@ export const MAIN_NAV: readonly NavItem[] = [
         icon: 'sparkles',
       },
       {
+        // Junto a los eventos: anuncia el próximo botez y guarda todos.
+        id: 'baptisms',
+        labelKey: 'nav.baptisms',
+        descriptionKey: 'nav.baptisms_desc',
+        path: `/${APP_PATHS.baptisms}`,
+        icon: 'droplet',
+      },
+      {
         id: 'bible',
         labelKey: 'nav.bible',
         descriptionKey: 'nav.bible_desc',

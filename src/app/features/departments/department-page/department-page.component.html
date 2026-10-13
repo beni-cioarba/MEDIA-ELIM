@@ -99,13 +99,13 @@
       <h1 class="hero-title" id="dept-title">{{ base + '.name' | translate }}</h1>
       <p class="hero-subtitle">{{ base + '.tagline' | translate }}</p>
 
-      <!-- Acción principal: la propia del departamento (la masa en Tineret) o
-           implicarse. Secundaria: sus momentos (crónicas) o los demás
+      <!-- Acción principal: la propia del departamento (el encuentro de vineri
+           en Tineret) o implicarse. Secundaria: sus momentos (crónicas) o los demás
            departamentos. -->
       <div class="hero-actions">
         @if (hasMeal()) {
-          <a class="btn btn--gold hero-actions__main" href="#masa" (click)="scrollTo($event, 'masa')">
-            {{ 'departments.youth.meal.cta' | translate }}
+          <a class="btn btn--gold hero-actions__main" href="#meet-friday" (click)="scrollTo($event, 'meet-friday')">
+            {{ 'departments.youth.cta_friday' | translate }}
             <app-icon name="chevron-right" />
           </a>
         }
@@ -174,16 +174,10 @@
           @switch (module.kind) {
             @case ('weekly') {
               <div class="block__anchor" [id]="'meet-' + module.key">
-                <app-meeting-block [department]="d.id" [meeting]="module" [hideAfter]="module.companion === 'youth-meal'">
+                <app-meeting-block [department]="d.id" [meeting]="module">
                   @if (module.companion === 'youth-meal') {
-                    <!-- El ancla vive fuera del @defer: así \`#masa\` (enlaces
-                         desde las portadas) existe antes de cargar la pieza. -->
                     <div class="block__anchor" id="masa">
-                      @defer (on viewport) {
-                        <app-youth-meal-block />
-                      } @placeholder {
-                        <div class="block__ph block__ph--meal" aria-hidden="true"></div>
-                      }
+                      <app-youth-meal-block />
                     </div>
                   }
                 </app-meeting-block>

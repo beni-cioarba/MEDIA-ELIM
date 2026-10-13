@@ -1,0 +1,158 @@
+<!--
+  Perfil de un candidato al botez (`/botezuri/<fecha>/<candidato>`).
+  Cabecera «de agua» con el retrato entero (4:5) y los datos del botez;
+  debajo, su testimonio (si lo hay) y con quién se bautizó.
+-->
+<article class="cp">
+  <!-- ================= Cabecera ================= -->
+  <header class="cp-hero">
+    <div class="cp-hero__ripples" aria-hidden="true"></div>
+    <div class="cp-wrap cp-hero__grid">
+      <div class="cp-hero__photo" [appViewable]="photoDoc()">
+        @if (candidate().photo; as p) {
+          <img [src]="p.medium" [srcset]="p.srcset" sizes="(max-width: 720px) 9rem, 17rem" [alt]="candidate().name" fetchpriority="high" decoding="async" />
+        }
+      </div>
+
+      <div class="cp-hero__id">
+        <p class="cp-eyebrow">
+          <app-icon name="droplet" />
+          {{ 'baptisms.profile.kicker' | translate }}
+          <span class="cp-eyebrow__ord">#{{ pad(baptism().ordinal) }}</span>
+        </p>
+        <h1 class="cp-hero__name">{{ candidate().name }}</h1>
+        @if (story()?.summary; as summary) {
+          <p class="cp-hero__summary">{{ summary }}</p>
+        }
+      </div>
+
+      <!-- Datos del botez en columnas alineadas. -->
+      <dl class="cp-facts">
+        <div class="cp-fact cp-fact--wide">
+          <dt>{{ 'baptisms.profile.date' | translate }}</dt>
+          <dd>
+            {{ date(baptism().date) }}
+            <span class="cp-fact__sub">{{ weekday(baptism().date) }}</span>
+          </dd>
+        </div>
+        @if (candidate().age) {
+          <div class="cp-fact">
+            <dt>{{ 'baptisms.profile.age' | translate }}</dt>
+            <dd>{{ 'baptisms.age' | translate: { age: candidate().age } }}</dd>
+          </div>
+        }
+        @if (candidate().origin) {
+          <div class="cp-fact">
+            <dt>{{ 'baptisms.profile.origin' | translate }}</dt>
+            <dd>{{ candidate().origin }}</dd>
+          </div>
+        }
+        <div class="cp-fact">
+          <dt>{{ 'baptisms.profile.group' | translate }}</dt>
+          <dd>{{ 'baptisms.candidates_count' | translate: { count: peers().length } }}</dd>
+        </div>
+      </dl>
+
+      <div class="cp-hero__actions">
+        <a class="bz-btn bz-btn--ghost" [routerLink]="registerLink()">
+          <app-icon name="chevron-left" />
+          {{ 'baptisms.profile.back' | translate }}
+        </a>
+        @if (baptism().photosUrl; as url) {
+          <a class="bz-btn bz-btn--ghost" [href]="url" target="_blank" rel="noopener noreferrer">
+            {{ 'baptisms.photos' | translate }}
+            <app-icon name="external" />
+          </a>
+        }
+        @if (canShare) {
+          <button type="button" class="bz-btn bz-btn--ghost" (click)="share()">
+            <app-icon name="share" />
+            {{ 'share.button_label' | translate }}
+          </button>
+        }
+        <app-copy-button class="cp-copy" [value]="url()" [label]="candidate().name" />
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Cuerpo =================
+       Con testimonio: relato a la izquierda y el grupo a la derecha.
+       Sin él: el grupo ocupa el ancho (nunca un hueco donde iría el relato). -->
+  <div class="cp-wrap cp-layout" [class.cp-layout--solo]="!story()?.testimony?.length && !story()?.verse">
+    @if (story(); as s) {
+      @if (s.testimony?.length || s.verse) {
+        <section class="cp-panel" aria-labelledby="cp-story-title">
+          <h2 class="cp-panel__title" id="cp-story-title">{{ 'baptisms.profile.testimony' | translate }}</h2>
+          @if (s.testimony?.length) {
+            <div class="cp-prose">
+              @for (paragraph of s.testimony; track $index) {
+                <p>{{ paragraph }}</p>
+              }
+            </div>
+          }
+          @if (s.verse; as verse) {
+            <figure class="cp-verse">
+              <blockquote>{{ verse.text }}</blockquote>
+              <figcaption>{{ verse.ref }}</figcaption>
+            </figure>
+          }
+        </section>
+      }
+    }
+
+    <section class="cp-panel" aria-labelledby="cp-peers-title">
+      <div class="cp-panel__head">
+        <h2 class="cp-panel__title" id="cp-peers-title">{{ 'baptisms.profile.peers' | translate }}</h2>
+        <span class="cp-panel__count">{{ date(baptism().date) }}</span>
+      </div>
+      <ul class="cp-peers" role="list">
+        @for (p of peers(); track p.key) {
+          <li>
+            <a class="cp-peer" [class.is-current]="p.key === candidate().key" [routerLink]="p.link" [attr.aria-current]="p.key === candidate().key ? 'page' : null">
+              <span class="cp-peer__photo">
+                @if (p.photo; as ph) {
+                  <img [src]="ph.small" alt="" loading="lazy" decoding="async" />
+                }
+              </span>
+              <span class="cp-peer__name">{{ p.name }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+
+  <!-- ================= Anterior / siguiente (todo el registro) ================= -->
+  @if (siblings(); as nav) {
+    @if (nav.prev || nav.next) {
+      <nav class="cp-wrap cp-pager" [attr.aria-label]="'baptisms.profile.pager' | translate">
+        @if (nav.prev; as prev) {
+          <a class="cp-pager__link" [routerLink]="prev.link" rel="prev">
+            <app-icon name="chevron-left" />
+            @if (prev.photo; as ph) {
+              <img class="cp-pager__thumb" [src]="ph.small" alt="" loading="lazy" />
+            }
+            <span class="cp-pager__text">
+              <span class="cp-pager__dir">{{ 'baptisms.profile.prev' | translate }}</span>
+              <span class="cp-pager__name">{{ prev.name }}</span>
+            </span>
+          </a>
+        } @else {
+          <span></span>
+        }
+        @if (nav.next; as next) {
+          <a class="cp-pager__link cp-pager__link--next" [routerLink]="next.link" rel="next">
+            <span class="cp-pager__text">
+              <span class="cp-pager__dir">{{ 'baptisms.profile.next' | translate }}</span>
+              <span class="cp-pager__name">{{ next.name }}</span>
+            </span>
+            @if (next.photo; as ph) {
+              <img class="cp-pager__thumb" [src]="ph.small" alt="" loading="lazy" />
+            }
+            <app-icon name="chevron-right" />
+          </a>
+        }
+      </nav>
+    }
+  }
+</article>

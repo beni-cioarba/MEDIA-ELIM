@@ -331,6 +331,27 @@ Ahora (`gallery-block.component.*`, sección `.gallery` de
   - `app-icon` mide `1em`: se dimensiona con `font-size`, no con `width`.
   - Móvil: rótulo compacto (título en una línea, CTA pequeño) para no tapar
     una foto de ~230 px de alto.
+- **Álbumes con ediciones** (oct. 2026): un evento que se repite (los
+  bautizos, cada concierto de colinde) es **un álbum** con varias ediciones
+  (`MediaEvent.pastEditions`), no una fila por año: con el doble de eventos
+  el carril se llenaría de «Botez» repetidos.
+  - **Carril**: una fila por álbum. La miniatura lleva dos láminas detrás
+    (`.is-stack`, sombras de la propia caja: no cambian la medida) y bajo la
+    fecha «2 ediții» con el icono `layers`. Proyectando, sólo la pila.
+  - **Escenario**: línea de tiempo de cristal arriba a la derecha
+    (`.gallery__editions`): cápsula por edición con miniatura redonda y
+    «mai 2026» (`Intl`, idioma activo), unidas por un trazo; la activa en oro.
+    Navy al 68 % con desenfoque: blanco a ≥ 4,5:1 aunque la foto sea blanca.
+    Con muchas ediciones la pista se desplaza dentro de la cápsula. Va fuera
+    del `<a>` del escenario (`.gallery__stage` envuelve ambos): no se anidan
+    controles en un enlace. En móvil, sin rótulo «Ediții».
+  - Al llegar a un álbum se ve **la más reciente**; elegir otra edición
+    **pausa la rotación** (si no, a los 6 s se la cambiarían). El rótulo de
+    fecha, el enlace a Drive y la foto son los de la edición.
+  - Alternativas descartadas: carrusel dentro de la tarjeta (dos gestos
+    anidados, ver `48-carousel-cards.md`); una fila por edición (no escala,
+    y el carril deja de ser un índice de álbumes); subpágina de archivo (un
+    clic más para algo que cabe en una cápsula).
 - «Ver fotos y vídeos» abre la subcarpeta de Drive del evento
   (`driveFolderId`, sólo el ID) y, si falta o no es válido, la carpeta
   principal. Receta y verificación: `20-content-i18n.md` → «Añadir un evento

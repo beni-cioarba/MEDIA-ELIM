@@ -234,6 +234,14 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   'zoom-out': ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16', 'm21 21-4.35-4.35', 'M8 11h6'],
   grid: ['M3 3h7v7H3z', 'M14 3h7v7h-7z', 'M14 14h7v7h-7z', 'M3 14h7v7H3z'],
   maximize: ['M15 3h6v6', 'M9 21H3v-6', 'M21 3l-7 7', 'M3 21l7-7'],
+  // Lucide «droplet»: Botezuri.
+  droplet: ['M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z'],
+  // Lucide «layers»: álbum de la galería con varias ediciones.
+  layers: [
+    'M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z',
+    'm22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65',
+    'm22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65',
+  ],
   // Lucide: herramientas y tipos de fichero del visor documental
   // (`shared/viewer`). «fit» = «scan» (ajustar a la pantalla).
   'rotate-ccw': ['M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8', 'M3 3v5h5'],

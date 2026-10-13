@@ -29,6 +29,35 @@ export interface MediaEvent {
    * principal (`mediaGalleryUrl`). Lo verifica `npm run check:drive`.
    */
   readonly driveFolderId?: string;
+  /**
+   * Fecha `YYYY-MM-DD` de esta edición. Obligatoria cuando el álbum tiene
+   * `pastEditions`: con ella se rotula cada edición en el selector.
+   */
+  readonly date?: string;
+  /**
+   * Ediciones anteriores del mismo álbum (los bautizos de otros años, cada
+   * concierto de colinde…), **de la más reciente a la más antigua**. La
+   * entrada en sí es siempre la edición más reciente: es la que se ve al
+   * llegar al álbum, la portada del menú y la del resumen de Media. Ver
+   * `docs/ai/40-styling.md` § Galería → «Álbumes con ediciones».
+   */
+  readonly pastEditions?: readonly MediaEdition[];
+}
+
+/**
+ * Una edición pasada de un álbum de la galería (`MediaEvent.pastEditions`).
+ * Mismos campos de imagen y carpeta que el álbum; el nombre es el del álbum
+ * y la fecha se rotula a partir de `date` en el idioma activo.
+ */
+export interface MediaEdition {
+  readonly id: string;
+  /** `YYYY-MM-DD`. */
+  readonly date: string;
+  readonly image: string;
+  readonly medium: string;
+  readonly thumb: string;
+  readonly tone: string;
+  readonly driveFolderId?: string;
 }
 
 /**
@@ -469,17 +498,36 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   //  4. `driveFolderId`: el ID de su subcarpeta en «ELIM - ACCES PUBLIC»
   //     (compartida como «cualquiera con el enlace»). Después
   //     `npm run check:drive`. Receta completa: docs/ai/20-content-i18n.md.
+  //  5. ¿Es una nueva edición de un álbum que ya existe (otro bautizo)? No
+  //     se crea entrada: la actual pasa a `pastEditions` (primera posición)
+  //     y la entrada toma la foto, `date` y carpeta de la nueva.
   mediaEvents: [
     {
-      id: 'botez_2025_11_30',
-      i18nKey: 'botez_2025_11_30',
-      image: 'assets/drive-media/botez_2025.webp',
-      medium: 'assets/drive-media/botez_2025-960.webp',
-      thumb: 'assets/drive-media/botez_2025-thumb.webp',
-      tone: '#91979f',
+      // Álbum con ediciones: la entrada es el bautizo más reciente y
+      // `pastEditions` el registro de los anteriores (`pastEditions` va
+      // siempre al final: `check:drive` corta cada entrada por `{ id:`).
+      id: 'botez',
+      i18nKey: 'botez',
+      date: '2026-05-31',
+      image: 'assets/drive-media/candidati_botez_2026.webp',
+      medium: 'assets/drive-media/candidati_botez_2026-960.webp',
+      thumb: 'assets/drive-media/candidati_botez_2026-thumb.webp',
+      tone: '#918880',
       gradient: ['#1e3a8a', '#3b82f6'],
-      // Drive: «BOTEZ 2025-11-30»
-      driveFolderId: '1neyEzyRpK9wnlSJ4cXp_JMi7jlu5lNfU',
+      // Drive: «ELIM - MEDIA POZE › BOTEZ 31/05/2026»
+      driveFolderId: '175k8wIpTRg_ZamgF8mBnVoGKbQez-ayY',
+      pastEditions: [
+        {
+          id: 'botez_2025_11_30',
+          date: '2025-11-30',
+          image: 'assets/drive-media/botez_2025.webp',
+          medium: 'assets/drive-media/botez_2025-960.webp',
+          thumb: 'assets/drive-media/botez_2025-thumb.webp',
+          tone: '#91979f',
+          // Drive: «BOTEZ 2025-11-30»
+          driveFolderId: '1neyEzyRpK9wnlSJ4cXp_JMi7jlu5lNfU',
+        },
+      ],
     },
     {
       id: 'concert_colinde_copii',

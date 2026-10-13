@@ -33,7 +33,7 @@ src/app/
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
     talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
-    departments.config.ts   ⭐ Departamente: estructura de cada uno + la app de la masa de tineret (ADM-TINERET)
+    departments.config.ts   ⭐ Departamente: estructura de cada uno + URL de ADM-TINERET (sólo en el pie)
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -78,7 +78,7 @@ src/app/
     family-prayer/          ⭐ Rugăciune pentru familii: página, resumen, ficha, foto entera, acceso desde anuncios
     prayer-causes/          ⭐ Cauzele Bisericii Elim: página + tablero (web y proyección)
     talent-contest/         ⭐ Talantul în Negoț: página para participantes + selector de categoría
-    departments/            ⭐ Departamente: portada `/departamente` + página por departamento + bloque de la masa de tineret
+    departments/            ⭐ Departamente: portada `/departamente` + página por departamento + invitación a la masa de tineret
     presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
     styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
     projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)

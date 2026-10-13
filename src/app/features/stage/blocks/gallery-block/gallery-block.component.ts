@@ -9,11 +9,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CHURCH_CONFIG, MediaEvent } from '../../../../core/church.config';
+import { CHURCH_CONFIG, MediaEdition, MediaEvent } from '../../../../core/church.config';
 import { PresentationService } from '../../../../core/presentation.service';
 import { CarouselService } from '../../../../core/services/carousel.service';
 import { ClockService } from '../../../../core/services/clock.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { driveFolderUrl } from '../../../../core/util/drive-folder';
+import { parseIsoDate } from '../../../../core/util/iso-date';
 import { DockOverlapService } from '../../../../shared/floating-actions/dock-overlap.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { ShareButtonComponent } from '../../../../shared/share-button/share-button.component';
@@ -24,6 +26,18 @@ const DWELL_WEB_MS = 6_000;
 const DWELL_PROJECTION_MS = 4_500;
 /** Franja inferior de la ventana que ocupa el dock flotante (y un margen). */
 const DOCK_BAND_PX = 96;
+
+/**
+ * Una edición de un álbum tal como la pinta el bloque: la propia entrada (la
+ * más reciente, cuya `date` puede faltar si el álbum no tiene más) o una de
+ * sus `pastEditions`.
+ */
+type GalleryEdition = Omit<MediaEdition, 'date'> & { readonly date?: string };
+
+/** La entrada y sus ediciones anteriores, de la más reciente a la más antigua. */
+function editionsOf(ev: MediaEvent): readonly GalleryEdition[] {
+  return [ev, ...(ev.pastEditions ?? [])];
+}
 
 /**
  * Bloque «Galería»: escenario con el evento destacado + carril con todos los
@@ -44,6 +58,12 @@ const DOCK_BAND_PX = 96;
  *  - La foto se ve **entera** (`contain`) sobre un fondo ambiental hecho con
  *    su propia miniatura desenfocada: nunca corta cabezas, sea cual sea la
  *    proporción del hueco.
+ *  - **Álbumes con ediciones** (`pastEditions`: todos los bautizos…): una
+ *    sola fila en el carril, con la pila de miniaturas y el número de
+ *    ediciones; en el escenario, una línea de tiempo de cristal para pasar
+ *    de una a otra. Elegir una edición pausa la rotación (la ha pedido el
+ *    usuario: que no se la cambien a los 6 s). Al volver al álbum se ve
+ *    siempre la más reciente.
  */
 @Component({
   selector: 'app-gallery-block',
@@ -60,6 +80,7 @@ export class GalleryBlockComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly dockOverlap = inject(DockOverlapService);
+  private readonly language = inject(LanguageService);
 
   private readonly rail = viewChild<ElementRef<HTMLElement>>('rail');
 
@@ -69,11 +90,26 @@ export class GalleryBlockComponent {
 
   protected readonly index = signal(0);
   protected readonly featured = computed<MediaEvent | null>(() => this.events[this.index()] ?? null);
-  /** El destacado como lista de uno: la foto se re-monta (y funde) al cambiar. */
-  protected readonly featuredList = computed(() => {
+
+  /** Ediciones del álbum destacado (una sola si no tiene `pastEditions`). */
+  protected readonly editions = computed(() => {
     const ev = this.featured();
-    return ev ? [ev] : [];
+    return ev ? editionsOf(ev) : [];
   });
+  protected readonly editionIndex = signal(0);
+  /** La edición que se ve en el escenario. */
+  protected readonly edition = computed<GalleryEdition | null>(
+    () => this.editions()[this.editionIndex()] ?? this.editions()[0] ?? null,
+  );
+  /** La edición como lista de uno: la foto se re-monta (y funde) al cambiar. */
+  protected readonly editionList = computed(() => {
+    const ed = this.edition();
+    return ed ? [ed] : [];
+  });
+
+  /** «31 mai 2026» / «nov. 2025», en el idioma activo. */
+  private readonly longDate = computed(() => dateFormat(this.language.current(), 'long'));
+  private readonly shortDate = computed(() => dateFormat(this.language.current(), 'short'));
 
   protected readonly dwellMs = computed(() =>
     this.fullscreen() ? DWELL_PROJECTION_MS : DWELL_WEB_MS,
@@ -145,6 +181,7 @@ export class GalleryBlockComponent {
   protected select(i: number): void {
     if (i === this.index()) return;
     this.index.set(i);
+    this.editionIndex.set(0);
     this.revealInRail(i);
     this.preload((i + 1) % this.total);
   }
@@ -152,6 +189,31 @@ export class GalleryBlockComponent {
   protected step(delta: number): void {
     if (this.total < 2) return;
     this.select((this.index() + delta + this.total) % this.total);
+  }
+
+  /** Cambia de edición dentro del álbum y para la rotación (ver cabecera). */
+  protected selectEdition(j: number): void {
+    if (j === this.editionIndex()) return;
+    this.editionIndex.set(j);
+    if (this.autoplay()) this.userPaused.set(true);
+  }
+
+  /** Rótulo de la fecha del escenario: el texto editado para la más reciente. */
+  protected editionKicker(ev: MediaEvent, ed: GalleryEdition): string | null {
+    return ed === ev || !ed.date ? null : this.longDate().format(parseIsoDate(ed.date));
+  }
+
+  /** Etiqueta corta de cada edición en la línea de tiempo («mai 2026»). */
+  protected editionLabel(ed: GalleryEdition): string {
+    return ed.date ? this.shortDate().format(parseIsoDate(ed.date)) : '';
+  }
+
+  protected editionLongLabel(ed: GalleryEdition): string {
+    return ed.date ? this.longDate().format(parseIsoDate(ed.date)) : '';
+  }
+
+  protected editionCount(ev: MediaEvent): number {
+    return 1 + (ev.pastEditions?.length ?? 0);
   }
 
   protected togglePause(): void {
@@ -191,11 +253,11 @@ export class GalleryBlockComponent {
   }
 
   /** Subcarpeta del evento; si su ID falta o no es válido, la carpeta principal. */
-  protected driveHref(ev: MediaEvent): string {
+  protected driveHref(ev: GalleryEdition): string {
     return driveFolderUrl(ev.driveFolderId, this.config.mediaGalleryUrl);
   }
 
-  protected srcset(ev: MediaEvent): string {
+  protected srcset(ev: GalleryEdition): string {
     return `${ev.medium} 960w, ${ev.image} 1600w`;
   }
 
@@ -232,6 +294,12 @@ export class GalleryBlockComponent {
       rail.scrollTo({ left, behavior });
     }
   }
+}
+
+function dateFormat(lang: string, style: 'long' | 'short'): Intl.DateTimeFormat {
+  return new Intl.DateTimeFormat(lang, style === 'long'
+    ? { day: 'numeric', month: 'long', year: 'numeric' }
+    : { month: 'short', year: 'numeric' });
 }
 
 function prefersReducedMotion(): boolean {

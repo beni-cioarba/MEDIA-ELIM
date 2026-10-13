@@ -1,0 +1,154 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Botezuri — piezas comunes de la portada y del perfil del candidato.
+// Línea propia del módulo (ver `docs/ai/34-baptisms.md`): navy + oro de la
+// marca y un acento «agua» (azul claro) que sólo vive aquí.
+// =====================================================================
+
+/** Azul «agua»: halos, ondas y la línea de tiempo. */
+$water: rgb(79, 143, 216);
+
+/** Superficie oscura a sangre con luz de agua (cabeceras). */
+@mixin water-surface {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--c-on-primary);
+  background:
+    radial-gradient(ellipse 55% 75% at 80% 10%, rgba(212, 175, 55, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 70% at 10% 110%, rgba(79, 143, 216, 0.32) 0%, transparent 62%),
+    linear-gradient(160deg, var(--c-primary-darkest) 0%, var(--c-primary-deep) 55%, var(--c-primary) 100%);
+}
+
+/**
+ * Ondas concéntricas (una gota sobre el agua), desvanecidas hacia fuera.
+ * Con movimiento, respiran muy despacio; sin él, quietas.
+ */
+@mixin ripples($at: 75% 45%) {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: repeating-radial-gradient(circle at $at, rgba(255, 255, 255, 0.075) 0 1px, transparent 1.5px 38px);
+  mask-image: radial-gradient(circle at $at, #000 0%, rgba(0, 0, 0, 0.6) 30%, transparent 62%);
+  -webkit-mask-image: radial-gradient(circle at $at, #000 0%, rgba(0, 0, 0, 0.6) 30%, transparent 62%);
+  transform-origin: $at;
+
+  @include motion-safe {
+    animation: bz-ripple 9s ease-in-out infinite alternate;
+  }
+
+  @keyframes bz-ripple {
+    from { transform: scale(1); opacity: 0.85; }
+    to { transform: scale(1.06); opacity: 1; }
+  }
+}
+
+@mixin eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.3rem 0.75rem 0.3rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--c-gold-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  app-icon {
+    font-size: 0.95rem;
+    color: rgb(140, 190, 245);
+  }
+}
+
+@mixin kicker {
+  margin: 0;
+  color: var(--c-gold-deep);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@mixin buttons {
+  .bz-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 1.15rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+    app-icon {
+      font-size: 1.05rem;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      @include focus-ring(3px);
+    }
+  }
+
+  .bz-btn--gold {
+    background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 50%, var(--c-gold-deep) 100%);
+    color: var(--c-primary-darkest);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25);
+  }
+
+  .bz-btn--ghost {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .bz-btn--navy {
+    background: var(--c-primary);
+    color: #fff;
+
+    &:hover {
+      background: var(--c-primary-deep);
+    }
+  }
+
+  .bz-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    app-icon {
+      font-size: 0.95rem;
+    }
+
+    &:hover {
+      color: var(--c-gold-deep);
+    }
+
+    &:focus-visible {
+      @include focus-ring(2px);
+      border-radius: 4px;
+    }
+  }
+}

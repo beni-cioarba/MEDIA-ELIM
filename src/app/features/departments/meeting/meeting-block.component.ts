@@ -37,7 +37,7 @@ interface MeetingView {
  *
  * Anatomía: billete con la próxima fecha (`app-date-ticket`) · qué es · qué
  * se vive esa noche (`parts`) · pieza propia proyectada (`<ng-content>`: la
- * masa de tineret con su app) · fechas siguientes · añadir al calendario
+ * invitación a la masa de tineret) · fechas siguientes · añadir al calendario
  * (un único evento recurrente, `RRULE`, que el teléfono repite solo).
  *
  * Las fechas se calculan, no se escriben: no caduca. La hora del semanal sale
@@ -53,12 +53,6 @@ interface MeetingView {
 export class MeetingBlockComponent {
   readonly department = input.required<DepartmentId>();
   readonly meeting = input.required<DepartmentWeekly | DepartmentMonthly>();
-  /**
-   * Oculta la fila «Después»: cuando la pieza proyectada ya enseña las
-   * próximas fechas con su contenido (los turnos de la masa), repetirlas
-   * sólo con la fecha sobra.
-   */
-  readonly hideAfter = input(false);
 
   private readonly config = inject(CHURCH_CONFIG);
   private readonly clock = inject(ClockService);

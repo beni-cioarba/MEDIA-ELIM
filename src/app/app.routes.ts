@@ -304,6 +304,53 @@ export const APP_ROUTES: Routes = [
           },
         },
       },
+      // Botezuri: portada + registro (`/botezuri`, `/botezuri/<fecha>` lleva
+      // a un botez del registro) y perfil de cada candidato. Hay menores:
+      // se comparten por enlace pero no se indexan.
+      ...['', '/:date'].map((suffix) => ({
+        path: `${APP_PATHS.baptisms}${suffix}`,
+        loadComponent: () =>
+          import('./features/baptisms/baptisms.component').then((m) => m.BaptismsComponent),
+        canActivate: suffix
+          ? [
+              (route: ActivatedRouteSnapshot) => {
+                const router = inject(Router);
+                return import('./features/baptisms/baptisms.guards').then((m) =>
+                  m.baptismExists(route, router),
+                );
+              },
+            ]
+          : [],
+        data: {
+          seo: {
+            titleKey: 'seo.baptisms.title',
+            descriptionKey: 'seo.baptisms.description',
+            noindex: true,
+          },
+        },
+      })),
+      {
+        path: `${APP_PATHS.baptisms}/:date/:candidate`,
+        loadComponent: () =>
+          import('./features/baptisms/candidate-profile/candidate-profile.component').then(
+            (m) => m.CandidateProfileComponent,
+          ),
+        canActivate: [
+          (route: ActivatedRouteSnapshot) => {
+            const router = inject(Router);
+            return import('./features/baptisms/baptisms.guards').then((m) =>
+              m.candidateExists(route, router),
+            );
+          },
+        ],
+        data: {
+          seo: {
+            titleKey: 'seo.baptisms.title',
+            descriptionKey: 'seo.baptisms.description',
+            noindex: true,
+          },
+        },
+      },
       {
         // Talantul în Negoț: información para participantes (pública, indexable).
         path: APP_PATHS.talentContest,

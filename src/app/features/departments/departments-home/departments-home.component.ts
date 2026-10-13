@@ -10,7 +10,6 @@ import { whatsappHref } from '../../../core/util/contact-links';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { DeptSwitcherComponent } from '../dept-switcher/dept-switcher.component';
 import { departmentPeople } from '../department.view';
-import { YouthMealNextComponent } from '../youth-meal/youth-meal-next.component';
 
 /**
  * Portada del módulo Departamente (`/departamente`): destino de la pestaña
@@ -19,8 +18,8 @@ import { YouthMealNextComponent } from '../youth-meal/youth-meal-next.component'
  * No usa la portada de sección genérica (`NavHubComponent`) porque aquí cada
  * entrada es un ministerio con cara propia: un **mosaico de fotos** dice más
  * que una lista de filas. Anatomía: cabecera navy con las cifras, acceso
- * rápido (fijo), mosaico (el destacado ocupa 2 × 2), el aviso vivo de la
- * masa de tineret y la invitación a implicarse.
+ * rápido (fijo), mosaico (el destacado ocupa 2 × 2) y la invitación a
+ * implicarse.
  *
  * El mosaico es rejilla, no posiciones a mano: un departamento nuevo entra
  * solo y la última celda suelta se estira para no dejar huecos.
@@ -28,7 +27,7 @@ import { YouthMealNextComponent } from '../youth-meal/youth-meal-next.component'
 @Component({
   selector: 'app-departments-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, TranslatePipe, IconComponent, DeptSwitcherComponent, YouthMealNextComponent],
+  imports: [RouterLink, TranslatePipe, IconComponent, DeptSwitcherComponent],
   templateUrl: './departments-home.component.html',
   styleUrl: './departments-home.component.scss',
 })
@@ -64,6 +63,4 @@ export class DepartmentsHomeComponent {
     const number = this.config.contact.whatsapp;
     return number ? whatsappHref(number, this.translate.instant('departments.join_message_any')) : null;
   });
-
-  protected readonly youthPath = departmentPath('youth');
 }

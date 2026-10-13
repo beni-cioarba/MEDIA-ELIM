@@ -76,8 +76,8 @@ export interface DepartmentWeekly {
   readonly durationMin: number;
   readonly parts: readonly { readonly key: string; readonly icon: IconName }[];
   /**
-   * Pieza propia dentro del bloque. `youth-meal`: la masa de después del
-   * programa con la app ADM-TINERET (quién prepara cada vineri, accesos).
+   * Pieza propia dentro del bloque. `youth-meal`: la invitación a quedarse a
+   * la masa de después del programa (texto, sin datos de la app interna).
    */
   readonly companion?: 'youth-meal';
 }
@@ -148,7 +148,7 @@ export interface DepartmentStory {
  * Bloque de contenido propio de un departamento. Unión discriminada: cada
  * `kind` es una pieza que la página sabe pintar.
  *  - `weekly`     → su encuentro semanal (próxima fecha, qué pasa, `.ics`) y,
- *    si lo tiene, su pieza propia (la masa de tineret con ADM-TINERET).
+ *    si lo tiene, su pieza propia (la invitación a la masa de tineret).
  *  - `monthly`    → su reunión mensual (próxima fecha, siguientes, `.ics`).
  *  - `stories`    → crónicas de lo que ya pasó, con fotos y vídeo.
  *  - `events`     → sus eventos futuros (`upcomingEvents` con
@@ -353,7 +353,7 @@ export const DEPARTMENTS: readonly DepartmentConfig[] = [
     ],
     modules: [
       {
-        // Cada vineri: el encuentro y, dentro, la masa de después con su app.
+        // Cada vineri: el encuentro y, dentro, la invitación a la masa de después.
         kind: 'weekly',
         key: 'friday',
         weeklyProgramId: 'vineri',
@@ -361,7 +361,6 @@ export const DEPARTMENTS: readonly DepartmentConfig[] = [
         parts: [
           { key: 'worship', icon: 'music' },
           { key: 'word', icon: 'book' },
-          { key: 'table', icon: 'users' },
         ],
         companion: 'youth-meal',
       },
@@ -541,41 +540,15 @@ export function departmentBySlug(slug: string | null | undefined): DepartmentCon
 }
 
 // ---------------------------------------------------------------------
-// App de la masa de tineret (ADM-TINERET)
+// App administrativa de tineret (ADM-TINERET)
 // ---------------------------------------------------------------------
 
 /**
- * La app hermana del Departament de Tineret: quién prepara la masa cada
- * vineri y qué părinți ayudan. Repo `INEB_ELIM_Administrativ/elim-admin`.
+ * La app interna del Departament de Tineret (quién prepara la masa de cada
+ * vineri, părinți de sprijin, normas). Repo `INEB_ELIM_Administrativ/elim-admin`.
  *
- * La web **no copia sus datos**: lee el calendario público que la app
- * publica en cada despliegue (`toate.ics`, mismo dominio de GitHub Pages y
- * `Access-Control-Allow-Origin: *`) y enseña sólo fecha, equipo y horas.
- * Los nombres de tineri y părinți se quedan en la app.
+ * Es una herramienta de organización, no contenido para el visitante: la web
+ * pública sólo la enlaza desde el pie (barra de herramientas), junto al panel
+ * de control y la guía de estilos (13/10/2026).
  */
-export const YOUTH_MEAL_APP = {
-  url: 'https://beni-cioarba.github.io/ADM-TINERET/',
-  feed: 'https://beni-cioarba.github.io/ADM-TINERET/assets/calendars/toate.ics',
-  /** Pestañas de la app (rutas relativas a `url`), por público. */
-  sections: {
-    schedule: '',
-    teams: 'echipe',
-    youths: 'tineri',
-    parents: 'parinti',
-    rules: 'reguli',
-  },
-  /** Cuántos turnos se enseñan en la web (el resto, en la app). */
-  turnsShown: 4,
-} as const;
-
-export type YouthMealSection = keyof typeof YOUTH_MEAL_APP.sections;
-
-/** URL absoluta de una pestaña de la app. */
-export function youthMealUrl(section: YouthMealSection): string {
-  return YOUTH_MEAL_APP.url + YOUTH_MEAL_APP.sections[section];
-}
-
-/** El feed como suscripción (`webcal:`): el calendario del teléfono lo sigue solo. */
-export function youthMealWebcal(): string {
-  return YOUTH_MEAL_APP.feed.replace(/^https:/, 'webcal:');
-}
+export const YOUTH_ADMIN_APP_URL = 'https://beni-cioarba.github.io/ADM-TINERET/';

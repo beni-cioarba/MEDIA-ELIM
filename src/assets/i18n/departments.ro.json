@@ -62,34 +62,16 @@
         "ref": "1 Timotei 4:12"
       },
       "join": "Ești tânăr și vrei să crești în credință? Vino vineri seara: nu trebuie să cunoști pe nimeni ca să te simți acasă.",
+      "cta_friday": "Vino vineri",
       "meal": {
-        "cta": "Programarea mesei",
-        "eyebrow": "Aplicația tineretului",
-        "title": "Programarea mesei de vineri",
-        "youth": {
-          "short": "Tineri"
-        },
-        "parents": {
-          "short": "Părinți"
-        },
-        "links": {
-          "schedule": "Programările",
-          "teams": "Echipele",
-          "parents": "Părinți de sprijin",
-          "rules": "Regulile"
-        },
-        "open": "Deschide aplicația",
-        "subscribe": "Abonează-te la calendar",
-        "board": "Următoarele vineri",
-        "today": "Azi!",
-        "in_days_short": "{{days}} z",
-        "step_arrival": "Sosesc tinerii",
-        "step_food": "Părinții aduc mâncarea",
-        "step_program": "Începe programul",
-        "none": "Nu există mese programate în perioada următoare. Verifică aplicația pentru noutăți.",
-        "offline": "Nu am putut încărca programarea acum. O găsești oricând în aplicație.",
-        "who": "Vezi cui îi vine rândul",
-        "section_title": "Masa de după program"
+        "kicker": "După întâlnire",
+        "title": "Rămâi la masă",
+        "lead": "La final punem masa și mâncăm cu toții împreună: în fiecare vineri o pregătește o echipă de tineri. Nu pleca în grabă; stai lângă cineva nou și prelungește seara.",
+        "chips": {
+          "everyone": "Este loc pentru toți",
+          "friend": "Adu un prieten",
+          "stay": "Mai rămâi puțin"
+        }
       },
       "monthly": {
         "sunday": {
@@ -118,7 +100,7 @@
       "stories": {
         "ancorat_2026": {
           "title": "ANCORAT · Conferința de tineret",
-          "lead": "Pe 26 septembrie sala s-a umplut de tineri pentru conferința «ANCORAT». Fratele Daniel Popa (Timișoara) a adus mesajul, iar seara a continuat cu întrebări și răspunsuri deschise. Iar la intrare, fiecare a lăsat un bilet pe zidul ancorei.",
+          "lead": "Pe 26 septembrie sala s-a umplut de tineri pentru conferința «ANCORAT». Fratele Daniel Popa (Timișoara) a adus mesajul, iar seara a continuat cu întrebări și răspunsuri deschise.",
           "points": {
             "message": {
               "title": "Mesajul",
@@ -167,7 +149,7 @@
           "eyebrow": "În fiecare săptămână",
           "title": "Întâlnirea de tineret",
           "when": "Vineri · {{time}}",
-          "lead": "Vinerea seara tinerii bisericii se adună pentru închinare, Cuvânt și părtășie. Seara o pregătim împreună: echipele de tineri se ocupă de masă, iar după program stăm la masă împreună. Oricine vrea să vină este binevenit — nu trebuie să cunoști pe nimeni.",
+          "lead": "Vinerea seara tinerii bisericii se adună pentru închinare, Cuvânt și părtășie. Oricine vrea să vină este binevenit — nu trebuie să cunoști pe nimeni.",
           "parts": {
             "worship": {
               "title": "Închinare",
@@ -176,10 +158,6 @@
             "word": {
               "title": "Cuvânt și discuții",
               "text": "Un mesaj din Scriptură și timp pentru întrebări, în grup."
-            },
-            "table": {
-              "title": "Masa împreună",
-              "text": "După program mâncăm împreună: masa o pregătește o echipă de tineri."
             }
           },
           "calendar_title": "Întâlnirea de tineret · Biserica Elim",

@@ -200,10 +200,13 @@
     "play": "Reanudar la rotación",
     "prev": "Evento anterior",
     "next": "Evento siguiente",
+    "editions": "Ediciones",
+    "editions_count": "{{count}} ediciones",
+    "edition_of": "{{name}}, edición del {{date}}",
     "events": {
-      "botez_2025_11_30": {
+      "botez": {
         "name": "Bautismo",
-        "date": "30 noviembre 2025"
+        "date": "31 de mayo de 2026"
       },
       "concert_colinde_copii": {
         "name": "Concierto de Villancicos · Niños",
@@ -654,6 +657,7 @@
     "built_at": "Publicada",
     "styleguide": "Guía de estilos",
     "control": "Panel de control",
+    "youth_admin": "App de jóvenes · ADM-TINERET (se abre en otra pestaña)",
     "call": "Llamar por teléfono",
     "whatsapp": "Escribir por WhatsApp"
   },
@@ -839,6 +843,8 @@
     "weekly_desc": "Los cultos de cada día",
     "upcoming": "Eventos",
     "upcoming_desc": "Próximas reuniones especiales",
+    "baptisms": "Bautismos",
+    "baptisms_desc": "Registro de bautismos y candidatos",
     "media": "Medios",
     "media_stage": "Panel completo",
     "media_stage_desc": "Todos los bloques en una sola página",
@@ -900,7 +906,10 @@
     "socials_count": "{{count}} canales oficiales",
     "gallery_kicker": "Fotos",
     "about_kicker": "Desde {{year}}",
-    "about_value": "{{years}} años en Arganda del Rey"
+    "about_value": "{{years}} años en Arganda del Rey",
+    "baptisms_next": "Próximo bautismo",
+    "baptisms_latest": "Último bautismo",
+    "baptisms_count": "{{count}} bautizados"
   },
   "seo": {
     "home": {
@@ -958,6 +967,10 @@
     "talent_contest": {
       "title": "Talantul în Negoț 2027 · Concurso bíblico",
       "description": "Todo para participar en el concurso bíblico Talantul în Negoț 2027 desde la Iglesia Elim Arganda: fases y fechas, categorías, libros y versículos, examen y materiales oficiales."
+    },
+    "baptisms": {
+      "title": "Bautismos",
+      "description": "Registro de bautismos de la Iglesia Elim de Arganda del Rey y los candidatos de cada uno."
     }
   },
   "home": {
@@ -1425,6 +1438,58 @@
     "evangelism": {
       "name": "Evangelización",
       "tagline": "La buena noticia, contada con amor."
+    }
+  },
+  "baptisms": {
+    "eyebrow": "Bautismos · Iglesia Elim",
+    "title": "El bautismo del Nuevo Testamento",
+    "lead": "«Porque somos sepultados juntamente con él para muerte por el bautismo, a fin de que como Cristo resucitó de los muertos, así también nosotros andemos en vida nueva.» — Romanos 6:4. Aquí guardamos, en orden, cada bautismo de la iglesia y a quienes dieron este paso.",
+    "stats": {
+      "baptisms": "Bautismos",
+      "candidates": "Candidatos",
+      "since": "Desde",
+      "years": "Años con bautismo"
+    },
+    "cta_join": "Quiero bautizarme",
+    "cta_register": "Registro de bautismos",
+    "next": "Próximo bautismo",
+    "latest": "Último bautismo",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "in_days": "En {{days}} días",
+    "ordinal": "Bautismo #{{n}}",
+    "candidates_count": "{{count}} candidatos",
+    "open_register": "Ver en el registro",
+    "photos": "Fotografías",
+    "age": "{{age}} años",
+    "cands_kicker": "Quienes dieron el paso",
+    "cands_title": "Candidatos al bautismo",
+    "filter_year": "Filtrar por año",
+    "all": "Todos",
+    "prev": "Candidatos anteriores",
+    "next_page": "Candidatos siguientes",
+    "reg_kicker": "De 2020 a hoy",
+    "reg_title": "Registro de bautismos",
+    "reg_note": "Cada bautismo, en orden cronológico, con todos sus candidatos. Toca un nombre para ver su perfil.",
+    "pending_title": "La lista de candidatos se añadirá pronto",
+    "pending_body": "Mientras tanto, las fotografías del bautismo ya están disponibles.",
+    "upcoming_title": "Los candidatos se anunciarán",
+    "upcoming_body": "La lista se publica cerca de la fecha del bautismo.",
+    "tbd_date": "Fecha por anunciar",
+    "tbd_title": "Próximo bautismo",
+    "tbd_body": "¿Has decidido seguir al Señor Jesús en las aguas del bautismo? Habla con el pastor: la preparación empieza con una conversación.",
+    "profile": {
+      "kicker": "Bautismo",
+      "date": "Fecha del bautismo",
+      "age": "Edad al bautizarse",
+      "origin": "De",
+      "group": "Ese mismo día",
+      "back": "Volver al registro",
+      "testimony": "Testimonio",
+      "peers": "Bautizados juntos",
+      "pager": "Otros candidatos",
+      "prev": "Anterior",
+      "next": "Siguiente"
     }
   }
 }

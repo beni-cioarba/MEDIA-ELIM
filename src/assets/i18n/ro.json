@@ -200,10 +200,13 @@
     "play": "Reia derularea",
     "prev": "Evenimentul anterior",
     "next": "Evenimentul următor",
+    "editions": "Ediții",
+    "editions_count": "{{count}} ediții",
+    "edition_of": "{{name}}, ediția din {{date}}",
     "events": {
-      "botez_2025_11_30": {
+      "botez": {
         "name": "Botez",
-        "date": "30 noiembrie 2025"
+        "date": "31 mai 2026"
       },
       "concert_colinde_copii": {
         "name": "Concert de Colinde · Copii",
@@ -654,6 +657,7 @@
     "built_at": "Publicată",
     "styleguide": "Ghid de stiluri",
     "control": "Panou de control",
+    "youth_admin": "Aplicația tineretului · ADM-TINERET (se deschide într-o filă nouă)",
     "call": "Sună la telefon",
     "whatsapp": "Scrie pe WhatsApp"
   },
@@ -839,6 +843,8 @@
     "weekly_desc": "Serviciile fiecărei zile",
     "upcoming": "Evenimente",
     "upcoming_desc": "Următoarele întâlniri speciale",
+    "baptisms": "Botezuri",
+    "baptisms_desc": "Registrul botezurilor și candidații",
     "media": "Media",
     "media_stage": "Panou complet",
     "media_stage_desc": "Toate blocurile într-o singură pagină",
@@ -900,7 +906,10 @@
     "socials_count": "{{count}} canale oficiale",
     "gallery_kicker": "Fotografii",
     "about_kicker": "Din {{year}}",
-    "about_value": "{{years}} de ani în Arganda del Rey"
+    "about_value": "{{years}} de ani în Arganda del Rey",
+    "baptisms_next": "Următorul botez",
+    "baptisms_latest": "Ultimul botez",
+    "baptisms_count": "{{count}} botezați"
   },
   "seo": {
     "home": {
@@ -958,6 +967,10 @@
     "talent_contest": {
       "title": "Talantul în Negoț 2027 · Concurs biblic",
       "description": "Tot ce trebuie ca să participi la concursul biblic Talantul în Negoț 2027 cu Biserica Elim Arganda: faze și date, categorii, cărți și versete, testul și materialele oficiale."
+    },
+    "baptisms": {
+      "title": "Botezuri",
+      "description": "Registrul botezurilor Bisericii Elim din Arganda del Rey și candidații fiecărui botez."
     }
   },
   "home": {
@@ -1425,6 +1438,58 @@
     "evangelism": {
       "name": "Evanghelizare",
       "tagline": "Vestea bună, spusă cu dragoste."
+    }
+  },
+  "baptisms": {
+    "eyebrow": "Botezuri · Biserica Elim",
+    "title": "Botezul nou-testamental",
+    "lead": "„Noi deci, prin botezul în moartea Lui, am fost îngropați împreună cu El, pentru ca, după cum Hristos a înviat din morți, tot așa și noi să trăim o viață nouă.” — Romani 6:4. Aici păstrăm, în ordine, fiecare botez al bisericii și pe cei care au făcut acest pas.",
+    "stats": {
+      "baptisms": "Botezuri",
+      "candidates": "Candidați",
+      "since": "Din anul",
+      "years": "Ani cu botez"
+    },
+    "cta_join": "Vreau să mă botez",
+    "cta_register": "Registrul botezurilor",
+    "next": "Următorul botez",
+    "latest": "Ultimul botez",
+    "today": "Astăzi",
+    "tomorrow": "Mâine",
+    "in_days": "În {{days}} zile",
+    "ordinal": "Botezul #{{n}}",
+    "candidates_count": "{{count}} candidați",
+    "open_register": "Vezi în registru",
+    "photos": "Fotografii",
+    "age": "{{age}} ani",
+    "cands_kicker": "Cei care au făcut pasul",
+    "cands_title": "Candidații la botez",
+    "filter_year": "Filtrează după an",
+    "all": "Toți",
+    "prev": "Candidații anteriori",
+    "next_page": "Candidații următori",
+    "reg_kicker": "Din 2020 până azi",
+    "reg_title": "Registrul botezurilor",
+    "reg_note": "Fiecare botez, în ordine cronologică, cu toți candidații lui. Atinge un nume pentru a-i vedea profilul.",
+    "pending_title": "Lista candidaților va fi adăugată",
+    "pending_body": "Între timp, fotografiile de la botez sunt deja disponibile.",
+    "upcoming_title": "Candidații vor fi anunțați",
+    "upcoming_body": "Lista se publică în apropierea botezului.",
+    "tbd_date": "Data se anunță",
+    "tbd_title": "Următorul botez",
+    "tbd_body": "Te-ai hotărât să urmezi pe Domnul Isus în apa botezului? Vorbește cu păstorul: pregătirea începe cu o discuție.",
+    "profile": {
+      "kicker": "Botez",
+      "date": "Data botezului",
+      "age": "Vârsta la botez",
+      "origin": "Din",
+      "group": "În aceeași zi",
+      "back": "Înapoi la registru",
+      "testimony": "Mărturia",
+      "peers": "Botezați împreună",
+      "pager": "Alți candidați",
+      "prev": "Anterior",
+      "next": "Următor"
     }
   }
 }
