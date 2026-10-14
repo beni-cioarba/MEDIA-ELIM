@@ -144,6 +144,17 @@ const UMBRAL_ARRASTRE_PX = 6;
         </button>
       }
     </div>
+
+    @if (progress() && overflows()) {
+      <!-- Indicador de posición (opcional): cuánto se ve y dónde se está.
+           Decorativo: la posición ya la anuncian las flechas y el foco. -->
+      <div class="ui-carousel__progress" aria-hidden="true">
+        <span
+          [style.width.%]="thumbWidth()"
+          [style.transform]="'translateX(' + thumbShift() + '%)'"
+        ></span>
+      </div>
+    }
   `,
   styles: [
     `
@@ -154,6 +165,46 @@ const UMBRAL_ARRASTRE_PX = 6;
       @media (prefers-reduced-motion: reduce) {
         .ui-carousel__viewport {
           scroll-behavior: auto;
+        }
+      }
+
+      /* Barra de posición: fina y discreta, en la columna de la página. */
+      .ui-carousel__progress {
+        position: relative;
+        height: 3px;
+        margin: 0.6rem var(--carousel-progress-inset, 0px) 0;
+        border-radius: 999px;
+        background: var(--c-hairline);
+        overflow: hidden;
+      }
+
+      .ui-carousel__progress span {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        border-radius: inherit;
+        background: var(--c-carousel-progress, var(--c-primary));
+        will-change: transform;
+        transition: width 0.2s ease;
+      }
+
+      /* Flechas: respuesta inmediata al apuntar y al pulsar (escala, que se
+         compone en GPU), además del aparecer/desaparecer del catálogo. */
+      @media (hover: hover) and (pointer: fine) {
+        .ui-carousel__nav {
+          transition:
+            opacity 0.25s ease,
+            transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+            background-color 0.2s ease;
+        }
+
+        .ui-carousel__nav:hover {
+          transform: scale(1.08);
+        }
+
+        .ui-carousel__nav:active {
+          transform: scale(0.94);
         }
       }
     `,
@@ -211,6 +262,13 @@ export class CardCarouselComponent {
   readonly loop = input(false);
 
   /**
+   * Barra fina de posición bajo la pista (como la de un reproductor): ancho =
+   * parte visible, posición = desplazamiento. Útil con muchas tarjetas, donde
+   * las flechas solas no dicen cuánto falta. Desactivada por defecto.
+   */
+  readonly progress = input(false);
+
+  /**
    * La segunda copia está pintada. Es un `signal` (y no un `computed` de
    * `loop() && desborda`) porque cómo se mide el desbordamiento depende de
    * si ya está pintada: con dos copias, una sola mide la mitad.
@@ -259,6 +317,24 @@ export class CardCarouselComponent {
     () => this.scrollWidth() - this.clientWidth() > CardCarouselComponent.EDGE_TOLERANCE_PX,
   );
 
+  /** Ancho y posición de la barra de progreso, en % del total. */
+  protected readonly thumbWidth = computed(() =>
+    this.scrollWidth() > 0 ? Math.min(100, (this.clientWidth() / this.scrollWidth()) * 100) : 100,
+  );
+  protected readonly thumbLeft = computed(() =>
+    this.scrollWidth() > 0
+      ? Math.min(100 - this.thumbWidth(), (this.scrollLeft() / this.scrollWidth()) * 100)
+      : 0,
+  );
+
+  /**
+   * Desplazamiento de la barra en % de **su propio ancho** (`translateX`):
+   * se mueve por composición, sin recalcular la maqueta en cada fotograma.
+   */
+  protected readonly thumbShift = computed(() =>
+    this.thumbWidth() > 0 ? (this.thumbLeft() / this.thumbWidth()) * 100 : 0,
+  );
+
   protected readonly canPrev = computed(() => {
     if (this.duplicated() && this.overflows()) return true;
     return this.scrollLeft() > CardCarouselComponent.EDGE_TOLERANCE_PX;
@@ -289,12 +365,21 @@ export class CardCarouselComponent {
         this.measure(el);
         this.marcarCopia(el);
       };
+      // Un `scroll` llega muchas veces por fotograma (rueda, arrastre,
+      // desplazamiento suave): se agrupan en **una medición por fotograma**
+      // con `requestAnimationFrame`. Leer `scrollWidth` y escribir señales
+      // en cada evento es lo que se nota como tirón al deslizar.
+      let pendiente = 0;
       const alDesplazar = (): void => {
-        const previo = this.scrollLeft();
-        medir();
-        const loHemosMovidoNosotros = Date.now() - this.ultimoAvanceAutomatico < MARGEN_AVANCE_MS;
-        const seHaMovido = Math.abs(el.scrollLeft - previo) > 2;
-        if (seHaMovido && !loHemosMovidoNosotros) this.engaged.set(true);
+        if (pendiente) return;
+        pendiente = requestAnimationFrame(() => {
+          pendiente = 0;
+          const previo = this.scrollLeft();
+          medir();
+          const loHemosMovidoNosotros = Date.now() - this.ultimoAvanceAutomatico < MARGEN_AVANCE_MS;
+          const seHaMovido = Math.abs(el.scrollLeft - previo) > 2;
+          if (seHaMovido && !loHemosMovidoNosotros) this.engaged.set(true);
+        });
       };
 
       // Fuera de la zona: el scroll dispara muchísimos eventos y no hace falta

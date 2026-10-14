@@ -152,6 +152,15 @@ falta o la ruta está mal, la tarjeta **cae a su portada de foto** en vez de
 enseñar una imagen rota. Instrucciones completas en
 `src/assets/posters/README.md`.
 
+## Barra de posición (opcional)
+
+`[progress]="true"` pinta bajo la pista una barra fina (3 px): ancho = parte
+visible, posición = desplazamiento. Para carruseles largos (los 70+ retratos
+de `/botezuri`), donde las flechas solas no dicen cuánto falta. Se coloca en
+la columna de la página con `--carousel-progress-inset` y su color con
+`--c-carousel-progress`. Sólo aparece si hay desbordamiento; es decorativa
+(`aria-hidden`).
+
 ## Avance automático y bucle sin fin
 
 Opcional (`autoplayMs`, en la portada son 5 s). La WCAG 2.2.2 no lo prohíbe:

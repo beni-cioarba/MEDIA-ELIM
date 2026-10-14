@@ -22,7 +22,8 @@
         </p>
         <h1 class="cp-hero__name">{{ candidate().name }}</h1>
         @if (story()?.summary; as summary) {
-          <p class="cp-hero__summary">{{ summary }}</p>
+          <!-- Cita destacada: una frase de su propio testimonio. -->
+          <blockquote class="cp-hero__quote">{{ summary }}</blockquote>
         }
       </div>
 
@@ -35,16 +36,10 @@
             <span class="cp-fact__sub">{{ weekday(baptism().date) }}</span>
           </dd>
         </div>
-        @if (candidate().age) {
+        @if (candidate().parents) {
           <div class="cp-fact">
-            <dt>{{ 'baptisms.profile.age' | translate }}</dt>
-            <dd>{{ 'baptisms.age' | translate: { age: candidate().age } }}</dd>
-          </div>
-        }
-        @if (candidate().origin) {
-          <div class="cp-fact">
-            <dt>{{ 'baptisms.profile.origin' | translate }}</dt>
-            <dd>{{ candidate().origin }}</dd>
+            <dt>{{ 'baptisms.profile.parents' | translate }}</dt>
+            <dd>{{ candidate().parents }}</dd>
           </div>
         }
         <div class="cp-fact">
@@ -58,6 +53,12 @@
           <app-icon name="chevron-left" />
           {{ 'baptisms.profile.back' | translate }}
         </a>
+        @if (baptism().videoUrl; as url) {
+          <a class="bz-btn bz-btn--ghost" [href]="url" target="_blank" rel="noopener noreferrer">
+            <app-icon name="play" />
+            {{ 'baptisms.video' | translate }}
+          </a>
+        }
         @if (baptism().photosUrl; as url) {
           <a class="bz-btn bz-btn--ghost" [href]="url" target="_blank" rel="noopener noreferrer">
             {{ 'baptisms.photos' | translate }}
@@ -82,7 +83,17 @@
     @if (story(); as s) {
       @if (s.testimony?.length || s.verse) {
         <section class="cp-panel" aria-labelledby="cp-story-title">
-          <h2 class="cp-panel__title" id="cp-story-title">{{ 'baptisms.profile.testimony' | translate }}</h2>
+          <div class="cp-panel__head">
+            <h2 class="cp-panel__title" id="cp-story-title">{{ 'baptisms.profile.testimony' | translate }}</h2>
+            @if (listenUrl(); as listen) {
+              <!-- Su mărturie grabada, en el minuto exacto del directo. -->
+              <a class="cp-listen" [href]="listen.url" target="_blank" rel="noopener noreferrer">
+                <app-icon name="play" />
+                {{ 'baptisms.profile.listen' | translate }}
+                <span class="cp-listen__at">{{ listen.clock }}</span>
+              </a>
+            }
+          </div>
           @if (s.testimony?.length) {
             <div class="cp-prose">
               @for (paragraph of s.testimony; track $index) {
@@ -106,6 +117,17 @@
         <span class="cp-panel__count">{{ date(baptism().date) }}</span>
       </div>
       <ul class="cp-peers" role="list">
+        <!-- Foto de grupo del día, primero (se amplía en el visor). -->
+        @if (baptism().cover; as cover) {
+          <li class="cp-peers__group">
+            <button type="button" class="cp-peer cp-peer--group" [appViewable]="coverDoc()">
+              <span class="cp-peer__photo" [style.background-color]="cover.tone">
+                <img [src]="cover.medium" alt="" loading="lazy" decoding="async" />
+              </span>
+              <span class="cp-peer__name">{{ 'baptisms.group_photo' | translate }}</span>
+            </button>
+          </li>
+        }
         @for (p of peers(); track p.key) {
           <li>
             <a class="cp-peer" [class.is-current]="p.key === candidate().key" [routerLink]="p.link" [attr.aria-current]="p.key === candidate().key ? 'page' : null">

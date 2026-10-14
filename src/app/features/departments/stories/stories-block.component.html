@@ -27,12 +27,11 @@
 
           @if (s.points.length > 0) {
           <ul class="points" role="list">
-            @for (point of s.points; track point.key) {
+            @for (point of s.points; track point) {
               <li class="point">
-                <span class="point__icon" aria-hidden="true"><app-icon [name]="point.icon" /></span>
                 <span class="point__text">
-                  <span class="point__title">{{ v.base + '.points.' + point.key + '.title' | translate }}</span>
-                  <span class="point__desc">{{ v.base + '.points.' + point.key + '.text' | translate }}</span>
+                  <span class="point__title">{{ v.base + '.points.' + point + '.title' | translate }}</span>
+                  <span class="point__desc">{{ v.base + '.points.' + point + '.text' | translate }}</span>
                 </span>
               </li>
             }
@@ -125,6 +124,16 @@
             }
           </ul>
         </div>
+
+        @if (s.sermon; as sermon) {
+          <app-sermon-notes
+            class="story__sermon"
+            [sermon]="sermon"
+            [base]="v.base"
+            [storyId]="s.id"
+            [youtubeId]="s.youtubeId"
+          />
+        }
       </article>
     } @else {
       <!-- ── Crónica compacta (aún sin fotos) ─────────────────────────── -->
@@ -142,12 +151,11 @@
           <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
           @if (s.points.length > 0) {
           <ul class="points points--inline" role="list">
-            @for (point of s.points; track point.key) {
+            @for (point of s.points; track point) {
               <li class="point">
-                <span class="point__icon" aria-hidden="true"><app-icon [name]="point.icon" /></span>
                 <span class="point__text">
-                  <span class="point__title">{{ v.base + '.points.' + point.key + '.title' | translate }}</span>
-                  <span class="point__desc">{{ v.base + '.points.' + point.key + '.text' | translate }}</span>
+                  <span class="point__title">{{ v.base + '.points.' + point + '.title' | translate }}</span>
+                  <span class="point__desc">{{ v.base + '.points.' + point + '.text' | translate }}</span>
                 </span>
               </li>
             }

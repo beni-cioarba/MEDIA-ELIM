@@ -1,6 +1,7 @@
 import { DEPARTMENT_SLUGS, DepartmentId } from './navigation/app-paths';
 import { IconName } from './ui/icon-name';
 import type { HeroSlide } from './church.config';
+import { MeetingTopic, YOUTH_FRIDAY_PROGRAM } from './meeting-programs.config';
 import { MonthlyRule } from './util/recurrence';
 
 /**
@@ -62,6 +63,8 @@ export interface DepartmentMonthly {
   readonly durationMin: number;
   /** Qué se ve esa noche: `departments.<id>.monthly.<key>.parts.<part>`. */
   readonly parts: readonly { readonly key: string; readonly icon: IconName }[];
+  /** Tema de cada fecha, si se conoce (`meeting-programs.config.ts`). */
+  readonly program?: readonly MeetingTopic[];
 }
 
 /**
@@ -80,6 +83,8 @@ export interface DepartmentWeekly {
    * la masa de después del programa (texto, sin datos de la app interna).
    */
   readonly companion?: 'youth-meal';
+  /** Tema de cada fecha, si se conoce (`meeting-programs.config.ts`). */
+  readonly program?: readonly MeetingTopic[];
 }
 
 /** Foto de una crónica: base de los `.webp` de `assets/drive-media/` y su tamaño real. */
@@ -111,6 +116,42 @@ export interface StoryVideo {
 }
 
 /**
+ * Parte del resumen de una predicación (`StorySermon.parts`). Textos en
+ * `<story>.sermon.parts.<key>.{title,lead?,…}`; `at` es el segundo del
+ * directo (`youtubeId`) en el que empieza, y la parte enlaza a ese punto.
+ *  - `contrast` → tabla a dos columnas (`cols.{a,b}`; por fila
+ *    `rows.<row>.{label,a,b}`). La última fila es el veredicto y se destaca.
+ *  - `steps`    → pasos numerados (`items.<item>.{title,text,note}`).
+ *  - `lessons`  → lecciones (`items.<item>.{title,text}`), sin iconos.
+ */
+export type SermonPart = {
+  readonly key: string;
+  readonly at?: number;
+  /** Tiene entradilla propia (`parts.<key>.lead`). */
+  readonly lead?: boolean;
+} & (
+  | { readonly kind: 'contrast'; readonly rows: readonly string[] }
+  | { readonly kind: 'steps'; readonly items: readonly string[] }
+  | {
+      readonly kind: 'lessons';
+      readonly items: readonly string[];
+    }
+);
+
+/**
+ * Resumen de la predicación de una crónica: qué se aprendió, por partes, con
+ * enlace a cada momento del directo. Textos en `<story>.sermon.{eyebrow,
+ * passage,title,lead,close.{title,text,verse,ref}}`.
+ */
+export interface StorySermon {
+  /** Segundo del directo en el que empieza la predicación. */
+  readonly at: number;
+  readonly parts: readonly SermonPart[];
+  /** Segundo del llamamiento final (`close`). */
+  readonly closeAt: number;
+}
+
+/**
  * Crónica de algo que ya pasó (conferencia, tabără…). Textos en
  * `departments.<id>.stories.<storyId>.{title,lead,points.*,caption?}`.
  * Sin fotos, la tarjeta se queda en su versión compacta («fotos en breve»).
@@ -129,7 +170,8 @@ export interface DepartmentStory {
   /** Nombre propio, no se traduce. */
   readonly place: string;
   readonly guest?: string;
-  readonly points: readonly { readonly key: string; readonly icon: IconName }[];
+  /** Claves de `departments.<id>.stories.<storyId>.points.<key>.{title,text}`. */
+  readonly points: readonly string[];
   readonly photos: readonly StoryPhoto[];
   readonly video?: StoryVideo;
   /** Carpeta pública de Drive con todas las fotos (sólo el ID). */
@@ -142,6 +184,8 @@ export interface DepartmentStory {
   readonly youtubeId?: string;
   /** Cita bíblica: `departments.<id>.stories.<storyId>.verse.{text,ref}`. */
   readonly verse?: boolean;
+  /** Resumen de la predicación (requiere `youtubeId` para enlazar los momentos). */
+  readonly sermon?: StorySermon;
 }
 
 /**
@@ -205,12 +249,7 @@ const YOUTH_STORIES: readonly DepartmentStory[] = [
     start: '2026-09-26',
     place: 'Biserica Elim, Arganda del Rey',
     guest: 'Daniel Popa (Timișoara)',
-    points: [
-      { key: 'message', icon: 'book' },
-      { key: 'qa', icon: 'users' },
-      { key: 'wall', icon: 'heart' },
-      { key: 'sunday', icon: 'church' },
-    ],
+    points: ['message', 'qa', 'wall', 'sunday'],
     // Orden pensado para la rejilla (4 × 4, sin huecos): destacada,
     // vertical, vertical, apaisada, vertical, vertical, apaisada.
     photos: [
@@ -236,6 +275,27 @@ const YOUTH_STORIES: readonly DepartmentStory[] = [
     // Directo de la conferencia en el canal de la iglesia.
     youtubeId: '5_4N6Ja0OdU',
     verse: true,
+    // Predicación de Daniel Popa (1 Samuel 17:23–37), resumida de la
+    // transcripción del directo (14/10/2026). Segundos medidos sobre él.
+    sermon: {
+      at: 3315,
+      parts: [
+        {
+          kind: 'contrast',
+          key: 'schools',
+          at: 3680,
+          rows: ['looks', 'invest', 'battle', 'words', 'fall', 'verdict'],
+        },
+        { kind: 'steps', key: 'mirrors', at: 5230, lead: true, items: ['family', 'others', 'god'] },
+        {
+          kind: 'lessons',
+          key: 'lessons',
+          at: 6560,
+          items: ['fear', 'invest', 'energy', 'hope', 'glory', 'stand'],
+        },
+      ],
+      closeAt: 6965,
+    },
   },
   {
     id: 'tabara_2026',
@@ -244,11 +304,7 @@ const YOUTH_STORIES: readonly DepartmentStory[] = [
     start: '2026-07-25',
     end: '2026-07-26',
     place: 'Granja Casavieja, Ávila',
-    points: [
-      { key: 'together', icon: 'users' },
-      { key: 'word', icon: 'book' },
-      { key: 'nature', icon: 'sprout' },
-    ],
+    points: ['together', 'word', 'nature'],
     photos: [],
   },
 ];
@@ -363,6 +419,7 @@ export const DEPARTMENTS: readonly DepartmentConfig[] = [
           { key: 'word', icon: 'book' },
         ],
         companion: 'youth-meal',
+        program: YOUTH_FRIDAY_PROGRAM,
       },
       {
         // Prima duminică a lunii, la serviciul de seară: programul îl duc în

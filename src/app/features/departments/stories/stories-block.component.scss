@@ -109,21 +109,8 @@
 }
 
 .point {
-  display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
-  gap: var(--sp-3);
-  align-items: start;
-}
-
-.point__icon {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: var(--r-md);
-  background: var(--c-veil-strong);
-  color: var(--c-primary);
-  font-size: 1rem;
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--c-hairline-strong);
 }
 
 .point__text {
@@ -343,7 +330,7 @@
   // Áreas: en estrecho cabecera → medios → texto (las fotos justo bajo el
   // título); en ancho, cabecera y texto a la izquierda, medios a la derecha.
   display: grid;
-  grid-template-areas: 'head' 'media' 'text';
+  grid-template-areas: 'head' 'media' 'text' 'sermon';
   gap: var(--sp-4);
   padding: var(--sp-5);
   border: 1px solid var(--c-hairline);
@@ -352,13 +339,13 @@
   box-shadow: var(--e-2);
 
   @container (min-width: 560px) {
-    grid-template-areas: 'head' 'text' 'media';
+    grid-template-areas: 'head' 'text' 'media' 'sermon';
   }
 
   @container (min-width: 1100px) {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    grid-template-areas: 'head media' 'text media';
-    grid-template-rows: auto 1fr;
+    grid-template-areas: 'head media' 'text media' 'sermon sermon';
+    grid-template-rows: auto 1fr auto;
     align-items: start;
   }
 
@@ -366,6 +353,12 @@
     padding: var(--sp-4);
     border-radius: var(--r-lg);
   }
+}
+
+// Resumen de la predicación: siempre al pie y a todo el ancho.
+.story__sermon {
+  grid-area: sermon;
+  min-width: 0;
 }
 
 .story__head {

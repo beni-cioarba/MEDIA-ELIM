@@ -1448,7 +1448,7 @@
       "baptisms": "Botezuri",
       "candidates": "Candidați",
       "since": "Din anul",
-      "years": "Ani cu botez"
+      "streams": "Transmisiuni"
     },
     "cta_join": "Vreau să mă botez",
     "cta_register": "Registrul botezurilor",
@@ -1461,16 +1461,13 @@
     "candidates_count": "{{count}} candidați",
     "open_register": "Vezi în registru",
     "photos": "Fotografii",
-    "age": "{{age}} ani",
     "cands_kicker": "Cei care au făcut pasul",
     "cands_title": "Candidații la botez",
     "filter_year": "Filtrează după an",
     "all": "Toți",
-    "prev": "Candidații anteriori",
-    "next_page": "Candidații următori",
-    "reg_kicker": "Din 2020 până azi",
+    "reg_kicker": "Cel mai recent primul",
     "reg_title": "Registrul botezurilor",
-    "reg_note": "Fiecare botez, în ordine cronologică, cu toți candidații lui. Atinge un nume pentru a-i vedea profilul.",
+    "reg_note": "Fiecare botez cu toți candidații lui, transmisiunea live și fotografiile. Atinge un nume pentru a-i vedea profilul.",
     "pending_title": "Lista candidaților va fi adăugată",
     "pending_body": "Între timp, fotografiile de la botez sunt deja disponibile.",
     "upcoming_title": "Candidații vor fi anunțați",
@@ -1481,15 +1478,19 @@
     "profile": {
       "kicker": "Botez",
       "date": "Data botezului",
-      "age": "Vârsta la botez",
-      "origin": "Din",
       "group": "În aceeași zi",
       "back": "Înapoi la registru",
       "testimony": "Mărturia",
+      "listen": "Ascultă mărturia",
       "peers": "Botezați împreună",
       "pager": "Alți candidați",
       "prev": "Anterior",
-      "next": "Următor"
-    }
+      "next": "Următor",
+      "parents": "Părinții"
+    },
+    "video": "Transmisiunea",
+    "ministers": "Au slujit:",
+    "testimony_badge": "Mărturie",
+    "group_photo": "Fotografia de grup"
   }
 }

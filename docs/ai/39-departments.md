@@ -33,7 +33,7 @@ features/departments/
   dept-switcher/                   Acceso rápido: pestañas de línea fijas bajo la cabecera (36 px, `--dept-switcher-h`)
   meeting/                         Reunión fija semanal o mensual (`app-meeting-block`) + hueco para su pieza propia
   ticket/                          Billete de la próxima fecha (`app-date-ticket`), común a las reuniones
-  stories/                         Crónicas: texto + reel vertical + mosaico (galería del visor)
+  stories/                         Crónicas: texto + reel vertical + mosaico (galería del visor) + resumen de predicación (sermon-notes)
   youth-meal/                      Invitación «Rămâi la masă» (texto, sin datos)
   departments-translations.resolver.ts  Carga el paquete de textos
 layout/top-nav/departments-aside.component.ts   Destacado del panel de escritorio (@defer)
@@ -92,7 +92,7 @@ progreso, pausa / anterior / siguiente, contador y rótulo
 proyectado idéntico al del inicio —chip de «lo próximo» (en marcha / hoy con
 cuenta atrás / día), titular, subtítulo, botones— desde
 `shared/styles/_hero-content.scss` (movido tal cual de `home.component.scss`,
-lo usan los dos). Añade el rótulo del departamento sobre el titular. El chip
+lo usan los dos). Sin rótulo sobre el titular (14/10/2026: se quitó «Departament · Biserica Elim» con su icono). El chip
 elige la reunión fija más cercana (semanal o mensual) y enlaza a su bloque
 (`#meet-<key>`). La migaja de pan se descuenta con `--hero-offset` (input
 CSS del carrusel, 0 por defecto: **el alto del inicio no cambia**). Los datos
@@ -114,6 +114,8 @@ Unión discriminada: cada `kind` es una pieza que la página sabe pintar.
   **Întâlnirea de tineret, vineri 20:30** (partes: închinare · Cuvânt; la
   masa no es una parte, la cuenta la invitación). Con encuentro semanal, la tarjeta lateral «Ne
   întâlnim» no se pinta (lo repetía).
+  Con `program` (`core/meeting-programs.config.ts`), tema por fecha: ver
+  «Programa de temas» más abajo.
 - `monthly` → reunión mensual fija (`rule: { weekday, nth }`, `time`,
   `durationMin`, `parts`). Fechas **calculadas** (`nextMonthlyDates`), no
   escritas: no caduca. Billete con la próxima y cuánto falta (verde si es
@@ -186,10 +188,70 @@ tapar el rótulo. A la derecha, «YouTube · live», el título y «Deschide pe
 YouTube». Abre `youtube.com/live/<id>`. Es un enlace, no un iframe: son horas
 de directo. ANCORAT 2026 → `5_4N6Ja0OdU`.
 
+**Resumen de la predicación** (`DepartmentStory.sermon`, 14/10/2026):
+`app-sermon-notes` (`stories/sermon-notes.component.*`), al pie de la
+crónica a todo su ancho (área `sermon`). Cabecera: «Din predică · pasaje»,
+título, entradilla y botón navy «Vezi predica · de la 55:15». Debajo, partes
+con su minuto del directo enlazado (`watch?v=<id>&t=<s>s`, a la derecha de un
+filete) y tres formatos según lo que se cuente: `contrast` (tabla rótulo | A |
+B, columna B con velo dorado, última fila = veredicto; en < 560 px cada fila se
+apila y las celdas llevan su escuela en `::before`), `steps` (fichas
+numeradas con nota al pie; 3 columnas ≥ 760 px, tira deslizable a sangre
+< 560 px) y `lessons` (título + texto con filete dorado a la izquierda, **sin iconos**; 1 → 2 → 3 columnas).
+Cierre navy con el llamamiento y su versículo. Textos en
+`<story>.sermon.*`; rótulos comunes `departments.sermon_{watch,from,at}`.
+ANCORAT 2026: resumen de la transcripción automática del directo
+(`yt-dlp --write-auto-subs --sub-langs ro-orig`), «Lepădat sau ancorat?»
+(1 Samuel 17:23–37): dos școli (Eliab / David), trei oglinzi (familia, cei
+din jur, Dumnezeu), seis lecciones y «Ancorarea începe la cruce» (Ps 51:7).
+Alto medido: 1.617 px a 908 px de ancho; 2.432 px a 375 px.
+
 **Vídeo en pantalla completa**: en el mosaico el reel es 9:16 con
 `object-fit: cover`; en `:fullscreen` / `:-webkit-full-screen` pasa a
 `contain` sobre negro, con `aspect-ratio: auto`. Así no se recorta en un
 teléfono girado ni en una pantalla apaisada (`stories-block.component.scss`).
+
+## Programa de temas (14/10/2026)
+
+**Fuente**: el calendario de Google de tineret (`adtineretelim@gmail.com`).
+**No se vincula ni se incrusta**, se copia: es **privado** (`.ics` público
+→ 404, `embed` → inicio de sesión: a un visitante le saldría «Inicia
+sesión»), mezcla lo público con la organización interna («IESIRE CU TINERII
+???», «Discuție …»), y un iframe de Google no lleva marca, ES/RO,
+proyección, accesibilidad ni funciona sin conexión; leer el `.ics` en vivo
+tampoco (Google no manda CORS). Si algún día se automatiza: script de build
+con la **dirección secreta iCal** en GitHub Secrets, mismo filtro, y fichero
+generado que se revisa antes de publicar.
+
+**Qué entra** (decisión del usuario): sólo fechas **con tema asignado**.
+Fuera: «Seara tineret: predica X» (sólo nombre), «Dezbatere: tema» (sin
+tema aún), salidas y todo lo que lleve «???». Texto en rumano corregido
+(diacríticos, «Samy B» / «Samuel B» → `samuel-bogdan`, «Cifor G» →
+`gabriel-daniel-cifor`; invitados fuera del organigrama en `guest`).
+
+**Modelo**: `MeetingTopic { date, title, series?, speaker?: PersonId,
+guest?, time? }` en `YOUTH_FRIDAY_PROGRAM`, colgado de la reunión
+(`program` en `weekly` / `monthly`): la reunión sabe *cuándo*, esto añade *de
+qué va*. Las fechas pasadas desaparecen solas. `time` sólo si esa noche
+cambia la hora (20/11/2026: 19:00 según el calendario); el billete la usa.
+
+**Iconos fuera** (14/10/2026, petición del usuario: «profesional y seria»):
+puntos de las crónicas y lecciones del resumen ya no llevan icono; el dato
+desapareció del modelo (`points` y `lessons.items` son listas de claves).
+
+**Pintado** (`app-meeting-block`): la próxima noche con tema → recuadro
+dorado «Tema serii» en el cuerpo (serie + título + «Cu …»); las siguientes →
+**agenda** a todo el ancho bajo el bloque, columnas fecha (sello navy) |
+serie + tema | quién (en < md baja bajo el tema). 4 filas y «Toate temele
+(N)» (`aria-expanded`). Con agenda, las píldoras de «Apoi» no se pintan
+(repetían las fechas). Textos `departments.program.*`. Medido a 14/10/2026:
+agenda plegada ≈ 300 px en escritorio; desplegada (12) ≈ 1.160 px a 375 px,
+sin scroll horizontal.
+
+**Actualizar**: copiar la vista «Agenda» del calendario (sólo ese
+calendario visible, Ctrl+A) y pasar a `YOUTH_FRIDAY_PROGRAM` las fechas con
+tema. Pendiente de confirmar con tineret: el 18/12 dice sólo «TEMA CRACIUN»
+(publicado como «Seară de Crăciun»).
 
 ## La masa de după program y ADM-TINERET
 
@@ -197,8 +259,8 @@ teléfono girado ni en una pantalla apaisada (`stories-block.component.scss`).
 del encuentro de vineri (`companion`, ancla `#masa`), una franja clara con
 velo dorado: «După întâlnire» · **Rămâi la masă** · dos frases (al acabar se
 pone la mesa, la prepara un equipo de tineri, quédate y alarga la noche) ·
-tres píldoras (loc pentru toți · adu un prieten · mai rămâi puțin). ~178 px
-en escritorio; en el teléfono sin insignia. Texto puro: sin red ni estado.
+tres píldoras (loc pentru toți · adu un prieten · mai rămâi puțin). Sin insignia ni iconos en las
+píldoras (14/10/2026). Texto puro: sin red ni estado.
 
 **Nada de la app interna en la web pública**: ni turnos, ni equipos, ni
 părinți, ni QR, ni franja en la portada de Departamente (se quitaron el

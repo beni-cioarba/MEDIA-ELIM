@@ -104,7 +104,7 @@
           "points": {
             "message": {
               "title": "El mensaje",
-              "text": "El hermano Daniel Popa, sobre lo que significa seguir anclado en Cristo."
+              "text": "«¿Desechado o anclado?»: David y Goliat, dos escuelas y tres espejos. El resumen, más abajo."
             },
             "qa": {
               "title": "Preguntas y respuestas",
@@ -123,7 +123,110 @@
             "text": "«La cual tenemos como segura y firme ancla del alma.»",
             "ref": "Hebreos 6:19"
           },
-          "caption": "La entrada: el muro «Dios es mi ancla cuando…»"
+          "caption": "La entrada: el muro «Dios es mi ancla cuando…»",
+          "sermon": {
+            "eyebrow": "De la predicación",
+            "passage": "1 Samuel 17:23–37",
+            "title": "¿Desechado o anclado?",
+            "lead": "A partir de David y Goliat, el hermano Daniel Popa puso ante los jóvenes dos escuelas: la de Eliab, donde se aprende a impresionar, y la de David, donde se aprende a seguir anclado en Dios. Dios no mira la estatura, sino el corazón, y al final de cada uno queda una de dos palabras.",
+            "parts": {
+              "schools": {
+                "title": "Dos escuelas",
+                "cols": {
+                  "a": "La escuela de Eliab",
+                  "b": "La escuela de David"
+                },
+                "rows": {
+                  "looks": {
+                    "label": "Qué cuenta",
+                    "a": "La estatura, la apariencia, la etiqueta. Impresionó incluso a Samuel.",
+                    "b": "El corazón: «El hombre mira lo que está delante de sus ojos, pero Jehová mira el corazón.»"
+                  },
+                  "invest": {
+                    "label": "En qué se apoya",
+                    "a": "En aparentar: invierte en sí mismo.",
+                    "b": "En ser: deja que Dios invierta en él."
+                  },
+                  "battle": {
+                    "label": "Ante Goliat",
+                    "a": "Reuniones y entrenamientos: 40 días de miedo y nadie sale a pelear.",
+                    "b": "Sale a pelear aunque todos lo ven «un muchacho»: viene a luchar, no a discutir."
+                  },
+                  "words": {
+                    "label": "Con las palabras",
+                    "a": "Las gasta en burlas: «Yo conozco tu soberbia…»",
+                    "b": "Pocas con su hermano; muchas ante Goliat y en oración."
+                  },
+                  "fall": {
+                    "label": "Cuando falla",
+                    "a": "No lo reconoce nunca.",
+                    "b": "«He pecado»: pide un corazón limpio (Salmo 51)."
+                  },
+                  "verdict": {
+                    "label": "Lo que dice Dios",
+                    "a": "Desechado",
+                    "b": "Anclado"
+                  }
+                }
+              },
+              "mirrors": {
+                "title": "Tres espejos",
+                "lead": "Para seguir anclado, importa en qué espejo te miras.",
+                "items": {
+                  "family": {
+                    "title": "El espejo de la familia",
+                    "text": "«Ya te conocemos»: apodos, etiquetas, «vuelve a las ovejas». David no discutió con Eliab: se volvió y habló con otro.",
+                    "note": "Se supera con humildad"
+                  },
+                  "others": {
+                    "title": "El espejo de los demás",
+                    "text": "Saúl: «No podrás, eres un muchacho.» El que está anclado no se rebela, pero tampoco renuncia a lo que Dios le confió.",
+                    "note": "Sigue las reglas de la Palabra"
+                  },
+                  "god": {
+                    "title": "El espejo de Dios",
+                    "text": "Te recuerda las victorias escondidas: el león y el oso junto a las ovejas. El diablo te recuerda los fracasos; el Señor, las victorias.",
+                    "note": "Aquí sabes quién eres"
+                  }
+                }
+              },
+              "lessons": {
+                "title": "Lo que nos llevamos",
+                "items": {
+                  "fear": {
+                    "title": "Temor del Señor, no de Goliat",
+                    "text": "Eliab temía a Goliat porque no temía al Señor. Los recursos del que está anclado son sencillos."
+                  },
+                  "invest": {
+                    "title": "Deja que Dios invierta en ti",
+                    "text": "El mundo dice «invierte en ti». Lo que Dios puso en ti es para honrar su Nombre."
+                  },
+                  "energy": {
+                    "title": "Guarda tu energía y tus palabras",
+                    "text": "No las malgastes discutiendo con Eliab: las necesitas para Goliat y para orar."
+                  },
+                  "hope": {
+                    "title": "Sé un punto de apoyo para otros",
+                    "text": "«No desmaye el corazón de ninguno» (v. 32). La esperanza es confiar en que Dios cumple lo que prometió."
+                  },
+                  "glory": {
+                    "title": "La batalla es del Señor, y la gloria también",
+                    "text": "Como en una boda, los aplausos son para el Novio. Cuando llega la victoria, su Nombre es el que tiene que brillar."
+                  },
+                  "stand": {
+                    "title": "Herido, pero firme",
+                    "text": "Pueden burlarse de ti, pero no puedes abandonar la obra a la que Dios te llamó."
+                  }
+                }
+              }
+            },
+            "close": {
+              "title": "Anclarse empieza en la cruz",
+              "text": "Dios no busca personas perfectas, sino personas capaces de humillarse y pedir perdón. Sea cual sea el pasado, en la cruz hay perdón y libertad. Al final, se invitó a los jóvenes a pasar al frente para salir de allí anclados.",
+              "verse": "«Purifícame con hisopo, y seré limpio; lávame, y seré más blanco que la nieve.»",
+              "ref": "Salmo 51:7"
+            }
+          }
         },
         "tabara_2026": {
           "title": "Campamento de jóvenes 2026",
@@ -429,6 +532,9 @@
     "watch_full": "Ver el programa completo",
     "watch_src": "directo",
     "watch_cta": "Abrir en YouTube",
+    "sermon_watch": "Ver la predicación",
+    "sermon_from": "desde el {{time}}, en YouTube",
+    "sermon_at": "Ver en YouTube desde el {{time}}",
     "photos_count": "{{count}} fotos",
     "photos_soon": "Las fotos aparecerán aquí muy pronto.",
     "video_label": "Vídeo",
@@ -450,6 +556,14 @@
       "after": "Después"
     },
     "cta_stories": "Fotos y momentos",
-    "cta_all": "Todos los departamentos"
+    "cta_all": "Todos los departamentos",
+    "program": {
+      "title": "Próximos temas",
+      "topic": "El tema de la noche",
+      "by": "Con {{name}}",
+      "at": "A las {{time}}",
+      "all": "Todos los temas ({{count}})",
+      "less": "Ver menos"
+    }
   }
 }

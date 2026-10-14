@@ -15,9 +15,6 @@
 
 .meal {
   display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr);
-  gap: var(--sp-2) var(--sp-4);
-  align-items: start;
   padding: var(--sp-4) var(--sp-5);
   border-top: 1px solid var(--c-hairline);
   background:
@@ -25,22 +22,7 @@
     var(--c-bg);
 
   @container (max-width: 479.98px) {
-    grid-template-columns: minmax(0, 1fr);
     padding: var(--sp-4);
-  }
-}
-
-.meal__badge {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background: var(--c-primary-deep);
-  color: var(--c-gold);
-
-  @container (max-width: 479.98px) {
-    display: none;
   }
 }
 
@@ -82,19 +64,11 @@
 }
 
 .meal__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.25rem 0.65rem 0.25rem 0.5rem;
+  padding: 0.25rem 0.65rem;
   border: 1px solid var(--c-hairline-strong);
   border-radius: var(--r-pill);
   background: var(--c-surface);
   font-size: 0.8125rem;
   font-weight: 700;
   color: var(--c-primary-deep);
-
-  app-icon {
-    font-size: 0.95rem;
-    color: var(--c-gold-deep);
-  }
 }

@@ -51,6 +51,18 @@ export class CandidateProfileComponent {
   protected readonly baptism = computed(() => this.candidate().baptism);
   protected readonly story = computed(() => this.candidate().story ?? null);
 
+  /** Enlace al momento del directo en que suena su mărturie (si se conoce). */
+  protected readonly listenUrl = computed(() => {
+    const at = this.story()?.at;
+    const video = this.baptism().videoUrl;
+    if (at == null || !video) return null;
+    const h = Math.floor(at / 3600);
+    const m = Math.floor((at % 3600) / 60);
+    const sec = at % 60;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return { url: `${video}&t=${at}s`, clock: `${h}:${pad(m)}:${pad(sec)}` };
+  });
+
   /** Los que se bautizaron el mismo día (el propio, marcado), en el orden de la presentación. */
   protected readonly peers = computed(() =>
     this.baptisms.candidates().filter((c) => c.baptism.date === this.baptism().date),
@@ -62,6 +74,14 @@ export class CandidateProfileComponent {
     const c = this.candidate();
     return c.photo
       ? { src: c.photo.large, srcset: c.photo.srcset, thumb: c.photo.small, name: c.name, alt: c.name, date: c.baptism.date }
+      : null;
+  });
+
+  /** Foto de grupo del día, para el visor. */
+  protected readonly coverDoc = computed<ViewerDocument | null>(() => {
+    const b = this.baptism();
+    return b.cover
+      ? { src: b.cover.image, srcset: `${b.cover.medium} 960w, ${b.cover.image} 1600w`, thumb: b.cover.thumb, date: b.date }
       : null;
   });
 

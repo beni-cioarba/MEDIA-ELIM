@@ -1448,7 +1448,7 @@
       "baptisms": "Bautismos",
       "candidates": "Candidatos",
       "since": "Desde",
-      "years": "Años con bautismo"
+      "streams": "Transmisiones"
     },
     "cta_join": "Quiero bautizarme",
     "cta_register": "Registro de bautismos",
@@ -1461,16 +1461,13 @@
     "candidates_count": "{{count}} candidatos",
     "open_register": "Ver en el registro",
     "photos": "Fotografías",
-    "age": "{{age}} años",
     "cands_kicker": "Quienes dieron el paso",
     "cands_title": "Candidatos al bautismo",
     "filter_year": "Filtrar por año",
     "all": "Todos",
-    "prev": "Candidatos anteriores",
-    "next_page": "Candidatos siguientes",
-    "reg_kicker": "De 2020 a hoy",
+    "reg_kicker": "El más reciente primero",
     "reg_title": "Registro de bautismos",
-    "reg_note": "Cada bautismo, en orden cronológico, con todos sus candidatos. Toca un nombre para ver su perfil.",
+    "reg_note": "Cada bautismo con todos sus candidatos, la transmisión en directo y las fotos. Toca un nombre para ver su perfil.",
     "pending_title": "La lista de candidatos se añadirá pronto",
     "pending_body": "Mientras tanto, las fotografías del bautismo ya están disponibles.",
     "upcoming_title": "Los candidatos se anunciarán",
@@ -1481,15 +1478,19 @@
     "profile": {
       "kicker": "Bautismo",
       "date": "Fecha del bautismo",
-      "age": "Edad al bautizarse",
-      "origin": "De",
       "group": "Ese mismo día",
       "back": "Volver al registro",
       "testimony": "Testimonio",
+      "listen": "Escuchar su testimonio",
       "peers": "Bautizados juntos",
       "pager": "Otros candidatos",
       "prev": "Anterior",
-      "next": "Siguiente"
-    }
+      "next": "Siguiente",
+      "parents": "Padres"
+    },
+    "video": "Transmisión",
+    "ministers": "Ministraron:",
+    "testimony_badge": "Testimonio",
+    "group_photo": "Foto de grupo"
   }
 }

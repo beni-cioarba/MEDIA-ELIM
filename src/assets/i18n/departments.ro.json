@@ -104,7 +104,7 @@
           "points": {
             "message": {
               "title": "Mesajul",
-              "text": "Fratele Daniel Popa, despre ce înseamnă să rămâi ancorat în Hristos."
+              "text": "«Lepădat sau ancorat?»: David și Goliat, două școli și trei oglinzi. Rezumatul, mai jos."
             },
             "qa": {
               "title": "Întrebări și răspunsuri",
@@ -123,7 +123,110 @@
             "text": "„Nădejdea aceasta o avem ca o ancoră a sufletului, tare și neclintită.”",
             "ref": "Evrei 6:19"
           },
-          "caption": "Intrarea: zidul «Dumnezeu este ancora mea atunci când…»"
+          "caption": "Intrarea: zidul «Dumnezeu este ancora mea atunci când…»",
+          "sermon": {
+            "eyebrow": "Din predică",
+            "passage": "1 Samuel 17:23–37",
+            "title": "Lepădat sau ancorat?",
+            "lead": "Pornind de la David și Goliat, fratele Daniel Popa le-a pus tinerilor în față două școli: a lui Eliab, unde înveți să impresionezi, și a lui David, unde înveți să rămâi ancorat în Dumnezeu. Dumnezeu nu se uită la statură, ci la inimă — iar la final, despre fiecare rămâne unul din două cuvinte.",
+            "parts": {
+              "schools": {
+                "title": "Două școli",
+                "cols": {
+                  "a": "Școala lui Eliab",
+                  "b": "Școala lui David"
+                },
+                "rows": {
+                  "looks": {
+                    "label": "Ce contează",
+                    "a": "Statura, înfățișarea, eticheta. L-a impresionat chiar și pe Samuel.",
+                    "b": "Inima: «Omul se uită la ce izbește ochii, dar Domnul se uită la inimă.»"
+                  },
+                  "invest": {
+                    "label": "Pe ce se sprijină",
+                    "a": "Pe a arăta: investește în el însuși.",
+                    "b": "Pe a fi: Îl lasă pe Dumnezeu să investească în el."
+                  },
+                  "battle": {
+                    "label": "În fața lui Goliat",
+                    "a": "Ședințe și antrenamente: 40 de zile de frică și nimeni nu iese la luptă.",
+                    "b": "Iese la luptă, deși toți îl văd «un copil»: vine să lupte, nu să discute."
+                  },
+                  "words": {
+                    "label": "Cu vorbele",
+                    "a": "Le cheltuiește pe batjocură: «Îți cunosc mândria…»",
+                    "b": "Puține cu fratele lui; multe în fața lui Goliat și în rugăciune."
+                  },
+                  "fall": {
+                    "label": "Când greșește",
+                    "a": "Nu recunoaște niciodată.",
+                    "b": "«Am păcătuit»: cere o inimă curată (Psalmul 51)."
+                  },
+                  "verdict": {
+                    "label": "Ce spune Dumnezeu",
+                    "a": "Lepădat",
+                    "b": "Ancorat"
+                  }
+                }
+              },
+              "mirrors": {
+                "title": "Trei oglinzi",
+                "lead": "Ca să rămâi ancorat, contează în ce oglindă te privești.",
+                "items": {
+                  "family": {
+                    "title": "Oglinda familiei",
+                    "text": "«Noi te știm»: porecle, etichete, «du-te la oi». David nu s-a certat cu Eliab: s-a întors și a vorbit cu altul.",
+                    "note": "O treci prin smerenie"
+                  },
+                  "others": {
+                    "title": "Oglinda celor din jur",
+                    "text": "Saul: «Nu poți, ești un copil.» Omul ancorat nu se răzvrătește, dar nici nu renunță la ce i-a încredințat Dumnezeu.",
+                    "note": "Mergi după regulile Cuvântului"
+                  },
+                  "god": {
+                    "title": "Oglinda lui Dumnezeu",
+                    "text": "Îți aduce aminte de biruințele ascunse: leul și ursul de la oi. Diavolul îți amintește eșecurile; Domnul, biruințele.",
+                    "note": "Aici afli cine ești"
+                  }
+                }
+              },
+              "lessons": {
+                "title": "Ce luăm acasă",
+                "items": {
+                  "fear": {
+                    "title": "Frica de Domnul, nu de Goliat",
+                    "text": "Eliab se temea de Goliat pentru că nu se temea de Domnul. Resursele omului ancorat sunt simple."
+                  },
+                  "invest": {
+                    "title": "Lasă-L pe Dumnezeu să investească în tine",
+                    "text": "Lumea spune «investește în tine». Ce a pus Dumnezeu în tine este ca să-I onoreze Numele."
+                  },
+                  "energy": {
+                    "title": "Păzește-ți energia și vorbele",
+                    "text": "Nu le risipi în certuri cu Eliab: îți trebuie pentru Goliat și pentru rugăciune."
+                  },
+                  "hope": {
+                    "title": "Fii un reper pentru ceilalți",
+                    "text": "«Nimeni să nu-și piardă nădejdea» (v. 32). Nădejdea e încrederea că Dumnezeu împlinește ce a promis."
+                  },
+                  "glory": {
+                    "title": "Lupta e a Domnului, și lauda tot a Lui",
+                    "text": "Ca la o nuntă, aplauzele sunt pentru Mire. Când vine biruința, Numele Lui trebuie să strălucească."
+                  },
+                  "stand": {
+                    "title": "Jignit, dar de neclintit",
+                    "text": "Poți fi batjocorit, dar nu ai voie să renunți la lucrarea la care te-a chemat Dumnezeu."
+                  }
+                }
+              }
+            },
+            "close": {
+              "title": "Ancorarea începe la cruce",
+              "text": "Dumnezeu nu caută oameni perfecți, ci oameni care se pot pleca și cere iertare. Oricare ar fi trecutul, la cruce sunt iertare și eliberare. La final, tinerii au fost chemați în față, ca să plece de acolo ancorați.",
+              "verse": "„Curăță-mă cu isop, și voi fi curat; spală-mă, și voi fi mai alb decât zăpada!”",
+              "ref": "Psalmul 51:7"
+            }
+          }
         },
         "tabara_2026": {
           "title": "Tabăra de tineret 2026",
@@ -429,6 +532,9 @@
     "watch_full": "Urmărește programul integral",
     "watch_src": "live",
     "watch_cta": "Deschide pe YouTube",
+    "sermon_watch": "Vezi predica",
+    "sermon_from": "de la {{time}}, pe YouTube",
+    "sermon_at": "Vezi pe YouTube de la {{time}}",
     "photos_count": "{{count}} fotografii",
     "photos_soon": "Fotografiile vor apărea aici în curând.",
     "video_label": "Video",
@@ -450,6 +556,14 @@
       "after": "Apoi"
     },
     "cta_stories": "Fotografii și momente",
-    "cta_all": "Toate departamentele"
+    "cta_all": "Toate departamentele",
+    "program": {
+      "title": "Temele următoare",
+      "topic": "Tema serii",
+      "by": "Cu {{name}}",
+      "at": "Ora {{time}}",
+      "all": "Toate temele ({{count}})",
+      "less": "Mai puține"
+    }
   }
 }

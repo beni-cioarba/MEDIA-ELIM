@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { IconComponent } from '../../../shared/icon/icon.component';
 
 /**
  * «Quédate a cenar»: la pieza propia del encuentro de vineri
@@ -14,7 +13,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 @Component({
   selector: 'app-youth-meal-block',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslatePipe, IconComponent],
+  imports: [TranslatePipe],
   templateUrl: './youth-meal-block.component.html',
   styleUrl: './youth-meal-block.component.scss',
 })

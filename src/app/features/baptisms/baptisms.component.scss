@@ -28,22 +28,24 @@
 // ---------------------------------------------------------------------
 .bz-hero {
   @include bz.water-surface;
-  padding-block: clamp(1.75rem, 4vw, 3.25rem);
+  // Compacta: la cabecera presenta, no ocupa la pantalla. A 1440×900 el
+  // carrusel de candidatos asoma ya en la primera vista.
+  padding-block: clamp(1.25rem, 2.6vw, 2.25rem);
 }
 
 .bz-hero__ripples {
-  @include bz.ripples(76% 46%);
+  @include bz.ripples(78% 50%);
 }
 
 .bz-hero__grid {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.5rem, 3vw, 3rem);
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
   align-items: center;
 
   @include from('lg') {
-    grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(24rem, 0.9fr);
   }
 }
 
@@ -52,36 +54,36 @@
 }
 
 .bz-hero__title {
-  margin: 0.6rem 0 0;
+  margin: 0.55rem 0 0;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4.4vw, 3.5rem);
+  font-size: clamp(1.75rem, 3.4vw, 2.75rem);
   font-weight: 800;
-  line-height: 1.02;
+  line-height: 1.04;
   letter-spacing: -0.025em;
   color: #fff;
   overflow-wrap: anywhere;
 }
 
 .bz-hero__lead {
-  margin: 0.85rem 0 0;
-  max-width: 58ch;
+  margin: 0.6rem 0 0;
+  max-width: 62ch;
   color: var(--c-on-band-muted);
-  font-size: clamp(0.95rem, 1.15vw, 1.08rem);
-  line-height: 1.6;
+  font-size: clamp(0.9rem, 1.05vw, 1rem);
+  line-height: 1.55;
+
+  @include until('sm') {
+    @include line-clamp(4);
+  }
 }
 
 // Cifras: número grande arriba, rótulo debajo, en columnas con filete.
 .bz-stats {
   display: grid;
-  // Dos por fila en móvil, las cuatro en una desde tablet.
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  // Cuatro en una fila siempre: en móvil se encogen, no se apilan.
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.9rem 0;
-
-  @include from('sm') {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  max-width: 40rem;
-  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+  max-width: 36rem;
+  margin: clamp(0.9rem, 1.8vw, 1.35rem) 0 0;
 }
 
 .bz-stat {
@@ -97,16 +99,24 @@
   }
 
   @include until('sm') {
-    &:nth-child(3) {
-      padding-left: 0;
-      border-left: 0;
+    min-width: 0;
+    padding-inline: 0.5rem;
+
+    &:last-child {
+      padding-right: 0;
+    }
+
+    dt {
+      font-size: 0.55rem;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
     }
   }
 
   dd {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 2.8vw, 2.35rem);
+    font-size: clamp(1.25rem, 2.3vw, 2rem);
     font-weight: 800;
     line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -116,7 +126,7 @@
 
   dt {
     color: var(--c-on-band-muted);
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -130,55 +140,67 @@
 .bz-hero__ctas {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
+  gap: 0.55rem;
+  margin-top: clamp(0.9rem, 1.8vw, 1.35rem);
+
+  // Móvil: el registro empieza justo debajo; el atajo sobra.
+  @include until('sm') {
+    .bz-btn--ghost {
+      display: none;
+    }
+  }
 }
 
-// Tarjeta del próximo / último botez: cristal sobre el agua.
+// Tarjeta del próximo / último botez. En escritorio, **horizontal** (foto a
+// la izquierda, datos a la derecha): la mitad de alto que en vertical.
+// Sin `backdrop-filter`: está encima de las ondas animadas y el desenfoque
+// se recalcularía en cada fotograma. Un fondo opaco tintado da lo mismo.
 .bz-feature {
   position: relative;
   display: grid;
   overflow: hidden;
-  border-radius: 1.25rem;
+  border-radius: 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  box-shadow: 0 24px 60px rgba(4, 14, 30, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(16, 36, 64, 0.82);
+  box-shadow: 0 20px 50px rgba(4, 14, 30, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  // Horizontal también en móvil (foto más estrecha): la mitad de alto.
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+
+  @include from('sm') {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
 
   &--next {
     border-color: rgba(212, 175, 55, 0.55);
-    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 24px 60px rgba(4, 14, 30, 0.45);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 20px 50px rgba(4, 14, 30, 0.45);
   }
 }
 
 .bz-feature__media {
   position: relative;
-  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--c-primary-deep);
+  min-height: 9.5rem;
+
+  @include from('sm') {
+    min-height: 12.5rem;
+  }
 
   > img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-
-  // Funde la foto con el cuerpo de la tarjeta.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0;
-    height: 45%;
-    background: linear-gradient(to top, rgba(10, 26, 48, 0.75), transparent);
-    pointer-events: none;
-  }
 }
 
 .bz-feature__mosaic {
+  position: absolute;
+  inset: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  height: 100%;
 
   img {
     width: 100%;
@@ -188,9 +210,10 @@
 }
 
 .bz-feature__empty {
+  position: absolute;
+  inset: 0;
   display: grid;
   place-items: center;
-  height: 100%;
   color: rgba(255, 255, 255, 0.35);
   font-size: 4rem;
 }
@@ -198,13 +221,13 @@
 .bz-feature__badge {
   position: absolute;
   z-index: 1;
-  top: 0.85rem;
-  left: 0.85rem;
-  padding: 0.3rem 0.7rem;
+  top: 0.7rem;
+  left: 0.7rem;
+  padding: 0.28rem 0.65rem;
   border-radius: 999px;
   background: var(--c-gold);
   color: var(--c-primary-darkest);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -212,13 +235,20 @@
 }
 
 .bz-feature__body {
-  padding: 1rem 1.25rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 1.15rem 1.05rem;
+
+  @include until('sm') {
+    padding: 0.75rem 0.8rem;
+  }
 }
 
 .bz-feature__kicker {
   margin: 0;
   color: var(--c-gold-soft);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -228,18 +258,19 @@
   margin: 0.25rem 0 0;
   color: #fff;
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
   font-weight: 800;
+  line-height: 1.1;
   letter-spacing: -0.015em;
 }
 
 .bz-feature__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.15rem 0.6rem;
+  gap: 0.15rem 0.55rem;
   margin: 0.3rem 0 0;
   color: var(--c-on-band-muted);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 
   span:first-child {
     text-transform: capitalize;
@@ -247,16 +278,27 @@
 
   span + span::before {
     content: '·';
-    margin-right: 0.6rem;
+    margin-right: 0.55rem;
     opacity: 0.6;
+  }
+}
+
+.bz-feature__ministers {
+  margin: 0.4rem 0 0;
+  color: var(--c-on-band-muted);
+  font-size: 0.8rem;
+
+  strong {
+    color: #fff;
+    font-weight: 700;
   }
 }
 
 .bz-feature__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1.1rem;
-  margin-top: 0.85rem;
+  gap: 0.35rem 1rem;
+  margin-top: 0.8rem;
 
   .bz-link {
     color: #fff;
@@ -271,7 +313,7 @@
 // Secciones claras: cabecera común
 // ---------------------------------------------------------------------
 .bz-section {
-  padding-block: clamp(1.75rem, 3.5vw, 3rem) 0;
+  padding-block: clamp(1.25rem, 2.4vw, 2rem) 0;
 
   &:last-child {
     padding-bottom: clamp(2.5rem, 5vw, 4rem);
@@ -284,7 +326,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 0.75rem 1.5rem;
-  margin-bottom: clamp(0.9rem, 1.8vw, 1.25rem);
+  margin-bottom: clamp(0.75rem, 1.4vw, 1rem);
 }
 
 .bz-kicker {
@@ -379,128 +421,167 @@
   font-size: 0.74rem;
 }
 
-.bz-arrows {
-  display: none;
-  gap: 0.35rem;
-
-  // En táctil se desliza: las flechas sólo con puntero fino.
-  @media (hover: hover) and (pointer: fine) {
-    display: flex;
-  }
-}
-
-.bz-arrow {
-  display: inline-grid;
-  place-items: center;
-  width: 2.375rem;
-  height: 2.375rem;
-  padding: 0;
-  border: 1px solid var(--c-hairline-strong);
-  border-radius: 999px;
-  background: var(--c-surface);
-  color: var(--c-primary);
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
-
-  app-icon {
-    font-size: 1.15rem;
-  }
-
-  &:hover:not(:disabled) {
-    background: var(--c-primary);
-    color: #fff;
-  }
-
-  &:focus-visible {
-    @include focus-ring(2px);
-  }
-
-  &:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-}
-
 // ---------------------------------------------------------------------
-// 2 · Carrusel de candidatos
+// 2 · Carrusel de candidatos (sobre `app-card-carousel`)
 // ---------------------------------------------------------------------
-// La pista sangra hasta el borde de la pantalla; su relleno es el margen
-// real de la página (`--page-inset`): la primera tarjeta cae en la vertical
-// del título. Ancho de tarjeta derivado de la ventana, acotado.
-.bz-track {
-  --card-w: clamp(9.25rem, 14.2vw, 12.75rem);
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: var(--card-w);
-  gap: clamp(0.6rem, 1vw, 0.9rem);
-  margin: 0;
-  padding: 0.35rem var(--page-inset) 0.9rem;
-  list-style: none;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--page-inset);
-  scrollbar-width: thin;
-  scrollbar-color: var(--c-hairline-strong) transparent;
+// La mecánica (flechas al apuntar, degradados, arrastre, anclaje, teclado)
+// es del carrusel compartido. Aquí sólo sus medidas y la tarjeta:
+//  · la pista sangra hasta el borde y su relleno es `--page-inset`: la
+//    primera tarjeta cae en la vertical del título;
+//  · ancho de tarjeta derivado de la ventana y acotado (≈ 7 a 1440 px);
+//  · la barra de posición se queda en la columna de la página.
+.bz-carousel {
+  --bz-card-w: clamp(9.25rem, 14.2vw, 12.75rem);
+  --bz-card-gap: clamp(0.6rem, 1vw, 0.9rem);
+  --carousel-progress-inset: var(--page-inset);
+  --c-carousel-fade: var(--c-bg);
+  // Con pocas tarjetas (un año) la fila empieza en el margen, no centrada:
+  // así sigue alineada con el título y con el filtro.
+  --carousel-justify: flex-start;
+  display: block;
+  padding-bottom: 0.25rem;
+
+  // El carrusel compartido centra la fila cuando todo cabe (`is-fitted`);
+  // aquí se queda alineada con el título y el filtro. La clase vive dentro
+  // del componente hijo: hace falta atravesar la encapsulación.
+  ::ng-deep .ui-carousel.is-fitted {
+    --carousel-justify: flex-start;
+  }
+
+  // Al cambiar de año la lista entera cambia: sin anclaje de scroll, la
+  // pista no «persigue» a la tarjeta que se estaba viendo.
+  ::ng-deep .ui-carousel__viewport {
+    overflow-anchor: none;
+  }
+
+  // Sin atenuar las demás tarjetas al apuntar a una (14/10/2026: lavaba
+  // la fila entera de blanco). Sólo la tarjeta apuntada reacciona.
+
+  // Las tarjetas no crecen: todas iguales aunque falten.
+  .ui-carousel__item {
+    flex: 0 0 var(--bz-card-w);
+    max-width: var(--bz-card-w);
+  }
 }
 
 .bz-card {
-  scroll-snap-align: start;
+  // Entrada escalonada al cargar o al cambiar de año: fluida, no de golpe.
+  @include motion-safe {
+    // `backwards`: sólo fija el estado inicial durante el retraso; al acabar
+    // no retiene `opacity`, así el foco del hover puede atenuar la tarjeta.
+    animation: bz-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(min(var(--i, 0), 10) * 45ms);
+  }
 }
 
+@keyframes bz-card-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ── Tarjeta ────────────────────────────────────────────────────────────
+// Rendimiento (sin un solo tirón): el hover sólo anima `transform` y
+// `opacity`, que el navegador compone en GPU sin repintar. La sombra y el
+// filo dorado del hover son capas propias (`::before` / `::after`) que se
+// encienden con `opacity`, no `box-shadow` animado. Sin `backdrop-filter`
+// en ninguna pieza de la tarjeta. `contain` aísla cada tarjeta: su hover no
+// recalcula el resto de la pista.
 .bz-card__link {
   position: relative;
   display: block;
   aspect-ratio: 4 / 5;
-  overflow: hidden;
   border-radius: 1rem;
   background: var(--c-primary-deep);
   color: #fff;
   text-decoration: none;
   isolation: isolate;
-  box-shadow: 0 1px 2px rgba(15, 36, 64, 0.08), 0 8px 24px rgba(15, 36, 64, 0.1);
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+  contain: layout paint style;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 
-  // Velo inferior para el texto + filo de luz.
+  // Sombra de reposo (fija) + sombra del hover (capa con opacidad).
+  box-shadow: 0 1px 2px rgba(15, 36, 64, 0.08), 0 8px 22px rgba(15, 36, 64, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: 0 18px 38px rgba(15, 36, 64, 0.28);
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  // Velo inferior para el texto + filo dorado del hover (por opacidad).
   &::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 1;
     border-radius: inherit;
-    background: linear-gradient(to top, rgba(10, 26, 48, 0.92) 0%, rgba(10, 26, 48, 0.45) 28%, transparent 55%);
+    background: linear-gradient(to top, rgba(10, 26, 48, 0.92) 0%, rgba(10, 26, 48, 0.42) 30%, transparent 56%);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     pointer-events: none;
-    transition: box-shadow 0.3s ease;
   }
 
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 2px 4px rgba(15, 36, 64, 0.1), 0 16px 36px rgba(15, 36, 64, 0.2);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translate3d(0, -6px, 0);
 
-    &::after {
-      box-shadow: inset 0 0 0 2px rgba(212, 175, 55, 0.85);
-    }
+      &::before {
+        opacity: 1;
+      }
 
-    img {
-      transform: scale(1.05);
+      .bz-card__ring {
+        opacity: 1;
+      }
+
+      img {
+        transform: scale(1.06);
+      }
     }
   }
 
   &:focus-visible {
     @include focus-ring(3px);
+
+    .bz-card__ring {
+      opacity: 1;
+    }
   }
+}
+
+.bz-card__ring {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px rgba(212, 175, 55, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .bz-card__photo {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: scale(1);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    backface-visibility: hidden;
   }
 }
 
@@ -511,13 +592,27 @@
   left: 0.55rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: rgba(10, 26, 48, 0.62);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  // Opaco, sin desenfoque: 70+ tarjetas con `backdrop-filter` son lo que
+  // hacía pesado el desplazamiento.
+  background: rgba(10, 26, 48, 0.72);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   font-variant-numeric: tabular-nums;
+}
+
+// Tiene testimonio: invita a abrir el perfil.
+.bz-card__story {
+  align-self: flex-start;
+  margin-bottom: 0.2rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: var(--c-gold);
+  color: var(--c-primary-darkest);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .bz-card__text {
@@ -527,27 +622,15 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  padding: 0.75rem 0.8rem 0.8rem;
+  padding: 0.7rem 0.75rem 0.75rem;
 }
 
 .bz-card__name {
   @include line-clamp(2);
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.005em;
-}
-
-.bz-card__meta {
-  overflow: hidden;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.74rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  &:empty {
-    display: none;
-  }
 }
 
 // ---------------------------------------------------------------------
@@ -571,7 +654,8 @@
     left: var(--node-x);
     width: 2px;
     border-radius: 2px;
-    background: linear-gradient(to bottom, rgba(79, 143, 216, 0.15), rgba(79, 143, 216, 0.6) 40%, var(--c-gold));
+    // Arriba lo más reciente (oro), abajo los primeros botezuri (agua).
+    background: linear-gradient(to bottom, var(--c-gold), rgba(79, 143, 216, 0.6) 55%, rgba(79, 143, 216, 0.15));
   }
 }
 
@@ -579,7 +663,7 @@
   position: relative;
   display: grid;
   gap: 0.75rem;
-  padding: 1.1rem 0 1.25rem;
+  padding: 0.95rem 0 1.05rem;
   scroll-margin-top: calc(var(--nav-height) + 1rem);
   border-radius: 0.75rem;
 
@@ -588,9 +672,9 @@
   }
 
   @include from('md') {
-    grid-template-columns: 10.5rem minmax(0, 1fr);
+    grid-template-columns: 9rem minmax(0, 1fr);
     gap: clamp(1rem, 2.5vw, 2rem);
-    padding-block: 1.5rem;
+    padding-block: 1.15rem;
   }
 
   // Llegada por enlace (`/botezuri/<fecha>`): un destello que se apaga.
@@ -831,12 +915,24 @@
   transition: color 0.2s ease;
 }
 
-.bz-tile__meta {
-  overflow: hidden;
-  color: var(--c-muted);
-  font-size: 0.72rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+// Foto de grupo del día: primera de la rejilla, a doble ancho. Proporción
+// 8:5 = dos retratos 4:5 juntos, así la fila no se descuadra.
+.bz-grid__group {
+  grid-column: span 2;
+}
+
+.bz-tile--group {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: zoom-in;
+
+  .bz-tile__photo {
+    aspect-ratio: 8 / 5;
+  }
 }
 
 // Botez sin lista todavía: foto de grupo + nota.
@@ -849,7 +945,7 @@
 }
 
 .bz-pending__photo {
-  flex: 0 1 26rem;
+  flex: 0 1 20rem;
   aspect-ratio: 3 / 2;
   padding: 0;
   overflow: hidden;
@@ -893,11 +989,65 @@
   line-height: 1.55;
 }
 
-.bz-entry__photos {
+.bz-entry__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.6rem;
+}
+
+// Enlaces del día: pastillas pequeñas; el directo con el rojo de YouTube.
+.bz-chiplink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 999px;
+  background: var(--c-surface);
   color: var(--c-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  app-icon {
+    font-size: 0.95rem;
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+
+  &--yt app-icon {
+    color: #e62117;
+  }
+}
+
+.bz-entry__ministers {
+  color: var(--c-muted);
+  font-size: 0.8rem;
+
+  strong {
+    color: var(--c-text);
+    font-weight: 700;
+  }
 }
 
 // Cierre: el próximo botez, aún sin fecha.
+.bz-tbd__text {
+  display: flex;
+  flex: 1 1 22rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
 .bz-tbd {
   display: flex;
   flex-wrap: wrap;

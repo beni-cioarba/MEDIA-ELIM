@@ -34,6 +34,8 @@ $water: rgb(79, 143, 216);
   mask-image: radial-gradient(circle at $at, #000 0%, rgba(0, 0, 0, 0.6) 30%, transparent 62%);
   -webkit-mask-image: radial-gradient(circle at $at, #000 0%, rgba(0, 0, 0, 0.6) 30%, transparent 62%);
   transform-origin: $at;
+  // Capa propia: la animación se compone en GPU sin repintar el degradado.
+  will-change: transform;
 
   @include motion-safe {
     animation: bz-ripple 9s ease-in-out infinite alternate;

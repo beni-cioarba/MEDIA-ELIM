@@ -107,6 +107,10 @@ const PEOPLE = [
   { id: 'aurel-burdet', name: 'Aurel Burdeț' },
   { id: 'ionut-mitoseriu', name: 'Ionuț Mitoșeriu' },
   { id: 'maria-copran', name: 'Maria Copran' },
+  { id: 'matias-zagrean', name: 'Matias Zăgrean' },
+  { id: 'david-dobre', name: 'David Dobre' },
+  { id: 'samuel-balean', name: 'Samuel Balean' },
+  { id: 'fineas-les', name: 'Fineas Les' },
 ] as const satisfies readonly Person[];
 
 /** Unión derivada del registro: referenciar a alguien inexistente no compila. */
@@ -343,7 +347,15 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
       {
         id: 'sound',
         i18nKey: 'sound',
-        members: [{ person: 'daniel-motrescu' }, { person: 'daniel-dulca' }],
+        members: [
+          { person: 'daniel-motrescu', roles: ['lead'] },
+          { person: 'daniel-dulca' },
+          { person: 'kevin-mitoseriu' },
+          { person: 'matias-zagrean' },
+          { person: 'david-dobre' },
+          { person: 'samuel-balean' },
+          { person: 'fineas-les' },
+        ],
       },
       {
         id: 'projection',

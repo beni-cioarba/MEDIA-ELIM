@@ -1,0 +1,584 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Resumen de la predicación (14/10/2026). Va al pie de la crónica, a todo
+// su ancho. Tres piezas según lo que se cuenta —contraste en tabla, pasos
+// numerados, lecciones con icono— y un cierre en navy. Cada parte lleva a
+// la derecha su minuto del directo. Cortes por **contenedor**: 560 px
+// (tabla de verdad, 2 lecciones por fila) y 760 px (3 pasos, 3 lecciones,
+// cierre a dos columnas).
+// =====================================================================
+
+:host {
+  display: block;
+  container-type: inline-size;
+}
+
+.sermon {
+  display: grid;
+  gap: var(--sp-5);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--c-hairline);
+}
+
+// ---------------------------------------------------------------------
+// Cabecera: antetítulo + título + entradilla | «Vezi predica»
+// ---------------------------------------------------------------------
+.sermon__head {
+  display: grid;
+  gap: var(--sp-3);
+
+  @container (min-width: 640px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: var(--sp-5);
+  }
+}
+
+.sermon__intro {
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.sermon__eyebrow {
+  @include eyebrow;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+
+.sermon__passage {
+  color: var(--c-muted);
+  letter-spacing: 0.04em;
+
+  &::before {
+    content: '·';
+    margin-right: 0.4rem;
+  }
+}
+
+.sermon__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1.1rem + 1.4cqi, 1.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--c-primary-deep);
+}
+
+.sermon__lead {
+  max-width: 64ch;
+  margin: 0;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+.sermon__watch {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.65rem;
+  min-height: 3rem;
+  padding: 0.35rem 1.1rem 0.35rem 0.4rem;
+  border-radius: var(--r-pill);
+  background: var(--c-primary-deep);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgb(212 175 55 / 0.35);
+  transition: box-shadow var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(2px);
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: inset 0 0 0 1px var(--c-gold);
+
+      .sermon__watch-icon {
+        background: var(--c-gold-soft);
+      }
+    }
+  }
+}
+
+.sermon__watch-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: 0.85rem;
+  transition: background var(--mo-fast) var(--ea-standard);
+}
+
+.sermon__watch-text {
+  display: grid;
+  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.sermon__watch-time {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-soft);
+}
+
+// ---------------------------------------------------------------------
+// Parte: título ─────────── ▶ minuto
+// ---------------------------------------------------------------------
+.part {
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.part__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+
+  // Filete que une el título con su minuto: la parte se lee como un
+  // capítulo con su marca de tiempo, igual que en el directo.
+  &::after {
+    content: '';
+    order: 1;
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--c-hairline);
+  }
+}
+
+.part__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  color: var(--c-primary-deep);
+}
+
+.part__time,
+.close__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  order: 2;
+  min-height: 2rem;
+  padding: 0 0.7rem;
+  border-radius: var(--r-pill);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(2px);
+
+  app-icon {
+    font-size: 0.65rem;
+  }
+}
+
+.part__time {
+  border: 1px solid var(--c-hairline-strong);
+  color: var(--c-primary);
+
+  app-icon {
+    color: var(--c-gold-deep);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--c-veil);
+    }
+  }
+}
+
+.part__lead {
+  max-width: 64ch;
+  margin: 0;
+  color: var(--c-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+// ---------------------------------------------------------------------
+// Contraste: tabla de tres columnas (rótulo | A | B). B es la que se
+// propone y lleva el velo dorado de arriba abajo; la última fila es el
+// veredicto. En estrecho cada fila se apila: rótulo y, debajo, A | B.
+// ---------------------------------------------------------------------
+.contrast {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+
+  th,
+  td {
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead td {
+    width: 22%;
+  }
+}
+
+.contrast__col {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+  vertical-align: bottom;
+
+  &--a {
+    color: var(--c-muted);
+  }
+
+  &--b {
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    background: var(--c-gold-tint);
+    color: var(--c-primary-deep);
+
+    app-icon {
+      margin-right: 0.35rem;
+      color: var(--c-gold-deep);
+      vertical-align: -0.1em;
+    }
+  }
+}
+
+.contrast__row > * {
+  border-top: 1px solid var(--c-hairline);
+}
+
+.contrast__label {
+  font-weight: 700;
+  color: var(--c-primary-deep);
+}
+
+.contrast__a {
+  color: var(--c-muted);
+}
+
+.contrast__b {
+  background: var(--c-gold-tint);
+  color: var(--c-text);
+}
+
+.contrast__row--verdict {
+  > * {
+    border-top-color: var(--c-hairline-strong);
+  }
+
+  .contrast__a,
+  .contrast__b {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .contrast__a {
+    color: var(--c-muted);
+  }
+
+  .contrast__b {
+    border-radius: 0 0 var(--r-md) var(--r-md);
+    color: var(--c-primary-deep);
+  }
+}
+
+@container (max-width: 559.98px) {
+  .contrast,
+  .contrast tbody {
+    display: block;
+  }
+
+  .contrast thead {
+    @include visually-hidden;
+  }
+
+  .contrast__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border-top: 1px solid var(--c-hairline);
+
+    > * {
+      border-top: 0;
+    }
+  }
+
+  .contrast th,
+  .contrast td {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .contrast__label {
+    grid-column: 1 / -1;
+    padding-bottom: 0.1rem !important;
+  }
+
+  // Sin cabecera visible, cada celda dice de qué escuela es.
+  .contrast__a,
+  .contrast__b {
+    &::before {
+      content: attr(data-col);
+      display: block;
+      margin-bottom: 0.15rem;
+      font-family: var(--font-sans);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--c-muted);
+    }
+  }
+
+  .contrast__b {
+    border-radius: var(--r-sm);
+
+    &::before {
+      color: var(--c-gold-deep);
+    }
+  }
+
+  .contrast__row--verdict .contrast__b {
+    border-radius: var(--r-sm);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Pasos numerados (las tres oglinzi)
+// ---------------------------------------------------------------------
+.steps {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @container (min-width: 760px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // En el teléfono, tira deslizable a sangre de la tarjeta (como el
+  // mosaico): asoma la siguiente ficha y ahorra ~400 px de alto.
+  @container (max-width: 559.98px) {
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    margin-inline: calc(-1 * var(--sp-4));
+    padding: 0 var(--sp-4) var(--sp-1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--sp-4);
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-focus);
+      outline-offset: -2px;
+    }
+
+    .step {
+      scroll-snap-align: start;
+    }
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-accent);
+}
+
+.step__num {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.step__title {
+  margin-top: 0.25rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-primary-deep);
+}
+
+.step__text {
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+// Al pie de la ficha, alineado entre las tres: cómo se pasa esa oglindă.
+.step__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-primary);
+
+  app-icon {
+    flex: none;
+    color: var(--c-gold-deep);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Lecciones (qué nos llevamos): rejilla 1 → 2 → 3
+// ---------------------------------------------------------------------
+.lessons {
+  display: grid;
+  gap: var(--sp-4) var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @container (min-width: 560px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container (min-width: 760px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.lesson {
+  padding-left: var(--sp-3);
+  border-left: 2px solid var(--c-gold);
+}
+
+.lesson__body {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.lesson__title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--c-primary-deep);
+}
+
+.lesson__text {
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// Cierre: el llamamiento y su versículo, en navy
+// ---------------------------------------------------------------------
+.close {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: linear-gradient(160deg, var(--c-primary-deep), var(--c-primary-darkest));
+  color: var(--c-on-band);
+  box-shadow: inset 0 0 0 1px rgb(212 175 55 / 0.3);
+
+  @container (min-width: 760px) {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: center;
+    column-gap: var(--sp-6);
+  }
+
+  @container (max-width: 559.98px) {
+    padding: var(--sp-4);
+  }
+}
+
+.close__body {
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-2);
+}
+
+.close__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.close__text {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--c-on-band-muted);
+}
+
+.close__time {
+  margin-top: var(--sp-1);
+  border: 1px solid rgb(212 175 55 / 0.55);
+  color: var(--c-gold-soft);
+
+  @media (hover: hover) {
+    &:hover {
+      background: rgb(212 175 55 / 0.14);
+    }
+  }
+}
+
+.close__verse {
+  margin: 0;
+  padding-left: var(--sp-4);
+  border-left: 3px solid var(--c-gold);
+
+  blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: #fff;
+  }
+
+  figcaption {
+    margin-top: 0.4rem;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--c-gold-soft);
+  }
+}
+
+@include motion-reduce {
+  .sermon__watch,
+  .sermon__watch-icon,
+  .part__time,
+  .close__time {
+    transition: none;
+  }
+}

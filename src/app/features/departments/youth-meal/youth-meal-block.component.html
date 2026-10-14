@@ -1,6 +1,4 @@
 <section class="meal" aria-labelledby="meal-title">
-  <span class="meal__badge" aria-hidden="true"><app-icon name="heart" /></span>
-
   <div class="meal__text">
     <p class="meal__kicker">{{ 'departments.youth.meal.kicker' | translate }}</p>
     <h3 class="meal__title" id="meal-title">{{ 'departments.youth.meal.title' | translate }}</h3>
@@ -9,7 +7,6 @@
     <ul class="meal__chips" role="list">
       @for (chip of chips; track chip) {
         <li class="meal__chip">
-          <app-icon name="check" />
           {{ 'departments.youth.meal.chips.' + chip | translate }}
         </li>
       }

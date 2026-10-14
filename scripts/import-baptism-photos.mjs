@@ -22,9 +22,16 @@
  * amplía: si el recorte mide menos que un tamaño, ese tamaño no se genera.
  * Privacidad: no se copia ningún metadato (EXIF con GPS, móvil, fecha).
  *
+ * Retratos «de estudio» (fondo común y encuadre igualado): los compone
+ * `scripts/baptism-studio.py` y se importan con `--studio`, ya en 4:5, a
+ * `src/assets/baptisms-studio/` con su propio manifiesto. Los originales de
+ * arriba **se conservan**: `PORTRAIT_STYLE` en `baptisms.service.ts` elige
+ * cuáles se ven (y cae al original si falta el de estudio).
+ *
  * Uso:
  *   node scripts/import-baptism-photos.mjs "<carpeta del botez>" 2023-06-11
  *   node scripts/import-baptism-photos.mjs --all "<carpeta con una subcarpeta por fecha>"
+ *   node scripts/import-baptism-photos.mjs --studio "<salida de baptism-studio.py>"
  *   node scripts/import-baptism-photos.mjs --manifest
  *
  * Reimportar un botez vacía antes su carpeta: no quedan variantes huérfanas.
@@ -39,6 +46,8 @@ import sharp from 'sharp';
 const DESTINO = 'src/assets/baptisms';
 const MANIFIESTO = 'src/app/core/baptism-photos.generated.ts';
 const RECORTES = 'scripts/assets-src/baptism-crops.json';
+const DESTINO_ESTUDIO = 'src/assets/baptisms-studio';
+const MANIFIESTO_ESTUDIO = 'src/app/core/baptism-studio-photos.generated.ts';
 
 /** Anchos generados (la proporción es siempre 4:5). */
 const ANCHOS = [320, 640, 1080];
@@ -48,6 +57,38 @@ const EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp', '.heic', '.tif', 
 
 async function leerRecortes() {
   return existsSync(RECORTES) ? JSON.parse(await readFile(RECORTES, 'utf8')) : {};
+}
+
+/** Retratos de estudio: ya vienen en 4:5 y encuadrados; sólo se reducen. */
+async function importarEstudio(raiz) {
+  // Sólo se reemplazan las fechas que trae `raiz`: las demás se quedan como
+  // están (sus PNG de estudio no tienen por qué seguir en el disco).
+  for (const fecha of (await readdir(raiz)).sort()) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) continue;
+    const carpeta = join(DESTINO_ESTUDIO, fecha);
+    await rm(carpeta, { recursive: true, force: true });
+    await mkdir(carpeta, { recursive: true });
+    const ficheros = (await readdir(join(raiz, fecha))).filter((f) => EXTENSIONES.has(extname(f).toLowerCase()));
+    console.log(`\n${fecha} — ${ficheros.length} retratos de estudio`);
+    for (const fichero of ficheros.sort()) {
+      const id = parse(fichero).name;
+      const base = sharp(join(raiz, fecha, fichero));
+      const { width = 0 } = await base.metadata();
+      const anchos = [...new Set([...ANCHOS.filter((a) => a < width), Math.min(width, ANCHOS.at(-1))])];
+      const hechos = [];
+      for (const a of anchos) {
+        const salida = await base
+          .clone()
+          .resize(a, Math.round(a / PROPORCION), { fit: 'cover', kernel: 'lanczos3', withoutEnlargement: true })
+          .sharpen({ sigma: 0.5 })
+          .webp(WEBP)
+          .toBuffer();
+        await writeFile(join(carpeta, `${id}-${a}.webp`), salida);
+        hechos.push(`${a} (${Math.round(salida.length / 1024)} kB)`);
+      }
+      console.log(`  ${id}  ·  ${hechos.join(' · ')}`);
+    }
+  }
 }
 
 async function importarBotez(origen, fecha, recortes) {
@@ -100,14 +141,14 @@ async function importarBotez(origen, fecha, recortes) {
   }
 }
 
-/** Lee todos los botezuri en disco y escribe el manifiesto TypeScript. */
-async function generarManifiesto() {
+/** Lee los retratos en disco (`destino`) y escribe su manifiesto TypeScript. */
+async function generarManifiesto(destino, archivo, nombre, que) {
   const entradas = [];
-  if (existsSync(DESTINO)) {
-    for (const fecha of (await readdir(DESTINO)).sort()) {
+  if (existsSync(destino)) {
+    for (const fecha of (await readdir(destino)).sort()) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) continue;
       const porId = new Map();
-      for (const f of await readdir(join(DESTINO, fecha))) {
+      for (const f of await readdir(join(destino, fecha))) {
         const m = f.match(/^(.+)-(\d+)\.webp$/);
         if (!m) continue;
         porId.set(m[1], [...(porId.get(m[1]) ?? []), Number(m[2])]);
@@ -119,25 +160,33 @@ async function generarManifiesto() {
   }
 
   const ts = `/**
- * Manifiesto de retratos de los candidatos al bautismo — GENERADO.
+ * Manifiesto de ${que} de los candidatos al bautismo — GENERADO.
  *
  * No lo edites a mano: lo escribe \`scripts/import-baptism-photos.mjs\` leyendo
- * \`src/assets/baptisms/\`. Clave \`<fecha del botez>/<id del candidato>\`;
+ * \`${destino}/\`. Clave \`<fecha del botez>/<id del candidato>\`;
  * valor: los anchos generados (4:5), de menor a mayor, para el \`srcset\`.
  */
 
-export const BAPTISM_PHOTOS: Readonly<Record<string, readonly number[]>> = {
+export const ${nombre}: Readonly<Record<string, readonly number[]>> = {
 ${entradas.join('\n')}
 };
 `;
-  await writeFile(MANIFIESTO, ts);
-  console.log(`\n✓ Manifiesto: ${entradas.length} retratos → ${MANIFIESTO}`);
+  await writeFile(archivo, ts);
+  console.log(`\n✓ Manifiesto: ${entradas.length} ${que} → ${archivo}`);
+}
+
+async function manifiestos() {
+  await generarManifiesto(DESTINO, MANIFIESTO, 'BAPTISM_PHOTOS', 'retratos');
+  await generarManifiesto(DESTINO_ESTUDIO, MANIFIESTO_ESTUDIO, 'BAPTISM_STUDIO_PHOTOS', 'retratos de estudio');
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const recortes = await leerRecortes();
-  if (args[0] === '--all') {
+  if (args[0] === '--studio') {
+    if (!args[1]) throw new Error('Falta la carpeta: --studio "<carpeta>"');
+    await importarEstudio(args[1]);
+  } else if (args[0] === '--all') {
     const raiz = args[1];
     if (!raiz) throw new Error('Falta la carpeta: --all "<carpeta>"');
     for (const fecha of (await readdir(raiz)).sort()) {
@@ -148,12 +197,13 @@ async function main() {
     if (!origen || !/^\d{4}-\d{2}-\d{2}$/.test(fecha ?? '')) {
       console.error('Uso: node scripts/import-baptism-photos.mjs "<carpeta>" AAAA-MM-DD');
       console.error('     node scripts/import-baptism-photos.mjs --all "<carpeta con subcarpetas por fecha>"');
+      console.error('     node scripts/import-baptism-photos.mjs --studio "<salida de baptism-studio.py>"');
       console.error('     node scripts/import-baptism-photos.mjs --manifest');
       process.exit(1);
     }
     await importarBotez(origen, fecha, recortes);
   }
-  await generarManifiesto();
+  await manifiestos();
 }
 
 main().catch((error) => {

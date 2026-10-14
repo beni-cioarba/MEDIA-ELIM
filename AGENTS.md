@@ -73,6 +73,7 @@ salvo que el usuario lo pida expresamente en esa tarea.
 | `docs/ai/16-state.md`        | Signals, servicios con estado y SignalStore                |
 | `docs/ai/20-content-i18n.md` | Eventos, redes, programa semanal, traducciones             |
 | `docs/ai/30-presentation.md` | Fullscreen, carrusel, bloques a proyectar, atajos, QR, escala `--pj-u` |
+| `docs/ai/34-baptisms.md`     | **Botezuri**: registro de bautismos, candidatos y perfiles, retratos (original / estudio), YouTube |
 | `docs/ai/35-announcements.md`| **Anunțuri**: modelo, vigencia, límites de proyección, protocolo de redacción |
 | `docs/ai/37-prayer-causes.md`| **Cauzele Bisericii Elim**: lista vigente de causas (por nombre / por intención), web + una diapositiva |
 | `docs/ai/38-talent-contest.md`| **Talantul în Negoț**: concurso bíblico para participantes (fases, categorías, examen); receta de nueva edición |

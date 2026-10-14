@@ -10,6 +10,7 @@ import { formatIsoRange, parseIsoDate } from '../../../core/util/iso-date';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../../shared/viewer/viewable.directive';
+import { SermonNotesComponent } from './sermon-notes.component';
 
 const ROOT = 'assets/drive-media/';
 
@@ -69,13 +70,16 @@ const toView = (photo: StoryPhoto): PhotoView => ({
  * cada una. Cada foto abre la galería del visor con todas (‹ ›). En el
  * teléfono el mosaico pasa a una tira deslizable.
  *
+ * Si tiene `sermon`, el resumen de la predicación va al pie, a todo el
+ * ancho (`app-sermon-notes`).
+ *
  * Una crónica **sin fotos** (la tabără, hoy) queda compacta y lo dice: no
  * se rellena con fotos de otra cosa.
  */
 @Component({
   selector: 'app-stories-block',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslatePipe, IconComponent, ViewableDirective],
+  imports: [TranslatePipe, IconComponent, ViewableDirective, SermonNotesComponent],
   templateUrl: './stories-block.component.html',
   styleUrl: './stories-block.component.scss',
 })

@@ -23,38 +23,6 @@
 // ---------------------------------------------------------------------
 // Rótulo del departamento sobre el titular (en el inicio no hay: allí la
 // marca es la iglesia entera).
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.6rem;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: var(--ls-caps);
-  text-transform: uppercase;
-  color: var(--c-gold-soft);
-  text-shadow: 0 1px 8px rgb(9 20 36 / 0.6);
-  animation: hero-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-
-  @include motion-reduce {
-    animation: none;
-  }
-}
-
-.hero-eyebrow__badge {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid rgb(212 175 55 / 0.5);
-  border-radius: var(--r-md);
-  background: rgb(9 20 36 / 0.45);
-  color: var(--c-gold);
-  font-size: 1rem;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
 // Sin fotos (Misiune externă): la misma portada en navy con retícula, halo
 // dorado y el icono del departamento en grande como marca de agua.
 .dept__carousel--plain ::ng-deep .hero {

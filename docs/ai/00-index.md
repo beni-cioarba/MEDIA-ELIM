@@ -34,6 +34,7 @@ src/app/
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
     talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
     departments.config.ts   ⭐ Departamente: estructura de cada uno + URL de ADM-TINERET (sólo en el pie)
+    meeting-programs.config.ts ⭐ Tema de cada noche de las reuniones fijas (calendario de tineret, copiado a mano)
     social-link.model.ts    Modelo de red social
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
@@ -78,6 +79,7 @@ src/app/
     family-prayer/          ⭐ Rugăciune pentru familii: página, resumen, ficha, foto entera, acceso desde anuncios
     prayer-causes/          ⭐ Cauzele Bisericii Elim: página + tablero (web y proyección)
     talent-contest/         ⭐ Talantul în Negoț: página para participantes + selector de categoría
+    baptisms/               ⭐ Botezuri: registro de bautismos, carrusel de candidatos y perfil (`34-baptisms.md`)
     departments/            ⭐ Departamente: portada `/departamente` + página por departamento + invitación a la masa de tineret
     presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
     styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
@@ -110,6 +112,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | --------------------------------------------------- | ------------------------------------------------------- |
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
+| «Nuevo botez» · «candidatos al bautismo» · «fotos / directo de un botez» | `docs/ai/34-baptisms.md` → `core/baptisms.config.ts` + `scripts/import-baptism-photos.mjs` |
 | «Cambia la lista de enfermos / causas» | `docs/ai/37-prayer-causes.md` → `core/prayer-causes.config.ts` (+ `updatedOn`) |
 | «PDF de las familias» · «que se pueda descargar la semana» | Se genera solo al publicar; en local `npm run pdf:familii -- --url http://localhost:4310/`. Botón «Descarcă PDF» en cada semana (sólo descarga; compartir = enlace con «Distribuie») — `docs/ai/36-family-prayer.md` → «PDF de la semana» |
 | «Familias de esta semana» · «nuevas fotos de familias» | `docs/ai/36-family-prayer.md` → `scripts/import-family-photos.mjs` + `core/family-prayer.config.ts` |
@@ -118,6 +121,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
 | «Nuevo departamento» · «más contenido en Tineret / Cor…» · «la app de la masa» | `docs/ai/39-departments.md` → `core/departments.config.ts` + `departments.*` |
+| «Temas nuevos del calendario de tineret» | `docs/ai/39-departments.md` › «Programa de temas» → `core/meeting-programs.config.ts` |
 | «Biografía / foto de alguien de la conducere»       | `core/leadership-profiles.config.ts` / `photo` en `PEOPLE` — `docs/ai/20-content-i18n.md` |
 | «Cambia un texto»                                   | `assets/i18n/es.json` **y** `ro.json`                   |
 | «Añade fotos de un evento a la galería»             | `scripts/optimize-images.js` + `mediaEvents`            |

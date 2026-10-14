@@ -45,7 +45,7 @@
   align-items: center;
 
   @include from('sm') {
-    grid-template-columns: clamp(12rem, 22vw, 17rem) minmax(0, 1fr);
+    grid-template-columns: clamp(11rem, 18vw, 14.5rem) minmax(0, 1fr);
     grid-template-areas:
       'photo id'
       'photo facts'
@@ -103,11 +103,28 @@
   overflow-wrap: anywhere;
 }
 
-.cp-hero__summary {
-  margin: 0.6rem 0 0;
-  max-width: 60ch;
-  color: var(--c-on-band-muted);
-  line-height: 1.55;
+.cp-hero__quote {
+  position: relative;
+  margin: 0.75rem 0 0;
+  max-width: 58ch;
+  padding-left: 1.6rem;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.5;
+
+  // Comilla de oro: se lee como cita, no como entradilla.
+  &::before {
+    content: '\201C';
+    position: absolute;
+    top: -0.35em;
+    left: 0;
+    color: var(--c-gold);
+    font-size: 2.2em;
+    font-style: normal;
+    line-height: 1;
+  }
 }
 
 .cp-facts {
@@ -227,6 +244,34 @@
   margin-bottom: 0.9rem;
 }
 
+.cp-listen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  color: var(--c-primary-deep);
+  font: 700 0.8125rem/1 var(--font-display);
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+
+  @include focus-ring(2px);
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--c-primary);
+    }
+  }
+}
+
+.cp-listen__at {
+  color: var(--c-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 .cp-panel__count {
   color: var(--c-muted);
   font-size: 0.8rem;
@@ -328,6 +373,25 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+}
+
+// Foto de grupo: primera, a doble ancho (8:5 = dos retratos 4:5).
+.cp-peers__group {
+  grid-column: span 2;
+}
+
+.cp-peer--group {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: zoom-in;
+
+  .cp-peer__photo {
+    aspect-ratio: 8 / 5;
   }
 }
 

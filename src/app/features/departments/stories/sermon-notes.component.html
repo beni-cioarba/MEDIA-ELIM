@@ -1,0 +1,117 @@
+@let s = sermon();
+@let key = k();
+@let headId = 'sermon-' + storyId();
+
+<section class="sermon" [attr.aria-labelledby]="headId">
+  <header class="sermon__head">
+    <div class="sermon__intro">
+      <p class="sermon__eyebrow">
+        <app-icon name="book" />
+        {{ key + '.eyebrow' | translate }}
+        <span class="sermon__passage">{{ key + '.passage' | translate }}</span>
+      </p>
+      <h4 class="sermon__title" [id]="headId">{{ key + '.title' | translate }}</h4>
+      <p class="sermon__lead">{{ key + '.lead' | translate }}</p>
+    </div>
+    @if (at(s.at); as url) {
+      <a class="sermon__watch" [href]="url" target="_blank" rel="noopener noreferrer">
+        <span class="sermon__watch-icon" aria-hidden="true"><app-icon name="play" /></span>
+        <span class="sermon__watch-text">
+          <span>{{ 'departments.sermon_watch' | translate }}</span>
+          <span class="sermon__watch-time">{{ 'departments.sermon_from' | translate: { time: clock(s.at) } }}</span>
+        </span>
+      </a>
+    }
+  </header>
+
+  @for (part of s.parts; track part.key) {
+    @let pk = key + '.parts.' + part.key;
+    <section class="part" [attr.aria-labelledby]="headId + '-' + part.key">
+      <header class="part__head">
+        <h5 class="part__title" [id]="headId + '-' + part.key">{{ pk + '.title' | translate }}</h5>
+        @if (at(part.at); as url) {
+          <a
+            class="part__time"
+            [href]="url"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="'departments.sermon_at' | translate: { time: clock(part.at!) }"
+          >
+            <app-icon name="play" />{{ clock(part.at!) }}
+          </a>
+        }
+      </header>
+      @if (part.lead) {
+        <p class="part__lead">{{ pk + '.lead' | translate }}</p>
+      }
+
+      @switch (part.kind) {
+        @case ('contrast') {
+          <table class="contrast">
+            <thead>
+              <tr>
+                <td></td>
+                <th scope="col" class="contrast__col contrast__col--a">{{ pk + '.cols.a' | translate }}</th>
+                <th scope="col" class="contrast__col contrast__col--b">
+                  <app-icon name="check" />{{ pk + '.cols.b' | translate }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of part.rows; track row; let last = $last) {
+                <tr class="contrast__row" [class.contrast__row--verdict]="last">
+                  <th scope="row" class="contrast__label">{{ pk + '.rows.' + row + '.label' | translate }}</th>
+                  <td class="contrast__a" [attr.data-col]="pk + '.cols.a' | translate">{{ pk + '.rows.' + row + '.a' | translate }}</td>
+                  <td class="contrast__b" [attr.data-col]="pk + '.cols.b' | translate">{{ pk + '.rows.' + row + '.b' | translate }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+        @case ('steps') {
+          <!-- tabindex: en el teléfono es una tira deslizable y debe poder
+               desplazarse con el teclado. -->
+          <ol class="steps" role="list" tabindex="0" data-no-swipe [attr.aria-label]="pk + '.title' | translate">
+            @for (item of part.items; track item; let n = $index) {
+              <li class="step">
+                <span class="step__num" aria-hidden="true">{{ n + 1 }}</span>
+                <span class="step__title">{{ pk + '.items.' + item + '.title' | translate }}</span>
+                <span class="step__text">{{ pk + '.items.' + item + '.text' | translate }}</span>
+                <span class="step__note"><app-icon name="arrow-right" />{{ pk + '.items.' + item + '.note' | translate }}</span>
+              </li>
+            }
+          </ol>
+        }
+        @case ('lessons') {
+          <ul class="lessons" role="list">
+            @for (item of part.items; track item) {
+              <li class="lesson">
+                <span class="lesson__body">
+                  <span class="lesson__title">{{ pk + '.items.' + item + '.title' | translate }}</span>
+                  <span class="lesson__text">{{ pk + '.items.' + item + '.text' | translate }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      }
+    </section>
+  }
+
+  <aside class="close" [attr.aria-labelledby]="headId + '-close'">
+    <div class="close__body">
+      <h5 class="close__title" [id]="headId + '-close'">{{ key + '.close.title' | translate }}</h5>
+      <p class="close__text">{{ key + '.close.text' | translate }}</p>
+      @if (at(s.closeAt); as url) {
+        <a class="close__time" [href]="url" target="_blank" rel="noopener noreferrer"
+           [attr.aria-label]="'departments.sermon_at' | translate: { time: clock(s.closeAt) }">
+          <app-icon name="play" />{{ clock(s.closeAt) }}
+        </a>
+      }
+    </div>
+    <figure class="close__verse">
+      <blockquote>{{ key + '.close.verse' | translate }}</blockquote>
+      <figcaption>{{ key + '.close.ref' | translate }}</figcaption>
+    </figure>
+  </aside>
+</section>

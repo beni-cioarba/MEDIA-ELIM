@@ -1,5 +1,6 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { BAPTISM_PHOTOS } from '../baptism-photos.generated';
+import { BAPTISM_STUDIO_PHOTOS } from '../baptism-studio-photos.generated';
 import { BAPTISMS, Baptism, BaptismCandidate } from '../baptisms.config';
 import { CHURCH_CONFIG } from '../church.config';
 import { APP_PATHS } from '../navigation/app-paths';
@@ -20,6 +21,8 @@ export interface BaptismView extends Baptism {
   readonly link: string;
   /** Carpeta de fotos del día, o `null` si no la hay. */
   readonly photosUrl: string | null;
+  /** Directo del servicio en YouTube, o `null`. */
+  readonly videoUrl: string | null;
 }
 
 /** Un candidato junto con su botez (para el carrusel, el perfil, los vecinos). */
@@ -39,6 +42,17 @@ export interface CandidatePhoto {
   readonly large: string;
   readonly srcset: string;
 }
+
+/**
+ * Qué retratos se ven:
+ *  · `'studio'`   → fondo de estudio común y encuadre igualado
+ *    (`assets/baptisms-studio/`, de `scripts/baptism-studio.py`).
+ *  · `'original'` → la foto tal cual llegó, sólo recortada a 4:5
+ *    (`assets/baptisms/`).
+ * Los dos juegos se conservan: volver atrás es cambiar esta línea. Si a un
+ * candidato le falta el de estudio, se usa su original.
+ */
+export const PORTRAIT_STYLE: 'studio' | 'original' = 'studio';
 
 /** Base de la ruta del módulo, sin barra inicial. */
 const BASE = APP_PATHS.baptisms;
@@ -74,9 +88,16 @@ export class BaptismsService {
           year: Number(b.date.slice(0, 4)),
           link: `/${BASE}/${b.date}`,
           photosUrl: b.driveFolderId ? driveFolderUrl(b.driveFolderId, this.fallbackUrl) : null,
+          videoUrl: b.youtubeId ? youtubeUrl(b.youtubeId) : null,
         } satisfies BaptismView;
       });
   });
+
+  /**
+   * Orden de lectura del registro: **el más reciente primero** (el próximo,
+   * si lo hay, encabeza). El ordinal sigue siendo el cronológico.
+   */
+  readonly newestFirst = computed(() => [...this.all()].reverse());
 
   /** Los que ya se celebraron (o se celebran hoy). */
   readonly held = computed(() => this.all().filter((b) => b.status !== 'upcoming'));
@@ -97,17 +118,7 @@ export class BaptismsService {
    * al más antiguo y, dentro de cada uno, en el orden de la presentación.
    */
   readonly candidates = computed<readonly CandidateView[]>(() =>
-    [...this.all()]
-      .reverse()
-      .flatMap((b) => b.candidates.map((c) => this.candidateView(b, c))),
-  );
-
-  /**
-   * Los mismos en orden cronológico (y, dentro de cada botez, el de la
-   * presentación): es el orden de anterior / siguiente.
-   */
-  private readonly chronological = computed(() =>
-    this.all().flatMap((b) => this.candidates().filter((c) => c.baptism.date === b.date)),
+    this.newestFirst().flatMap((b) => b.candidates.map((c) => this.candidateView(b, c))),
   );
 
   /** Cifras de la cabecera. */
@@ -118,6 +129,7 @@ export class BaptismsService {
       candidates: held.reduce((n, b) => n + b.candidates.length, 0),
       since: held[0]?.year ?? null,
       years: new Set(held.map((b) => b.year)).size,
+      streams: held.filter((b) => b.youtubeId).length,
     };
   });
 
@@ -134,9 +146,9 @@ export class BaptismsService {
     return this.candidates().find((c) => c.baptism.date === date && c.id === id) ?? null;
   }
 
-  /** Anterior y siguiente en todo el registro (cronológico, sin bucle). */
+  /** Anterior y siguiente en todo el registro, en el orden en que se lee (sin bucle). */
   neighbours(current: CandidateView): { prev: CandidateView | null; next: CandidateView | null } {
-    const list = this.chronological();
+    const list = this.candidates();
     const i = list.findIndex((c) => c.key === current.key);
     return { prev: list[i - 1] ?? null, next: list[i + 1] ?? null };
   }
@@ -170,11 +182,17 @@ export class BaptismsService {
   }
 }
 
+export function youtubeUrl(id: string): string {
+  return `https://www.youtube.com/watch?v=${id}`;
+}
+
 /** Retrato de un candidato a partir del manifiesto generado. */
 function photoOf(key: string): CandidatePhoto | null {
-  const widths = BAPTISM_PHOTOS[key];
+  const studio = PORTRAIT_STYLE === 'studio' ? BAPTISM_STUDIO_PHOTOS[key] : undefined;
+  const widths = studio?.length ? studio : BAPTISM_PHOTOS[key];
   if (!widths?.length) return null;
-  const url = (w: number) => `assets/baptisms/${key}-${w}.webp`;
+  const folder = studio?.length ? 'baptisms-studio' : 'baptisms';
+  const url = (w: number) => `assets/${folder}/${key}-${w}.webp`;
   return {
     small: url(widths[0]),
     medium: url(widths[Math.min(1, widths.length - 1)]),

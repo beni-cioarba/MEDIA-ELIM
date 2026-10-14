@@ -6,7 +6,6 @@ import {
   computed,
   inject,
   signal,
-  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -14,6 +13,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { map } from 'rxjs';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { BaptismView, BaptismsService, CandidateView } from '../../core/services/baptisms.service';
+import { CardCarouselComponent } from '../../shared/card-carousel/card-carousel.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
@@ -26,16 +26,19 @@ import { ViewableDirective } from '../../shared/viewer/viewable.directive';
  *  1. **Cabecera**: qué es el botez, las cifras del registro y la tarjeta
  *     del próximo botez (o, si no hay ninguno anunciado, del último).
  *  2. **Candidații**: carrusel de retratos, del más reciente al más antiguo,
- *     con filtro por año. Cada tarjeta abre el perfil.
- *  3. **Registrul**: todos los botezuri en orden cronológico, en una línea de
- *     tiempo; cada uno con su rejilla compacta de candidatos.
+ *     con filtro por año, sobre el carrusel compartido (`app-card-carousel`:
+ *     flechas al apuntar, degradados, arrastre, teclado, barra de posición).
+ *     Cada tarjeta abre el perfil.
+ *  3. **Registrul**: todos los botezuri, del más reciente al más antiguo, en
+ *     una línea de tiempo; cada uno con su rejilla compacta de candidatos, su
+ *     directo de YouTube, sus fotos y quién predicó.
  *
  * Línea visual propia (no la guía de `/stil`): ver `docs/ai/34-baptisms.md`.
  */
 @Component({
   selector: 'app-baptisms',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslatePipe, RouterLink, IconComponent, ViewableDirective],
+  imports: [TranslatePipe, RouterLink, IconComponent, ViewableDirective, CardCarouselComponent],
   templateUrl: './baptisms.component.html',
   styleUrl: './baptisms.component.scss',
 })
@@ -81,13 +84,8 @@ export class BaptismsComponent {
     return this.baptisms.candidates().filter((c) => c.baptism.year === year).length;
   }
 
-  private readonly track = viewChild<ElementRef<HTMLElement>>('track');
-  protected readonly atStart = signal(true);
-  protected readonly atEnd = signal(false);
-
   constructor() {
     afterNextRender(() => {
-      this.onTrackScroll();
       const date = this.focusDate();
       if (date) {
         this.host.nativeElement
@@ -97,24 +95,16 @@ export class BaptismsComponent {
     });
   }
 
+  /** Cambia el filtro y vuelve la pista al principio (si no, se quedaría a media lista). */
   protected pickYear(year: number | null): void {
     this.year.set(year);
-    const el = this.track()?.nativeElement;
-    if (el) el.scrollTo({ left: 0, behavior: 'auto' });
-    queueMicrotask(() => this.onTrackScroll());
-  }
-
-  protected scrollTrack(direction: 1 | -1): void {
-    const el = this.track()?.nativeElement;
-    if (!el) return;
-    el.scrollBy({ left: direction * el.clientWidth * 0.85, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
-  }
-
-  protected onTrackScroll(): void {
-    const el = this.track()?.nativeElement;
-    if (!el) return;
-    this.atStart.set(el.scrollLeft <= 4);
-    this.atEnd.set(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    // Después de pintar la lista nueva (antes, el navegador conservaría la
+    // posición anclada a la tarjeta que se veía y la pista quedaría a medias).
+    requestAnimationFrame(() =>
+      this.host.nativeElement
+        .querySelector<HTMLElement>('.bz-carousel .ui-carousel__viewport')
+        ?.scrollTo({ left: 0, behavior: 'instant' as ScrollBehavior }),
+    );
   }
 
   // ── Registro ─────────────────────────────────────────────────────────

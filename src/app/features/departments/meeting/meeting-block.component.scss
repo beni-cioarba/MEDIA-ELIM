@@ -201,6 +201,213 @@
   }
 }
 
+// ---------------------------------------------------------------------
+// Programa de temas (14/10/2026): la próxima noche, destacada en el cuerpo;
+// las siguientes, en una agenda a todo el ancho. Columnas alineadas
+// (fecha | tema | quién) para que crezca con el calendario sin perder orden.
+// ---------------------------------------------------------------------
+.topic {
+  display: grid;
+  gap: 0.2rem;
+  max-width: 46rem;
+  padding: var(--sp-3) var(--sp-4);
+  border-left: 3px solid var(--c-gold);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  background: var(--c-gold-tint);
+}
+
+.topic__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  @include eyebrow;
+}
+
+.topic__series {
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+.topic__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-wrap: balance;
+  color: var(--c-primary-deep);
+}
+
+.topic__by {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+.agenda {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+  border-top: 1px solid var(--c-hairline);
+  min-width: 0;
+
+  @include until('sm') {
+    padding: var(--sp-4);
+  }
+}
+
+.agenda__title {
+  margin: 0;
+  @include eyebrow;
+  color: var(--c-muted);
+}
+
+.agenda__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// fecha | tema | quién. En el teléfono, «quién» baja bajo el tema.
+.row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 13rem);
+  gap: var(--sp-1) var(--sp-4);
+  align-items: center;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--c-hairline);
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  @include until('md') {
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.row__date {
+  display: grid;
+  justify-items: center;
+  padding: 0.3rem 0;
+  border-radius: var(--r-md);
+  background: var(--c-primary-deep);
+  color: #fff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+
+  @include until('md') {
+    grid-row: span 2;
+  }
+}
+
+.row__wd,
+.row__month {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.row__wd {
+  color: var(--c-gold);
+}
+
+.row__day {
+  margin: 0.15rem 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.row__text {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.row__series {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--c-gold-deep);
+}
+
+.row__title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--c-primary-deep);
+}
+
+.row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+
+  @include from('md') {
+    justify-content: flex-end;
+    text-align: right;
+  }
+}
+
+.row__by,
+.row__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.row__time {
+  font-weight: 700;
+  color: var(--c-gold-deep);
+}
+
+.more {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-primary-deep);
+  font: 700 0.875rem/1 var(--font-display);
+  cursor: pointer;
+
+  @include focus-ring(2px);
+
+  app-icon {
+    transition: transform var(--mo-fast) var(--ea-standard);
+  }
+
+  &[aria-expanded='true'] app-icon {
+    transform: rotate(180deg);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--c-primary);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    app-icon {
+      transition: none;
+    }
+  }
+}
+
 // Pieza proyectada (la masa de tineret): fila propia a todo el ancho.
 .companion {
   grid-column: 1 / -1;

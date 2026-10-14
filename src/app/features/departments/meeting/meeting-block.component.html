@@ -3,7 +3,7 @@
   <section class="meeting" [attr.aria-labelledby]="'meeting-' + v.key">
     <!-- Billete: la próxima fecha. -->
     @if (v.dates[0]; as next) {
-      <app-date-ticket [date]="next" [time]="v.time" />
+      <app-date-ticket [date]="next" [time]="nextTime()" />
     }
 
     <div class="body">
@@ -14,6 +14,23 @@
       <h2 class="title" [id]="'meeting-' + v.key">{{ b + '.title' | translate }}</h2>
       <p class="when">{{ b + '.when' | translate: { time: v.time } }}</p>
       <p class="lead">{{ b + '.lead' | translate }}</p>
+
+      <!-- Tema de la próxima noche (la del billete), si ya está asignado. -->
+      @if (spotlight(); as s) {
+        <div class="topic">
+          <p class="topic__eyebrow">
+            <app-icon name="mic-vocal" />
+            {{ 'departments.program.topic' | translate }}
+            @if (s.series) {
+              <span class="topic__series">· {{ s.series }}</span>
+            }
+          </p>
+          <p class="topic__title">{{ s.title }}</p>
+          @if (s.by) {
+            <p class="topic__by">{{ 'departments.program.by' | translate: { name: s.by } }}</p>
+          }
+        </div>
+      }
 
       <ul class="parts" role="list">
         @for (part of meeting().parts; track part.key) {
@@ -28,7 +45,7 @@
       </ul>
 
       <div class="foot">
-        @if (v.dates.length > 1) {
+        @if (v.dates.length > 1 && !agendaTotal()) {
           <div class="after">
             <span class="after__label">{{ 'departments.ticket.after' | translate }}</span>
             <ul class="after__list" role="list">
@@ -45,6 +62,61 @@
         </button>
       </div>
     </div>
+
+    <!-- Agenda: las siguientes noches con tema, a todo el ancho. -->
+    @if (agendaTotal()) {
+      <section class="agenda" [attr.aria-labelledby]="'agenda-' + v.key">
+        <h3 class="agenda__title" [id]="'agenda-' + v.key">
+          {{ 'departments.program.title' | translate }}
+        </h3>
+        <ol class="agenda__list" role="list" [id]="'agenda-list-' + v.key">
+          @for (t of agenda(); track t.date) {
+            @let q = schedule.formatDayParts(t.date);
+            <li class="row">
+              <span class="row__date">
+                <span class="row__wd">{{ schedule.formatWeekdayShort(t.date) }}</span>
+                <span class="row__day">{{ q.day }}</span>
+                <span class="row__month">{{ q.month }}</span>
+              </span>
+              <span class="row__text">
+                @if (t.series) {
+                  <span class="row__series">{{ t.series }}</span>
+                }
+                <span class="row__title">{{ t.title }}</span>
+              </span>
+              @if (t.by || t.time) {
+                <span class="row__meta">
+                  @if (t.by) {
+                    <span class="row__by"><app-icon name="mic-vocal" />{{ t.by }}</span>
+                  }
+                  @if (t.time) {
+                    <span class="row__time">
+                      <app-icon name="clock" />{{ 'departments.program.at' | translate: { time: t.time } }}
+                    </span>
+                  }
+                </span>
+              }
+            </li>
+          }
+        </ol>
+        @if (canExpand()) {
+          <button
+            type="button"
+            class="more"
+            [attr.aria-expanded]="showAll()"
+            [attr.aria-controls]="'agenda-list-' + v.key"
+            (click)="showAll.set(!showAll())"
+          >
+            @if (showAll()) {
+              {{ 'departments.program.less' | translate }}
+            } @else {
+              {{ 'departments.program.all' | translate: { count: agendaTotal() } }}
+            }
+            <app-icon name="chevron-down" />
+          </button>
+        }
+      </section>
+    }
 
     <!-- Pieza propia de esta reunión (la invitación a la masa de tineret), a
          todo el ancho del bloque, bajo el billete y el cuerpo. -->
