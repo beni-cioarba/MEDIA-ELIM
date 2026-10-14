@@ -17,11 +17,14 @@
                 [href]="social.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                [attr.aria-label]="social.handle"
+                [attr.aria-label]="('socials.items.' + social.i18nKey + '.name' | translate) + ' · ' + social.handle"
                 [style.--social-a]="social.gradient[0]"
                 [style.--social-b]="social.gradient[1]"
               >
-                <app-social-icon [name]="social.icon" />
+                <!-- Icono = la red; texto = la cuenta. Así los dos Instagram
+                     (Elim y Tineret) se distinguen sin depender del color. -->
+                <span class="footer__social-icon"><app-social-icon [name]="social.icon" /></span>
+                <span class="footer__social-label">{{ 'socials.items.' + social.i18nKey + '.short' | translate }}</span>
               </a>
             </li>
           }

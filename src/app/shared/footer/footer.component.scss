@@ -154,26 +154,30 @@
 }
 
 .footer__socials {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
   gap: var(--sp-2);
   margin: var(--sp-1) 0 0;
   padding: 0;
   list-style: none;
 }
 
-// Círculo neutro en reposo y color de la red al pasar por encima: en
-// reposo cuatro logos a todo color dentro de un pie oscuro roban toda la
-// atención y descolocan la jerarquía.
+// Pastilla neutra en reposo (icono = la red, texto = la cuenta) y color de
+// la red al pasar por encima: en reposo cuatro logos a todo color dentro de
+// un pie oscuro roban toda la atención y descolocan la jerarquía.
 .footer__social {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  gap: 0.45rem;
+  min-width: 7.5rem;
+  min-height: 2.25rem;
+  padding: 0 0.85rem 0 0.3rem;
   border: 1px solid rgba(247, 250, 252, 0.16);
-  border-radius: 50%;
+  border-radius: var(--r-pill);
   color: rgba(247, 250, 252, 0.85);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
   transition:
     background var(--mo-base) var(--ea-standard),
     border-color var(--mo-base) var(--ea-standard),
@@ -197,6 +201,17 @@
   &:focus-visible {
     @include focus-ring(3px);
   }
+}
+
+.footer__social-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+}
+
+.footer__social-label {
+  white-space: nowrap;
 }
 
 // ---------------------------------------------------------------------

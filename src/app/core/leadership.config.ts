@@ -295,10 +295,8 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
       {
         id: 'youth',
         i18nKey: 'youth',
-        members: [
-          { person: 'samuel-bogdan', roles: ['lead'] },
-          { person: 'gabriel-daniel-cifor' },
-        ],
+        // Coordinan los dos por igual: sin «Responsabil» (14/10/2026).
+        members: [{ person: 'samuel-bogdan' }, { person: 'gabriel-daniel-cifor' }],
       },
       {
         id: 'teens',

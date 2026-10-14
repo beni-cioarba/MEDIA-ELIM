@@ -22,18 +22,22 @@
     "site_pj": "Web de la iglesia",
     "items": {
       "instagram_main": {
+        "short": "Elim",
         "name": "Instagram",
         "subtitle": "Cuenta principal de la iglesia"
       },
       "instagram_youth": {
+        "short": "Tineret",
         "name": "Instagram · Jóvenes",
         "subtitle": "Departamento de jóvenes"
       },
       "facebook_main": {
+        "short": "Facebook",
         "name": "Facebook",
         "subtitle": "Página oficial de la iglesia"
       },
       "youtube_main": {
+        "short": "YouTube",
         "name": "YouTube",
         "subtitle": "Canal oficial · transmisiones y predicaciones"
       }

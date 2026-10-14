@@ -22,18 +22,22 @@
     "site_pj": "Site-ul bisericii",
     "items": {
       "instagram_main": {
+        "short": "Elim",
         "name": "Instagram",
         "subtitle": "Contul principal al bisericii"
       },
       "instagram_youth": {
+        "short": "Tineret",
         "name": "Instagram · Tineret",
         "subtitle": "Departamentul de tineret"
       },
       "facebook_main": {
+        "short": "Facebook",
         "name": "Facebook",
         "subtitle": "Pagina oficială a bisericii"
       },
       "youtube_main": {
+        "short": "YouTube",
         "name": "YouTube",
         "subtitle": "Canalul oficial · transmisiuni și predici"
       }
