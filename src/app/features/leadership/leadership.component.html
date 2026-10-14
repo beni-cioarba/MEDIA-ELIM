@@ -301,7 +301,6 @@
             @for (area of column; track area.id) {
               <section class="area" [attr.aria-labelledby]="'area-' + area.id">
                 <h3 class="area__title" [id]="'area-' + area.id">
-                  <app-icon class="area__icon" [name]="area.icon" />
                   <span class="area__name">{{ 'leadership.areas.' + area.i18nKey + '.name' | translate }}</span>
                   <span class="area__count">
                     {{ (area.departments.length === 1 ? 'leadership.directory.departments_one' : 'leadership.directory.departments_other') | translate: { n: area.departments.length } }}
@@ -312,20 +311,32 @@
                     <div class="dept">
                       <dt class="dept__name">{{ 'leadership.departments.' + department.i18nKey | translate }}</dt>
                       <dd class="dept__people">
+                        <!-- Dos acciones sin anidar, como en las tarjetas: la
+                             miniatura abre el visor (si hay foto real) y el
+                             nombre lleva al perfil (si lo hay). -->
                         @for (member of department.members; track member.card.id) {
-                          <a class="who" [routerLink]="member.card.link">
-                            <app-person-avatar class="who__avatar" slot="tiny" [photo]="member.card.photo" sizes="1.2rem" />
-                            <span class="who__name">
-                              @for (part of member.card.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
+                          <div class="who" [class.who--lead]="member.roles?.includes('lead')">
+                            <div
+                              class="who__photo"
+                              [appViewable]="directoryGallery().items"
+                              [appViewableIndex]="directoryGallery().at.get(member.card.id) ?? 0"
+                              [appViewableDisabled]="!member.card.photo"
+                            >
+                              <app-person-avatar slot="tiny" [photo]="member.card.photo" sizes="2.4rem" />
+                            </div>
+                            <span class="who__text">
+                              <a class="who__name" [routerLink]="member.card.link">
+                                @for (part of member.card.name | leadHighlight: needle(); track $index) {<span class="hl" [class.hl--hit]="part.hit">{{ part.text }}</span>}
+                              </a>
+                              @if (member.roles; as roles) {
+                                <span class="who__role">
+                                  @for (role of roles; track role; let last = $last) {
+                                    {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
+                                  }
+                                </span>
+                              }
                             </span>
-                            @if (member.roles; as roles) {
-                              <span class="who__role">
-                                @for (role of roles; track role; let last = $last) {
-                                  {{ 'leadership.roles.' + role | translate }}{{ last ? '' : ' · ' }}
-                                }
-                              </span>
-                            }
-                          </a>
+                          </div>
                         }
                       </dd>
                     </div>

@@ -167,6 +167,20 @@ export class LeadershipComponent {
   /** Galería de la vista por personas: sigue al filtro de búsqueda. */
   protected readonly peopleGallery = computed(() => photoGallery(this.people()));
 
+  /**
+   * Galería de la vista por departamentos, en orden de lectura y sin
+   * repetir a quien sirve en varios: cada foto sale una vez en el visor.
+   */
+  protected readonly directoryGallery = computed(() => {
+    const cards = new Map<PersonCard['id'], PersonCard>();
+    for (const area of this.directory()) {
+      for (const department of area.departments) {
+        for (const { card } of department.members) cards.set(card.id, card);
+      }
+    }
+    return photoGallery([...cards.values()]);
+  });
+
   /** Resultados de la vista activa (aviso de resultados y vacío). */
   protected readonly resultCount = computed(() =>
     this.view() === 'people'

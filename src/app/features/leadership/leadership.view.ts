@@ -1,5 +1,4 @@
 import { APP_PATHS } from '../../core/navigation/app-paths';
-import { IconName } from '../../core/ui/icon-name';
 import {
   CHURCH_COMMITTEE,
   LEADERSHIP_OFFICES,
@@ -170,7 +169,6 @@ export interface DirectoryDepartment {
 export interface DirectoryArea {
   readonly id: string;
   readonly i18nKey: string;
-  readonly icon: IconName;
   readonly departments: readonly DirectoryDepartment[];
 }
 
@@ -178,7 +176,6 @@ export interface DirectoryArea {
 export const DIRECTORY: readonly DirectoryArea[] = SERVICE_AREAS.map((area) => ({
   id: area.id,
   i18nKey: area.i18nKey,
-  icon: area.icon,
   departments: area.departments.map((department) => ({
     id: department.id,
     i18nKey: department.i18nKey,
