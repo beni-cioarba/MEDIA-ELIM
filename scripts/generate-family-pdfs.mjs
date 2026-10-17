@@ -122,7 +122,7 @@ const context = await browser.newContext({
 });
 await context.addInitScript(() => {
   try {
-    localStorage.setItem('iglesia-redes.lang', 'ro');
+    localStorage.setItem('iglesia-redes.lang.elegido', 'ro');
   } catch {
     /* almacenamiento bloqueado: manda la configuración regional */
   }

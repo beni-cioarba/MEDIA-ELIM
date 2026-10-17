@@ -5,16 +5,23 @@ import { firstValueFrom } from 'rxjs';
 /** Idiomas soportados por la aplicación. */
 export type AppLanguage = 'es' | 'ro';
 
-const STORAGE_KEY = 'iglesia-redes.lang';
+/**
+ * Sólo guarda una elección **explícita** del usuario. Clave nueva a propósito:
+ * con la anterior (`iglesia-redes.lang`) se guardaba también el idioma
+ * detectado del navegador, así que quien entró con el navegador en español
+ * quedó fijado en español sin haberlo elegido nunca.
+ */
+const STORAGE_KEY = 'iglesia-redes.lang.elegido';
 const DEFAULT_LANG: AppLanguage = 'ro';
 const SUPPORTED: readonly AppLanguage[] = ['ro', 'es'];
 
 /**
  * Servicio centralizado de idioma:
  *  - Inicializa ngx-translate.
- *  - Lee/persiste el idioma activo en localStorage.
- *  - Si no hay preferencia guardada, autodetecta del navegador y cae en
- *    rumano por defecto si no se reconoce.
+ *  - Rumano por defecto: la iglesia y su contenido son rumanos, aunque el
+ *    navegador del visitante esté en español (lo normal en España).
+ *  - Si el usuario cambia de idioma, la elección se guarda en localStorage y
+ *    se respeta en las siguientes visitas.
  */
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
@@ -26,32 +33,39 @@ export class LanguageService {
   readonly supported = SUPPORTED;
 
   /**
-   * Arranque: elige el idioma (guardado → navegador → rumano) y **espera** a
+   * Arranque: elige el idioma (elegido por el usuario → rumano) y **espera** a
    * que su JSON esté cargado antes de pintar nada. El idioma de reserva lo fija
    * `provideTranslateService` en `app.config.ts`.
    */
   init(): Promise<void> {
     this.translate.addLangs([...SUPPORTED]);
     this.followOtherWindows();
-    const initial = this.readFromStorage() || this.detectFromBrowser() || DEFAULT_LANG;
-    return this.use(initial);
+    return this.apply(this.readFromStorage() ?? DEFAULT_LANG);
   }
 
-  /** Cambia de idioma; resuelve cuando sus traducciones están disponibles. */
+  /**
+   * Cambia de idioma por decisión del usuario (selector): lo guarda para las
+   * siguientes visitas. Resuelve cuando sus traducciones están disponibles.
+   */
   async use(lang: AppLanguage): Promise<void> {
+    await this.apply(lang);
+    this.writeToStorage(this.current());
+  }
+
+  toggle(): Promise<void> {
+    return this.use(this.current() === 'es' ? 'ro' : 'es');
+  }
+
+  /** Activa el idioma sin guardarlo como elección del usuario. */
+  private async apply(lang: AppLanguage): Promise<void> {
     if (!SUPPORTED.includes(lang)) lang = DEFAULT_LANG;
     await firstValueFrom(this.translate.use(lang));
     this.current.set(lang);
-    this.writeToStorage(lang);
     // Mantener el atributo `lang` del documento sincronizado: mejora la
     // accesibilidad y permite a los lectores de pantalla pronunciar bien.
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
     }
-  }
-
-  toggle(): Promise<void> {
-    return this.use(this.current() === 'es' ? 'ro' : 'es');
   }
 
   /**
@@ -66,14 +80,8 @@ export class LanguageService {
     window.addEventListener('storage', (event) => {
       if (event.key !== STORAGE_KEY) return;
       const lang = event.newValue;
-      if ((lang === 'es' || lang === 'ro') && lang !== this.current()) void this.use(lang);
+      if ((lang === 'es' || lang === 'ro') && lang !== this.current()) void this.apply(lang);
     });
-  }
-
-  private detectFromBrowser(): AppLanguage | null {
-    if (typeof navigator === 'undefined') return null;
-    const code = (navigator.language || '').slice(0, 2).toLowerCase();
-    return SUPPORTED.includes(code as AppLanguage) ? (code as AppLanguage) : null;
   }
 
   private readFromStorage(): AppLanguage | null {

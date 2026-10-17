@@ -359,7 +359,13 @@ vuelve a fusionar al cambiar de idioma). Referencia:
 
 ## Reglas de i18n
 
-- Idioma por defecto: **`ro`**. Soportados: `ro`, `es`.
+- Idioma por defecto: **`ro`**. Soportados: `ro`, `es`. **No se detecta el
+  idioma del navegador** (decisión del usuario, 18/10/2026: en España casi
+  todos los navegadores están en español y la web salía en español). Sólo se
+  guarda la elección explícita del selector (`LanguageService.use`, clave
+  `iglesia-redes.lang.elegido` en localStorage); sin elección, rumano. La clave
+  antigua `iglesia-redes.lang` guardaba también el idioma detectado y se
+  abandonó por eso.
 - Toda clave debe existir en **ambos** ficheros, con la misma estructura.
 - En plantillas, siempre `{{ 'clave' | translate }}` o
   `[attr.aria-label]="'clave' | translate"`. Nunca texto literal.
