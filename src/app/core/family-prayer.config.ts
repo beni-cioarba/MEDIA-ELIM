@@ -413,4 +413,55 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 7,
+    presentedOn: '2026-10-18',
+    families: [
+      {
+        id: 'bosancu-sandu-floarea',
+        surname: 'Bosancu',
+        names: 'Sandu și Floarea',
+        message: ['Dorința noastră este ca Dumnezeu să ne ajute ca toată familia să ajungem în Cerul lui Dumnezeu!'],
+      },
+      {
+        id: 'bosancu-ioan-daniela',
+        surname: 'Bosancu',
+        names: 'Ioan și Daniela',
+        children: ['Amalia', 'Sofia'],
+        verse: {
+          text: 'Nu vă îngrijorați de nimic; ci, în orice lucru, aduceți cererile voastre la cunoștința lui Dumnezeu, prin rugăciuni și cereri, cu mulțumiri. Și pacea lui Dumnezeu, care întrece orice pricepere, vă va păzi inimile și gândurile în Hristos Isus.',
+          reference: 'Filipeni 4:6-7',
+        },
+      },
+      {
+        id: 'bosancu-cornel-bianca',
+        surname: 'Bosancu',
+        names: 'Cornel și Bianca',
+        message: ['Dorința noastră este ca Domnul să ne dea lumină și să ne călăuzească prin Duhul Său cel Sfânt.'],
+      },
+      {
+        id: 'bradean-calin-denisa',
+        surname: 'Brădean',
+        names: 'Călin și Denisa',
+        children: ['Anais'],
+        message: [
+          'Mulțumim Domnului căci până aici a fost cu noi!',
+          'Dorim ca în continuare dragostea și îndurarea Lui să fie peste familia noastră și să ne ajute să rămânem plini de încredere pe cale, pentru a putea ajunge în Împărăția Sa.',
+        ],
+      },
+      {
+        id: 'blejusca-nicu-mirela',
+        surname: 'Blejușcă',
+        names: 'Nicu și Mirela',
+        children: ['David', 'Eva'],
+        message: [
+          'Avem nevoie ca Dumnezeu să ne întărească credința în vremuri de încercare, să ne dea pace în mijlocul problemelor și putere să rămânem statornici în umblarea noastră cu El. Să ne ajute să nu ne pierdem nădejdea, ci să ne încredem în promisiunile Sale, știind că El nu ne părăsește niciodată.',
+        ],
+        verse: {
+          text: 'Nu te teme, căci Eu sunt cu tine; nu te uita cu îngrijorare, căci Eu sunt Dumnezeul tău; Eu te întăresc, tot Eu îți vin în ajutor. Eu te sprijin cu dreapta Mea biruitoare.',
+          reference: 'Isaia 41:10',
+        },
+      },
+    ],
+  },
 ];

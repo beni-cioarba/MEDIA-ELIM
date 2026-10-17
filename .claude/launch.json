@@ -4,9 +4,46 @@
     {
       "name": "web",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["ng", "serve", "--port", "4310"],
+      "runtimeArgs": [
+        "ng",
+        "serve",
+        "--port",
+        "4310"
+      ],
       "port": 4310,
       "autoPort": false
+    },
+    {
+      "name": "elim25-revizuire",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4320",
+        "--directory",
+        "C:/workspace/elim-25/SELECTIE"
+      ],
+      "port": 4320
+    },
+    {
+      "name": "elim25-editor",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/workspace/elim-25/scripts/editor_server.mjs"
+      ],
+      "port": 4325
+    },
+    {
+      "name": "elim25-team",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4330",
+        "--directory",
+        "C:/workspace/elim-25/team-site"
+      ],
+      "port": 4330
     }
   ]
 }

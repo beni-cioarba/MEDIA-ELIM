@@ -894,6 +894,44 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       publishedOn: '2026-10-11',
       expiresOn: '2026-10-17',
     },
+    /*
+     * Semana de intercesión por las dos familias de misioneros que la
+     * iglesia sostiene económicamente (18/10 → 24/10).
+     *
+     * El original llegó sin diacríticos y con erratas (famili→familii,
+     * sai→să-i, bunecuvanteze→binecuvânteze, vestí→vestească,
+     * indeazneala→îndrăzneală). Misma estructura que las semanas anteriores;
+     * como cada familia lleva su campo de misión, la lista es `people`
+     * (familia en negrita · destino atenuado) en vez de las flechas del aviso.
+     */
+    {
+      id: 'mijlocire_misionari',
+      title: 'Săptămână de rugăciune pentru misionarii noștri',
+      lead: 'În săptămâna aceasta stăm în rugăciune pentru cele două familii de misionari pe care Biserica noastră le susține financiar.',
+      sections: [
+        {
+          heading: 'Îi aducem înaintea Domnului',
+          kind: 'people',
+          items: [
+            { label: 'Familia Lețu', value: 'Mongolia' },
+            { label: 'Familia Fahrodin', value: 'printre refugiații musulmani' },
+          ],
+        },
+        {
+          heading: 'Ce cerem pentru ei',
+          kind: 'list',
+          highlight: true,
+          items: [
+            { label: 'Domnul să îi binecuvânteze' },
+            { label: 'Să le dăruiască multă putere' },
+            { label: 'Să vestească Cuvântul cu îndrăzneală' },
+            { label: 'Domnul să scoată mulți oameni la mântuire' },
+          ],
+        },
+      ],
+      publishedOn: '2026-10-18',
+      expiresOn: '2026-10-24',
+    },
     {
       id: 'aniversare_25_ani',
       title: 'Sărbătoare: 25 de ani de la înființarea Bisericii Elim',

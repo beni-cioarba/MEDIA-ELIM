@@ -44,4 +44,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-10-11/bolfa-silviu-valeria': { width: 1600, height: 1148, variants: [[480, 480], [960, 960], [1600, 1600]] },
   '2026-10-11/bontas-dorut-saveta': { width: 697, height: 1124, variants: [[480, 298], [960, 595], [1124, 697]] },
   '2026-10-11/bosancu-beniamin': { width: 1172, height: 700, variants: [[480, 480], [960, 960], [1172, 1172]] },
+  '2026-10-18/blejusca-nicu-mirela': { width: 1600, height: 900, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-10-18/bosancu-cornel-bianca': { width: 1024, height: 768, variants: [[480, 480], [960, 960], [1024, 1024]] },
+  '2026-10-18/bosancu-ioan-daniela': { width: 1600, height: 1200, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-10-18/bosancu-sandu-floarea': { width: 519, height: 804, variants: [[480, 310], [804, 519]] },
+  '2026-10-18/bradean-calin-denisa': { width: 532, height: 824, variants: [[480, 310], [824, 532]] },
 };
