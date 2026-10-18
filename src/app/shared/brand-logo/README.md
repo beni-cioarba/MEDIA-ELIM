@@ -196,7 +196,39 @@ fiable), usa la forma compacta o exporta a PNG a 2× desde el navegador.
 
 ---
 
-## 8. Reproducirlo desde cero
+## 8. Sello temporal (`seal`)
+
+Para una celebración (25 aniversario, 2001–2026) la marca admite un **sello** a su izquierda: la
+cifra al alto entero de la marca y un filete dorado.
+
+```
+   │ ELIM
+25 │
+   │ ARGANDA DEL REY
+```
+
+| Pieza | Medida | Por qué |
+|---|---|---|
+| Cifra | Playfair Display 600, **1,6 S**, cifras de caja alta (`lnum`), oro en degradado; `align-self: end` y margen inferior −0,091 S | Calibrado al píxel: la tinta empieza en la de «ELIM» y la línea base coincide con la de la localidad (la panza del 5 sobresale lo justo, como toda curva). El margen superior −1 S evita que estire las filas. |
+| Filete | max(1 px, 0,035 S); aire `--brand-seal-gap` × S a cada lado (0,3 por defecto) | Va de la tinta de «ELIM» a la línea base de la localidad, con extremos difuminados. El aire es margen del filete, no `column-gap`: con el sello oculto la marca mide lo de siempre. |
+
+**Sin etiqueta visible.** Se probó «ANIVERSARE» bajo la cifra (como en las piezas de Canva): a
+tamaño web salía a 4–6 px de cuerpo, ilegible. La palabra sólo existe a partir de ~60 px de
+marca (impresos, redes); en la web, la cifra sola. El campo `label` completa el nombre accesible
+(«Biserica Elim · 25 Aniversare»).
+
+Oros: tono claro `#a98428 → #856618` (≥ 3,3:1 sobre papel; texto grande); tono oscuro
+`#f4e6ad → #d09c57` (≥ 6:1 sobre navy). En `mono`, una tinta. En `forced-colors`, `CanvasText`.
+
+**Control desde el consumidor** (propiedades CSS heredables):
+
+- `--brand-seal-gap: 0.18` → aire del filete más estrecho (cabecera en el teléfono).
+- `--brand-seal-display: none` → sin sello (tramos de la cabecera sin holgura).
+
+Fechas y textos: `src/app/core/anniversary.config.ts` (`from`/`until`, inclusive). Fuera de la
+ventana el sello desaparece solo.
+
+## 9. Reproducirlo desde cero
 
 Si hay que redibujarlo en otra herramienta (rótulo, vinilo, papelería), esto es lo que define la
 marca:
@@ -213,7 +245,7 @@ localidad a 0,289 S y justifícala a ese ancho → separa 0,14 S → aplica el p
 
 ---
 
-## 9. Origen
+## 10. Origen
 
 Antes convivían tres marcas: este wordmark en la cabecera, un `logo-elim.webp` (texto blanco con
 llama dorada, sólo válido sobre oscuro) en el pie y otro en el escenario. Se unificó en el wordmark

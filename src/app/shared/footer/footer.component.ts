@@ -10,6 +10,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { activeBrandSeal } from '../../core/anniversary.config';
 import { YOUTH_ADMIN_APP_URL } from '../../core/departments.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
@@ -78,6 +79,8 @@ interface FooterColumn {
 })
 export class FooterComponent {
   protected readonly config = inject(CHURCH_CONFIG);
+  /** Sello de aniversario junto a la marca (el mismo que en la cabecera). */
+  protected readonly brandSeal = activeBrandSeal();
 
   protected readonly year = new Date().getFullYear();
 

@@ -111,6 +111,27 @@ const PEOPLE = [
   { id: 'david-dobre', name: 'David Dobre' },
   { id: 'samuel-balean', name: 'Samuel Balean' },
   { id: 'fineas-les', name: 'Fineas Les' },
+  // Profesoras de la școala duminicală (Copii), por grupos — 18/10/2026.
+  { id: 'cristina-bucurici', name: 'Cristina Bucurici' },
+  { id: 'marta-stuleanec', name: 'Marta Stuleanec' },
+  { id: 'manu-mic', name: 'Manu Mic' },
+  { id: 'sara-bolfa', name: 'Sara Bolfa' },
+  { id: 'sara-stuleanec', name: 'Sara Stuleanec' },
+  { id: 'nerea-marc', name: 'Nerea Marc' },
+  { id: 'melisa-marc', name: 'Melisa Marc' },
+  { id: 'simona-pintilei', name: 'Simona Pintilei' },
+  { id: 'monica-barz', name: 'Monica Barz' },
+  // Sin apellido en la lista recibida: completarlo cuando se sepa (cambia el `id` y el fichero de la foto).
+  { id: 'ierasmina', name: 'Ierasmina' },
+  { id: 'naomi-creta', name: 'Naomi Creța' },
+  { id: 'dina-istratoaie', name: 'Dina Istratoaie' },
+  { id: 'sara-toth', name: 'Sara Toth' },
+  { id: 'denisa-naros', name: 'Denisa Naroș' },
+  { id: 'marinela-dobre', name: 'Marinela Dobre' },
+  { id: 'elena-valean', name: 'Elena Valean' },
+  { id: 'naomi-valean', name: 'Naomi Valean' },
+  { id: 'noemi-toader', name: 'Noemi Toader' },
+  { id: 'cristina-circu', name: 'Cristina Cîrcu' },
 ] as const satisfies readonly Person[];
 
 /** Unión derivada del registro: referenciar a alguien inexistente no compila. */
@@ -303,7 +324,49 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
         i18nKey: 'teens',
         members: [{ person: 'daniel-motrescu' }, { person: 'adriana-gherasim' }],
       },
-      { id: 'children', i18nKey: 'children', members: [{ person: 'petrica-halas' }] },
+      {
+        id: 'children',
+        i18nKey: 'children',
+        // Responsable de todo el departamento; cada grupo lleva sus profesoras.
+        members: [{ person: 'petrica-halas', roles: ['lead'] }],
+      },
+      {
+        id: 'children_small',
+        i18nKey: 'children_small',
+        members: [
+          { person: 'cristina-bucurici' },
+          { person: 'marta-stuleanec' },
+          { person: 'manu-mic' },
+          { person: 'sara-bolfa' },
+          { person: 'sara-stuleanec' },
+          { person: 'nerea-marc' },
+          { person: 'melisa-marc' },
+        ],
+      },
+      {
+        id: 'children_middle',
+        i18nKey: 'children_middle',
+        members: [
+          { person: 'simona-pintilei' },
+          { person: 'monica-barz' },
+          { person: 'ierasmina' },
+          { person: 'naomi-creta' },
+          { person: 'dina-istratoaie' },
+          { person: 'sara-toth' },
+          { person: 'denisa-naros' },
+        ],
+      },
+      {
+        id: 'children_big',
+        i18nKey: 'children_big',
+        members: [
+          { person: 'marinela-dobre' },
+          { person: 'elena-valean' },
+          { person: 'naomi-valean' },
+          { person: 'noemi-toader' },
+          { person: 'cristina-circu' },
+        ],
+      },
     ],
   },
   {

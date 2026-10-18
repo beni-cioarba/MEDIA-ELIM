@@ -84,6 +84,27 @@
 
   justify-self: start;
   padding-inline-end: var(--sp-2);
+
+  // Con el sello de aniversario («25» al alto de la marca) la marca gana
+  // ~2,1 × S. En el teléfono las acciones no ceden: se estrecha el aire del
+  // filete y, por debajo de 375 px, se prescinde del sello (a 360 px aplastaba
+  // el botón «en directo»; el pie lo sigue mostrando).
+  @media (max-width: 47.99rem) {
+    --brand-seal-gap: 0.18;
+  }
+  @media (max-width: 23.43rem) {
+    --brand-seal-display: none;
+  }
+
+  // En escritorio la lista del menú no tiene holgura justo al estrenar cada
+  // tramo: a 1024 px (aparece la lista) y a 1280 px (entra «Inicio»). En
+  // español, con el sello (+74 px) «Contacto» pisaba «Donativos». En esos dos
+  // tramos se oculta el sello de la cabecera (el pie lo sigue mostrando); el
+  // corte deja ≥ 30 px libres en ES. Si el menú crece, repetir el barrido de
+  // anchos (ver 15-navigation.md → «Sello de aniversario»).
+  @media (min-width: 64rem) and (max-width: 69.49rem), (min-width: 80rem) and (max-width: 84.99rem) {
+    --brand-seal-display: none;
+  }
 }
 
 // ---- Lista de escritorio --------------------------------------------

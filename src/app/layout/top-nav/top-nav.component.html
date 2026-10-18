@@ -4,7 +4,7 @@
   <div class="nav__inner">
     <!-- Marca: componente único compartido con el pie y con la proyección
          (`shared/brand-logo`). Ver 45-design-system.md. -->
-    <app-brand-logo class="nav__brand" size="context" tone="light" link="/" />
+    <app-brand-logo class="nav__brand" size="context" tone="light" link="/" [seal]="brandSeal" />
 
     <!-- Navegación de escritorio -->
     <nav class="nav__desktop u-desktop-only" [attr.aria-label]="'nav.primary' | translate">

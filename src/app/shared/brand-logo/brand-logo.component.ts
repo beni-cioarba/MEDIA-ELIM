@@ -55,6 +55,17 @@ export type BrandLogoSize = 'sm' | 'md' | 'lg' | 'xl' | 'context';
 /** Fondo sobre el que se pinta: decide tinta y acento. No hay dos ficheros, hay dos tintas. */
 export type BrandLogoTone = 'light' | 'dark';
 
+/**
+ * Sello temporal a la izquierda de la marca (p. ej. un aniversario): una cifra
+ * en oro al alto de la marca, separada por un filete.
+ */
+export interface BrandSeal {
+  /** Cifra corta: «25». */
+  readonly value: string;
+  /** Lo que significa la cifra: no se pinta, completa el nombre accesible («25 Aniversare»). */
+  readonly label: string;
+}
+
 /** Nombre accesible por defecto cuando no hay traducción ni `label`. */
 const DEFAULT_LABEL = 'Biserica Elim';
 
@@ -81,6 +92,12 @@ const DEFAULT_LABEL = 'Biserica Elim';
     }
 
     <ng-template #mark>
+      @if (seal(); as s) {
+        <!-- Sello temporal (aniversario): «25» al alto de la marca y un filete.
+             La etiqueta sólo va en el nombre accesible. -->
+        <span class="brand__seal-value">{{ s.value }}</span>
+        <span class="brand__rule" aria-hidden="true"></span>
+      }
       <span class="brand__name">{{ name() }}</span>
       @if (showLocation()) {
         <span class="brand__city">{{ location() }}</span>
@@ -200,6 +217,95 @@ const DEFAULT_LABEL = 'Biserica Elim';
         transition: none;
       }
     }
+
+    /* ── Sello (aniversario) ────────────────────────────────────────────────
+           │ ELIM
+        25 │
+           │ ARGANDA DEL REY
+       · La cifra ocupa el alto entero de la marca: su tinta va de la de «ELIM»
+         a la línea base de la localidad: cuerpo 1,6 S (calibrado al píxel con
+         Playfair 600 lnum). Se apoya abajo (\`end\`) y el margen negativo baja
+         su caja hasta que su línea base coincide con la de la localidad; la
+         panza del 5 sobresale lo justo por debajo, como toda curva.
+       · El filete cubre ese mismo alto, con los extremos difuminados.
+       · El aire entre columnas es margen del filete, no \`column-gap\`: si el
+         consumidor oculta el sello (\`--brand-seal-display: none\`) la marca
+         vuelve a medir lo de siempre, sin huecos de columnas vacías.
+       Todo deriva de S: el sello escala con la marca sin descuadrarse. */
+    :host(.has-seal) .brand {
+      grid-template-columns: max-content max-content max-content;
+      grid-template-areas:
+        'value rule name'
+        'value rule city';
+    }
+    :host(.has-seal) .brand__name { grid-area: name; }
+    :host(.has-seal) .brand__city { grid-area: city; }
+
+    .brand__seal-value {
+      grid-area: value;
+      display: var(--brand-seal-display, block);
+      align-self: end;
+      font-family: var(--brand-font-name);
+      font-size: calc(var(--brand-size, 24px) * 1.6);
+      font-weight: 600;
+      line-height: 1;
+      font-variant-numeric: lining-nums;
+      font-feature-settings: 'lnum' 1;
+      letter-spacing: 0.02em;
+      margin-inline-end: -0.02em;
+      /* Arriba, margen negativo para que la cifra no estire las filas de la marca. */
+      margin-block: calc(var(--brand-size, 24px) * -1) calc(var(--brand-size, 24px) * -0.091);
+      /* Oro en degradado (de claro arriba a profundo abajo), recortado al texto. */
+      background: linear-gradient(180deg, var(--brand-seal-from) 22%, var(--brand-seal-to) 92%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand__rule {
+      grid-area: rule;
+      display: var(--brand-seal-display, block);
+      align-self: stretch;
+      width: max(1px, calc(var(--brand-size, 24px) * 0.035));
+      /* De la tinta de «ELIM» (0,19 S bajo el borde de su caja) a la línea base
+         de la localidad (0,04 S sobre el borde inferior). */
+      margin-block: calc(var(--brand-size, 24px) * 0.19) calc(var(--brand-size, 24px) * 0.04);
+      /* Aire a cada lado: 0,3 S; el consumidor lo estrecha donde falta sitio. */
+      margin-inline: calc(var(--brand-size, 24px) * var(--brand-seal-gap, 0.3));
+      background: linear-gradient(
+        180deg,
+        transparent,
+        var(--brand-seal-from) 16%,
+        var(--brand-seal-to) 84%,
+        transparent
+      );
+    }
+
+    :host(.is-light) {
+      /* ≥ 3,3:1 sobre papel (texto grande) en todo el degradado. */
+      --brand-seal-from: #a98428;
+      --brand-seal-to: var(--brand-gold-deep);
+    }
+    :host(.is-dark) {
+      --brand-seal-from: #f4e6ad;
+      --brand-seal-to: #d09c57;
+    }
+    :host(.is-mono) {
+      --brand-seal-from: var(--brand-ink);
+      --brand-seal-to: var(--brand-ink);
+    }
+
+    /* Alto contraste del sistema: sin degradados recortados (desaparecerían). */
+    @media (forced-colors: active) {
+      .brand__seal-value {
+        background: none;
+        color: CanvasText;
+      }
+      .brand__rule {
+        background: none;
+        border-inline-start: 1px solid CanvasText;
+      }
+    }
   `
 })
 export class BrandLogoComponent {
@@ -231,6 +337,9 @@ export class BrandLogoComponent {
    */
   readonly label = input('');
 
+  /** Sello temporal (aniversario). `null` = la marca de siempre. */
+  readonly seal = input<BrandSeal | null>(null);
+
   private readonly translate = inject(TranslateService, { optional: true });
 
   /** `stream` emite el valor actual y cada cambio de idioma; sin traductor, nada. */
@@ -240,16 +349,19 @@ export class BrandLogoComponent {
   );
 
   protected readonly ariaLabel = computed<string>(() => {
-    const explicit = this.label();
-    if (explicit) return explicit;
     const translated = this.translatedLabel();
     // Sin traducción cargada, `stream` devuelve la propia clave.
-    return translated && translated !== 'brand.name' ? translated : DEFAULT_LABEL;
+    const base =
+      this.label() || (translated && translated !== 'brand.name' ? translated : DEFAULT_LABEL);
+    // El nombre accesible sustituye al texto visible: el sello tiene que ir en él.
+    const seal = this.seal();
+    return seal ? `${base} · ${seal.value} ${seal.label}` : base;
   });
 
   protected readonly external = computed<boolean>(() => this.link()?.startsWith('http') ?? false);
 
   protected readonly hostClass = computed<string>(
-    () => `is-${this.size()} is-${this.tone()}${this.mono() ? ' is-mono' : ''}`,
+    () =>
+      `is-${this.size()} is-${this.tone()}${this.mono() ? ' is-mono' : ''}${this.seal() ? ' has-seal' : ''}`,
   );
 }

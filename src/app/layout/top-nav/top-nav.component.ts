@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { activeBrandSeal } from '../../core/anniversary.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { DepartmentsAsideComponent } from './departments-aside.component';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
@@ -91,6 +92,9 @@ export class TopNavComponent {
   protected readonly items = MAIN_NAV.filter((item) => !item.cta);
 
   /** CTA principal (directo): píldora dorada en la zona de acciones. */
+  /** Sello de aniversario junto a la marca mientras dure la celebración (ver `anniversary.config`). */
+  protected readonly brandSeal = activeBrandSeal();
+
   protected readonly liveCta = MAIN_NAV.find((item) => item.cta === 'live') ?? null;
 
   /** CTA secundaria (donativos): píldora perfilada, sólo en escritorio. */

@@ -170,6 +170,7 @@ tema, es identidad, y debe verse igual en cualquier app de la iglesia.
 | `showLocation` | `boolean`                                 | Forma compacta (sólo el nombre), mínimo 16 px.  |
 | `mono`         | `boolean`                                 | Una tinta: la localidad toma la del nombre (sello, grabado). |
 | `label`        | texto                                     | Nombre accesible explícito; vacío = traducción o «Biserica Elim». |
+| `seal`         | `{ value, label }` \| `null`              | Sello temporal a la izquierda («25» dorado al alto de la marca; `label` sólo para el nombre accesible). Lo activa `core/anniversary.config.ts` por fechas en cabecera y pie; ver README → «Sello». |
 | `name` · `location` | texto                                | Constantes de marca (`Elim` · `Arganda del Rey`); no son traducciones y por eso **ya no están en `i18n/*.json`**. |
 
 La escala es responsabilidad del componente, no del consumidor: `md` es fluida

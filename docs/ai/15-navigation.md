@@ -200,6 +200,26 @@ figurativo se toma de un set profesional, no se dibuja a mano.
   **reserva altura** para no provocar CLS (17 rem escritorio / 48 rem móvil:
   si cambia el alto del pie, se vuelve a medir y se ajusta).
 
+## Sello de aniversario en la marca (18/10/2026)
+
+Del 01/10 al 31/12/2026 la cabecera y el pie pasan `[seal]` a `app-brand-logo`
+(un «25» dorado al alto de la marca + filete; fechas en
+`core/anniversary.config.ts`, diseño en `brand-logo/README.md` → «Sello»). Sin
+la palabra «ANIVERSARE»: a tamaño web era ilegible. El sello suma ~74 px de
+ancho, así que la cabecera lo regula en `top-nav.component.scss`:
+
+| Ancho | Cabecera |
+|---|---|
+| < 375 px | Sin sello (a 360 px aplastaba el botón «en directo») |
+| 375–767 px | Sello con el aire del filete estrecho (`--brand-seal-gap: 0.18`) |
+| 768–1023 px | Sello completo |
+| 1024–1111 px y 1280–1359 px | Sin sello: arranques de tramo sin holgura (en ES «Contacto» pisaba «Donativos») |
+| Resto de escritorio | Sello completo (≥ 36 px libres en ES) |
+
+El pie lo muestra siempre. **Si el menú gana entradas**, repetir el barrido de
+anchos (holgura = `.nav__desktop.right − .nav__list.right` en ES y RO) y
+reajustar los tramos.
+
 ## El pie (compacto, 29/09/2026)
 
 Columnas derivadas de `MAIN_NAV` (un grupo nuevo aparece solo). Identidad =
