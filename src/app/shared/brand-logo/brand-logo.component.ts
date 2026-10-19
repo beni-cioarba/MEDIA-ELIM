@@ -62,7 +62,7 @@ export type BrandLogoTone = 'light' | 'dark';
 export interface BrandSeal {
   /** Cifra corta: «25». */
   readonly value: string;
-  /** Lo que significa la cifra: no se pinta, completa el nombre accesible («25 Aniversare»). */
+  /** Lo que significa la cifra: se pinta comprimida bajo ella y completa el nombre accesible («25 Aniversare»). */
   readonly label: string;
 }
 
@@ -93,9 +93,12 @@ const DEFAULT_LABEL = 'Biserica Elim';
 
     <ng-template #mark>
       @if (seal(); as s) {
-        <!-- Sello temporal (aniversario): «25» al alto de la marca y un filete.
-             La etiqueta sólo va en el nombre accesible. -->
+        <!-- Sello temporal (aniversario): «25», debajo la etiqueta comprimida a su
+             ancho, y un filete. El lector la oye en el nombre accesible. -->
         <span class="brand__seal-value">{{ s.value }}</span>
+        <svg class="brand__seal-label" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
+          <text x="0" y="10" textLength="100" lengthAdjust="spacingAndGlyphs">{{ s.label.toUpperCase() }}</text>
+        </svg>
         <span class="brand__rule" aria-hidden="true"></span>
       }
       <span class="brand__name">{{ name() }}</span>
@@ -219,14 +222,18 @@ const DEFAULT_LABEL = 'Biserica Elim';
     }
 
     /* ── Sello (aniversario) ────────────────────────────────────────────────
-           │ ELIM
-        25 │
-           │ ARGANDA DEL REY
-       · La cifra ocupa el alto entero de la marca: su tinta va de la de «ELIM»
-         a la línea base de la localidad: cuerpo 1,6 S (calibrado al píxel con
-         Playfair 600 lnum). Se apoya abajo (\`end\`) y el margen negativo baja
-         su caja hasta que su línea base coincide con la de la localidad; la
-         panza del 5 sobresale lo justo por debajo, como toda curva.
+               │ ELIM
+           25  │
+       ANIVERSARE│ ARGANDA DEL REY
+       · Cifra y etiqueta ocupan juntas el alto entero de la marca, de la tinta
+         de «ELIM» a la línea base de la localidad.
+       · La etiqueta va en la fila de la localidad, con su misma línea base y su
+         misma altura de versales (0,21 S), y **comprimida al ancho de la cifra**:
+         SVG con \`textLength\` y \`preserveAspectRatio="none"\`, así encaja
+         exacta a cualquier tamaño sin medir nada en JS.
+       · La cifra (Playfair 600 lnum, cifras de 0,749 em) llena el resto dejando
+         0,14 S de aire sobre la etiqueta: cuerpo 1,135 S, tinta arriba a ras de
+         la de «ELIM».
        · El filete cubre ese mismo alto, con los extremos difuminados.
        · El aire entre columnas es margen del filete, no \`column-gap\`: si el
          consumidor oculta el sello (\`--brand-seal-display: none\`) la marca
@@ -236,7 +243,7 @@ const DEFAULT_LABEL = 'Biserica Elim';
       grid-template-columns: max-content max-content max-content;
       grid-template-areas:
         'value rule name'
-        'value rule city';
+        'label rule city';
     }
     :host(.has-seal) .brand__name { grid-area: name; }
     :host(.has-seal) .brand__city { grid-area: city; }
@@ -244,22 +251,43 @@ const DEFAULT_LABEL = 'Biserica Elim';
     .brand__seal-value {
       grid-area: value;
       display: var(--brand-seal-display, block);
-      align-self: end;
+      justify-self: center;
+      align-self: start;
       font-family: var(--brand-font-name);
-      font-size: calc(var(--brand-size, 24px) * 1.6);
+      font-size: calc(var(--brand-size, 24px) * 1.135);
       font-weight: 600;
       line-height: 1;
       font-variant-numeric: lining-nums;
       font-feature-settings: 'lnum' 1;
       letter-spacing: 0.02em;
       margin-inline-end: -0.02em;
-      /* Arriba, margen negativo para que la cifra no estire las filas de la marca. */
-      margin-block: calc(var(--brand-size, 24px) * -1) calc(var(--brand-size, 24px) * -0.091);
+      /* Arriba, 0,035 S: la tinta de la cifra a ras de la de «ELIM» (medido al píxel).
+         Abajo, margen negativo para que la cifra no estire la fila de «ELIM». */
+      margin-block: calc(var(--brand-size, 24px) * 0.035) calc(var(--brand-size, 24px) * -0.235);
       /* Oro en degradado (de claro arriba a profundo abajo), recortado al texto. */
       background: linear-gradient(180deg, var(--brand-seal-from) 22%, var(--brand-seal-to) 92%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+    }
+
+    .brand__seal-label {
+      grid-area: label;
+      display: var(--brand-seal-display, block);
+      align-self: end;
+      width: 0;            /* no aporta ancho a la columna: la fija la cifra… */
+      min-width: 100%;     /* …y la etiqueta la ocupa entera */
+      height: calc(var(--brand-size, 24px) * 0.21);
+      margin-block-end: calc(var(--brand-size, 24px) * 0.04);
+      overflow: visible;
+      fill: var(--brand-seal-to);
+    }
+    /* Cuerpo en unidades del viewBox: versales de Inter (0,727 em) = 10 de alto. */
+    .brand__seal-label text {
+      font-family: var(--brand-font-location);
+      font-size: 13.75px;
+      font-weight: 600;
+      text-transform: uppercase;
     }
 
     .brand__rule {
@@ -304,6 +332,9 @@ const DEFAULT_LABEL = 'Biserica Elim';
       .brand__rule {
         background: none;
         border-inline-start: 1px solid CanvasText;
+      }
+      .brand__seal-label {
+        fill: CanvasText;
       }
     }
   `

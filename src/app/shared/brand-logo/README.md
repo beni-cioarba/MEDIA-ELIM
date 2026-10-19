@@ -199,23 +199,25 @@ fiable), usa la forma compacta o exporta a PNG a 2× desde el navegador.
 ## 8. Sello temporal (`seal`)
 
 Para una celebración (25 aniversario, 2001–2026) la marca admite un **sello** a su izquierda: la
-cifra al alto entero de la marca y un filete dorado.
+cifra, debajo su etiqueta comprimida al ancho de la cifra, y un filete dorado.
 
 ```
-   │ ELIM
-25 │
-   │ ARGANDA DEL REY
+           │ ELIM
+    25     │
+ANIVERSARE │ ARGANDA DEL REY
 ```
 
 | Pieza | Medida | Por qué |
 |---|---|---|
-| Cifra | Playfair Display 600, **1,6 S**, cifras de caja alta (`lnum`), oro en degradado; `align-self: end` y margen inferior −0,091 S | Calibrado al píxel: la tinta empieza en la de «ELIM» y la línea base coincide con la de la localidad (la panza del 5 sobresale lo justo, como toda curva). El margen superior −1 S evita que estire las filas. |
+| Cifra | Playfair Display 600, **1,135 S**, cifras de caja alta (`lnum`), oro en degradado; arriba de la fila de «ELIM» con margen 0,035 S | Calibrado al píxel: la tinta empieza a ras de la de «ELIM» y deja 0,14 S de aire sobre la etiqueta. El margen inferior negativo evita que estire la fila. |
+| Etiqueta | Inter 600 en versales, alto de versales 0,21 S (el de la localidad), **comprimida al ancho de la cifra**; en la fila de la localidad, misma línea base | SVG con `textLength` + `preserveAspectRatio="none"`: encaja exacta a cualquier tamaño sin medir en JS. Oro sólido (`--brand-seal-to`). |
 | Filete | max(1 px, 0,035 S); aire `--brand-seal-gap` × S a cada lado (0,3 por defecto) | Va de la tinta de «ELIM» a la línea base de la localidad, con extremos difuminados. El aire es margen del filete, no `column-gap`: con el sello oculto la marca mide lo de siempre. |
 
-**Sin etiqueta visible.** Se probó «ANIVERSARE» bajo la cifra (como en las piezas de Canva): a
-tamaño web salía a 4–6 px de cuerpo, ilegible. La palabra sólo existe a partir de ~60 px de
-marca (impresos, redes); en la web, la cifra sola. El campo `label` completa el nombre accesible
-(«Biserica Elim · 25 Aniversare»).
+**Etiqueta visible, comprimida** (decisión del usuario, 19/10/2026). El 18/10 se quitó porque, a
+ancho natural, salía a 4–6 px de cuerpo. Ahora va a la altura de versales de la localidad y
+comprimida al ancho del «25» (sin ocupar más que la cifra): en la cabecera mide ~6–7 px de alto,
+es un rasgo de marca más que un texto a leer. El campo `label` también completa el nombre
+accesible («Biserica Elim · 25 Aniversare»).
 
 Oros: tono claro `#a98428 → #856618` (≥ 3,3:1 sobre papel; texto grande); tono oscuro
 `#f4e6ad → #d09c57` (≥ 6:1 sobre navy). En `mono`, una tinta. En `forced-colors`, `CanvasText`.
