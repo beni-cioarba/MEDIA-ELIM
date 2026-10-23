@@ -1138,24 +1138,16 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   aboutImage: 'assets/drive-media/concert_copii_2025.webp',
 
   heroSlides: [
-    // El orden es deliberado: abre el concierto de niños (la foto con más
-    // gente y más luz, que es la primera impresión), siguen los slujitori
-    // (23/10/2026) y el tineret en alabanza (04/10/2026), ambos a petición
-    // del usuario, y, agrupados por
+    // El orden es deliberado: abren los slujitori de la iglesia (foto de
+    // grupo del 25 aniversario, a petición del usuario, 23/10/2026), sigue
+    // el concierto de niños (la foto con más gente y más luz), el tineret
+    // en alabanza (04/10/2026, también a petición suya) y, agrupados por
     // tema, la música (coro y fanfara) y el bautismo (candidatos y bautismo).
     // Después Fin de Año y acción social, y cierra la velada de villancicos.
     // Cambiarlo es cambiar lo primero que ve quien entra.
     {
-      id: 'hero_children',
-      i18nKey: 'children',
-      image: 'assets/drive-media/concert_copii_2025.webp',
-      medium: 'assets/drive-media/concert_copii_2025-960.webp',
-      thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
-      tone: '#797474',
-    },
-    {
       // Los slujitori de la iglesia, foto de grupo del 25 aniversario.
-      // Segunda a petición del usuario (23/10/2026). Única con `large`: el
+      // Primera a petición del usuario (23/10/2026). Única con `large`: el
       // original mide 6269 px.
       id: 'hero_ministers',
       i18nKey: 'ministers',
@@ -1164,6 +1156,14 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       large: 'assets/drive-media/slujitori_biserica_2026-2560.webp',
       thumb: 'assets/drive-media/slujitori_biserica_2026-thumb.webp',
       tone: '#605956',
+    },
+    {
+      id: 'hero_children',
+      i18nKey: 'children',
+      image: 'assets/drive-media/concert_copii_2025.webp',
+      medium: 'assets/drive-media/concert_copii_2025-960.webp',
+      thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
+      tone: '#797474',
     },
     {
       // El tineret dirigiendo la alabanza: la letra en pantalla, el coro y
