@@ -191,6 +191,17 @@ $lead-transition:
 }
 
 /** Contenedor de foto a sangre: el avatar lo llena entero. */
+/**
+ * Botón de ampliar del visor en un retrato: abajo a la derecha y pequeño.
+ * Arriba (su sitio por defecto) caía sobre la cabeza.
+ */
+@mixin lead-portrait-badge {
+  --viewable-badge-top: auto;
+  --viewable-badge-bottom: 0.4rem;
+  --viewable-badge-right: 0.4rem;
+  --viewable-badge-size: 1.75rem;
+}
+
 @mixin lead-photo-fill {
   display: block;
   overflow: hidden;

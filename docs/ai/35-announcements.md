@@ -18,6 +18,7 @@ El mismo objeto se pinta en **tres sitios** con **un solo renderizador**
 | Web `/anunturi`               | `AnnouncementsComponent` lista los vigentes, el más próximo primero  |
 | Web `/anunturi/<id>`          | El mismo componente con uno solo: **enlace para compartir** (WhatsApp) |
 | Proyección                    | Bloque `announcements`, **un anuncio = una o varias diapositivas** (páginas), al principio del carrusel |
+| Portada `/`, tarjeta «Program săptămânal» | Sólo los **de toda la semana** (`AnnouncementsService.weekLong`: sin `date`, `publishedOn` → `expiresOn` ≥ 6 días): fila «TOATĂ SĂPTĂMÂNA» + título encima de «Restul săptămânii»; cada una ocupa el sitio de una línea de la agenda (23/10/2026) |
 | Panel completo de la web (`/media`) | **No aparecen** (decisión del usuario, 22/09/2026): los anuncios sólo viven en su sección y en la proyección; `/media/anunturi` redirige a `/anunturi` |
 
 Vigencia: desde `publishedOn` (opcional, incluido) hasta `expiresOn`
@@ -202,6 +203,9 @@ Cuando el usuario pase un aviso en bruto (normalmente texto de WhatsApp):
 1. **Corrige** ortografía y diacríticos rumanos (ș, ț, ă, î, â), horas
    («18:00», nunca «18;OO»), mayúsculas de nombres propios y puntuación.
    Mantén los nombres de personas tal cual se escriben en la iglesia.
+   Las palabras con guion interno que no deben partirse al final de un renglón
+   («cu de-amănuntul») llevan `⁠` (word joiner) tras el guion:
+   `'de-⁠amănuntul'`. No hace falta en los clíticos cortos («Să-i»).
 2. **Estructura** en lugar de transcribir: fecha/hora/lugar a sus campos,
    precios y listas a `sections` **con su `kind`** (`prices`, `people`,
    `schedule`, `list`), la frase que resume el aviso a `lead`, el invitado

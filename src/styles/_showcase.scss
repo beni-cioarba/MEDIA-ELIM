@@ -414,6 +414,50 @@
   color: rgb(255 255 255 / 0.62);
 }
 
+/*
+ * Aviso de toda la semana (semana de oración) encima de la agenda: icono
+ * oro colgado, «TOATĂ SĂPTĂMÂNA» en versalitas y el título debajo (hasta dos
+ * líneas). Un velo claro y el filete oro lo separan de los cultos sin
+ * competir con el destacado.
+ */
+.promo__agenda-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.6rem;
+  align-items: center;
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--c-gold);
+  border-radius: 0 6px 6px 0;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.promo__agenda-notice app-icon {
+  grid-row: 1 / span 2;
+  font-size: 1.1rem;
+  color: var(--c-gold-soft);
+}
+
+.promo__agenda-notice-when {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.promo__agenda-notice-what {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: balance;
+  color: rgb(255 255 255 / 0.95);
+}
+
 /* --- Insignia ----------------------------------------------------------- */
 
 .promo__badge {

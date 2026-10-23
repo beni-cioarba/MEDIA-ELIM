@@ -451,6 +451,17 @@
 }
 
 /* =====================================================================
+ * La semana de un vistazo, en la columna de la página (alineada con la
+ * franja de avisos y el tablero).
+ * ===================================================================== */
+
+.week {
+  max-width: calc(var(--page-max) + 2 * var(--page-gutter));
+  margin-inline: auto;
+  padding: 1rem var(--page-gutter) 0;
+}
+
+/* =====================================================================
  * Tablero «lo que viene» — la banda del carrusel.
  *
  * Las tarjetas son `.promo` y viven en la hoja global `_showcase.scss`

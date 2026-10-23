@@ -146,6 +146,22 @@ aprovechando el espacio para imágenes y textos):
   ancho); la cabecera del perfil va `eager`. Los rangos existen porque Chrome
   reutiliza una variante mayor ya en memoria: tras abrir el visor, una tarjeta
   pintaba la de 1600 px reducida ×8 → muaré en trajes y listones. Una foto de < 640 px de ancho sale con aviso: pedir otra.
+  - **Si el recorte automático descentra** (cabeza a un lado del cuerpo, foto
+    apaisada): recortar antes a 4:5 a mano y pasarle el PNG al script (si ya
+    es 4:5 no recorta). Manda **la cara en el eje** (Pavel Negrușier,
+    23/10/2026: centrar los hombros dejaba la cara al 45 % y se veía
+    torcido); sólo si la cara ya cae cerca del centro se igualan los hombros
+    (Ionel Sidor).
+- **Tarjetas destacadas** (pastor y asistente), 23/10/2026: la foto marca el
+  alto (`align-self: stretch` + `width: 100%` + 4:5); en móvil foto de 9 / 7,5
+  rem y resumen a 2 líneas, y si la tarjeta mide < 21 rem (contenedor
+  `feature`) se ocultan resumen y nº de slujiri. El botón de ampliar del
+  visor va abajo a la derecha en los retratos (`lead-portrait-badge`, vars
+  `--viewable-badge-*` de `viewable.directive.ts`).
+- **Foto de grupo del comité** (23/10/2026): `assets/groups/comitetul_bisericii_2026-{960,1600,2560}.webp`,
+  debajo de las tarjetas del comité, a todo el ancho y ampliable en el visor.
+  Va fuera de `assets/leadership/` porque el script tomaría cualquier
+  `<nombre>-<ancho>.webp` de esa carpeta por una persona.
 - Estilos comunes en `features/leadership/_leadership-shared.scss`.
 
 *Arquitectura*:

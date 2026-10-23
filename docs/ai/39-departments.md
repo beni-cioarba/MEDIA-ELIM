@@ -269,8 +269,10 @@ La acción principal del hero de Tineret es «Vino vineri» → `#meet-friday`.
 
 ADM-TINERET (`C:\workspace\INEB_ELIM_Administrativ\elim-admin`, publicada en
 `https://beni-cioarba.github.io/ADM-TINERET/`) **sólo se enlaza desde el
-pie**: icono `layout-grid` en la barra de herramientas, junto al panel de
-control y la guía de estilos (`footer.youth_admin`). URL en un sitio:
+pie**: icono `calendar` en la barra de herramientas, junto al panel de
+control y la guía de estilos, con el rótulo «Programare · Administrativ»
+(`footer.admin_schedule`; abre la programación, que es su página de
+inicio). URL en un sitio:
 `YOUTH_ADMIN_APP_URL` (`departments.config.ts`).
 
 ## Diseño (línea propia, no catálogo)

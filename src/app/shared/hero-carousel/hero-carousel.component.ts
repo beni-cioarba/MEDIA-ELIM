@@ -42,8 +42,8 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
  * 3:2 y el marco a pantalla completa es más apaisado, así que sobra alto. En
  * vez de centrar el recorte a ciegas, cada diapositiva declara su `focus`
  * (`upper` por defecto), que se traduce a `object-position`: el recorte se
- * come el suelo, no las cabezas. En vertical (móvil o ventana estrecha) el
- * recorte pasa a ser lateral y se centra, que es lo correcto para un grupo.
+ * come el suelo, no las cabezas. En móvil (< 860 px) no se recorta nada: la
+ * foto va entera arriba sobre su propia copia difuminada (`.hero__fill`).
  *
  * **Sensación de movimiento**, que es lo que hace que una portada esté viva:
  *  - *Ken Burns*: la foto activa hace un zoom lento durante los 6 s que dura,
@@ -93,6 +93,19 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
              navegador no frenaba ninguna y se descargaban de golpe al entrar. -->
         @for (frame of frames(); track frame.slide.id; let i = $index) {
           @if (mounted().has(i)) {
+          <!-- Sólo en móvil: la misma foto, difuminada, rellena el marco
+               alrededor de la foto entera (ver .hero__fill). La miniatura
+               basta: va desenfocada. -->
+          <img
+            class="hero__fill"
+            [class.is-active]="i === index()"
+            [class.is-leaving]="i === leaving()"
+            [src]="frame.slide.thumb"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+          />
           <img
             class="hero__image"
             [class.is-active]="i === index()"
@@ -283,6 +296,60 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
 
       .hero.is-paused .hero__image.is-active {
         animation-play-state: paused;
+      }
+
+      /*
+       * Móvil (< 860 px): la foto SIEMPRE entera (petición del usuario,
+       * 23/10/2026). El marco es vertical y las fotos apaisadas: con cover
+       * se perdían los lados —en una foto de grupo, la mitad de la gente—.
+       * Ahora la foto va completa arriba (contain) y el resto del marco lo
+       * llena la misma foto difuminada y oscurecida, así no hay bandas y el
+       * texto se apoya en un fondo del color de la foto. El alto del hero no
+       * cambia. Sin Ken Burns en la foto: el zoom recortaría los bordes.
+       */
+      .hero__fill {
+        display: none;
+      }
+
+      @media (max-width: 859.98px) {
+        .hero__fill {
+          position: absolute;
+          inset: 0;
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0;
+          filter: blur(22px) saturate(1.15) brightness(0.62);
+          /* Escalada para que el borde del desenfoque no deje un halo claro. */
+          transform: scale(1.2);
+          transition: opacity 1.2s var(--ea-standard);
+        }
+
+        .hero__fill.is-active {
+          opacity: 1;
+        }
+
+        .hero__image {
+          object-fit: contain;
+          object-position: 50% 0 !important;
+        }
+
+        .hero__image.is-active,
+        .hero__image.is-leaving {
+          animation: none;
+        }
+
+        /* El fondo difuminado ya va oscurecido: el velo sólo refuerza la
+           zona del texto y deja limpia la foto de arriba. */
+        .hero__scrim {
+          background: linear-gradient(
+            to top,
+            color-mix(in srgb, var(--c-primary-darkest) 82%, transparent) 0%,
+            color-mix(in srgb, var(--c-primary-darkest) 55%, transparent) 30%,
+            transparent 55%
+          );
+        }
       }
 
       /* Zoom contenido (1,00 → 1,05). Llegó a 1,12: cada punto de zoom es un

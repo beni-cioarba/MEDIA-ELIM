@@ -30,6 +30,7 @@ import {
   splitInTwo,
 } from './leadership.view';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
+import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { PersonAvatarComponent } from './person-avatar/person-avatar.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 
@@ -75,6 +76,18 @@ export class LeadershipComponent {
 
   protected readonly leaders = LEADER_CARDS;
   protected readonly committee = COMMITTEE_CARDS;
+
+  /** Foto de grupo del comité (25 aniversario, 2026). Original de 6469 px. */
+  protected readonly committeePhoto: ViewerDocument = {
+    src: 'assets/groups/comitetul_bisericii_2026-1600.webp',
+    srcset:
+      'assets/groups/comitetul_bisericii_2026-960.webp 960w, ' +
+      'assets/groups/comitetul_bisericii_2026-1600.webp 1600w, ' +
+      'assets/groups/comitetul_bisericii_2026-2560.webp 2560w',
+    thumb: 'assets/groups/comitetul_bisericii_2026-960.webp',
+    name: 'Comitetul Bisericii',
+    alt: 'Comitetul Bisericii',
+  };
 
   /**
    * ¿Hay en el bloque alguien con perfil? Sólo entonces se explica la marca

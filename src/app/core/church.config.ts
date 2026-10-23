@@ -932,6 +932,47 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       publishedOn: '2026-10-18',
       expiresOn: '2026-10-24',
     },
+    /*
+     * Semana de intercesión por el tineret y sus líderes (25/10 → 31/10).
+     *
+     * Erratas del original: «,dorim» (coma suelta), «înțelepciune putere»
+     * sin coma, «îi îmbrace cu duhul sfânt»→Duhul Sfânt, «lucrarea
+     * domnului»→Domnului, «lideri de tineret»→liderii, «cu de amănuntul
+     * călea»→«cu de-amănuntul calea», «tineri bisericii»→tinerii Bisericii.
+     * Como el aviso pide cosas distintas para los jóvenes y para sus líderes,
+     * las dos columnas son una por destinatario; la de los líderes, más
+     * corta, va en `highlight` para no dejar hueco. La bendición final, al pie.
+     */
+    {
+      id: 'mijlocire_tineret',
+      title: 'Săptămână de rugăciune pentru tineretul bisericii',
+      lead: 'În săptămâna aceasta stăm înaintea Domnului în rugăciune pentru tineretul casei Domnului.',
+      sections: [
+        {
+          heading: 'Pentru tineri',
+          kind: 'list',
+          items: [
+            { label: 'Înțelepciune, putere și sănătate' },
+            { label: 'Să-i păzească de planurile celui rău' },
+            { label: 'Să-i îmbrace cu Duhul Sfânt' },
+            { label: 'Să fie folositori în lucrarea Domnului' },
+          ],
+        },
+        {
+          heading: 'Pentru liderii de tineret',
+          kind: 'list',
+          highlight: true,
+          items: [
+            { label: 'Înțelepciune și călăuzire' },
+            // U+2060 (word joiner) tras el guion: «de-amănuntul» no se parte en dos renglones.
+            { label: 'Să-i învețe cu de-⁠amănuntul calea Domnului' },
+          ],
+        },
+      ],
+      footnote: 'Domnul să binecuvânteze pe toți tinerii Bisericii Elim!',
+      publishedOn: '2026-10-25',
+      expiresOn: '2026-10-31',
+    },
     {
       id: 'aniversare_25_ani',
       title: 'Sărbătoare: 25 de ani de la înființarea Bisericii Elim',
@@ -1098,8 +1139,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
 
   heroSlides: [
     // El orden es deliberado: abre el concierto de niños (la foto con más
-    // gente y más luz, que es la primera impresión), sigue el tineret en
-    // alabanza (segunda, a petición del usuario, 04/10/2026) y, agrupados por
+    // gente y más luz, que es la primera impresión), siguen los slujitori
+    // (23/10/2026) y el tineret en alabanza (04/10/2026), ambos a petición
+    // del usuario, y, agrupados por
     // tema, la música (coro y fanfara) y el bautismo (candidatos y bautismo).
     // Después Fin de Año y acción social, y cierra la velada de villancicos.
     // Cambiarlo es cambiar lo primero que ve quien entra.
@@ -1110,6 +1152,18 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       medium: 'assets/drive-media/concert_copii_2025-960.webp',
       thumb: 'assets/drive-media/concert_copii_2025-thumb.webp',
       tone: '#797474',
+    },
+    {
+      // Los slujitori de la iglesia, foto de grupo del 25 aniversario.
+      // Segunda a petición del usuario (23/10/2026). Única con `large`: el
+      // original mide 6269 px.
+      id: 'hero_ministers',
+      i18nKey: 'ministers',
+      image: 'assets/drive-media/slujitori_biserica_2026.webp',
+      medium: 'assets/drive-media/slujitori_biserica_2026-960.webp',
+      large: 'assets/drive-media/slujitori_biserica_2026-2560.webp',
+      thumb: 'assets/drive-media/slujitori_biserica_2026-thumb.webp',
+      tone: '#605956',
     },
     {
       // El tineret dirigiendo la alabanza: la letra en pantalla, el coro y

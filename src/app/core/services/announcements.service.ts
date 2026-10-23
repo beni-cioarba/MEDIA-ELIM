@@ -23,6 +23,9 @@ import { ClockService } from './clock.service';
  */
 const PAST_WINDOW_DAYS = 90;
 
+/** Días (incluidos ambos extremos) a partir de los cuales un aviso sin fecha es «de toda la semana». */
+const WEEK_MIN_DAYS = 6;
+
 @Injectable({ providedIn: 'root' })
 export class AnnouncementsService {
   private readonly config = inject(CHURCH_CONFIG);
@@ -40,6 +43,24 @@ export class AnnouncementsService {
   });
 
   readonly hasActive = computed<boolean>(() => this.active().length > 0);
+
+  /**
+   * Vigentes que abarcan **toda una semana** (sin `date` propia y con
+   * `publishedOn` → `expiresOn` de al menos `WEEK_MIN_DAYS` días): las semanas
+   * de oración y mijlocire. No son de un día concreto, así que la tarjeta del
+   * programa semanal de la portada los enseña como «Toată săptămâna».
+   */
+  readonly weekLong = computed<readonly Announcement[]>(() =>
+    this.active().filter((a) => {
+      if (a.date || !a.publishedOn) return false;
+      const days = Math.round(
+        (startOfDay(parseIsoDate(a.expiresOn)).getTime() -
+          startOfDay(parseIsoDate(a.publishedOn)).getTime()) /
+          DAY_MS,
+      ) + 1;
+      return days >= WEEK_MIN_DAYS;
+    }),
+  );
 
   /**
    * Anuncios caducados en los últimos `PAST_WINDOW_DAYS` días, el más reciente

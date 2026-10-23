@@ -156,6 +156,15 @@
 }
 
 <!-- ===================================================================
+     La semana de un vistazo (lunes → domingo), debajo de los avisos: el
+     mismo componente que en Contact, sin la franja del próximo culto (la
+     tarjeta del programa del tablero ya lleva la cuenta atrás).
+     =================================================================== -->
+<div class="week">
+  <app-week-schedule [showNext]="false" />
+</div>
+
+<!-- ===================================================================
      Tablero «lo que viene»: carrusel de tarjetas de promoción.
      La anatomía está calcada del carrusel de play.google.com/store/apps
      (medido, no mirado): portada con foto, insignia superpuesta arriba a la
@@ -245,6 +254,16 @@
 
               @if (card.agenda.length > 0) {
                 <div class="promo__agenda">
+                  <!-- Avisos de toda la semana (semanas de oración): `div` y no
+                       `p` para no contar en el `nth-of-type` que recorta las
+                       filas en móvil. -->
+                  @for (n of card.notices; track n.id) {
+                    <div class="promo__agenda-notice">
+                      <app-icon name="megaphone" />
+                      <span class="promo__agenda-notice-when">{{ 'home.board.whole_week' | translate }}</span>
+                      <span class="promo__agenda-notice-what">{{ n.title }}</span>
+                    </div>
+                  }
                   <p class="promo__agenda-head">{{ card.agendaKey | translate }}</p>
                   @for (row of card.agenda; track row.id) {
                     <p class="promo__agenda-row">

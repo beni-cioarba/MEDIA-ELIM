@@ -32,14 +32,17 @@ import { DocumentViewerService } from './overlay/document-viewer.service';
   template: `<app-icon name="maximize" />`,
   styles: `
     :host {
+      /* Esquina y tamaño ajustables por quien lo usa (en un retrato, abajo:
+         arriba a la derecha tapaba la cabeza). */
       position: absolute;
-      top: 0.6rem;
-      right: 0.6rem;
+      top: var(--viewable-badge-top, 0.6rem);
+      right: var(--viewable-badge-right, 0.6rem);
+      bottom: var(--viewable-badge-bottom, auto);
       z-index: 2;
       display: grid;
       place-items: center;
-      width: 2.25rem;
-      height: 2.25rem;
+      width: var(--viewable-badge-size, 2.25rem);
+      height: var(--viewable-badge-size, 2.25rem);
       border-radius: 50%;
       background: rgb(0 0 0 / 0.55);
       color: #fff;

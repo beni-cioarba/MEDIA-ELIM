@@ -170,8 +170,11 @@ con el recorte gobernado.
 - **Qué se recorta**: cada diapositiva declara su `focus` (`ImageFocus`,
   `upper` por defecto), que `hero-carousel.component.ts` traduce a
   `object-position`. Con `upper` el recorte se lleva el suelo y deja las
-  cabezas. En vertical el recorte pasa a ser lateral y se centra, que es lo
-  correcto para una foto de grupo.
+  cabezas. **En móvil (< 860 px) no se recorta nada** (petición del usuario,
+  23/10/2026: en las fotos de grupo se perdía media fila): la foto va entera
+  arriba (`contain`, sin Ken Burns) sobre su miniatura difuminada y
+  oscurecida (`.hero__fill`), que llena el resto del marco; el texto se apoya
+  en ese fondo, debajo de la foto. El alto del hero no cambia.
 - **Legibilidad**: velo diagonal (100°) en horizontal —oscurece el lado del
   texto y deja ver la foto en el otro— y de abajo arriba en vertical, donde
   además el texto se ancla al pie en lugar de centrarse: centrado caía en la

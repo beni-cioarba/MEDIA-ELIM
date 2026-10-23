@@ -661,7 +661,7 @@
     "built_at": "Publicada",
     "styleguide": "Guía de estilos",
     "control": "Panel de control",
-    "youth_admin": "App de jóvenes · ADM-TINERET (se abre en otra pestaña)",
+    "admin_schedule": "Programare · Administrativ",
     "call": "Llamar por teléfono",
     "whatsapp": "Escribir por WhatsApp"
   },
@@ -984,6 +984,7 @@
     "board": {
       "title": "Lo que viene",
       "rest_week": "El resto de la semana",
+      "whole_week": "Toda la semana",
       "day_of": "Día {{n}} de {{total}}",
       "calendar": "Calendario",
       "rest_readings": "El resto de las lecturas",
@@ -1007,6 +1008,7 @@
         "baptism": "Bautismo",
         "baptism_candidates": "Los candidatos al bautismo",
         "children": "Concierto de los niños",
+        "ministers": "Los siervos de la iglesia",
         "youth": "Los jóvenes en alabanza",
         "choir": "El coro de la iglesia",
         "brass": "La fanfarria",
@@ -1125,7 +1127,8 @@
     },
     "committee": {
       "title": "Comité de la iglesia",
-      "subtitle": "Los miembros que forman el comité y toman las decisiones de la iglesia."
+      "subtitle": "Los miembros que forman el comité y toman las decisiones de la iglesia.",
+      "photo_alt": "El comité de la Iglesia Elim Arganda, juntos, en el 25 aniversario"
     },
     "titles": {
       "pastor": "Pastor",

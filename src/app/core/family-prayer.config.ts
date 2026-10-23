@@ -464,4 +464,72 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 8,
+    presentedOn: '2026-10-25',
+    families: [
+      {
+        id: 'breban-daniel-anamaria',
+        surname: 'Breban',
+        names: 'Daniel și Anamaria',
+        children: ['Maya', 'Daniel'],
+        message: [
+          'Mulțumesc lui Dumnezeu pentru dragostea Lui nespus de mare față de mine și familia mea!',
+          'Îmi doresc ca Domnul să lucreze cu mântuire în casa noastră, să ne păzească și să ne ajute să-I slujim cu pasiune, sfârșind alergarea cu bucurie!',
+        ],
+        verse: {
+          text: 'Lăudați pe Domnul, căci este bun, căci în veac ține îndurarea Lui!',
+          reference: 'Psalmul 136:1',
+        },
+      },
+      {
+        id: 'brinzoi-madalin-erasmina',
+        surname: 'Brînzoi',
+        names: 'Mădălin și Erasmina',
+        children: ['Abigail', 'Samuel', 'Levi'],
+        message: [
+          'Mulțumim Domnului pentru tot Harul și Bunătatea Sa.',
+          'Dorința familiei noastre este ca prezența lui Dumnezeu să fie reală în viața noastră și să ne ajute Domnul să nu uităm niciodată promisiunea Lui:',
+        ],
+        verse: {
+          text: 'Eu sunt cu voi în toate zilele, până la sfârșitul veacului.',
+          reference: 'Matei 28:20',
+        },
+      },
+      {
+        id: 'bucur-ionel-mirela',
+        surname: 'Bucur',
+        names: 'Ionel și Mirela',
+        message: [
+          'Mulțumim Bunului Dumnezeu pentru cei 34 de ani împreună, cu bune și cu mai puțin bune, și nu uităm niciodată de izbânda pe care ne-a dat-o Dumnezeu.',
+          'Mulțumim Bisericii „Elim” pentru sprijin și ajutor în necaz, și Dumnezeu să fie glorificat și binecuvântat!',
+          'Mulțumim Domnului pentru cei 2 copii ai noștri, Marina și Florin, și cei 6 nepoței!',
+          'Mâna Domnului să fie peste toată familia noastră!',
+        ],
+      },
+      {
+        id: 'bucurici-samuel-cristina',
+        surname: 'Bucurici',
+        names: 'Samuel și Cristina',
+        children: ['Caleb', 'Ezra', 'Asael'],
+        message: [
+          'Mulțumim lui Dumnezeu pentru toate lucrurile și dorim să rămânem lângă El toată viața, slujindu-I cu dragoste și dăruire, împlinind voia Sa în viața noastră!',
+        ],
+      },
+      {
+        id: 'burdet-aurel-marga',
+        surname: 'Burdeț',
+        names: 'Aurel și Marga',
+        children: ['Abigail', 'Rahela', 'Efraim'],
+        message: [
+          'Mulțumim Domnului pentru implicarea Lui în familia noastră, pentru rugăciunile ascultate și bunătatea Lui arătată față de noi.',
+          'Dorința noastră este ca Domnul să ne ajute să rămânem statornici în credință, să fim plini de pasiune pentru lucrarea pe care ne-a chemat El să o facem și să lucrăm cu mai multă dăruire în Biserica Elim!',
+        ],
+        verse: {
+          text: 'De aceea, preaiubiții mei frați, fiți tari, neclintiți, lucrând totdeauna cu prisosință în lucrul Domnului, căci știți că osteneala voastră în Domnul nu este zadarnică.',
+          reference: '1 Corinteni 15:58',
+        },
+      },
+    ],
+  },
 ];

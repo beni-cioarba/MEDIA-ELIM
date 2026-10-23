@@ -661,7 +661,7 @@
     "built_at": "Publicată",
     "styleguide": "Ghid de stiluri",
     "control": "Panou de control",
-    "youth_admin": "Aplicația tineretului · ADM-TINERET (se deschide într-o filă nouă)",
+    "admin_schedule": "Programare · Administrativ",
     "call": "Sună la telefon",
     "whatsapp": "Scrie pe WhatsApp"
   },
@@ -984,6 +984,7 @@
     "board": {
       "title": "Ce urmează",
       "rest_week": "Restul săptămânii",
+      "whole_week": "Toată săptămâna",
       "day_of": "Ziua {{n}} din {{total}}",
       "calendar": "Calendar",
       "rest_readings": "Restul lecturilor",
@@ -1007,6 +1008,7 @@
         "baptism": "Botez",
         "baptism_candidates": "Candidații la botez",
         "children": "Concertul copiilor",
+        "ministers": "Slujitorii bisericii",
         "youth": "Tineretul în închinare",
         "choir": "Corul bisericii",
         "brass": "Fanfara",
@@ -1125,7 +1127,8 @@
     },
     "committee": {
       "title": "Comitetul Bisericii",
-      "subtitle": "Membrii care alcătuiesc comitetul și iau deciziile bisericii."
+      "subtitle": "Membrii care alcătuiesc comitetul și iau deciziile bisericii.",
+      "photo_alt": "Comitetul Bisericii Elim Arganda, împreună, la aniversarea de 25 de ani"
     },
     "titles": {
       "pastor": "Pastor",

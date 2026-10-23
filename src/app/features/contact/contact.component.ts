@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
@@ -11,11 +11,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { ContactFormService } from '../../core/services/contact-form.service';
 import { LanguageService } from '../../core/services/language.service';
-import { ScheduleService } from '../../core/services/schedule.service';
 import { telHref, whatsappHref } from '../../core/util/contact-links';
-import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
+import { APP_PATHS } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { CopyButtonComponent } from '../../shared/copy-button/copy-button.component';
+import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.component';
 import { IconName } from '../../core/ui/icon-name';
 
 /** Una vía de contacto de la columna lateral. */
@@ -59,6 +59,7 @@ const MIN_FILL_MS = 3000;
         TranslatePipe,
         IconComponent,
         CopyButtonComponent,
+        WeekScheduleComponent,
     ],
     templateUrl: './contact.component.html',
     styleUrl: './contact.component.scss'
@@ -71,7 +72,6 @@ export class ContactComponent {
   private readonly language = inject(LanguageService);
 
   protected readonly links = {
-    weekly: blockPath('weekly'),
     donate: `/${APP_PATHS.donate}`,
     about: `/${APP_PATHS.about}`,
     /** Acciones directas de la cabecera. */
@@ -79,20 +79,6 @@ export class ContactComponent {
     mailto: `mailto:${this.config.contact.email}`,
     maps: this.config.location.mapsShareUrl,
   } as const;
-
-  /**
-   * Horario: la semana en curso como calendario (lunes → domingo, con fecha
-   * y días sin culto) y el culto en curso o siguiente. Misma fuente que el
-   * bloque «Program săptămânal»: los dos no pueden decir cosas distintas.
-   */
-  protected readonly schedule = inject(ScheduleService);
-  protected readonly next = this.schedule.nextService;
-
-  /** «Hoy» / «Mañana» se traducen en la plantilla; el resto, día de la semana. */
-  protected readonly nextDayLabel = computed(() => {
-    const next = this.next();
-    return next ? this.schedule.formatWeekdayLong(next.iso) : '';
-  });
 
   /**
    * Vías de contacto. Se construyen aquí (y no en la plantilla) para que el

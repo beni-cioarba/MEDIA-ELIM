@@ -20,6 +20,7 @@ import { IconName } from '../../core/ui/icon-name';
 import { FamilyPrayerService, PrayerFamilyView } from '../../core/services/family-prayer.service';
 import { FamilyPhotoComponent } from '../family-prayer/family-photo/family-photo.component';
 import { ContestTeaserComponent } from '../talent-contest/contest-teaser/contest-teaser.component';
+import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.component';
 
 
 
@@ -144,6 +145,11 @@ interface BoardCard {
   /** Agenda comprimida: lo que viene después de lo que va en el titular. */
   readonly agenda: readonly BoardAgendaRow[];
   /**
+   * Avisos de toda la semana (semanas de oración), encima de la agenda. Sólo
+   * la tarjeta del programa semanal: es la que responde «qué hay esta semana».
+   */
+  readonly notices: readonly { readonly id: string; readonly title: string }[];
+  /**
    * Avance de 0 a 1 que pinta la barra fina del pie: cuánto falta para el
    * culto (últimas 24 h), en qué día va el plan de lectura, cuánto queda para
    * el evento (último mes). Refuerza `meta`, que lo dice con palabras.
@@ -191,6 +197,7 @@ interface HeroNext {
         IconComponent,
         FamilyPhotoComponent,
         ContestTeaserComponent,
+        WeekScheduleComponent,
     ],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'
@@ -315,6 +322,7 @@ export class HomeComponent {
     // Si el culto de hoy ya terminó, `nextService` es otro y no se usa.
     const next = this.schedule.nextService();
     const session = next && featured && next.service.id === featured.id ? next : null;
+    const weekNotices = this.announcements.weekLong().map((a) => ({ id: a.id, title: a.title }));
     return {
       id: 'weekly',
       cover: 'data',
@@ -345,10 +353,13 @@ export class HomeComponent {
       event: null,
       date: null,
       agendaKey: 'home.board.rest_week',
+      notices: weekNotices,
       // El resto de la semana: lo que hace que la tarjeta responda «¿cuándo
       // nos reunimos?» sin abrir nada. Cuatro líneas: la portada se estira
       // hasta el alto de la tarjeta de cartel y el hueco se llena con datos.
-      agenda: rest.slice(0, 4).map((item) => ({
+      // Cada aviso de la semana ocupa el sitio de una línea: la tarjeta no
+      // crece y la agenda conserva al menos dos días.
+      agenda: rest.slice(0, Math.max(2, 4 - weekNotices.length)).map((item) => ({
         id: item.id,
         when: item.dayLabel,
         what: item.title,
@@ -395,6 +406,7 @@ export class HomeComponent {
             weekday: this.schedule.formatWeekdayLong(evento.date),
           },
           agendaKey: '',
+          notices: [],
           agenda: [],
         };
       });
@@ -443,6 +455,7 @@ export class HomeComponent {
       event: null,
       date: null,
       agendaKey: 'home.board.rest_readings',
+      notices: [],
       agenda: days.slice(todayIndex + 1, todayIndex + 5).map((day) => ({
         id: day.date,
         when: this.schedule.formatWeekdayShort(day.date),

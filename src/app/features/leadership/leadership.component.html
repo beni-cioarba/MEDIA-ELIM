@@ -52,7 +52,7 @@
           [appViewableIndex]="galleries.featured.at.get(item.card.id) ?? 0"
           [appViewableDisabled]="!item.card.photo"
         >
-          <app-person-avatar slot="card" [photo]="item.card.photo" sizes="(max-width: 860px) 8rem, 12rem" />
+          <app-person-avatar slot="card" [photo]="item.card.photo" sizes="(max-width: 860px) 9rem, 12rem" />
         </div>
         <div class="feature__body">
           <span class="feature__kicker">{{ 'leadership.tier.' + item.card.tier | translate }}</span>
@@ -61,7 +61,7 @@
             <span class="feature__summary">{{ item.summary }}</span>
           }
           <span class="feature__foot">
-            <span>
+            <span class="feature__count">
               {{ (item.card.serviceCount === 1 ? 'leadership.serves_one' : 'leadership.serves_other') | translate: { n: item.card.serviceCount } }}
             </span>
             @if (item.card.link) {
@@ -175,6 +175,21 @@
       }
     </ul>
     </div>
+    <!-- Foto de grupo (25 aniversario): debajo de las tarjetas, como
+         cierre del bloque. Se amplía en el visor a 2560 px. -->
+    <figure class="group" [appViewable]="committeePhoto">
+      <img
+        class="group__img"
+        [src]="committeePhoto.src"
+        [srcset]="committeePhoto.srcset"
+        sizes="(max-width: 1520px) 100vw, 1440px"
+        width="2560"
+        height="1224"
+        loading="lazy"
+        decoding="async"
+        [alt]="'leadership.committee.photo_alt' | translate"
+      />
+    </figure>
   </section>
 
   <!-- ================= Directorio =================

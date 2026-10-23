@@ -20,6 +20,9 @@ export const LEADERSHIP_PHOTOS: Readonly<Record<string, LeadershipPhotoManifestE
   'ilie-petrescu': { width: 1176, height: 1470, variants: [160, 320, 640, 960, 1176] },
   'ioan-andor': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'ioan-lauran': { width: 1018, height: 1273, variants: [160, 320, 640, 1018] },
+  'ionel-sidor': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
+  'ionut-mitoseriu': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
+  'pavel-negrusier': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'petrica-halas': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'vali-roman': { width: 324, height: 405, variants: [160, 324] },
 };
