@@ -53,5 +53,5 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-10-25/brinzoi-madalin-erasmina': { width: 814, height: 1176, variants: [[480, 332], [960, 664], [1176, 814]] },
   '2026-10-25/bucur-ionel-mirela': { width: 1200, height: 1209, variants: [[480, 476], [960, 953], [1209, 1200]] },
   '2026-10-25/bucurici-samuel-cristina': { width: 1031, height: 855, variants: [[480, 480], [960, 960], [1031, 1031]] },
-  '2026-10-25/burdet-aurel-marga': { width: 1126, height: 1356, variants: [[480, 399], [960, 797], [1356, 1126]] },
+  '2026-10-25/burdet-aurel-marga': { width: 780, height: 905, variants: [[480, 414], [905, 780]] },
 };
