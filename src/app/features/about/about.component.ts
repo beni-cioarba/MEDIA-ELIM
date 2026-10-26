@@ -12,7 +12,15 @@ import { IconName } from '../../core/ui/icon-name';
 import { CREDO_ARTICLE_COUNT, CREDO_PARTS, citarArticulo } from '../credo/credo.data';
 import { ScheduleService } from '../../core/services/schedule.service';
 import { LanguageService } from '../../core/services/language.service';
-import { STORY_CHAPTERS, STORY_FACTS, STORY_FACTS_AS_OF, STORY_WORKS } from './about-story.data';
+import {
+  STORY_CHAPTERS,
+  STORY_ERAS,
+  STORY_FACTS,
+  STORY_FACTS_AS_OF,
+  STORY_WORKS,
+  StoryEra,
+  StoryMilestone,
+} from './about-story.data';
 
 /** Pilar de identidad (misión, visión, valores…). */
 interface Pillar {
@@ -28,6 +36,21 @@ interface Pillar {
    */
   readonly article: string;
 }
+
+/** Hito listo para pintar: fecha en el idioma activo y enlace a la grabación. */
+interface MilestoneView extends StoryMilestone {
+  readonly label: string;
+  readonly iso: string;
+  readonly url: string | null;
+}
+
+/** Época lista para pintar (numeral romano y hitos resueltos). */
+interface EraView extends Omit<StoryEra, 'milestones'> {
+  readonly numeral: string;
+  readonly milestones: readonly MilestoneView[];
+}
+
+const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
 /** Un pilar con su artículo ya resuelto (número y enlace). */
 interface PillarView extends Pillar {
@@ -59,6 +82,31 @@ export class AboutComponent {
   protected readonly chapters = STORY_CHAPTERS;
   protected readonly facts = STORY_FACTS;
   protected readonly works = STORY_WORKS;
+
+  /**
+   * Cronología por épocas, con la fecha de cada hito en el idioma activo:
+   * «2001», «nov. 2001» / «nov 2001» o «18 oct. 2026», según lo que se sepa.
+   */
+  protected readonly eras = computed<readonly EraView[]>(() => {
+    const lang = this.language.current();
+    const month = new Intl.DateTimeFormat(lang, { month: 'short', year: 'numeric' });
+    const day = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', year: 'numeric' });
+    const label = (date: string): string => {
+      const [y, m, d] = date.split('-').map(Number);
+      if (!m) return String(y);
+      return (d ? day : month).format(new Date(y, m - 1, d || 1));
+    };
+    return STORY_ERAS.map((era, i) => ({
+      ...era,
+      numeral: NUMERALS[i] ?? String(i + 1),
+      milestones: era.milestones.map((m) => ({
+        ...m,
+        label: label(m.date),
+        iso: m.date,
+        url: m.video ? `https://www.youtube.com/watch?v=${m.video}` : null,
+      })),
+    }));
+  });
   private readonly language = inject(LanguageService);
   private readonly translate = inject(TranslateService);
 

@@ -1045,15 +1045,15 @@
       "chapters": {
         "start": {
           "title": "Un comienzo pequeño, en la voluntad de Dios",
-          "body": "Todo empezó con una propuesta, después un consejo, una resolución y, al final, una decisión. La pregunta de entonces no era sólo si saldría bien, sino si esta obra era la voluntad del Señor. Eran pocas personas, en un lugar sencillo —no un fuego, sino una chispa—, pero se empezó con Dios."
+          "body": "Todo empezó en 2001, en Arganda del Rey, con una propuesta, un consejo, una resolución y, al final, una decisión. La pregunta de entonces no era sólo si saldría bien, sino si esta obra era la voluntad del Señor. Eran pocas personas, en un lugar sencillo —no un fuego, sino una chispa—, pero se empezó con Dios. Ese mismo año nació el coro, y la iglesia antigua se llenó de oración y de programas de jóvenes."
         },
         "growth": {
           "title": "Crecida por el Espíritu Santo",
-          "body": "La iglesia llegó a las 100 almas no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
+          "body": "Siguieron años de servicio: la banda de música, el grupo de misión que llevó el Evangelio por ciudades de España, conferencias de jóvenes y de misiones. La iglesia llegó a las 100 almas no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
         },
         "today": {
           "title": "Hasta aquí, y más allá",
-          "body": "Hoy somos unos 450 miembros y 270 allegados, y detrás de cada alma hay una historia. La gracia que nos ha traído hasta aquí nos llevará más lejos: niños que conozcan a Dios, jóvenes que ardan por Cristo, familias unidas y una iglesia que siga siendo casa de oración."
+          "body": "Una nueva generación se ha bautizado, se han levantado ministros y la misión ha llegado hasta Uganda. Desde 2025 nos reunimos en una casa nueva. Hoy somos unos 450 miembros y 270 allegados, y detrás de cada alma hay una historia. La gracia que nos ha traído hasta aquí nos llevará más lejos."
         }
       },
       "facts": {
@@ -1061,6 +1061,69 @@
         "members": "Miembros",
         "adherents": "Allegados",
         "as_of": "Cifras de {{date}}"
+      },
+      "timeline": {
+        "title": "25 años, en breve",
+        "lead": "Cinco etapas, de la iglesia antigua a la casa nueva. Detrás de cada hito hay una grabación del archivo de la iglesia.",
+        "era": "Etapa {{n}}",
+        "watch": "Ver",
+        "watch_long": "Ver la grabación en YouTube"
+      },
+      "eras": {
+        "beginnings": {
+          "title": "Los comienzos",
+          "summary": "Unas pocas personas, un lugar sencillo y una pregunta: ¿es esta obra la voluntad del Señor?",
+          "milestones": {
+            "founded": "Nace la Iglesia Elim de Arganda del Rey",
+            "choir": "Se funda el coro de la iglesia",
+            "youth": "Programas de jóvenes en la iglesia antigua",
+            "christmas": "Concierto de Navidad y Nochevieja: el coro, la orquesta y los grupos"
+          }
+        },
+        "growth": {
+          "title": "Crecimiento",
+          "summary": "La iglesia se organiza y sale fuera: banda de música, grupo de misión, conferencias.",
+          "milestones": {
+            "conference": "Conferencia «La buena batalla»",
+            "brass": "La banda de música de la iglesia, dirigida por Damian Onofrei",
+            "mission": "El grupo de misión en Alcalá de Henares, Getafe, Cuéllar, Azuqueca y Roquetas de Mar",
+            "youth_conf": "Conferencia regional de jóvenes en Elim",
+            "choir7": "El coro cumple 7 años: «Eben-Ezer» y «No a nosotros, Señor»",
+            "assembly": "La Asamblea de Arganda del Rey (31 de octubre – 1 de noviembre)"
+          }
+        },
+        "fruit": {
+          "title": "Frutos",
+          "summary": "Diez años del comienzo y una iglesia en plena obra, con conferencias para jóvenes, líderes y misiones.",
+          "milestones": {
+            "ten": "10 años de la inauguración de la iglesia",
+            "cuellar": "Conferencia en Cuéllar",
+            "conferences": "Conferencias en Poveda, para líderes y jóvenes y para maestros de niños",
+            "mission_conf": "Conferencia de misiones (4–6 de diciembre)"
+          }
+        },
+        "generation": {
+          "title": "Una nueva generación",
+          "summary": "Los niños que crecieron en la iglesia se bautizan, se levantan ministros y la misión cruza fronteras.",
+          "milestones": {
+            "baptisms": "Bautismos, año tras año",
+            "ordination": "Ordenación de ministros",
+            "uganda": "Misión en Uganda, con la tribu IK",
+            "children": "Bendición de los niños"
+          }
+        },
+        "house": {
+          "title": "Una casa nueva",
+          "summary": "Un nuevo templo y el mismo llamado del principio.",
+          "milestones": {
+            "temple": "La iglesia se reúne en su nuevo templo",
+            "anchored": "Conferencia «Anclado en Cristo»",
+            "shoebox": "«Una sonrisa en una caja» y el concierto de villancicos de los niños",
+            "hope": "Conferencia «Esperanza para ti»",
+            "ordination": "Ordenación de ministros",
+            "jubilee": "25 años: un altar de gratitud"
+          }
+        }
       },
       "works": {
         "title": "Lo que Dios ha hecho en {{count}} años",

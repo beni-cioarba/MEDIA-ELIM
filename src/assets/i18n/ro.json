@@ -1045,15 +1045,15 @@
       "chapters": {
         "start": {
           "title": "Un început mic, în voia Domnului",
-          "body": "Totul a început cu o propunere, apoi un sfat, o hotărâre și, în final, o decizie. Întrebarea de atunci nu era doar dacă vom avea izbândă, ci dacă lucrarea aceasta este în voia Domnului. Au fost doar câțiva oameni, într-un loc simplu — nu un foc, ci o scânteie —, dar s-a început cu Dumnezeu."
+          "body": "Totul a început în 2001, la Arganda del Rey, cu o propunere, un sfat, o hotărâre și, în final, o decizie. Întrebarea de atunci nu era doar dacă vom avea izbândă, ci dacă lucrarea aceasta este în voia Domnului. Au fost doar câțiva oameni, într-un loc simplu — nu un foc, ci o scânteie —, dar s-a început cu Dumnezeu. În același an s-a înființat corul, iar biserica veche s-a umplut de rugăciune și de programe de tineret."
         },
         "growth": {
           "title": "Crescută prin Duhul Sfânt",
-          "body": "Biserica a ajuns la 100 de suflete nu pentru că avea oameni pregătiți pentru lucrări mari, ci pentru că a crezut Cuvântul: „nici prin putere, nici prin tărie, ci prin Duhul Meu”. Au fost și încercări — despărțiri, pierderi, furtuni —, dar după fiecare am putut spune: „Dreapta Domnului câștigă biruința.”"
+          "body": "Au urmat ani de slujire: fanfara, grupul de misiune care a dus Evanghelia prin orașele Spaniei, conferințe de tineret și de misiune. Biserica a ajuns la 100 de suflete nu pentru că avea oameni pregătiți pentru lucrări mari, ci pentru că a crezut Cuvântul: „nici prin putere, nici prin tărie, ci prin Duhul Meu”. Au fost și încercări — despărțiri, pierderi, furtuni —, dar după fiecare am putut spune: „Dreapta Domnului câștigă biruința.”"
         },
         "today": {
           "title": "Până aici, și mai departe",
-          "body": "Astăzi suntem în jur de 450 de membri și 270 de aparținători, și în spatele fiecărui suflet este o poveste. Harul care ne-a dus până aici ne va duce mai departe: copii care să-L cunoască pe Dumnezeu, tineri care să ardă pentru Hristos, familii unite și o biserică ce rămâne casă de rugăciune."
+          "body": "O nouă generație s-a botezat, s-au ridicat slujitori, iar misiunea a ajuns până în Uganda. Din 2025 ne adunăm într-o casă nouă. Astăzi suntem în jur de 450 de membri și 270 de aparținători, și în spatele fiecărui suflet este o poveste. Harul care ne-a dus până aici ne va duce mai departe."
         }
       },
       "facts": {
@@ -1061,6 +1061,69 @@
         "members": "Membri",
         "adherents": "Aparținători",
         "as_of": "Cifre din {{date}}"
+      },
+      "timeline": {
+        "title": "25 de ani, pe scurt",
+        "lead": "Cinci etape, din biserica veche până în casa nouă. În spatele fiecărui reper este o înregistrare din arhiva bisericii.",
+        "era": "Etapa {{n}}",
+        "watch": "Vezi",
+        "watch_long": "Vezi înregistrarea pe YouTube"
+      },
+      "eras": {
+        "beginnings": {
+          "title": "Începuturile",
+          "summary": "Câțiva oameni, un loc simplu și o întrebare: este lucrarea aceasta în voia Domnului?",
+          "milestones": {
+            "founded": "Începe Biserica Elim din Arganda del Rey",
+            "choir": "Se înființează corul bisericii",
+            "youth": "Programe de tineret în biserica veche",
+            "christmas": "Concert de Crăciun și seara de Revelion: corul, orchestra și grupurile"
+          }
+        },
+        "growth": {
+          "title": "Creștere",
+          "summary": "Biserica se organizează și iese în afară: fanfară, grup de misiune, conferințe.",
+          "milestones": {
+            "conference": "Conferința „Lupta cea bună”",
+            "brass": "Fanfara bisericii, sub bagheta lui Damian Onofrei",
+            "mission": "Grupul de misiune la Alcalá de Henares, Getafe, Cuéllar, Azuqueca și Roquetas de Mar",
+            "youth_conf": "Conferință regională de tineret la Elim",
+            "choir7": "Corul împlinește 7 ani: „Eben-Ezer” și „Nu nouă, Doamne”",
+            "assembly": "Adunarea de la Arganda del Rey (31 octombrie – 1 noiembrie)"
+          }
+        },
+        "fruit": {
+          "title": "Roade",
+          "summary": "Zece ani de la început și o biserică în plină lucrare, cu conferințe pentru tineri, lideri și misiune.",
+          "milestones": {
+            "ten": "10 ani de la inaugurarea bisericii",
+            "cuellar": "Conferința de la Cuéllar",
+            "conferences": "Conferințe la Poveda, pentru lideri și tineret și pentru profesorii de copii",
+            "mission_conf": "Conferința de misiune (4–6 decembrie)"
+          }
+        },
+        "generation": {
+          "title": "O nouă generație",
+          "summary": "Copiii crescuți în biserică se botează, se ridică slujitori și misiunea trece granițele.",
+          "milestones": {
+            "baptisms": "Botezuri nou-testamentare, an de an",
+            "ordination": "Ordinare de slujitori",
+            "uganda": "Misiune în Uganda, la tribul IK",
+            "children": "Binecuvântarea copiilor"
+          }
+        },
+        "house": {
+          "title": "O casă nouă",
+          "summary": "Un nou locaș de închinare și aceeași chemare de la început.",
+          "milestones": {
+            "temple": "Biserica se adună în noul locaș de închinare",
+            "anchored": "Conferința „Ancorat în Hristos”",
+            "shoebox": "„Zâmbetul din cutie” și concertul de colinde al copiilor",
+            "hope": "Conferința „Speranță pentru tine”",
+            "ordination": "Ordinare de slujitori",
+            "jubilee": "25 de ani: un altar de mulțumire"
+          }
+        }
       },
       "works": {
         "title": "Ce a lucrat Dumnezeu în {{count}} de ani",

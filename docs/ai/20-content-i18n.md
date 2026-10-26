@@ -376,6 +376,13 @@ cifras y obras salen de ese texto (lo dudoso va marcado `[?]` y no se publica).
 - **Cifras con fecha**: al cambiar miembros / aparținători se actualiza
   `STORY_FACTS_AS_OF` (se pinta «Cifre din octombrie 2026» en el idioma
   activo) y la frase de `about.story.chapters.today.body`, que las repite.
+- **Cronología** (`STORY_ERAS`): las cinco épocas del vídeo de los 25 años,
+  cada hito con fecha (`AAAA`, `AAAA-MM` o `AAAA-MM-DD`, formateada en el
+  idioma activo) y, si existe, el id de YouTube de la grabación que lo
+  prueba («Vezi»). Fuentes y huecos: `docs/fuentes/cronologie-elim.md`.
+  Hito nuevo = una línea + su texto en `about.story.eras.<época>.milestones`.
+  Desktop: 3 columnas (época · resumen · hitos); < lg 2; < sm 1 y la fecha
+  sube encima del hito.
 - Añadir una obra o un grupo: una línea en `STORY_WORKS` + su texto. La
   rejilla va 4 → 2 (< `lg`) → 1 (< `xs`) para que cuatro grupos nunca
   queden 3 + 1.

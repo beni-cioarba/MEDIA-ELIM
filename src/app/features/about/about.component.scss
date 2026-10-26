@@ -116,6 +116,196 @@
   color: var(--c-muted);
 }
 
+/* Cronología por épocas.
+ *
+ * Una fila por época, en tres columnas alineadas en escritorio:
+ * [numeral + años + título] [resumen] [hitos]. Así cinco épocas caben en
+ * poco alto sin bajar la letra, y la vista recorre la columna de años de
+ * arriba abajo como en un índice. Un filete vertical en oro une las épocas
+ * (la «línea del tiempo») sin dibujar nada más.
+ *
+ * < lg: la cabecera de la época arriba y el resto debajo; < sm, todo en
+ * una columna. Los hitos son una rejilla [fecha] [texto] [Vezi], así la
+ * fecha y el enlace quedan alineados aunque el texto ocupe dos líneas. */
+.timeline {
+  margin-block-start: clamp(2.25rem, 4.5vw, 3rem);
+}
+
+.timeline__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.timeline__lead {
+  max-width: 62ch;
+  margin: 0.3rem 0 1.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--c-muted);
+}
+
+.eras {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-block-start: 1px solid var(--c-hairline);
+}
+
+.era {
+  display: grid;
+  grid-template-columns: minmax(10rem, 13rem) minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 0.5rem clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+  padding-block: 1.1rem;
+  border-block-end: 1px solid var(--c-hairline);
+
+  @include until('lg') {
+    grid-template-columns: minmax(9rem, 11rem) minmax(0, 1fr);
+
+    .milestones {
+      grid-column: 2;
+    }
+  }
+
+  @include until('sm') {
+    grid-template-columns: 1fr;
+
+    .milestones {
+      grid-column: auto;
+    }
+  }
+}
+
+.era__head {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  column-gap: 0.6rem;
+  align-items: baseline;
+
+  @include until('lg') {
+    grid-row: span 2;
+  }
+
+  @include until('sm') {
+    grid-row: auto;
+  }
+}
+
+.era__numeral {
+  grid-row: span 2;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--c-gold);
+}
+
+.era__years {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+}
+
+.era__title {
+  margin: 0.1rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--c-primary);
+}
+
+.era__summary {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--c-text);
+  text-wrap: pretty;
+}
+
+.milestones {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.milestone-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  gap: 0 0.75rem;
+  align-items: baseline;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+
+  // En móvil la fecha sube encima del texto: con tres columnas en 344 px el
+  // texto se quedaba en ~180 px y partía cada hito en tres líneas.
+  @include until('sm') {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    .milestone-row__date {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.milestone-row__date {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.milestone-row__text {
+  color: var(--c-text);
+}
+
+.milestone-row__watch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard);
+
+  app-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    background: var(--c-gold-tint);
+    border-color: var(--c-gold);
+  }
+
+  @include focus-ring(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .milestone-row__watch {
+    transition: none;
+  }
+}
+
 /* Lo que Dios ha hecho: 4 → 2 → 1 columnas. `auto-fit` con mínimo de
    12rem llena la fila en escritorio; por debajo de `lg` se fuerza 2 para que
    cuatro grupos nunca queden 3 + 1 (fila coja). */

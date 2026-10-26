@@ -81,6 +81,59 @@
     </div>
   </div>
 
+  <!-- Cronología: las cinco épocas del vídeo de los 25 años. Cada hito es
+       una grabación o una carpeta con fecha del archivo de la iglesia, y si
+       hay grabación pública se puede ver en YouTube. Tres columnas en
+       escritorio (época · resumen · hitos), una debajo de otra en móvil. -->
+  <section class="timeline" aria-labelledby="timeline-title">
+    <h3 class="timeline__title" id="timeline-title">{{ 'about.story.timeline.title' | translate }}</h3>
+    <p class="timeline__lead">{{ 'about.story.timeline.lead' | translate }}</p>
+
+    <ol class="eras">
+      @for (era of eras(); track era.id) {
+        <li class="era">
+          <div class="era__head">
+            <span class="era__numeral" aria-hidden="true">{{ era.numeral }}</span>
+            <p class="era__years">
+              <span class="u-sr-only">{{ 'about.story.timeline.era' | translate: { n: era.numeral } }}: </span>
+              {{ era.from }}–{{ era.to }}
+            </p>
+            <h4 class="era__title">{{ 'about.story.eras.' + era.id + '.title' | translate }}</h4>
+          </div>
+
+          <p class="era__summary">{{ 'about.story.eras.' + era.id + '.summary' | translate }}</p>
+
+          <ul class="milestones">
+            @for (m of era.milestones; track m.id) {
+              <li class="milestone-row">
+                <time class="milestone-row__date" [attr.datetime]="m.iso">{{ m.label }}</time>
+                <span class="milestone-row__text">
+                  {{ 'about.story.eras.' + era.id + '.milestones.' + m.id | translate }}
+                </span>
+                @if (m.url) {
+                  <a
+                    class="milestone-row__watch"
+                    [href]="m.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [attr.aria-label]="
+                      ('about.story.timeline.watch_long' | translate) +
+                      ': ' +
+                      ('about.story.eras.' + era.id + '.milestones.' + m.id | translate)
+                    "
+                  >
+                    <app-icon name="play" />
+                    <span>{{ 'about.story.timeline.watch' | translate }}</span>
+                  </a>
+                }
+              </li>
+            }
+          </ul>
+        </li>
+      }
+    </ol>
+  </section>
+
   <!-- Lo que Dios ha hecho en estos años. Columnas por naturaleza (no una
        lista de 15 líneas): se leen de un vistazo y la rejilla se reparte sola
        si mañana hay más grupos. -->
