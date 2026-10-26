@@ -17,6 +17,12 @@ interface ManifestEntry {
   readonly bytes: number;
 }
 
+/** `pdf.json`: cuándo se generó y qué semanas tienen PDF. */
+interface PdfManifest {
+  readonly generatedAt?: string;
+  readonly weeks?: readonly ManifestEntry[];
+}
+
 /** Lo escribe `scripts/generate-family-pdfs.mjs` al publicar. */
 const MANIFEST = 'assets/family-prayer/pdf.json';
 
@@ -57,15 +63,21 @@ export class FamilyPdfService {
     this.requested = true;
     const base = this.document.baseURI;
     fetch(new URL(MANIFEST, base), { cache: 'no-cache' })
-      .then((res) => (res.ok ? (res.json() as Promise<{ weeks?: ManifestEntry[] }>) : { weeks: [] }))
-      .then(({ weeks = [] }) => {
+      .then((res) =>
+        res.ok ? (res.json() as Promise<PdfManifest>) : ({} as PdfManifest),
+      )
+      .then(({ generatedAt, weeks = [] }) => {
+        // El PDF se regenera en cada publicación con el mismo nombre: la
+        // fecha de generación en la URL evita que el navegador (o la caché
+        // de GitHub Pages) entregue el de antes de cambiar una foto.
+        const version = generatedAt ? `?v=${encodeURIComponent(generatedAt)}` : '';
         this.byWeek.set(
           new Map(
             weeks.map((entry) => [
               entry.presentedOn,
               {
                 presentedOn: entry.presentedOn,
-                url: new URL(entry.file, base).href,
+                url: new URL(entry.file, base).href + version,
                 pages: entry.pages,
                 bytes: entry.bytes,
               },

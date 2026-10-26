@@ -77,8 +77,21 @@ desplazamiento con zoom se calculan sobre la **foto pintada**
 subía al escenario y abría la foto siguiente al 250 % (10/10/2026). El visor documental no lo sufría (limita
 con `--cw`/`--ch` medidos).
 
+## Regla: toda foto de contenido se amplía (26/10/2026)
+
+Petición expresa del usuario: **cualquier foto que la web enseña como contenido
+se abre en el visor**. Al añadir una imagen nueva, lleva `[appViewable]` en su
+contenedor (con `srcset` para que el visor pida la mayor). Excepciones, porque
+su clic ya hace otra cosa: imágenes dentro de un enlace o de una tarjeta
+enlazada (mosaico de departamentos, carteles de la portada, álbumes que abren
+Drive, miniaturas de YouTube, avatares que llevan al perfil), el carrusel de
+portada, logotipos, iconos y fondos decorativos (`aria-hidden`). Y nunca en la
+proyección (`[appViewableDisabled]`).
+
 ## Dónde está puesto hoy
 
+- **Cine suntem** (`/despre-noi`): la foto de «Povestea noastră».
+- **Botezuri**: la portada del botez destacado (próximo o último), si tiene foto.
 - **Crónicas de departamentos** (`stories`, `39-departments.md`): cada foto
   del mosaico abre la galería con todas las de la crónica.
 

@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "web",
-      "runtimeExecutable": "npx",
+      "runtimeExecutable": "C:/workspace/.tools/node24/node.exe",
       "runtimeArgs": [
-        "ng",
+        "node_modules/@angular/cli/bin/ng.js",
         "serve",
         "--port",
         "4310"

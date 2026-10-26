@@ -1039,12 +1039,75 @@
       "departments": "Departamentos activos"
     },
     "story": {
+      "eyebrow": "2001 – 2026",
       "title": "Nuestra historia",
-      "subtitle": "De un grupo pequeño de familias a una comunidad viva.",
-      "body_1": "La Iglesia Elim de Arganda del Rey nació del deseo de unas pocas familias de tener un lugar donde adorar en su idioma y crecer juntas en la fe.",
-      "body_2": "Con los años la comunidad creció y se diversificó: hoy somos una iglesia multicultural, con cultos en rumano y español y departamentos para todas las edades.",
-      "body_3": "Seguimos con el mismo llamado del principio: dar a conocer el amor de Dios en nuestra ciudad, con hechos concretos y las puertas siempre abiertas.",
-      "image_alt": "Los niños de la iglesia durante el concierto de Navidad"
+      "subtitle": "De una chispa a una iglesia viva: 25 años de gracia.",
+      "chapters": {
+        "start": {
+          "title": "Un comienzo pequeño, en la voluntad de Dios",
+          "body": "Todo empezó con una propuesta, después un consejo, una resolución y, al final, una decisión. La pregunta de entonces no era sólo si saldría bien, sino si esta obra era la voluntad del Señor. Eran pocas personas, en un lugar sencillo —no un fuego, sino una chispa—, pero se empezó con Dios."
+        },
+        "growth": {
+          "title": "Crecida por el Espíritu Santo",
+          "body": "La iglesia llegó a las 100 almas no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
+        },
+        "today": {
+          "title": "Hasta aquí, y más allá",
+          "body": "Hoy somos unos 450 miembros y 270 allegados, y detrás de cada alma hay una historia. La gracia que nos ha traído hasta aquí nos llevará más lejos: niños que conozcan a Dios, jóvenes que ardan por Cristo, familias unidas y una iglesia que siga siendo casa de oración."
+        }
+      },
+      "facts": {
+        "founded": "Año del comienzo",
+        "members": "Miembros",
+        "adherents": "Allegados",
+        "as_of": "Cifras de {{date}}"
+      },
+      "works": {
+        "title": "Lo que Dios ha hecho en {{count}} años",
+        "groups": {
+          "events": {
+            "title": "Evangelización y conferencias",
+            "items": {
+              "evangelism": "Campañas de evangelización",
+              "national": "Conferencias regionales y nacionales",
+              "music": "Encuentros de coros, bandas de música y grupos de alabanza",
+              "family": "Conferencias para la familia",
+              "youth": "Conferencias de jóvenes",
+              "mission": "Conferencias de misiones"
+            }
+          },
+          "mission": {
+            "title": "Misiones",
+            "items": {
+              "projects": "Proyectos misioneros en Uganda y Liberia",
+              "churches": "Iglesias construidas en Uganda",
+              "wells": "Pozos de agua"
+            }
+          },
+          "help": {
+            "title": "Ayuda social",
+            "items": {
+              "departments": "Departamentos de ayuda",
+              "shoebox": "El proyecto «Una sonrisa en una caja»",
+              "more": "Ayudas de todo tipo"
+            }
+          },
+          "servants": {
+            "title": "Ministerio y familia",
+            "items": {
+              "ordained": "Ministros reconocidos: diáconos, presbíteros y pastores",
+              "baptisms": "Bautismos, año tras año",
+              "children": "La bendición de los niños"
+            }
+          }
+        }
+      },
+      "verse": {
+        "text": "«Hasta aquí nos ayudó el Señor».",
+        "ref": "1 Samuel 7:12",
+        "note": "El 18 de octubre de 2026, al cumplir 25 años, levantamos un altar de gratitud. No a nosotros, Señor, no a nosotros, sino a tu nombre da gloria."
+      },
+      "image_alt": "La congregación reunida en el templo durante un culto"
     },
     "pillars": {
       "eyebrow": "La obra de la Iglesia",

@@ -5,9 +5,14 @@ import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ViewableDirective } from '../../shared/viewer/viewable.directive';
+import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
+import { TranslateService } from '@ngx-translate/core';
 import { IconName } from '../../core/ui/icon-name';
 import { CREDO_ARTICLE_COUNT, CREDO_PARTS, citarArticulo } from '../credo/credo.data';
 import { ScheduleService } from '../../core/services/schedule.service';
+import { LanguageService } from '../../core/services/language.service';
+import { STORY_CHAPTERS, STORY_FACTS, STORY_FACTS_AS_OF, STORY_WORKS } from './about-story.data';
 
 /** Pilar de identidad (misión, visión, valores…). */
 interface Pillar {
@@ -42,13 +47,37 @@ interface PillarView extends Pillar {
 @Component({
     selector: 'app-about',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RouterLink, TranslatePipe, PageSectionComponent, IconComponent],
+    imports: [RouterLink, TranslatePipe, PageSectionComponent, IconComponent, ViewableDirective],
     templateUrl: './about.component.html',
     styleUrl: './about.component.scss'
 })
 export class AboutComponent {
   protected readonly config = inject(CHURCH_CONFIG);
   protected readonly schedule = inject(ScheduleService);
+
+  /** «Povestea noastră»: capítulos, cifras y obras (`about-story.data.ts`). */
+  protected readonly chapters = STORY_CHAPTERS;
+  protected readonly facts = STORY_FACTS;
+  protected readonly works = STORY_WORKS;
+  private readonly language = inject(LanguageService);
+  private readonly translate = inject(TranslateService);
+
+  /** La foto de la historia, para el visor (nombre = su `alt`, en el idioma activo). */
+  protected readonly storyPhoto = computed<ViewerDocument>(() => {
+    this.language.current();
+    return {
+      src: this.config.aboutImage.src,
+      srcset: this.config.aboutImage.srcset,
+      name: this.translate.instant('about.story.image_alt'),
+    };
+  });
+  /** «2026-10» → «octombrie 2026» / «octubre de 2026», en el idioma activo. */
+  protected readonly factsAsOf = computed(() => {
+    const [year, month] = STORY_FACTS_AS_OF.split('-').map(Number);
+    return new Intl.DateTimeFormat(this.language.current(), { month: 'long', year: 'numeric' }).format(
+      new Date(year, month - 1, 1),
+    );
+  });
 
   protected readonly links = {
     leadership: `/${APP_PATHS.leadership}`,

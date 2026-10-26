@@ -423,7 +423,7 @@ export interface ChurchConfig {
    * no `heroSlides[0]`: reordenar el carrusel no puede cambiar la
    * ilustración de un texto que no tiene nada que ver.
    */
-  readonly aboutImage: string;
+  readonly aboutImage: { readonly src: string; readonly srcset: string };
   readonly heroSlides: readonly HeroSlide[];
   /** Cifras destacadas de la sección «quiénes somos». */
   readonly stats: readonly ChurchStat[];
@@ -1132,10 +1132,16 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
    * foto sola y sin que nadie se enterara. Una ilustración elegida para un
    * texto concreto no puede depender del orden de otra cosa.
    *
-   * Se escoge la sala llena porque el texto habla de pasar de unas pocas
-   * familias a una comunidad: la foto tiene que enseñar la comunidad.
+   * La congregación sentada en el templo (26/10/2026): el relato pasa de
+   * «unos pocos» a «unos 450 miembros», y la foto tiene que enseñar a esa
+   * comunidad, no un acto concreto. 960 y 1600 px (`srcset`), WebP q82, en
+   * `assets/about/` (fuera de `drive-media/`, que es de la galería).
    */
-  aboutImage: 'assets/drive-media/concert_copii_2025.webp',
+  aboutImage: {
+    src: 'assets/about/biserica_adunata_2026-1600.webp',
+    srcset:
+      'assets/about/biserica_adunata_2026-960.webp 960w, assets/about/biserica_adunata_2026-1600.webp 1600w',
+  },
 
   heroSlides: [
     // El orden es deliberado: abren los slujitori de la iglesia (foto de

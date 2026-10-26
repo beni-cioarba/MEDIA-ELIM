@@ -25,27 +25,94 @@
   </div>
 </header>
 
-<!-- Historia -->
-<app-page-section titleKey="about.story.title" subtitleKey="about.story.subtitle">
+<!-- Historia.
+
+     Sale del discurso de los 25 años (`docs/fuentes/discurs-25-ani.md`),
+     no de un texto genérico: tres capítulos con título (principio,
+     crecimiento, hoy), las cifras con su fecha, lo que Dios ha hecho en
+     estos años agrupado en columnas y, para cerrar, el versículo del
+     aniversario. Datos en `about-story.data.ts`. -->
+<app-page-section
+  eyebrowKey="about.story.eyebrow"
+  titleKey="about.story.title"
+  subtitleKey="about.story.subtitle"
+>
   <div class="story">
     <div class="story__text">
-      <p>{{ 'about.story.body_1' | translate }}</p>
-      <p>{{ 'about.story.body_2' | translate }}</p>
-      <p>{{ 'about.story.body_3' | translate }}</p>
+      @for (chapter of chapters; track chapter) {
+        <section class="chapter">
+          <h3 class="chapter__title">{{ 'about.story.chapters.' + chapter + '.title' | translate }}</h3>
+          <p class="chapter__body">{{ 'about.story.chapters.' + chapter + '.body' | translate }}</p>
+        </section>
+      }
     </div>
-    <!-- Sin pie de foto: repetía palabra por palabra el `alt`, así que un
-         lector de pantalla oía la misma frase dos veces y quien ve la imagen
-         leía debajo lo que ya estaba viendo. El `alt` describe la escena; la
-         foto no necesita nada más. -->
-    <figure class="story__figure">
-      <img
-        [src]="config.aboutImage"
-        [alt]="'about.story.image_alt' | translate"
-        loading="lazy"
-        decoding="async"
-      />
-    </figure>
+
+    <div class="story__aside">
+      <!-- Sin pie de foto: repetía palabra por palabra el `alt`. Se amplía en
+           el visor, como toda foto de contenido de la web. -->
+      <figure class="story__figure" [appViewable]="storyPhoto()">
+        <img
+          [src]="config.aboutImage.src"
+          [srcset]="config.aboutImage.srcset"
+          sizes="(max-width: 860px) 100vw, 40vw"
+          [alt]="'about.story.image_alt' | translate"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+
+      <!-- Cifras: el número manda, la etiqueta debajo. Con fecha, porque el
+           número de miembros cambia y una cifra sin fecha acaba mintiendo. -->
+      <div class="facts">
+        <dl class="facts__list">
+          <div class="fact">
+            <dt class="fact__label">{{ 'about.story.facts.founded' | translate }}</dt>
+            <dd class="fact__value">{{ config.foundedYear }}</dd>
+          </div>
+          @for (fact of facts; track fact.id) {
+            <div class="fact">
+              <dt class="fact__label">{{ 'about.story.facts.' + fact.id | translate }}</dt>
+              <dd class="fact__value">{{ fact.value }}</dd>
+            </div>
+          }
+        </dl>
+        <p class="facts__as-of">{{ 'about.story.facts.as_of' | translate: { date: factsAsOf() } }}</p>
+      </div>
+    </div>
   </div>
+
+  <!-- Lo que Dios ha hecho en estos años. Columnas por naturaleza (no una
+       lista de 15 líneas): se leen de un vistazo y la rejilla se reparte sola
+       si mañana hay más grupos. -->
+  <section class="works-done" aria-labelledby="works-done-title">
+    <h3 class="works-done__title" id="works-done-title">
+      {{ 'about.story.works.title' | translate: { count: years() } }}
+    </h3>
+    <div class="works-done__grid">
+      @for (group of works; track group.id) {
+        <section class="done-group">
+          <h4 class="done-group__title">
+            {{ 'about.story.works.groups.' + group.id + '.title' | translate }}
+          </h4>
+          <ul class="done-group__list">
+            @for (item of group.items; track item) {
+              <li>{{ 'about.story.works.groups.' + group.id + '.items.' + item | translate }}</li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  </section>
+
+  <!-- Cierre: el versículo del aniversario (Eben-Ezer). Playfair, como todo
+       versículo en la web. -->
+  <figure class="milestone">
+    <blockquote class="milestone__verse">
+      <p>{{ 'about.story.verse.text' | translate }}</p>
+    </blockquote>
+    <figcaption class="milestone__ref">{{ 'about.story.verse.ref' | translate }}</figcaption>
+    <p class="milestone__note">{{ 'about.story.verse.note' | translate }}</p>
+  </figure>
 </app-page-section>
 
 <!-- Identidad -->

@@ -364,6 +364,23 @@ La confesión (`features/credo/`) separa **estructura** de **texto**:
    su avance.
 4. `npm run i18n:check` valida que ro y es siguen teniendo las mismas claves.
 
+### «Povestea noastră» (`/despre-noi`): historia de la iglesia
+
+Fuente única: el discurso de los 25 años, transcrito y corregido en
+`docs/fuentes/discurs-25-ani.md`. Nada de la sección se inventa: capítulos,
+cifras y obras salen de ese texto (lo dudoso va marcado `[?]` y no se publica).
+
+- Datos (ids, orden, cifras): `features/about/about-story.data.ts`
+  (`STORY_CHAPTERS`, `STORY_FACTS` + `STORY_FACTS_AS_OF`, `STORY_WORKS`).
+  Textos: `about.story.*` en `ro.json` / `es.json`.
+- **Cifras con fecha**: al cambiar miembros / aparținători se actualiza
+  `STORY_FACTS_AS_OF` (se pinta «Cifre din octombrie 2026» en el idioma
+  activo) y la frase de `about.story.chapters.today.body`, que las repite.
+- Añadir una obra o un grupo: una línea en `STORY_WORKS` + su texto. La
+  rejilla va 4 → 2 (< `lg`) → 1 (< `xs`) para que cuatro grupos nunca
+  queden 3 + 1.
+- Versículo de cierre (1 Samuel 7:12) en Playfair: es versículo.
+
 ### Textos largos de una sola página
 
 Si un bloque de texto supera ~5 kB y sólo lo usa una ruta, no se mete en

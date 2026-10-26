@@ -1039,12 +1039,75 @@
       "departments": "Departamente active"
     },
     "story": {
+      "eyebrow": "2001 – 2026",
       "title": "Povestea noastră",
-      "subtitle": "De la un grup mic de familii la o comunitate vie.",
-      "body_1": "Biserica Elim din Arganda del Rey s-a născut din dorința câtorva familii de a avea un loc unde să se închine în limba lor și să crească împreună în credință.",
-      "body_2": "De-a lungul anilor, comunitatea a crescut și s-a diversificat: astăzi suntem o biserică multiculturală, cu servicii în română și spaniolă, și cu departamente pentru toate vârstele.",
-      "body_3": "Continuăm cu aceeași chemare de la început: să facem cunoscută dragostea lui Dumnezeu în orașul nostru, cu fapte concrete și cu ușile mereu deschise.",
-      "image_alt": "Copiii bisericii în timpul concertului de Crăciun"
+      "subtitle": "De la o scânteie la o biserică vie: 25 de ani de har.",
+      "chapters": {
+        "start": {
+          "title": "Un început mic, în voia Domnului",
+          "body": "Totul a început cu o propunere, apoi un sfat, o hotărâre și, în final, o decizie. Întrebarea de atunci nu era doar dacă vom avea izbândă, ci dacă lucrarea aceasta este în voia Domnului. Au fost doar câțiva oameni, într-un loc simplu — nu un foc, ci o scânteie —, dar s-a început cu Dumnezeu."
+        },
+        "growth": {
+          "title": "Crescută prin Duhul Sfânt",
+          "body": "Biserica a ajuns la 100 de suflete nu pentru că avea oameni pregătiți pentru lucrări mari, ci pentru că a crezut Cuvântul: „nici prin putere, nici prin tărie, ci prin Duhul Meu”. Au fost și încercări — despărțiri, pierderi, furtuni —, dar după fiecare am putut spune: „Dreapta Domnului câștigă biruința.”"
+        },
+        "today": {
+          "title": "Până aici, și mai departe",
+          "body": "Astăzi suntem în jur de 450 de membri și 270 de aparținători, și în spatele fiecărui suflet este o poveste. Harul care ne-a dus până aici ne va duce mai departe: copii care să-L cunoască pe Dumnezeu, tineri care să ardă pentru Hristos, familii unite și o biserică ce rămâne casă de rugăciune."
+        }
+      },
+      "facts": {
+        "founded": "Anul începutului",
+        "members": "Membri",
+        "adherents": "Aparținători",
+        "as_of": "Cifre din {{date}}"
+      },
+      "works": {
+        "title": "Ce a lucrat Dumnezeu în {{count}} de ani",
+        "groups": {
+          "events": {
+            "title": "Evanghelizare și conferințe",
+            "items": {
+              "evangelism": "Evanghelizări",
+              "national": "Conferințe regionale și naționale",
+              "music": "Conferințe de coruri, fanfare și grupuri de laudă",
+              "family": "Conferințe pentru familie",
+              "youth": "Conferințe de tineret",
+              "mission": "Conferințe de misiune"
+            }
+          },
+          "mission": {
+            "title": "Misiune",
+            "items": {
+              "projects": "Proiecte misionare în Uganda și Liberia",
+              "churches": "Biserici construite în Uganda",
+              "wells": "Fântâni de apă"
+            }
+          },
+          "help": {
+            "title": "Ajutorare",
+            "items": {
+              "departments": "Departamente de ajutorare",
+              "shoebox": "Proiectul „Zâmbetul din cutie”",
+              "more": "Fel de fel de ajutoare"
+            }
+          },
+          "servants": {
+            "title": "Slujire și familie",
+            "items": {
+              "ordained": "Slujitori promovați: diaconi, prezbiteri și păstori",
+              "baptisms": "Botezuri, an de an",
+              "children": "Binecuvântarea copiilor"
+            }
+          }
+        }
+      },
+      "verse": {
+        "text": "„Până aici Domnul ne-a ajutat.”",
+        "ref": "1 Samuel 7:12",
+        "note": "Pe 18 octombrie 2026, la 25 de ani, am ridicat un altar de mulțumire. Nu nouă, Doamne, nu nouă, ci Numelui Tău dă slavă."
+      },
+      "image_alt": "Biserica adunată în sală, în timpul unui serviciu"
     },
     "pillars": {
       "eyebrow": "Lucrarea Bisericii",

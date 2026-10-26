@@ -51,7 +51,7 @@
     @if (feature(); as f) {
       <!-- Próximo botez (cuenta atrás) o, si no hay ninguno anunciado, el último. -->
       <article class="bz-feature" [class.bz-feature--next]="f.kind === 'next'">
-        <div class="bz-feature__media" [style.background-color]="f.baptism.cover?.tone">
+        <div class="bz-feature__media" [style.background-color]="f.baptism.cover?.tone" [appViewable]="coverDoc(f.baptism)">
           @if (f.baptism.cover; as cover) {
             <img
               [src]="cover.medium"

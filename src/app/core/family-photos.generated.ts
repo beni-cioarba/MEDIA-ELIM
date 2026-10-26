@@ -49,7 +49,7 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-10-18/bosancu-ioan-daniela': { width: 1600, height: 1200, variants: [[480, 480], [960, 960], [1600, 1600]] },
   '2026-10-18/bosancu-sandu-floarea': { width: 519, height: 804, variants: [[480, 310], [804, 519]] },
   '2026-10-18/bradean-calin-denisa': { width: 532, height: 824, variants: [[480, 310], [824, 532]] },
-  '2026-10-25/breban-daniel-anamaria': { width: 1200, height: 1600, variants: [[480, 360], [960, 720], [1600, 1200]] },
+  '2026-10-25/breban-daniel-anamaria': { width: 1077, height: 1070, variants: [[480, 480], [960, 960], [1077, 1077]] },
   '2026-10-25/brinzoi-madalin-erasmina': { width: 814, height: 1176, variants: [[480, 332], [960, 664], [1176, 814]] },
   '2026-10-25/bucur-ionel-mirela': { width: 1200, height: 1209, variants: [[480, 476], [960, 953], [1209, 1200]] },
   '2026-10-25/bucurici-samuel-cristina': { width: 1031, height: 855, variants: [[480, 480], [960, 960], [1031, 1031]] },
