@@ -569,10 +569,60 @@ export class PresenterComponent implements OnInit {
    * es el culto; se vuelve a encender en su tarjeta) y desde el resumen.
    */
   protected presentFamilies(): void {
+    this.display.applyShortcutDurations(null);
     this.blocks.selectFamilyPresentation();
     this.display.setAutoAdvance(false);
     this.display.setCountdownEnabled(false);
     this.sync.sendCommand({ type: 'gotoKey', key: FAMILY_SUMMARY_SLIDE_KEY });
+  }
+
+  /**
+   * Atajo «Terminare»: el cierre del culto. Anuncios enteros, resumen de las
+   * familias, lectura, programa semanal y eventos próximos, en **avance
+   * automático**: los anuncios a 12 s y el resto a 10 s.
+   */
+  protected presentEnding(): void {
+    this.blocks.selectEndingBlocks();
+    this.display.applyShortcutDurations('ending');
+    this.display.setAutoAdvance(true);
+  }
+
+  /** «Terminare» aplicado del todo: bloques, tiempos y avance automático. */
+  protected readonly endingActive = computed<boolean>(
+    () =>
+      this.blocks.endingOnly() && this.display.hasShortcutDurations('ending') && this.display.autoAdvance(),
+  );
+
+  /**
+   * Atajo «Rugăciune»: familias (resumen) y causas, en **avance automático**;
+   * las causas, a 60 s.
+   */
+  protected selectPrayerBlocks(): void {
+    this.display.applyShortcutDurations('prayer');
+    this.blocks.selectPrayerBlocks();
+    this.display.setAutoAdvance(true);
+  }
+
+  /** «Rugăciune» aplicado: bloques, tiempo de las causas y avance automático. */
+  protected readonly prayerActive = computed<boolean>(
+    () =>
+      this.blocks.prayerOnly() && this.display.hasShortcutDurations('prayer') && this.display.autoAdvance(),
+  );
+
+  // «Doar primul», «Toate» y «Familii» devuelven a su valor por defecto los
+  // tiempos que fijan «Terminare» y «Rugăciune». Todos los atajos encienden el
+  // avance automático salvo «Familii», el único que lo apaga.
+
+  protected selectOnlyFirstBlock(): void {
+    this.display.applyShortcutDurations(null);
+    this.blocks.selectOnlyFirstBlock();
+    this.display.setAutoAdvance(true);
+  }
+
+  protected selectAllBlocks(): void {
+    this.display.applyShortcutDurations(null);
+    this.blocks.selectAllBlocks();
+    this.display.setAutoAdvance(true);
   }
 
   protected setShowClock(event: Event): void {

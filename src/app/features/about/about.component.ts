@@ -8,7 +8,6 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
 import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { TranslateService } from '@ngx-translate/core';
-import { IconName } from '../../core/ui/icon-name';
 import { CREDO_ARTICLE_COUNT, CREDO_PARTS, citarArticulo } from '../credo/credo.data';
 import { ScheduleService } from '../../core/services/schedule.service';
 import { LanguageService } from '../../core/services/language.service';
@@ -17,6 +16,7 @@ import {
   STORY_ERAS,
   STORY_FACTS,
   STORY_FACTS_AS_OF,
+  STORY_PEOPLE,
   STORY_WORKS,
   StoryEra,
   StoryMilestone,
@@ -25,7 +25,6 @@ import {
 /** Pilar de identidad (misión, visión, valores…). */
 interface Pillar {
   readonly id: string;
-  readonly icon: IconName;
   /**
    * Artículo de la confesión de fe que sostiene este pilar.
    *
@@ -82,6 +81,7 @@ export class AboutComponent {
   protected readonly chapters = STORY_CHAPTERS;
   protected readonly facts = STORY_FACTS;
   protected readonly works = STORY_WORKS;
+  protected readonly people = STORY_PEOPLE;
 
   /**
    * Cronología por épocas, con la fecha de cada hito en el idioma activo:
@@ -152,15 +152,15 @@ export class AboutComponent {
    */
   private readonly pillarData: readonly Pillar[] = [
     // La adoración no tiene artículo propio: el 16 es donde se la nombra.
-    { id: 'worship', icon: 'music', article: 'church' },
+    { id: 'worship', article: 'church' },
     // El Evangelio se recibe «por fe y arrepentimiento» (art. 9).
-    { id: 'gospel', icon: 'megaphone', article: 'conversion' },
+    { id: 'gospel', article: 'conversion' },
     // Hacer discípulos es acompañar la santificación (art. 11).
-    { id: 'discipleship', icon: 'book', article: 'sanctification' },
+    { id: 'discipleship', article: 'sanctification' },
     // Servir es amar a todos sin discriminación (art. 29).
-    { id: 'service', icon: 'heart', article: 'love' },
+    { id: 'service', article: 'love' },
     // La Cena «fortalece la unidad de los creyentes» (art. 19).
-    { id: 'fellowship', icon: 'users', article: 'lords_supper' },
+    { id: 'fellowship', article: 'lords_supper' },
   ];
 
   /**

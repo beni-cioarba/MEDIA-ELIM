@@ -71,22 +71,24 @@
              Las familias de semanas anteriores nunca entran con «Toate». -->
         @let todo = blocks.globalSelection();
         @if (todo.total > 1) {
-          <div class="seg" role="group" [attr.aria-label]="'presenter.global_label' | translate">
+          <!-- Seis atajos no caben junto al contador en la columna del
+               panel: contador arriba y botones repartidos debajo. -->
+          <div class="seg seg--stacked" role="group" [attr.aria-label]="'presenter.global_label' | translate">
             <span class="seg__meta">{{ 'presenter.global_count' | translate: { n: todo.visible, total: todo.total } }}</span>
-            <button type="button" class="seg__btn" [disabled]="todo.onlyFirst" (click)="blocks.selectOnlyFirstBlock()">
+            <button type="button" class="seg__btn" [disabled]="todo.onlyFirst && display.autoAdvance()" (click)="selectOnlyFirstBlock()">
               {{ 'presenter.select_first' | translate }}
             </button>
-            <button type="button" class="seg__btn" [disabled]="todo.allSelected" (click)="blocks.selectAllBlocks()">
+            <button type="button" class="seg__btn" [disabled]="todo.allSelected && display.autoAdvance()" (click)="selectAllBlocks()">
               {{ 'presenter.select_all' | translate }}
             </button>
             <!-- Momento de oración: sólo familias (el resumen) y causas. -->
             <button
               type="button"
               class="seg__btn seg__btn--prayer"
-              [disabled]="blocks.prayerOnly() || !blocks.hasPrayerBlocks()"
-              [attr.aria-pressed]="blocks.prayerOnly()"
+              [disabled]="prayerActive() || !blocks.hasPrayerBlocks()"
+              [attr.aria-pressed]="prayerActive()"
               [title]="'presenter.select_prayer_hint' | translate"
-              (click)="blocks.selectPrayerBlocks()"
+              (click)="selectPrayerBlocks()"
             >{{ 'presenter.select_prayer' | translate }}</button>
             <!-- Presentación de las familias en el culto: sólo las de la
                  semana, todas, desde el resumen y en avance manual. -->
@@ -98,6 +100,16 @@
               [title]="'presenter.select_families_hint' | translate"
               (click)="presentFamilies()"
             >{{ 'presenter.select_families' | translate }}</button>
+            <!-- Cierre del culto: anuncios, resumen de familias, lectura,
+                 programa y eventos, en avance automático (anuncios 12 s, resto 10 s). -->
+            <button
+              type="button"
+              class="seg__btn seg__btn--prayer"
+              [disabled]="endingActive() || !blocks.hasEndingBlocks()"
+              [attr.aria-pressed]="endingActive()"
+              [title]="'presenter.select_ending_hint' | translate"
+              (click)="presentEnding()"
+            >{{ 'presenter.select_ending' | translate }}</button>
           </div>
         }
       </div>

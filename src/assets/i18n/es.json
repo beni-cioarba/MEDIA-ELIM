@@ -155,14 +155,16 @@
     "countdown_set": "Fijar",
     "countdown_clear": "Quitar",
     "select_prayer": "Oración",
-    "select_prayer_hint": "Sólo la oración: el resumen de las familias y las causas de la iglesia",
+    "select_prayer_hint": "Sólo la oración: el resumen de las familias y las causas de la iglesia, en avance automático, las causas a 60 s",
     "countdown_always": "Siempre",
     "countdown_from_always": "Siempre, desde las {{time}} (no durante un culto)",
     "clock_show": "Mostrar la hora",
     "clock_hint": "Reloj en la esquina superior derecha de la proyección",
     "clock_seconds": "Con segundos",
     "select_families": "Familias",
-    "select_families_hint": "Presentación de las familias: sólo las de esta semana (resumen + cada familia), en avance manual, desde el resumen"
+    "select_families_hint": "Presentación de las familias: sólo las de esta semana (resumen + cada familia), en avance manual, desde el resumen",
+    "select_ending": "Terminare",
+    "select_ending_hint": "Final del culto: todos los anuncios, el resumen de las familias, la lectura bíblica, el programa semanal y los próximos eventos, en avance automático: los anuncios a 12 s y el resto a 10 s"
   },
   "carousel": {
     "label": "Carrusel de contenido",
@@ -276,6 +278,13 @@
     "tomorrow": "Mañana",
     "watch_live": "Ver en directo",
     "no_service": "Sin culto",
+    "monthly": {
+      "nth_1": "Primer {{day}} del mes",
+      "nth_2": "Segundo {{day}} del mes",
+      "nth_3": "Tercer {{day}} del mes",
+      "nth_4": "Cuarto {{day}} del mes",
+      "nth_-1": "Último {{day}} del mes"
+    },
     "directions": "Cómo llegar",
     "unit_day": "día",
     "unit_days": "días",
@@ -1045,15 +1054,15 @@
       "chapters": {
         "start": {
           "title": "Un comienzo pequeño, en la voluntad de Dios",
-          "body": "Todo empezó en 2001, en Arganda del Rey, con una propuesta, un consejo, una resolución y, al final, una decisión. La pregunta de entonces no era sólo si saldría bien, sino si esta obra era la voluntad del Señor. Eran pocas personas, en un lugar sencillo —no un fuego, sino una chispa—, pero se empezó con Dios. Ese mismo año nació el coro, y la iglesia antigua se llenó de oración y de programas de jóvenes."
+          "body": "Antes de Elim, los hermanos rumanos de Arganda se reunían en la iglesia «Muntele Sionului». A finales de 2000, un pequeño grupo de hermanos presentó ante el Señor una sola pregunta: ¿es esta obra su voluntad? El primer culto de la Iglesia Elim se celebró el último domingo de diciembre de 2000, en un lugar sencillo —no un fuego, sino una chispa—. En 2001 se ordenaron los primeros ministros y nació el coro."
         },
         "growth": {
           "title": "Crecida por el Espíritu Santo",
-          "body": "Siguieron años de servicio: la banda de música, el grupo de misión que llevó el Evangelio por ciudades de España, conferencias de jóvenes y de misiones. La iglesia llegó a las 100 almas no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
+          "body": "De unas 50 personas al principio, la iglesia llegó a las 100 almas, no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». Llegaron la banda de música, el grupo de misión que llevó el Evangelio por ciudades de España y las conferencias de jóvenes. También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
         },
         "today": {
           "title": "Hasta aquí, y más allá",
-          "body": "Una nueva generación se ha bautizado, se han levantado ministros y la misión ha llegado hasta Uganda. Desde 2025 nos reunimos en una casa nueva. Hoy somos unos 450 miembros y 270 allegados, y detrás de cada alma hay una historia. La gracia que nos ha traído hasta aquí nos llevará más lejos."
+          "body": "La iglesia se ha mudado de un lugar a otro, ha construido y reconstruido; muchos salieron de aquí para servir en otros lugares, y otros llegaron. Una nueva generación se ha bautizado, la misión ha llegado hasta Uganda y, desde 2025, adoramos en un templo nuevo. Tras 24 años de pastorado de Gavrilă Zăgrean, hoy dirige la iglesia el pastor Pavel Negrușier, y somos unos 450 miembros y 270 allegados. La gracia que nos ha traído hasta aquí nos llevará más lejos."
         }
       },
       "facts": {
@@ -1074,8 +1083,9 @@
           "title": "Los comienzos",
           "summary": "Unas pocas personas, un lugar sencillo y una pregunta: ¿es esta obra la voluntad del Señor?",
           "milestones": {
-            "founded": "Nace la Iglesia Elim de Arganda del Rey",
-            "choir": "Se funda el coro de la iglesia",
+            "first_service": "Primer culto de la Iglesia Elim, con un pequeño grupo de hermanos",
+            "ordination": "Primera ordenación: el pastor Gavrilă Zăgrean y los diáconos Mircea Coptil y Adrian Mureșan",
+            "choir": "Nace el coro, dirigido por Sabin Tofan",
             "youth": "Programas de jóvenes en la iglesia antigua",
             "christmas": "Concierto de Navidad y Nochevieja: el coro, la orquesta y los grupos"
           }
@@ -1108,15 +1118,16 @@
           "milestones": {
             "baptisms": "Bautismos, año tras año",
             "ordination": "Ordenación de ministros",
-            "uganda": "Misión en Uganda, con la tribu IK",
-            "children": "Bendición de los niños"
+            "uganda": "Misión en Uganda (20 oct. – 7 nov.): dos iglesias construidas, con la tribu IK",
+            "children": "Bendición de los niños",
+            "pastors": "Gavrilă Zăgrean concluye 24 años de pastorado; el pastor de la iglesia es Pavel Negrușier"
           }
         },
         "house": {
           "title": "Una casa nueva",
           "summary": "Un nuevo templo y el mismo llamado del principio.",
           "milestones": {
-            "temple": "La iglesia se reúne en su nuevo templo",
+            "temple": "El nuevo templo, levantado con el trabajo, las ofrendas y la maquinaria de los hermanos",
             "anchored": "Conferencia «Anclado en Cristo»",
             "shoebox": "«Una sonrisa en una caja» y el concierto de villancicos de los niños",
             "hope": "Conferencia «Esperanza para ti»",
@@ -1124,6 +1135,19 @@
             "jubilee": "25 años: un altar de gratitud"
           }
         }
+      },
+      "people": {
+        "title": "Los del principio",
+        "lead": "Algunos de los que pusieron las bases de la obra, tal como la iglesia los recordó en el aniversario.",
+        "items": {
+          "zagrean": "Pastor de la iglesia durante 24 años, de 2001 a 2024",
+          "coptil": "Uno de los primeros diáconos; hoy pastor en Rumanía",
+          "muresan": "Uno de los primeros diáconos; hoy presbítero en Rumanía",
+          "tofan": "Director del coro desde su fundación; dejó una huella profunda en el canto de la iglesia",
+          "cazacu": "El primer organista de la iglesia, siendo aún adolescente",
+          "carbune": "La primera maestra de los niños de la iglesia"
+        },
+        "note": "De Elim han salido ministros que hoy son presbíteros y pastores en Rumanía, Bélgica y el País Vasco."
       },
       "works": {
         "title": "Lo que Dios ha hecho en {{count}} años",

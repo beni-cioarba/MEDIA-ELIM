@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { blockPath } from '../../core/navigation/app-paths';
-import { ScheduleService } from '../../core/services/schedule.service';
+import { MonthlyNoteView, ScheduleService } from '../../core/services/schedule.service';
 import { IconComponent } from '../icon/icon.component';
 
 /**
@@ -29,6 +29,18 @@ export class WeekScheduleComponent {
   protected readonly schedule = inject(ScheduleService);
   protected readonly next = this.schedule.nextService;
   protected readonly weeklyLink = blockPath('weekly');
+
+  /**
+   * Reglas mensuales que esta semana no se cumplen (las que sí, ya las dice
+   * su día), una por culto que las tenga.
+   */
+  protected readonly monthlyNotes = computed<readonly MonthlyNoteView[]>(() =>
+    this.schedule
+      .week()
+      .flatMap((d) => d.services)
+      .map((s) => s.monthlyNote)
+      .filter((n): n is MonthlyNoteView => n !== null),
+  );
 
   /** «Hoy» / «Mañana» se traducen en la plantilla; el resto, día de la semana. */
   protected readonly nextDayLabel = computed(() => {

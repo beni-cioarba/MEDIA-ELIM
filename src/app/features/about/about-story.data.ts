@@ -8,7 +8,10 @@
  *    (`C:\workspace\elim-25`: catálogo de 2.043 clips y fotos de YouTube y
  *    Drive, ordenado por épocas). Cada hito de la cronología es una
  *    grabación o una carpeta con fecha; `video` es su id de YouTube.
- *    Resumen y huecos conocidos en `docs/fuentes/cronologie-elim.md`.
+ *  · El directo del aniversario (18/10/2026, YouTube `kRrYhmOcDjA`): los
+ *    testimonios de los pioneros (primera reunión, primera ordenación,
+ *    24 años de pastorado de Gavrilă Zăgrean).
+ *    Resumen, citas con minuto y huecos en `docs/fuentes/cronologie-elim.md`.
  *
  * Los textos viven en `about.story.*` (i18n); aquí sólo están los ids, el
  * orden, las fechas y los números. Pensado para crecer: un hito nuevo es una
@@ -56,12 +59,17 @@ export interface StoryEra {
 export const STORY_ERAS: readonly StoryEra[] = [
   {
     id: 'beginnings',
-    from: 2001,
+    from: 2000,
     to: 2005,
     milestones: [
-      { id: 'founded', date: '2001' },
+      // «El último domingo de diciembre de 2000» (Adrian Mureșan, directo
+      // del 18/10/2026, 2:04:23): fue el 31/12/2000.
+      { id: 'first_service', date: '2000-12-31' },
+      // Primera ordenación: pastor Gavrilă Zăgrean, diáconos Mircea Coptil y
+      // Adrian Mureșan («hace 25 años», mismo testimonio).
+      { id: 'ordination', date: '2001' },
       // El coro cumplió 7 años el 09/11/2008.
-      { id: 'choir', date: '2001-11' },
+      { id: 'choir', date: '2001-11', video: 'TWO08Sml4MQ' },
       { id: 'youth', date: '2002-03', video: '1ez6DFE_vD0' },
       { id: 'christmas', date: '2005-12', video: 'LaA1jVMxyhI' },
     ],
@@ -75,7 +83,7 @@ export const STORY_ERAS: readonly StoryEra[] = [
       { id: 'brass', date: '2007-03', video: 'cmiQbEZtf3A' },
       { id: 'mission', date: '2007-04', video: 'clo6yyDMBx8' },
       { id: 'youth_conf', date: '2007-10', video: '0RF-GvlzoeU' },
-      { id: 'choir7', date: '2008-11', video: 'TWO08Sml4MQ' },
+      { id: 'choir7', date: '2008-11', video: '40COQj2tHAU' },
       { id: 'assembly', date: '2010-10' },
     ],
   },
@@ -97,8 +105,12 @@ export const STORY_ERAS: readonly StoryEra[] = [
     milestones: [
       { id: 'baptisms', date: '2021-11', video: 'grXGFevqzm8' },
       { id: 'ordination', date: '2022-11', video: 'ZLJCnudjlc4' },
-      { id: 'uganda', date: '2023', video: 'kPM1r9TX-TI' },
+      // Viaje del 20/10 al 07/11/2023 (descripción del vídeo).
+      { id: 'uganda', date: '2023-10', video: 'kPM1r9TX-TI' },
       { id: 'children', date: '2024-10', video: '8FQxxLakDYU' },
+      // «Durante 24 años, hasta 2024, fue el pastor de la iglesia Elim»
+      // (bienvenida del directo del 18/10/2026, 0:29:07).
+      { id: 'pastors', date: '2024' },
     ],
   },
   {
@@ -114,6 +126,25 @@ export const STORY_ERAS: readonly StoryEra[] = [
       { id: 'jubilee', date: '2026-10-18' },
     ],
   },
+];
+
+/**
+ * Personas del principio que la iglesia nombró en el aniversario, con su
+ * papel (texto en `about.story.people.items.<id>`). Sólo ministerios y
+ * servicios públicos de la iglesia: nada personal.
+ */
+export interface StoryPerson {
+  readonly id: string;
+  readonly name: string;
+}
+
+export const STORY_PEOPLE: readonly StoryPerson[] = [
+  { id: 'zagrean', name: 'Gavrilă Zăgrean' },
+  { id: 'coptil', name: 'Mircea Coptil' },
+  { id: 'muresan', name: 'Adrian Mureșan' },
+  { id: 'tofan', name: 'Sabin Tofan' },
+  { id: 'cazacu', name: 'Cristi Cazacu' },
+  { id: 'carbune', name: 'Cătălina Cărbune' },
 ];
 
 /** Grupo de obras («Ce a lucrat Dumnezeu»): título + lista. */

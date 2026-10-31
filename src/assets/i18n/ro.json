@@ -155,14 +155,16 @@
     "countdown_set": "Setează",
     "countdown_clear": "Șterge",
     "select_prayer": "Rugăciune",
-    "select_prayer_hint": "Doar rugăciunea: rezumatul familiilor și cauzele bisericii",
+    "select_prayer_hint": "Doar rugăciunea: rezumatul familiilor și cauzele bisericii, pe avans automatic, cauzele câte 60 s",
     "countdown_always": "Mereu",
     "countdown_from_always": "Mereu, de la {{time}} (nu în timpul unui serviciu)",
     "clock_show": "Arată ora",
     "clock_hint": "Ceas în colțul din dreapta sus al proiecției",
     "clock_seconds": "Cu secunde",
     "select_families": "Familii",
-    "select_families_hint": "Prezentarea familiilor: doar familiile din săptămâna aceasta (rezumat + fiecare familie), pe avans manual, de la rezumat"
+    "select_families_hint": "Prezentarea familiilor: doar familiile din săptămâna aceasta (rezumat + fiecare familie), pe avans manual, de la rezumat",
+    "select_ending": "Terminare",
+    "select_ending_hint": "Sfârșitul slujbei: toate anunțurile, rezumatul familiilor, citirea Bibliei, programul săptămânal și evenimentele viitoare, pe avans automatic, anunțurile câte 12 s și restul câte 10 s"
   },
   "carousel": {
     "label": "Carusel de conținut",
@@ -276,6 +278,13 @@
     "tomorrow": "Mâine",
     "watch_live": "Urmărește în direct",
     "no_service": "Fără serviciu",
+    "monthly": {
+      "nth_1": "Prima {{day}} din lună",
+      "nth_2": "A doua {{day}} din lună",
+      "nth_3": "A treia {{day}} din lună",
+      "nth_4": "A patra {{day}} din lună",
+      "nth_-1": "Ultima {{day}} din lună"
+    },
     "directions": "Cum ajungi",
     "unit_day": "zi",
     "unit_days": "zile",
@@ -1045,15 +1054,15 @@
       "chapters": {
         "start": {
           "title": "Un început mic, în voia Domnului",
-          "body": "Totul a început în 2001, la Arganda del Rey, cu o propunere, un sfat, o hotărâre și, în final, o decizie. Întrebarea de atunci nu era doar dacă vom avea izbândă, ci dacă lucrarea aceasta este în voia Domnului. Au fost doar câțiva oameni, într-un loc simplu — nu un foc, ci o scânteie —, dar s-a început cu Dumnezeu. În același an s-a înființat corul, iar biserica veche s-a umplut de rugăciune și de programe de tineret."
+          "body": "Înainte de Elim, frații români din Arganda se adunau la biserica „Muntele Sionului”. Spre sfârșitul anului 2000, un grup mic de frați a pus înaintea Domnului o singură întrebare: este lucrarea aceasta în voia Lui? Prima slujbă a Bisericii Elim s-a ținut în ultima duminică din decembrie 2000, într-un loc simplu — nu un foc, ci o scânteie. În 2001 au fost ordinați primii slujitori și s-a înființat corul."
         },
         "growth": {
           "title": "Crescută prin Duhul Sfânt",
-          "body": "Au urmat ani de slujire: fanfara, grupul de misiune care a dus Evanghelia prin orașele Spaniei, conferințe de tineret și de misiune. Biserica a ajuns la 100 de suflete nu pentru că avea oameni pregătiți pentru lucrări mari, ci pentru că a crezut Cuvântul: „nici prin putere, nici prin tărie, ci prin Duhul Meu”. Au fost și încercări — despărțiri, pierderi, furtuni —, dar după fiecare am putut spune: „Dreapta Domnului câștigă biruința.”"
+          "body": "Din aproximativ 50 de persoane la început, biserica a ajuns la 100 de suflete — nu pentru că avea oameni pregătiți pentru lucrări mari, ci pentru că a crezut Cuvântul: „nici prin putere, nici prin tărie, ci prin Duhul Meu”. Au venit fanfara, grupul de misiune care a dus Evanghelia prin orașele Spaniei și conferințele de tineret. Au fost și încercări — despărțiri, pierderi, furtuni —, dar după fiecare am putut spune: „Dreapta Domnului câștigă biruința.”"
         },
         "today": {
           "title": "Până aici, și mai departe",
-          "body": "O nouă generație s-a botezat, s-au ridicat slujitori, iar misiunea a ajuns până în Uganda. Din 2025 ne adunăm într-o casă nouă. Astăzi suntem în jur de 450 de membri și 270 de aparținători, și în spatele fiecărui suflet este o poveste. Harul care ne-a dus până aici ne va duce mai departe."
+          "body": "Biserica s-a mutat dintr-un loc în altul, a construit și a reconstruit; mulți au plecat de aici să slujească în alte locuri, alții au venit. O nouă generație s-a botezat, misiunea a ajuns până în Uganda și, din 2025, ne închinăm într-un locaș nou. După 24 de ani de păstorire a fratelui Gavrilă Zăgrean, biserica este condusă astăzi de pastorul Pavel Negrușier și numără în jur de 450 de membri și 270 de aparținători. Harul care ne-a dus până aici ne va duce mai departe."
         }
       },
       "facts": {
@@ -1074,8 +1083,9 @@
           "title": "Începuturile",
           "summary": "Câțiva oameni, un loc simplu și o întrebare: este lucrarea aceasta în voia Domnului?",
           "milestones": {
-            "founded": "Începe Biserica Elim din Arganda del Rey",
-            "choir": "Se înființează corul bisericii",
+            "first_service": "Prima slujbă a Bisericii Elim, cu un grup mic de frați",
+            "ordination": "Prima ordinare: pastorul Gavrilă Zăgrean și diaconii Mircea Coptil și Adrian Mureșan",
+            "choir": "Se înființează corul, dirijat de Sabin Tofan",
             "youth": "Programe de tineret în biserica veche",
             "christmas": "Concert de Crăciun și seara de Revelion: corul, orchestra și grupurile"
           }
@@ -1108,15 +1118,16 @@
           "milestones": {
             "baptisms": "Botezuri nou-testamentare, an de an",
             "ordination": "Ordinare de slujitori",
-            "uganda": "Misiune în Uganda, la tribul IK",
-            "children": "Binecuvântarea copiilor"
+            "uganda": "Misiune în Uganda (20 oct. – 7 nov.): două biserici construite, la tribul IK",
+            "children": "Binecuvântarea copiilor",
+            "pastors": "Gavrilă Zăgrean încheie 24 de ani de păstorire; pastorul bisericii este Pavel Negrușier"
           }
         },
         "house": {
           "title": "O casă nouă",
           "summary": "Un nou locaș de închinare și aceeași chemare de la început.",
           "milestones": {
-            "temple": "Biserica se adună în noul locaș de închinare",
+            "temple": "Noul locaș de închinare, ridicat cu munca, darurile și utilajele fraților",
             "anchored": "Conferința „Ancorat în Hristos”",
             "shoebox": "„Zâmbetul din cutie” și concertul de colinde al copiilor",
             "hope": "Conferința „Speranță pentru tine”",
@@ -1124,6 +1135,19 @@
             "jubilee": "25 de ani: un altar de mulțumire"
           }
         }
+      },
+      "people": {
+        "title": "Oamenii începutului",
+        "lead": "Câțiva dintre cei care au pus bazele lucrării, așa cum i-a amintit biserica la aniversare.",
+        "items": {
+          "zagrean": "Pastorul bisericii timp de 24 de ani, din 2001 până în 2024",
+          "coptil": "Unul dintre primii diaconi; astăzi pastor în România",
+          "muresan": "Unul dintre primii diaconi; astăzi prezbiter în România",
+          "tofan": "Dirijorul corului de la înființare; a lăsat o amprentă adâncă în cântarea bisericii",
+          "cazacu": "Primul organist al bisericii, încă adolescent",
+          "carbune": "Prima educatoare a copiilor din biserică"
+        },
+        "note": "Din Elim au plecat slujitori care astăzi sunt prezbiteri și păstori în România, Belgia și Țara Bascilor."
       },
       "works": {
         "title": "Ce a lucrat Dumnezeu în {{count}} de ani",

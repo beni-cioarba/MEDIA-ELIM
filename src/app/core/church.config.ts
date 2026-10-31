@@ -2,6 +2,7 @@ import { InjectionToken } from '@angular/core';
 import { SocialLink } from './social-link.model';
 import { IconName } from './ui/icon-name';
 import type { DepartmentId } from './navigation/app-paths';
+import type { MonthlyRule } from './util/recurrence';
 
 /**
  * Evento del directorio público de fotos/vídeos de la iglesia.
@@ -91,6 +92,22 @@ export interface WeeklyProgram {
   readonly time: string;
   readonly title: string;
   readonly description: string;
+  /**
+   * Excepciones mensuales fijas: en la ocurrencia de `rule` (p. ej. el primer
+   * domingo), la sesión de `time` se llama `title` en vez del título de
+   * siempre. `time` debe ser una de las horas de `time` del día: no añade
+   * cultos, sólo los renombra. `ScheduleService` lo resuelve por fecha, así
+   * que la portada, el programa, la proyección y la cuenta atrás lo dicen
+   * todos a la vez.
+   */
+  readonly monthly?: readonly WeeklyMonthlySession[];
+}
+
+/** Sesión de un culto semanal que cambia de nombre una vez al mes. */
+export interface WeeklyMonthlySession {
+  readonly rule: MonthlyRule;
+  readonly time: string;
+  readonly title: string;
 }
 
 /**
@@ -640,6 +657,12 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       time: '10:00 & 18:00',
       title: 'Închinare și învățătură',
       description: '',
+      // Prima duminică din lună: dimineața Cina Domnului, seara serviciul de
+      // tineret (el mismo que `departments.config.ts` → youth → `sunday`).
+      monthly: [
+        { rule: { weekday: 0, nth: 1 }, time: '10:00', title: 'Cina Domnului' },
+        { rule: { weekday: 0, nth: 1 }, time: '18:00', title: 'Seară de tineret' },
+      ],
     },
   ],
   // ---------------------------------------------------------------------
@@ -972,6 +995,48 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       footnote: 'Domnul să binecuvânteze pe toți tinerii Bisericii Elim!',
       publishedOn: '2026-10-25',
       expiresOn: '2026-10-31',
+    },
+    /*
+     * Semana de intercesión por los niños de la iglesia y los hermanos y
+     * hermanas educadoras de los grupos (01/11 → 07/11).
+     *
+     * Erratas del original: «Multa»→Multă, «copii bisericii»→copiii,
+     * «mintă»→minte, «binecuvinteze»→binecuvânteze, espacios antes de coma.
+     * Como en la del tineret, una columna por destinatario; la de los
+     * educadores en `highlight`. Los tres grupos van al pie (no son lo que se
+     * pide, sino a quién) y el saludo final se omite. Se mantiene
+     * «frații și surorile educatoare» del original: hay de los dos, más hermanas.
+     */
+    {
+      id: 'mijlocire_copii_educatori',
+      title: 'Săptămână de rugăciune pentru copiii bisericii',
+      lead: 'În săptămâna aceasta aducem înaintea Domnului copiii bisericii și pe frații și surorile educatoare de la grupele de copii.',
+      sections: [
+        {
+          heading: 'Pentru copii',
+          kind: 'list',
+          items: [
+            { label: 'Creștere sănătoasă' },
+            { label: 'Înțelepciune de sus și minte sănătoasă' },
+            { label: 'Să-i păzească de planurile celui rău' },
+            { label: 'Să facă să lumineze fața Lui peste ei' },
+          ],
+        },
+        {
+          heading: 'Pentru frații și surorile educatoare',
+          kind: 'list',
+          highlight: true,
+          items: [
+            { label: 'Multă răbdare și înțelepciune' },
+            { label: 'Să-i învețe pe copii din Cuvântul sfânt' },
+            { label: 'Răsplată pentru toată osteneala' },
+            { label: 'Binecuvântare peste ei și familiile lor' },
+          ],
+        },
+      ],
+      footnote: 'Grupa mică · Grupa mijlocie · Grupa mare și adolescenți',
+      publishedOn: '2026-11-01',
+      expiresOn: '2026-11-07',
     },
     {
       id: 'aniversare_25_ani',

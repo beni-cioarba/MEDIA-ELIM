@@ -202,6 +202,11 @@ figurativo se toma de un set profesional, no se dibuja a mano.
 
 ## Sello de aniversario en la marca (18/10/2026)
 
+> **Retirado el 01/11/2026** a petición del usuario: `until` pasa a
+> `2026-10-31` y la marca vuelve a ser la de siempre. El componente y su
+> documentación se conservan para otra celebración (basta con cambiar las
+> fechas de `anniversary.config.ts`).
+
 Del 01/10 al 31/12/2026 la cabecera y el pie pasan `[seal]` a `app-brand-logo`
 (un «25» dorado al alto de la marca + filete; fechas en
 `core/anniversary.config.ts`, diseño en `brand-logo/README.md` → «Sello»). Sin

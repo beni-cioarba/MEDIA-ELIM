@@ -96,6 +96,20 @@ export interface PastFamilyOption {
  */
 const PRAYER_BLOCKS: readonly PresentationBlockId[] = ['families', 'causes'];
 
+/**
+ * Bloques del cierre del culto (atajo «Terminare» del panel): los anuncios
+ * enteros, el resumen de las familias, la lectura bíblica, el programa
+ * semanal y los eventos próximos. Sus tiempos los fija
+ * `PresentationDisplayService.SHORTCUT_DURATIONS_S`.
+ */
+const ENDING_BLOCKS: readonly PresentationBlockId[] = [
+  'announcements',
+  'families',
+  'bible',
+  'weekly',
+  'upcoming',
+];
+
 /** Quién va a pintar las diapositivas que devuelve `expand()`. */
 export type ExpandView = 'projection' | 'panel' | 'web';
 
@@ -824,6 +838,52 @@ export class PresentationBlocksService {
       sel.visible === sel.total &&
       this.pastFamilyIds().size === 0 &&
       !this.showingNextFamilyWeek()
+    );
+  });
+
+  /**
+   * Atajo «Terminare»: lo que se deja pasando al acabar el culto. Sólo
+   * quedan encendidos los bloques de `ENDING_BLOCKS` que tienen contenido:
+   * todos los anuncios y todos los eventos próximos y, de las familias, **sólo
+   * el resumen** (fuera las de semanas anteriores y la prueba de la
+   * siguiente). Avance y tiempos, en el panel (`presentEnding`).
+   */
+  selectEndingBlocks(): void {
+    if (!this.hasEndingBlocks()) return;
+    const next: Partial<Record<PresentationBlockId, boolean>> = {};
+    for (const state of this.states()) {
+      next[state.id] = state.autoAvailable && ENDING_BLOCKS.includes(state.id);
+    }
+    this.overrides.set(next);
+    persistOverrides(next);
+    this.setNextFamilyWeekShown(false);
+    this.selectAll('announcements');
+    this.selectAll('upcoming');
+    this.selectOnlyFirst('families');
+  }
+
+  /** Hay algún bloque del cierre con contenido (si no, el atajo no aplica). */
+  readonly hasEndingBlocks = computed<boolean>(() =>
+    this.states().some((s) => s.autoAvailable && ENDING_BLOCKS.includes(s.id)),
+  );
+
+  /** La selección de bloques es la del atajo «Terminare» (sin mirar tiempos). */
+  readonly endingOnly = computed<boolean>(() => {
+    if (!this.hasEndingBlocks()) return false;
+    const states = this.states();
+    if (!states.every((s) => s.enabled === (s.autoAvailable && ENDING_BLOCKS.includes(s.id)))) return false;
+    const on = (id: PresentationBlockId) => states.find((s) => s.id === id)?.enabled ?? false;
+    const full = (id: SelectableBlockId) => {
+      const sel = this.selection(id);
+      return sel.visible === sel.total;
+    };
+    return (
+      (!on('announcements') || full('announcements')) &&
+      (!on('upcoming') || full('upcoming')) &&
+      (!on('families') ||
+        (this.selection('families').onlyFirst &&
+          this.pastFamilyIds().size === 0 &&
+          !this.showingNextFamilyWeek()))
     );
   });
 

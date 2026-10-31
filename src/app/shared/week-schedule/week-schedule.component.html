@@ -43,16 +43,56 @@
         </span>
 
         @for (s of d.services; track s.id) {
-          <span class="schedule__times">
-            @for (t of s.times; track t) {
-              <time class="schedule__chip" [attr.datetime]="t">{{ t }}</time>
+          @if (s.special) {
+            <!-- El día de la excepción mensual (primer domingo): cada hora con
+                 su culto, bajo el rótulo de la regla. -->
+            @if (s.specialRule; as rule) {
+              <span class="schedule__rule">
+                {{ ('weekly.monthly.nth_' + rule.nth) | translate: { day: schedule.formatWeekdayLong(d.iso) } }}
+              </span>
             }
-          </span>
-          <span class="schedule__what">{{ s.title }}</span>
+            @for (x of s.sessions; track x.time) {
+              <span class="schedule__session">
+                <span class="schedule__times">
+                  <time class="schedule__chip" [class.is-special]="x.special" [attr.datetime]="x.time">{{ x.time }}</time>
+                </span>
+                <span class="schedule__what" [class.is-special]="x.special">{{ x.title }}</span>
+              </span>
+            }
+          } @else {
+            <span class="schedule__times">
+              @for (t of s.times; track t) {
+                <time class="schedule__chip" [attr.datetime]="t">{{ t }}</time>
+              }
+            </span>
+            <span class="schedule__what">{{ s.title }}</span>
+          }
         } @empty {
           <span class="schedule__none">{{ 'weekly.no_service' | translate }}</span>
         }
       </li>
     }
   </ol>
+
+  <!-- Las reglas mensuales (primer domingo: Cina Domnului, seară de tineret),
+       a todo el ancho bajo la semana: se leen de un vistazo sin estirar las
+       siete celdas. La semana en que tocan desaparecen: lo dice ya su día. -->
+  @if (monthlyNotes().length) {
+    <ul class="schedule__monthly" role="list">
+      @for (note of monthlyNotes(); track note.iso) {
+        <li class="schedule__monthly-item">
+          <span class="schedule__rule">
+            {{ ('weekly.monthly.nth_' + note.rule.nth) | translate: { day: schedule.formatWeekdayLong(note.iso) } }}
+            · <time [attr.datetime]="note.iso">{{ schedule.formatEventDateShort(note.iso) }}</time>
+          </span>
+          @for (x of note.sessions; track x.time) {
+            <span class="schedule__monthly-line">
+              <time class="schedule__monthly-time" [attr.datetime]="x.time">{{ x.time }}</time>
+              {{ x.title }}
+            </span>
+          }
+        </li>
+      }
+    </ul>
+  }
 </section>

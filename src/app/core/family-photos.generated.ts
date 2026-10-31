@@ -54,4 +54,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-10-25/bucur-ionel-mirela': { width: 1200, height: 1209, variants: [[480, 476], [960, 953], [1209, 1200]] },
   '2026-10-25/bucurici-samuel-cristina': { width: 1031, height: 855, variants: [[480, 480], [960, 960], [1031, 1031]] },
   '2026-10-25/burdet-aurel-marga': { width: 780, height: 905, variants: [[480, 414], [905, 780]] },
+  '2026-11-01/calini-alina': { width: 1087, height: 1000, variants: [[480, 480], [960, 960], [1087, 1087]] },
+  '2026-11-01/carsai-cristian-domnita': { width: 1298, height: 1600, variants: [[480, 389], [960, 779], [1600, 1298]] },
+  '2026-11-01/ceposu-jose-mirabela': { width: 1554, height: 1600, variants: [[480, 466], [960, 932], [1600, 1554]] },
+  '2026-11-01/chereji-sorin-roxana': { width: 1076, height: 1569, variants: [[480, 329], [960, 658], [1569, 1076]] },
+  '2026-11-01/chis-calin-angela-simona': { width: 1200, height: 1196, variants: [[480, 480], [960, 960], [1200, 1200]] },
 };

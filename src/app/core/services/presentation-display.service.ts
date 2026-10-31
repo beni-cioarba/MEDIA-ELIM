@@ -20,7 +20,8 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   gallery: 12,
   weekly: 12,
   upcoming: 15,
-  bible: 20,
+  // 10 s (01/11/2026, a petición del usuario; antes 20).
+  bible: 10,
   // Resumen y fichas comparten tiempo: una ficha lleva foto y uno o dos
   // párrafos que se leen en voz alta mientras se ve la familia.
   families: 20,
@@ -32,6 +33,9 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
   website: 15,
 };
+
+/** Atajos del panel que traen tiempos propios («Terminare», «Rugăciune»). */
+export type DurationShortcut = 'ending' | 'prayer';
 
 /**
  * Lo mínimo de una diapositiva que hace falta para saber su tiempo propio.
@@ -251,6 +255,47 @@ export class PresentationDisplayService {
     const durations = { ...this.prefs().durations };
     delete durations[block];
     this.update({ durations });
+  }
+
+  // ---- Tiempos de los atajos del panel ------------------------------------
+  //
+  // Algunos atajos de la selección global traen sus propios tiempos. Al
+  // pulsar cualquier atajo, los bloques que tocan estos tiempos vuelven
+  // primero a su valor por defecto y después se aplican los del atajo
+  // pulsado (si tiene): así nada se queda con el tiempo de otro momento.
+
+  /**
+   * - `ending` («Terminare», cierre del culto): 12 s los anuncios y 10 s el
+   *   resumen de las familias, la lectura, el programa semanal y los eventos.
+   * - `prayer` («Rugăciune»): 60 s las causas, que se leen y se ora por ellas;
+   *   el resumen de las familias se queda en su valor por defecto.
+   */
+  static readonly SHORTCUT_DURATIONS_S: Readonly<
+    Record<DurationShortcut, Readonly<Partial<Record<PresentationBlockId, number>>>>
+  > = {
+    ending: { announcements: 12, families: 10, bible: 10, weekly: 10, upcoming: 10 },
+    prayer: { causes: 60 },
+  };
+
+  /**
+   * Aplica los tiempos de un atajo, o sólo restablece (`null`), en una sola
+   * escritura. Los tiempos que el operador haya puesto a mano en esos
+   * bloques también vuelven al valor por defecto.
+   */
+  applyShortcutDurations(shortcut: DurationShortcut | null): void {
+    const durations = { ...this.prefs().durations };
+    for (const preset of Object.values(PresentationDisplayService.SHORTCUT_DURATIONS_S)) {
+      for (const block of Object.keys(preset)) delete durations[block as PresentationBlockId];
+    }
+    if (shortcut) Object.assign(durations, PresentationDisplayService.SHORTCUT_DURATIONS_S[shortcut]);
+    this.update({ durations });
+  }
+
+  /** Los tiempos de un atajo están aplicados (para pintarlo pulsado). */
+  hasShortcutDurations(shortcut: DurationShortcut): boolean {
+    return Object.entries(PresentationDisplayService.SHORTCUT_DURATIONS_S[shortcut]).every(
+      ([block, seconds]) => this.durations()[block as PresentationBlockId] === seconds,
+    );
   }
 
   /** Devuelve todos los bloques y diapositivas a su duración por defecto. */

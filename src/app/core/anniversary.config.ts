@@ -13,7 +13,9 @@ export const ANNIVERSARY = {
   /** 25 años de la iglesia (2001–2026); el culto de aniversario fue el 18/10/2026. */
   seal: { value: '25', label: 'Aniversare' } satisfies BrandSeal,
   from: '2026-10-01',
-  until: '2026-12-31',
+  // Retirado el 01/11/2026 a petición del usuario («dejarlo como antes»);
+  // antes llegaba al 31/12/2026.
+  until: '2026-10-31',
 } as const;
 
 /** El sello vigente hoy, o `null` fuera de la ventana. Fechas ISO: se comparan como texto. */

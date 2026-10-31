@@ -532,4 +532,72 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 9,
+    presentedOn: '2026-11-01',
+    families: [
+      {
+        id: 'calini-alina',
+        surname: 'Călini',
+        names: 'Alina',
+        single: true,
+        children: ['Alin', 'Andrei', 'Samuel'],
+        message: [
+          'Mulțumim Domnului pentru bunătatea și îndurarea Lui, care au fost revărsate din belșug peste noi și familia noastră.',
+          'Dorința mea este ca Duhul Sfânt să lucreze cu mântuire în casa noastră, să cerceteze inima noastră a tuturor și harul Său să ne fie ajutor în orice vreme.',
+        ],
+      },
+      {
+        id: 'carsai-cristian-domnita',
+        surname: 'Carsai',
+        names: 'Cristian și Domnița',
+        children: ['Noemi', 'Iosua'],
+        message: [
+          'Dorința noastră este ca familia noastră să rămână mereu în ascultare de Dumnezeu, trăind în dragoste și credință, iar toată gloria să fie a Domnului.',
+        ],
+        verse: {
+          text: 'Mulțumiți lui Dumnezeu pentru toate lucrurile.',
+          reference: '1 Tesaloniceni 5:18',
+        },
+      },
+      {
+        id: 'ceposu-jose-mirabela',
+        surname: 'Ceposu',
+        names: 'Jose și Mirabela',
+        children: ['Alexia', 'Nereea'],
+        message: [
+          'Mulțumim Domnului pentru dragostea și grija pe care ne-o poartă în fiecare moment al vieții.',
+          'Dorința mea este ca Domnul să-Și facă desăvârșită lucrarea pe care a început-o în mine și să lase mântuire în casa noastră.',
+        ],
+        // El original decía «Isaia 51:10»; el texto es Isaia 61:10.
+        verse: {
+          text: 'Mă bucur în Domnul și sufletul meu este plin de veselie în Dumnezeul meu, căci m-a îmbrăcat cu hainele mântuirii, m-a acoperit cu mantaua izbăvirii, ca pe un mire împodobit cu o cunună împărătească și ca o mireasă împodobită cu sculele ei.',
+          reference: 'Isaia 61:10',
+        },
+      },
+      {
+        id: 'chereji-sorin-roxana',
+        surname: 'Chereji',
+        names: 'Sorin și Roxana',
+        children: ['Aron', 'Lucas'],
+        message: [
+          'Cu inimile pline de recunoștință, Îi mulțumim Domnului pentru dragostea, sănătatea și purtarea Lui de grijă față de familia noastră. Fiecare binecuvântare din viața noastră este un dar de la El, iar dorința noastră cea mai mare este să rămânem mereu aproape de El!',
+        ],
+        verse: {
+          text: 'Cât despre mine și casa mea, noi vom sluji Domnului.',
+          reference: 'Iosua 24:15',
+        },
+      },
+      {
+        id: 'chis-calin-angela-simona',
+        surname: 'Chis',
+        names: 'Calin și Ángela Simona',
+        children: ['Amellia Catalina', 'Antonia Elena'],
+        message: [
+          'Mulțumesc lui Dumnezeu pentru binecuvântările nenumărate pe care le revarsă din belșug peste casa noastră.',
+          'Dorim ca Duhul Domnului să ne călăuzească în tot adevărul, pacea Lui să fie în inima noastră și protecția Domnului să fie peste toată familia noastră.',
+        ],
+      },
+    ],
+  },
 ];

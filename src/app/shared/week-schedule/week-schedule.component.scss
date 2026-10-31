@@ -214,6 +214,74 @@
   color: var(--c-muted);
 }
 
+// --- Excepción mensual (primer domingo: Cina Domnului, seară de tineret) ---
+//
+// El día que toca: rótulo de la regla en versalitas oro y cada hora con su
+// culto, la hora en oro macizo. Las demás semanas, la regla va en una línea
+// a todo el ancho bajo la semana (`.schedule__monthly`): a la vista sin
+// estirar las siete celdas.
+
+.schedule__rule {
+  grid-column: 2 / -1;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+// Hora y culto de una sesión. En filas, transparente: chip y título caen en
+// las columnas 2 y 3 de la rejilla. En siete columnas, una línea cada uno
+// («[10:00] Cina Domnului»): apilados, el domingo estiraba las siete celdas.
+.schedule__session {
+  display: contents;
+}
+
+.schedule__chip.is-special {
+  background: var(--c-gold);
+  color: var(--c-primary);
+}
+
+.schedule__what.is-special {
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.schedule__monthly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.65rem 1.1rem;
+  border-top: 1px solid var(--c-hairline);
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.schedule__monthly-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 1.25rem;
+
+  .schedule__rule {
+    margin-right: 0.25rem;
+  }
+}
+
+.schedule__monthly-line {
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.schedule__monthly-time {
+  margin-right: 0.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+}
+
 // Días ya pasados: atenuados, sin desaparecer (la semana se lee entera).
 .schedule__day.is-past {
   .schedule__name,
@@ -264,13 +332,25 @@
   .schedule__when,
   .schedule__times,
   .schedule__what,
-  .schedule__none {
+  .schedule__none,
+  .schedule__rule {
     grid-column: 1;
   }
 
   .schedule__times {
     flex-direction: row;
     flex-wrap: wrap;
+  }
+
+  .schedule__session {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    grid-column: 1;
+
+    .schedule__times {
+      flex: none;
+    }
   }
 }
 

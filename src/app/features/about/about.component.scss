@@ -306,6 +306,75 @@
   }
 }
 
+/* Los del principio: seis columnas en escritorio, tres en tableta, dos en
+   móvil (seis llena siempre filas completas). Nombre en display, papel en
+   texto; filete de oro arriba, como los grupos de obras. */
+.pioneers {
+  margin-block-start: clamp(2rem, 4vw, 2.75rem);
+}
+
+.pioneers__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.pioneers__lead {
+  max-width: 62ch;
+  margin: 0.3rem 0 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--c-muted);
+}
+
+.pioneers__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem clamp(0.75rem, 2vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include until('xl') {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include until('sm') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pioneer {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  padding-block-start: 0.6rem;
+  border-block-start: 2px solid var(--c-gold);
+}
+
+.pioneer__name {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--c-primary);
+}
+
+.pioneer__role {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--c-text);
+}
+
+.pioneers__note {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--c-muted);
+}
+
 /* Lo que Dios ha hecho: 4 → 2 → 1 columnas. `auto-fit` con mínimo de
    12rem llena la fila en escritorio; por debajo de `lg` se fuerza 2 para que
    cuatro grupos nunca queden 3 + 1 (fila coja). */
@@ -431,66 +500,82 @@
   list-style: none;
 }
 
+/* Revisión del 01/11/2026 («más serio y profesional»): fuera los iconos en
+   cuadros dorados y la píldora del artículo, que a 1.700 px quedaba a ~540 px
+   del final del texto, sin relación visible con su fila. Ahora es una lista
+   de definiciones: columna fija con el nombre y su artículo debajo, texto al
+   lado a medida de lectura. Toda la fila se lee de izquierda a derecha sin
+   huecos, y la columna crece con cualquier número de lucrări. */
 .work {
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
-  gap: 0 1rem;
-  align-items: start;
-  padding-block: 1rem;
+  grid-template-columns: minmax(12rem, 18rem) minmax(0, 46rem);
+  grid-template-areas:
+    'title text'
+    'ref   text';
+  grid-template-rows: auto 1fr;
+  gap: 0.35rem clamp(1.5rem, 4vw, 4rem);
+  align-items: baseline;
+  padding-block: 1.25rem;
   border-block-end: 1px solid var(--c-hairline);
 }
 
-.work__icon {
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--r-md);
-  background: var(--c-gold-tint);
-  font-size: 1.15rem;
-  color: var(--c-gold-deep);
-}
-
-.work__body {
-  min-width: 0;
-  padding-block-start: 0.15rem;
-}
-
 .work__title {
-  margin: 0 0 0.15rem;
+  grid-area: title;
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   font-weight: 700;
+  line-height: 1.3;
   letter-spacing: -0.01em;
   color: var(--c-primary);
 }
 
 .work__text {
-  /* Medida de lectura: la fila llega al ancho de la página y un párrafo a
-     1.400 px no se lee. */
-  max-width: 46rem;
+  grid-area: text;
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.6;
-  color: var(--c-muted);
+  color: var(--c-text);
+  text-wrap: pretty;
 }
 
+/* El artículo, como cita: versalitas pequeñas en oro, sin caja. */
 .work__ref {
-  align-self: center;
-}
+  grid-area: ref;
+  justify-self: start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--mo-fast) var(--ea-standard);
 
-/* Por debajo de `sm` la referencia no cabe junto al texto: baja bajo el
-   cuerpo, alineada con él. */
-@include until('sm') {
-  .work {
-    grid-template-columns: 2.5rem minmax(0, 1fr);
-    row-gap: 0.6rem;
+  &:hover {
+    text-decoration-color: currentColor;
   }
 
-  .work__ref {
-    grid-column: 2;
-    justify-self: start;
-    align-self: start;
+  &:focus-visible {
+    outline: 2px solid var(--c-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+/* Por debajo de `md` no hay ancho para dos columnas: nombre, texto y
+   artículo, uno debajo de otro. */
+@include until('md') {
+  .work {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'title'
+      'text'
+      'ref';
+    grid-template-rows: auto;
+    row-gap: 0.4rem;
   }
 }
 

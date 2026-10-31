@@ -350,6 +350,32 @@ Un álbum que hoy tiene una sola edición se convierte igual: se le añade
 Edita `weeklyProgram`. `day` usa la convención de `Date.getDay()`
 (0 = domingo). `ScheduleService` rota la lista para que hoy salga primero.
 
+**Excepciones mensuales** (`monthly`, 01/11/2026): el primer domingo de cada
+mes, a las 10:00 es **Cina Domnului** y a las 18:00 **Seară de tineret**:
+
+```ts
+monthly: [
+  { rule: { weekday: 0, nth: 1 }, time: '10:00', title: 'Cina Domnului' },
+  { rule: { weekday: 0, nth: 1 }, time: '18:00', title: 'Seară de tineret' },
+],
+```
+
+`rule` es la `MonthlyRule` de `util/recurrence.ts` (`nth` 1–4 o −1 = último);
+`time` tiene que ser una de las horas del culto (renombra sesiones, no añade
+cultos). `ScheduleService` lo resuelve **por fecha**: `weeklyProgram` y
+`todayProgram` llevan el título de su próxima fecha («Cina Domnului · Seară de
+tineret»), `nextService` el de la sesión concreta y `week` las sesiones de cada
+día (`sessions`, `special`, `specialRule`) y la regla cuando no toca
+(`monthlyNote`). Así lo dicen a la vez la tira «Când ne întâlnim», la tarjeta
+AZI y el rótulo del hero, la proyección y el menú.
+
+En la tira (`shared/week-schedule`): el día que toca, la celda lleva el rótulo
+«PRIMA DUMINICĂ DIN LUNĂ» y cada hora con su culto en una línea (hora en oro
+macizo); las demás semanas, una línea a todo el ancho bajo la semana con la
+próxima fecha («PRIMA DUMINICĂ DIN LUNĂ · 6 DEC. — 10:00 Cina Domnului · 18:00
+Seară de tineret»). Ahí y no dentro de la celda: dentro estiraba las siete
+celdas de 146 a 216 px. Textos: `weekly.monthly.nth_{1,2,3,4,-1}`.
+
 ### Editar o añadir un artículo de la confesión de fe
 
 La confesión (`features/credo/`) separa **estructura** de **texto**:

@@ -227,6 +227,30 @@ ventanas de proyección ya abiertas lo siguen al momento, por el mismo canal
 que el resto de ajustes. No hay idiomas distintos para consola y proyección:
 el operador ve en la vista previa exactamente lo que se proyecta.
 
+## Atajo «Terminare» (01/11/2026)
+
+Quinto botón de la selección global: el **cierre del culto**, lo que se deja
+pasando solo al acabar. `PresentationBlocksService.selectEndingBlocks()` deja
+encendidos sólo los bloques de `ENDING_BLOCKS` que tienen contenido —anuncios
+(todos), familias (**sólo el resumen**, sin semanas anteriores ni la prueba de
+la siguiente), `bible`, `weekly` y `upcoming` (todos los eventos)—; el panel
+(`presentEnding()`) pone el **avance automático** y los tiempos de
+`PresentationDisplayService.SHORTCUT_DURATIONS_S.ending`: **12 s** los anuncios y
+**10 s** familias, lectura, programa y eventos. Pulsado mientras
+coinciden bloques, tiempos y avance (`endingActive`).
+
+**Tiempos por atajo** (`applyShortcutDurations`): cada atajo devuelve antes a
+su valor por defecto todos los bloques que tocan los tiempos de algún atajo
+(también si el operador los había cambiado a mano) y después aplica los
+suyos, si tiene: «Terminare» los de arriba, «Rugăciune» **60 s las causas**
+(las familias siguen en 20 s); «Doar primul», «Toate» y «Familii», ninguno.
+
+**Avance automático**: todos los atajos lo encienden salvo «Familii», el único
+que lo apaga (01/11/2026). Por eso «Doar primul» y «Toate» sólo se desactivan
+si su selección ya está aplicada **y** el avance está encendido. Con seis botones, la
+fila usa `seg--stacked`: contador arriba y botones repartidos debajo (en la
+columna de 364 px el contador quedaba aplastado).
+
 ## Atajo «Familii» (04/10/2026)
 
 Cuarto botón de la selección global (tras «Rugăciune»): la **presentación de
@@ -252,8 +276,10 @@ aparezca (`CarouselService.currentIndex` resuelve primero por
 Tercer botón de la selección global (junto a «Doar primul» / «Toate»):
 `PresentationBlocksService.selectPrayerBlocks()` deja encendidos sólo los
 bloques de oración (`PRAYER_BLOCKS`: `families` y `causes`) y, de familias,
-**sólo el resumen** (las fichas una a una, no). Se pinta en oro mientras está
-aplicado (`prayerOnly`).
+**sólo el resumen** (las fichas una a una, no). Desde el 01/11/2026 pone
+además las causas a **60 s** (`SHORTCUT_DURATIONS_S.prayer`) y enciende el
+**avance automático** (viniendo de «Familii», que lo apaga). Se pinta en oro
+mientras está aplicado (`prayerActive`: bloques, tiempo y avance).
 
 ## Panel de control: consola de realización (03/10/2026)
 
@@ -331,7 +357,7 @@ lunes (con la insignia «Începe mâine»); de lunes a sábado, la semana en cur
 con el día de hoy resaltado y los pasados atenuados. Sin nada que configurar
 cada semana. Datos: `core/bible-reading.config.ts`, **generado** desde el
 Excel de la iglesia (receta en `20-content-i18n.md`). Duración por defecto
-20 s. Lleva su hoja propia (`bible-block.component.scss`, web + proyección),
+10 s (antes 20; cambiada el 01/11/2026). Lleva su hoja propia (`bible-block.component.scss`, web + proyección),
 igual que la tarjeta de anuncio.
 
 Composición (2026-09-28):

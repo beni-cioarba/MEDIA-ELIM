@@ -2,6 +2,7 @@ import { Injectable, computed, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent, WeeklyProgram } from '../church.config';
 import { DAY_MS, parseIsoDate, startOfDay } from '../util/iso-date';
+import { MonthlyRule, monthlyOccurrence, nextMonthlyDates } from '../util/recurrence';
 import { ClockService } from './clock.service';
 
 /** Valor de orden usado cuando una hora no se puede interpretar: va al final. */
@@ -37,12 +38,41 @@ export interface UpcomingEventView extends UpcomingEvent {
   readonly isPast: boolean;
 }
 
+/** Una sesión concreta (una hora) de un culto en una fecha. */
+export interface WeeklySessionView {
+  readonly time: string;
+  readonly title: string;
+  /** Es la excepción mensual (Cina Domnului el primer domingo…). */
+  readonly special: boolean;
+}
+
+/**
+ * La regla mensual de un culto, para anunciarla los días en que **no** toca:
+ * «Prima duminică din lună · 6 dec.: 10:00 Cina Domnului, 18:00 Seară de
+ * tineret». Así se sabe de un vistazo cualquier semana del mes.
+ */
+export interface MonthlyNoteView {
+  readonly rule: MonthlyRule;
+  /** `YYYY-MM-DD` de la próxima vez que toca. */
+  readonly iso: string;
+  readonly sessions: readonly { readonly time: string; readonly title: string }[];
+}
+
 /** Un culto del programa semanal con sus horas ya separadas («10:00 & 18:00» → dos). */
 export interface WeeklyServiceView {
   readonly id: string;
+  /** Título de ese día: el de siempre o, si cambia, los de sus sesiones («A · B»). */
   readonly title: string;
   readonly description: string;
   readonly times: readonly string[];
+  /** Una por hora, con su título de ese día. */
+  readonly sessions: readonly WeeklySessionView[];
+  /** Ese día alguna sesión es la excepción mensual. */
+  readonly special: boolean;
+  /** La regla que se cumple ese día (para rotularlo), o `null`. */
+  readonly specialRule: MonthlyRule | null;
+  /** La regla mensual, cuando ese día no toca (para anunciarla). */
+  readonly monthlyNote: MonthlyNoteView | null;
 }
 
 /**
@@ -101,17 +131,23 @@ export class ScheduleService {
    * Así la proyección siempre empieza por lo que ocurre hoy.
    */
   readonly weeklyProgram = computed<readonly WeeklyProgram[]>(() => {
-    const today = this.currentWeekDay();
-    return [...this.config.weeklyProgram].sort((a, b) => {
-      const da = (a.day - today + 7) % 7;
-      const db = (b.day - today + 7) % 7;
-      return da - db;
-    });
+    const today = startOfDay(new Date(this.clock.now()));
+    const offset = (p: WeeklyProgram) => (p.day - today.getDay() + 7) % 7;
+    // Cada culto con el título de su próxima fecha: el primer domingo del
+    // mes, «Cina Domnului · Seară de tineret» en vez de «Închinare și
+    // învățătură». Quien lea `title` (portada, proyección, menú) ya lo dice.
+    return [...this.config.weeklyProgram]
+      .sort((a, b) => offset(a) - offset(b))
+      .map((p) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() + offset(p));
+        return resolveOn(p, date);
+      });
   });
 
-  /** Servicio de hoy, si existe (para el badge "HOY"). */
+  /** Servicio de hoy, si existe (para el badge "HOY"), con el título de hoy. */
   readonly todayProgram = computed<WeeklyProgram | null>(
-    () => this.config.weeklyProgram.find((p) => p.day === this.currentWeekDay()) ?? null,
+    () => this.weeklyProgram().find((p) => p.day === this.currentWeekDay()) ?? null,
   );
 
   /**
@@ -150,7 +186,7 @@ export class ScheduleService {
         iso: isoDeFecha(date),
         isToday: date.getTime() === today.getTime(),
         isPast: date.getTime() < today.getTime(),
-        services: this.config.weeklyProgram.filter((p) => p.day === day).map(toServiceView),
+        services: this.config.weeklyProgram.filter((p) => p.day === day).map((p) => toServiceView(p, date)),
       };
     });
   });
@@ -172,8 +208,14 @@ export class ScheduleService {
       const sessions = this.config.weeklyProgram
         .filter((p) => p.day === day)
         .flatMap((p) => {
-          const view = toServiceView(p);
-          return view.times.map((time) => ({ view, time, start: date.getTime() + parseTimeToMinutes(time) * 60_000 }));
+          const view = toServiceView(p, date);
+          // La sesión lleva su propio título: el primer domingo a las 10:00
+          // es «Cina Domnului», no «Cina Domnului · Seară de tineret».
+          return view.sessions.map((session) => ({
+            view: { ...view, title: session.title },
+            time: session.time,
+            start: date.getTime() + parseTimeToMinutes(session.time) * 60_000,
+          }));
         })
         .filter((s) => now < s.start + MINUTOS_VENTANA * 60_000)
         .sort((a, b) => a.start - b.start);
@@ -348,14 +390,69 @@ export class ScheduleService {
   }
 }
 
-/** Culto del programa con sus horas separadas, en el orden en que se escriben. */
-function toServiceView(p: WeeklyProgram): WeeklyServiceView {
-  const times = [...p.time.matchAll(/\d{1,2}:\d{2}/g)].map((m) => m[0]);
+/** Horas de un culto en el orden en que se escriben («10:00 & 18:00» → dos). */
+function splitTimes(time: string): readonly string[] {
+  const times = [...time.matchAll(/\d{1,2}:\d{2}/g)].map((m) => m[0]);
+  return times.length ? times : [time];
+}
+
+/** Sesiones de un culto en una fecha, con la excepción mensual aplicada. */
+function sessionsOn(p: WeeklyProgram, date: Date): readonly WeeklySessionView[] {
+  const hoy = monthlyOn(p, date);
+  return splitTimes(p.time).map((time) => {
+    const special = hoy.find((m) => m.time === time);
+    return { time, title: special?.title ?? p.title, special: !!special };
+  });
+}
+
+/** Las excepciones mensuales del culto que se cumplen en esa fecha. */
+function monthlyOn(p: WeeklyProgram, date: Date): NonNullable<WeeklyProgram['monthly']> {
+  const day = startOfDay(date).getTime();
+  return (p.monthly ?? []).filter(
+    (m) => monthlyOccurrence(m.rule, date.getFullYear(), date.getMonth()).getTime() === day,
+  );
+}
+
+/** Títulos distintos de las sesiones, en orden: «A» o «A · B». */
+function joinTitles(sessions: readonly WeeklySessionView[], fallback: string): string {
+  return [...new Set(sessions.map((s) => s.title))].join(' · ') || fallback;
+}
+
+/** El culto con el título que tiene en esa fecha. */
+function resolveOn(p: WeeklyProgram, date: Date): WeeklyProgram {
+  return { ...p, title: joinTitles(sessionsOn(p, date), p.title) };
+}
+
+/**
+ * La regla mensual de un culto a partir de `date` (la próxima vez que toca),
+ * o `null` si no tiene. Si hay varias reglas, la primera: hoy sólo existe la
+ * del primer domingo.
+ */
+function monthlyNoteFrom(p: WeeklyProgram, date: Date): MonthlyNoteView | null {
+  const first = p.monthly?.[0];
+  if (!first) return null;
+  const same = p.monthly!.filter((m) => m.rule.nth === first.rule.nth && m.rule.weekday === first.rule.weekday);
+  const [iso] = nextMonthlyDates(first.rule, date, 1);
+  return {
+    rule: first.rule,
+    iso,
+    sessions: same.map(({ time, title }) => ({ time, title })),
+  };
+}
+
+/** Culto del programa en una fecha: horas, sesiones con su título y la regla mensual. */
+function toServiceView(p: WeeklyProgram, date: Date): WeeklyServiceView {
+  const sessions = sessionsOn(p, date);
+  const special = sessions.some((s) => s.special);
   return {
     id: p.id,
-    title: p.title,
+    title: joinTitles(sessions, p.title),
     description: p.description,
-    times: times.length ? times : [p.time],
+    times: sessions.map((s) => s.time),
+    sessions,
+    special,
+    specialRule: monthlyOn(p, date)[0]?.rule ?? null,
+    monthlyNote: special ? null : monthlyNoteFrom(p, date),
   };
 }
 
