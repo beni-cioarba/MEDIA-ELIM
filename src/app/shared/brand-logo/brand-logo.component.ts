@@ -163,8 +163,12 @@ const DEFAULT_LABEL = 'Biserica Elim';
     .brand {
       display: grid;
       grid-template-columns: max-content;
-      /* El hueco entre líneas deriva del tamaño de marca, no del cuerpo del contexto. */
-      row-gap: calc(var(--brand-size, 24px) * 0.14);
+      /* El hueco entre líneas deriva del tamaño de marca, no del cuerpo del contexto.
+         0,07 S (01/11/2026; antes 0,14): de la línea base de «ELIM» a la tinta de
+         la localidad quedan 0,17 S, 0,75 veces su altura de versales (medido con
+         marcador de línea base). Con 0,14 era ~1,07 veces y la localidad se
+         despegaba del nombre. */
+      row-gap: calc(var(--brand-size, 24px) * 0.07);
       line-height: 1;
       text-decoration: none;
       color: inherit;
@@ -191,10 +195,20 @@ const DEFAULT_LABEL = 'Biserica Elim';
       font-family: var(--brand-font-location);
       font-size: calc(var(--brand-size, 24px) * 0.289);
       font-weight: 600;
-      letter-spacing: 0.06em;
-      margin-inline-end: -0.06em;
+      /* Interletraje que llena el ancho de «ELIM» por sí solo (01/11/2026; antes
+         0,06 em). Con 0,06 em la línea medía 2,95 S y \`justify\` metía los
+         0,21 S que faltaban sólo en los dos espacios: 12 veces el hueco entre
+         letras, «ARGANDA   DEL   REY». Repartido entre todas las letras, el
+         espaciado es parejo. Es proporción de S, así que vale a cualquier tamaño.
+         Ojo: el interletraje se suma también tras la última letra y cuenta para
+         el ajuste de línea; con 0,11 la línea pasaba de largo por 0,6 px y «REY»
+         saltaba a una segunda línea. 0,10 deja ~0,7 px de holgura y \`justify\`
+         la reparte. Para otra localidad, recalcularlo (README → «Localidad»). */
+      letter-spacing: 0.1em;
+      margin-inline-end: -0.1em;
       text-transform: uppercase;
-      /* Exige 2+ palabras y es incompatible con white-space: nowrap. */
+      /* Red de seguridad para el redondeo (o una fuente de reserva): exige 2+
+         palabras y es incompatible con white-space: nowrap. */
       text-align-last: justify;
       color: var(--brand-accent);
       transition: color 200ms ease;

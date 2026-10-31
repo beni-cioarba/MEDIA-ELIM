@@ -302,6 +302,15 @@
   font-size: 0.875rem;
 }
 
+// El enlace, al ancho de su texto: como elemento de rejilla se estiraba a
+// toda la columna (`1fr`) y el subrayado oro del hover cruzaba ~700 px bajo
+// un correo de 190 (01/11/2026). Partido en dos líneas, sigue ocupando lo
+// que ocupe su texto (`max-width: 100%`).
+.footer__datum > .footer__link {
+  justify-self: start;
+  max-width: 100%;
+}
+
 .footer__datum-icon {
   margin-block-start: 0.15rem;
   font-size: 1rem;
