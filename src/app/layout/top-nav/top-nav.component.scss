@@ -54,6 +54,9 @@
   align-items: center;
   gap: var(--sp-4);
   min-height: var(--nav-height);
+  // Relleno lateral de cada enlace del menú (P). Variable porque también fija
+  // el hueco marca → menú (`.nav__desktop`).
+  --nav-link-px: clamp(0.4rem, 0.85vw, 0.75rem);
 }
 
 // ---- Marca -----------------------------------------------------------
@@ -69,8 +72,10 @@
  * valor fijo no seguía a la barra: cambiar el alto de la cabecera no movía la
  * marca.
  *
- * El bloque mide **1,43 × `--brand-size`** (nombre + hueco 0,14 + localidad
- * 0,289; proporciones de la hoja de marca, que no se tocan). Despejando: para
+ * El bloque medía **1,43 × `--brand-size`** (nombre + hueco 0,14 + localidad
+ * 0,289). Desde el 01/11/2026 el hueco es 0,07 y mide 1,36, pero el divisor se
+ * queda en 1,43 a propósito: juntar las líneas no debía agrandar la marca, sólo
+ * darle aire alrededor (ocupa ~72 % del alto de la barra). Despejando: para
  * llenar la barra menos un margen de respiro, el tamaño es
  * `(alto − margen) / 1,43`. Con eso la marca pasa a ocupar ~76 % del alto y la
  * localidad sube a ~9 px. El `clamp` es la red de seguridad para alturas
@@ -83,7 +88,7 @@
   --brand-size: clamp(22px, calc((var(--nav-height) - 0.85rem) / 1.43), 34px);
 
   justify-self: start;
-  padding-inline-end: var(--sp-2);
+  // Sin relleno propio: el hueco marca → menú lo fija `.nav__desktop`.
 
   // Con el sello de aniversario («25» al alto de la marca) la marca gana
   // ~2,1 × S. En el teléfono las acciones no ceden: se estrecha el aire del
@@ -112,7 +117,12 @@
   display: flex;
   justify-content: flex-start;
   min-width: 0;
-  padding-inline-start: clamp(0.25rem, 1vw, 1rem);
+  // Hueco marca → menú (01/11/2026): `gap` de la rejilla + 0,75 P aquí + P
+  // del primer enlace, contra 2P (+ el `gap` de la lista) entre opciones.
+  // Crecen juntos con la pantalla: la marca queda ~1,3–1,4 veces más separada
+  // que una opción de otra (≈ 36 px a 1280), se lee aparte sin quedar
+  // descolgada. Antes eran cuatro rellenos sueltos (~49 px a 1280, 1,9 veces).
+  padding-inline-start: calc(var(--nav-link-px) * 0.75);
 }
 
 .nav__list {
@@ -140,7 +150,7 @@
   // corto (0.8rem) porque el rótulo del donativo está siempre visible y ya no
   // se repliega para hacer sitio.
   padding-block: 0;
-  padding-inline: clamp(0.4rem, 0.85vw, 0.75rem);
+  padding-inline: var(--nav-link-px);
   // Todos los controles de la barra miden lo mismo. Antes los enlaces con
   // submenú medían 40 px y los planos 45 (por el filete del subrayado), así
   // que el realce al apuntar salía de dos alturas distintas en la misma fila.
@@ -268,12 +278,19 @@
 @include until('xl') {
   // El rótulo ya no se esconde (sin icono dejaría un botón vacío), así que
   // los ~55 px que costaba mostrarlo se recuperan apretando la lista.
-  .nav__link {
-    padding-inline: clamp(0.3rem, 0.7vw, 0.6rem);
+  .nav__inner {
+    --nav-link-px: clamp(0.3rem, 0.7vw, 0.6rem);
   }
 
   .nav__list {
     gap: 0;
+  }
+
+  // Con enlaces más estrechos y la lista sin `gap`, el `gap` fijo de la
+  // rejilla (17 px) ya basta: con la P de más la marca quedaba 2,2 veces más
+  // separada que una opción de otra (31 px contra 14). Sin ella, ~1,3 veces.
+  .nav__desktop {
+    padding-inline-start: 0;
   }
 
   // Con «Departamente» (09/10/2026) la lista pasó a seis enlaces y a 1024

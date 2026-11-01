@@ -181,9 +181,11 @@ const DEFAULT_LABEL = 'Biserica Elim';
       font-size: var(--brand-size, 24px);
       font-weight: 600;
       /* El tracking es lo que da el aire de marca institucional; el margen negativo
-         devuelve el hueco que deja tras la «M». */
-      letter-spacing: 0.22em;
-      margin-inline-end: -0.22em;
+         devuelve el hueco que deja tras la «M». 0,16 em (01/11/2026; antes 0,22):
+         con 0,22 cada hueco entre letras (6,9 px a S = 31,5) se acercaba al ancho
+         de la «I» y «E L I M» se leía como cuatro letras sueltas. */
+      letter-spacing: 0.16em;
+      margin-inline-end: -0.16em;
       text-transform: uppercase;
       color: var(--brand-ink);
       transition: color 200ms ease;
@@ -195,17 +197,17 @@ const DEFAULT_LABEL = 'Biserica Elim';
       font-family: var(--brand-font-location);
       font-size: calc(var(--brand-size, 24px) * 0.289);
       font-weight: 600;
-      /* Interletraje que llena el ancho de «ELIM» por sí solo (01/11/2026; antes
-         0,06 em). Con 0,06 em la línea medía 2,95 S y \`justify\` metía los
-         0,21 S que faltaban sólo en los dos espacios: 12 veces el hueco entre
-         letras, «ARGANDA   DEL   REY». Repartido entre todas las letras, el
-         espaciado es parejo. Es proporción de S, así que vale a cualquier tamaño.
-         Ojo: el interletraje se suma también tras la última letra y cuenta para
-         el ajuste de línea; con 0,11 la línea pasaba de largo por 0,6 px y «REY»
-         saltaba a una segunda línea. 0,10 deja ~0,7 px de holgura y \`justify\`
-         la reparte. Para otra localidad, recalcularlo (README → «Localidad»). */
-      letter-spacing: 0.1em;
-      margin-inline-end: -0.1em;
+      /* Interletraje que llena el ancho de «ELIM» por sí solo, ligado al tracking
+         del nombre: con «ELIM» a 0,16 em el máximo que cabe en una línea es
+         0,0635 em; 0,06 deja holgura y \`justify\` reparte el resto (~0,3 px por
+         espacio). Si la línea se quedara corta, \`justify\` metería todo lo que
+         falta en los dos espacios («ARGANDA   DEL   REY»: pasó con «ELIM» a
+         0,22 em); si se pasara, «REY» saltaría de línea (el interletraje cuenta
+         también tras la última letra). Es proporción de S: vale a cualquier
+         tamaño. Si cambia el tracking del nombre o la localidad, recalcularlo
+         (README → «Localidad»). */
+      letter-spacing: 0.06em;
+      margin-inline-end: -0.06em;
       text-transform: uppercase;
       /* Red de seguridad para el redondeo (o una fuente de reserva): exige 2+
          palabras y es incompatible con white-space: nowrap. */

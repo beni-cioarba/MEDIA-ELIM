@@ -20,8 +20,8 @@ La marca es **tipográfica**: no hay dibujo, hay dos líneas de texto con una re
 
 | Pieza | Qué es | Tipografía | Color |
 |---|---|---|---|
-| **Nombre** | «ELIM» en versales | Playfair Display **600**, tracking 0,22 em | Tinta (navy o papel, según el fondo) |
-| **Localidad** | «ARGANDA DEL REY» en versales, al ancho exacto del nombre | Inter **600**, tracking 0,10 em | Acento oro (profundo o claro, según el fondo) |
+| **Nombre** | «ELIM» en versales | Playfair Display **600**, tracking 0,16 em | Tinta (navy o papel, según el fondo) |
+| **Localidad** | «ARGANDA DEL REY» en versales, al ancho exacto del nombre | Inter **600**, tracking 0,06 em | Acento oro (profundo o claro, según el fondo) |
 
 El **emblema** (paloma, cruz y llama sobre disco claro) **no forma parte del wordmark**: sólo vive
 en el icono de la app (favicon, PWA, Apple), generado con `npm run pwa:icons`. No se coloca al lado
@@ -37,26 +37,26 @@ bloque sin descuadrarlo.
 | Elemento | Medida | Notas |
 |---|---|---|
 | Cuerpo del nombre | **S** | `font-size` de «ELIM» |
-| Tracking del nombre | 0,22 S | El margen final negativo (−0,22 S) descuenta el hueco que cuelga tras la «M»: la caja mide **tinta** |
+| Tracking del nombre | **0,16 S** (antes 0,22: «E L I M» se leía en letras sueltas) | El margen final negativo (−0,16 S) descuenta el hueco que cuelga tras la «M»: la caja mide **tinta** |
 | Hueco entre líneas | **0,07 S** | `row-gap`; deriva de S. Deja 0,17 S de la línea base de «ELIM» a la tinta de la localidad = 0,75 × su altura de versales (antes 0,14 S ≈ 1,07 ×: la localidad se despegaba) |
-| Cuerpo de la localidad | **0,289 S** | Con Inter 600 y tracking 0,10 em, «ARGANDA DEL REY» llena casi exacto el ancho de «ELIM» |
-| Ancho total (tinta) | ≈ **3,16 S** | Medido con Playfair Display 600 (≈ 3,2 : 1) |
+| Cuerpo de la localidad | **0,289 S** | Con Inter 600 y tracking 0,06 em, «ARGANDA DEL REY» llena casi exacto el ancho de «ELIM» (a 0,16 S) |
+| Ancho total (tinta) | ≈ **2,98 S** | Medido con Playfair Display 600 (≈ 3,2 : 1) |
 | Alto total | **1,36 S** | S + 0,07 S + 0,289 S (`line-height: 1`) |
-| Forma compacta (solo nombre) | 1 S de alto, ≈ 3,16 S de ancho | `showLocation = false` |
+| Forma compacta (solo nombre) | 1 S de alto, ≈ 2,98 S de ancho | `showLocation = false` |
 
 **Justificación de la localidad** (la parte no obvia): la rejilla tiene una sola columna
 `max-content` fijada por el nombre; la localidad no aporta ancho (`width: 0; min-width: 100%`) y
-llega a ese ancho **por su interletraje** (0,10 em), no por los espacios. `text-align-last: justify`
+llega a ese ancho **por su interletraje** (0,06 em), no por los espacios. `text-align-last: justify`
 queda como red de seguridad para el medio píxel de redondeo. Requiere ≥ 2 palabras y es
 incompatible con `white-space: nowrap`.
 
-Revisión del 01/11/2026 (medido a S = 31,5 px): con 0,06 em la línea medía 92,9 px de 99,6 y
-`justify` metía los 6,7 px que faltaban **sólo en los dos espacios** (≈ 6,6 px por espacio contra
-0,55 px entre letras): «ARGANDA   DEL   REY». Con 0,10 em la diferencia se reparte entre todas las
-letras y a los espacios les tocan 0,2 px. No subir de 0,10: el interletraje también cuenta tras la
-última letra para el ajuste de línea, y con 0,11 «REY» saltaba a una segunda línea. Para otra
-localidad, recalcularlo: el mayor valor con el que la línea (más un interletraje final) cabe en el
-ancho de «ELIM».
+Revisión del 01/11/2026 (medido a S = 31,5 px). Los dos interletrajes van **ligados**: el de la
+localidad es el mayor con el que la línea (más un interletraje final, que también cuenta para el
+ajuste) cabe en el ancho de «ELIM». Con «ELIM» a 0,22 em ese máximo era 0,105 em; con la localidad
+a 0,06 em, `justify` metía los 6,7 px que faltaban **sólo en los dos espacios** («ARGANDA   DEL
+REY»). Con «ELIM» a **0,16 em** el máximo es 0,0635 em y **0,06 em** lo llena (≈ 0,3–0,5 px de más
+por espacio). Si se pasa, «REY» salta de línea. Si cambia el tracking del nombre o la localidad,
+recalcularlo.
 
 **Alineación óptica**: «ELIM» empieza en el borde izquierdo de la columna; la «E» de Playfair no
 tiene remate saliente, así que no hace falta compensación óptica a la izquierda.
@@ -194,8 +194,8 @@ Dos `<span>` en una rejilla. Ejemplo de la completa sobre fondo oscuro a 36 px:
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@600&display=swap" rel="stylesheet">
 <span role="img" aria-label="Biserica Elim"
       style="display:grid;grid-template-columns:max-content;row-gap:2.5px;line-height:1;text-transform:uppercase">
-  <span style="font:600 36px 'Playfair Display',Georgia,serif;letter-spacing:.22em;margin-right:-.22em;color:#faf9f6">Elim</span>
-  <span style="width:0;min-width:100%;font:600 10.4px Inter,system-ui,sans-serif;letter-spacing:.1em;margin-right:-.1em;text-align-last:justify;color:#d4af37">Arganda del Rey</span>
+  <span style="font:600 36px 'Playfair Display',Georgia,serif;letter-spacing:.16em;margin-right:-.16em;color:#faf9f6">Elim</span>
+  <span style="width:0;min-width:100%;font:600 10.4px Inter,system-ui,sans-serif;letter-spacing:.06em;margin-right:-.06em;text-align-last:justify;color:#d4af37">Arganda del Rey</span>
 </span>
 ```
 
@@ -251,7 +251,7 @@ marca:
 > nombre papel `#FAF9F6` y localidad oro `#D4AF37`. Sin contorno, sombra ni degradado.
 
 Orden de trabajo: fija S → compón «ELIM» con su tracking → mide su ancho de tinta → compón la
-localidad a 0,289 S con tracking 0,10 em (justificada sólo como ajuste fino) → separa 0,07 S → aplica el par de colores del fondo.
+localidad a 0,289 S con tracking 0,06 em (justificada sólo como ajuste fino) → separa 0,07 S → aplica el par de colores del fondo.
 
 ---
 
