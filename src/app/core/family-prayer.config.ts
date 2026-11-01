@@ -536,15 +536,16 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
     number: 9,
     presentedOn: '2026-11-01',
     families: [
+      // Cambio del 01/11/2026: Chis sustituye a Călini Alina en el primer
+      // puesto (Călini sale de esta semana) y Cetănaș entra el quinto.
       {
-        id: 'calini-alina',
-        surname: 'Călini',
-        names: 'Alina',
-        single: true,
-        children: ['Alin', 'Andrei', 'Samuel'],
+        id: 'chis-calin-angela-simona',
+        surname: 'Chis',
+        names: 'Calin și Ángela Simona',
+        children: ['Amellia Catalina', 'Antonia Elena'],
         message: [
-          'Mulțumim Domnului pentru bunătatea și îndurarea Lui, care au fost revărsate din belșug peste noi și familia noastră.',
-          'Dorința mea este ca Duhul Sfânt să lucreze cu mântuire în casa noastră, să cerceteze inima noastră a tuturor și harul Său să ne fie ajutor în orice vreme.',
+          'Mulțumesc lui Dumnezeu pentru binecuvântările nenumărate pe care le revarsă din belșug peste casa noastră.',
+          'Dorim ca Duhul Domnului să ne călăuzească în tot adevărul, pacea Lui să fie în inima noastră și protecția Domnului să fie peste toată familia noastră.',
         ],
       },
       {
@@ -589,13 +590,14 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
         },
       },
       {
-        id: 'chis-calin-angela-simona',
-        surname: 'Chis',
-        names: 'Calin și Ángela Simona',
-        children: ['Amellia Catalina', 'Antonia Elena'],
+        id: 'cetanas-gabriel',
+        surname: 'Cetănaș',
+        names: 'Gabriel',
+        single: true,
+        children: ['Gabriela', 'Jesica'],
         message: [
-          'Mulțumesc lui Dumnezeu pentru binecuvântările nenumărate pe care le revarsă din belșug peste casa noastră.',
-          'Dorim ca Duhul Domnului să ne călăuzească în tot adevărul, pacea Lui să fie în inima noastră și protecția Domnului să fie peste toată familia noastră.',
+          'Domnul Isus Hristos să pună voința și îndurarea Sa spre mântuirea sufletelor fiicelor mele, Gabriela și Jesica.',
+          'Domnul să întărească vindecarea picioarelor mele, după voia Sa.',
         ],
       },
     ],
