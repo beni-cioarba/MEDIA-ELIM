@@ -602,4 +602,74 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 10,
+    presentedOn: '2026-11-08',
+    // Orden tal como lo pasó la iglesia (Călini, que salió de la semana 9,
+    // va la última).
+    families: [
+      {
+        id: 'cifor-gabi-rebeca',
+        surname: 'Cifor',
+        names: 'Gabi și Rebeca',
+        children: ['Caleb', 'Grace', 'Elisa'],
+        message: [
+          'Îi mulțumim Domnului că până aici ne-a ajutat și ne-a călăuzit, atât în familie, cât și în toate domeniile din viața noastră. Împreună ne-am apropiat mai mult de El și vrem să-I slujim toată viața.',
+        ],
+        verse: {
+          text: 'Dumnezeu este adăpostul și sprijinul nostru, un ajutor care nu lipsește niciodată în nevoi. De aceea nu ne temem, chiar dacă s-ar zgudui pământul și s-ar clătina munții în inima mărilor. Chiar dacă ar urla și ar spumega valurile mării și s-ar ridica până acolo de să se cutremure munții.',
+          reference: 'Psalmul 46:1-3',
+        },
+      },
+      {
+        id: 'cioarba-daniel-maria-magdalena',
+        surname: 'Cioarba',
+        names: 'Daniel și Maria Magdalena',
+        children: ['Beniamin Natanael', 'Abel Daniel'],
+        // Su deseo parafrasea el salmo; el versículo va completo (Cornilescu).
+        message: [
+          'Familia să stea sub ocrotirea Celui Preaînalt și să se odihnească la umbra Celui Atotputernic.',
+        ],
+        verse: {
+          text: 'Cel ce stă sub ocrotirea Celui Preaînalt și se odihnește la umbra Celui Atotputernic zice despre Domnul: „El este locul meu de scăpare și cetățuia mea, Dumnezeul meu în care mă încred!”',
+          reference: 'Psalmul 91:1-2',
+        },
+      },
+      {
+        id: 'ciobanu-oleg-maria',
+        surname: 'Ciobanu',
+        names: 'Oleg și Maria',
+        children: ['Beatrisa', 'Emanuela', 'Eleonor'],
+        message: [
+          'Mulțumim Domnului că a intrat cu mântuire în casa noastră și avem harul minunat de a ne numi copii ai lui Dumnezeu.',
+          'Ne dorim ca toată familia noastră și cei din rudeniile noastre să ajungă într-o zi la mântuirea dată de Domnul.',
+        ],
+        verse: {
+          text: 'Eu am încredere în bunătatea Ta, sunt cu inima veselă din pricina mântuirii Tale: cânt Domnului, căci mi-a făcut mult bine.',
+          reference: 'Psalmul 13:5-6',
+        },
+      },
+      {
+        id: 'circu-onita',
+        surname: 'Cîrcu',
+        names: 'Onița',
+        single: true,
+        children: ['Cristina'],
+        message: [
+          'Dorința noastră este ca Dumnezeu să ne îndrume pașii în continuare, să ne dea înțelepciune în fiecare alegere și să-Și împlinească planul Său în viețile noastre, la timpul potrivit și în felul Său desăvârșit.',
+        ],
+      },
+      {
+        id: 'calini-alina',
+        surname: 'Călini',
+        names: 'Alina',
+        single: true,
+        children: ['Alin', 'Andrei', 'Samuel'],
+        message: [
+          'Mulțumim Domnului pentru bunătatea și îndurarea Lui, care au fost revărsate din belșug peste noi și familia noastră.',
+          'Dorința mea este ca Duhul Sfânt să lucreze cu mântuire în casa noastră, să cerceteze inima noastră a tuturor și harul Său să ne fie ajutor în orice vreme.',
+        ],
+      },
+    ],
+  },
 ];

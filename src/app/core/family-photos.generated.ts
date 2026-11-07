@@ -59,4 +59,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-11-01/cetanas-gabriel': { width: 901, height: 1160, variants: [[480, 373], [960, 746], [1160, 901]] },
   '2026-11-01/chereji-sorin-roxana': { width: 1076, height: 1569, variants: [[480, 329], [960, 658], [1569, 1076]] },
   '2026-11-01/chis-calin-angela-simona': { width: 1200, height: 1196, variants: [[480, 480], [960, 960], [1200, 1200]] },
+  '2026-11-08/calini-alina': { width: 1087, height: 1000, variants: [[480, 480], [960, 960], [1087, 1087]] },
+  '2026-11-08/cifor-gabi-rebeca': { width: 1174, height: 1480, variants: [[480, 381], [960, 762], [1480, 1174]] },
+  '2026-11-08/cioarba-daniel-maria-magdalena': { width: 1152, height: 1289, variants: [[480, 429], [960, 858], [1289, 1152]] },
+  '2026-11-08/ciobanu-oleg-maria': { width: 1600, height: 1066, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-11-08/circu-onita': { width: 415, height: 672, variants: [[480, 296], [672, 415]] },
 };
