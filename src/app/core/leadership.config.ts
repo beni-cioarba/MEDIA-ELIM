@@ -141,6 +141,23 @@ const PEOPLE = [
   // TODO(iglesia): ¿es el mismo que «Ioan Strugaru» (Transmisie live)? Si lo
   // es, se borra esta entrada y se usa `ioan-strugaru`.
   { id: 'ionut-strugaru', name: 'Ionuț Strugaru' },
+  // Primire, ospitalitate și ordine (08/11/2026). La lista llegó en
+  // mayúsculas y a veces «Apellido Nombre»: aquí «Nombre Apellido»; sin
+  // inventar diacríticos en apellidos (Teglas tal cual; Ivașcu y Biriș, confirmados).
+  { id: 'aron-suciu', name: 'Aron Suciu' },
+  // TODO(iglesia): «Gicu» es el diminutivo de Grigore: ¿es Grigore Tomoiagă
+  // (pastor asistente)? Si lo es, se borra y se usa `grigore-tomoiaga`.
+  { id: 'gicu-tomoiaga', name: 'Gicu Tomoiagă' },
+  { id: 'dumitru-ivascu', name: 'Dumitru Ivașcu' },
+  { id: 'valentin-pintilei', name: 'Valentin Pintilei' },
+  { id: 'ioan-vit', name: 'Ioan Vit' },
+  // «Stulianec» en la lista; en el registro la familia es Stuleanec.
+  { id: 'stefan-stuleanec', name: 'Ștefan Stuleanec' },
+  { id: 'doru-marcu', name: 'Doru Marcu' },
+  { id: 'vasile-rus', name: 'Vasile Rus' },
+  { id: 'florin-biris', name: 'Florin Biriș' },
+  { id: 'nicu-teglas', name: 'Nicu Teglas' },
+  { id: 'oleg-ciobanu', name: 'Oleg Ciobanu' },
 ] as const satisfies readonly Person[];
 
 /** Unión derivada del registro: referenciar a alguien inexistente no compila. */
@@ -495,7 +512,26 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
     i18nKey: 'hospitality',
     icon: 'users',
     departments: [
-      { id: 'welcome', i18nKey: 'welcome', members: [{ person: 'ioan-lauran', roles: ['lead'] }] },
+      {
+        id: 'welcome',
+        i18nKey: 'welcome',
+        members: [
+          { person: 'ioan-lauran', roles: ['lead'] },
+          { person: 'aron-suciu' },
+          { person: 'gicu-tomoiaga' },
+          { person: 'dumitru-ivascu' },
+          { person: 'valentin-pintilei' },
+          { person: 'ioan-vit' },
+          { person: 'stefan-stuleanec' },
+          { person: 'silviu-dobre' },
+          { person: 'vali-roman' },
+          { person: 'doru-marcu' },
+          { person: 'vasile-rus' },
+          { person: 'florin-biris' },
+          { person: 'nicu-teglas' },
+          { person: 'oleg-ciobanu' },
+        ],
+      },
       { id: 'guests', i18nKey: 'guests', members: [{ person: 'ionut-mitoseriu', roles: ['lead'] }] },
     ],
   },
