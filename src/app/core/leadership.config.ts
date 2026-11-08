@@ -136,7 +136,7 @@ const PEOPLE = [
   { id: 'ruben-istratoaie', name: 'Ruben Istratoaie' },
   { id: 'naomi-muresan', name: 'Naomi Mureșan' },
   // Tomoiagă con ă, como Grigore (en los botezuri figura «Tomoiaga»).
-  { id: 'eunice-tomoiaga', name: 'Eunice Tomoiagă' },
+  { id: 'eunice-rahela-tomoiaga', name: 'Eunice Rahela Tomoiagă' },
   { id: 'timeea-noemi-halas', name: 'Timeea Noemi Halas' },
   // TODO(iglesia): ¿es el mismo que «Ioan Strugaru» (Transmisie live)? Si lo
   // es, se borra esta entrada y se usa `ioan-strugaru`.
@@ -449,7 +449,7 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
       {
         id: 'communication_youth',
         i18nKey: 'communication_youth',
-        members: [{ person: 'eunice-tomoiaga' }, { person: 'timeea-noemi-halas' }],
+        members: [{ person: 'eunice-rahela-tomoiaga' }, { person: 'timeea-noemi-halas' }],
       },
       {
         id: 'digital_platforms',
