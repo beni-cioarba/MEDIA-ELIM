@@ -1069,7 +1069,7 @@
         },
         "today": {
           "title": "Până aici, și mai departe",
-          "body": "Biserica s-a mutat dintr-un loc în altul, a construit și a reconstruit; mulți au plecat de aici să slujească în alte locuri, alții au venit. O nouă generație s-a botezat, misiunea a ajuns până în Uganda și, din 2025, ne închinăm într-un locaș nou. După 24 de ani de păstorire a fratelui Gavrilă Zăgrean, biserica este condusă astăzi de pastorul Pavel Negrușier și numără în jur de 450 de membri și 270 de aparținători. Harul care ne-a dus până aici ne va duce mai departe."
+          "body": "Biserica s-a mutat dintr-un loc în altul, a construit și a reconstruit; mulți au plecat de aici să slujească în alte locuri, alții au venit. O nouă generație s-a botezat, din 2021 ne închinăm într-un locaș nou, înnoit în 2025, iar misiunea a ajuns până în Uganda. După 24 de ani de păstorire a fratelui Gavrilă Zăgrean, biserica este condusă astăzi de pastorul Pavel Negrușier și numără în jur de 450 de membri și 270 de aparținători. Harul care ne-a dus până aici ne va duce mai departe."
         }
       },
       "facts": {
@@ -1121,8 +1121,9 @@
         },
         "generation": {
           "title": "O nouă generație",
-          "summary": "Copiii crescuți în biserică se botează, se ridică slujitori și misiunea trece granițele.",
+          "summary": "Un nou locaș de închinare, copii crescuți în biserică care se botează, slujitori noi și o misiune care trece granițele.",
           "milestones": {
+            "temple": "Noul locaș de închinare, ridicat cu munca și darurile fraților",
             "baptisms": "Botezuri nou-testamentare, an de an",
             "ordination": "Ordinare de slujitori",
             "uganda": "Misiune în Uganda (20 oct. – 7 nov.): două biserici construite, la tribul IK",
@@ -1131,10 +1132,10 @@
           }
         },
         "house": {
-          "title": "O casă nouă",
-          "summary": "Un nou locaș de închinare și aceeași chemare de la început.",
+          "title": "O casă înnoită",
+          "summary": "Locașul de închinare se înnoiește, iar chemarea rămâne cea de la început.",
           "milestones": {
-            "temple": "Noul locaș de închinare, ridicat cu munca, darurile și utilajele fraților",
+            "renovation": "Renovarea locașului de închinare",
             "anchored": "Conferința „Ancorat în Hristos”",
             "shoebox": "„Zâmbetul din cutie” și concertul de colinde al copiilor",
             "hope": "Conferința „Speranță pentru tine”",

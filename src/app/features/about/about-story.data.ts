@@ -103,6 +103,9 @@ export const STORY_ERAS: readonly StoryEra[] = [
     from: 2021,
     to: 2024,
     milestones: [
+      // El locaș nuevo se levantó a comienzos de 2021; en 2025 se renovó
+      // (corrección del usuario, 08/11/2026: antes figuraba como de 2025).
+      { id: 'temple', date: '2021' },
       { id: 'baptisms', date: '2021-11', video: 'grXGFevqzm8' },
       { id: 'ordination', date: '2022-11', video: 'ZLJCnudjlc4' },
       // Viaje del 20/10 al 07/11/2023 (descripción del vídeo).
@@ -118,7 +121,7 @@ export const STORY_ERAS: readonly StoryEra[] = [
     from: 2025,
     to: 2026,
     milestones: [
-      { id: 'temple', date: '2025' },
+      { id: 'renovation', date: '2025' },
       { id: 'anchored', date: '2025-09', video: 'bFodeHrFcKs' },
       { id: 'shoebox', date: '2025-12', video: 'CmIX8SlJeMM' },
       { id: 'hope', date: '2026-03', video: 'pUlwTXBRvSI' },

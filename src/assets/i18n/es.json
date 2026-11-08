@@ -1069,7 +1069,7 @@
         },
         "today": {
           "title": "Hasta aquí, y más allá",
-          "body": "La iglesia se ha mudado de un lugar a otro, ha construido y reconstruido; muchos salieron de aquí para servir en otros lugares, y otros llegaron. Una nueva generación se ha bautizado, la misión ha llegado hasta Uganda y, desde 2025, adoramos en un templo nuevo. Tras 24 años de pastorado de Gavrilă Zăgrean, hoy dirige la iglesia el pastor Pavel Negrușier, y somos unos 450 miembros y 270 allegados. La gracia que nos ha traído hasta aquí nos llevará más lejos."
+          "body": "La iglesia se ha mudado de un lugar a otro, ha construido y reconstruido; muchos salieron de aquí para servir en otros lugares, y otros llegaron. Una nueva generación se ha bautizado, desde 2021 adoramos en un templo nuevo, renovado en 2025, y la misión ha llegado hasta Uganda. Tras 24 años de pastorado de Gavrilă Zăgrean, hoy dirige la iglesia el pastor Pavel Negrușier, y somos unos 450 miembros y 270 allegados. La gracia que nos ha traído hasta aquí nos llevará más lejos."
         }
       },
       "facts": {
@@ -1121,8 +1121,9 @@
         },
         "generation": {
           "title": "Una nueva generación",
-          "summary": "Los niños que crecieron en la iglesia se bautizan, se levantan ministros y la misión cruza fronteras.",
+          "summary": "Un templo nuevo, niños que crecieron en la iglesia y se bautizan, nuevos ministros y una misión que cruza fronteras.",
           "milestones": {
+            "temple": "El nuevo templo, levantado con el trabajo y las ofrendas de los hermanos",
             "baptisms": "Bautismos, año tras año",
             "ordination": "Ordenación de ministros",
             "uganda": "Misión en Uganda (20 oct. – 7 nov.): dos iglesias construidas, con la tribu IK",
@@ -1131,10 +1132,10 @@
           }
         },
         "house": {
-          "title": "Una casa nueva",
-          "summary": "Un nuevo templo y el mismo llamado del principio.",
+          "title": "Una casa renovada",
+          "summary": "El templo se renueva y el llamado sigue siendo el del principio.",
           "milestones": {
-            "temple": "El nuevo templo, levantado con el trabajo, las ofrendas y la maquinaria de los hermanos",
+            "renovation": "Renovación del templo",
             "anchored": "Conferencia «Anclado en Cristo»",
             "shoebox": "«Una sonrisa en una caja» y el concierto de villancicos de los niños",
             "hope": "Conferencia «Esperanza para ti»",
