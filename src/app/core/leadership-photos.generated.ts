@@ -23,6 +23,7 @@ export const LEADERSHIP_PHOTOS: Readonly<Record<string, LeadershipPhotoManifestE
   'ionel-sidor': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'ionut-mitoseriu': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'iosif-negru': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
+  'natanael-beniamin-cioarba': { width: 478, height: 597, variants: [160, 320, 478] },
   'pavel-negrusier': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'pavel-santa': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'petrica-halas': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },

@@ -103,11 +103,38 @@ export interface WeeklyProgram {
   readonly monthly?: readonly WeeklyMonthlySession[];
 }
 
+/**
+ * Repetiții (ensayos) en la iglesia. Sólo se enseñan en la página del
+ * programa semanal (`/media/program`), en un bloque aparte: no son cultos,
+ * no entran en la cuenta atrás, la portada ni la proyección.
+ */
+export interface Rehearsal {
+  readonly id: string;
+  /** Quién ensaya, tal como se lee («Cor», «Fanfară»). */
+  readonly group: string;
+  /** Matiz de la fila («săptămână intensivă»). Opcional. */
+  readonly label?: string;
+  /** Departamento al que enlaza la fila. */
+  readonly department?: DepartmentId;
+  /** Días y hora, en el orden de la semana («Luni – Vineri» · «19:00»). */
+  readonly slots: readonly { readonly days: string; readonly time: string }[];
+  /**
+   * Sólo la última semana de cada mes: de lunes al último sábado del mes.
+   * La web calcula las fechas y marca la fila cuando toca.
+   */
+  readonly lastWeekOfMonth?: boolean;
+}
+
 /** Sesión de un culto semanal que cambia de nombre una vez al mes. */
 export interface WeeklyMonthlySession {
   readonly rule: MonthlyRule;
   readonly time: string;
   readonly title: string;
+  /**
+   * Departamentos del evento que se genera solo con la próxima vez que toca
+   * (`ScheduleService`): sale en «Evenimente viitoare» sin cargarlo a mano.
+   */
+  readonly departments?: readonly DepartmentId[];
 }
 
 /**
@@ -419,6 +446,8 @@ export interface ChurchConfig {
   readonly mediaEvents: readonly MediaEvent[];
   /** Programación semanal recurrente (servicii religioase fixe). */
   readonly weeklyProgram: readonly WeeklyProgram[];
+  /** Repetiții de cor y fanfara (sólo en la página del programa). */
+  readonly rehearsals: readonly Rehearsal[];
   /** Evenimente viitoare puntuale (botezuri, conferințe, etc.). */
   readonly upcomingEvents: readonly UpcomingEvent[];
   /**
@@ -661,7 +690,7 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       // tineret (el mismo que `departments.config.ts` → youth → `sunday`).
       monthly: [
         { rule: { weekday: 0, nth: 1 }, time: '10:00', title: 'Cina Domnului' },
-        { rule: { weekday: 0, nth: 1 }, time: '18:00', title: 'Seară de tineret' },
+        { rule: { weekday: 0, nth: 1 }, time: '18:00', title: 'Seară de tineret', departments: ['youth'] },
       ],
     },
   ],
@@ -671,6 +700,34 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   // (no aquí) para reaccionar a la fecha actual sin recargar la app.
   // Formato `date`: ISO YYYY-MM-DD (sin hora, sin zona horaria).
   // ---------------------------------------------------------------------
+  rehearsals: [
+    {
+      id: 'cor',
+      group: 'Cor',
+      department: 'choir',
+      slots: [{ days: 'Sâmbătă', time: '19:00' }],
+    },
+    {
+      id: 'fanfara',
+      group: 'Fanfară',
+      department: 'brass',
+      slots: [
+        { days: 'Miercuri', time: '19:00' },
+        { days: 'Sâmbătă', time: '17:00' },
+      ],
+    },
+    {
+      id: 'fanfara_intensiv',
+      group: 'Fanfară',
+      label: 'săptămână intensivă',
+      department: 'brass',
+      lastWeekOfMonth: true,
+      slots: [
+        { days: 'Luni – Vineri', time: '19:00' },
+        { days: 'Sâmbătă', time: '17:00' },
+      ],
+    },
+  ],
   upcomingEvents: [
     {
       id: 'ancorat_2026_09_26',
@@ -698,6 +755,75 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       worshipLead: '',
     },
     {
+      id: 'evanghelizare_apc_2026_11_08',
+      departments: ['evangelism'],
+      poster: 'assets/posters/evanghelizare-apc-2026.webp',
+      date: '2026-11-08',
+      time: '18:00',
+      title: 'Evanghelizare cu Asociația Polițiștilor Creștini din România',
+      description:
+        'Program de evanghelizare cu frații din Asociația Polițiștilor Creștini din România (APC).',
+      verse:
+        'Semănați potrivit cu neprihănirea, și veți secera potrivit cu îndurarea. Desțeleniți-vă un ogor nou! Este vremea să căutați pe Domnul, ca să vină și să vă plouă mântuire. (Osea 10:12)',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
+      id: 'binecuvantare_copii_2026_11_08',
+      // Portada 16:9 (miniatura del directo), no cartel 4:5.
+      poster: 'assets/posters/binecuvantare-copii-2026-11-08.webp',
+      date: '2026-11-08',
+      time: '10:00',
+      title: 'Binecuvântare de copii',
+      description: '',
+      verse: '',
+      preacher: 'Radu Mariș',
+      worshipLead: '',
+    },
+    {
+      // «Sâmbătă seara»: sin hora confirmada.
+      id: 'conferinta_familie_2026_11_21',
+      date: '2026-11-21',
+      time: '',
+      title: 'Conferință de familie: "Familia dincolo de aparențe”',
+      description: '',
+      verse: '',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
+      id: 'botez_2026_11_22',
+      date: '2026-11-22',
+      time: '10:00',
+      title: 'Botez nou-testamental',
+      description: 'Mesaj: "De ce să fii sigur de mântuirea ta?"',
+      verse: '',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
+      id: 'conferinta_familie_2026_11_22',
+      date: '2026-11-22',
+      time: '18:00',
+      title: 'Conferință de familie: "Ce poate face Dumnezeu cu familia ta?"',
+      description: '',
+      verse: '',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
+      // Sin hora confirmada.
+      id: 'fanfara_castellon_2026_11_29',
+      departments: ['brass'],
+      date: '2026-11-29',
+      time: '',
+      title: 'Fanfara de la Castellón',
+      description: '',
+      verse: '',
+      preacher: '',
+      worshipLead: '',
+    },
+    {
       id: 'aniversare_25_2026_10_18',
       poster: 'assets/posters/aniversare-25-ani-2026.webp',
       date: '2026-10-18',
@@ -707,47 +833,6 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
         'Sărbătoare în biserică, apoi masă festivă la restaurantul Oma Bodas din Arganda del Rey (cu înscriere).',
       verse: '',
       preacher: 'Simion Bumbar',
-      worshipLead: '',
-    },
-    {
-      id: '2',
-      date: '2026-06-21',
-      time: '10:00',
-      title: 'Laudă şi închinare',
-      description: '',
-      verse: '',
-      preacher: '',
-      worshipLead: 'Andrei şi Andreea Mois',
-    },
-    {
-      id: '1',
-      date: '2026-06-28', 
-      time: '18:00',
-      title: 'Laudă şi închinare',
-      description: '',
-      verse: '',
-      preacher: '',
-      worshipLead: 'Adi Kovaci',
-    },
-    {
-      id: '3',
-      date: '2026-07-05',
-      time: '10:00',
-      title: 'Cina Domnului',
-      description: '',
-      verse: '',
-      preacher: '',
-      worshipLead: '',
-    },
-    {
-      id: '4',
-      departments: ['youth'],
-      date: '2026-07-05',
-      time: '18:00',
-      title: 'Seară de tineret',
-      description: '',
-      verse: '',
-      preacher: '',
       worshipLead: '',
     },
     /* {
@@ -1037,6 +1122,40 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       footnote: 'Grupa mică · Grupa mijlocie · Grupa mare și adolescenți',
       publishedOn: '2026-11-01',
       expiresOn: '2026-11-07',
+    },
+    /*
+     * Semana de intercesión por los departamentos de Ajutorare y Misiune
+     * (08/11 → 14/11).
+     *
+     * Erratas del original: «pt»→pentru, «care le susțin»→«pe care le
+     * susțin», «frați»→frații, espacios antes de coma. Mismo patrón que las
+     * semanas anteriores: lo que se pide para los departamentos en una
+     * columna y los hermanos en Uganda en `highlight`; la doxología al pie.
+     */
+    {
+      id: 'mijlocire_ajutorare_misiune',
+      title: 'Săptămână de rugăciune pentru Ajutorare și Misiune',
+      lead: 'În săptămâna aceasta ne rugăm pentru frații din departamentul de Ajutorare și Misiune.',
+      sections: [
+        {
+          heading: 'Ce cerem pentru ei',
+          kind: 'list',
+          items: [
+            { label: 'Multă propășire în toate proiectele pe care le susțin și le realizează cu ajutorul Domnului și al Bisericii Elim' },
+            { label: 'Călăuzire, înțelepciune și lumină de sus' },
+            { label: 'Ungere sfântă și binecuvântare peste orice lucrare' },
+          ],
+        },
+        {
+          heading: 'Pentru frații în misiune',
+          kind: 'list',
+          highlight: true,
+          items: [{ label: 'Domnul să-i binecuvânteze pe frații plecați în misiune în Uganda' }],
+        },
+      ],
+      footnote: 'Numele Domnului să fie proslăvit în toate lucrurile!',
+      publishedOn: '2026-11-08',
+      expiresOn: '2026-11-14',
     },
     {
       id: 'aniversare_25_ani',

@@ -43,9 +43,10 @@
         </span>
 
         @for (s of d.services; track s.id) {
-          @if (s.special) {
-            <!-- El día de la excepción mensual (primer domingo): cada hora con
-                 su culto, bajo el rótulo de la regla. -->
+          @if (s.special || s.merged) {
+            <!-- Sesión a sesión: el primer domingo de mes (cada hora con su
+                 culto) o un día con eventos a la hora de un culto: el evento
+                 va en la línea de su hora y la hora no se repite. -->
             @if (s.specialRule; as rule) {
               <span class="schedule__rule">
                 {{ ('weekly.monthly.nth_' + rule.nth) | translate: { day: schedule.formatWeekdayLong(d.iso) } }}
@@ -54,10 +55,20 @@
             @for (x of s.sessions; track x.time) {
               <span class="schedule__session">
                 <span class="schedule__times">
-                  <time class="schedule__chip" [class.is-special]="x.special" [attr.datetime]="x.time">{{ x.time }}</time>
+                  <time class="schedule__chip" [class.is-special]="x.special || !!x.events?.length" [attr.datetime]="x.time">{{ x.time }}</time>
                 </span>
-                <span class="schedule__what" [class.is-special]="x.special">{{ x.title }}</span>
+                <span class="schedule__what" [class.is-special]="x.special">
+                  @if (x.special || !x.events?.length) {
+                    {{ x.title }}
+                  }
+                  @for (ev of x.events; track ev.id) {
+                    <a class="schedule__event schedule__event--at" [routerLink]="upcomingLink" [fragment]="ev.isPast ? undefined : 'ev-' + ev.id">{{ ev.title }}</a>
+                  }
+                </span>
               </span>
+            }
+            @if (s.contextTitle) {
+              <span class="schedule__context">{{ s.contextTitle }}</span>
             }
           } @else {
             <span class="schedule__times">
@@ -68,7 +79,27 @@
             <span class="schedule__what">{{ s.title }}</span>
           }
         } @empty {
-          <span class="schedule__none">{{ 'weekly.no_service' | translate }}</span>
+          @if (!d.events.length) {
+            <span class="schedule__none">{{ 'weekly.no_service' | translate }}</span>
+          }
+        }
+
+        <!-- Eventos de ese día fuera de las horas de culto: «hora título». -->
+        @if (d.events; as evs) {
+          @if (evs.length) {
+            <ul class="schedule__events" role="list" [attr.aria-label]="'nav.upcoming' | translate">
+              @for (ev of evs; track ev.id) {
+                <li>
+                  <a class="schedule__event" [routerLink]="upcomingLink" [fragment]="ev.isPast ? undefined : 'ev-' + ev.id">
+                    @if (ev.time) {
+                      <time class="schedule__event-time">{{ ev.time }}</time>
+                    }
+                    {{ ev.title }}
+                  </a>
+                </li>
+              }
+            </ul>
+          }
         }
       </li>
     }

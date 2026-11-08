@@ -98,7 +98,7 @@ const PEOPLE = [
   { id: 'alin-negrusier', name: 'Alin Negrușier' },
   { id: 'emanuel-marcu', name: 'Emanuel Marcu' },
   { id: 'daniel-dulca', name: 'Daniel Dulcă' },
-  { id: 'beni-cioarba', name: 'Beni Cioarba' },
+  { id: 'natanael-beniamin-cioarba', name: 'Natanael Beniamin Cioarba' },
   { id: 'andrei-stanus', name: 'Andrei Stănuș' },
   { id: 'mihai-zagrean', name: 'Mihai Zăgrean' },
   { id: 'ioan-strugaru', name: 'Ioan Strugaru' },
@@ -132,6 +132,15 @@ const PEOPLE = [
   { id: 'naomi-valean', name: 'Naomi Valean' },
   { id: 'noemi-toader', name: 'Noemi Toader' },
   { id: 'cristina-circu', name: 'Cristina Cîrcu' },
+  // «Instratoaie» en la lista recibida: errata de Istratoaie (como Dina).
+  { id: 'ruben-istratoaie', name: 'Ruben Istratoaie' },
+  { id: 'naomi-muresan', name: 'Naomi Mureșan' },
+  // Tomoiagă con ă, como Grigore (en los botezuri figura «Tomoiaga»).
+  { id: 'eunice-tomoiaga', name: 'Eunice Tomoiagă' },
+  { id: 'timeea-noemi-halas', name: 'Timeea Noemi Halas' },
+  // TODO(iglesia): ¿es el mismo que «Ioan Strugaru» (Transmisie live)? Si lo
+  // es, se borra esta entrada y se usa `ioan-strugaru`.
+  { id: 'ionut-strugaru', name: 'Ionuț Strugaru' },
 ] as const satisfies readonly Person[];
 
 /** Unión derivada del registro: referenciar a alguien inexistente no compila. */
@@ -421,12 +430,41 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
       {
         id: 'projection',
         i18nKey: 'projection',
-        members: [{ person: 'beni-cioarba' }, { person: 'andrei-stanus' }],
+        members: [{ person: 'natanael-beniamin-cioarba' }, { person: 'andrei-stanus' }],
       },
       {
         id: 'live_stream',
         i18nKey: 'live_stream',
         members: [{ person: 'mihai-zagrean' }, { person: 'ioan-strugaru' }],
+      },
+      // Ramas de digitalización (08/11/2026). Rețele sociale, partida
+      // por cuenta/público como «Copii · grupa …»: una rama por cada red
+      // (Elim y Tineret), en Media y no en Generații para compartir marca,
+      // calendario y plantillas. Biserică primero: lo general antes.
+      {
+        id: 'communication_church',
+        i18nKey: 'communication_church',
+        members: [{ person: 'natanael-beniamin-cioarba' }, { person: 'ionut-strugaru' }],
+      },
+      {
+        id: 'communication_youth',
+        i18nKey: 'communication_youth',
+        members: [{ person: 'eunice-tomoiaga' }, { person: 'timeea-noemi-halas' }],
+      },
+      {
+        id: 'digital_platforms',
+        i18nKey: 'digital_platforms',
+        members: [{ person: 'natanael-beniamin-cioarba' }],
+      },
+      {
+        id: 'archive_photo',
+        i18nKey: 'archive_photo',
+        members: [
+          { person: 'ruben-istratoaie' },
+          { person: 'naomi-muresan' },
+          { person: 'mihai-zagrean' },
+          { person: 'natanael-beniamin-cioarba' },
+        ],
       },
     ],
   },

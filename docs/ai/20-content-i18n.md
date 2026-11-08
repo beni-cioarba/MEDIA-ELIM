@@ -249,7 +249,16 @@ nombre en la tarjeta que ya se titula «Cenzori».
 }
 ```
 
-No hace falta borrar los pasados: `ScheduleService` los filtra solos. Cuando la
+No hace falta borrar los pasados: `ScheduleService` los filtra solos (y
+salen en el desplegable «Evenimente trecute»).
+
+**Eventos automáticos de las reglas mensuales** (08/11/2026): Cina Domnului
+y Seară de tineret (primer domingo, `weeklyProgram → duminica → monthly`) no
+se cargan a mano: `ScheduleService.monthlyEvents` genera **la próxima vez
+que toca** de cada sesión mensual (id estable `auto_<culto>_<hhmm>`,
+`departments` de la sesión). Si se carga un evento manual ese día a esa hora
+(con predicador, cartel…), manda el manual. Los generados no se cuelgan de
+la semana (el programa ya lo dice en su día) ni se acumulan en el histórico. Cuando la
 lista queda vacía, el bloque desaparece de la proyección automáticamente
 (ver `docs/ai/30-presentation.md`).
 

@@ -415,27 +415,20 @@
 }
 
 /*
- * Aviso de toda la semana (semana de oración) encima de la agenda: icono
- * oro colgado, «TOATĂ SĂPTĂMÂNA» en versalitas y el título debajo (hasta dos
+ * Aviso de toda la semana (semana de oración) encima de la agenda, sin
+ * icono (08/11/2026): «TOATĂ SĂPTĂMÂNA» en versalitas y el título debajo (hasta dos
  * líneas). Un velo claro y el filete oro lo separan de los cultos sin
  * competir con el destacado.
  */
 .promo__agenda-notice {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 0.6rem;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   margin: 0 0 0.75rem;
   padding: 0.5rem 0.75rem;
   border-left: 3px solid var(--c-gold);
   border-radius: 0 6px 6px 0;
   background: rgb(255 255 255 / 0.08);
-}
-
-.promo__agenda-notice app-icon {
-  grid-row: 1 / span 2;
-  font-size: 1.1rem;
-  color: var(--c-gold-soft);
 }
 
 .promo__agenda-notice-when {
@@ -456,6 +449,27 @@
   line-height: 1.3;
   text-wrap: balance;
   color: rgb(255 255 255 / 0.95);
+}
+
+/*
+ * Eventos de hoy (08/11/2026): mismo bloque que el aviso de la semana, con
+ * una línea por evento («10:00 Binecuvântare de copii»), recortada a una
+ * línea: la tarjeta no crece, cada evento resta una fila a la agenda.
+ */
+.promo__agenda-event {
+  overflow: hidden;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 0.95);
+}
+
+.promo__agenda-event-time {
+  margin-right: 0.4rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-soft);
 }
 
 /* --- Insignia ----------------------------------------------------------- */

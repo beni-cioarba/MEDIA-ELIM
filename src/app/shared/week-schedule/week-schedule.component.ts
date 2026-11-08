@@ -29,6 +29,8 @@ export class WeekScheduleComponent {
   protected readonly schedule = inject(ScheduleService);
   protected readonly next = this.schedule.nextService;
   protected readonly weeklyLink = blockPath('weekly');
+  protected readonly upcomingLink = blockPath('upcoming');
+
 
   /**
    * Reglas mensuales que esta semana no se cumplen (las que sí, ya las dice

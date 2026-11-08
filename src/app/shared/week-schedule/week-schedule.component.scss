@@ -203,6 +203,9 @@
 
 .schedule__what {
   grid-column: 3;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-weight: 600;
   line-height: 1.3;
   color: var(--c-text);
@@ -283,6 +286,59 @@
 }
 
 // Días ya pasados: atenuados, sin desaparecer (la semana se lee entera).
+/* Eventos del día (08/11/2026): bajo el culto, «hora título» con filete
+   oro; en filas (estrecho) ocupan horas + culto, en columnas la celda. */
+.schedule__events {
+  grid-column: 2 / -1;
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0 0 0 0.5rem;
+  border-left: 2px solid var(--c-gold);
+  list-style: none;
+}
+
+.schedule__event {
+  display: block;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--c-text);
+  text-decoration: none;
+  text-wrap: pretty;
+
+  &:hover {
+    color: var(--c-primary);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.schedule__event--at {
+  margin-top: 0.1rem;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+/* Un evento ocupa todas las horas del culto: su nombre, en pequeño, para
+   que se sepa en qué culto es. */
+.schedule__context {
+  grid-column: 2 / -1;
+  font-size: 0.75rem;
+  color: var(--c-muted);
+}
+
+.schedule__event-time {
+  margin-right: 0.3rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+}
+
 .schedule__day.is-past {
   .schedule__name,
   .schedule__what {
@@ -333,7 +389,9 @@
   .schedule__times,
   .schedule__what,
   .schedule__none,
-  .schedule__rule {
+  .schedule__rule,
+  .schedule__events,
+  .schedule__context {
     grid-column: 1;
   }
 
@@ -342,14 +400,23 @@
     flex-wrap: wrap;
   }
 
+  /* Chip y texto en la misma línea si caben; si la columna es estrecha
+     (7 columnas en ~40-60rem), el texto baja bajo el chip a todo el ancho
+     de la celda en vez de recortarse. Base 6rem = ~12 caracteres. */
   .schedule__session {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.4rem;
+    gap: 0.25rem 0.4rem;
     grid-column: 1;
 
     .schedule__times {
       flex: none;
+    }
+
+    .schedule__what {
+      flex: 1 1 6rem;
+      min-width: 0;
     }
   }
 }

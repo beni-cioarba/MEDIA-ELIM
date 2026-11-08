@@ -119,6 +119,12 @@ export class UpcomingBlockComponent {
     return this.shown().map((ev) => this.toCard(ev, lang));
   });
 
+  /** Histórico (web): del más reciente al más antiguo, en filas de una línea. */
+  protected readonly past = computed<readonly EventCard[]>(() => {
+    const lang = this.language.current();
+    return this.schedule.pastEvents().map((ev) => this.toCard(ev, lang));
+  });
+
   /** El próximo evento: ocupa la tarjeta grande. */
   protected readonly featured = computed<EventCard | null>(() => this.cards()[0] ?? null);
 
@@ -152,6 +158,21 @@ export class UpcomingBlockComponent {
     }
     return map;
   });
+
+  /**
+   * Carteles apaisados (miniatura 16:9 del directo, no cartel 4:5), por URL.
+   * Se mide al cargar: la proporción es del fichero, no hay que declararla.
+   */
+  protected readonly widePosters = signal<ReadonlySet<string>>(new Set());
+
+  protected onPosterLoad(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    const src = img.getAttribute('src');
+    if (!src || !img.naturalHeight) return;
+    if (img.naturalWidth / img.naturalHeight >= 1.2 && !this.widePosters().has(src)) {
+      this.widePosters.update((set) => new Set(set).add(src));
+    }
+  }
 
   protected formatEventDate(iso: string): string {
     return this.schedule.formatEventDate(iso);

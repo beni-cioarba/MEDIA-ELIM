@@ -148,7 +148,7 @@ que el cartel no da.
 Para añadir uno: se deja el fichero en `src/assets/posters/` (tal cual salga de
 Canva), se ejecuta **`npm run posters`** —lo pasa a WebP de 1080 px y arregla el
 nombre— y se apunta en el campo `poster` del evento o del anuncio. Si el fichero
-falta o la ruta está mal, la tarjeta **cae a su portada de foto** en vez de
+falta o la ruta está mal, la tarjeta **cae a la tarjeta de datos (nunca a una foto de archivo)** en vez de
 enseñar una imagen rota. Instrucciones completas en
 `src/assets/posters/README.md`.
 
@@ -399,3 +399,22 @@ opacidad 0,78: **6:1** sobre el crema (antes 3,8:1, no cumplía AA).
 | Tarjeta de promoción | `src/styles/_showcase.scss` → `.promo*` |
 | Datos de las tarjetas (una por sección) | `home.component.ts` → `boardCards()` |
 | Ejemplo vivo | `/stil` → «Carrusel y tarjeta de promoción» |
+
+## Portada: eventos sin fotos inventadas (08/11/2026)
+
+Decisión del usuario: en el carrusel de la portada entran **todos los
+eventos futuros, en orden cronológico**, pero **ninguna foto que él no haya
+asignado**. Con `poster`, manda el cartel; sin cartel (o si el cartel falla),
+**tarjeta de datos** (`cover: 'data'`): tono por turno, título arriba y
+«Detalii» con día · fecha · hora (y predicador / închinare si los hay). Antes
+se ponía una foto de archivo de la galería y hacía creer que era de ese
+evento (la fanfara en una «Conferință de familie»).
+
+El mismo día, los eventos van también en la tarjeta «Program săptămânal»
+(bloque «Azi», sin icono: una línea por evento, hora · título, recortada a una
+línea; cada evento resta una fila a «Restul săptămânii») y en las celdas de
+la semana.
+
+**Degradados de borde del carrusel**: apagados en todos los tamaños
+(`_primitives.scss`): tapaban el borde de las fotos y tarjetas; la tarjeta que
+asoma y las flechas ya indican que hay más.

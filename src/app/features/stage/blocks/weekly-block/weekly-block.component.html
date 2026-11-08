@@ -110,19 +110,65 @@
 
           <div class="weekly__cell-body">
             @for (s of d.services; track s.id) {
-              <div class="weekly__service">
-                <span class="weekly__times">
-                  @for (t of s.times; track t) {
-                    <time class="weekly__time-chip" [attr.datetime]="t">{{ t }}</time>
+              @if (s.merged) {
+                <!-- Eventos a la hora del culto: sesión a sesión, la hora una vez. -->
+                <div class="weekly__service weekly__service--sessions">
+                  @for (x of s.sessions; track x.time) {
+                    <div class="weekly__session">
+                      <time class="weekly__time-chip" [class.is-event]="!!x.events?.length" [attr.datetime]="x.time">{{ x.time }}</time>
+                      <div class="weekly__session-what">
+                        @if (x.special || !x.events?.length) {
+                          <h3 class="weekly__service-title">{{ x.title }}</h3>
+                        }
+                        @for (ev of x.events; track ev.id) {
+                          <a class="weekly__session-event" [routerLink]="upcomingPath" [fragment]="ev.isPast ? undefined : 'ev-' + ev.id">{{ ev.title }}</a>
+                        }
+                      </div>
+                    </div>
                   }
-                </span>
-                <h3 class="weekly__service-title">{{ s.title }}</h3>
-                @if (s.description) {
-                  <p class="weekly__service-desc">{{ s.description }}</p>
-                }
-              </div>
+                  @if (s.contextTitle) {
+                    <p class="weekly__service-context">{{ s.contextTitle }}</p>
+                  }
+                </div>
+              } @else {
+                <div class="weekly__service">
+                  <span class="weekly__times">
+                    @for (t of s.times; track t) {
+                      <time class="weekly__time-chip" [attr.datetime]="t">{{ t }}</time>
+                    }
+                  </span>
+                  <h3 class="weekly__service-title">{{ s.title }}</h3>
+                  @if (s.description) {
+                    <p class="weekly__service-desc">{{ s.description }}</p>
+                  }
+                </div>
+              }
             } @empty {
-              <p class="weekly__cell-empty">{{ 'weekly.no_service' | translate }}</p>
+              @if (!d.events.length) {
+                <p class="weekly__cell-empty">{{ 'weekly.no_service' | translate }}</p>
+              }
+            }
+
+            <!-- Eventos fuera de las horas de culto (o sin hora): hora · título. -->
+            @if (d.events; as evs) {
+              @if (evs.length) {
+                <ul class="weekly__events" role="list" [attr.aria-label]="'nav.upcoming' | translate">
+                  @for (ev of evs; track ev.id) {
+                    <li class="weekly__event">
+                      <a
+                        class="weekly__event-link"
+                        [routerLink]="upcomingPath"
+                        [fragment]="ev.isPast ? undefined : 'ev-' + ev.id"
+                      >
+                        @if (ev.time) {
+                          <span class="weekly__event-time">{{ ev.time }}</span>
+                        }
+                        <span class="weekly__event-title">{{ ev.title }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
             }
           </div>
         </li>
@@ -137,5 +183,46 @@
         <app-icon name="arrow-right" />
       </a>
     </p>
+
+    <!-- Repetiții: sólo en la página propia del programa (input `rehearsals`). -->
+    @if (rehearsals()) {
+      <section class="rehearsals" aria-labelledby="rehearsals-title">
+        <h3 id="rehearsals-title" class="rehearsals__title">{{ 'weekly.rehearsals_title' | translate }}</h3>
+        <ul class="rehearsals__list" role="list">
+          @for (row of rehearsalRows(); track row.r.id) {
+            <li class="rehearsals__row" [class.is-active]="row.active">
+              <div class="rehearsals__who">
+                @if (row.link) {
+                  <a class="rehearsals__group" [routerLink]="row.link">{{ row.r.group }}</a>
+                } @else {
+                  <span class="rehearsals__group">{{ row.r.group }}</span>
+                }
+                @if (row.r.label) {
+                  <span class="rehearsals__label">{{ row.r.label }}</span>
+                }
+              </div>
+              <div class="rehearsals__slots">
+                @for (slot of row.r.slots; track slot.days) {
+                  <span class="rehearsals__slot">
+                    <span class="rehearsals__days">{{ slot.days }}</span>
+                    <time class="weekly__time-chip" [attr.datetime]="slot.time">{{ slot.time }}</time>
+                  </span>
+                }
+              </div>
+              @if (row.range) {
+                <p class="rehearsals__when">
+                  @if (row.active) {
+                    <span class="rehearsals__now">{{ 'weekly.this_week' | translate }}</span>
+                  } @else {
+                    {{ 'weekly.rehearsals_last_week' | translate }} ·
+                  }
+                  {{ row.range }}
+                </p>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
   }
 </section>

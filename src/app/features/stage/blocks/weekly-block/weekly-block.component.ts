@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CHURCH_CONFIG } from '../../../../core/church.config';
-import { blockPath } from '../../../../core/navigation/app-paths';
+import { CHURCH_CONFIG, Rehearsal } from '../../../../core/church.config';
+import { blockPath, departmentPath } from '../../../../core/navigation/app-paths';
+import { ClockService } from '../../../../core/services/clock.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { addDays, formatIsoRange, startOfDay, toIsoDate } from '../../../../core/util/iso-date';
 import { PresentationService } from '../../../../core/presentation.service';
 import { ScheduleService } from '../../../../core/services/schedule.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
@@ -11,6 +14,32 @@ import { IconComponent } from '../../../../shared/icon/icon.component';
 interface CountdownPart {
   readonly value: number;
   readonly unitKey: string;
+}
+
+/** Fila del bloque de repetiții, con lo que se deriva de la fecha de hoy. */
+interface RehearsalRow {
+  readonly r: Rehearsal;
+  readonly link: string | null;
+  /** Semana intensiva: «23 – 28 noiembrie 2026» (la en curso o la próxima). */
+  readonly range: string | null;
+  /** `true` si hoy cae dentro de esa semana. */
+  readonly active: boolean;
+}
+
+/**
+ * Última semana del mes que contiene `day`: de lunes al último sábado del mes.
+ * Si ya pasó, la del mes siguiente. Función pura (sin reloj) para poder probarla.
+ */
+export function lastWeekOfMonth(day: Date): { start: Date; end: Date } {
+  const today = startOfDay(day);
+  for (let offset = 0; offset < 2; offset++) {
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1 + offset, 0);
+    // getDay(): 6 = sábado.
+    const end = addDays(lastDay, -((lastDay.getDay() + 1) % 7));
+    const start = addDays(end, -5);
+    if (today.getTime() <= end.getTime()) return { start, end };
+  }
+  throw new Error('unreachable');
 }
 
 /**
@@ -41,8 +70,36 @@ export class WeeklyBlockComponent {
 
   protected readonly streamsPath = blockPath('streams');
   protected readonly locationPath = blockPath('location');
+  protected readonly upcomingPath = blockPath('upcoming');
+
 
   protected readonly next = this.schedule.nextService;
+
+  private readonly clock = inject(ClockService);
+  private readonly language = inject(LanguageService);
+  private readonly rehearsalList = inject(CHURCH_CONFIG).rehearsals;
+
+  /**
+   * Pinta el bloque de repetiții. Sólo en la página propia del programa
+   * (`StageComponent` lo activa con `/media/program`): ni en el panel
+   * completo ni en la proyección.
+   */
+  readonly rehearsals = input(false);
+
+  protected readonly rehearsalRows = computed<readonly RehearsalRow[]>(() => {
+    const today = startOfDay(new Date(this.clock.now()));
+    const lang = this.language.current();
+    return this.rehearsalList.map((r) => {
+      let range: string | null = null;
+      let active = false;
+      if (r.lastWeekOfMonth) {
+        const { start, end } = lastWeekOfMonth(today);
+        range = formatIsoRange(lang, toIsoDate(start), toIsoDate(end));
+        active = today.getTime() >= start.getTime();
+      }
+      return { r, link: r.department ? departmentPath(r.department) : null, range, active };
+    });
+  });
 
   /**
    * Las dos unidades mayores que quedan («2 zile 3 h», «3 h 12 min»,

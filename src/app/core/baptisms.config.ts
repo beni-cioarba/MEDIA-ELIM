@@ -672,4 +672,10 @@ export const BAPTISMS: readonly Baptism[] = [
       },
     ],
   },
+  {
+    // Botez anunțat (Evenimente viitoare): candidatos y fotos cuando lleguen.
+    date: '2026-11-22',
+    time: '10:00',
+    candidates: [],
+  },
 ];

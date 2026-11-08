@@ -424,6 +424,27 @@ reglas antiguas de `.weekly` salieron de `stage.component.scss`.
 - Crecer: un culto nuevo el sábado o un segundo culto un día es **sólo datos**
   (`weeklyProgram`); la rejilla y el panel lo recogen sin tocar marcado.
 
+#### Eventos del día y repetiții (08/11/2026)
+
+- **Eventos en la celda del día** (también en `shared/week-schedule`, la
+  semana de la portada y Contact): `ScheduleService.week()` cuelga cada
+  evento de la **sesión a cuya hora cae** (`mergeEvents`): la hora se dice
+  una vez (chip oro) y el evento ocupa su línea; si todas las horas del
+  culto llevan evento, el título del culto queda debajo, atenuado, como
+  contexto. Los eventos a otra hora o sin hora van sueltos (`day.events`)
+  como «hora · título» con filete oro. Enlazan a
+  `/media/evenimente#ev-<id>`. Un día sin culto pero con evento no dice
+  «Fără serviciu». Revisión del 08/11/2026: antes la hora salía dos veces.
+- **Repetiții** (`church.config.ts → rehearsals`, tipo `Rehearsal`): bloque
+  aparte bajo la dirección, **sólo en `/media/program`** (input
+  `rehearsals`, que `StageComponent` activa cuando el bloque es la página
+  sola; ni en `/media` ni en la proyección ni en la portada). Fila: grupo
+  (enlace al departamento) · matiz | días + chip de hora | fechas. La
+  intensiva de fanfara lleva `lastWeekOfMonth`: lunes → último sábado del
+  mes (`lastWeekOfMonth()`, función pura en `weekly-block.component.ts`);
+  muestra la próxima («Ultima săptămână din lună · 23 – 28 noiembrie 2026»)
+  y, mientras dura, la fila en oro con «Săptămâna aceasta».
+
 ## Selector de bloques (auto / manual)
 
 Botón con icono de cuadrícula y contador `n/N` dentro de la barra de controles.
@@ -889,3 +910,25 @@ ningún sitio y «Calendario» estaba dos veces.
 - Cada evento lleva `id="ev-<id>"`; «Compartir» comparte la página con ese
   ancla. Claves nuevas en `upcoming.*`: `when`, `starts_in`, `started`,
   `unit_days|hours|minutes`, `later`, `in_days`, `tomorrow`.
+
+### Histórico «Evenimente trecute» (07/11/2026)
+
+Pedido del usuario: los eventos pasados, de forma discreta, por si alguien
+quiere verlos. `ScheduleService.pastEvents` (más reciente primero; los
+eventos no se borran de `upcomingEvents`, así que el histórico se llena solo).
+Sólo web: `<details class="past">` **cerrado** al pie del bloque, con el
+parcial compartido `shared/styles/_past-archive.scss` (como anuncios y
+familias). Fila de una línea: fecha con año (columna fija, `nowrap`) |
+título + hora · predicador | miniatura 4:5 del cartel, que abre el visor
+(`[appViewable]`). Sin cuenta atrás, sin calendario ni compartir.
+
+### Carteles apaisados en «Evenimente viitoare» (08/11/2026)
+
+`poster` admite también la miniatura 16:9 del directo (p. ej.
+`binecuvantare-copii-2026-11-08.webp`, 1280×720). No se declara: el
+componente mide la proporción al cargar (`onPosterLoad`, ≥ 1,2 →
+`has-wide-poster`). Destacado ≥ 900 px: columna del cartel
+`clamp(18rem, 30cqi, 26rem)` en vez de 11-14,5rem (salía de 130 px de
+ancho); 560-900 px: banda a todo el ancho arriba; móvil: la banda de
+siempre. En la portada, la tarjeta de cartel lo enseña entero sobre su
+copia difuminada.

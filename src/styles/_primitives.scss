@@ -910,6 +910,16 @@
   opacity: 1;
 }
 
+/*
+ * Degradados apagados en todos los tamaños (decisión del usuario,
+ * 08/11/2026): tapaban el borde de las fotos y tarjetas; la tarjeta que
+ * asoma y las flechas ya dicen que hay más a ese lado.
+ */
+.ui-carousel::before,
+.ui-carousel::after {
+  display: none;
+}
+
 /** Todo cabe: no hay carrusel que recorrer, así que la fila se centra. */
 .ui-carousel.is-fitted {
   --carousel-justify: center;

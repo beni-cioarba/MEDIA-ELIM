@@ -36,6 +36,12 @@ export interface UpcomingEventView extends UpcomingEvent {
   readonly daysLeft: number;
   readonly isToday: boolean;
   readonly isPast: boolean;
+  /**
+   * Generado de una regla mensual del programa (Cina Domnului, Seară de
+   * tineret): el programa semanal ya lo dice en su día, así que no se cuelga
+   * de la semana (`eventsByDate`).
+   */
+  readonly auto?: boolean;
 }
 
 /** Una sesión concreta (una hora) de un culto en una fecha. */
@@ -44,6 +50,11 @@ export interface WeeklySessionView {
   readonly title: string;
   /** Es la excepción mensual (Cina Domnului el primer domingo…). */
   readonly special: boolean;
+  /**
+   * Eventos (evenimente) que caen a esta hora ese día: se pintan en la línea
+   * de la sesión, sin repetir la hora. Sólo en `week()`.
+   */
+  readonly events?: readonly UpcomingEventView[];
 }
 
 /**
@@ -73,6 +84,13 @@ export interface WeeklyServiceView {
   readonly specialRule: MonthlyRule | null;
   /** La regla mensual, cuando ese día no toca (para anunciarla). */
   readonly monthlyNote: MonthlyNoteView | null;
+  /** Alguna sesión lleva eventos: se pinta sesión a sesión. Sólo en `week()`. */
+  readonly merged?: boolean;
+  /**
+   * Título del culto como contexto («Închinare și învățătură») cuando todas
+   * sus sesiones las ocupan eventos y si no no se leería. Sólo en `week()`.
+   */
+  readonly contextTitle?: string | null;
 }
 
 /**
@@ -87,6 +105,8 @@ export interface WeekDayView {
   readonly isToday: boolean;
   readonly isPast: boolean;
   readonly services: readonly WeeklyServiceView[];
+  /** Eventos de ese día que no caen a la hora de un culto (o sin hora). */
+  readonly events: readonly UpcomingEventView[];
 }
 
 /** El culto que toca destacar: el que está en curso o, si no, el siguiente. */
@@ -181,12 +201,18 @@ export class ScheduleService {
       const date = new Date(monday);
       date.setDate(monday.getDate() + i);
       const day = date.getDay() as WeekDayIndex;
+      const iso = isoDeFecha(date);
+      const services = this.config.weeklyProgram
+        .filter((p) => p.day === day)
+        .map((p) => toServiceView(p, date));
+      const merged = mergeEvents(services, this.eventsByDate().get(iso) ?? []);
       return {
         day,
-        iso: isoDeFecha(date),
+        iso,
         isToday: date.getTime() === today.getTime(),
         isPast: date.getTime() < today.getTime(),
-        services: this.config.weeklyProgram.filter((p) => p.day === day).map((p) => toServiceView(p, date)),
+        services: merged.services,
+        events: merged.loose,
       };
     });
   });
@@ -288,22 +314,97 @@ export class ScheduleService {
   });
 
   /**
+   * Eventos de las reglas mensuales del programa (primer domingo: Cina
+   * Domnului, Seară de tineret): **la próxima vez que toca**, generado. Así
+   * siempre está el siguiente en «Evenimente viitoare» sin cargarlo a mano.
+   * Si ya hay un evento manual ese día a esa hora (con predicador, cartel…),
+   * manda el manual.
+   */
+  private readonly monthlyEvents = computed<readonly UpcomingEvent[]>(() => {
+    const today = new Date(this.clock.now());
+    const manual = new Set(this.config.upcomingEvents.map((ev) => `${ev.date} ${ev.time}`));
+    return this.config.weeklyProgram.flatMap((p) =>
+      (p.monthly ?? []).flatMap((m) => {
+        const [date] = nextMonthlyDates(m.rule, today, 1);
+        if (!date || manual.has(`${date} ${m.time}`)) return [];
+        return [
+          {
+            id: `auto_${p.id}_${m.time.replace(':', '')}`,
+            departments: m.departments,
+            date,
+            time: m.time,
+            title: m.title,
+            description: '',
+            verse: '',
+            preacher: '',
+            worshipLead: '',
+          },
+        ];
+      }),
+    );
+  });
+
+  /** Todos los eventos (configuración + generados) con sus días respecto a hoy. */
+  private readonly eventViews = computed<readonly UpcomingEventView[]>(() => {
+    const today = startOfDay(new Date(this.clock.now()));
+    const auto = new Set(this.monthlyEvents().map((ev) => ev.id));
+    return [...this.config.upcomingEvents, ...this.monthlyEvents()].map<UpcomingEventView>((ev) => {
+      const eventDay = startOfDay(parseIsoDate(ev.date));
+      const daysLeft = Math.round((eventDay.getTime() - today.getTime()) / DAY_MS);
+      return {
+        ...ev,
+        daysLeft,
+        isToday: daysLeft === 0,
+        isPast: daysLeft < 0,
+        auto: auto.has(ev.id),
+      };
+    });
+  });
+
+  /**
    * Eventos futuros: descarta los pasados y ordena por día y hora de inicio.
    */
-  readonly upcomingEvents = computed<readonly UpcomingEventView[]>(() => {
-    const today = startOfDay(new Date(this.clock.now()));
-    return this.config.upcomingEvents
-      .map<UpcomingEventView>((ev) => {
-        const eventDay = startOfDay(parseIsoDate(ev.date));
-        const daysLeft = Math.round((eventDay.getTime() - today.getTime()) / DAY_MS);
-        return { ...ev, daysLeft, isToday: daysLeft === 0, isPast: daysLeft < 0 };
-      })
+  readonly upcomingEvents = computed<readonly UpcomingEventView[]>(() =>
+    this.eventViews()
       .filter((ev) => !ev.isPast)
       .sort((a, b) =>
         a.daysLeft !== b.daysLeft
           ? a.daysLeft - b.daysLeft
           : parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time),
-      );
+      ),
+  );
+
+  /**
+   * Histórico: los eventos ya celebrados, del más reciente al más antiguo.
+   * Sólo la web los enseña (desplegable «Evenimente trecute»).
+   */
+  readonly pastEvents = computed<readonly UpcomingEventView[]>(() =>
+    this.eventViews()
+      .filter((ev) => ev.isPast)
+      .sort((a, b) =>
+        a.daysLeft !== b.daysLeft
+          ? b.daysLeft - a.daysLeft
+          : parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time),
+      ),
+  );
+
+  /**
+   * Eventos por fecha (`YYYY-MM-DD`), pasados incluidos, ordenados por hora.
+   * Para anotar los días del programa semanal.
+   */
+  readonly eventsByDate = computed<ReadonlyMap<string, readonly UpcomingEventView[]>>(() => {
+    const map = new Map<string, UpcomingEventView[]>();
+    for (const ev of this.eventViews()) {
+      // Los generados de la regla mensual ya los dice el programa en su día.
+      if (ev.auto) continue;
+      const list = map.get(ev.date);
+      if (list) list.push(ev);
+      else map.set(ev.date, [ev]);
+    }
+    for (const list of map.values()) {
+      list.sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time));
+    }
+    return map;
   });
 
   /** `true` si queda al menos un evento futuro por celebrar. */
@@ -414,6 +515,51 @@ function monthlyOn(p: WeeklyProgram, date: Date): NonNullable<WeeklyProgram['mon
 }
 
 /** Títulos distintos de las sesiones, en orden: «A» o «A · B». */
+/** Horas de un evento («10:00 & 18:00» → dos); vacío si no tiene. */
+function eventTimes(ev: UpcomingEventView): string[] {
+  return [...ev.time.matchAll(/\d{1,2}:\d{2}/g)].map((m) => m[0].padStart(5, '0'));
+}
+
+/**
+ * Cuelga cada evento del día de la sesión a cuya hora cae, para no repetir la
+ * hora (el chip del culto ya la dice). Un evento con varias horas va en cada
+ * una; si alguna no es de culto, o no tiene hora, va suelto con su hora.
+ */
+function mergeEvents(
+  services: readonly WeeklyServiceView[],
+  events: readonly UpcomingEventView[],
+): { services: readonly WeeklyServiceView[]; loose: readonly UpcomingEventView[] } {
+  const sessionTimes = new Set(services.flatMap((s) => s.sessions.map((x) => x.time.padStart(5, '0'))));
+  const attached = new Map<string, UpcomingEventView[]>();
+  const loose: UpcomingEventView[] = [];
+  for (const ev of events) {
+    const times = eventTimes(ev);
+    if (times.length && times.every((t) => sessionTimes.has(t))) {
+      for (const t of times) {
+        const list = attached.get(t);
+        if (list) list.push(ev);
+        else attached.set(t, [ev]);
+      }
+    } else {
+      loose.push(ev);
+    }
+  }
+  return {
+    loose,
+    services: services.map((s) => {
+      const sessions = s.sessions.map((x) => ({ ...x, events: attached.get(x.time.padStart(5, '0')) ?? [] }));
+      const merged = sessions.some((x) => x.events.length > 0);
+      return {
+        ...s,
+        sessions,
+        merged,
+        contextTitle:
+          merged && !s.special && sessions.every((x) => x.events.length > 0) ? s.title : null,
+      };
+    }),
+  };
+}
+
 function joinTitles(sessions: readonly WeeklySessionView[], fallback: string): string {
   return [...new Set(sessions.map((s) => s.title))].join(' · ') || fallback;
 }

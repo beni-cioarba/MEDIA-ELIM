@@ -33,7 +33,7 @@
               @case ('socials') { <app-socials-block /> }
               @case ('streams') { <app-streams-block /> }
               @case ('gallery') { <app-gallery-block /> }
-              @case ('weekly') { <app-weekly-block /> }
+              @case ('weekly') { <app-weekly-block [rehearsals]="selectedBlock() === 'weekly'" /> }
               @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
               @case ('bible') { <app-bible-block /> }
               @case ('causes') { <app-causes-block /> }

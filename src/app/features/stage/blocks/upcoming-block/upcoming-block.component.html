@@ -93,6 +93,44 @@
       }
     </div>
   }
+
+  <!-- Histórico discreto (sólo web): cerrado, una línea gris al pie. -->
+  @if (!fullscreen() && past().length > 0) {
+    <details class="past">
+      <summary class="past__summary">
+        <span class="past__label">{{ 'upcoming.past_title' | translate }}</span>
+        <span class="past__count">{{ past().length }}</span>
+        <svg class="past__chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </summary>
+      <ol class="past__list" role="list">
+        @for (c of past(); track c.ev.id) {
+          <li class="past__row">
+            <time class="past__date" [attr.datetime]="c.ev.date">{{ c.parts.day }} {{ c.parts.month }} {{ c.parts.year }}</time>
+            <div class="past__main">
+              <span class="past__title">{{ c.ev.title }}</span>
+              <span class="past__meta">
+                {{ c.times.join(' · ') }}
+                @if (c.ev.preacher) {
+                  · {{ c.ev.preacher }}
+                }
+              </span>
+            </div>
+            @if (c.poster) {
+              <button
+                type="button"
+                class="past__poster"
+                [appViewable]="c.poster"
+                [attr.aria-label]="('upcoming.poster' | translate) + ': ' + c.ev.title">
+                <img [src]="c.ev.poster" alt="" width="864" height="1080" loading="lazy" decoding="async" />
+              </button>
+            }
+          </li>
+        }
+      </ol>
+    </details>
+  }
 </section>
 
 <!-- Tarjeta de evento: destacado en la web y cada evento de la diapositiva en proyección. -->
@@ -101,6 +139,7 @@
     class="ev-hero"
     [id]="'ev-' + f.ev.id"
     [class.has-poster]="!!f.poster"
+    [class.has-wide-poster]="!!f.poster && widePosters().has(f.ev.poster)"
     [class.is-today]="f.ev.isToday"
     [attr.aria-labelledby]="'ev-title-' + f.ev.id"
   >
@@ -116,6 +155,7 @@
           width="864"
           height="1080"
           decoding="async"
+          (load)="onPosterLoad($event)"
         />
       </div>
     }

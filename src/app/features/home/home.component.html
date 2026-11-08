@@ -259,9 +259,22 @@
                        filas en móvil. -->
                   @for (n of card.notices; track n.id) {
                     <div class="promo__agenda-notice">
-                      <app-icon name="megaphone" />
                       <span class="promo__agenda-notice-when">{{ 'home.board.whole_week' | translate }}</span>
                       <span class="promo__agenda-notice-what">{{ n.title }}</span>
+                    </div>
+                  }
+                  <!-- Eventos de hoy: un bloque, una línea por evento (hora · título). -->
+                  @if (card.events.length) {
+                    <div class="promo__agenda-notice promo__agenda-notice--events">
+                      <span class="promo__agenda-notice-when">{{ 'home.board.today_events' | translate }}</span>
+                      @for (ev of card.events; track ev.id) {
+                        <span class="promo__agenda-event">
+                          @if (ev.time) {
+                            <span class="promo__agenda-event-time">{{ ev.time }}</span>
+                          }
+                          {{ ev.title }}
+                        </span>
+                      }
                     </div>
                   }
                   <p class="promo__agenda-head">{{ card.agendaKey | translate }}</p>

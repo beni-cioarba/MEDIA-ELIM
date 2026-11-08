@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { NOW_WINDOW_MIN, formatIn } from '../../core/util/countdown';
+import { toIsoDate } from '../../core/util/iso-date';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent, WeeklyProgram } from '../../core/church.config';
@@ -35,27 +36,8 @@ import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.
  * —el próximo culto, el anuncio vigente, el evento más cercano, la lectura de
  * hoy— y debajo las dos siguientes.
  */
-/**
- * Fotos disponibles con **el tono derivado de cada una** (medido con canvas:
- * matiz de la imagen, saturación 0,32, luminosidad 0,20). Las tarjetas de
- * evento van tomando una distinta por orden, así dos seguidas nunca repiten
- * color ni imagen.
- */
-const FOTOS = [
-  { thumb: 'botez_2025-thumb.webp', image: 'botez_2025.webp', tone: 'is-blue' },
-  { thumb: 'zambetul_cutie_2025-thumb.webp', image: 'zambetul_cutie_2025.webp', tone: 'is-plum' },
-  { thumb: 'revelion_2025-thumb.webp', image: 'revelion_2025.webp', tone: 'is-slate' },
-  { thumb: 'concert_copii_2025-thumb.webp', image: 'concert_copii_2025.webp', tone: 'is-clay' },
-] as const;
-
-const RUTA_MEDIA = 'assets/drive-media/';
-
-/**
- * Tope de tarjetas de evento en el carrusel. Con más de cuatro deja de ser un
- * escaparate y se convierte en una lista horizontal interminable; el resto
- * está en su sección, a un clic.
- */
-const MAX_EVENTOS = 4;
+/** Tono de las tarjetas de evento, por turno: se distinguen antes de leerlas. */
+const TONOS_EVENTO = ['is-blue', 'is-plum', 'is-slate', 'is-clay'] as const;
 
 /**
  * Tope de emisiones en la franja de la portada. Cinco llenan la fila a
@@ -149,6 +131,11 @@ interface BoardCard {
    * la tarjeta del programa semanal: es la que responde «qué hay esta semana».
    */
   readonly notices: readonly { readonly id: string; readonly title: string }[];
+  /**
+   * Eventos (evenimente) de hoy, en la tarjeta del programa semanal: hora y
+   * título en una línea cada uno, encima de la agenda.
+   */
+  readonly events: readonly { readonly id: string; readonly time: string; readonly title: string }[];
   /**
    * Avance de 0 a 1 que pinta la barra fina del pie: cuánto falta para el
    * culto (últimas 24 h), en qué día va el plan de lectura, cuánto queda para
@@ -323,6 +310,12 @@ export class HomeComponent {
     const next = this.schedule.nextService();
     const session = next && featured && next.service.id === featured.id ? next : null;
     const weekNotices = this.announcements.weekLong().map((a) => ({ id: a.id, title: a.title }));
+    const todayIso = toIsoDate(new Date(this.clock.now()));
+    const todayEvents = (this.schedule.eventsByDate().get(todayIso) ?? []).map((ev) => ({
+      id: ev.id,
+      time: ev.time,
+      title: ev.title,
+    }));
     return {
       id: 'weekly',
       cover: 'data',
@@ -354,12 +347,14 @@ export class HomeComponent {
       date: null,
       agendaKey: 'home.board.rest_week',
       notices: weekNotices,
+      events: todayEvents,
       // El resto de la semana: lo que hace que la tarjeta responda «¿cuándo
       // nos reunimos?» sin abrir nada. Cuatro líneas: la portada se estira
       // hasta el alto de la tarjeta de cartel y el hueco se llena con datos.
       // Cada aviso de la semana ocupa el sitio de una línea: la tarjeta no
       // crece y la agenda conserva al menos dos días.
-      agenda: rest.slice(0, Math.max(2, 4 - weekNotices.length)).map((item) => ({
+      // Los eventos de hoy, igual: cada uno, una línea menos de agenda.
+      agenda: rest.slice(0, Math.max(2, 4 - weekNotices.length - todayEvents.length)).map((item) => ({
         id: item.id,
         when: item.dayLabel,
         what: item.title,
@@ -369,47 +364,62 @@ export class HomeComponent {
   }
 
   private eventCards(): readonly BoardCard[] {
-    return this.schedule
-      .upcomingEvents()
-      .slice(0, MAX_EVENTOS)
-      .map((evento, indice) => {
-        const foto = FOTOS[indice % FOTOS.length];
-        // La cuenta atrás encabeza el pie y la fecha va en la insignia: así no
-        // se repite el dato y «3 zile rămase» no tiene que caber en 32 px.
-        const datos = [this.daysLeftLabel(evento), evento.time, evento.preacher ?? null].filter(
-          Boolean,
-        );
-        return {
-          id: `event-${evento.id}`,
-          // Si el evento tiene cartel, manda el cartel: ya lleva su identidad,
-          // su fecha y su invitado.
-          cover: evento.poster ? ('poster' as const) : ('photo' as const),
-          icon: 'sparkles' as const,
-          tone: foto.tone,
-          // Con cartel, `poster` es la portada y la foto queda de respaldo.
-          poster: evento.poster ?? '',
-          thumb: RUTA_MEDIA + foto.thumb,
-          image: RUTA_MEDIA + foto.image,
-          titleKey: 'nav.upcoming',
-          link: this.links.upcoming,
-          badge: evento.isToday
-            ? this.translate.instant('upcoming.today')
-            : this.schedule.formatEventDateShort(evento.date),
-          pulse: evento.isToday,
-          headline: evento.title,
-          description: evento.description,
-          meta: datos.join(' · '),
-          progress: Math.min(1, Math.max(0.04, 1 - evento.daysLeft / DIAS_CUENTA_ATRAS)),
-          event: evento,
-          date: {
-            ...this.schedule.formatDayParts(evento.date),
-            weekday: this.schedule.formatWeekdayLong(evento.date),
-          },
-          agendaKey: '',
-          notices: [],
-          agenda: [],
-        };
-      });
+    // Todos los eventos futuros, en orden cronológico. Con cartel, manda el
+    // cartel; sin cartel, tarjeta de datos (título, fecha, hora, quién):
+    // nunca una foto de archivo, que haría creer que es de ese evento
+    // (decisión del usuario, 08/11/2026).
+    return this.schedule.upcomingEvents().map((evento, indice) => {
+      const tone = TONOS_EVENTO[indice % TONOS_EVENTO.length];
+      // La cuenta atrás encabeza el pie y la fecha va en la insignia: así no
+      // se repite el dato y «3 zile rămase» no tiene que caber en 32 px.
+      const datos = [this.daysLeftLabel(evento), evento.time, evento.preacher ?? null].filter(
+        Boolean,
+      );
+      const agenda: BoardAgendaRow[] = evento.poster
+        ? []
+        : [
+            {
+              id: 'date',
+              when: this.schedule.formatWeekdayShort(evento.date).replace('.', ''),
+              what: this.schedule.formatEventDateShort(evento.date),
+              time: evento.time,
+            },
+            ...(evento.preacher
+              ? [{ id: 'preacher', when: this.translate.instant('upcoming.preacher'), what: evento.preacher, time: '' }]
+              : []),
+            ...(evento.worshipLead
+              ? [{ id: 'worship', when: this.translate.instant('upcoming.worship'), what: evento.worshipLead, time: '' }]
+              : []),
+          ];
+      return {
+        id: `event-${evento.id}`,
+        cover: evento.poster ? ('poster' as const) : ('data' as const),
+        icon: 'sparkles' as const,
+        tone,
+        poster: evento.poster ?? '',
+        thumb: '',
+        image: '',
+        titleKey: 'nav.upcoming',
+        link: this.links.upcoming,
+        badge: evento.isToday
+          ? this.translate.instant('upcoming.today')
+          : this.schedule.formatEventDateShort(evento.date),
+        pulse: evento.isToday,
+        headline: evento.title,
+        description: evento.description,
+        meta: datos.join(' · '),
+        progress: Math.min(1, Math.max(0.04, 1 - evento.daysLeft / DIAS_CUENTA_ATRAS)),
+        event: evento,
+        date: {
+          ...this.schedule.formatDayParts(evento.date),
+          weekday: this.schedule.formatWeekdayLong(evento.date),
+        },
+        agendaKey: 'home.board.event_details',
+        notices: [],
+        events: [],
+        agenda,
+      };
+    });
   }
 
   private bibleCard(): BoardCard {
@@ -456,6 +466,7 @@ export class HomeComponent {
       date: null,
       agendaKey: 'home.board.rest_readings',
       notices: [],
+      events: [],
       agenda: days.slice(todayIndex + 1, todayIndex + 5).map((day) => ({
         id: day.date,
         when: this.schedule.formatWeekdayShort(day.date),
@@ -507,7 +518,8 @@ export class HomeComponent {
   /** Portada real de una tarjeta, ya descontados los carteles que fallaron. */
   protected coverFor(card: BoardCard): BoardCard['cover'] {
     if (card.cover !== 'poster') return card.cover;
-    return this.postersCaidos().has(card.id) ? 'photo' : 'poster';
+    // Cartel roto: tarjeta de datos, nunca una foto que no es del evento.
+    return this.postersCaidos().has(card.id) ? 'data' : 'poster';
   }
 
   /** «Calendar» del panel del cartel: el evento como `.ics`. */

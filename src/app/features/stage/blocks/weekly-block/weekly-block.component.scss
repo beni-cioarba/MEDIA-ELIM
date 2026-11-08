@@ -556,6 +556,243 @@ app-weekly-block {
 }
 
 // ---------------------------------------------------------------------
+// 3b · Web — eventos del día dentro de la celda (07/11/2026)
+// ---------------------------------------------------------------------
+// Un evento puntual que cae ese día va DEBAJO del culto, en líneas
+// compactas: hora · título, sin caja propia. Filete oro a la
+// izquierda = «esto es extra, no el culto de siempre». Varios se apilan.
+
+.weekly__events {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: 0 0 0 var(--sp-2);
+  display: grid;
+  gap: var(--sp-1);
+  border-left: 2px solid var(--c-gold);
+}
+
+.weekly__event-link {
+  display: block;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+  color: var(--c-text);
+  text-decoration: none;
+  text-wrap: pretty;
+
+  &:hover .weekly__event-title {
+    color: var(--c-primary);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.weekly__event-time {
+  margin-right: 0.35em;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+}
+
+.weekly__event-title {
+  font-weight: 600;
+}
+
+.weekly__cell.is-past .weekly__event-link {
+  color: var(--c-muted);
+}
+
+// Día con eventos a la hora del culto: una fila por sesión, chip | qué.
+// El evento ocupa la línea de su hora (la hora no se repite); el culto, si
+// todas sus horas tienen evento, queda como contexto atenuado debajo.
+.weekly__service--sessions {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+// Chip y texto en línea si caben; en columnas estrechas el texto baja bajo
+// el chip (base 7rem) en vez de recortarse.
+.weekly__session {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-2);
+}
+
+.weekly__time-chip.is-event {
+  background: var(--c-gold);
+  color: var(--c-primary);
+}
+
+.weekly__session-what {
+  flex: 1 1 7rem;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.weekly__session-event {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--c-primary);
+  text-decoration: none;
+  text-wrap: pretty;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.weekly__service-context {
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// 3c · Web — Repetiții (sólo en la página del programa)
+// ---------------------------------------------------------------------
+// Una superficie con filetes, como la semana. Fila: quién | días + hora |
+// cuándo (sólo la intensiva). Columnas alineadas en escritorio; en móvil,
+// apilado. La semana intensiva en curso se marca como «hoy» (oro).
+
+.rehearsals {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.rehearsals__title {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.rehearsals__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--e-1);
+}
+
+.rehearsals__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-1) var(--sp-4);
+  align-items: center;
+  padding: var(--sp-3) var(--sp-4);
+
+  & + & {
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  &.is-active {
+    background: var(--c-gold-tint);
+    box-shadow: inset 3px 0 0 var(--c-gold);
+
+    .weekly__time-chip {
+      background: var(--c-surface);
+    }
+  }
+}
+
+.rehearsals__who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--sp-2);
+}
+
+.rehearsals__group {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--c-text);
+  text-decoration: none;
+}
+
+a.rehearsals__group {
+  &:hover {
+    color: var(--c-primary);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.rehearsals__label {
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.rehearsals__slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.rehearsals__slot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.rehearsals__days {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.rehearsals__when {
+  margin: 0;
+  max-width: none;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rehearsals__now {
+  margin-right: var(--sp-1);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold);
+  color: var(--c-primary);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@include from('md') {
+  .rehearsals__row {
+    grid-template-columns: 14rem minmax(0, 1fr) auto;
+  }
+
+  .rehearsals__when {
+    text-align: right;
+  }
+}
+
+// ---------------------------------------------------------------------
 // 4 · Proyección — base de la lista (la escala vive en `_projection.scss`)
 // ---------------------------------------------------------------------
 

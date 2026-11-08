@@ -285,6 +285,9 @@
       "nth_4": "Cuarto {{day}} del mes",
       "nth_-1": "Último {{day}} del mes"
     },
+    "rehearsals_title": "Ensayos",
+    "rehearsals_last_week": "Última semana del mes",
+    "this_week": "Esta semana",
     "directions": "Cómo llegar",
     "unit_day": "día",
     "unit_days": "días",
@@ -293,6 +296,8 @@
   },
   "upcoming": {
     "title": "Próximos eventos",
+    "past_title": "Eventos pasados",
+    "poster": "Cartel",
     "empty": "No hay eventos programados por el momento.",
     "next": "PRÓXIMO",
     "today": "ES HOY",
@@ -992,6 +997,8 @@
     },
     "board": {
       "title": "Lo que viene",
+      "today_events": "Hoy",
+      "event_details": "Detalles",
       "rest_week": "El resto de la semana",
       "whole_week": "Toda la semana",
       "day_of": "Día {{n}} de {{total}}",
@@ -1351,6 +1358,10 @@
       "sound": "Sonido",
       "projection": "Proyección",
       "live_stream": "Transmisión en directo",
+      "communication_church": "Redes sociales · Iglesia",
+      "communication_youth": "Redes sociales · Jóvenes",
+      "digital_platforms": "Plataformas digitales",
+      "archive_photo": "Archivo y fotografía",
       "other_churches": "Relaciones con otras iglesias",
       "san_martin": "Iglesia de San Martín de la Vega",
       "authorities": "Relaciones con el Estado y el Ayuntamiento",

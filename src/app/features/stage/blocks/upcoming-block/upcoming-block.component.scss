@@ -10,6 +10,7 @@
 // «Próximos eventos en la web».
 // =====================================================================
 @use 'ds' as *;
+@use '../../../../shared/styles/past-archive' as *;
 
 :host {
   display: contents;
@@ -433,6 +434,21 @@
         'poster panel';
     }
 
+    // Cartel apaisado (16:9): en una columna de 12rem quedaba diminuto.
+    // Banda a todo el ancho arriba, entero, y el texto debajo.
+    &.has-wide-poster {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'poster'
+        'body'
+        'panel';
+
+      .ev-hero__poster {
+        padding-right: var(--sp-4, 1rem);
+        padding-bottom: 0;
+      }
+    }
+
     &__poster {
       height: auto;
       padding: var(--sp-4, 1rem);
@@ -478,6 +494,19 @@
         minmax(0, 1fr)
         clamp(15rem, 22cqi, 17.5rem);
       grid-template-areas: 'poster body panel';
+    }
+
+    // Apaisado: columna a su proporción (~16:9 a la altura de la tarjeta).
+    &.has-wide-poster {
+      grid-template-columns:
+        clamp(18rem, 30cqi, 26rem)
+        minmax(0, 1fr)
+        clamp(15rem, 22cqi, 17.5rem);
+      grid-template-areas: 'poster body panel';
+
+      .ev-hero__poster {
+        padding: 1.1rem 0 1.1rem 1.1rem;
+      }
     }
 
     &__poster {
@@ -1071,5 +1100,76 @@
     b {
       font-size: var(--pj-fs-lead);
     }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Histórico «Evenimente trecute»: contenedor, cabecera y lista en
+// `shared/styles/_past-archive.scss` (como anuncios y familias). Fila:
+// fecha | título + hora/predicador | miniatura del cartel (abre el visor).
+// ---------------------------------------------------------------------
+.past__row {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 44px;
+  padding-block: var(--sp-2);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.past__date {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--c-muted);
+}
+
+.past__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.past__title {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
+
+.past__meta {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+.past__poster {
+  display: block;
+  width: 2.4rem;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm, 4px);
+  background: var(--c-surface-2);
+  cursor: zoom-in;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+@media (max-width: 30rem) {
+  .past__row {
+    grid-template-columns: 6.25rem minmax(0, 1fr) auto;
+    gap: var(--sp-2);
   }
 }

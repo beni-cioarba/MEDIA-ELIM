@@ -285,6 +285,9 @@
       "nth_4": "A patra {{day}} din lună",
       "nth_-1": "Ultima {{day}} din lună"
     },
+    "rehearsals_title": "Repetiții",
+    "rehearsals_last_week": "Ultima săptămână din lună",
+    "this_week": "Săptămâna aceasta",
     "directions": "Cum ajungi",
     "unit_day": "zi",
     "unit_days": "zile",
@@ -293,6 +296,8 @@
   },
   "upcoming": {
     "title": "Evenimente viitoare",
+    "past_title": "Evenimente trecute",
+    "poster": "Afiș",
     "empty": "Nu sunt evenimente programate în momentul de față.",
     "next": "URMĂTORUL",
     "today": "ESTE AZI",
@@ -992,6 +997,8 @@
     },
     "board": {
       "title": "Ce urmează",
+      "today_events": "Azi",
+      "event_details": "Detalii",
       "rest_week": "Restul săptămânii",
       "whole_week": "Toată săptămâna",
       "day_of": "Ziua {{n}} din {{total}}",
@@ -1351,6 +1358,10 @@
       "sound": "Sunet",
       "projection": "Proiecție",
       "live_stream": "Transmisie live",
+      "communication_church": "Rețele sociale · Biserică",
+      "communication_youth": "Rețele sociale · Tineret",
+      "digital_platforms": "Platforme digitale",
+      "archive_photo": "Arhivă și foto",
       "other_churches": "Relații cu alte biserici",
       "san_martin": "Biserica din San Martín de la Vega",
       "authorities": "Relații cu statul și primăria",
