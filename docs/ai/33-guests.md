@@ -158,7 +158,7 @@ manda que se lea en un teléfono recién sacado del bolsillo.
 | Lógica pura (URL del QR, `?lang`, vCard, dirección, estado del culto, iniciales) | Vitest: `guests.view.spec.ts` | ✓ |
 | Ruta oculta, `noindex`, fuera del menú; datos (anfitriones, departamentos, preguntas, textos en los dos idiomas) | Vitest: `guests.config.spec.ts` | ✓ |
 | Semana intensiva de fanfara (`lastWeekOfMonth`) | Vitest: `last-week-of-month.spec.ts` | ✓ |
-| Generador de páginas estáticas | `node --test scripts/` (`npm run test:scripts`, dentro de `npm run check`) | ✓ 5/5 |
+| Generador de páginas estáticas | `node --test "scripts/**/*.test.mjs"` (`npm run test:scripts`, dentro de `npm run check`) | ✓ 5/5 |
 | El QR codifica exactamente la URL (ro y es) | Matriz del SVG de la página = matriz de referencia de `qrcode`, módulo a módulo | ✓ |
 | Impresión | Playwright + Edge → PDF: 1 página A4 en afiche y tarjetas, ro y es, también desde un teléfono | ✓ |
 | Responsive | `responsive-audit.snippet.js` vía Playwright: 320 · 360 · 375 · 390 · 414 · 667×375 · 768 · 1024 · 1280 · 1440 · 1920, ro y es, `/invitati` y `/invitati/qr` | ✓ (sin scroll horizontal, desbordes, solapes ni textos cortados; los únicos avisos son de la cabecera y el pie, comunes a toda la web) |

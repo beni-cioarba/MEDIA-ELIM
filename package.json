@@ -18,7 +18,7 @@
     "check:projection": "node scripts/check-projection-sizes.mjs",
     "check:drive": "node scripts/check-drive-links.mjs",
     "check": "npm run i18n:check && npm run check:projection && node scripts/check-drive-links.mjs --offline && npm run test:scripts",
-    "test:scripts": "node --test scripts/",
+    "test:scripts": "node --test \"scripts/**/*.test.mjs\"",
     "pdf:familii": "node scripts/generate-family-pdfs.mjs"
   },
   "private": true,

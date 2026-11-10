@@ -92,7 +92,8 @@ destino del QR de bienvenida): copia de `index.html` con su título,
 descripción, Open Graph y `noindex`, sacados de `seo.<clave>` de `ro.json`.
 GitHub Pages las sirve con **200** (el resto de rutas siguen con el 404 del
 fallback). Sus tests (`scripts/*.test.mjs`, `node --test`) corren en
-`npm run check` (`test:scripts`), así que un fallo no llega a publicarse.
+`npm run check` (`test:scripts`, con el glob entre comillas: desde Node 22
+`--test` no acepta un directorio), así que un fallo no llega a publicarse.
 
 > Compilar en local desde Git Bash: `--base-href /` se convierte en
 > `C:/Program Files/Git/` (conversión de rutas de MSYS). Usa
