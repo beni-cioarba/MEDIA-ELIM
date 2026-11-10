@@ -4,6 +4,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { APP_PATHS, DEPARTMENT_SLUGS, DepartmentId } from './core/navigation/app-paths';
 import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
 import { departmentsTranslationsResolver } from './features/departments/departments-translations.resolver';
+import { guestsTranslationsResolver } from './features/guests/guests-translations.resolver';
 
 /**
  * Portada de sección de un grupo de `MAIN_NAV` (`/biserica`, `/program`,
@@ -75,6 +76,17 @@ export const APP_ROUTES: Routes = [
       import('./features/projection/projection.component').then((m) => m.ProjectionComponent),
     data: {
       seo: { titleKey: 'seo.projection.title', descriptionKey: 'seo.projection.description' },
+    },
+  },
+  {
+    // Hoja imprimible del QR de «Invitați» (afiche A4 / tarjetas A6). Sin
+    // shell: es una herramienta del operador y se imprime tal cual.
+    path: `${APP_PATHS.guests}/${APP_PATHS.guestsQr}`,
+    loadComponent: () =>
+      import('./features/guests/guests-qr/guests-qr.component').then((m) => m.GuestsQrComponent),
+    resolve: { i18n: guestsTranslationsResolver },
+    data: {
+      seo: { titleKey: 'seo.guests_qr.title', descriptionKey: 'seo.guests_qr.description', noindex: true },
     },
   },
   {
@@ -375,6 +387,22 @@ export const APP_ROUTES: Routes = [
           seo: {
             titleKey: 'seo.contact.title',
             descriptionKey: 'seo.contact.description',
+          },
+        },
+      },
+      {
+        // Invitați: bienvenida para quien viene por primera vez. Oculta: sin
+        // entrada en MAIN_NAV (sólo un acceso discreto en el pie y el QR) y
+        // fuera de los buscadores. `?lang=es` la abre en español.
+        path: APP_PATHS.guests,
+        loadComponent: () =>
+          import('./features/guests/guests.component').then((m) => m.GuestsComponent),
+        resolve: { i18n: guestsTranslationsResolver },
+        data: {
+          seo: {
+            titleKey: 'seo.guests.title',
+            descriptionKey: 'seo.guests.description',
+            noindex: true,
           },
         },
       },

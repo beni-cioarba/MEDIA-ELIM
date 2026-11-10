@@ -65,6 +65,14 @@ export const APP_PATHS = {
    * sección pública: no entra en el menú ni en el sitemap.
    */
   styleguide: 'stil',
+  /**
+   * Invitați: bienvenida para quien nos visita por primera vez. **Oculta**:
+   * fuera de `MAIN_NAV`, del pie y de los buscadores; se llega por QR o
+   * tecleando la dirección (`docs/ai/33-guests.md`). `/invitati/qr` es la
+   * hoja imprimible con el código (sin shell).
+   */
+  guests: 'invitati',
+  guestsQr: 'qr',
 } as const;
 
 export type AppPathKey = keyof typeof APP_PATHS;

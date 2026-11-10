@@ -37,12 +37,14 @@ export interface CountdownTarget {
  * el horario y caduca sola a medianoche.
  *
  * ── Cuándo se ve ──────────────────────────────────────────────────────
- * Desde `leadMinutes` antes hasta un minuto después del comienzo («Începem
- * acum»); fuera de esa ventana no existe. Con `leadMinutes = null`
- * («Mereu») se ve todo el día hasta el próximo comienzo, salvo mientras dura
- * un culto anterior de hoy (`SERVICE_DURATION_MS` desde su comienzo). Ni siquiera se calcula al segundo:
- * aquí sólo se resuelve el objetivo con el reloj de minuto de la app; el
- * segundero lo lleva el componente que lo pinta, y sólo dentro de la ventana.
+ * Desde `leadSeconds` antes (15 s … 5 min, 90 s por defecto) hasta un minuto
+ * después del comienzo («Începem acum»); fuera de esa ventana no existe. Con
+ * `leadSeconds = null` («Mereu») se ve todo el día hasta el próximo comienzo,
+ * salvo mientras dura un culto anterior de hoy (`SERVICE_DURATION_MS` desde su
+ * comienzo). Ni siquiera se calcula al segundo: aquí sólo se resuelve el
+ * objetivo con el reloj de minuto de la app; el segundero —y el temporizador
+ * que abre la ventana en su segundo exacto— lo lleva el componente que lo
+ * pinta, y sólo dentro de la ventana.
  *
  * Todas las ventanas de proyección leen los mismos ajustes (`localStorage`) y
  * el mismo reloj del sistema, así que marcan lo mismo sin sincronizarse.
@@ -69,7 +71,7 @@ export class ServiceCountdownService {
      * si es el primero).
      */
     const showFromFor = (at: number, minutes: number): number => {
-      if (prefs.leadMinutes !== null) return at - prefs.leadMinutes * 60_000;
+      if (prefs.leadSeconds !== null) return at - prefs.leadSeconds * 1_000;
       const previous = starts.filter((start) => start < minutes).at(-1);
       return previous === undefined
         ? midnight.getTime()

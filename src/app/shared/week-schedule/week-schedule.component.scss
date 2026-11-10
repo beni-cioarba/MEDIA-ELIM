@@ -427,3 +427,16 @@
     animation: none;
   }
 }
+
+/* Sin cabecera propia (la página ya titula la sección): sin filete arriba
+   del primer día, que pisaría el borde de la superficie. En columnas, todos
+   los días están en la primera fila. */
+.schedule--headless .schedule__day:first-child {
+  border-top: 0;
+}
+
+@container schedule (min-width: 40rem) {
+  .schedule--headless .schedule__day {
+    border-top: 0;
+  }
+}

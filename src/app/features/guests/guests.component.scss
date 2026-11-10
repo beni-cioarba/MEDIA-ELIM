@@ -1,0 +1,1585 @@
+// =====================================================================
+// Invitați — página de bienvenida para quien viene por primera vez.
+//
+// No sigue el catálogo `ui-*` (regla de AGENTS.md): es una página de
+// llegada, y lo que manda es que se lea de un vistazo en un teléfono recién
+// sacado del bolsillo tras escanear un QR. Móvil primero; las columnas se
+// abren con el ancho. Marca: navy (superficies fuertes, títulos) y oro
+// (acentos, botón principal). Decisiones: `docs/ai/33-guests.md`.
+// =====================================================================
+@use 'ds' as *;
+
+:host {
+  display: block;
+  background: var(--c-bg);
+  // Tonos propios de la página (derivados de la marca).
+  --gst-navy: var(--c-primary);
+  --gst-navy-deep: var(--c-primary-deep);
+  --gst-ink: var(--c-primary-darkest);
+  --gst-radius: 1rem;
+  --gst-radius-lg: 1.25rem;
+  --gst-shadow: 0 1px 2px rgb(13 31 53 / 0.06), 0 8px 24px -12px rgb(13 31 53 / 0.18);
+  --gst-shadow-lift: 0 2px 4px rgb(13 31 53 / 0.06), 0 16px 36px -14px rgb(13 31 53 / 0.28);
+  --gst-btn-h: 3rem;
+  // Texto atenuado más oscuro que el global (0,66 → 0,75): el global da
+  // 4,2:1 sobre crema; aquí todo texto pasa AA (≥ 5,1:1 en crema, blanco,
+  // tinte oro y velo navy). Lo hereda también la semana incrustada.
+  --c-muted: rgb(45 55 72 / 0.75);
+  // Objetivo táctil mínimo (WCAG 2.5.5): la raíz mide 15 px en el teléfono,
+  // así que 2,75 rem serían 41 px; nunca menos de 44.
+  --gst-tap: max(44px, 2.75rem);
+}
+
+// ---------------------------------------------------------------------
+// Botones y enlaces comunes
+// ---------------------------------------------------------------------
+
+.gst-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--gst-btn-h);
+  padding: 0 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  app-icon {
+    flex: none;
+    font-size: 1.15rem;
+  }
+
+  @include focus-ring(3px);
+
+  @include motion-safe {
+    transition:
+      background-color var(--mo-fast) var(--ea-standard),
+      border-color var(--mo-fast) var(--ea-standard),
+      transform var(--mo-fast) var(--ea-standard);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.gst-btn--gold {
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+
+  &:hover {
+    background: var(--c-gold-soft);
+  }
+}
+
+.gst-btn--glass {
+  background: rgb(255 255 255 / 0.12);
+  border-color: rgb(255 255 255 / 0.34);
+  color: #fff;
+
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: blur(10px);
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 0.2);
+  }
+}
+
+.gst-btn--navy {
+  background: var(--gst-navy);
+  color: var(--c-on-primary);
+
+  &:hover {
+    background: var(--gst-navy-deep);
+  }
+}
+
+.gst-btn--line {
+  background: var(--c-surface);
+  border-color: var(--c-hairline-strong);
+  color: var(--gst-navy);
+
+  &:hover {
+    border-color: var(--gst-navy);
+  }
+}
+
+.gst-btn--sm {
+  --gst-btn-h: var(--gst-tap);
+  padding: 0 1rem;
+  font-size: 0.875rem;
+}
+
+.gst-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: var(--gst-tap);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--gst-navy);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+
+  app-icon {
+    font-size: 1rem;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include focus-ring(2px);
+}
+
+// ---------------------------------------------------------------------
+// 1 · Portada
+// ---------------------------------------------------------------------
+
+.gst-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  // Asoma la tarjeta del próximo culto: invita a bajar.
+  min-height: min(74svh, 40rem);
+  overflow: hidden;
+  background: var(--gst-ink);
+  color: #fff;
+
+  @include from('md') {
+    min-height: min(78svh, 46rem);
+  }
+
+  // Teléfono apaisado: la foto no puede comerse la pantalla entera.
+  @media (orientation: landscape) and (max-height: 520px) {
+    min-height: 26rem;
+  }
+}
+
+.gst-hero__img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 38%;
+}
+
+// Velo navy: oscurece la mitad inferior (donde va el texto) y, en
+// escritorio, el lado izquierdo. Contraste del texto blanco medido sobre la
+// zona más clara de la foto (camisas blancas): > 7:1.
+.gst-hero__veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgb(13 31 53 / 0.5) 0%,
+    rgb(13 31 53 / 0.28) 28%,
+    rgb(13 31 53 / 0.78) 62%,
+    rgb(13 31 53 / 0.95) 100%
+  );
+
+  @include from('md') {
+    background:
+      linear-gradient(90deg, rgb(13 31 53 / 0.88) 0%, rgb(13 31 53 / 0.55) 48%, rgb(13 31 53 / 0.1) 78%),
+      linear-gradient(180deg, rgb(13 31 53 / 0.35) 0%, rgb(13 31 53 / 0) 30%, rgb(13 31 53 / 0.7) 100%);
+  }
+}
+
+.gst-hero__inner {
+  @include container();
+  position: relative;
+  // Hueco abajo para la tarjeta que flota encima del borde.
+  padding-top: 4.5rem;
+  padding-bottom: 5.5rem;
+
+  @include from('md') {
+    padding-top: 5rem;
+    padding-bottom: 6.5rem;
+  }
+}
+
+.gst-hero__content {
+  max-width: 40rem;
+}
+
+// Selector de idioma: arriba a la derecha, sobre la foto.
+.gst-lang {
+  position: absolute;
+  z-index: 1;
+  top: var(--sp-4);
+  // Alineado con el borde derecho del contenido (misma rejilla que la cabecera).
+  right: var(--page-inset);
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: var(--r-pill);
+  background: rgb(13 31 53 / 0.5);
+
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: blur(12px);
+  }
+}
+
+.gst-lang__btn {
+  min-height: var(--gst-tap);
+  min-width: var(--gst-tap);
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.82);
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    background: #fff;
+    color: var(--gst-ink);
+  }
+
+  &:hover:not([aria-pressed='true']) {
+    color: #fff;
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  @include focus-ring(2px);
+}
+
+.gst-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 var(--sp-3);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.gst-hero__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--c-gold);
+  box-shadow: 0 0 0 4px rgb(212 175 55 / 0.25);
+}
+
+.gst-hero__title {
+  margin: 0;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: clamp(2.375rem, 9.2vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: #fff;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+// «acasă»: la palabra que importa, en la cursiva de la casa y en oro.
+.gst-hero__accent {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--c-gold-soft);
+}
+
+.gst-hero__lead {
+  max-width: 34ch;
+  margin: var(--sp-4) 0 0;
+  font-size: clamp(1rem, 2.4vw, 1.1875rem);
+  line-height: 1.55;
+  color: rgb(255 255 255 / 0.9);
+  text-wrap: pretty;
+}
+
+.gst-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+
+  // En el teléfono los dos botones a lo ancho, uno por fila si no caben.
+  .gst-btn {
+    flex: 1 1 11rem;
+
+    @include from('sm') {
+      flex: 0 0 auto;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Contenido
+// ---------------------------------------------------------------------
+
+.gst {
+  @include container();
+  position: relative;
+  padding-bottom: clamp(3rem, 7vw, 5rem);
+}
+
+// Destinos del índice. El `html` ya reserva la cabecera fija
+// (`scroll-padding-top` global); aquí sólo se descuenta el aire superior de
+// la sección, para que al saltar el rótulo quede arriba y no 70 px más abajo.
+[id^='gst-'] {
+  &:focus {
+    outline: none;
+  }
+}
+
+.gst-sec[id^='gst-'] {
+  scroll-margin-top: calc(var(--sp-2) - var(--gst-sec-pad));
+}
+
+// ---------------------------------------------------------------------
+// 2 · Próximo culto (flota sobre el borde de la portada)
+// ---------------------------------------------------------------------
+
+.gst-next {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: -3.75rem;
+  padding: var(--sp-5);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius-lg);
+  background: var(--c-surface);
+  box-shadow: var(--gst-shadow-lift);
+
+  // Filo de marca arriba: oro (en directo, verde «ahora»).
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 var(--sp-5) auto;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--c-gold);
+  }
+
+  &.is-live::before {
+    background: var(--c-success);
+  }
+
+  @include from('md') {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--sp-8);
+    padding: var(--sp-6) var(--sp-8);
+
+    // Con eventos hoy: tres columnas (cuándo · también hoy · acciones).
+    &.has-today {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+    }
+  }
+}
+
+.gst-next__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+
+  .is-live & {
+    color: var(--c-success);
+  }
+}
+
+.gst-next__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+
+  .is-live & {
+    @include motion-safe {
+      animation: gst-pulse 1.8s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes gst-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.gst-next__time {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6rem;
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.125rem, 7vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--gst-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.gst-next__day {
+  font-size: 0.62em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.gst-next__title {
+  margin: 0.25rem 0 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.gst-next__note {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--c-muted);
+}
+
+// «Duminică 10:00 & 18:00 · Închinare și învățătură» cuando lo próximo no es el domingo.
+.gst-next__sunday {
+  display: flex;
+  max-width: none;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  margin: var(--sp-3) 0 0;
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--c-hairline-strong);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.gst-next__sunday-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.gst-next__sunday-time {
+  font-weight: 800;
+  color: var(--gst-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.gst-next__sunday-title {
+  color: var(--c-muted);
+}
+
+.gst-next__today {
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--c-gold-tint);
+
+  @include from('md') {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.gst-next__label {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.gst-next__events {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--gst-navy);
+
+  li {
+    overflow-wrap: break-word;
+  }
+}
+
+.gst-next__ev-time {
+  margin-right: 0.35rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+}
+
+.gst-next__actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+  gap: var(--sp-3);
+
+  @include from('md') {
+    grid-template-columns: 1fr;
+    min-width: 13rem;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 3 · Índice de la página
+// ---------------------------------------------------------------------
+
+.gst-toc {
+  margin-top: var(--sp-6);
+
+  // Teléfono: una fila que se desliza, hasta el borde de la pantalla.
+  @include until('md') {
+    margin-inline: calc(-1 * var(--page-gutter));
+  }
+}
+
+.gst-toc__list {
+  display: flex;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0.25rem var(--page-gutter);
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > li {
+    flex: none;
+    scroll-snap-align: start;
+  }
+
+  @include from('md') {
+    flex-wrap: wrap;
+    padding-inline: 0;
+    overflow: visible;
+  }
+}
+
+.gst-toc__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--gst-tap);
+  padding: 0 1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--gst-navy);
+  text-decoration: none;
+  white-space: nowrap;
+
+  app-icon {
+    font-size: 1rem;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    border-color: var(--gst-navy);
+  }
+
+  @include focus-ring(2px);
+}
+
+// ---------------------------------------------------------------------
+// Sección (cabecera común)
+// ---------------------------------------------------------------------
+
+.gst-sec {
+  --gst-sec-pad: clamp(2.75rem, 7vw, 4.5rem);
+  padding-top: var(--gst-sec-pad);
+}
+
+.gst-sec__head {
+  max-width: 46rem;
+  margin-bottom: var(--sp-6);
+}
+
+.gst-sec__head--row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-6);
+  max-width: none;
+
+  > div {
+    max-width: 46rem;
+  }
+}
+
+.gst-sec__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.gst-sec__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 4.6vw, 2.375rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--gst-navy);
+  text-wrap: balance;
+}
+
+.gst-sec__lead {
+  max-width: 60ch;
+  margin: 0.6rem 0 0;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--c-muted);
+  text-wrap: pretty;
+}
+
+// ---------------------------------------------------------------------
+// 4 · Primii pași
+// ---------------------------------------------------------------------
+
+.gst-first__grid {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from('sm') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from('xl') {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  > li {
+    display: flex;
+  }
+}
+
+.gst-action {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  width: 100%;
+  min-height: 4.75rem;
+  padding: var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius);
+  background: var(--c-surface);
+  box-shadow: var(--gst-shadow);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+
+  @include motion-safe {
+    transition:
+      box-shadow var(--mo-fast) var(--ea-standard),
+      border-color var(--mo-fast) var(--ea-standard);
+  }
+
+  &:hover {
+    border-color: var(--c-hairline-strong);
+    box-shadow: var(--gst-shadow-lift);
+  }
+
+  @include focus-ring(2px);
+
+  @include from('xl') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-5);
+  }
+}
+
+.gst-action__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.8rem;
+  background: var(--c-veil-strong);
+  color: var(--gst-navy);
+  font-size: 1.35rem;
+
+  .gst-action--whatsapp & {
+    background: var(--c-whatsapp);
+    color: var(--c-on-whatsapp);
+  }
+}
+
+.gst-action__text {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.gst-action__title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--gst-navy);
+}
+
+.gst-action__desc {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--c-muted);
+}
+
+.gst-action__go {
+  flex: none;
+  font-size: 1.1rem;
+  color: var(--c-faint);
+
+  @include from('xl') {
+    display: none;
+  }
+}
+
+.gst-first__saved {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 1.5rem;
+  margin: var(--sp-3) 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-success);
+
+  &:empty {
+    min-height: 0;
+    margin: 0;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 5 · Ce te așteaptă
+// ---------------------------------------------------------------------
+
+.gst-steps {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+
+  @include from('sm') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from('lg') {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.gst-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'num title'
+    'num text';
+  align-content: start;
+  column-gap: var(--sp-4);
+  row-gap: 0.3rem;
+  padding: var(--sp-5);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius);
+  background: var(--c-surface);
+  box-shadow: var(--gst-shadow);
+
+  @include from('lg') {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'num icon'
+      'title title'
+      'text text';
+    row-gap: 0.5rem;
+  }
+}
+
+.gst-step__num {
+  grid-area: num;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--gst-navy);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--c-gold-soft);
+  font-variant-numeric: tabular-nums;
+
+  @include from('lg') {
+    margin-bottom: 0.4rem;
+  }
+}
+
+.gst-step__icon {
+  grid-area: icon;
+  display: none;
+  font-size: 1.4rem;
+  color: var(--c-gold-deep);
+
+  @include from('lg') {
+    display: block;
+  }
+}
+
+.gst-step__title {
+  grid-area: title;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--gst-navy);
+}
+
+.gst-step__text {
+  grid-area: text;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--c-muted);
+}
+
+.gst-note {
+  display: flex;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--c-gold-tint);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--c-text);
+
+  app-icon {
+    flex: none;
+    margin-top: 0.15rem;
+    font-size: 1.1rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 6 · Programa (componente compartido)
+// ---------------------------------------------------------------------
+
+.gst-week {
+  display: block;
+  box-shadow: var(--gst-shadow);
+  border-radius: 18px;
+}
+
+// ---------------------------------------------------------------------
+// 7 · Cine suntem
+// ---------------------------------------------------------------------
+
+.gst-about {
+  display: grid;
+  gap: var(--sp-6);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--sp-12);
+  }
+}
+
+.gst-about__body {
+  max-width: 62ch;
+  margin: var(--sp-4) 0 0;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--c-text);
+  text-wrap: pretty;
+}
+
+.gst-about__body--warm {
+  font-family: var(--font-serif);
+  font-size: 1.1875rem;
+  font-style: italic;
+  color: var(--gst-navy);
+}
+
+.gst-about__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--sp-6);
+  margin-top: var(--sp-3);
+}
+
+.gst-facts {
+  position: relative;
+  padding: var(--sp-5) var(--sp-4);
+  overflow: hidden;
+  border-radius: var(--gst-radius-lg);
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgb(212 175 55 / 0.16), transparent 55%),
+    linear-gradient(160deg, var(--gst-navy), var(--gst-ink));
+  color: #fff;
+
+  @include from('sm') {
+    padding: var(--sp-8) var(--sp-6);
+  }
+}
+
+.gst-facts__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+}
+
+.gst-fact {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+  text-align: center;
+}
+
+.gst-fact__value {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 7vw, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.gst-fact__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.gst-facts__asof {
+  margin: var(--sp-4) 0 0;
+  font-size: 0.75rem;
+  text-align: center;
+  color: rgb(255 255 255 / 0.62);
+}
+
+// ---------------------------------------------------------------------
+// 8 · Cine te primește
+// ---------------------------------------------------------------------
+
+.gst-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4) var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from('md') {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--sp-5);
+  }
+}
+
+.gst-person {
+  min-width: 0;
+}
+
+.gst-person__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--gst-radius);
+  box-shadow: var(--gst-shadow);
+
+  @include focus-ring(3px);
+
+  .gst-person__photo {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.gst-person__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  // Cuadrado con la cara arriba: cuatro retratos 4:5 ocupaban más de una
+  // pantalla (en el móvil y a 1440). La foto entera, en el visor.
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: 50% 18%;
+
+  border-radius: var(--gst-radius);
+  background: var(--c-veil-strong);
+  box-shadow: var(--gst-shadow);
+}
+
+.gst-person__photo--mono {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, var(--gst-navy), var(--gst-ink));
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 6vw, 2.5rem);
+  font-weight: 800;
+  color: var(--c-gold-soft);
+}
+
+.gst-person__name {
+  margin: var(--sp-3) 0 0;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--gst-navy);
+  overflow-wrap: break-word;
+}
+
+.gst-person__role {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--c-muted);
+}
+
+// ---------------------------------------------------------------------
+// 9 · Pentru fiecare vârstă
+// ---------------------------------------------------------------------
+
+.gst-ages {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from('sm') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from('lg') {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  > li {
+    display: flex;
+  }
+}
+
+.gst-age {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  width: 100%;
+  min-height: 4.75rem;
+  padding: var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius);
+  background: var(--c-surface);
+  color: inherit;
+  text-decoration: none;
+
+  @include motion-safe {
+    transition:
+      box-shadow var(--mo-fast) var(--ea-standard),
+      border-color var(--mo-fast) var(--ea-standard);
+  }
+
+  @at-root a#{&}:hover {
+    border-color: var(--c-hairline-strong);
+    box-shadow: var(--gst-shadow-lift);
+  }
+
+  @include focus-ring(2px);
+}
+
+// Los niños: no es un enlace, es lo que pasa en el culto. Tono navy y a
+// todo el ancho (encabeza la rejilla: los seis departamentos quedan 3 + 3).
+.gst-age--kids {
+  grid-column: 1 / -1;
+  background: var(--c-veil);
+  border-color: transparent;
+}
+
+.gst-age__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.8rem;
+  background: var(--c-gold-tint);
+  font-size: 1.35rem;
+  color: var(--c-gold-deep);
+
+  .gst-age--kids & {
+    background: var(--gst-navy);
+    color: var(--c-gold-soft);
+  }
+}
+
+.gst-age__text {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.gst-age__name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--gst-navy);
+}
+
+.gst-age__desc {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--c-muted);
+}
+
+.gst-age__go {
+  flex: none;
+  font-size: 1.1rem;
+  color: var(--c-faint);
+}
+
+// ---------------------------------------------------------------------
+// 10 · Ce urmează
+// ---------------------------------------------------------------------
+
+.gst-events {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius);
+  background: var(--c-surface);
+  box-shadow: var(--gst-shadow);
+}
+
+.gst-event {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+
+  & + & {
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  &.is-today {
+    background: var(--c-gold-tint);
+  }
+}
+
+.gst-event__date {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3.25rem;
+  padding: 0.35rem 0;
+  border-radius: var(--r-lg);
+  background: var(--c-veil-strong);
+  line-height: 1;
+
+  .is-today & {
+    background: var(--gst-navy);
+  }
+}
+
+.gst-event__day {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--gst-navy);
+
+  .is-today & {
+    color: #fff;
+  }
+}
+
+.gst-event__month {
+  margin-top: 0.15rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--c-gold-deep);
+
+  .is-today & {
+    color: var(--c-gold-soft);
+  }
+}
+
+.gst-event__text {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.gst-event__title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--c-text);
+  overflow-wrap: break-word;
+}
+
+.gst-event__meta {
+  font-size: 0.875rem;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+// ---------------------------------------------------------------------
+// 11 · Cum ajungi
+// ---------------------------------------------------------------------
+
+.gst-where {
+  display: grid;
+  gap: var(--sp-6);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    align-items: start;
+    gap: var(--sp-12);
+  }
+}
+
+.gst-where__address {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius);
+  background: var(--c-surface);
+
+  > app-icon {
+    flex: none;
+    font-size: 1.35rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+// El botón de copiar (componente compartido, 2 rem) crece aquí al objetivo
+// táctil: en esta página se usa con el pulgar.
+:host ::ng-deep .gst-where__address .copy {
+  width: var(--gst-tap);
+  height: var(--gst-tap);
+}
+
+.gst-where__lines {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gst-where__label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.gst-where__value {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--gst-navy);
+  overflow-wrap: break-word;
+}
+
+.gst-where__cta {
+  width: 100%;
+  margin-top: var(--sp-3);
+
+  @include from('sm') {
+    width: auto;
+  }
+}
+
+.gst-where__map {
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius-lg);
+  background: var(--c-veil);
+  box-shadow: var(--gst-shadow);
+  aspect-ratio: 4 / 3;
+
+  @include from('lg') {
+    aspect-ratio: 16 / 11;
+  }
+
+  iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
+// ---------------------------------------------------------------------
+// 12 · Întrebări frecvente
+// ---------------------------------------------------------------------
+
+// Escritorio: título a la izquierda (fijo al bajar), preguntas a la derecha.
+.gst-faq-sec {
+  @include from('lg') {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    align-items: start;
+    gap: var(--sp-12);
+
+    .gst-sec__head {
+      position: sticky;
+      top: calc(var(--nav-height) + var(--sp-6));
+      margin-bottom: 0;
+    }
+  }
+}
+
+.gst-faq {
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--gst-radius);
+  background: var(--c-surface);
+  box-shadow: var(--gst-shadow);
+}
+
+.gst-faq__item + .gst-faq__item {
+  border-top: 1px solid var(--c-hairline);
+}
+
+.gst-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: 3.5rem;
+  padding: var(--sp-3) var(--sp-5);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--gst-navy);
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(-3px);
+}
+
+.gst-faq__chev {
+  flex: none;
+  font-size: 1.15rem;
+  color: var(--c-gold-deep);
+
+  @include motion-safe {
+    transition: transform var(--mo-fast) var(--ea-standard);
+  }
+
+  .gst-faq__item[open] & {
+    transform: rotate(180deg);
+  }
+}
+
+.gst-faq__a {
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-5) var(--sp-5);
+
+  p {
+    max-width: 68ch;
+    margin: 0;
+    font-size: 0.9875rem;
+    line-height: 1.6;
+    color: var(--c-text);
+  }
+}
+
+.gst-faq__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+// ---------------------------------------------------------------------
+// 13 · Cierre
+// ---------------------------------------------------------------------
+
+.gst-close {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(80% 120% at 50% 0%, rgb(212 175 55 / 0.14), transparent 60%),
+    linear-gradient(180deg, var(--gst-navy), var(--gst-ink));
+  color: #fff;
+  text-align: center;
+}
+
+.gst-close__inner {
+  @include container(48rem);
+  padding-top: clamp(3rem, 8vw, 5rem);
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+}
+
+.gst-close__verse {
+  margin: 0;
+
+  blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.25rem, 3.6vw, 1.75rem);
+    font-style: italic;
+    line-height: 1.4;
+    color: rgb(255 255 255 / 0.94);
+    text-wrap: balance;
+  }
+
+  figcaption {
+    margin-top: var(--sp-3);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-gold-soft);
+  }
+}
+
+.gst-close__title {
+  margin: clamp(2rem, 5vw, 2.75rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.gst-close__when {
+  margin: var(--sp-2) 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 0.78);
+  font-variant-numeric: tabular-nums;
+}
+
+.gst-close__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+
+  .gst-btn {
+    flex: 1 1 9rem;
+    max-width: 14rem;
+  }
+}
+
+.gst-close__follow {
+  margin: var(--sp-8) 0 var(--sp-3);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.62);
+}
+
+.gst-close__socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gst-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--gst-tap);
+  padding: 0 1rem;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: var(--r-pill);
+  background: rgb(255 255 255 / 0.06);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+
+  app-social-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 0.14);
+  }
+
+  @include focus-ring(2px);
+}

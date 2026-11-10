@@ -112,11 +112,11 @@ export interface CountdownPrefs {
   /** Se muestra en la proyección (automática según el horario). */
   readonly enabled: boolean;
   /**
-   * Minutos antes del comienzo en que aparece, o `null` = **siempre**
-   * («Mereu», 04/10/2026): visible todo el día hasta el próximo comienzo,
-   * salvo mientras dura un culto (ver `ServiceCountdownService`).
+   * **Segundos** antes del comienzo en que aparece (09/11/2026), o `null` =
+   * **siempre** («Mereu», 04/10/2026): visible todo el día hasta el próximo
+   * comienzo, salvo mientras dura un culto (ver `ServiceCountdownService`).
    */
-  readonly leadMinutes: number | null;
+  readonly leadSeconds: number | null;
   /**
    * Hora de comienzo puesta a mano para un día (`HH:MM` + `YYYY-MM-DD`), que
    * manda sobre el horario: un culto que hoy empieza a otra hora, un evento
@@ -125,11 +125,18 @@ export interface CountdownPrefs {
   readonly manual: { readonly date: string; readonly time: string } | null;
 }
 
-/** Opciones de antelación que ofrece el panel (minutos). */
-export const COUNTDOWN_LEAD_OPTIONS: readonly number[] = [15, 30, 45, 60, 90];
+/**
+ * Opciones de antelación que ofrece el panel, en **segundos** (09/11/2026, a
+ * petición del usuario): la cuenta atrás es el aviso de que el culto empieza
+ * ya, no un reloj de toda la tarde. Hasta entonces eran minutos (15′ … 90′) y
+ * el panel los rotulaba con «′», que se leía como segundos; ahora los botones
+ * dicen la unidad («90s», «2m»). Cada opción tiene su nombre completo en
+ * `presenter.countdown_leads.<segundos>` (lector de pantalla y `title`).
+ */
+export const COUNTDOWN_LEAD_OPTIONS: readonly number[] = [15, 30, 45, 60, 90, 120, 300];
 
-/** Por defecto aparece 90 min antes (04/10/2026, a petición del usuario; antes 30). */
-const COUNTDOWN_DEFAULTS: CountdownPrefs = { enabled: true, leadMinutes: 90, manual: null };
+/** Por defecto aparece 90 s antes (09/11/2026; antes 90 min, y antes aún 30 min). */
+const COUNTDOWN_DEFAULTS: CountdownPrefs = { enabled: true, leadSeconds: 90, manual: null };
 
 const STORAGE_KEY = 'iglesia-redes.presentation.display';
 
@@ -205,10 +212,10 @@ export class PresentationDisplayService {
     this.update({ countdown: { ...this.prefs().countdown, enabled } });
   }
 
-  /** Antelación en minutos, o `null` para que se vea siempre. */
-  setCountdownLead(leadMinutes: number | null): void {
-    if (leadMinutes !== null && !COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)) return;
-    this.update({ countdown: { ...this.prefs().countdown, leadMinutes } });
+  /** Antelación en segundos, o `null` para que se vea siempre. */
+  setCountdownLead(leadSeconds: number | null): void {
+    if (leadSeconds !== null && !COUNTDOWN_LEAD_OPTIONS.includes(leadSeconds)) return;
+    this.update({ countdown: { ...this.prefs().countdown, leadSeconds } });
   }
 
   /** Hora de comienzo manual para hoy (`HH:MM`), o `null` para volver al horario. */
@@ -420,17 +427,22 @@ function readStoredPrefs(): DisplayPrefs {
 /** Cuenta atrás guardada, validada campo a campo (lo dudoso vuelve al defecto). */
 function readCountdown(value: unknown): CountdownPrefs {
   if (!value || typeof value !== 'object') return COUNTDOWN_DEFAULTS;
-  const { enabled, leadMinutes, manual } = value as Record<string, unknown>;
+  const stored = value as Record<string, unknown>;
+  const { enabled, manual } = stored;
   const { date, time } = (manual ?? {}) as Record<string, unknown>;
+  // Hasta el 09/11/2026 la clave era `leadMinutes`, con los mismos números
+  // (15 … 90) en minutos. Se leen como segundos, que es como se entendían en
+  // el panel: el botón elegido sigue siendo el mismo.
+  const lead = 'leadSeconds' in stored ? stored['leadSeconds'] : stored['leadMinutes'];
   return {
     enabled: enabled !== false,
     // `null` = siempre; un número fuera de las opciones vuelve al defecto.
-    leadMinutes:
-      leadMinutes === null
+    leadSeconds:
+      lead === null
         ? null
-        : typeof leadMinutes === 'number' && COUNTDOWN_LEAD_OPTIONS.includes(leadMinutes)
-          ? leadMinutes
-          : COUNTDOWN_DEFAULTS.leadMinutes,
+        : typeof lead === 'number' && COUNTDOWN_LEAD_OPTIONS.includes(lead)
+          ? lead
+          : COUNTDOWN_DEFAULTS.leadSeconds,
     manual:
       typeof date === 'string' && ISO_DATE.test(date) && typeof time === 'string' && HH_MM.test(time)
         ? { date, time }

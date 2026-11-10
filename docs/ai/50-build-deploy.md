@@ -85,6 +85,19 @@ router) → crea `.nojekyll` → publica en GitHub Pages.
 > Si añades rutas nuevas, el fallback `404.html` ya las cubre. No hace falta
 > `withHashLocation()`.
 
+**Páginas estáticas por ruta** (09/11/2026): tras el fallback,
+`node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser`
+escribe `<ruta>/index.html` para las rutas de `ROUTE_PAGES` (hoy `invitati`,
+destino del QR de bienvenida): copia de `index.html` con su título,
+descripción, Open Graph y `noindex`, sacados de `seo.<clave>` de `ro.json`.
+GitHub Pages las sirve con **200** (el resto de rutas siguen con el 404 del
+fallback). Sus tests (`scripts/*.test.mjs`, `node --test`) corren en
+`npm run check` (`test:scripts`), así que un fallo no llega a publicarse.
+
+> Compilar en local desde Git Bash: `--base-href /` se convierte en
+> `C:/Program Files/Git/` (conversión de rutas de MSYS). Usa
+> `MSYS_NO_PATHCONV=1` delante o PowerShell; el CI (Linux) no tiene el problema.
+
 ## Dominio — `elimarganda.com`
 
 Registrado en **IONOS** (contrato «IONOS Pack Dominio»); el DNS se gestiona

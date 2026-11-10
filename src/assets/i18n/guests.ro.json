@@ -1,0 +1,175 @@
+{
+  "guests": {
+    "hero": {
+      "eyebrow": "Prima ta vizită",
+      "title_1": "Bine ai venit",
+      "title_2": "acasă",
+      "lead": "Ne bucurăm că ești aici. Suntem o familie care se închină, slujește și crește împreună — și aici ai un loc și tu.",
+      "cta_next": "Când ne vedem",
+      "cta_directions": "Cum ajungi",
+      "image_alt": "Biserica Elim adunată la serviciu, în sala de închinare",
+      "lang_label": "Limba paginii"
+    },
+    "next": {
+      "aria": "Următorul serviciu",
+      "live": "Acum, în desfășurare",
+      "live_text": "Serviciul a început. Intră liniștit: ești binevenit.",
+      "today": "Azi",
+      "tomorrow": "Mâine",
+      "later": "Următorul serviciu",
+      "starts_in": "începe în {{time}}",
+      "also_today": "Tot azi",
+      "calendar": "Adaugă în calendar",
+      "calendar_title": "{{service}} · Biserica Elim",
+      "calendar_description": "Te așteptăm la Biserica Elim. Pagina pentru invitați: {{url}}",
+      "directions": "Cum ajungi"
+    },
+    "toc": "Pe această pagină",
+    "sections": {
+      "expect": {
+        "chip": "Ce te așteaptă",
+        "title": "Ce te așteaptă duminică",
+        "lead": "Pas cu pas, ca să știi de la început cum decurge serviciul."
+      },
+      "program": {
+        "chip": "Program",
+        "title": "Când ne adunăm",
+        "lead": "Toate serviciile săptămânii, zi cu zi."
+      },
+      "about": {
+        "chip": "Cine suntem",
+        "title": "Cine suntem"
+      },
+      "people": {
+        "chip": "Cine te primește",
+        "title": "Oamenii pe care îi vei cunoaște",
+        "lead": "Pastorii bisericii și cei care se ocupă de primirea oaspeților."
+      },
+      "ages": {
+        "chip": "Pentru fiecare",
+        "title": "Un loc pentru fiecare vârstă",
+        "lead": "Copii, tineri, muzică, misiune: în fiecare departament e loc și pentru tine."
+      },
+      "events": {
+        "title": "Ce urmează",
+        "lead": "Evenimentele apropiate. La toate ești binevenit.",
+        "all": "Toate evenimentele"
+      },
+      "directions": {
+        "chip": "Cum ajungi",
+        "title": "Cum ajungi la noi",
+        "lead": "Ne găsești în Arganda del Rey, lângă Madrid."
+      },
+      "faq": {
+        "chip": "Întrebări",
+        "title": "Întrebări frecvente",
+        "lead": "Ce ne întreabă de obicei cei care vin prima dată."
+      }
+    },
+    "first": {
+      "title": "Primii pași",
+      "lead": "Câteva lucruri simple, ca să rămânem în legătură.",
+      "whatsapp": {
+        "title": "Scrie-ne pe WhatsApp",
+        "text": "Spune-ne că ai fost la noi sau întreabă orice.",
+        "message": "Bună ziua! Vă scriu de pe pagina pentru invitați a Bisericii Elim. Aș vrea să vă cunosc mai bine."
+      },
+      "prayer": {
+        "title": "Cerere de rugăciune",
+        "text": "Spune-ne pentru ce să ne rugăm pentru tine.",
+        "message": "Bună ziua! Am o cerere de rugăciune: "
+      },
+      "contact": {
+        "title": "Salvează contactul",
+        "text": "Telefonul, e-mailul și adresa bisericii, în agenda ta.",
+        "note": "Biserica evanghelică penticostală din Arganda del Rey.",
+        "saved": "Contactul a fost descărcat. Deschide fișierul ca să-l adaugi în agendă."
+      },
+      "online": {
+        "title": "Urmărește online",
+        "text": "Serviciile de duminică, în direct pe YouTube."
+      }
+    },
+    "about": {
+      "years": "ani de istorie",
+      "cta_story": "Istoria noastră",
+      "cta_credo": "În ce credem"
+    },
+    "people": {
+      "all": "Toată echipa",
+      "photo": "Fotografie: {{name}}"
+    },
+    "ages": {
+      "open": "Vezi pagina: {{name}}"
+    },
+    "directions": {
+      "address": "Adresa",
+      "open_maps": "Deschide în Google Maps",
+      "copy": "Adresa",
+      "map_title": "Harta cu locația Bisericii Elim"
+    },
+    "faq": {
+      "language": {
+        "q": "În ce limbă sunt serviciile?",
+        "a": "În limba română. Versurile cântărilor se proiectează pe ecran, ca să le poți urma ușor. Biserica are și o echipă de traducere: dacă nu vorbești româna, scrie-ne înainte și îți spunem cum te putem ajuta."
+      },
+      "children": {
+        "q": "Pot veni cu copiii?",
+        "a": "Da. Copiii au program separat, pe vârste, în timpul mesajului: îi lași și îi iei la ieșire."
+      },
+      "communion": {
+        "q": "Ce este Cina Domnului? Trebuie să particip?",
+        "a": "Cina Domnului se ține în prima duminică a fiecărei luni, la serviciul de dimineață. Se împărtășesc credincioșii botezați; dacă ești în vizită, poți rămâne liniștit pe locul tău."
+      },
+      "online": {
+        "q": "Pot urmări serviciile de acasă?",
+        "a": "Da. Serviciile de duminică se transmit în direct pe canalul de YouTube al bisericii, iar transmisiunile rămân pe canal.",
+        "link": "Deschide canalul de YouTube"
+      },
+      "beliefs": {
+        "q": "Ce fel de biserică sunteți?",
+        "a": "O biserică evanghelică penticostală. Împărtășim Mărturisirea de credință a Cultului Creștin Penticostal: este ce credem și ce predicăm duminică de duminică.",
+        "link": "Citește Mărturisirea de credință"
+      },
+      "baptism": {
+        "q": "Vreau să mă botez. Ce fac?",
+        "a": "Vorbește cu pastorul bisericii: el îți explică pașii.",
+        "link": "Registrul botezurilor"
+      },
+      "talk": {
+        "q": "Cu cine pot vorbi dacă am o întrebare?",
+        "a": "Cu pastorul bisericii, {{name}}. Îl poți suna sau îi poți scrie pe WhatsApp — sau vino să-l cunoști duminică."
+      }
+    },
+    "closing": {
+      "title": "Te așteptăm",
+      "verse": "Mă bucur când mi se zice: „Haidem la Casa Domnului!”",
+      "verse_ref": "Psalmul 122:1",
+      "call": "Sună",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "follow": "Ne găsești și aici"
+    },
+    "qr": {
+      "eyebrow": "Pentru operator",
+      "title": "QR pentru invitați",
+      "lead": "Tipărește-l și pune-l la intrare, pe bănci sau pe masa de primire. Codul duce la pagina de bun venit, în limba aleasă aici.",
+      "format": "Format",
+      "poster": "Afiș A4",
+      "cards": "4 cartonașe A6",
+      "language": "Limba",
+      "print": "Tipărește",
+      "download": "Descarcă SVG",
+      "open": "Deschide pagina",
+      "hint": "La tipărire, alege hârtie A4, fără margini, și activează «Grafică de fundal» ca să iasă culorile.",
+      "preview": "Previzualizare",
+      "poster_eyebrow": "Bine ai venit!",
+      "poster_title": "Ești la prima vizită?",
+      "poster_text": "Scanează codul și află cine suntem, când ne adunăm și cum ne poți cunoaște.",
+      "poster_scan": "Deschide camera telefonului și îndreapt-o spre cod",
+      "card_title": "Bine ai venit!",
+      "card_text": "Ești la prima vizită? Scanează și cunoaște-ne.",
+      "when": "Duminica, la {{time}}"
+    }
+  }
+}

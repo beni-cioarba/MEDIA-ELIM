@@ -31,6 +31,7 @@ src/app/
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
     family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
+    guests.config.ts        ⭐ Invitați: anfitriones, departamentos, preguntas y anclas de `/invitati`
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
     talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
     departments.config.ts   ⭐ Departamente: estructura de cada uno + URL de ADM-TINERET (sólo en el pie)
@@ -73,6 +74,7 @@ src/app/
     home/                   Portada pública (hero, bienvenida, accesos, visita)
     nav-hub/                Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`)
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
+    guests/                 ⭐ Invitați: bienvenida fuera del menú (`/invitati`) + hoja del QR (`/invitati/qr`) — `33-guests.md`
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Índice del organigrama + `person-profile/` (perfil `/conducere/<id>`)
     announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección)
@@ -111,6 +113,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | Petición típica                                     | Fichero(s)                                              |
 | --------------------------------------------------- | ------------------------------------------------------- |
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
+| «Página para los que vienen por primera vez» · «QR de bienvenida» · «imprimir el QR» | `docs/ai/33-guests.md` → `/invitati`, `/invitati/qr`, `core/guests.config.ts` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
 | «Nuevo botez» · «candidatos al bautismo» · «fotos / directo de un botez» | `docs/ai/34-baptisms.md` → `core/baptisms.config.ts` + `scripts/import-baptism-photos.mjs` |
 | «Cambia la lista de enfermos / causas» | `docs/ai/37-prayer-causes.md` → `core/prayer-causes.config.ts` (+ `updatedOn`) |

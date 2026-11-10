@@ -71,6 +71,14 @@ Las **rutas del operador** (`/media/control`, `/media/ecran`) no cuelgan del
 ni pie, y no aparecen en `MAIN_NAV`. Cualquier herramienta interna nueva sigue
 ese patrón; una página pública, el de abajo.
 
+**Páginas públicas fuera del menú** (09/11/2026, `/invitati`): cuelgan del
+shell como cualquier página pero **no** entran en `MAIN_NAV`. Sin rastro en el
+menú no hay migaja, ninguna pestaña se enciende y el arrastre entre pestañas
+no actúa (`activeIndex < 0`). Se enlazan desde donde tenga sentido (aquí, una
+fila discreta del pie) y llevan `noindex`. Si van a circular en QR, se les
+genera página estática en el despliegue (`scripts/generate-route-pages.mjs`)
+para que respondan 200. Detalle en `33-guests.md`.
+
 Si la página admite un elemento con URL propia (como `/anunturi/:id`), se
 declara una segunda ruta con el **mismo** `loadComponent` y el componente lee
 el parámetro con `ActivatedRoute.paramMap` (patrón de `/media/:blockId`). El

@@ -45,6 +45,12 @@ jobs:
       - name: Add SPA fallback (404 -> index)
         run: cp dist/iglesia-redes/browser/index.html dist/iglesia-redes/browser/404.html
 
+      # Páginas estáticas por ruta (hoy `invitati/`, destino del QR de
+      # bienvenida): responden 200 en vez del 404 del fallback y llevan su
+      # propio título / Open Graph / noindex. Ver scripts/generate-route-pages.mjs.
+      - name: Route pages (200 + own meta)
+        run: node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser
+
       - name: Add .nojekyll
         run: touch dist/iglesia-redes/browser/.nojekyll
 

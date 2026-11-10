@@ -125,6 +125,15 @@
               {{ 'footer.schedule' | translate }}
             </a>
           </li>
+          <!-- Acceso discreto a «Invitați» (`/invitati`): la página no tiene
+               entrada en el menú; aquí, junto a «cómo venir», es donde la
+               busca quien piensa visitarnos (docs/ai/33-guests.md). -->
+          <li class="footer__datum">
+            <app-icon class="footer__datum-icon" name="hand-heart" />
+            <a class="footer__link" [routerLink]="links.guests">
+              {{ 'footer.guests' | translate }}
+            </a>
+          </li>
         </ul>
 
       </section>

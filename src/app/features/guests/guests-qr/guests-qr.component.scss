@@ -1,0 +1,487 @@
+// =====================================================================
+// Hoja imprimible del QR de «Invitați» (`/invitati/qr`).
+//
+// Hoja global (`ViewEncapsulation.None`) con prefijo `.qrp`: el SVG de
+// `qrcode` y las reglas de impresión tienen que alcanzar todo el documento.
+// La hoja se mide en **milímetros**: impresa sale exacta; en pantalla es la
+// misma hoja escalada (`--k`, lo calcula el componente).
+// =====================================================================
+@use 'ds' as *;
+
+app-guests-qr {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--c-bg-cool, #e9edf2);
+}
+
+.qrp {
+  --qrp-navy: #1a365d;
+  --qrp-ink: #0d1f35;
+  --qrp-gold: #d4af37;
+  --qrp-gold-deep: #8a6a17;
+
+  @include container(62rem);
+  padding-top: var(--sp-6);
+  padding-bottom: var(--sp-12);
+}
+
+// ---------------------------------------------------------------------
+// Controles
+// ---------------------------------------------------------------------
+
+.qrp-bar {
+  display: grid;
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-6);
+  padding: var(--sp-5);
+  border: 1px solid var(--c-hairline);
+  border-radius: 1rem;
+  background: var(--c-surface);
+  box-shadow: var(--e-2);
+
+  @include from('sm') {
+    padding: var(--sp-6);
+  }
+}
+
+.qrp-bar__eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.qrp-bar__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--c-primary);
+}
+
+.qrp-bar__lead {
+  max-width: 60ch;
+  margin: 0.4rem 0 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--c-muted);
+}
+
+.qrp-bar__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-4) var(--sp-6);
+}
+
+.qrp-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.qrp-field__label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.qrp-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 0.25rem;
+  border-radius: var(--r-pill);
+  background: var(--c-veil-strong);
+}
+
+.qrp-seg__btn {
+  min-height: max(44px, 2.75rem);
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+
+  @include focus-ring(2px);
+}
+
+.qrp-bar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-left: auto;
+
+  @include until('sm') {
+    margin-left: 0;
+    width: 100%;
+
+    .qrp-btn {
+      flex: 1 1 10rem;
+    }
+  }
+}
+
+.qrp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: max(44px, 2.75rem);
+  padding: 0 1.1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-decoration: none;
+  cursor: pointer;
+
+  app-icon {
+    font-size: 1.05rem;
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  @include focus-ring(2px);
+}
+
+.qrp-btn--primary {
+  border-color: transparent;
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+
+  &:hover {
+    border-color: transparent;
+    background: var(--c-gold-soft);
+  }
+}
+
+.qrp-bar__hint {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--c-muted);
+
+  app-icon {
+    flex: none;
+    margin-top: 0.1rem;
+    color: var(--c-gold-deep);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Vista previa: la hoja de 210 mm escalada al ancho disponible
+// ---------------------------------------------------------------------
+
+.qrp-stage {
+  --k: 1;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.qrp-sheet {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(13 31 53 / 0.08), 0 24px 48px -20px rgb(13 31 53 / 0.35);
+  color: var(--qrp-ink);
+  transform: translateX(-50%) scale(var(--k));
+  transform-origin: top center;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+// El SVG del código ocupa todo su marco.
+.qrp-qr {
+  qrcode,
+  qrcode > div {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Afiche A4
+// ---------------------------------------------------------------------
+
+.qrp-poster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 20mm 18mm 0;
+  text-align: center;
+  background:
+    radial-gradient(120mm 90mm at 50% 0%, rgb(212 175 55 / 0.12), transparent 70%),
+    #fff;
+}
+
+.qrp-poster__brand {
+  margin-bottom: 9mm;
+}
+
+.qrp-poster__eyebrow {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 4.2mm;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--qrp-gold-deep);
+}
+
+.qrp-poster__title {
+  margin: 3mm 0 0;
+  font-family: var(--font-display);
+  font-size: 15mm;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--qrp-navy);
+}
+
+.qrp-poster__text {
+  max-width: 150mm;
+  margin: 5mm 0 0;
+  font-family: var(--font-sans);
+  font-size: 5.6mm;
+  line-height: 1.45;
+  color: #2d3748;
+}
+
+.qrp-poster__code {
+  width: 96mm;
+  height: 96mm;
+  margin-top: 11mm;
+  padding: 6mm;
+  box-sizing: content-box;
+  border: 1.2mm solid var(--qrp-navy);
+  border-radius: 7mm;
+  background: #fff;
+}
+
+.qrp-poster__url {
+  margin: 7mm 0 0;
+  font-family: var(--font-display);
+  font-size: 8.4mm;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--qrp-navy);
+}
+
+.qrp-poster__scan {
+  display: inline-flex;
+  align-items: center;
+  gap: 2mm;
+  margin: 3mm 0 0;
+  font-family: var(--font-sans);
+  font-size: 4.2mm;
+  color: #4a5568;
+
+  app-icon {
+    font-size: 5mm;
+    color: var(--qrp-gold-deep);
+  }
+}
+
+.qrp-poster__when {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.2mm;
+  margin: 9mm 0 0;
+  padding: 2.6mm 6mm;
+  border: 0.5mm solid var(--qrp-gold);
+  border-radius: 99mm;
+  font-family: var(--font-display);
+  font-size: 5.4mm;
+  font-weight: 800;
+  color: var(--qrp-navy);
+
+  app-icon {
+    font-size: 5.6mm;
+    color: var(--qrp-gold-deep);
+  }
+}
+
+.qrp-poster__foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5mm;
+  width: calc(100% + 36mm);
+  margin-top: auto;
+  padding: 7mm 12mm;
+  background: var(--qrp-navy);
+  font-family: var(--font-sans);
+  font-size: 4.2mm;
+  font-weight: 600;
+  color: #fff;
+
+  app-icon {
+    flex: none;
+    font-size: 5mm;
+    color: var(--qrp-gold);
+  }
+}
+
+// ---------------------------------------------------------------------
+// 4 tarjetas A6 (105 × 148,5 mm) con línea de corte
+// ---------------------------------------------------------------------
+
+.qrp-sheet.is-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.qrp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10mm 9mm 8mm;
+  text-align: center;
+  box-sizing: border-box;
+  background:
+    radial-gradient(80mm 50mm at 50% 0%, rgb(212 175 55 / 0.12), transparent 70%),
+    #fff;
+
+  // Líneas de corte: discontinuas, gris claro (se ven al cortar, no compiten).
+  &:nth-child(odd) {
+    border-right: 0.3mm dashed #b8c2cc;
+  }
+
+  &:nth-child(-n + 2) {
+    border-bottom: 0.3mm dashed #b8c2cc;
+  }
+}
+
+.qrp-card__brand {
+  margin-bottom: 5mm;
+}
+
+.qrp-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 8mm;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--qrp-navy);
+}
+
+.qrp-card__text {
+  max-width: 80mm;
+  margin: 2mm 0 0;
+  font-family: var(--font-sans);
+  font-size: 4mm;
+  line-height: 1.4;
+  color: #2d3748;
+}
+
+.qrp-card__code {
+  width: 52mm;
+  height: 52mm;
+  margin-top: 7mm;
+  padding: 3.5mm;
+  box-sizing: content-box;
+  border: 0.8mm solid var(--qrp-navy);
+  border-radius: 4.5mm;
+}
+
+.qrp-card__when {
+  margin: 6mm 0 0;
+  font-family: var(--font-display);
+  font-size: 4.4mm;
+  font-weight: 800;
+  color: var(--qrp-gold-deep);
+}
+
+.qrp-card__url {
+  margin: auto 0 0;
+  padding-top: 4mm;
+  font-family: var(--font-display);
+  font-size: 4.6mm;
+  font-weight: 800;
+  color: var(--qrp-navy);
+}
+
+// ---------------------------------------------------------------------
+// Impresión: sólo la hoja, a tamaño real, sin márgenes
+// ---------------------------------------------------------------------
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  app-guests-qr {
+    min-height: 0;
+    background: #fff;
+  }
+
+  .qrp {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .qrp-bar {
+    display: none !important;
+  }
+
+  .qrp-stage {
+    height: auto !important;
+    overflow: visible;
+  }
+
+  .qrp-sheet {
+    position: static;
+    // Medio milímetro menos que la página: el redondeo de 297 mm a píxeles
+    // (1122,52 px) bastaba para que el navegador abriera una segunda hoja
+    // en blanco. Nadie ve 0,5 mm en el pie de un A4.
+    height: 296.5mm;
+    box-shadow: none;
+    transform: none;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+}

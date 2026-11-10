@@ -61,37 +61,10 @@ export interface PersonStory {
 
 /** Quién tiene perfil propio (clave) y su relato (`null` = aún sin biografía). */
 export const PERSON_PROFILES: Partial<Record<PersonId, PersonStory | null>> = {
-  // MAQUETA (lorem ipsum): muestra de un perfil con biografía completa.
-  // Sustituir por el texto real en cuanto lo entregue.
-  'pavel-negrusier': {
-    summary:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus, posuere velit aliquet.',
-    bio: [
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus, posuere velit aliquet. Donec ullamcorper nulla non metus auctor fringilla, vestibulum id ligula porta felis euismod semper.',
-      'Curabitur blandit tempus porttitor. Maecenas faucibus mollis interdum. Nullam quis risus eget urna mollis ornare vel eu leo. Cras mattis consectetur purus sit amet fermentum, aenean lacinia bibendum nulla sed consectetur.',
-      'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Sed posuere consectetur est at lobortis.',
-    ],
-    sections: [
-      {
-        title: 'Lorem ipsum',
-        body: 'Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
-      },
-      {
-        title: 'Dolor sit amet',
-        body: 'Etiam porta sem malesuada magna mollis euismod. Aenean eu leo quam, pellentesque ornare sem lacinia quam venenatis vestibulum.',
-      },
-      {
-        title: 'Consectetur',
-        body: 'Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.',
-      },
-      {
-        title: 'Adipiscing elit',
-        body: 'Nulla vitae elit libero, a pharetra augue. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.',
-      },
-    ],
-    verse: { text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.', ref: 'Lorem 1:1' },
-    since: 2000,
-  },
+  // Sin biografía hasta que la entregue: la maqueta de lorem ipsum que hubo
+  // aquí (07/10/2026) se retiró el 10/11/2026, a petición del usuario. La
+  // página se arma con lo real (cargos, dónde sirve, con quién).
+  'pavel-negrusier': null,
   'grigore-tomoiaga': null,
   'gabriel-daniel-cifor': null,
 };

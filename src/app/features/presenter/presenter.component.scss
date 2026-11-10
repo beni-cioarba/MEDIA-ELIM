@@ -348,6 +348,18 @@ button:disabled {
   }
 }
 
+/* `.mini` como enlace (abre otra pestaña): mismo aspecto que el botón. */
+a.mini {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+
+  &.mini--go {
+    color: var(--gold-2);
+  }
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -573,7 +585,7 @@ button:disabled {
 
   // Rótulo encima y botones debajo, repartidos a lo ancho: para filas con
   // más opciones de las que caben junto al rótulo (la antelación de la
-  // cuenta atrás: 15′ … 90′ + «Mereu»).
+  // cuenta atrás: 15s … 90s, 2m, 5m + «Mereu»).
   &--stacked {
     flex-wrap: wrap;
     row-gap: 4px;
@@ -587,6 +599,27 @@ button:disabled {
     }
   }
 
+  // Antelación de la cuenta atrás (15s … 5m + «Mereu»): rejilla de celdas
+  // iguales, no `flex`, que con ocho botones partía la fila en la columna
+  // estrecha del panel (ventana de 1280 px: seis botones y dos estirados al
+  // doble). Estrecha: 4 por fila. Con sitio, una fila (`@container
+  // seg-options`, debajo).
+  &--options {
+    container: seg-options / inline-size;
+  }
+
+  &__options {
+    display: grid;
+    flex: 1 0 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px 3px;
+
+    .seg__btn {
+      min-width: 0;
+      padding: 0 4px;
+    }
+  }
+
   &--inner {
     padding: 0 8px 4px 28px;
   }
@@ -596,6 +629,16 @@ button:disabled {
     border-color: var(--gold);
     background: var(--gold-a);
     color: var(--gold-2);
+  }
+}
+
+// Sitio para todas las antelaciones (≥ 31 px cada una): una sola fila, como
+// en la columna ancha del panel a 1920 px. Celdas iguales; «Mereu» /
+// «Siempre» nunca por debajo de su texto (`max-content`), y si no cabe, la
+// diferencia la pagan las demás a partes iguales.
+@container seg-options (min-width: 320px) {
+  .seg__options {
+    grid-template-columns: repeat(var(--n, 7), minmax(0, 1fr)) minmax(max-content, 1fr);
   }
 }
 

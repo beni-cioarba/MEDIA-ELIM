@@ -69,6 +69,10 @@
     "open_control": "Deschide panoul de control al proiecției"
   },
   "presenter": {
+    "guests_title": "Invitați",
+    "guests_text": "Pagina de bun venit pentru cei care vin prima dată. Nu apare în meniu: se deschide doar cu codul QR sau cu adresa.",
+    "guests_open": "Deschide pagina",
+    "guests_qr": "QR de tipărit",
     "lang_aria": "Limba panoului și a proiecției",
     "title": "Panou de control",
     "subtitle": "Proiecție",
@@ -151,6 +155,15 @@
     "countdown_from": "Apare la {{time}}",
     "countdown_none": "Azi nu mai sunt servicii în program. Poți pune o oră manual.",
     "countdown_lead": "Arată înainte",
+    "countdown_leads": {
+      "15": "15 secunde înainte",
+      "30": "30 de secunde înainte",
+      "45": "45 de secunde înainte",
+      "60": "60 de secunde înainte",
+      "90": "90 de secunde înainte",
+      "120": "2 minute înainte",
+      "300": "5 minute înainte"
+    },
     "countdown_manual_label": "Oră manuală (azi)",
     "countdown_set": "Setează",
     "countdown_clear": "Șterge",
@@ -662,6 +675,7 @@
     "copied": "Copiat!"
   },
   "footer": {
+    "guests": "Ești la prima vizită?",
     "church": "Biserica ELIM Arganda",
     "rights": "Toate drepturile rezervate.",
     "tools": "Instrumente",
@@ -930,6 +944,14 @@
     "baptisms_count": "{{count}} botezați"
   },
   "seo": {
+    "guests": {
+      "title": "Bine ai venit",
+      "description": "Ești la prima vizită la Biserica Elim din Arganda del Rey? Află ce te așteaptă duminică, când ne adunăm și cum ajungi la noi."
+    },
+    "guests_qr": {
+      "title": "QR pentru invitați",
+      "description": "Codul QR de tipărit care duce la pagina de bun venit a Bisericii Elim."
+    },
     "home": {
       "title": "Acasă",
       "description": "Biserica Elim din Arganda del Rey: program, evenimente, transmisiuni în direct și rețele sociale."
@@ -1020,7 +1042,7 @@
       "next": "Fotografia următoare",
       "program_aria": "Vezi programul săptămânal",
       "slides": {
-        "worship": "Seară de colinde",
+        "congregation": "Biserica adunată",
         "baptism": "Botez",
         "baptism_candidates": "Candidații la botez",
         "children": "Concertul copiilor",

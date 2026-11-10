@@ -1,0 +1,175 @@
+{
+  "guests": {
+    "hero": {
+      "eyebrow": "Tu primera visita",
+      "title_1": "Bienvenido",
+      "title_2": "a casa",
+      "lead": "Nos alegra que estés aquí. Somos una familia que adora, sirve y crece unida, y aquí también hay un sitio para ti.",
+      "cta_next": "Cuándo nos vemos",
+      "cta_directions": "Cómo llegar",
+      "image_alt": "La Iglesia Elim reunida en el culto, en el templo",
+      "lang_label": "Idioma de la página"
+    },
+    "next": {
+      "aria": "Próximo culto",
+      "live": "Ahora, en curso",
+      "live_text": "El culto ya ha empezado. Entra con tranquilidad: eres bienvenido.",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "later": "Próximo culto",
+      "starts_in": "empieza en {{time}}",
+      "also_today": "También hoy",
+      "calendar": "Añadir al calendario",
+      "calendar_title": "{{service}} · Iglesia Elim",
+      "calendar_description": "Te esperamos en la Iglesia Elim. Página para invitados: {{url}}",
+      "directions": "Cómo llegar"
+    },
+    "toc": "En esta página",
+    "sections": {
+      "expect": {
+        "chip": "Qué esperar",
+        "title": "Qué te espera el domingo",
+        "lead": "Paso a paso, para que sepas desde el principio cómo es el culto."
+      },
+      "program": {
+        "chip": "Horario",
+        "title": "Cuándo nos reunimos",
+        "lead": "Todos los cultos de la semana, día a día."
+      },
+      "about": {
+        "chip": "Quiénes somos",
+        "title": "Quiénes somos"
+      },
+      "people": {
+        "chip": "Quién te recibe",
+        "title": "Las personas que vas a conocer",
+        "lead": "Los pastores de la iglesia y quienes se encargan de recibir a los invitados."
+      },
+      "ages": {
+        "chip": "Para cada uno",
+        "title": "Un sitio para cada edad",
+        "lead": "Niños, jóvenes, música, misión: en cada departamento también hay sitio para ti."
+      },
+      "events": {
+        "title": "Lo que viene",
+        "lead": "Los próximos eventos. En todos eres bienvenido.",
+        "all": "Todos los eventos"
+      },
+      "directions": {
+        "chip": "Cómo llegar",
+        "title": "Cómo llegar",
+        "lead": "Estamos en Arganda del Rey, junto a Madrid."
+      },
+      "faq": {
+        "chip": "Preguntas",
+        "title": "Preguntas frecuentes",
+        "lead": "Lo que suelen preguntarnos quienes vienen por primera vez."
+      }
+    },
+    "first": {
+      "title": "Primeros pasos",
+      "lead": "Unas cosas sencillas para seguir en contacto.",
+      "whatsapp": {
+        "title": "Escríbenos por WhatsApp",
+        "text": "Cuéntanos que has venido o pregúntanos lo que quieras.",
+        "message": "¡Hola! Os escribo desde la página para invitados de la Iglesia Elim. Me gustaría conoceros mejor."
+      },
+      "prayer": {
+        "title": "Petición de oración",
+        "text": "Dinos por qué podemos orar por ti.",
+        "message": "¡Hola! Tengo una petición de oración: "
+      },
+      "contact": {
+        "title": "Guarda el contacto",
+        "text": "El teléfono, el correo y la dirección de la iglesia, en tu agenda.",
+        "note": "Iglesia evangélica pentecostal de Arganda del Rey.",
+        "saved": "Se ha descargado el contacto. Abre el archivo para añadirlo a tu agenda."
+      },
+      "online": {
+        "title": "Síguenos en línea",
+        "text": "Los cultos del domingo, en directo en YouTube."
+      }
+    },
+    "about": {
+      "years": "años de historia",
+      "cta_story": "Nuestra historia",
+      "cta_credo": "En qué creemos"
+    },
+    "people": {
+      "all": "Todo el equipo",
+      "photo": "Foto: {{name}}"
+    },
+    "ages": {
+      "open": "Ver la página: {{name}}"
+    },
+    "directions": {
+      "address": "Dirección",
+      "open_maps": "Abrir en Google Maps",
+      "copy": "La dirección",
+      "map_title": "Mapa con la ubicación de la Iglesia Elim"
+    },
+    "faq": {
+      "language": {
+        "q": "¿En qué idioma son los cultos?",
+        "a": "En rumano. La letra de los cantos se proyecta en la pantalla para que puedas seguirla con facilidad. La iglesia tiene además un equipo de traducción: si no hablas rumano, escríbenos antes y te contamos cómo podemos ayudarte."
+      },
+      "children": {
+        "q": "¿Puedo venir con mis hijos?",
+        "a": "Sí. Los niños tienen programa aparte, por edades, durante el mensaje: los dejas y los recoges a la salida."
+      },
+      "communion": {
+        "q": "¿Qué es la Cena del Señor? ¿Tengo que participar?",
+        "a": "La Cena del Señor se celebra el primer domingo de cada mes, en el culto de la mañana. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
+      },
+      "online": {
+        "q": "¿Puedo seguir los cultos desde casa?",
+        "a": "Sí. Los cultos del domingo se emiten en directo en el canal de YouTube de la iglesia, y las emisiones se quedan en el canal.",
+        "link": "Abrir el canal de YouTube"
+      },
+      "beliefs": {
+        "q": "¿Qué tipo de iglesia sois?",
+        "a": "Una iglesia evangélica pentecostal. Compartimos la Declaración de fe del Culto Cristiano Pentecostal: es lo que creemos y lo que se predica cada domingo.",
+        "link": "Leer la Declaración de fe"
+      },
+      "baptism": {
+        "q": "Quiero bautizarme. ¿Qué hago?",
+        "a": "Habla con el pastor de la iglesia: él te explica los pasos.",
+        "link": "Registro de bautismos"
+      },
+      "talk": {
+        "q": "¿Con quién puedo hablar si tengo una pregunta?",
+        "a": "Con el pastor de la iglesia, {{name}}. Puedes llamarle o escribirle por WhatsApp, o venir a conocerle el domingo."
+      }
+    },
+    "closing": {
+      "title": "Te esperamos",
+      "verse": "Yo me alegré con los que me decían: A la casa de Jehová iremos.",
+      "verse_ref": "Salmo 122:1",
+      "call": "Llamar",
+      "whatsapp": "WhatsApp",
+      "email": "Correo",
+      "follow": "También nos encuentras aquí"
+    },
+    "qr": {
+      "eyebrow": "Para el operador",
+      "title": "QR para invitados",
+      "lead": "Imprímelo y ponlo en la entrada, en los bancos o en la mesa de acogida. El código lleva a la página de bienvenida, en el idioma que elijas aquí.",
+      "format": "Formato",
+      "poster": "Cartel A4",
+      "cards": "4 tarjetas A6",
+      "language": "Idioma",
+      "print": "Imprimir",
+      "download": "Descargar SVG",
+      "open": "Abrir la página",
+      "hint": "Al imprimir, elige papel A4, sin márgenes, y activa «Gráficos de fondo» para que salgan los colores.",
+      "preview": "Vista previa",
+      "poster_eyebrow": "¡Bienvenido!",
+      "poster_title": "¿Es tu primera visita?",
+      "poster_text": "Escanea el código y descubre quiénes somos, cuándo nos reunimos y cómo conocernos.",
+      "poster_scan": "Abre la cámara del móvil y apunta al código",
+      "card_title": "¡Bienvenido!",
+      "card_text": "¿Es tu primera visita? Escanea y conócenos.",
+      "when": "Los domingos, a las {{time}}"
+    }
+  }
+}

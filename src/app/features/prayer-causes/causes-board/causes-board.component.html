@@ -1,14 +1,16 @@
 <!--
-  Sólo tipografía (sin iconos, viñetas, contadores ni cajas). Tres piezas:
+  Sólo tipografía (sin iconos, viñetas ni contadores). La misma estructura en
+  la web y en la proyección (09/11/2026): columna de nombres + columna lateral.
     · Cabecera: el título (en la web lo pone la página; aquí queda oculto).
-    · Por nombre: epígrafe en versalitas y los nombres; cada causa ocupa tantas
-      columnas como pidan sus nombres (`--cols`).
-    · Por intención: título + intención, en columnas iguales (`--n`).
+    · Por nombre: epígrafe en versalitas y los nombres. Las columnas salen de
+      los datos: `--name-ch` (letras del nombre más largo) en la web y
+      `--cols` (1-2) en la proyección.
+    · Por intención: la columna lateral, título + intención por fila.
   `appFitToBox` va en la sección y mide `.causes__inner`: una sola escala para
   todo, así la jerarquía nunca cambia entre zonas.
 -->
 <section class="causes" aria-labelledby="causes-title" appFitToBox [appFitToBoxMax]="1.4">
-  <div class="causes__inner">
+  <div class="causes__inner" [class.causes__inner--solo]="!causes.general.length">
     <header class="causes__head" [class.u-sr-only]="!fullscreen()">
       <h2 id="causes-title" class="causes__title">{{ 'prayer_causes.title' | translate }}</h2>
     </header>
@@ -18,8 +20,8 @@
       @for (cause of causes.named; track cause.id) {
         <section
           class="cause cause--named"
-          [class.cause--many]="cause.people.length > 3"
-          [style.--cols]="cause.people.length > 6 ? 3 : cause.people.length > 3 ? 2 : 1"
+          [style.--cols]="cause.columns"
+          [style.--name-ch]="cause.longest"
           [attr.id]="cause.id"
           [attr.aria-labelledby]="cause.id + '-title'"
         >
@@ -35,7 +37,7 @@
 
     <!-- 2 · Por intención -->
     @if (causes.general.length > 0) {
-      <ul class="causes__general" role="list" [style.--n]="causes.general.length">
+      <ul class="causes__general" role="list">
         @for (cause of causes.general; track cause.id) {
           <li class="cause cause--general" [attr.id]="cause.id">
             <span class="cause__title">{{ cause.title }}</span>

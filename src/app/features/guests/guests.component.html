@@ -1,0 +1,543 @@
+<!-- ═════════ Portada: la iglesia reunida + bienvenida ═════════ -->
+<header class="gst-hero">
+  <img
+    class="gst-hero__img"
+    [src]="heroImage.src"
+    [srcset]="heroImage.srcset"
+    sizes="100vw"
+    [alt]="'guests.hero.image_alt' | translate"
+    width="1600"
+    height="1066"
+    fetchpriority="high"
+    decoding="async"
+  />
+  <div class="gst-hero__veil" aria-hidden="true"></div>
+
+  <!-- Idioma visible en la portada: quien no lee rumano lo encuentra aquí,
+       no en el selector pequeño de la cabecera. -->
+  <div class="gst-lang" role="group" [attr.aria-label]="'guests.hero.lang_label' | translate">
+    @for (lang of languages; track lang.code) {
+      <button
+        type="button"
+        class="gst-lang__btn"
+        [attr.lang]="lang.code"
+        [attr.aria-pressed]="language.current() === lang.code"
+        (click)="setLanguage(lang.code)"
+      >
+        {{ lang.name }}
+      </button>
+    }
+  </div>
+
+  <div class="gst-hero__inner">
+    <div class="gst-hero__content">
+      <p class="gst-hero__eyebrow">
+        <span class="gst-hero__dot" aria-hidden="true"></span>
+        {{ 'guests.hero.eyebrow' | translate }}
+      </p>
+      <h1 class="gst-hero__title">
+        {{ 'guests.hero.title_1' | translate }}
+        <em class="gst-hero__accent">{{ 'guests.hero.title_2' | translate }}</em>
+      </h1>
+      <p class="gst-hero__lead">{{ 'guests.hero.lead' | translate }}</p>
+      <div class="gst-hero__ctas">
+        <a class="gst-btn gst-btn--gold" [attr.href]="pagePath + '#gst-next'" (click)="goTo($event, 'gst-next')">
+          <app-icon name="clock" />
+          {{ 'guests.hero.cta_next' | translate }}
+        </a>
+        <a
+          class="gst-btn gst-btn--glass"
+          [href]="config.location.mapsShareUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <app-icon name="map-pin" />
+          {{ 'guests.hero.cta_directions' | translate }}
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="gst">
+  <!-- ═════════ Próximo culto (flota sobre la portada) ═════════ -->
+  @if (next(); as n) {
+    <section
+      class="gst-next"
+      id="gst-next"
+      tabindex="-1"
+      [class.is-live]="nextState() === 'live'"
+      [class.has-today]="todayEvents().length > 0"
+      [attr.aria-label]="'guests.next.aria' | translate"
+    >
+      <div class="gst-next__when">
+        <p class="gst-next__status">
+          <span class="gst-next__dot" aria-hidden="true"></span>
+          @switch (nextState()) {
+            @case ('live') { {{ 'guests.next.live' | translate }} }
+            @case ('today') { {{ 'guests.next.today' | translate }} }
+            @case ('tomorrow') { {{ 'guests.next.tomorrow' | translate }} }
+            @default { {{ 'guests.next.later' | translate }} }
+          }
+        </p>
+        <p class="gst-next__time">
+          @if (nextState() === 'later') {
+            <span class="gst-next__day">{{ weekday(n.iso) }}</span>
+          }
+          <time [attr.datetime]="n.iso + 'T' + n.time">{{ n.time }}</time>
+        </p>
+        <p class="gst-next__title">{{ n.service.title }}</p>
+        @if (nextState() === 'live') {
+          <p class="gst-next__note">{{ 'guests.next.live_text' | translate }}</p>
+        } @else if (nextState() === 'today') {
+          <p class="gst-next__note">{{ 'guests.next.starts_in' | translate: { time: nextIn() } }}</p>
+        }
+        <!-- Si lo próximo no es el domingo, también el domingo: es el culto
+             al que se invita a quien viene por primera vez. -->
+        @if (sunday(); as sun) {
+          @if (n.day !== 0) {
+            <p class="gst-next__sunday">
+              <span class="gst-next__sunday-label">{{ sun.dayName }}</span>
+              <span class="gst-next__sunday-time">{{ sun.time }}</span>
+              <span class="gst-next__sunday-title">{{ sun.title }}</span>
+            </p>
+          }
+        }
+      </div>
+
+      @if (todayEvents().length) {
+        <div class="gst-next__today">
+          <p class="gst-next__label">{{ 'guests.next.also_today' | translate }}</p>
+          <ul class="gst-next__events" role="list">
+            @for (ev of todayEvents(); track ev.id) {
+              <li>
+                @if (ev.time) {
+                  <span class="gst-next__ev-time">{{ ev.time }}</span>
+                }
+                {{ ev.title }}
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      <div class="gst-next__actions">
+        <button type="button" class="gst-btn gst-btn--navy" (click)="addToCalendar()">
+          <app-icon name="calendar" />
+          {{ 'guests.next.calendar' | translate }}
+        </button>
+        <a
+          class="gst-btn gst-btn--line"
+          [href]="config.location.mapsShareUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <app-icon name="map-pin" />
+          {{ 'guests.next.directions' | translate }}
+        </a>
+      </div>
+    </section>
+  }
+
+  <!-- ═════════ Índice de la página ═════════ -->
+  <nav class="gst-toc" [attr.aria-label]="'guests.toc' | translate" data-no-swipe>
+    <ul class="gst-toc__list" role="list">
+      @for (section of sections; track section.id) {
+        <li>
+          <a
+            class="gst-toc__chip"
+            [attr.href]="pagePath + '#gst-' + section.id"
+            (click)="goTo($event, 'gst-' + section.id)"
+          >
+            <app-icon [name]="section.icon" />
+            {{ 'guests.sections.' + section.id + '.chip' | translate }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- ═════════ Primii pași ═════════ -->
+  <section class="gst-sec gst-first" aria-labelledby="gst-first-title">
+    <div class="gst-sec__head">
+      <h2 class="gst-sec__title" id="gst-first-title">{{ 'guests.first.title' | translate }}</h2>
+      <p class="gst-sec__lead">{{ 'guests.first.lead' | translate }}</p>
+    </div>
+    <ul class="gst-first__grid" role="list">
+      @if (whatsappLink('guests.first.whatsapp.message' | translate); as wa) {
+        <li>
+          <a class="gst-action gst-action--whatsapp" [href]="wa" target="_blank" rel="noopener noreferrer">
+            <span class="gst-action__icon"><app-icon name="whatsapp" /></span>
+            <span class="gst-action__text">
+              <span class="gst-action__title">{{ 'guests.first.whatsapp.title' | translate }}</span>
+              <span class="gst-action__desc">{{ 'guests.first.whatsapp.text' | translate }}</span>
+            </span>
+            <app-icon class="gst-action__go" name="external" />
+          </a>
+        </li>
+      }
+      @if (whatsappLink('guests.first.prayer.message' | translate); as wa) {
+        <li>
+          <a class="gst-action" [href]="wa" target="_blank" rel="noopener noreferrer">
+            <span class="gst-action__icon"><app-icon name="pray" /></span>
+            <span class="gst-action__text">
+              <span class="gst-action__title">{{ 'guests.first.prayer.title' | translate }}</span>
+              <span class="gst-action__desc">{{ 'guests.first.prayer.text' | translate }}</span>
+            </span>
+            <app-icon class="gst-action__go" name="external" />
+          </a>
+        </li>
+      }
+      <li>
+        <button type="button" class="gst-action" (click)="saveContact()">
+          <span class="gst-action__icon"><app-icon name="phone" /></span>
+          <span class="gst-action__text">
+            <span class="gst-action__title">{{ 'guests.first.contact.title' | translate }}</span>
+            <span class="gst-action__desc">{{ 'guests.first.contact.text' | translate }}</span>
+          </span>
+          <app-icon class="gst-action__go" name="download" />
+        </button>
+      </li>
+      <li>
+        <a class="gst-action" [href]="config.youtubeLiveUrl" target="_blank" rel="noopener noreferrer">
+          <span class="gst-action__icon"><app-icon name="play" /></span>
+          <span class="gst-action__text">
+            <span class="gst-action__title">{{ 'guests.first.online.title' | translate }}</span>
+            <span class="gst-action__desc">{{ 'guests.first.online.text' | translate }}</span>
+          </span>
+          <app-icon class="gst-action__go" name="external" />
+        </a>
+      </li>
+    </ul>
+    <p class="gst-first__saved" role="status">
+      @if (contactSaved()) {
+        <app-icon name="check" />
+        {{ 'guests.first.contact.saved' | translate }}
+      }
+    </p>
+  </section>
+
+  <!-- ═════════ Ce te așteaptă ═════════ -->
+  <section class="gst-sec" id="gst-expect" tabindex="-1" aria-labelledby="gst-expect-title">
+    <div class="gst-sec__head">
+      <p class="gst-sec__eyebrow">{{ 'guests.sections.expect.chip' | translate }}</p>
+      <h2 class="gst-sec__title" id="gst-expect-title">{{ 'guests.sections.expect.title' | translate }}</h2>
+      <p class="gst-sec__lead">{{ 'guests.sections.expect.lead' | translate }}</p>
+    </div>
+    <ol class="gst-steps" role="list">
+      @for (step of steps; track step.id; let i = $index) {
+        <li class="gst-step">
+          <span class="gst-step__num" aria-hidden="true">{{ i + 1 }}</span>
+          <span class="gst-step__icon" aria-hidden="true"><app-icon [name]="step.icon" /></span>
+          <h3 class="gst-step__title">
+            <span class="u-sr-only">{{ 'about.visit_step' | translate: { n: i + 1 } }}. </span>
+            {{ 'about.visit.items.' + step.id + '.title' | translate }}
+          </h3>
+          <p class="gst-step__text">{{ 'about.visit.items.' + step.id + '.body' | translate }}</p>
+        </li>
+      }
+    </ol>
+    <p class="gst-note">
+      <app-icon name="info" />
+      <span>{{ 'about.visit.note' | translate }}</span>
+    </p>
+  </section>
+
+  <!-- ═════════ Programul săptămânii ═════════ -->
+  <section class="gst-sec" id="gst-program" tabindex="-1" aria-labelledby="gst-program-title">
+    <div class="gst-sec__head gst-sec__head--row">
+      <div>
+        <p class="gst-sec__eyebrow">{{ 'guests.sections.program.chip' | translate }}</p>
+        <h2 class="gst-sec__title" id="gst-program-title">{{ 'guests.sections.program.title' | translate }}</h2>
+        <p class="gst-sec__lead">{{ 'guests.sections.program.lead' | translate }}</p>
+      </div>
+      <a class="gst-link" [routerLink]="links.program">
+        {{ 'contact.schedule.all' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+    <app-week-schedule class="gst-week" [showNext]="false" [showHead]="false" />
+  </section>
+
+  <!-- ═════════ Cine suntem ═════════ -->
+  <section class="gst-sec gst-about" id="gst-about" tabindex="-1" aria-labelledby="gst-about-title">
+    <div class="gst-about__text">
+      <p class="gst-sec__eyebrow">{{ 'guests.sections.about.chip' | translate }}</p>
+      <h2 class="gst-sec__title" id="gst-about-title">{{ 'home.welcome.title' | translate }}</h2>
+      <p class="gst-about__body">{{ 'home.welcome.body' | translate }}</p>
+      <p class="gst-about__body gst-about__body--warm">{{ 'home.welcome.body_2' | translate }}</p>
+      <div class="gst-about__links">
+        <a class="gst-link" [routerLink]="links.about">
+          {{ 'guests.about.cta_story' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+        <a class="gst-link" [routerLink]="links.credo">
+          {{ 'guests.about.cta_credo' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+      </div>
+    </div>
+    <div class="gst-facts">
+      <dl class="gst-facts__list">
+        <div class="gst-fact">
+          <dt class="gst-fact__label">{{ 'guests.about.years' | translate }}</dt>
+          <dd class="gst-fact__value">{{ years() }}</dd>
+        </div>
+        @for (fact of facts; track fact.id) {
+          <div class="gst-fact">
+            <dt class="gst-fact__label">{{ 'about.story.facts.' + fact.id | translate }}</dt>
+            <dd class="gst-fact__value">{{ fact.value }}</dd>
+          </div>
+        }
+      </dl>
+      <p class="gst-facts__asof">{{ 'about.story.facts.as_of' | translate: { date: factsAsOf() } }}</p>
+    </div>
+  </section>
+
+  <!-- ═════════ Cine te primește ═════════ -->
+  <section class="gst-sec" id="gst-people" tabindex="-1" aria-labelledby="gst-people-title">
+    <div class="gst-sec__head gst-sec__head--row">
+      <div>
+        <p class="gst-sec__eyebrow">{{ 'guests.sections.people.chip' | translate }}</p>
+        <h2 class="gst-sec__title" id="gst-people-title">{{ 'guests.sections.people.title' | translate }}</h2>
+        <p class="gst-sec__lead">{{ 'guests.sections.people.lead' | translate }}</p>
+      </div>
+      <a class="gst-link" [routerLink]="links.leadership">
+        {{ 'guests.people.all' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+    <ul class="gst-people" role="list">
+      @for (host of hosts; track host.id) {
+        <li class="gst-person">
+          @if (host.photo; as photo) {
+            <!-- El visor va en el contenedor (inserta dentro su botón flotante). -->
+            <div class="gst-person__media" [appViewable]="host.viewer">
+              <img
+                class="gst-person__photo"
+                [src]="photo.src"
+                [srcset]="photo.srcset"
+                sizes="(min-width: 64rem) 22rem, (min-width: 54rem) 24vw, 46vw"
+                [alt]="'guests.people.photo' | translate: { name: host.name }"
+                [width]="photo.width"
+                [height]="photo.height"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          } @else {
+            <span class="gst-person__photo gst-person__photo--mono" aria-hidden="true">{{ host.initials }}</span>
+          }
+          <p class="gst-person__name">{{ host.name }}</p>
+          <p class="gst-person__role">{{ host.roleKey | translate }}</p>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ═════════ Pentru fiecare vârstă ═════════ -->
+  <section class="gst-sec" id="gst-ages" tabindex="-1" aria-labelledby="gst-ages-title">
+    <div class="gst-sec__head">
+      <p class="gst-sec__eyebrow">{{ 'guests.sections.ages.chip' | translate }}</p>
+      <h2 class="gst-sec__title" id="gst-ages-title">{{ 'guests.sections.ages.title' | translate }}</h2>
+      <p class="gst-sec__lead">{{ 'guests.sections.ages.lead' | translate }}</p>
+    </div>
+    <ul class="gst-ages" role="list">
+      <!-- Los niños no tienen página propia: su dato es lo que pasa durante el culto. -->
+      <li class="gst-age gst-age--kids">
+        <span class="gst-age__icon" aria-hidden="true"><app-icon name="family" /></span>
+        <span class="gst-age__text">
+          <span class="gst-age__name">{{ 'about.visit.items.family.title' | translate }}</span>
+          <span class="gst-age__desc">{{ 'about.visit.items.family.body' | translate }}</span>
+        </span>
+      </li>
+      @for (dept of departments; track dept.id) {
+        <li>
+          <a
+            class="gst-age"
+            [routerLink]="dept.path"
+            [attr.aria-label]="'guests.ages.open' | translate: { name: ('departments.' + dept.id + '.name' | translate) }"
+          >
+            <span class="gst-age__icon" aria-hidden="true"><app-icon [name]="dept.icon" /></span>
+            <span class="gst-age__text">
+              <span class="gst-age__name">{{ 'departments.' + dept.id + '.name' | translate }}</span>
+              <span class="gst-age__desc">{{ 'departments.' + dept.id + '.tagline' | translate }}</span>
+            </span>
+            <app-icon class="gst-age__go" name="chevron-right" />
+          </a>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ═════════ Ce urmează ═════════ -->
+  @if (events().length) {
+    <section class="gst-sec" aria-labelledby="gst-events-title">
+      <div class="gst-sec__head gst-sec__head--row">
+        <div>
+          <h2 class="gst-sec__title" id="gst-events-title">{{ 'guests.sections.events.title' | translate }}</h2>
+          <p class="gst-sec__lead">{{ 'guests.sections.events.lead' | translate }}</p>
+        </div>
+        <a class="gst-link" [routerLink]="links.upcoming">
+          {{ 'guests.sections.events.all' | translate }}
+          <app-icon name="arrow-right" />
+        </a>
+      </div>
+      <ul class="gst-events" role="list">
+        @for (ev of events(); track ev.id) {
+          @let parts = schedule.formatDayParts(ev.date);
+          <li class="gst-event" [class.is-today]="ev.isToday">
+            <span class="gst-event__date" aria-hidden="true">
+              <span class="gst-event__day">{{ parts.day }}</span>
+              <span class="gst-event__month">{{ parts.month }}</span>
+            </span>
+            <span class="gst-event__text">
+              <span class="gst-event__title">
+                <span class="u-sr-only">{{ schedule.formatEventDate(ev.date) }} · </span>
+                {{ ev.title }}
+              </span>
+              <span class="gst-event__meta">
+                {{ weekday(ev.date) }}@if (ev.time) { · {{ ev.time }} }
+              </span>
+            </span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- ═════════ Cum ajungi ═════════ -->
+  <section class="gst-sec gst-where" id="gst-directions" tabindex="-1" aria-labelledby="gst-directions-title">
+    <div class="gst-where__text">
+      <p class="gst-sec__eyebrow">{{ 'guests.sections.directions.chip' | translate }}</p>
+      <h2 class="gst-sec__title" id="gst-directions-title">{{ 'guests.sections.directions.title' | translate }}</h2>
+      <p class="gst-sec__lead">{{ 'guests.sections.directions.lead' | translate }}</p>
+      <div class="gst-where__address">
+        <app-icon name="map-pin" />
+        <span class="gst-where__lines">
+          <span class="gst-where__label">{{ 'guests.directions.address' | translate }}</span>
+          <span class="gst-where__value">{{ config.location.address }}</span>
+        </span>
+        <app-copy-button [value]="config.location.mapsQuery" [label]="'guests.directions.copy' | translate" />
+      </div>
+      <a class="gst-btn gst-btn--navy gst-where__cta" [href]="config.location.mapsShareUrl" target="_blank" rel="noopener noreferrer">
+        <app-icon name="map-pin" />
+        {{ 'guests.directions.open_maps' | translate }}
+      </a>
+    </div>
+    <div class="gst-where__map">
+      <iframe
+        [src]="mapEmbedUrl()"
+        [title]="'guests.directions.map_title' | translate"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </section>
+
+  <!-- ═════════ Întrebări frecvente ═════════ -->
+  <section class="gst-sec gst-faq-sec" id="gst-faq" tabindex="-1" aria-labelledby="gst-faq-title">
+    <div class="gst-sec__head">
+      <p class="gst-sec__eyebrow">{{ 'guests.sections.faq.chip' | translate }}</p>
+      <h2 class="gst-sec__title" id="gst-faq-title">{{ 'guests.sections.faq.title' | translate }}</h2>
+      <p class="gst-sec__lead">{{ 'guests.sections.faq.lead' | translate }}</p>
+    </div>
+    <div class="gst-faq">
+      @for (id of faq; track id) {
+        <details class="gst-faq__item">
+          <summary class="gst-faq__q">
+            <span>{{ 'guests.faq.' + id + '.q' | translate }}</span>
+            <app-icon class="gst-faq__chev" name="chevron-down" />
+          </summary>
+          <div class="gst-faq__a">
+            <p>{{ 'guests.faq.' + id + '.a' | translate: { name: pastorName } }}</p>
+            @switch (id) {
+              @case ('online') {
+                <a class="gst-link" [href]="config.youtubeChannelUrl" target="_blank" rel="noopener noreferrer">
+                  {{ 'guests.faq.online.link' | translate }}
+                  <app-icon name="external" />
+                </a>
+              }
+              @case ('beliefs') {
+                <a class="gst-link" [routerLink]="links.credo">
+                  {{ 'guests.faq.beliefs.link' | translate }}
+                  <app-icon name="arrow-right" />
+                </a>
+              }
+              @case ('baptism') {
+                <a class="gst-link" [routerLink]="links.baptisms">
+                  {{ 'guests.faq.baptism.link' | translate }}
+                  <app-icon name="arrow-right" />
+                </a>
+              }
+              @case ('talk') {
+                <span class="gst-faq__actions">
+                  <a class="gst-btn gst-btn--line gst-btn--sm" [href]="tel">
+                    <app-icon name="phone" />
+                    {{ 'guests.closing.call' | translate }}
+                  </a>
+                  @if (whatsappLink('guests.first.whatsapp.message' | translate); as wa) {
+                    <a class="gst-btn gst-btn--line gst-btn--sm" [href]="wa" target="_blank" rel="noopener noreferrer">
+                      <app-icon name="whatsapp" />
+                      {{ 'guests.closing.whatsapp' | translate }}
+                    </a>
+                  }
+                </span>
+              }
+            }
+          </div>
+        </details>
+      }
+    </div>
+  </section>
+</div>
+
+<!-- ═════════ Cierre: versículo + te esperamos ═════════ -->
+<section class="gst-close" aria-labelledby="gst-close-title">
+  <div class="gst-close__inner">
+    <figure class="gst-close__verse">
+      <blockquote>{{ 'guests.closing.verse' | translate }}</blockquote>
+      <figcaption>{{ 'guests.closing.verse_ref' | translate }}</figcaption>
+    </figure>
+    <h2 class="gst-close__title" id="gst-close-title">{{ 'guests.closing.title' | translate }}</h2>
+    @if (sunday(); as sun) {
+      <p class="gst-close__when">
+        {{ sun.dayName }} · {{ sun.time }} · {{ config.location.address }}
+      </p>
+    }
+    <div class="gst-close__actions">
+      <a class="gst-btn gst-btn--gold" [href]="tel">
+        <app-icon name="phone" />
+        {{ 'guests.closing.call' | translate }}
+      </a>
+      @if (whatsappLink('guests.first.whatsapp.message' | translate); as wa) {
+        <a class="gst-btn gst-btn--glass" [href]="wa" target="_blank" rel="noopener noreferrer">
+          <app-icon name="whatsapp" />
+          {{ 'guests.closing.whatsapp' | translate }}
+        </a>
+      }
+      <a class="gst-btn gst-btn--glass" [href]="mailto">
+        <app-icon name="mail" />
+        {{ 'guests.closing.email' | translate }}
+      </a>
+    </div>
+    <p class="gst-close__follow">{{ 'guests.closing.follow' | translate }}</p>
+    <ul class="gst-close__socials" role="list">
+      @for (social of config.socials; track social.id) {
+        <li>
+          <a
+            class="gst-social"
+            [href]="social.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="('socials.items.' + social.i18nKey + '.name' | translate) + ' · ' + social.handle"
+          >
+            <app-social-icon [name]="social.icon" />
+            <span>{{ social.handle }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

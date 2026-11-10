@@ -184,9 +184,10 @@ aprovechando el espacio para imágenes y textos):
 **Perfiles opcionales (07/10/2026).** El perfil propio ya no es de todos:
 sólo lo tiene quien lo quiere. Único control: `PERSON_PROFILES` en
 `core/leadership-profiles.config.ts` (hoy: Pavel Negrușier, Grigore Tomoiagă,
-Gabriel Daniel Cifor). Sin texto de relleno, salvo una excepción temporal: el de
-Pavel Negrușier lleva una biografía completa **de maqueta** (lorem ipsum, a
-petición del usuario, 07/10/2026) como muestra hasta que llegue la real.
+Gabriel Daniel Cifor), los tres **sin biografía** (`null`) hasta que la
+entreguen. **Nunca texto de relleno**: la maqueta de lorem ipsum que llevó el
+de Pavel Negrușier (07/10/2026) se retiró el 10/11/2026 a petición del usuario
+—se veía en público, también en la tarjeta destacada de `/conducere`—.
 
 - **Clave presente** = tiene perfil. Valor `null` = **sin biografía** (aún no la
   ha entregado); valor `PersonStory` = **con biografía** (`summary`, `bio[]`,

@@ -3,13 +3,18 @@
 
 // =====================================================================
 // Tablero «Cauzele Bisericii Elim» — hoja GLOBAL (`.causes__*`, `.cause__*`).
-// Sólo tipografía: sin iconos, viñetas, contadores ni cajas (revisión del
+// Sólo tipografía: sin iconos, viñetas ni contadores (revisión del
 // 28/09/2026: «más profesional y serio»).
 //
-//   1. Web (`/cauze-de-rugaciune`): tokens `--c-*`, `--fs-*`. Dos zonas lado a
-//      lado (por nombre | por intención en panel navy).
+// La misma estructura en las dos superficies (revisión del 09/11/2026, al
+// entrar la 5.ª causa «Tineretul bisericii»): **columna de nombres + columna
+// lateral** con las causas por intención.
+//
+//   1. Web (`/cauze-de-rugaciune`): tokens `--c-*`, `--fs-*`. Tarjeta blanca
+//      con la lateral en navy; decide la tarjeta (`@container causes`), no la
+//      ventana. Ver la sección 1.
 //   2. Proyección (`.stage.is-fullscreen .causes`): **blanco y negro**, a
-//      sangre y a todo el lienzo (revisión del 03/10/2026). Ver la sección 2.
+//      sangre y a todo el lienzo (03/10/2026). Ver la sección 2.
 // =====================================================================
 
 /// Medida de proyección que sigue al autoajuste.
@@ -29,18 +34,46 @@ app-causes-board {
 // ---------------------------------------------------------------------
 // 1 · Web
 // ---------------------------------------------------------------------
+// Medido el 09/11/2026 con 5 causas (antes → ahora), alto de la tarjeta:
+//   1920: 433 → 286 px · 1440: ~430 → 281 px · 375: 688 → 581 px.
+// Antes la lateral navy marcaba el alto y la columna de nombres dejaba vacía
+// casi la mitad de abajo (196 px a 1920). Ahora: nombres más grandes
+// (`h3`, 18 → 22 px a 1920) y la lateral como **tabla** «título | intención»
+// con filetes, que cabe en la mitad de alto.
+//
+//   RUGĂCIUNE PENTRU FAMILII                    │ Fiii risipitori     Întoarcere…
+//   Popițan Grigore și Maria  Zăgrean Mihael…   │ Familiile bisericii Implicarea…
+//   VINDECARE                                   │ Tineretul bisericii O generație…
+//   Neluțu Andor   Mirela Bucur   Gicu Tomoiagă │ România             Pentru…
+//   …                                           │ Biserica Elim       Revigorare…
+//
+// Tres anchos de tarjeta (consultas de contenedor, no de ventana):
+//   · < 48rem: apilado (nombres arriba, banda navy debajo).
+//   · ≥ 48rem: dos columnas 3 : 2.
+//   · La lateral va en tabla cuando tiene sitio: banda entera ≥ 36rem, o
+//     columna lateral con la tarjeta ≥ 70rem. Si no, título sobre intención.
+
+/// Relleno de las dos zonas de la tarjeta.
+$pad: clamp(1.25rem, 0.75rem + 1.5vw, 2rem);
+
 .causes {
   display: block;
+  container: causes / inline-size;
 }
 
 .causes__inner {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--c-hairline);
   border-radius: var(--r-lg);
   background: var(--c-surface);
+}
+
+@container causes (min-width: 48rem) {
+  .causes__inner:not(.causes__inner--solo) {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
 }
 
 // ---- Por nombre ------------------------------------------------------
@@ -48,14 +81,14 @@ app-causes-board {
 .causes__named {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-6);
-  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  gap: var(--sp-5);
+  padding: $pad;
 }
 
 .cause--named {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
 }
 
 .cause__heading {
@@ -68,42 +101,62 @@ app-causes-board {
   color: var(--c-gold-deep);
 }
 
-// Nombres en columnas limpias, sin viñetas; un nombre nunca se parte.
+// Columnas derivadas de los datos: el mínimo es el nombre más largo
+// (`--name-ch` letras × 0,58em, medido: los nombres de hoy van de 0,50 a
+// 0,55em por letra), y como mucho 3. Caben tantas como nombres enteros: a
+// 375 px, los enfermos van de dos en dos; las parejas, de una en una.
 .cause__people {
+  --gap-x: clamp(var(--sp-4), 2vw, var(--sp-6));
+  --name-min: calc(var(--name-ch, 14) * 0.58em);
+
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
-  gap: var(--sp-2) var(--sp-5);
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(var(--name-min), (100% - 2 * var(--gap-x)) / 3)), 1fr)
+  );
+  gap: var(--sp-1) var(--gap-x);
   margin: 0;
   padding: 0;
   list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
 }
 
 .cause__person {
-  font-family: var(--font-display);
-  font-size: var(--fs-body-lg);
   font-weight: 600;
   line-height: 1.3;
   color: var(--c-primary);
 }
 
-// ---- Por intención (panel navy) ----------------------------------------
+// ---- Por intención (lateral navy) --------------------------------------
 
 .causes__general {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--sp-5);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   margin: 0;
-  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  padding: $pad;
   list-style: none;
   background: var(--c-primary);
   color: var(--c-on-primary);
 }
 
+// Una fila por causa, separadas por filetes (no por aire).
 .cause--general {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
+  padding: var(--sp-2) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+
+  &:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
 }
 
 .cause__title {
@@ -117,44 +170,67 @@ app-causes-board {
 .cause__intent {
   font-size: var(--fs-sm);
   line-height: 1.45;
+  text-wrap: pretty;
   color: rgba(255, 255, 255, 0.85);
 }
 
-@include until('md') {
-  .causes__inner {
-    grid-template-columns: minmax(0, 1fr);
+/// Tabla «título | intención»: la columna de títulos mide el más largo
+/// (`max-content`, por `subgrid`), así todas las intenciones arrancan a la vez.
+@mixin general-as-table {
+  .causes__general {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  .cause--general {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    column-gap: var(--sp-6);
+    align-items: baseline;
   }
 }
 
+// Banda entera (tarjeta apilada) con sitio para las dos columnas…
+@container causes (min-width: 36rem) and (max-width: 47.99rem) {
+  @include general-as-table;
+}
+
+// …o columna lateral ancha (2/5 de una tarjeta de 70rem: ~28rem).
+@container causes (min-width: 70rem) {
+  @include general-as-table;
+}
+
 // ---------------------------------------------------------------------
-// 2 · Proyección — blanco y negro, a todo el lienzo (03/10/2026)
+// 2 · Proyección — blanco y negro, a todo el lienzo
 // ---------------------------------------------------------------------
 // Se proyecta mientras se ora. Decisiones:
-//   · **Blanco y negro**: casi negro (no ilumina la sala) y sólo blancos y
-//     grises. Sin oro ni navy: nada compite con los nombres; la jerarquía la
-//     dan el tamaño, el peso y la opacidad, como un programa impreso.
-//   · **Composición editorial a todo el ancho**, en tres franjas separadas por
-//     filetes finos:
+//   · **Blanco y negro** (03/10/2026): casi negro (no ilumina la sala) y sólo
+//     blancos y grises. Sin oro ni navy: nada compite con los nombres; la
+//     jerarquía la dan el tamaño, el peso y la opacidad, como un programa
+//     impreso.
+//   · **Dos columnas** (09/11/2026), la misma estructura que la web:
 //
-//       CAUZELE BISERICII ELIM ─────────────────────────────────────────
-//       RUGĂCIUNE PENTRU FAMILII
-//       Popițan Grigore și Maria
-//       Zăgrean Mihael și Emanuela
-//       VINDECARE
-//       Neluțu Andor        Mirela Bucur        Gicu Tomoiagă
-//       Zoltan Toth         Alex Popițan        Marcos Zăgrean …
-//       ────────────────────────────────────────────────────────────────
-//       Fiii risipitori │ Familiile bisericii │ România │ Biserica Elim
-//       Întoarcere…     │ Implicarea lui…     │ Pentru… │ Revigorare…
+//       CAUZELE BISERICII ELIM ──────────────────── │ Fiii risipitori
+//       RUGĂCIUNE PENTRU FAMILII                    │ Întoarcere cu fața…
+//       Popițan Grigore și Maria                    │ Familiile bisericii
+//       Zăgrean Mihael și Emanuela                  │ Implicarea lui…
+//       VINDECARE                                   │ Tineretul bisericii
+//       Neluțu Andor        Mirela Bucur            │ O generație…
+//       Gicu Tomoiagă       Zoltan Toth             │ România
+//       …                                           │ Biserica Elim
 //
-//     Cada causa con nombres es una franja a todo el ancho y reparte sus
-//     nombres en 1-3 columnas según cuántos sean (`--cols`); las de
-//     intención, columnas iguales (`--n`). Franjas y no columnas lado a lado:
-//     tres columnas de nombres largos no caben a lo ancho y obligaban a
-//     encoger al mínimo dejando medio lienzo vacío (medido el 03/10/2026).
-//   · **Siempre el máximo de espacio**: `appFitToBox` crece hasta 1,4 y ahora
-//     mide alto Y ancho (antes sólo alto: «Marcos Zăgrean» pisaba la columna
-//     de al lado). Las franjas se reparten el alto sobrante.
+//     Los nombres a su ancho justo (`max-content`, 1-2 columnas, `--cols`) y
+//     las causas por intención en una lateral a todo el alto con el ancho que
+//     sobra. Antes iban en una fila de columnas iguales debajo: con 5 causas
+//     la quinta caía sola a otra línea y `--fit` bajaba a 0,70 (nombres de
+//     60 px a 1920×1080); así queda en 0,89 (77 px; con 4 causas eran 71).
+//     Se descartaron las franjas con la fila de abajo (la quinta no cabe) y
+//     las etiquetas colgadas a la izquierda (roban ancho a los nombres). En
+//     lienzos de 3:2 o más altos, las causas por intención van debajo, en 3
+//     columnas (ver el final de la hoja).
+//   · **Siempre el máximo de espacio**: `appFitToBox` crece hasta 1,4 y mide
+//     alto Y ancho (los nombres y los títulos son `nowrap`). Capacidad medida:
+//     12 enfermos a 0,84; con 16 llega al mínimo (0,70).
 .stage.is-fullscreen {
   app-causes-board {
     display: contents;
@@ -169,6 +245,8 @@ app-causes-board {
     // Abajo, la franja de la cuenta atrás del culto (`.stage-countdown`).
     --causes-pad-bottom: calc(var(--pj-u) * 7);
     --causes-pad-x: calc(var(--pj-u) * 5.5);
+    // Las consultas de contenedor son de la web: aquí no aplican.
+    container-type: normal;
     height: 100%;
     min-height: 0;
     overflow: hidden;
@@ -176,13 +254,18 @@ app-causes-board {
     color: var(--causes-ink);
   }
 
-  // Hijo medido: al menos todo el alto; las franjas se reparten el sobrante.
+  // Hijo medido: rejilla de dos columnas a todo el lienzo. La de nombres mide
+  // lo que piden sus nombres; la lateral, el resto (como poco, su título más
+  // largo, que no se parte).
   .causes__inner {
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: fit(var(--pj-sp-4));
+    display: grid;
+    grid-template-columns: max-content minmax(min-content, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'head general'
+      'named general';
+    gap: fit(var(--pj-sp-3)) fit(calc(var(--pj-u) * 5));
     min-height: 100%;
     padding: var(--causes-pad-y) var(--causes-pad-x) var(--causes-pad-bottom);
     overflow: visible;
@@ -191,9 +274,18 @@ app-causes-board {
     background: none;
   }
 
+  // Sin causas por intención, los nombres se quedan con todo el ancho.
+  .causes__inner--solo {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'head'
+      'named';
+  }
+
   // Cabecera: el título como rótulo, no como titular (lo que se lee son los
-  // nombres), con un filete a todo el ancho.
+  // nombres), con un filete sobre la columna de nombres.
   .causes__head {
+    grid-area: head;
     padding-bottom: fit(calc(var(--pj-u) * 1.6));
     border-bottom: max(1px, calc(var(--pj-u) * 0.15)) solid var(--causes-rule);
   }
@@ -209,12 +301,14 @@ app-causes-board {
     color: var(--causes-ink-2);
   }
 
-  // ---- Por nombre: una franja por causa, a todo el ancho ------------------
+  // ---- Por nombre --------------------------------------------------------
+  // `space-between`: la primera y la última causa enrasan con la lateral,
+  // arriba y abajo; el sobrante separa las causas.
   .causes__named {
+    grid-area: named;
     display: flex;
-    flex: 1 1 auto;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
     gap: fit(var(--pj-sp-4));
     padding: 0;
   }
@@ -231,11 +325,11 @@ app-causes-board {
     color: var(--causes-ink-2);
   }
 
-  // Columnas iguales (1-3, `--cols`): los nombres quedan alineados en
-  // rejilla, como una lista impresa, y se leen por filas.
+  // Columnas `max-content` (1-2, `--cols`): cada una mide su nombre más
+  // largo, sin hueco; los nombres se leen por filas, como una lista impresa.
   .cause__people {
-    grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
-    gap: fit(calc(var(--pj-u) * 1.4)) fit(var(--pj-sp-6));
+    grid-template-columns: repeat(var(--cols, 1), max-content);
+    gap: fit(calc(var(--pj-u) * 1.4)) fit(calc(var(--pj-u) * 5));
   }
 
   // El nombre entero en su línea; si no cabe, el autoajuste encoge todo
@@ -249,41 +343,74 @@ app-causes-board {
     color: var(--causes-ink);
   }
 
-  // ---- Por intención: una fila de columnas iguales -------------------------
+  // ---- Por intención: columna lateral a todo el alto ---------------------
+  // Título e intención al mismo cuerpo (`body`): los separa el peso y el gris.
   .causes__general {
-    display: grid;
-    grid-template-columns: repeat(min(var(--n, 4), 4), minmax(0, 1fr));
-    gap: fit(var(--pj-sp-3)) 0;
-    padding: fit(var(--pj-sp-3)) 0 0;
-    border-top: max(1px, calc(var(--pj-u) * 0.15)) solid var(--causes-rule);
+    grid-area: general;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: fit(calc(var(--pj-u) * 2.5));
+    padding: 0 0 0 fit(calc(var(--pj-u) * 5));
+    border-left: max(1px, calc(var(--pj-u) * 0.15)) solid var(--causes-rule);
     border-radius: 0;
     background: none;
     color: var(--causes-ink);
   }
 
   .cause--general {
-    gap: fit(calc(var(--pj-u) * 0.8));
+    gap: fit(calc(var(--pj-u) * 0.5));
     min-width: 0;
-    padding: 0 fit(var(--pj-sp-3));
-    border-left: max(1px, calc(var(--pj-u) * 0.15)) solid var(--causes-rule);
-
-    // Primera de cada fila: pegada al margen, sin filete.
-    &:nth-child(4n + 1) {
-      padding-left: 0;
-      border-left: 0;
-    }
+    padding: 0;
+    border-top: 0;
   }
 
+  // El título no se parte: fija el ancho mínimo de la columna lateral.
   .cause__title {
-    font-size: floor-fit(var(--pj-fs-lead));
+    font-size: floor-fit(var(--pj-fs-body));
     font-weight: 700;
     line-height: 1.1;
+    white-space: nowrap;
     color: var(--causes-ink);
   }
 
   .cause__intent {
     font-size: floor-fit(var(--pj-fs-body));
-    line-height: 1.25;
+    line-height: 1.2;
+    text-wrap: balance;
     color: var(--causes-ink-2);
+  }
+
+  // ---- Lienzo alto (3:2, 4:3, 5:4): las causas por intención, debajo ------
+  // En un lienzo alto la lateral se queda estrecha (244 px a 1024×768), la
+  // intención del tineret se parte en 6 líneas y la columna de nombres abre un
+  // hueco de un cuarto a un tercio del alto entre Familii y Vindecare (251 px
+  // a 4:3, 253 a 3:2). Debajo, en 3 columnas, el lienzo queda lleno a cambio
+  // de nombres algo menores: 4:3 45 → 43 px, 3:2 61 → 55 px. A 16:10 y 16:9
+  // la lateral gana de largo (81 / 77 px frente a 68 / 60 desbordando), así
+  // que el corte va en 3:2.
+  @media (max-aspect-ratio: 3/2) {
+    .causes__inner:not(.causes__inner--solo) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-areas:
+        'head'
+        'named'
+        'general';
+    }
+
+    .causes__named {
+      justify-content: flex-start;
+    }
+
+    .causes__general {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: space-evenly;
+      gap: fit(calc(var(--pj-u) * 2.5)) fit(calc(var(--pj-u) * 5));
+      padding: fit(var(--pj-sp-3)) 0 0;
+      border-top: max(1px, calc(var(--pj-u) * 0.15)) solid var(--causes-rule);
+      border-left: 0;
+    }
   }
 }

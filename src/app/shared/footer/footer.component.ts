@@ -111,6 +111,8 @@ export class FooterComponent {
     donate: `/${APP_PATHS.donate}`,
     live: blockPath('streams'),
     location: blockPath('location'),
+    /** Bienvenida para quien viene por primera vez: fuera del menú, sólo aquí y por QR. */
+    guests: `/${APP_PATHS.guests}`,
     /** Panel de control de la proyección (herramienta del operador). */
     control: `/${APP_PATHS.media}/${APP_PATHS.control}`,
     styleguide: `/${APP_PATHS.styleguide}`,

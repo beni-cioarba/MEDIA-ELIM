@@ -1,11 +1,17 @@
-<section class="schedule" aria-labelledby="schedule-title">
-  <div class="schedule__head">
-    <h2 class="schedule__title" id="schedule-title">{{ 'contact.schedule.title' | translate }}</h2>
-    <a class="schedule__more" [routerLink]="weeklyLink">
-      {{ 'contact.schedule.all' | translate }}
-      <app-icon name="arrow-right" />
-    </a>
-  </div>
+<section
+  class="schedule"
+  [class.schedule--headless]="!showHead()"
+  [attr.aria-labelledby]="showHead() ? 'schedule-title' : null"
+>
+  @if (showHead()) {
+    <div class="schedule__head">
+      <h2 class="schedule__title" id="schedule-title">{{ 'contact.schedule.title' | translate }}</h2>
+      <a class="schedule__more" [routerLink]="weeklyLink">
+        {{ 'contact.schedule.all' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+  }
 
   @if (showNext()) {
     @if (next(); as n) {

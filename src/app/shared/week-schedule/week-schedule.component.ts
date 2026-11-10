@@ -26,6 +26,12 @@ export class WeekScheduleComponent {
   /** Franja «Următorul / Acum» con el próximo culto. */
   readonly showNext = input(true);
 
+  /**
+   * Cabecera propia («Când ne întâlnim» + «Vezi programul complet»). La
+   * página que ya titula la sección (Invitați) la apaga para no repetirla.
+   */
+  readonly showHead = input(true);
+
   protected readonly schedule = inject(ScheduleService);
   protected readonly next = this.schedule.nextService;
   protected readonly weeklyLink = blockPath('weekly');

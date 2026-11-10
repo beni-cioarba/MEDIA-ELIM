@@ -1,0 +1,131 @@
+<div class="qrp">
+  <!-- ═════════ Controles (no se imprimen) ═════════ -->
+  <header class="qrp-bar">
+    <div class="qrp-bar__intro">
+      <p class="qrp-bar__eyebrow">{{ 'guests.qr.eyebrow' | translate }}</p>
+      <h1 class="qrp-bar__title">{{ 'guests.qr.title' | translate }}</h1>
+      <p class="qrp-bar__lead">{{ 'guests.qr.lead' | translate }}</p>
+    </div>
+
+    <div class="qrp-bar__controls">
+      <div class="qrp-field">
+        <span class="qrp-field__label" id="qrp-format">{{ 'guests.qr.format' | translate }}</span>
+        <div class="qrp-seg" role="group" aria-labelledby="qrp-format">
+          <button type="button" class="qrp-seg__btn" [attr.aria-pressed]="format() === 'poster'" (click)="setFormat('poster')">
+            {{ 'guests.qr.poster' | translate }}
+          </button>
+          <button type="button" class="qrp-seg__btn" [attr.aria-pressed]="format() === 'cards'" (click)="setFormat('cards')">
+            {{ 'guests.qr.cards' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="qrp-field">
+        <span class="qrp-field__label" id="qrp-lang">{{ 'guests.qr.language' | translate }}</span>
+        <div class="qrp-seg" role="group" aria-labelledby="qrp-lang">
+          @for (lang of languages; track lang.code) {
+            <button
+              type="button"
+              class="qrp-seg__btn"
+              [attr.lang]="lang.code"
+              [attr.aria-pressed]="language.current() === lang.code"
+              (click)="setLanguage(lang.code)"
+            >
+              {{ lang.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="qrp-bar__actions">
+        <button type="button" class="qrp-btn qrp-btn--primary" (click)="print()">
+          <app-icon name="printer" />
+          {{ 'guests.qr.print' | translate }}
+        </button>
+        <button type="button" class="qrp-btn" (click)="downloadSvg()">
+          <app-icon name="download" />
+          {{ 'guests.qr.download' | translate }}
+        </button>
+        <a class="qrp-btn" [routerLink]="pagePath" [queryParams]="pageQuery()" target="_blank" rel="noopener">
+          <app-icon name="external" />
+          {{ 'guests.qr.open' | translate }}
+        </a>
+      </div>
+    </div>
+
+    <p class="qrp-bar__hint">
+      <app-icon name="info" />
+      <span>{{ 'guests.qr.hint' | translate }}</span>
+    </p>
+  </header>
+
+  <!-- ═════════ Hoja A4 (vista previa a escala; impresa a tamaño real) ═════════ -->
+  <section class="qrp-stage" #stage [attr.aria-label]="'guests.qr.preview' | translate">
+    <div class="qrp-sheet" #sheet [class.is-cards]="format() === 'cards'">
+      @if (format() === 'poster') {
+        <article class="qrp-poster">
+          <div class="qrp-poster__brand">
+            <app-brand-logo size="lg" [link]="null" />
+          </div>
+          <p class="qrp-poster__eyebrow">{{ 'guests.qr.poster_eyebrow' | translate }}</p>
+          <h2 class="qrp-poster__title">{{ 'guests.qr.poster_title' | translate }}</h2>
+          <p class="qrp-poster__text">{{ 'guests.qr.poster_text' | translate }}</p>
+
+          <div class="qrp-poster__code qrp-qr">
+            <qrcode
+              [qrdata]="qrData()"
+              [width]="1024"
+              [margin]="2"
+              [errorCorrectionLevel]="'M'"
+              [colorDark]="qrInk"
+              [colorLight]="qrPaper"
+              [elementType]="'svg'"
+            ></qrcode>
+          </div>
+
+          <p class="qrp-poster__url">{{ displayUrl }}</p>
+          <p class="qrp-poster__scan">
+            <app-icon name="device-phone" />
+            {{ 'guests.qr.poster_scan' | translate }}
+          </p>
+          @if (sunday(); as sun) {
+            <p class="qrp-poster__when">
+              <app-icon name="clock" />
+              {{ 'guests.qr.when' | translate: { time: sun.time } }}
+            </p>
+          }
+
+          <footer class="qrp-poster__foot">
+            <app-icon name="map-pin" />
+            <span>{{ 'footer.church' | translate }} · {{ address }}</span>
+          </footer>
+        </article>
+      } @else {
+        @for (card of cards; track card) {
+          <article class="qrp-card">
+            <div class="qrp-card__brand">
+              <app-brand-logo size="sm" [link]="null" />
+            </div>
+            <h2 class="qrp-card__title">{{ 'guests.qr.card_title' | translate }}</h2>
+            <p class="qrp-card__text">{{ 'guests.qr.card_text' | translate }}</p>
+            <div class="qrp-card__code qrp-qr">
+              <qrcode
+                [qrdata]="qrData()"
+                [width]="1024"
+                [margin]="2"
+                [errorCorrectionLevel]="'M'"
+                [colorDark]="qrInk"
+                [colorLight]="qrPaper"
+                [elementType]="'svg'"
+              ></qrcode>
+            </div>
+            @if (sunday(); as sun) {
+              <p class="qrp-card__when">{{ 'guests.qr.when' | translate: { time: sun.time } }}</p>
+            }
+            <p class="qrp-card__url">{{ displayUrl }}</p>
+          </article>
+        }
+      }
+    </div>
+  </section>
+</div>

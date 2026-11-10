@@ -99,6 +99,12 @@ export class PresenterComponent implements OnInit {
   protected readonly durationMax = DURATION_MAX_S;
   protected readonly mediaLink = `/${APP_PATHS.media}`;
 
+  /** «Invitați»: la página de bienvenida (oculta) y su hoja de QR para imprimir. */
+  protected readonly guestsLinks = {
+    page: `/${APP_PATHS.guests}`,
+    qr: `/${APP_PATHS.guests}/${APP_PATHS.guestsQr}`,
+  } as const;
+
   /** Selector de idioma de la barra: código visible, nombre en su idioma. */
   protected readonly languages: readonly { code: AppLanguage; name: string }[] = [
     { code: 'ro', name: 'Română' },
@@ -180,13 +186,25 @@ export class PresenterComponent implements OnInit {
     return !!t && this.display.countdown().enabled && this.now() >= t.showFrom;
   });
 
-  /** Hora desde la que se proyecta («17:30»). */
+  /**
+   * Hora desde la que se proyecta: «20:28:30» con una antelación de 90 s,
+   * «20:25» cuando cae en minuto exacto (2m, 5m, «Mereu»).
+   */
   protected readonly countdownFrom = computed<string>(() => {
     const t = this.countdownTarget();
-    return t
-      ? new Date(t.showFrom).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' })
-      : '';
+    if (!t) return '';
+    const from = new Date(t.showFrom);
+    return from.toLocaleTimeString('ro-RO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      ...(from.getSeconds() ? { second: '2-digit' } : {}),
+    });
   });
+
+  /** Rótulo corto de una antelación: «15s» … «90s», «2m», «5m». */
+  protected leadLabel(seconds: number): string {
+    return seconds < 120 ? `${seconds}s` : `${seconds / 60}m`;
+  }
 
   protected setCountdownEnabled(event: Event): void {
     this.display.setCountdownEnabled((event.target as HTMLInputElement).checked);

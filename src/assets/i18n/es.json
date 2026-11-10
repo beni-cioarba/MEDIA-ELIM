@@ -69,6 +69,10 @@
     "open_control": "Abrir el panel de control de la proyección"
   },
   "presenter": {
+    "guests_title": "Invitados",
+    "guests_text": "La página de bienvenida para quien viene por primera vez. No aparece en el menú: sólo se abre con el código QR o con la dirección.",
+    "guests_open": "Abrir la página",
+    "guests_qr": "QR para imprimir",
     "lang_aria": "Idioma de la consola y de la proyección",
     "title": "Panel de control",
     "subtitle": "Proyección",
@@ -151,6 +155,15 @@
     "countdown_from": "Aparece a las {{time}}",
     "countdown_none": "Hoy no hay más cultos en el horario. Puedes poner una hora a mano.",
     "countdown_lead": "Mostrar antes",
+    "countdown_leads": {
+      "15": "15 segundos antes",
+      "30": "30 segundos antes",
+      "45": "45 segundos antes",
+      "60": "60 segundos antes",
+      "90": "90 segundos antes",
+      "120": "2 minutos antes",
+      "300": "5 minutos antes"
+    },
     "countdown_manual_label": "Hora manual (hoy)",
     "countdown_set": "Fijar",
     "countdown_clear": "Quitar",
@@ -662,6 +675,7 @@
     "copied": "¡Copiado!"
   },
   "footer": {
+    "guests": "¿Es tu primera visita?",
     "church": "Iglesia ELIM Arganda",
     "rights": "Todos los derechos reservados.",
     "tools": "Herramientas",
@@ -930,6 +944,14 @@
     "baptisms_count": "{{count}} bautizados"
   },
   "seo": {
+    "guests": {
+      "title": "Bienvenido",
+      "description": "¿Es tu primera visita a la Iglesia Elim de Arganda del Rey? Descubre qué te espera el domingo, cuándo nos reunimos y cómo llegar."
+    },
+    "guests_qr": {
+      "title": "QR para invitados",
+      "description": "El código QR para imprimir que lleva a la página de bienvenida de la Iglesia Elim."
+    },
     "home": {
       "title": "Inicio",
       "description": "Iglesia Elim de Arganda del Rey: programa, eventos, directos y redes sociales."
@@ -1020,7 +1042,7 @@
       "next": "Foto siguiente",
       "program_aria": "Ver el programa semanal",
       "slides": {
-        "worship": "Noche de villancicos",
+        "congregation": "La iglesia reunida",
         "baptism": "Bautismo",
         "baptism_candidates": "Los candidatos al bautismo",
         "children": "Concierto de los niños",

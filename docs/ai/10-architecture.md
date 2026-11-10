@@ -57,6 +57,8 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'anunturi/:id'`    | `AnnouncementsComponent` | Un anuncio (enlace compartible) |
 | `'departamente'`    | `DepartmentsHomeComponent` | Portada de Departamente (mosaico) — `39-departments.md` |
 | `'departamente/<slug>'` | `DepartmentPageComponent` | Una ruta por departamento (`departmentRoute()`), mismo chunk |
+| `'invitati'`        | `GuestsComponent`      | Bienvenida a invitados, **fuera del menú** (QR + enlace del pie), `noindex` — `33-guests.md` |
+| `'invitati/qr'`     | `GuestsQrComponent`    | Hoja imprimible del QR (fuera del shell, antes del layout) |
 | `'contact'`         | `ContactComponent`     | Formulario `mailto:`, datos y mapa |
 | `'doneaza'`         | `DonateComponent`      | Donativos y datos bancarios    |
 | `**`                | redirect a `''`        | GitHub Pages sirve 404.html    |

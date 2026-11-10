@@ -738,7 +738,7 @@
           </div>
           <p class="note">
             {{
-              (display.countdown().leadMinutes === null ? 'presenter.countdown_from_always' : 'presenter.countdown_from')
+              (display.countdown().leadSeconds === null ? 'presenter.countdown_from_always' : 'presenter.countdown_from')
                 | translate: { time: countdownFrom() }
             }}
           </p>
@@ -746,26 +746,33 @@
           <p class="note">{{ 'presenter.countdown_none' | translate }}</p>
         }
 
-        <div class="seg seg--stacked" role="group" [attr.aria-label]="'presenter.countdown_lead' | translate">
+        <div class="seg seg--stacked seg--options" role="group" [attr.aria-label]="'presenter.countdown_lead' | translate">
           <span class="seg__meta">{{ 'presenter.countdown_lead' | translate }}</span>
-          @for (m of countdownLeads; track m) {
+          <!-- Antelación en segundos, con la unidad escrita («90s», «2m»): el
+               «′» de antes eran minutos y se leía como segundos. Rejilla de
+               celdas iguales (`--n` = nº de antelaciones; «Mereu» al final). -->
+          <div class="seg__options" [style.--n]="countdownLeads.length">
+            @for (s of countdownLeads; track s) {
+              <button
+                type="button"
+                class="seg__btn"
+                [disabled]="display.countdown().leadSeconds === s"
+                [attr.aria-pressed]="display.countdown().leadSeconds === s"
+                [attr.aria-label]="'presenter.countdown_leads.' + s | translate"
+                [title]="'presenter.countdown_leads.' + s | translate"
+                (click)="display.setCountdownLead(s)"
+              >{{ leadLabel(s) }}</button>
+            }
+            <!-- «Mereu»: sin antelación fija, todo el día hasta el próximo
+                 comienzo (salvo durante un culto). -->
             <button
               type="button"
               class="seg__btn"
-              [disabled]="display.countdown().leadMinutes === m"
-              [attr.aria-pressed]="display.countdown().leadMinutes === m"
-              (click)="display.setCountdownLead(m)"
-            >{{ m }}′</button>
-          }
-          <!-- «Mereu»: sin antelación fija, todo el día hasta el próximo
-               comienzo (salvo durante un culto). -->
-          <button
-            type="button"
-            class="seg__btn"
-            [disabled]="display.countdown().leadMinutes === null"
-            [attr.aria-pressed]="display.countdown().leadMinutes === null"
-            (click)="display.setCountdownLead(null)"
-          >{{ 'presenter.countdown_always' | translate }}</button>
+              [disabled]="display.countdown().leadSeconds === null"
+              [attr.aria-pressed]="display.countdown().leadSeconds === null"
+              (click)="display.setCountdownLead(null)"
+            >{{ 'presenter.countdown_always' | translate }}</button>
+          </div>
         </div>
 
         <!-- Hora manual para hoy: manda sobre el horario y caduca a medianoche. -->
@@ -786,6 +793,23 @@
             </button>
           }
         </form>
+      </section>
+
+      <!-- Invitați: la página oculta de bienvenida y su QR imprimible
+           (docs/ai/33-guests.md). Se abren en otra pestaña: la consola sigue. -->
+      <section class="card" aria-labelledby="guests-title">
+        <header class="card__head">
+          <h2 id="guests-title" class="card__title">{{ 'presenter.guests_title' | translate }}</h2>
+        </header>
+        <p class="note">{{ 'presenter.guests_text' | translate }}</p>
+        <div class="card__actions">
+          <a class="mini mini--go" [href]="guestsLinks.page" target="_blank" rel="noopener">
+            {{ 'presenter.guests_open' | translate }}
+          </a>
+          <a class="mini" [href]="guestsLinks.qr" target="_blank" rel="noopener">
+            {{ 'presenter.guests_qr' | translate }}
+          </a>
+        </div>
       </section>
 
       <!-- Anuncios programados: verlos y probarlos antes del día -->

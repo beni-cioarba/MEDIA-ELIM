@@ -172,26 +172,39 @@ pública y la proyección siguen sin mostrarlos antes de tiempo.
 comienzo de **hoy** según `weeklyProgram` y los eventos de hoy
 (`ScheduleService.todayStarts`; el domingo «10:00 & 18:00» son dos). El panel
 (tarjeta «Cuenta atrás del culto») permite encenderla/apagarla, elegir la
-antelación (15-90 min; **90 por defecto** desde el 04/10/2026) y fijar una **hora manual para hoy** que manda sobre el
+antelación y fijar una **hora manual para hoy** que manda sobre el
 horario y caduca a medianoche (`PresentationDisplayService.countdown`, en
 `localStorage` como el resto: todas las pantallas marcan lo mismo).
+
+**Antelación en segundos (09/11/2026, pedido del usuario)**: `leadSeconds`,
+opciones `15s · 30s · 45s · 60s · 90s · 2m · 5m · Mereu`, **90 s por
+defecto**. Es el aviso de que el culto empieza ya, no un reloj de toda la
+tarde. Antes eran minutos (15′-90′, 90′ por defecto desde el 04/10) y el
+panel los rotulaba con «′», que se leía como segundos: con 90′ se proyectaba
+desde hora y media antes y parecía que «salía siempre». Ahora cada botón
+lleva la unidad escrita y su nombre completo (`presenter.countdown_leads.<s>`,
+`aria-label` y `title`). Las preferencias guardadas con la clave antigua
+`leadMinutes` se leen con el mismo número en segundos (el botón elegido no
+cambia). «Apare la» muestra los segundos cuando los hay (`20:28:30`).
 
 En proyección es una píldora en el **margen inferior izquierdo** (simétrica a
 la firma ELIM), en todas las diapositivas: clara con texto navy sobre las
 diapositivas claras, oscura sobre las de oración a sangre (`:host-context(
 .stage--bleed)`). «ÎNCEPEM ÎN 12:47» con cifras monoespaciadas y un anillo que
-se cierra con la antelación; los 5 últimos minutos en oro; a la hora, «Începem
+se cierra con la antelación; los 5 últimos minutos en oro (con antelaciones de
+5m o menos, oro desde que aparece: todo es «ya»); a la hora, «Începem
 acum» un minuto y desaparece. Rendimiento: el segundero sólo existe dentro de la
 ventana; fuera, un único `setTimeout`. Las diapositivas a sangre reservan 7u
 abajo (causas, collage de familias) para que no pise el texto.
 
-**«Mereu» (siempre, 04/10/2026, pedido del usuario)**: sexta opción de la
-antelación (`leadMinutes = null`). Sin elegir minutos: se ve todo el día
+**«Mereu» (siempre, 04/10/2026, pedido del usuario)**: última opción de la
+antelación (`leadSeconds = null`). Sin antelación fija: se ve todo el día
 hasta el próximo comienzo, **salvo mientras dura un culto anterior de hoy**
 (2 h desde su comienzo, `SERVICE_DURATION_MS`, las mismas que la ventana de
 culto de `ScheduleService`): el domingo, a las 11:00 no se proyecta «Începem
 în 7:00:00» hacia las 18:00 en plena reunión; vuelve a las 12:00. La fila de
-antelación del panel va apilada (`.seg--stacked`): rótulo encima, seis botones.
+antelación del panel va apilada (`.seg--stacked`): rótulo encima, ocho botones
+en una fila.
 
 ## Piezas de esquina pegadas al borde (04/10/2026)
 

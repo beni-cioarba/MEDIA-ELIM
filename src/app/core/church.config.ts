@@ -1333,8 +1333,21 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
     // el concierto de niños (la foto con más gente y más luz), el tineret
     // en alabanza (04/10/2026, también a petición suya) y, agrupados por
     // tema, la música (coro y fanfara) y el bautismo (candidatos y bautismo).
-    // Después Fin de Año y acción social, y cierra la velada de villancicos.
+    // Después Fin de Año y acción social. Desde el 09/11/2026, a petición del
+    // usuario, abre la congregación reunida en el templo (la misma foto de
+    // «Despre noi») y sale la velada de villancicos.
     // Cambiarlo es cambiar lo primero que ve quien entra.
+    {
+      // La congregación sentada en el templo: la foto de «Nuestra historia».
+      // Comparte ficheros con `aboutImage` (no se duplica peso), pero es una
+      // entrada aparte: quitarla de aquí no cambia la página Quiénes somos.
+      id: 'hero_congregation',
+      i18nKey: 'congregation',
+      image: 'assets/about/biserica_adunata_2026-1600.webp',
+      medium: 'assets/about/biserica_adunata_2026-960.webp',
+      thumb: 'assets/about/biserica_adunata_2026-thumb.webp',
+      tone: '#7d6c62',
+    },
     {
       // Los slujitori de la iglesia, foto de grupo del 25 aniversario.
       // Primera a petición del usuario (23/10/2026). Única con `large`: el
@@ -1428,14 +1441,6 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       // Los chicos de delante tienen la cabeza pegada al borde de arriba: con
       // `upper` (28 %) se les cortaba el pelo. Abajo sólo hay cajas.
       focus: 'top',
-    },
-    {
-      id: 'hero_worship',
-      i18nKey: 'worship',
-      image: 'assets/drive-media/concert_colinde_2025.webp',
-      medium: 'assets/drive-media/concert_colinde_2025-960.webp',
-      thumb: 'assets/drive-media/concert_colinde_2025-thumb.webp',
-      tone: '#777e7e',
     },
   ],
 
