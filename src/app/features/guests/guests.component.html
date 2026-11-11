@@ -307,7 +307,7 @@
         <app-icon name="arrow-right" />
       </a>
     </div>
-    <ul class="gst-people" role="list">
+    <ul class="gst-people" role="list" [style.--gst-people-count]="hosts.length">
       @for (host of hosts; track host.id) {
         <li class="gst-person">
           @if (host.photo; as photo) {

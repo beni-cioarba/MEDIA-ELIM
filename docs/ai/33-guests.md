@@ -118,6 +118,11 @@ manda que se lea en un teléfono recién sacado del bolsillo.
 - **Fotos de personas cuadradas** (cara arriba, `object-position: 50% 18%`):
   cuatro retratos 4:5 ocupaban más de una pantalla; el retrato entero, en el
   visor (`[appViewable]` en el **contenedor**, no en el `<img>`).
+- **«Cine te primește»** = pastores + responsable de primire (`GUEST_HOSTS`).
+  Ionuț Mitoșeriu (departamento *guests*) **no** va: se ocupa de invitados
+  especiales, no de quien llega por primera vez. Columnas derivadas del número
+  (`--gst-people-count`, tope 4 desde `md`); en el teléfono, 2 columnas y el
+  impar del final centrado.
 - **Anclas**: el `html` ya reserva la cabecera (`scroll-padding-top`); las
   secciones descuentan su aire superior (`scroll-margin-top` negativo) para
   que el rótulo quede a ~25 px bajo la cabecera. Los enlaces del índice

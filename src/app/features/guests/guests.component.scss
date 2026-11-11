@@ -1028,14 +1028,25 @@
   padding: 0;
   list-style: none;
 
+  // Tantas columnas como personas (tope 4): con 3, sin hueco vacío.
   @include from('md') {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(min(var(--gst-people-count, 4), 4), minmax(0, 1fr));
     gap: var(--sp-5);
   }
 }
 
 .gst-person {
   min-width: 0;
+
+  // Teléfono (2 columnas): si el número es impar, el último va centrado
+  // a media anchura en vez de quedar huérfano a la izquierda.
+  @include until('md') {
+    &:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc((100% - var(--sp-3)) / 2);
+    }
+  }
 }
 
 .gst-person__media {

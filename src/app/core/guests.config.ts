@@ -30,7 +30,9 @@ export const GUEST_HOSTS: readonly GuestHost[] = [
   { person: 'pavel-negrusier', roleKey: 'leadership.titles.pastor' },
   { person: 'grigore-tomoiaga', roleKey: 'leadership.titles.assistant_pastor' },
   { person: 'ioan-lauran', roleKey: 'leadership.departments.welcome' },
-  { person: 'ionut-mitoseriu', roleKey: 'leadership.departments.guests' },
+  // Ionuț Mitoșeriu (departamento «guests») NO va aquí: se ocupa de los
+  // invitados especiales (predicadores, delegaciones), no de quien llega
+  // por primera vez a la iglesia.
 ];
 
 /**
