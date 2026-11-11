@@ -10,6 +10,8 @@ import {
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { LanguageService } from '../../core/services/language.service';
+import { withShareLang } from '../../core/util/share-lang';
 
 /**
  * Botón de "compartir" universal para visitantes de la web.
@@ -478,6 +480,7 @@ import { CHURCH_CONFIG } from '../../core/church.config';
 export class ShareButtonComponent {
   private readonly config = inject(CHURCH_CONFIG);
   private readonly translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
 
   /** URL a compartir. Por defecto usa la URL pública canónica de la iglesia. */
   @Input() url?: string;
@@ -489,10 +492,14 @@ export class ShareButtonComponent {
   protected readonly isModalOpen = signal(false);
   protected readonly copied = signal(false);
 
+  /**
+   * El enlace lleva el idioma de quien comparte (`?lang=`, o `/invitati/es/`
+   * en la página de invitados): quien lo abre lo ve en ese mismo idioma.
+   */
   protected get shareUrl(): string {
-    if (this.url) return this.url;
-    if (typeof window !== 'undefined') return window.location.href;
-    return this.config.publicUrl;
+    const base =
+      this.url ?? (typeof window !== 'undefined' ? window.location.href : this.config.publicUrl);
+    return withShareLang(base, this.language.current());
   }
 
   protected get shareTitle(): string {

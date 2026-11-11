@@ -407,6 +407,24 @@ export const APP_ROUTES: Routes = [
         },
       },
       {
+        // La misma página **en español**: el idioma va en la ruta para que
+        // tenga su propia página estática (la tarjeta de WhatsApp sale en
+        // español) y para que el enlace abra siempre en español, lo haya
+        // compartido quien lo haya compartido. Es lo que codifica el QR.
+        path: `${APP_PATHS.guests}/es`,
+        loadComponent: () =>
+          import('./features/guests/guests.component').then((m) => m.GuestsComponent),
+        resolve: { i18n: guestsTranslationsResolver },
+        data: {
+          lang: 'es',
+          seo: {
+            titleKey: 'seo.guests.title',
+            descriptionKey: 'seo.guests.description',
+            noindex: true,
+          },
+        },
+      },
+      {
         path: APP_PATHS.donate,
         loadComponent: () =>
           import('./features/donate/donate.component').then((m) => m.DonateComponent),

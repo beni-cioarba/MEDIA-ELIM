@@ -20,11 +20,17 @@
       "starts_in": "începe în {{time}}",
       "also_today": "Tot azi",
       "calendar": "Adaugă în calendar",
+      "calendar_sunday": "Adaugă duminica în calendar",
       "calendar_title": "{{service}} · Biserica Elim",
       "calendar_description": "Te așteptăm la Biserica Elim. Pagina pentru invitați: {{url}}",
-      "directions": "Cum ajungi"
+      "directions": "Cum ajungi",
+      "sunday_status": "Te așteptăm duminică · {{date}}",
+      "now": "Acum",
+      "live_short": "în desfășurare",
+      "ics": "iPhone sau Outlook? Descarcă fișierul .ics"
     },
     "toc": "Pe această pagină",
+    "new_tab": "se deschide într-o filă nouă",
     "sections": {
       "expect": {
         "chip": "Ce te așteaptă",
@@ -43,14 +49,18 @@
       "people": {
         "chip": "Cine te primește",
         "title": "Oamenii pe care îi vei cunoaște",
-        "lead": "Pastorii bisericii și cei care se ocupă de primirea oaspeților."
+        "lead": "Pastorii bisericii și cel care te întâmpină la ușă."
+      },
+      "first": {
+        "chip": "Primii pași"
       },
       "ages": {
         "chip": "Pentru fiecare",
         "title": "Un loc pentru fiecare vârstă",
-        "lead": "Copii, tineri, muzică, misiune: în fiecare departament e loc și pentru tine."
+        "lead": "Tineri, muzică, misiune: în fiecare departament e loc și pentru tine."
       },
       "events": {
+        "chip": "Ce urmează",
         "title": "Ce urmează",
         "lead": "Evenimentele apropiate. La toate ești binevenit.",
         "all": "Toate evenimentele"
@@ -106,16 +116,34 @@
       "address": "Adresa",
       "open_maps": "Deschide în Google Maps",
       "copy": "Adresa",
-      "map_title": "Harta cu locația Bisericii Elim"
+      "map_title": "Harta cu locația Bisericii Elim",
+      "show_map": "Arată harta",
+      "map_note": "Harta se încarcă de la Google Maps."
     },
     "faq": {
       "language": {
         "q": "În ce limbă sunt serviciile?",
-        "a": "În limba română. Versurile cântărilor se proiectează pe ecran, ca să le poți urma ușor. Biserica are și o echipă de traducere: dacă nu vorbești româna, scrie-ne înainte și îți spunem cum te putem ajuta."
+        "a": "Serviciile sunt în limba română, dar limba nu e o piedică: avem traducere în direct, prin audio, în limba spaniolă, și o putem adapta pentru orice altă limbă de care ai nevoie. Scrie-ne înainte și pregătim totul pentru tine. Versurile cântărilor se proiectează pe ecran."
       },
       "children": {
         "q": "Pot veni cu copiii?",
         "a": "Da. Copiii au program separat, pe vârste, în timpul mesajului: îi lași și îi iei la ieșire."
+      },
+      "duration": {
+        "q": "Cât durează serviciul?",
+        "a": "Duminica, atât dimineața cât și seara, serviciul durează aproximativ 2 ore. În cursul săptămânii, aproximativ o oră și jumătate."
+      },
+      "parking": {
+        "q": "Am unde parca?",
+        "a": "Da. Este loc de parcare suficient și gratuit."
+      },
+      "access": {
+        "q": "Clădirea are acces fără trepte?",
+        "a": "Da. Intrarea și sala sunt accesibile fără trepte, și avem baie adaptată pentru persoanele cu dizabilități."
+      },
+      "dress": {
+        "q": "Cum să mă îmbrac?",
+        "a": "Hainele nu sunt ce contează: vino cum poți. Ca recomandare, o ținută elegantă sau clasică — mai formală ori casual, cum te simți bine."
       },
       "communion": {
         "q": "Ce este Cina Domnului? Trebuie să particip?",

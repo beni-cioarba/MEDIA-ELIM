@@ -32,6 +32,13 @@ export class WeekScheduleComponent {
    */
   readonly showHead = input(true);
 
+  /**
+   * Traducción breve de cada título (contenido en rumano) bajo el original,
+   * o `null` si no hay. Sólo la usa la página de invitados en español: el
+   * resto de la web publica los títulos tal cual.
+   */
+  readonly gloss = input<((title: string) => string | null) | null>(null);
+
   protected readonly schedule = inject(ScheduleService);
   protected readonly next = this.schedule.nextService;
   protected readonly weeklyLink = blockPath('weekly');

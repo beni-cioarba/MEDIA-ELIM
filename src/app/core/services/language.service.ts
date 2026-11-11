@@ -40,7 +40,11 @@ export class LanguageService {
   init(): Promise<void> {
     this.translate.addLangs([...SUPPORTED]);
     this.followOtherWindows();
-    return this.apply(this.readFromStorage() ?? DEFAULT_LANG);
+    // Un enlace compartido lleva el idioma de quien lo compartió (`?lang=es`,
+    // ver `withShareLang`): manda sobre lo guardado, para que quien lo abre
+    // vea lo mismo que vio quien se lo envió. No se guarda como elección
+    // suya: en su próxima visita sin `?lang` vuelve a su idioma de siempre.
+    return this.apply(this.readFromUrl() ?? this.readFromStorage() ?? DEFAULT_LANG);
   }
 
   /**
@@ -82,6 +86,15 @@ export class LanguageService {
       const lang = event.newValue;
       if ((lang === 'es' || lang === 'ro') && lang !== this.current()) void this.apply(lang);
     });
+  }
+
+  private readFromUrl(): AppLanguage | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      const v = new URLSearchParams(window.location.search).get('lang')?.trim().toLowerCase();
+      if (v === 'es' || v === 'ro') return v;
+    } catch { /* ignore */ }
+    return null;
   }
 
   private readFromStorage(): AppLanguage | null {

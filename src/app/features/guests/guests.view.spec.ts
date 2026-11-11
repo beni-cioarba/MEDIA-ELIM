@@ -1,6 +1,9 @@
 import {
   buildVCard,
+  glossTitle,
+  googleCalendarUrl,
   guestsDisplayUrl,
+  guestsPath,
   guestsUrl,
   initialsOf,
   nextServiceState,
@@ -19,8 +22,50 @@ describe('guests.view', () => {
       expect(guestsUrl('https://elimarganda.com', 'ro')).toBe('https://elimarganda.com/invitati/');
     });
 
-    it('sólo el español lleva ?lang (el rumano es el idioma por defecto)', () => {
-      expect(guestsUrl('https://elimarganda.com/', 'es')).toBe('https://elimarganda.com/invitati/?lang=es');
+    it('el español va en la ruta (/invitati/es/), con su propia página estática', () => {
+      expect(guestsUrl('https://elimarganda.com/', 'es')).toBe('https://elimarganda.com/invitati/es/');
+    });
+  });
+
+  describe('guestsPath', () => {
+    it('ruta interna por idioma', () => {
+      expect(guestsPath('ro')).toBe('/invitati');
+      expect(guestsPath('es')).toBe('/invitati/es');
+    });
+  });
+
+  describe('googleCalendarUrl', () => {
+    it('evento ya rellenado, hora de Madrid sin zona y duración', () => {
+      const url = new URL(
+        googleCalendarUrl({
+          title: 'Închinare · Biserica Elim',
+          iso: '2026-11-15',
+          time: '10:00',
+          durationMin: 120,
+          details: 'Te așteptăm',
+          location: 'Av. de Madrid, 30, 28500 Arganda del Rey',
+        }),
+      );
+      expect(url.origin + url.pathname).toBe('https://calendar.google.com/calendar/render');
+      expect(url.searchParams.get('action')).toBe('TEMPLATE');
+      expect(url.searchParams.get('dates')).toBe('20261115T100000/20261115T120000');
+      expect(url.searchParams.get('ctz')).toBe('Europe/Madrid');
+      expect(url.searchParams.get('text')).toBe('Închinare · Biserica Elim');
+      expect(url.searchParams.get('location')).toBe('Av. de Madrid, 30, 28500 Arganda del Rey');
+    });
+  });
+
+  describe('glossTitle', () => {
+    const glossary = { Învățătură: 'Enseñanza', 'Studiu biblic': 'Estudio bíblico', Rugăciune: 'Oración' };
+
+    it('traduce un título y uno compuesto por partes', () => {
+      expect(glossTitle('Rugăciune', glossary)).toBe('Oración');
+      expect(glossTitle('Învățătură · Studiu biblic', glossary)).toBe('Enseñanza · Estudio bíblico');
+    });
+
+    it('sin entrada (o a medias) no traduce nada', () => {
+      expect(glossTitle('Seară de tineret', glossary)).toBeNull();
+      expect(glossTitle('Învățătură · Ceva nou', glossary)).toBeNull();
     });
   });
 
@@ -28,6 +73,10 @@ describe('guests.view', () => {
     it('quita el protocolo, el www y la barra final', () => {
       expect(guestsDisplayUrl('https://www.elimarganda.com/')).toBe('elimarganda.com/invitati');
       expect(guestsDisplayUrl('http://elimarganda.com')).toBe('elimarganda.com/invitati');
+    });
+
+    it('en español, la dirección de la versión en español', () => {
+      expect(guestsDisplayUrl('https://elimarganda.com/', 'es')).toBe('elimarganda.com/invitati/es');
     });
   });
 

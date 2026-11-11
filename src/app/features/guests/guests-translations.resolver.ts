@@ -23,15 +23,17 @@ const loadGuests: TranslationPackLoader = async (lang) => {
 };
 
 /**
- * Antes de activar la ruta: aplica `?lang=es|ro` (el QR en español abre la
- * página en español; es una elección explícita, así que se guarda) y espera
- * al paquete del idioma ya definitivo. Así no se pinta ni una clave suelta ni
- * un parpadeo de rumano a español.
+ * Antes de activar la ruta: aplica el idioma del enlace —el de la ruta
+ * (`/invitati/es`, `data.lang`) o, en enlaces antiguos y compartidos,
+ * `?lang=es|ro`— y espera al paquete del idioma ya definitivo. Así no se
+ * pinta ni una clave suelta ni un parpadeo de rumano a español. Abrir un
+ * enlace en un idioma es una elección explícita, así que se guarda.
  */
 export const guestsTranslationsResolver: ResolveFn<boolean> = async (route) => {
   const language = inject(LanguageService);
   const packs = inject(TranslationPackService);
-  const lang = parseGuestLang(route.queryParamMap.get('lang'));
+  const lang =
+    parseGuestLang(route.queryParamMap.get('lang')) ?? parseGuestLang(route.data['lang'] as string | undefined);
   if (lang && lang !== language.current()) await language.use(lang);
   await packs.load('guests', loadGuests);
   return true;

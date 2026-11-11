@@ -495,6 +495,47 @@
   color: var(--c-muted);
 }
 
+// Lo de hoy en marcha (línea secundaria bajo el domingo): verde «ahora».
+.gst-next__sunday.is-live .gst-next__sunday-label {
+  color: var(--c-success);
+}
+
+// Traducción breve bajo el título rumano (página en español).
+.gst-next__gloss {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--c-muted);
+}
+
+// «iPhone / Outlook: .ics»: alternativa discreta bajo los dos botones.
+.gst-next__ics {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--gst-tap);
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: var(--r-lg);
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--gst-navy);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(2px);
+}
+
 .gst-next__today {
   padding: var(--sp-4);
   border-radius: var(--r-lg);
@@ -554,38 +595,38 @@
 // 3 · Índice de la página
 // ---------------------------------------------------------------------
 
+// Índice: los chips se reparten en filas a cualquier ancho. Antes, en el
+// teléfono, era una fila deslizable que cortaba el último chip a la mitad
+// («Cin…») sin ninguna pista de que había más: parecía un fallo, y la mitad
+// del índice quedaba fuera de la vista. Todo a la vista, sin gesto.
 .gst-toc {
   margin-top: var(--sp-6);
-
-  // Teléfono: una fila que se desliza, hasta el borde de la pantalla.
-  @include until('md') {
-    margin-inline: calc(-1 * var(--page-gutter));
-  }
 }
 
 .gst-toc__list {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--sp-2);
   margin: 0;
-  padding: 0.25rem var(--page-gutter);
+  padding: 0;
   list-style: none;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
   > li {
-    flex: none;
-    scroll-snap-align: start;
+    min-width: 0;
   }
 
-  @include from('md') {
-    flex-wrap: wrap;
-    padding-inline: 0;
-    overflow: visible;
+  // Teléfono: los nueve chips en 4 filas (199 px) en vez de 5 (251 px):
+  // sin icono y con menos relleno. El alto táctil (44 px) no se toca.
+  @include until('sm') {
+    gap: 0.375rem;
+
+    .gst-toc__chip {
+      padding: 0 0.85rem;
+
+      app-icon {
+        display: none;
+      }
+    }
   }
 }
 
@@ -808,6 +849,17 @@
   list-style: none;
   counter-reset: none;
 
+  // Teléfono: los cuatro pasos en **una** tarjeta, unidos por una línea
+  // (cronología). Cuatro tarjetas sueltas eran 918 px de bordes y aire.
+  @include until('sm') {
+    gap: 0;
+    padding: var(--sp-2) var(--sp-4);
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--gst-radius);
+    background: var(--c-surface);
+    box-shadow: var(--gst-shadow);
+  }
+
   @include from('sm') {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -832,6 +884,27 @@
   border-radius: var(--gst-radius);
   background: var(--c-surface);
   box-shadow: var(--gst-shadow);
+
+  @include until('sm') {
+    padding: var(--sp-3) 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    column-gap: var(--sp-3);
+
+    // La línea que une un número con el siguiente.
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: calc(var(--sp-3) + 2.25rem + 0.25rem);
+      bottom: calc(-1 * var(--sp-3) + 0.25rem);
+      left: calc(2.25rem / 2 - 1px);
+      width: 2px;
+      border-radius: 1px;
+      background: var(--c-gold-tint);
+    }
+  }
 
   @include from('lg') {
     grid-template-columns: 1fr auto;
@@ -919,6 +992,29 @@
   border-radius: 18px;
 }
 
+// El programa compartido es denso (12–13 px; «AZI» a 10 px): aquí lo lee
+// alguien que no conoce la iglesia, con el teléfono en la mano. Mismo
+// componente, un escalón de letra más (≥ 14 px el texto, ≥ 12 px rótulos).
+:host ::ng-deep .gst-week {
+  .schedule__day {
+    font-size: 0.9375rem;
+  }
+
+  .schedule__date,
+  .schedule__context {
+    font-size: 0.8125rem;
+  }
+
+  .schedule__today,
+  .schedule__rule {
+    font-size: 0.75rem;
+  }
+
+  .schedule__monthly {
+    font-size: 0.875rem;
+  }
+}
+
 // ---------------------------------------------------------------------
 // 7 · Cine suntem
 // ---------------------------------------------------------------------
@@ -959,7 +1055,7 @@
 
 .gst-facts {
   position: relative;
-  padding: var(--sp-5) var(--sp-4);
+  padding: var(--sp-4);
   overflow: hidden;
   border-radius: var(--gst-radius-lg);
   background:
@@ -999,19 +1095,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+// Rótulo en minúscula y sin espaciado: a 10,5 px en mayúsculas no se leía
+// («APARȚINĂTORI» partía la palabra). Ahora ≥ 12 px y cabe en su tercio.
 .gst-fact__label {
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  line-height: 1.25;
   color: var(--c-gold-soft);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   hyphens: auto;
 }
 
 .gst-facts__asof {
-  margin: var(--sp-4) 0 0;
-  font-size: 0.75rem;
+  margin: var(--sp-3) 0 0;
+  font-size: 0.8125rem;
   text-align: center;
   color: rgb(255 255 255 / 0.62);
 }
@@ -1020,31 +1117,61 @@
 // 8 · Cine te primește
 // ---------------------------------------------------------------------
 
+// Teléfono: una fila por persona (foto a la izquierda, nombre y papel a la
+// derecha), que crece hacia abajo sin huecos ni huérfanos con cualquier
+// número. Desde `md`: rejilla de retratos, una columna por persona (tope 4)
+// y **ancho máximo** por retrato: con menos personas no se agrandan, se
+// quedan a la izquierda alineadas con el título.
 .gst-people {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-4) var(--sp-3);
+  gap: var(--sp-3);
   margin: 0;
   padding: 0;
   list-style: none;
 
-  // Tantas columnas como personas (tope 4): con 3, sin hueco vacío.
   @include from('md') {
-    grid-template-columns: repeat(min(var(--gst-people-count, 4), 4), minmax(0, 1fr));
-    gap: var(--sp-5);
+    grid-template-columns: repeat(min(var(--gst-people-count, 4), 4), minmax(0, 15rem));
+    justify-content: start;
+    gap: var(--sp-6);
   }
 }
 
 .gst-person {
   min-width: 0;
 
-  // Teléfono (2 columnas): si el número es impar, el último va centrado
-  // a media anchura en vez de quedar huérfano a la izquierda.
   @include until('md') {
-    &:last-child:nth-child(odd) {
-      grid-column: 1 / -1;
-      justify-self: center;
-      width: calc((100% - var(--sp-3)) / 2);
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr;
+    column-gap: var(--sp-4);
+    padding: var(--sp-3);
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--gst-radius);
+    background: var(--c-surface);
+
+    > .gst-person__media,
+    > .gst-person__photo {
+      grid-row: 1 / -1;
+    }
+
+    .gst-person__name {
+      grid-row: 2;
+      margin: 0;
+    }
+
+    .gst-person__role {
+      grid-row: 3;
+    }
+
+    // Ya va en una tarjeta: la foto sin sombra propia y con radio menor.
+    .gst-person__media,
+    .gst-person__photo {
+      border-radius: calc(var(--gst-radius) - 4px);
+      box-shadow: none;
+    }
+
+    .gst-person__photo--mono {
+      font-size: 1.5rem;
     }
   }
 }
@@ -1109,8 +1236,11 @@
 // 9 · Pentru fiecare vârstă
 // ---------------------------------------------------------------------
 
+// Teléfono: baldosas de 2 en 2 (icono arriba, nombre, frase); desde `sm`,
+// filas con icono a la izquierda. Seis departamentos = 3 × 2 o 2 × 3.
 .gst-ages {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--sp-3);
   margin: 0;
   padding: 0;
@@ -1154,14 +1284,25 @@
   }
 
   @include focus-ring(2px);
-}
 
-// Los niños: no es un enlace, es lo que pasa en el culto. Tono navy y a
-// todo el ancho (encabeza la rejilla: los seis departamentos quedan 3 + 3).
-.gst-age--kids {
-  grid-column: 1 / -1;
-  background: var(--c-veil);
-  border-color: transparent;
+  @include until('sm') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    min-height: 0;
+    padding: var(--sp-3);
+
+    // Toda la baldosa es el enlace: la flecha sobra.
+    .gst-age__go {
+      display: none;
+    }
+
+    .gst-age__icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      font-size: 1.15rem;
+    }
+  }
 }
 
 .gst-age__icon {
@@ -1174,11 +1315,6 @@
   background: var(--c-gold-tint);
   font-size: 1.35rem;
   color: var(--c-gold-deep);
-
-  .gst-age--kids & {
-    background: var(--gst-navy);
-    color: var(--c-gold-soft);
-  }
 }
 
 .gst-age__text {
@@ -1383,6 +1519,54 @@
     height: 100%;
     border: 0;
   }
+}
+
+// Antes de cargar Google Maps: plano de calles insinuado (rejilla muy
+// tenue), la chincheta y el botón. Misma caja que el mapa: no salta nada.
+.gst-map-gate {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-2);
+  height: 100%;
+  padding: var(--sp-5);
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 45%, var(--c-surface) 0 22%, transparent 62%),
+    repeating-linear-gradient(0deg, transparent 0 38px, var(--c-hairline) 38px 40px),
+    repeating-linear-gradient(90deg, transparent 0 38px, var(--c-hairline) 38px 40px),
+    var(--c-veil);
+}
+
+.gst-map-gate__pin {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: var(--gst-navy);
+  box-shadow: var(--gst-shadow);
+
+  app-icon {
+    transform: rotate(45deg);
+    font-size: 1.4rem;
+    color: var(--c-gold-soft);
+  }
+}
+
+.gst-map-gate__place {
+  margin: var(--sp-1) 0 var(--sp-2);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--gst-navy);
+}
+
+.gst-map-gate__note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--c-muted);
 }
 
 // ---------------------------------------------------------------------

@@ -55,6 +55,11 @@ export const GUEST_DEPARTMENTS: readonly DepartmentId[] = [
 export const GUEST_FAQ = [
   'language',
   'children',
+  // Respuestas de la iglesia del 11/11/2026.
+  'duration',
+  'parking',
+  'access',
+  'dress',
   'communion',
   'online',
   'beliefs',
@@ -75,7 +80,10 @@ export const GUEST_SECTIONS: readonly GuestSection[] = [
   { id: 'program', icon: 'calendar' },
   { id: 'about', icon: 'heart' },
   { id: 'people', icon: 'users' },
+  { id: 'first', icon: 'hand-heart' },
   { id: 'ages', icon: 'sparkles' },
+  // Sólo si hay eventos próximos (la sección se oculta sin ellos).
+  { id: 'events', icon: 'megaphone' },
   { id: 'directions', icon: 'map-pin' },
   { id: 'faq', icon: 'info' },
 ];
@@ -87,6 +95,24 @@ export const GUEST_STEPS: readonly { readonly id: string; readonly icon: IconNam
   { id: 'word', icon: 'book' },
   { id: 'family', icon: 'family' },
 ];
+
+/**
+ * Traducción breve de los títulos del programa semanal para la página en
+ * **español** (bajo el título rumano, en cursiva). Los títulos son contenido
+ * de la iglesia y se publican en rumano en toda la web (decisión del
+ * 18/10/2026); aquí los lee justamente quien eligió español. Un título nuevo
+ * en `weeklyProgram` sin entrada aquí simplemente no lleva glosa.
+ */
+export const GUEST_TITLE_GLOSS_ES: Readonly<Record<string, string>> = {
+  'Rugăciune și stăruință după Duhul Sfânt': 'Oración y búsqueda del Espíritu Santo',
+  Rugăciune: 'Oración',
+  Învățătură: 'Enseñanza',
+  'Studiu biblic': 'Estudio bíblico',
+  'Rugăciune și învățătură': 'Oración y enseñanza',
+  'Seară de tineret': 'Noche de jóvenes',
+  'Închinare și învățătură': 'Adoración y enseñanza',
+  'Cina Domnului': 'Santa Cena',
+};
 
 /** Cuántos eventos próximos se enseñan (el resto, en su página). */
 export const GUEST_EVENTS_MAX = 3;

@@ -15,12 +15,11 @@ import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { CHURCH_CONFIG } from '../../../core/church.config';
-import { APP_PATHS } from '../../../core/navigation/app-paths';
 import { AppLanguage, LanguageService } from '../../../core/services/language.service';
 import { ScheduleService } from '../../../core/services/schedule.service';
 import { BrandLogoComponent } from '../../../shared/brand-logo/brand-logo.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { guestsDisplayUrl, guestsUrl } from '../guests.view';
+import { guestsDisplayUrl, guestsPath, guestsUrl } from '../guests.view';
 
 /** Formato de la hoja. */
 type SheetFormat = 'poster' | 'cards';
@@ -47,7 +46,7 @@ const QR_PAPER = '#ffffff';
  * la misma hoja escalada (`--k`) al ancho disponible.
  *
  * El código lleva la URL con barra final (respuesta 200 directa, ver
- * `guestsUrl`) y el idioma activo (`?lang=es` en español). Bajo el código va
+ * `guestsUrl`) y el idioma activo (en español, `/invitati/es/`). Bajo el código va
  * la dirección escrita, para quien no escanea.
  */
 @Component({
@@ -85,13 +84,13 @@ export class GuestsQrComponent {
   /** Lo que codifica el QR (idioma activo). */
   protected readonly qrData = computed(() => guestsUrl(this.config.publicUrl, this.language.current()));
 
-  /** Dirección escrita bajo el código. */
-  protected readonly displayUrl = guestsDisplayUrl(this.config.publicUrl);
-
-  protected readonly pagePath = `/${APP_PATHS.guests}`;
-  protected readonly pageQuery = computed(() =>
-    this.language.current() === 'es' ? { lang: 'es' } : {},
+  /** Dirección escrita bajo el código (`elimarganda.com/invitati/es` en español). */
+  protected readonly displayUrl = computed(() =>
+    guestsDisplayUrl(this.config.publicUrl, this.language.current()),
   );
+
+  /** La página en el idioma de la hoja. */
+  protected readonly pagePath = computed(() => guestsPath(this.language.current()));
 
   /** Cuatro tarjetas por hoja. */
   protected readonly cards = [0, 1, 2, 3];

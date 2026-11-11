@@ -442,6 +442,13 @@ vuelve a fusionar al cambiar de idioma). Referencia:
   `iglesia-redes.lang.elegido` en localStorage); sin elección, rumano. La clave
   antigua `iglesia-redes.lang` guardaba también el idioma detectado y se
   abandonó por eso.
+- **El idioma viaja con el enlace compartido** (11/11/2026): todo lo que se
+  comparte (botón flotante `app-share-button`, perfiles del organigrama y de
+  botezuri) pasa por `withShareLang` (`core/util/share-lang.ts`), que añade
+  `?lang=<idioma de quien comparte>` (en invitados, la ruta `/invitati/es/`).
+  Al abrirlo, `LanguageService.init` lee `?lang` **antes** que lo guardado y
+  lo aplica **sin guardarlo**: quien lo abre ve lo mismo que vio quien lo
+  envió, y en su próxima visita sin `?lang` vuelve a su idioma.
 - Toda clave debe existir en **ambos** ficheros, con la misma estructura.
 - En plantillas, siempre `{{ 'clave' | translate }}` o
   `[attr.aria-label]="'clave' | translate"`. Nunca texto literal.

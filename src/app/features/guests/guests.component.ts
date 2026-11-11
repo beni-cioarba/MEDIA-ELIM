@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent } from '../../core/church.config';
 import { DEPARTMENTS } from '../../core/departments.config';
@@ -19,6 +19,7 @@ import {
   GUEST_HOSTS,
   GUEST_SECTIONS,
   GUEST_STEPS,
+  GUEST_TITLE_GLOSS_ES,
 } from '../../core/guests.config';
 import { PEOPLE_INDEX } from '../../core/leadership.config';
 import { APP_PATHS, blockPath, departmentPath } from '../../core/navigation/app-paths';
@@ -41,6 +42,9 @@ import { STORY_FACTS, STORY_FACTS_AS_OF } from '../about/about-story.data';
 import { personPhoto, photoSource, PhotoSource } from '../leadership/person-photo';
 import {
   buildVCard,
+  glossTitle,
+  googleCalendarUrl,
+  guestsPath,
   guestsUrl,
   initialsOf,
   nextServiceState,
@@ -70,6 +74,9 @@ const LANGUAGES: readonly { readonly code: AppLanguage; readonly name: string }[
   { code: 'ro', name: 'Română' },
   { code: 'es', name: 'Español' },
 ];
+
+/** Duración del culto del domingo (dato de la iglesia, 11/11/2026: 2 h). */
+const SERVICE_DURATION_MIN = 120;
 
 /** Cuánto se ve el aviso «contacto descargado» (ms). */
 const SAVED_NOTICE_MS = 6000;
@@ -109,16 +116,29 @@ export class GuestsComponent {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
 
   protected readonly languages = LANGUAGES;
-  protected readonly sections = GUEST_SECTIONS;
+  /** Índice: «Ce urmează» sólo cuando hay eventos (sin ellos, la sección no se pinta). */
+  protected readonly sections = computed(() =>
+    GUEST_SECTIONS.filter((s) => s.id !== 'events' || this.events().length > 0),
+  );
   protected readonly steps = GUEST_STEPS;
   protected readonly faq = GUEST_FAQ;
   protected readonly heroImage = this.config.aboutImage;
 
-  /** Ruta de la página (las anclas del índice la llevan delante: el `base href` resolvería `#x` contra la portada). */
-  protected readonly pagePath = `/${APP_PATHS.guests}`;
+  /**
+   * Ruta de la página en el idioma activo (`/invitati` o `/invitati/es`).
+   * Las anclas del índice la llevan delante: el `base href` resolvería `#x`
+   * contra la portada.
+   */
+  protected readonly pagePath = computed(() => guestsPath(this.language.current()));
+
+  /** Glosa en español bajo los títulos rumanos del programa (sólo en español). */
+  protected readonly gloss = computed(() =>
+    this.language.current() === 'es'
+      ? (title: string) => glossTitle(title, GUEST_TITLE_GLOSS_ES)
+      : null,
+  );
 
   protected readonly links = {
     leadership: `/${APP_PATHS.leadership}`,
@@ -155,11 +175,32 @@ export class GuestsComponent {
   protected readonly sunday = computed(() => {
     const program = this.schedule.weeklyProgram().find((p) => p.day === 0);
     if (!program) return null;
+    // El domingo que viene: hoy si es domingo y aún queda culto (lo próximo
+    // es domingo); si hoy es domingo y ya pasó, el de la semana siguiente.
+    const now = new Date(this.clock.now());
+    const next = this.next();
+    const from = now.getDay() === 0 && next?.day !== 0 ? new Date(now.getTime() + 86_400_000) : now;
+    const [iso] = nextWeeklyDates(0, from, 1);
+    // Título de **ese** domingo (el primero del mes es «Cina Domnului · Seară
+    // de tineret»), si cae en la semana en curso; si no, el de siempre.
+    const ofThatDay = this.schedule.week().find((d) => d.iso === iso)?.services[0]?.title;
+    const parts = this.schedule.formatDayParts(iso);
     // El nombre del día, en el idioma de la interfaz («Domingo»); el título
     // del culto es contenido de la iglesia y va como se publica (en rumano).
-    const [iso] = nextWeeklyDates(0, new Date(this.clock.now()), 1);
     this.language.current();
-    return { ...program, dayName: this.weekday(iso) };
+    return {
+      ...program,
+      iso,
+      title: ofThatDay ?? program.title,
+      dayName: this.weekday(iso),
+      dateLabel: `${parts.day} ${parts.month}`,
+    };
+  });
+
+  /** Lo próximo no es el domingo: la tarjeta pone el domingo delante y lo de hoy/mañana debajo. */
+  protected readonly sundayFirst = computed(() => {
+    const next = this.next();
+    return !!this.sunday() && (!next || next.day !== 0);
   });
 
   /** Eventos de hoy (los del calendario, no los del programa fijo). */
@@ -226,6 +267,13 @@ export class GuestsComponent {
     ),
   );
 
+  /**
+   * El mapa de Google se carga **a petición**: hasta que se pulsa, ni cookies
+   * de terceros ni ~1 MB de scripts. Debajo ya está la dirección y «Abrir en
+   * Google Maps», que es lo que usa casi todo el mundo desde el teléfono.
+   */
+  protected readonly mapLoaded = signal(false);
+
   /** Aviso accesible tras descargar el contacto. */
   protected readonly contactSaved = signal(false);
   private savedTimer: ReturnType<typeof setTimeout> | null = null;
@@ -237,18 +285,13 @@ export class GuestsComponent {
 
   }
 
-  protected setLanguage(code: AppLanguage): void {
+  protected async setLanguage(code: AppLanguage): Promise<void> {
     if (code === this.language.current()) return;
-    void this.language.use(code);
-    // La dirección refleja el idioma: quien la comparta ahora la comparte en
-    // el idioma que ve (`?lang=es`; el rumano, por defecto, sin parámetro).
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { lang: code === 'es' ? 'es' : null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-      preserveFragment: true,
-    });
+    await this.language.use(code);
+    // La dirección refleja el idioma (`/invitati` ↔ `/invitati/es`): quien
+    // la comparta ahora la comparte en el idioma que ve, y cada idioma tiene
+    // su página estática (la tarjeta de WhatsApp sale en ese idioma).
+    void this.router.navigateByUrl(guestsPath(code), { replaceUrl: true });
   }
 
   /**
@@ -277,16 +320,52 @@ export class GuestsComponent {
     target.focus({ preventScroll: true });
   }
 
-  /** El próximo culto como evento de calendario (`.ics`). */
-  protected addToCalendar(): void {
+  /**
+   * Qué culto se guarda en el calendario: el **domingo**, que es al que se
+   * invita a quien viene por primera vez. Si lo próximo ya es un domingo
+   * (hoy a las 18:00, por ejemplo), esa sesión; si no, la primera hora del
+   * domingo que viene (10:00). Un miércoles de estudio bíblico no es la
+   * primera visita que se le propone a nadie.
+   */
+  protected readonly calendarTarget = computed<{ iso: string; time: string; title: string } | null>(() => {
     const next = this.next();
-    if (!next) return;
+    if (next?.day === 0) return { iso: next.iso, time: next.time, title: next.service.title };
+    const sun = this.sunday();
+    if (!sun) return null;
+    return { iso: sun.iso, time: sun.time.split('&')[0].trim(), title: sun.title };
+  });
+
+  /**
+   * El mismo domingo en **Google Calendar** (enlace con el evento ya
+   * rellenado). En Android, que es la mayoría, el `.ics` se queda en
+   * Descargas y nadie lo abre; el enlace abre la app de Calendar directamente.
+   */
+  protected readonly googleCalendarHref = computed(() => {
+    const target = this.calendarTarget();
+    if (!target) return null;
+    this.language.current();
+    return googleCalendarUrl({
+      title: this.translate.instant('guests.next.calendar_title', { service: target.title }) as string,
+      iso: target.iso,
+      time: target.time,
+      durationMin: SERVICE_DURATION_MIN,
+      details: this.translate.instant('guests.next.calendar_description', {
+        url: guestsUrl(this.config.publicUrl, this.language.current()),
+      }) as string,
+      location: this.config.location.mapsQuery,
+    });
+  });
+
+  /** El domingo como evento de calendario (`.ics`). */
+  protected addToCalendar(): void {
+    const target = this.calendarTarget();
+    if (!target) return;
     const event: UpcomingEvent = {
-      // El fichero y el UID ya llevan la fecha: `serviciu-2030-2026-11-09.ics`.
-      id: `serviciu-${next.time.replace(':', '')}`,
-      date: next.iso,
-      time: next.time,
-      title: this.translate.instant('guests.next.calendar_title', { service: next.service.title }) as string,
+      // El fichero y el UID ya llevan la fecha: `serviciu-1000-2026-11-15.ics`.
+      id: `serviciu-${target.time.replace(':', '')}`,
+      date: target.iso,
+      time: target.time,
+      title: this.translate.instant('guests.next.calendar_title', { service: target.title }) as string,
       description: this.translate.instant('guests.next.calendar_description', {
         url: guestsUrl(this.config.publicUrl, this.language.current()),
       }) as string,

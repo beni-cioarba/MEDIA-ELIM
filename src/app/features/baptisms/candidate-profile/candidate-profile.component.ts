@@ -8,6 +8,7 @@ import { BreadcrumbTailService } from '../../../core/navigation/breadcrumb-tail.
 import { SeoService } from '../../../core/seo/seo.service';
 import { BaptismsService, CandidateView } from '../../../core/services/baptisms.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { withShareLang } from '../../../core/util/share-lang';
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
@@ -87,8 +88,12 @@ export class CandidateProfileComponent {
 
   protected readonly registerLink = computed(() => this.baptism().link);
 
-  protected readonly url = computed(
-    () => `${this.config.publicUrl.replace(/\/$/, '')}${this.candidate().link}`,
+  /** Enlace público, con el idioma de quien lo comparte (`?lang=`). */
+  protected readonly url = computed(() =>
+    withShareLang(
+      `${this.config.publicUrl.replace(/\/$/, '')}${this.candidate().link}`,
+      this.language.current(),
+    ),
   );
 
   protected readonly canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';

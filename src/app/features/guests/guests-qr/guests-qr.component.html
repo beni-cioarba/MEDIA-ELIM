@@ -46,7 +46,7 @@
           <app-icon name="download" />
           {{ 'guests.qr.download' | translate }}
         </button>
-        <a class="qrp-btn" [routerLink]="pagePath" [queryParams]="pageQuery()" target="_blank" rel="noopener">
+        <a class="qrp-btn" [routerLink]="pagePath()" target="_blank" rel="noopener">
           <app-icon name="external" />
           {{ 'guests.qr.open' | translate }}
         </a>
@@ -83,7 +83,7 @@
             ></qrcode>
           </div>
 
-          <p class="qrp-poster__url">{{ displayUrl }}</p>
+          <p class="qrp-poster__url">{{ displayUrl() }}</p>
           <p class="qrp-poster__scan">
             <app-icon name="device-phone" />
             {{ 'guests.qr.poster_scan' | translate }}
@@ -122,7 +122,7 @@
             @if (sunday(); as sun) {
               <p class="qrp-card__when">{{ 'guests.qr.when' | translate: { time: sun.time } }}</p>
             }
-            <p class="qrp-card__url">{{ displayUrl }}</p>
+            <p class="qrp-card__url">{{ displayUrl() }}</p>
           </article>
         }
       }

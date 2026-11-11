@@ -20,11 +20,17 @@
       "starts_in": "empieza en {{time}}",
       "also_today": "También hoy",
       "calendar": "Añadir al calendario",
+      "calendar_sunday": "Añadir el domingo al calendario",
       "calendar_title": "{{service}} · Iglesia Elim",
       "calendar_description": "Te esperamos en la Iglesia Elim. Página para invitados: {{url}}",
-      "directions": "Cómo llegar"
+      "directions": "Cómo llegar",
+      "sunday_status": "Te esperamos el domingo · {{date}}",
+      "now": "Ahora",
+      "live_short": "en curso",
+      "ics": "¿iPhone u Outlook? Descarga el archivo .ics"
     },
     "toc": "En esta página",
+    "new_tab": "se abre en una pestaña nueva",
     "sections": {
       "expect": {
         "chip": "Qué esperar",
@@ -43,14 +49,18 @@
       "people": {
         "chip": "Quién te recibe",
         "title": "Las personas que vas a conocer",
-        "lead": "Los pastores de la iglesia y quienes se encargan de recibir a los invitados."
+        "lead": "Los pastores de la iglesia y quien te recibe en la puerta."
+      },
+      "first": {
+        "chip": "Primeros pasos"
       },
       "ages": {
         "chip": "Para cada uno",
         "title": "Un sitio para cada edad",
-        "lead": "Niños, jóvenes, música, misión: en cada departamento también hay sitio para ti."
+        "lead": "Jóvenes, música, misión: en cada departamento también hay sitio para ti."
       },
       "events": {
+        "chip": "Lo que viene",
         "title": "Lo que viene",
         "lead": "Los próximos eventos. En todos eres bienvenido.",
         "all": "Todos los eventos"
@@ -106,16 +116,34 @@
       "address": "Dirección",
       "open_maps": "Abrir en Google Maps",
       "copy": "La dirección",
-      "map_title": "Mapa con la ubicación de la Iglesia Elim"
+      "map_title": "Mapa con la ubicación de la Iglesia Elim",
+      "show_map": "Ver el mapa",
+      "map_note": "El mapa se carga desde Google Maps."
     },
     "faq": {
       "language": {
         "q": "¿En qué idioma son los cultos?",
-        "a": "En rumano. La letra de los cantos se proyecta en la pantalla para que puedas seguirla con facilidad. La iglesia tiene además un equipo de traducción: si no hablas rumano, escríbenos antes y te contamos cómo podemos ayudarte."
+        "a": "Los cultos son en rumano, pero el idioma no es un impedimento: hay traducción en directo al español por audio, y se puede adaptar a cualquier otro idioma que necesites. Escríbenos antes y lo preparamos todo para ti. Las letras de las canciones se proyectan en pantalla."
       },
       "children": {
         "q": "¿Puedo venir con mis hijos?",
         "a": "Sí. Los niños tienen programa aparte, por edades, durante el mensaje: los dejas y los recoges a la salida."
+      },
+      "duration": {
+        "q": "¿Cuánto dura el culto?",
+        "a": "Los domingos, tanto por la mañana como por la tarde, el culto dura unas 2 horas. Entre semana, alrededor de una hora y media."
+      },
+      "parking": {
+        "q": "¿Hay aparcamiento?",
+        "a": "Sí. Hay aparcamiento suficiente y gratuito."
+      },
+      "access": {
+        "q": "¿Hay acceso sin escalones?",
+        "a": "Sí. La entrada y la sala son accesibles sin escalones, y hay un baño adaptado para personas con discapacidad."
+      },
+      "dress": {
+        "q": "¿Cómo debo vestir?",
+        "a": "La ropa no es lo importante: ven como puedas. Como recomendación, algo elegante o clásico, más formal o casual, como te sientas cómodo."
       },
       "communion": {
         "q": "¿Qué es la Cena del Señor? ¿Tengo que participar?",

@@ -440,3 +440,16 @@
     border-top: 0;
   }
 }
+
+// Traducción breve bajo el título (sólo si la página la pide: `[gloss]`).
+.schedule__gloss {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--c-muted);
+
+  .schedule__monthly-line & {
+    display: inline;
+  }
+}

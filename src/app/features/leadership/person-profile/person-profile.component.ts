@@ -8,6 +8,7 @@ import { APP_PATHS } from '../../../core/navigation/app-paths';
 import { BreadcrumbTailService } from '../../../core/navigation/breadcrumb-tail.service';
 import { SeoService } from '../../../core/seo/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { withShareLang } from '../../../core/util/share-lang';
 import {
   CHURCH_COMMITTEE,
   PEOPLE_INDEX,
@@ -132,9 +133,12 @@ export class PersonProfileComponent {
     return { prev: n > 2 ? PROFILE_CARDS[(index - 1 + n) % n] : null, next };
   });
 
-  /** Enlace público del perfil, para copiar o compartir. */
-  protected readonly url = computed(
-    () => `${this.config.publicUrl.replace(/\/$/, '')}/${APP_PATHS.leadership}/${this.id()}`,
+  /** Enlace público del perfil, para copiar o compartir (con el idioma de quien lo comparte). */
+  protected readonly url = computed(() =>
+    withShareLang(
+      `${this.config.publicUrl.replace(/\/$/, '')}/${APP_PATHS.leadership}/${this.id()}`,
+      this.language.current(),
+    ),
   );
 
   /**

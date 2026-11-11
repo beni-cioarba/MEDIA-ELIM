@@ -66,6 +66,9 @@
                 <span class="schedule__what" [class.is-special]="x.special">
                   @if (x.special || !x.events?.length) {
                     {{ x.title }}
+                    @if (gloss()?.(x.title); as g) {
+                      <span class="schedule__gloss">{{ g }}</span>
+                    }
                   }
                   @for (ev of x.events; track ev.id) {
                     <a class="schedule__event schedule__event--at" [routerLink]="upcomingLink" [fragment]="ev.isPast ? undefined : 'ev-' + ev.id">{{ ev.title }}</a>
@@ -82,7 +85,12 @@
                 <time class="schedule__chip" [attr.datetime]="t">{{ t }}</time>
               }
             </span>
-            <span class="schedule__what">{{ s.title }}</span>
+            <span class="schedule__what">
+              {{ s.title }}
+              @if (gloss()?.(s.title); as g) {
+                <span class="schedule__gloss">{{ g }}</span>
+              }
+            </span>
           }
         } @empty {
           @if (!d.events.length) {
@@ -126,6 +134,9 @@
             <span class="schedule__monthly-line">
               <time class="schedule__monthly-time" [attr.datetime]="x.time">{{ x.time }}</time>
               {{ x.title }}
+              @if (gloss()?.(x.title); as g) {
+                <span class="schedule__gloss">({{ g }})</span>
+              }
             </span>
           }
         </li>

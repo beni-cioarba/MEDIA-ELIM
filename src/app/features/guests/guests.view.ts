@@ -9,21 +9,33 @@ export const GUESTS_SEGMENT = 'invitati';
 /** Idiomas en que se puede abrir la página por enlace (`?lang=`). */
 export type GuestLang = 'ro' | 'es';
 
+/** Segmento de la versión en español: `/invitati/es`. */
+export const GUESTS_ES_SEGMENT = 'es';
+
 /**
- * URL que codifica el QR. **Con barra final**: el despliegue sirve
- * `invitati/index.html`, y así GitHub Pages responde 200 sin la redirección
- * de `/invitati` → `/invitati/`. El rumano es el idioma por defecto: sólo el
- * español lleva `?lang=es`.
+ * Ruta interna de la página en un idioma: `/invitati` (rumano, el de por
+ * defecto) o `/invitati/es`. El idioma va **en la ruta**, no en `?lang`:
+ * así cada idioma tiene su página estática (WhatsApp y compañía leen el HTML,
+ * no ejecutan la app, y un `?lang` no cambia lo que leen).
+ */
+export function guestsPath(lang: GuestLang): string {
+  return lang === 'es' ? `/${GUESTS_SEGMENT}/${GUESTS_ES_SEGMENT}` : `/${GUESTS_SEGMENT}`;
+}
+
+/**
+ * URL pública de la página en un idioma: la del QR y la que se comparte.
+ * **Con barra final**: el despliegue sirve `invitati/index.html` e
+ * `invitati/es/index.html`, y así GitHub Pages responde 200 sin redirección.
  */
 export function guestsUrl(publicUrl: string, lang: GuestLang): string {
-  const base = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
-  return `${base}${GUESTS_SEGMENT}/${lang === 'es' ? '?lang=es' : ''}`;
+  const base = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
+  return `${base}${guestsPath(lang)}/`;
 }
 
 /** La dirección como se teclea, bajo el QR: `elimarganda.com/invitati`. */
-export function guestsDisplayUrl(publicUrl: string): string {
+export function guestsDisplayUrl(publicUrl: string, lang: GuestLang = 'ro'): string {
   const host = publicUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, '');
-  return `${host}/${GUESTS_SEGMENT}`;
+  return `${host}${guestsPath(lang)}`;
 }
 
 /** Valor de `?lang=` aceptado, o `null` si no viene o no es válido. */
@@ -124,4 +136,54 @@ export function initialsOf(name: string): string {
     .slice(0, 2)
     .join('')
     .toUpperCase();
+}
+
+/** Datos de un evento para el enlace de Google Calendar. */
+export interface CalendarLinkEvent {
+  readonly title: string;
+  /** `YYYY-MM-DD`. */
+  readonly iso: string;
+  /** `HH:MM` (hora de Madrid). */
+  readonly time: string;
+  readonly durationMin: number;
+  readonly details: string;
+  readonly location: string;
+}
+
+/** `YYYYMMDDTHHMMSS` (hora local, sin zona: la pone `ctz`). */
+function calendarStamp(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}00`;
+}
+
+/**
+ * Enlace «añadir a Google Calendar» con el evento ya rellenado. La hora va
+ * sin zona y `ctz=Europe/Madrid`: es la hora de la iglesia esté donde esté
+ * quien lo añade. En Android abre la app de Calendar; en el ordenador, la web.
+ */
+export function googleCalendarUrl(event: CalendarLinkEvent): string {
+  const [y, m, d] = event.iso.split('-').map(Number);
+  const [hh, mm] = event.time.split(':').map(Number);
+  const start = new Date(y, m - 1, d, hh, mm);
+  const end = new Date(start.getTime() + event.durationMin * 60_000);
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: event.title,
+    dates: `${calendarStamp(start)}/${calendarStamp(end)}`,
+    ctz: 'Europe/Madrid',
+    details: event.details,
+    location: event.location,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+/**
+ * Traducción breve de los títulos del programa (contenido de la iglesia, que
+ * se publica en rumano) para la página en español: «Rugăciune» → «Oración».
+ * Un título compuesto («A · B») se traduce por partes; si alguna parte no
+ * está en el glosario, no se traduce nada (mejor sin glosa que a medias).
+ */
+export function glossTitle(title: string, glossary: Readonly<Record<string, string>>): string | null {
+  const parts = title.split(' · ').map((part) => glossary[part.trim()]);
+  return parts.every(Boolean) ? parts.join(' · ') : null;
 }
