@@ -401,6 +401,55 @@ Composición (2026-09-28):
   avance baja a su fila y el icono del calendario se oculta. En proyección no
   se pinta.
 
+**Web: elegir un día y leerlo** (12/11/2026, sólo `!fullscreen()`; la
+proyección no cambia): cada ficha de la semana es un botón estirado
+(`.bible__day-pick`, `aria-pressed`) que elige el día —por defecto hoy; el
+domingo, el lunes que empieza—; el elegido lleva aro navy (hoy sigue en
+oro). Debajo, **la lectura de ese día** en una tarjeta (`.bible__read`):
+«Azi · Ezechiel 38–39 · 52 de versete · ≈ 9 min» y **un capítulo por fila**
+(`app-bible-passages`: abrir en la app Biblia si está —en Android con
+`intent:`; si falta, Chrome vuelve aquí y avisa con Google Play—, escuchar el
+audio de bible.com, versículos y minutos), y en el pie la versión y la tienda
+(`app-bible-options`) y **«Azi în Proiectul Împreună: Iacov 2»**. El texto
+del plan («Isaia 43-44») se convierte con `parseRomanianPassage`
+(`core/bible/bible-refs.ts`); una prueba comprueba que se entienden todas las
+lecturas del plan. Subtítulo: «… Alege o zi ca s-o citești sau s-o asculți.»
+El rango de «Vezi toată programarea» pasa a un gris derivado del texto (con
+`--c-muted` daba < 4,5:1 en esta página). Docs de las piezas:
+`32-impreuna.md` → «Citirea zilei».
+
+**En la portada** (12/11/2026, `features/home/bible-week/`,
+`app-bible-week`): franja propia **justo debajo de «Când ne întâlnim»**, su
+pareja. Misma superficie y cabecera («Citirea Bibliei · Săptămâna 98 ·
+Ezechiel 32–45 · Vezi planul complet →») y, con ancho (contenedor ≥ 40rem,
+el mismo umbral que `app-week-schedule`), **las mismas siete columnas**
+(`repeat(7, 1fr)` + filete): cada lectura cae bajo su día —medido: 7 × 192 px
+a 1440, idénticas a las del horario— y «hoy» es **una sola columna dorada**
+que atraviesa las dos tarjetas. Cada día: «JOI 12 · AZI», el pasaje del plan,
+«52 de versete · ≈ 9 min» (suma fila a fila, como la página) y auriculares.
+**Toda la celda abre la lectura** (enlace extendido: `::after` sobre la
+celda; el anillo de foco lo pinta ese `::after`) en la app Biblia o bible.com
+—primer capítulo; los siguientes, a una flecha en la app—; si en Android no
+está la app, Chrome vuelve a esta página con `?biblia=lipsa` y el aviso de
+Google Play sale aquí. Los auriculares, el audio. Filas por *subgrid*: día,
+pasaje y minutos a la misma altura en las siete aunque un pasaje ocupe dos
+líneas. Medidas: 141 px de alto a 1440 · 158 a 1024 · 161 a 768 (columnas de
+~100 px: sin versículos, sólo «≈ 12 min») · 361 a 375, donde pasa a **una fila
+por día** (día · pasaje · minutos · audio, 42 px). En columnas de menos de
+~150 px (40–63rem) la insignia «AZI» se oculta: no cabía con los auriculares y
+bajaba sola estirando las siete celdas; hoy sigue marcado por el oro, el
+«AZI» del horario justo encima y `aria-current`. «≈ 12 min» no se parte.
+
+Semana de la portada: **`BibleReadingService.currentWeek`** (la que contiene
+hoy), no `announcedWeek`: el domingo la portada sigue en la semana que
+termina —hoy se lee su último día y el horario de encima también es esa
+semana— y añade la línea **«De mâine · Săptămâna 99 · Ezechiel 46–48,
+Daniel 1–11 →»** hacia esta página, que ya enseña la nueva. De lunes a sábado
+las dos coinciden. `@defer (on viewport; prefetch on idle)` con hueco del alto
+medido (`.bw-placeholder`). Sustituye a la tarjeta «Citirea Bibliei» del
+carrusel de la portada, que se retiró (48-carousel-cards.md → «Portada: el
+tablero, sólo eventos»).
+
 Sólo en la web, debajo, un `<details>` «Vezi toată programarea» muestra el
 plan completo (`BibleReadingService.planOverview`): mes a mes, cada semana con
 su tramo y estado (`past` atenuada · `current` resaltada · `upcoming`), y cada

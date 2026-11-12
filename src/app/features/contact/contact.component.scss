@@ -93,7 +93,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
   }
 }
@@ -202,7 +202,8 @@
 .field__optional {
   margin-inline-start: 0.25rem;
   font-weight: 400;
-  color: var(--c-faint);
+  // `--c-muted`, no `--c-faint` (2,6:1): es información, no decoración (axe, 12/11/2026).
+  color: var(--c-muted);
 }
 
 .field__input {
@@ -226,10 +227,13 @@
     border-color: rgb(26 54 93 / 0.3);
   }
 
+  // El borde oro de 1 px (#d4af37, 1,8:1 sobre blanco) no bastaba como foco:
+  // anillo del token encima del borde y el halo suave de siempre fuera.
   &:focus {
-    outline: none;
-    border-color: var(--c-gold);
-    box-shadow: 0 0 0 3px rgb(212 175 55 / 0.2);
+    outline: 2px solid var(--c-focus);
+    outline-offset: -1px;
+    border-color: var(--c-focus);
+    box-shadow: 0 0 0 4px rgb(212 175 55 / 0.18);
   }
 
   &[aria-invalid='true'] {
@@ -314,7 +318,7 @@
   margin: 0;
   font-size: 0.75rem;
   line-height: 1.5;
-  color: var(--c-faint);
+  color: var(--c-muted);
 }
 
 // Campo trampa: fuera de la vista pero en el DOM (con `display: none` muchos
@@ -441,6 +445,7 @@
 // Tarjeta de contacto navy (mismo lenguaje que la de donativos)
 // ---------------------------------------------------------------------
 .card {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   display: grid;
   gap: 0.75rem;
   padding: 1.1rem;
@@ -522,7 +527,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -611,7 +616,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
     border-radius: 4px;
   }

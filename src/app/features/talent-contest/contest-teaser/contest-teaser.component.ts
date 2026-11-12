@@ -10,7 +10,8 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 /**
  * Franja de la portada: que se sepa que el concurso existe y que tiene
  * página. Una sola línea en escritorio — qué es, cuánto falta para la fase
- * que toca y el acceso — con la misma superficie oscura que el módulo.
+ * que toca y el acceso — en tarjeta blanca, como el resto de bloques de la
+ * portada (12/11/2026; antes, la superficie navy del módulo).
  *
  * Usa sólo `TalentContestService` (fechas y cifras): los versículos viven en
  * `talent-contest.categories.ts` y no entran en el chunk de la portada.
@@ -66,7 +67,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
     }
 
     .tt {
-      padding: clamp(1rem, 2.5vh, 1.75rem) var(--page-gutter);
+      padding: clamp(0.75rem, 2vh, 1.5rem) var(--page-gutter);
     }
 
     .tt__card {
@@ -76,38 +77,25 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       gap: var(--sp-4);
       max-width: var(--page-max);
       margin-inline: auto;
-      padding: clamp(1rem, 1.6vw, 1.25rem) clamp(1.25rem, 2.5vw, 2rem);
+      padding: clamp(0.9rem, 1.2vw, 1.15rem) clamp(1.1rem, 2vw, 1.5rem);
       overflow: hidden;
-      border-radius: var(--r-lg);
-      color: var(--c-on-primary);
-      background:
-        radial-gradient(ellipse 45% 120% at 100% 0%, rgba(212, 175, 55, 0.22) 0%, transparent 60%),
-        linear-gradient(120deg, var(--c-primary-darkest) 0%, var(--c-primary-deep) 55%, var(--c-primary) 100%);
-      box-shadow: 0 18px 40px -26px rgba(15, 30, 60, 0.7);
-      transition:
-        transform var(--mo-base) var(--ea-standard),
-        box-shadow var(--mo-base) var(--ea-standard);
-
-      // Rejilla técnica, como en la página del concurso.
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        background-size: 36px 36px;
-        mask-image: linear-gradient(90deg, transparent, #000 40%, #000);
-      }
+      border: 1px solid rgb(26 54 93 / 0.1);
+      border-radius: 18px;
+      color: var(--c-text);
+      background: var(--c-surface);
+      transition: border-color var(--mo-base) var(--ea-standard);
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 24px 48px -26px rgba(15, 30, 60, 0.8);
+        border-color: var(--c-hairline-strong);
       }
 
+      // El anillo, en la tarjeta (el enlace estirado la cubre). Escrito a
+      // mano: el mixin focus-ring aquí dentro generaba
+      // «…:has(…):focus-visible», que nunca casa, y la tarjeta se quedaba
+      // sin anillo de foco (auditoría del 12/11/2026).
       &:has(.tt__cta:focus-visible) {
-        @include focus-ring(3px);
+        outline: 2px solid var(--c-focus);
+        outline-offset: 3px;
       }
     }
 
@@ -128,7 +116,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       font-weight: 700;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--c-gold-soft);
+      color: var(--c-gold-deep);
     }
 
     .tt__dot {
@@ -136,7 +124,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       height: 0.4rem;
       border-radius: 50%;
       background: var(--c-gold);
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+      box-shadow: 0 0 0 3px rgb(212 175 55 / 0.22);
     }
 
     .tt__title {
@@ -146,12 +134,8 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       font-weight: 700;
       line-height: 1.1;
       letter-spacing: -0.015em;
-      // Margen para la coma de la «ț» (background-clip recorta a la línea).
       padding-bottom: 0.1em;
-      background: linear-gradient(100deg, #fff 0%, #fff 50%, var(--c-gold-soft) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      color: var(--c-primary);
     }
 
     // Sin tope de medida: es una frase, y en escritorio cabe en una línea.
@@ -160,7 +144,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       max-width: none;
       font-size: 0.92rem;
       line-height: 1.5;
-      color: rgba(247, 250, 252, 0.78);
+      color: var(--c-muted);
     }
 
     // Cuenta atrás: la cifra grande manda; la fase y la fecha, debajo.
@@ -178,7 +162,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
     @include from('lg') {
       .tt__count {
         padding-inline: clamp(1.25rem, 2.5vw, 2.25rem);
-        border-inline: 1px solid rgba(255, 255, 255, 0.12);
+        border-inline: 1px solid var(--c-hairline);
       }
     }
 
@@ -189,28 +173,25 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       line-height: 1;
       letter-spacing: -0.03em;
       font-variant-numeric: tabular-nums;
-      background: linear-gradient(180deg, #fff 10%, var(--c-gold-soft) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      color: var(--c-gold-deep);
     }
 
     .tt__unit {
       font-size: 0.9rem;
       font-weight: 600;
-      color: rgba(247, 250, 252, 0.75);
+      color: var(--c-muted);
     }
 
     .tt__phase {
       grid-column: 1 / -1;
       margin-top: 0.2rem;
       font-size: 0.8rem;
-      color: rgba(247, 250, 252, 0.65);
+      color: var(--c-muted);
       white-space: nowrap;
 
       b {
         font-weight: 700;
-        color: #fff;
+        color: var(--c-primary);
       }
     }
 
@@ -222,13 +203,18 @@ import { IconComponent } from '../../../shared/icon/icon.component';
       min-height: 2.6rem;
       padding-inline: 1.1rem;
       border-radius: var(--r-pill);
-      background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 45%, var(--c-gold-deep) 100%);
+      background: var(--c-primary);
       font-size: 0.9rem;
       font-weight: 700;
       white-space: nowrap;
       text-decoration: none;
-      color: var(--c-primary-darkest);
+      color: var(--c-on-primary);
       outline: none;
+      transition: background-color var(--mo-base) var(--ea-standard);
+
+      &:hover {
+        background: var(--c-primary-deep);
+      }
 
       // Enlace estirado: cubre toda la tarjeta.
       &::after {
@@ -239,12 +225,9 @@ import { IconComponent } from '../../../shared/icon/icon.component';
     }
 
     @include motion-reduce {
-      .tt__card {
+      .tt__card,
+      .tt__cta {
         transition: none;
-      }
-
-      .tt__card:hover {
-        transform: none;
       }
     }
   `,

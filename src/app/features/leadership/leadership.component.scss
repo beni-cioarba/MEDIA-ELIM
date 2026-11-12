@@ -217,6 +217,7 @@
 
 // Pastor: tarjeta navy lisa.
 .feature--pastor {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro (la foto)
   border-color: var(--c-primary);
   background: var(--c-primary);
 

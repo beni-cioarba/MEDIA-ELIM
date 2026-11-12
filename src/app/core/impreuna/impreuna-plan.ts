@@ -10,40 +10,7 @@
  * que es como las da YouVersion y como se enlaza un pasaje: el texto se
  * compone aquí en el idioma de la página. Ver `docs/ai/32-impreuna.md`.
  */
-import booksJson from './bible-books.json';
-
-export type BibleLang = 'ro' | 'es';
-
-interface BookNames {
-  readonly ro: string;
-  readonly es: string;
-  readonly roOne?: string;
-  readonly esOne?: string;
-  readonly chapters?: number;
-}
-
-const BOOKS = booksJson.books as Readonly<Record<string, BookNames>>;
-const BOOK_ORDER = Object.keys(BOOKS);
-/** Índice del primer libro del Nuevo Testamento (Mateo) en el canon. */
-const FIRST_NT = BOOK_ORDER.indexOf('MAT');
-const WISDOM = new Set(['PSA', 'PRO']);
-
-/** Una referencia: libro, capítulo y, si no es el capítulo entero, versículos. */
-export interface PassageRef {
-  /** Código tal cual (`PRO.26.17-21`): es también el del enlace a bible.com. */
-  readonly code: string;
-  readonly book: string;
-  readonly chapter: number;
-  readonly from?: number;
-  readonly to?: number;
-}
-
-/** Referencias seguidas del mismo libro, ya rotuladas («Psalmii 124, 125»). */
-export interface PassageGroup {
-  readonly book: string;
-  readonly label: string;
-  readonly refs: readonly PassageRef[];
-}
+import { BIBLE_BOOK_ORDER, PassageRef, isNewTestament } from '../bible/bible-refs';
 
 /**
  * Qué se lee ese día. El plan alterna cinco días de Nuevo Testamento con dos
@@ -51,93 +18,14 @@ export interface PassageGroup {
  */
 export type DayKind = 'nt' | 'wisdom' | 'ot';
 
-/** Versión de bible.com en la que se abre la lectura en cada idioma. */
-export interface BibleVersion {
-  readonly id: number;
-  readonly abbr: string;
-  readonly name: string;
-}
-
-/** Cornilescu en rumano y Reina-Valera 1960 en español (ids verificados en bible.com). */
-export const BIBLE_VERSIONS: Readonly<Record<BibleLang, BibleVersion>> = {
-  ro: { id: 191, abbr: 'VDC', name: 'Cornilescu' },
-  es: { id: 149, abbr: 'RVR1960', name: 'Reina-Valera 1960' },
-};
-
+const WISDOM = new Set(['PSA', 'PRO']);
 const DAY_MS = 86_400_000;
-
-/** `PRO.26.17-21` → `{ book: 'PRO', chapter: 26, from: 17, to: 21 }`. */
-export function parseRef(code: string): PassageRef {
-  const [book, chapter, verses] = code.split('.');
-  const [from, to] = (verses ?? '').split('-').map(Number);
-  return from
-    ? { code, book, chapter: Number(chapter), from, to: to || from }
-    : { code, book, chapter: Number(chapter) };
-}
-
-/** Una lectura del plan (`PSA.124;PSA.125`) → sus referencias, en orden. */
-export function parseReading(reading: string): readonly PassageRef[] {
-  return reading.split(';').filter(Boolean).map(parseRef);
-}
-
-/** Nombre del libro en el idioma; `single` = se cita un solo capítulo. */
-export function bookName(book: string, lang: BibleLang, single = false): string {
-  const names = BOOKS[book];
-  if (!names) return book;
-  return (single ? names[lang === 'ro' ? 'roOne' : 'esOne'] : undefined) ?? names[lang];
-}
-
-/** `26` · `26:17–21` · `26:5`. */
-function chapterSpec(ref: PassageRef): string {
-  if (!ref.from) return String(ref.chapter);
-  return ref.to && ref.to !== ref.from ? `${ref.chapter}:${ref.from}–${ref.to}` : `${ref.chapter}:${ref.from}`;
-}
-
-/** Un pasaje suelto, con su libro: «Psalmul 124», «Proverbe 26:17–21», «Filimon». */
-export function refLabel(ref: PassageRef, lang: BibleLang): string {
-  if (BOOKS[ref.book]?.chapters === 1 && !ref.from) return bookName(ref.book, lang);
-  return `${bookName(ref.book, lang, true)} ${chapterSpec(ref)}`;
-}
-
-/** Agrupa referencias seguidas del mismo libro y las rotula. */
-export function groupRefs(refs: readonly PassageRef[], lang: BibleLang): readonly PassageGroup[] {
-  const groups: { book: string; refs: PassageRef[] }[] = [];
-  for (const ref of refs) {
-    const last = groups.at(-1);
-    if (last && last.book === ref.book) last.refs.push(ref);
-    else groups.push({ book: ref.book, refs: [ref] });
-  }
-  return groups.map(({ book, refs: list }) => ({
-    book,
-    refs: list,
-    label:
-      list.length === 1
-        ? refLabel(list[0], lang)
-        : `${bookName(book, lang)} ${list.map(chapterSpec).join(', ')}`,
-  }));
-}
-
-/**
- * La lectura en una línea: «Psalmii 124, 125; Proverbe 26:17–21». Misma regla
- * que `formatReading` de `scripts/sync-impreuna.mjs` (calendarios .ics).
- */
-export function formatReading(refs: readonly PassageRef[], lang: BibleLang): string {
-  return groupRefs(refs, lang)
-    .map((g) => g.label)
-    .join('; ');
-}
-
-/** Enlace al pasaje en bible.com; en el móvil abre la app Biblia si está instalada. */
-export function bibleUrl(ref: PassageRef, lang: BibleLang): string {
-  const v = BIBLE_VERSIONS[lang];
-  return `https://www.bible.com/bible/${v.id}/${ref.code}.${v.abbr}`;
-}
 
 /** Tipo de día según sus libros (ver `DayKind`). */
 export function dayKind(refs: readonly PassageRef[]): DayKind {
   if (refs.length > 0 && refs.every((r) => WISDOM.has(r.book))) return 'wisdom';
   const main = refs.find((r) => !WISDOM.has(r.book));
-  return main && BOOK_ORDER.indexOf(main.book) < FIRST_NT ? 'ot' : 'nt';
+  return main && BIBLE_BOOK_ORDER.includes(main.book) && !isNewTestament(main.book) ? 'ot' : 'nt';
 }
 
 /**
@@ -295,7 +183,8 @@ export interface YoutubePlaylistItemJson {
  * Misma regla que `parseYoutubeUpload` de `scripts/sync-impreuna.mjs`.
  */
 export function parseYoutubeUpload(item: YoutubePlaylistItemJson, year: number): WpDayPost | null {
-  const title = item.snippet?.title?.trim() ?? '';
+  // NFC: YouTube manda a veces los diacríticos descompuestos («a» + breve).
+  const title = (item.snippet?.title ?? '').normalize('NFC').trim();
   const video = item.snippet?.resourceId?.videoId ?? '';
   const match = /^Ziua\s+0*(\d{1,3})\b\s*[–—-]?\s*(.*?)\s*$/u.exec(title);
   if (!match || !/^[\w-]{11}$/.test(video)) return null;
@@ -341,7 +230,7 @@ function decodeEntities(text: string): string {
  * Misma regla que `parseWpPost` de `scripts/sync-impreuna.mjs`.
  */
 export function parseWpPost(post: WpPostJson): WpDayPost | null {
-  const title = decodeEntities(post.title?.rendered ?? '').trim();
+  const title = decodeEntities(post.title?.rendered ?? '').normalize('NFC').trim();
   const match =
     /^Ziua\s+0*(\d{1,3})\s*[–—-]\s*(.+?)\s*[–—-]\s*\d{1,2}\s+\p{L}+\s+\d{4}\s*$/u.exec(title) ??
     /^Ziua\s+0*(\d{1,3})\s*[–—-]?\s*(.*?)\s*$/u.exec(title);

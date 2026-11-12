@@ -143,6 +143,7 @@
 // Pastor: navy liso, como su tarjeta del índice. «Distribuie» y «Copiar»
 // heredan la versión clara de los tokens que ya consumen.
 .hero--pastor {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   border-color: var(--c-primary);
   background: var(--c-primary);
 

@@ -45,7 +45,8 @@
 | Contenido de cada entrada | 1.er `<p>` = lectura · `<iframe …/embed/<id>>` = vídeo · título «Ziua 315 – Adi Ion – 11 Noiembrie 2026» · resumen + «Motive de rugăciune» (no se copian: son texto suyo; se enlaza) |
 | YouTube | Canal `@cultulcrestinpenticostal` = `UCqKwJYXPbht3Oh0riWfT1bg`; lista de subidas `UUqKwJYXPbht3Oh0riWfT1bg`. **Fuente principal del vídeo**: lo suben cada día a las **22:15 UTC** (23:15 en España) con el título «Ziua 316 Paul Răducanu», **horas antes** de que la web del proyecto publique su entrada (el 12/11/2026 a las 09:15 su web aún iba por el 315). Se lee con la YouTube Data API v3 (`playlistItems.list`, 1 unidad de cuota) y la clave de la web (`youtubeApiKey`, restringida por dominio: `elimarganda.com` y `localhost`; desde un script hay que mandar `Referer: https://elimarganda.com/`). Las páginas HTML del canal no se pueden leer (muro de consentimiento) |
 | Plan en la app Biblia | `https://www.bible.com/reading-plans/43657` · día: `/reading-plans/43657/day/<n>` |
-| Pasajes en bible.com | `https://www.bible.com/bible/<versión>/<USFM>.<abbr>` · **VDC (Cornilescu) = 191**, **RVR1960 = 149** (verificados) |
+| Pasajes en bible.com | `https://www.bible.com/bible/<versión>/<USFM>.<abbr>` · **VDC (Cornilescu) = 191**, **RVR1960 = 149** (verificados) · audio: `/audio-bible/<versión>/<USFM>.<abbr>` (las dos versiones tienen audio; comprobado el 12/11/2026) |
+| App Biblia (YouVersion) | Android `com.sirma.mobile.bible.android` (Google Play) · iOS App Store `id282935706`. bible.com cede **todos** sus enlaces a la app (`/.well-known/assetlinks.json` con `handle_all_urls`; `apple-app-site-association` con `paths: ["*"]`) |
 | Ayuno (motivo) | `https://cultulpenticostal.ro/proiectul-impreuna-punct-si-de-la-capat/` (`IMPREUNA_FAST_SOURCE`) |
 | Miniaturas | `i.ytimg.com/vi/<id>/…`: `hq720` y `maxresdefault` **no existen** en este canal (404 con imagen gris de 120 px; 7 de 7 vídeos muestreados); se usa `sddefault` y, de respaldo, `mqdefault` |
 
@@ -55,15 +56,27 @@
 scripts/sync-impreuna.mjs ──(--plan: YouVersion 43657 − días saltados)──▶ core/impreuna/data/<año>.plan.json
         │                 ──(API WordPress)────────────────────────────▶ core/impreuna/data/<año>.media.json
         └────────────────────────────────────────────────────────────▶ assets/calendars/impreuna-<año>-{ro,es}.ics
-core/impreuna/
+core/bible/               motor bíblico de toda la web (Împreună, Citirea Bibliei, portada)
   bible-books.json        66 libros: USFM → nombre RO (Cornilescu) / ES (RVR1960)
-  impreuna-plan.ts        lógica pura: día del año, semana, formato de lecturas, bible.com, YouVersion, WordPress
+  bible-refs.ts           pasajes (USFM), cómo se escriben en cada idioma, bible.com (texto y audio), intent de Android,
+                          y `parseRomanianPassage` («Isaia 43-44» → ISA.43, ISA.44) para los planes escritos a mano
+  bible-verses.json/.ts   versículos por capítulo y palabras por versículo (66 libros, KJV) → «26 de versete · ≈ 3 min»
+  bible-app.ts            la app Biblia: paquete de Android, Google Play, App Store
+  bible-link.service.ts   abrir un pasaje: app Biblia si está (Android: intent + vuelta), si no el navegador; versión elegida
+shared/bible/             la UI de lectura compartida (kit `_bible.scss`)
+  bible-passages          filas «Citește · Ascultă» (+ aviso de app ausente al volver de Android)
+  bible-options           versión Cornilescu | RVR 1960 y tienda de la app
+core/impreuna/
+  impreuna-plan.ts        lógica pura del proyecto: día del año, semana, tipo de día, YouVersion, ayuno, WordPress/YouTube
   impreuna-edition.ts     la edición: 365 días ya interpretados (sólo plan, ~8 kB) → lo usa el resumen del menú
   impreuna.service.ts     hoy (ClockService), vídeos (instantánea + API en vivo), progreso (localStorage)
   impreuna.config.ts      enlaces fijos (web, YouTube, YouVersion, calendario) + IMPREUNA_REMINDER (08:00 Madrid)
 core/push/                web push por temas (OneSignal bajo demanda) → § 7
 features/impreuna/        páginas (chunk propio) + paquete de textos impreuna.{ro,es}.json
+  day-read/               tarjeta «Citirea zilei» (filas + versión + el día en la app + «Am citit» / «Trimite»)
   reminder/               tarjeta «Amintire zilnică la 08:00» (interruptor) → § 7
+features/home/impreuna-teaser/  franja de la portada → § 3 «En la portada»
+features/home/bible-week/       la semana del plan de la iglesia en la portada (mismo `core/bible`) → 30-presentation.md
 scripts/impreuna-push.mjs aviso diario (GitHub Action impreuna-push.yml) → § 7
 ```
 
@@ -154,13 +167,88 @@ Herramienta de uso diario: manda «qué toca hoy» sin desplazarse.
     directos de una rejilla: en el móvil la fecha ocupa todo el ancho (como un
     selector, flecha a la derecha) y debajo van «dónde cae» a la izquierda y
     ‹ Azi › a la derecha; desde `sm`, una sola fila.
-  - Lectura en display 1,65–2,5 rem; con **una** lectura, «Citește Iacov 1»
-    primario; con **varias**, rótulo «Citește:» y piezas con el mismo peso
-    (antes la primera era primaria y parecía la principal). «Am citit»
-    (`aria-pressed`) + «Trimite»; vídeo 16:9 *lite*.
+  - Lectura en display 1,65–2,5 rem y, debajo, el control **Citirea zilei**
+    (`day-read/`, 12/11/2026; sustituye al botón «Citește Iacov 2», que no
+    decía en qué versión, cuánto era ni dónde se abría). Ver «Citirea zilei»
+    más abajo. Vídeo 16:9 *lite*.
   - Primer jueves: **panel de post și rugăciune** (qué es, tema del mes si
     está cargado, cinco motivos oficiales o los del mes, fuente enlazada). La
     víspera, una línea «Mâine este zi de post și rugăciune · Vezi ziua».
+- **Citirea zilei** (`features/impreuna/day-read/`, sobre las piezas
+  compartidas `shared/bible/`: `app-bible-passages` = filas y
+  `app-bible-options` = versión y tienda; las mismas en la portada y en
+  Citirea Bibliei): una tarjeta, todo lo de leer junto.
+  - **Una fila por pasaje** (datos, no marcado; 1 en los días de NT, 2–3 en
+    los de Psalmi y Proverbe, con el total arriba: «Citește azi: 3 texte ·
+    18 versete · ≈ 2 min»): icono del libro en el color del día (navy NT, oro
+    Psalmi y Proverbe), «Citește Iacov 2», **versículos y minutos** («26 de
+    versete · ≈ 3 min», plural rumano con `Intl.PluralRules`: 1 verset ·
+    2–19 versete · 20+ de versete) y, aparte, **Ascultă** (audio de bible.com;
+    en el móvil sólo el icono).
+  - **Pie**: versión **Cornilescu | RVR 1960** (control segmentado; cambia
+    todos los enlaces; sigue al idioma de la web hasta que se elige y luego se
+    recuerda), **«Biblia: ziua 317»** (el día en el plan de la app; nombre
+    accesible completo), la **tienda** cuando toca y, proyectadas desde la
+    página, **«Am citit» · «Trimite»** (`<div readTools>`): leer y cerrar la
+    lectura van juntos. A 375 px: fila 56 px + una línea de versión y plan +
+    la de acciones = **155 px** (antes 203, al quitar la versión repetida y
+    acortar el plan; medido).
+  - **Abrir en la app Biblia si está** (`core/bible/bible-link.service.ts`).
+    Ninguna web puede preguntar qué apps hay instaladas; lo que sí se puede es
+    pedírselo al sistema y saber qué pasó:
+    - **Android** (Chrome, Edge, Samsung Internet): enlace
+      `intent://www.bible.com/bible/191/JAS.2.VDC#Intent;scheme=https;package=com.sirma.mobile.bible.android;S.browser_fallback_url=…;end`
+      en la misma pestaña. Con la app, se abre en el pasaje (y si la página se
+      oculta en < 2,5 s queda `installed`). **Sin la app, Chrome vuelve** a
+      `/impreuna/ziua/<n>?biblia=lipsa&text=<USFM>`: la página lo marca
+      `missing` (en `localStorage`, `elim.bible.app`), limpia la dirección y
+      enseña arriba **«Aplicația Biblia nu este pe acest telefon»** con
+      **Instalează din Google Play** y **Citește în browser**. Desde entonces
+      los enlaces van a bible.com en otra pestaña y el pie ofrece «Instalează
+      aplicația Biblia» (oro) + «Am instalat-o» (vuelve a intentarlo). Si la
+      instala, bible.com la abre igual (App Links verificados).
+    - **iPhone / iPad**: bible.com; el enlace universal abre la app si está y,
+      si no, la web (que ofrece la App Store). No se puede saber cuál pasó:
+      «Aplicația Biblia (App Store)» queda discreta en el pie.
+    - **Firefox de Android y navegadores integrados**: bible.com (no entienden
+      `intent:`). **Ordenador**: bible.com en otra pestaña, sin tienda.
+  - Datos de **versículos y minutos**: `core/bible/bible-verses.json`
+    (versículos por capítulo de los 66 libros y palabras por versículo de cada
+    libro, de la KJV de dominio público; misma división que Cornilescu y la
+    RVR1960 salvo detalles como 3 Juan). Minutos = versículos × palabras por
+    versículo × 1,1 (rumano y español) ÷ 180 palabras/min, redondeado, mínimo
+    1. Sólo en el chunk de la página (~2 kB comprimido).
+  - Al limpiar `?biblia=lipsa` hay una navegación que borra el título propio
+    de la pestaña: el efecto del título también depende de `NavigationEnd` y lo
+    repone aunque el día no cambie.
+  - Accesibilidad: cada fila tiene nombre completo («Citește Iacov 2 în
+    Biblie, Cornilescu: 26 de versete, cam 3 min»), versión con
+    `aria-pressed`, aviso con `role="status"`; axe (WCAG 2.2 AA) sin
+    incumplimientos con y sin aviso; 320 · 375 · 760 · 1280 sin desbordes.
+  - Detalles medidos al montarlo: el total de la cabecera es la **suma de
+    las filas** (redondear el total aparte daba 10 min con filas de 4 + 5);
+    gris de texto pequeño derivado del texto (`--bp-muted`, ≥ 4,5:1 en
+    cualquier página: en la de los bloques `--c-muted` daba 4,26); al volver
+    de Android la página **salta al aviso** cuando el router ya ha
+    restaurado el scroll (si no, quedaba arriba y el aviso fuera de vista).
+- **En la portada** (`features/home/impreuna-teaser/`, 12/11/2026): franja
+  navy, la del módulo, tras la semana de Citirea Bibliei (12/11/2026: el tablero de eventos subió bajo los avisos) y antes de las familias
+  (la vida espiritual de la semana, junta). Tres zonas: **qué es** (eyebrow
+  «Cultul Penticostal · Ediția 2026», título, entradilla —oculta en el móvil—
+  y avance «Ziua 316 din 365» con barra oro) · **hoy** (fecha, las mismas
+  filas de lectura en una tarjeta blanca y una línea: ayuno, «Mâine: Iacov 3»
+  y, si ya marca lo que lee, «Seria ta: N zile») · **la meditación**
+  (miniatura `mqdefault` + ponente → `/impreuna#video`) y **«Vezi ziua
+  completă»**. Medido: 183 px de tarjeta a 1280 (antes 242, con la miniatura
+  en vertical), 311 px a 900, 399 px a 375. `@defer (on viewport)` con hueco
+  reservado de ese alto: el servicio, los vídeos y los versículos no pesan en
+  la carga inicial (chunk propio de 3,6 kB comprimido; el inicial no cambia).
+  En Android sin la app, Chrome vuelve a la página del día del módulo (allí
+  está el aviso), no a la portada. Sólo con la edición en marcha.
+- **Citirea Bibliei** (el plan de la iglesia, `/media/citirea-bibliei`) usa
+  las mismas piezas: ver `30-presentation.md` → «Bloque Citirea Bibliei». Y
+  la página de Proiectul Împreună lo enlaza en «Linkuri utile» (los dos planes
+  se encuentran entre sí).
 - **Lateral**: **calendario del plan** (`day-calendar/`) y progreso. Sustituye
   a la lista «Săptămâna aceasta», que seguía al día abierto y hacía creer que
   se estaba en la semana actual. Una codificación por estado, sin mezclar:
@@ -177,9 +265,11 @@ Herramienta de uso diario: manda «qué toca hoy» sin desplazarse.
 - **Diálogo** del calendario (`<dialog>` + `showModal`): imprescindible en el
   móvil, donde el lateral queda bajo el vídeo. Foco al abrir en el día
   abierto; Esc o clic fuera cierran; botón «Mergi la ziua de azi».
-- **Anillo de foco propio** (`imp.focus`): el global `focus-ring` pone
+- **Anillo de foco propio** (`imp.focus`): el global `focus-ring` ponía
   `border-radius: inherit` y convertía los días (círculos) y las píldoras en
-  cuadrados al enfocarlos.
+  cuadrados al enfocarlos (el global ya no lo hace, 12/11/2026). Color: el del
+  token por superficie (`45-design-system.md` → «Foco»); la cabecera navy y
+  el vídeo declaran `--c-focus-on-dark`.
 - Debajo, franja **«Pe telefonul tău»** de mosaicos `auto-fit minmax(13rem)`
   con el QR a la derecha de su cabecera.
 - **Colores de tipo de día**: navy = Noul Testament, oro profundo = Psalmi și
@@ -229,6 +319,12 @@ YouTube sale de `YOUTUBE_API_KEY` o, si no, de `church.config.ts`.
    a `youversionSkipped`, `--plan` de nuevo y comprobar con la consola del
    script que no quedan diferencias salvo erratas.
 
+**Versículos por capítulo** (`bible-verses.json`): `npm run bible:verses`
+lo regenera desde github.com/aruljohn/Bible-kjv y comprueba los totales (66
+libros, 1.189 capítulos, 31.102 versículos). No hace falta para una edición
+nueva: ya están los 66 libros; `bible-verses.spec.ts` avisa si algún pasaje
+del plan se queda sin versículos.
+
 **Tema del ayuno del mes** (cuando el Cult publique la «chemarea lunară la
 post» en Facebook / YouTube): una entrada en `IMPREUNA_FASTING_THEMES`
 (`core/impreuna/impreuna.config.ts`) con `date` (el primer jueves), `theme` en
@@ -275,6 +371,29 @@ Pasos sugeridos para lanzarlo — **no hechos en código, los decide la iglesia*
 - `core/impreuna/impreuna.service.spec.ts` — TestBed: hoy, progreso y
   persistencia, `localStorage` corrupto, consulta en vivo (sólo si falta el
   vídeo, una vez, fusión, caída de su web).
+- Citirea zilei: `core/bible/bible-refs.spec.ts` (formatos, bible.com, audio,
+  intent; textos en rumano: tramos, varios libros, ţ/ț, versículos sueltos,
+  texto compuesto, lo desconocido se descarta y **todas las lecturas del plan
+  de la iglesia se entienden**), `core/bible/bible-verses.spec.ts` (66 libros, 1.189
+  capítulos, 31.102 versículos; capítulos y tramos; minutos; todos los pasajes
+  de la edición con versículos), `core/bible/bible-link.service.spec.ts`
+  (Android con intent y vuelta, `missing` recordado y «Am instalat-o», la app
+  abierta si la página se oculta, iPhone, Firefox de Android y vistas
+  integradas, ordenador sin tienda, versión elegida y recordada) y
+  `features/impreuna/day-read/day-read.component.spec.ts` (uno y varios
+  textos, oro, versión que cambia todos los enlaces, intent en Android, aviso
+  de app ausente con Google Play, dirección limpia y `?text=` raro descartado,
+  App Store en iPhone), `shared/bible/bible-passages.component.spec.ts`
+  (capítulos del plan de la iglesia con rótulo y total, «Citește …» sin
+  rótulo, vuelta de Android a `returnPath`, plurales 1 · 2–19 · 20+),
+  `features/home/impreuna-teaser/impreuna-teaser.component.spec.ts` (lo de
+  hoy, meditación, mañana y módulo; ayuno víspera y día; racha; fuera de la
+  edición no sale) y `features/stage/blocks/bible-block/bible-block.component.spec.ts`
+  (hoy elegido y sus capítulos, elegir otro día, enlace a Împreună, la
+  proyección sin cambios).
+- Ponentes en NFC: `parseYoutubeUpload` / `parseWpPost` (app y script)
+  normalizan el título (YouTube mandaba «a» + breve sueltos: 81 nombres de la
+  instantánea estaban así; corregidos) y `impreuna-data.spec.ts` lo vigila.
 - `scripts/sync-impreuna.test.mjs` — script sin red (parser, YouVersion,
   saltos, formato, `.ics` plegado a 75 octetos y con el ayuno, JSON).
 - Notificaciones (§ 7): `core/push/push.service.spec.ts` (permiso antes del
@@ -476,3 +595,25 @@ impreuna-push.yml (05:05 · 05:35 · 06:05 · 06:35 UTC) → scripts/impreuna-pu
   título y texto; macOS no enseña imagen.
 - Los bloqueadores de anuncios suelen bloquear OneSignal: la tarjeta lo dice
   al fallar y sugiere revisarlo.
+
+### Seguir el plan en la app Biblia (12/11/2026)
+
+Una sola tarjeta, en «Cum funcționează» junto a «Ritmul săptămânii» y «Ai
+rămas în urmă?» (`#aplicatia-biblia`): se lee una vez y ya, así que no va en
+la tarjeta del día, que se mira a diario (allí sigue sólo el chip «Ziua N în
+plan»). Tres pasos (abrir el plan y «Start this Plan»; día de la app = día
+del proyecto + 1 por el salto del día 82; el número de la app junto a cada
+lectura) y dos enlaces: el plan (`youversionPlanUrl`) y **hoy en la app**
+(`youversionDayUrl`, `appToday` en el componente; sólo con la edición en
+marcha). Sustituye a la nota `how.youversion_text`. Mismo alto que sus
+vecinas (255 px a 1024): los textos se recortaron para no estirar la fila.
+
+**Portada en blanco** (12/11/2026, a petición del usuario): la franja de
+Împreună y la del concurso Talantul pasan de navy a **tarjeta blanca**, la
+misma superficie que «Când ne întâlnim» y Citirea Bibliei (borde
+`rgb(26 54 93 / .1)`, radio 18 px): títulos navy, rótulos y cifras en oro
+750, texto secundario `--c-muted`, botón navy macizo. Fuera degradados,
+rejilla y sombras; el anillo de foco vuelve al de claro. Medido a 1440:
+Împreună 179 px (antes 190), Talantul 125 px (antes 156); a 375: 371 / 272.
+axe sin fallos de contraste.
+

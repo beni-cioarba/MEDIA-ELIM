@@ -1,0 +1,102 @@
+/* =====================================================================
+ * Kit de lectura bíblica: filas «Citește · Ascultă», versión y tienda de la
+ * app Biblia. Lo usan Proiectul Împreună, Citirea Bibliei y la portada (ver
+ * docs/ai/32-impreuna.md → «Citirea zilei»). Línea propia, no el catálogo
+ * `ui-*`. Sólo mixins: no emite CSS por sí mismo.
+ *
+ * Uso: @use 'app/shared/bible/bible' as bible;   (o relativo: './bible')
+ * ===================================================================== */
+@use 'ds' as *;
+
+/** Anillo de foco: el global (`focus-ring`), que desde el 12/11/2026 ya sigue la forma del elemento. */
+@mixin focus($offset: 2px) {
+  @include focus-ring($offset);
+}
+
+@mixin motion-off {
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/** Color del texto: navy (Nuevo y Antiguo Testamento), oro (Psalmi y Proverbe). */
+@mixin kind-colors {
+  --kind: var(--c-primary);
+  --kind-tint: var(--c-veil);
+
+  &.is-wisdom {
+    --kind: var(--c-gold-deep);
+    --kind-tint: var(--c-gold-tint);
+  }
+}
+
+/** Botón píldora (avisos). */
+@mixin btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-primary);
+  font: 600 var(--fs-xs) / 1.2 var(--font-sans);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  @include focus;
+  @include motion-off;
+
+  &:hover {
+    border-color: var(--c-primary);
+    background: var(--c-veil);
+  }
+
+  app-icon {
+    flex: none;
+    font-size: 1.05em;
+  }
+}
+
+@mixin btn-primary {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+
+  &:hover {
+    border-color: var(--c-primary-deep);
+    background: var(--c-primary-deep);
+  }
+}
+
+/** Ficha pequeña de enlace (el día en la app, la tienda). */
+@mixin chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.875rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--r-pill);
+  color: var(--c-primary);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  @include focus;
+  @include motion-off;
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  app-icon {
+    flex: none;
+    font-size: 1.05em;
+  }
+}

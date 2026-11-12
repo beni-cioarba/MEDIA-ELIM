@@ -1,56 +1,7 @@
-import {
-  announcedWeek,
-  bibleUrl,
-  dayKind,
-  dayOfEdition,
-  daysInYear,
-  formatReading,
-  groupRefs,
-  isFastingDay,
-  isoDateOfDay,
-  monthGrid,
-  monthOfDay,
-  monthRange,
-  nextFastingDay,
-  nextFirstThursday,
-  parseReading,
-  parseRef,
-  parseWpPost,
-  parseYoutubeUpload,
-  readingStreak,
-  refLabel,
-  relativeDay,
-  weekOf,
-  youversionDay,
-} from './impreuna-plan';
+import { announcedWeek, dayKind, dayOfEdition, daysInYear, isFastingDay, isoDateOfDay, monthGrid, monthOfDay, monthRange, nextFastingDay, nextFirstThursday, parseWpPost, parseYoutubeUpload, readingStreak, relativeDay, weekOf, youversionDay } from './impreuna-plan';
+import { parseReading } from '../bible/bible-refs';
 
-describe('Proiectul Împreună · lecturas', () => {
-  it('lee una referencia con y sin versículos', () => {
-    expect(parseRef('JAS.1')).toEqual({ code: 'JAS.1', book: 'JAS', chapter: 1 });
-    expect(parseRef('PRO.26.17-21')).toEqual({ code: 'PRO.26.17-21', book: 'PRO', chapter: 26, from: 17, to: 21 });
-    expect(parseRef('PRO.26.5')).toEqual({ code: 'PRO.26.5', book: 'PRO', chapter: 26, from: 5, to: 5 });
-  });
-
-  it('agrupa capítulos seguidos del mismo libro y escribe cada idioma', () => {
-    const refs = parseReading('PSA.124;PSA.125;PRO.26.17-21');
-    expect(formatReading(refs, 'ro')).toBe('Psalmii 124, 125; Proverbe 26:17–21');
-    expect(formatReading(refs, 'es')).toBe('Salmos 124, 125; Proverbios 26:17–21');
-    expect(groupRefs(refs, 'ro').map((g) => g.refs.length)).toEqual([2, 1]);
-  });
-
-  it('un solo salmo va en singular y un libro de un capítulo sin número', () => {
-    expect(formatReading(parseReading('PSA.36;PRO.8.32-36'), 'ro')).toBe('Psalmul 36; Proverbe 8:32–36');
-    expect(refLabel(parseRef('PSA.36'), 'es')).toBe('Salmo 36');
-    expect(formatReading(parseReading('PHM.1'), 'ro')).toBe('Filimon');
-    expect(formatReading(parseReading('JUD.1'), 'es')).toBe('Judas');
-    expect(formatReading(parseReading('ACT.13'), 'ro')).toBe('Faptele apostolilor 13');
-  });
-
-  it('enlaza a bible.com en Cornilescu o en Reina-Valera 1960', () => {
-    expect(bibleUrl(parseRef('JAS.1'), 'ro')).toBe('https://www.bible.com/bible/191/JAS.1.VDC');
-    expect(bibleUrl(parseRef('PRO.26.17-21'), 'es')).toBe('https://www.bible.com/bible/149/PRO.26.17-21.RVR1960');
-  });
-
+describe('Proiectul Împreună · tipo de día', () => {
   it('distingue los días de Nuevo Testamento de los de Psalmi y Proverbe', () => {
     expect(dayKind(parseReading('JAS.1'))).toBe('nt');
     expect(dayKind(parseReading('PSA.148;PSA.149;PSA.150;PRO.31.10-31'))).toBe('wisdom');
@@ -162,6 +113,11 @@ describe('Proiectul Împreună · YouTube', () => {
       postId: null,
     });
     expect(parseYoutubeUpload(item('Ziua 001 Nelu Filip', '2025-12-31T22:15:00Z'), 2026)?.day).toBe(1);
+  });
+
+  it('el ponente sale con los diacríticos compuestos (NFC), aunque YouTube los mande sueltos', () => {
+    const speaker = parseYoutubeUpload(item('Ziua 316 Paul Răducanu', '2026-11-11T22:15:02Z'), 2026)?.speaker;
+    expect(speaker).toBe('Paul Răducanu');
   });
 
   it('descarta lo que no es del proyecto o no casa con la fecha de subida', () => {

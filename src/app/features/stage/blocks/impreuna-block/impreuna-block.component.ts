@@ -3,13 +3,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG, displayAddress } from '../../../../core/church.config';
 import { IMPREUNA_FASTING_THEMES } from '../../../../core/impreuna/impreuna.config';
 import { IMPREUNA_EDITION, editionToday, planDay } from '../../../../core/impreuna/impreuna-edition';
-import {
-  announcedWeek,
-  formatReading,
-  isFastingDay,
-  localDateOfDay,
-  nextFirstThursday,
-} from '../../../../core/impreuna/impreuna-plan';
+import { announcedWeek, isFastingDay, localDateOfDay, nextFirstThursday } from '../../../../core/impreuna/impreuna-plan';
+import { formatReading } from '../../../../core/bible/bible-refs';
 import { APP_PATHS } from '../../../../core/navigation/app-paths';
 import { ClockService } from '../../../../core/services/clock.service';
 import { LanguageService } from '../../../../core/services/language.service';

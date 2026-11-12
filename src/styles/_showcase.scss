@@ -52,8 +52,10 @@
 
   // El foco lo recibe el enlace del pie, pero el anillo se pinta en la
   // tarjeta entera: es lo que se activa.
+  // Fuera de la tarjeta, sobre el lienzo claro: el oro de foco de claro
+  // (con `--c-gold` daba 1,8:1).
   &:has(.promo__link:focus-visible) {
-    outline: 3px solid var(--c-gold);
+    outline: 3px solid var(--c-focus);
     outline-offset: 3px;
   }
 }
@@ -242,6 +244,7 @@
  * En tarjeta estrecha no cabe y la fecha vuelve a la insignia.
  */
 .promo__panel {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   display: none;
 }
 
@@ -328,7 +331,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--c-gold);
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
   }
 }
@@ -412,64 +415,6 @@
 .promo__agenda-time {
   font-variant-numeric: tabular-nums;
   color: rgb(255 255 255 / 0.62);
-}
-
-/*
- * Aviso de toda la semana (semana de oración) encima de la agenda, sin
- * icono (08/11/2026): «TOATĂ SĂPTĂMÂNA» en versalitas y el título debajo (hasta dos
- * líneas). Un velo claro y el filete oro lo separan de los cultos sin
- * competir con el destacado.
- */
-.promo__agenda-notice {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: center;
-  margin: 0 0 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-left: 3px solid var(--c-gold);
-  border-radius: 0 6px 6px 0;
-  background: rgb(255 255 255 / 0.08);
-}
-
-.promo__agenda-notice-when {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--c-gold-soft);
-}
-
-.promo__agenda-notice-what {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.3;
-  text-wrap: balance;
-  color: rgb(255 255 255 / 0.95);
-}
-
-/*
- * Eventos de hoy (08/11/2026): mismo bloque que el aviso de la semana, con
- * una línea por evento («10:00 Binecuvântare de copii»), recortada a una
- * línea: la tarjeta no crece, cada evento resta una fila a la agenda.
- */
-.promo__agenda-event {
-  overflow: hidden;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgb(255 255 255 / 0.95);
-}
-
-.promo__agenda-event-time {
-  margin-right: 0.4rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--c-gold-soft);
 }
 
 /* --- Insignia ----------------------------------------------------------- */

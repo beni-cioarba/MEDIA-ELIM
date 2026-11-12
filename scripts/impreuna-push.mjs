@@ -277,6 +277,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   const { IMPREUNA_REMINDER: reminder, IMPREUNA_FASTING_THEMES } = loadTsModule(src('app/core/impreuna/impreuna.config.ts'));
   const { IMPREUNA_EDITION: edition, planDay } = loadTsModule(src('app/core/impreuna/impreuna-edition.ts'));
   const plan = loadTsModule(src('app/core/impreuna/impreuna-plan.ts'));
+  const refs = loadTsModule(src('app/core/bible/bible-refs.ts'));
   const { zonedDate, zonedInstant, dayOfYear } = loadTsModule(src('app/core/push/push-schedule.ts'));
   const { DEFAULT_CHURCH_CONFIG: config } = loadTsModule(src('app/core/church.config.ts'));
   const { timeZone, hour, topic } = reminder;
@@ -346,8 +347,8 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
         copy: pack.impreuna.push,
         day,
         date,
-        reading: plan.formatReading(entry.refs, lang),
-        readUrl: plan.bibleUrl(entry.refs[0], lang),
+        reading: refs.formatReading(entry.refs, lang),
+        readUrl: refs.bibleUrl(entry.refs[0], lang),
         video: media.video,
         speaker: media.speaker,
         fasting,

@@ -256,7 +256,8 @@
   margin: clamp(3rem, 7vw, 5rem) 0 0;
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--c-faint);
+  // `--c-muted`, no `--c-faint` (2,5:1): dice desde cuándo es la lista (axe, 12/11/2026).
+  color: var(--c-muted);
 }
 
 .fp__end-dot {

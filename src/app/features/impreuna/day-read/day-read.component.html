@@ -1,0 +1,27 @@
+<section class="rd" [attr.aria-label]="'impreuna.read.aria' | translate">
+  <app-bible-passages
+    [refs]="refs()"
+    [returnPath]="returnPath()"
+    [kind]="kind()"
+    [heading]="refs().length > 1 ? ('impreuna.read.today_multi' | translate: { count: refs().length }) : null"
+  />
+
+  <div class="rd__foot">
+    <app-bible-options />
+
+    <a
+      class="rd__chip"
+      [href]="planDayUrl()"
+      target="_blank"
+      rel="noopener"
+      [title]="'impreuna.read.plan_day_aria' | translate: { day: youversionDay() }"
+      [attr.aria-label]="'impreuna.read.plan_day_aria' | translate: { day: youversionDay() }"
+    >
+      <app-icon name="calendar" />
+      {{ 'impreuna.read.plan_day' | translate: { day: youversionDay() } }}
+    </a>
+
+    <!-- «Am citit» y «Trimite», de la página: la lectura y su cierre, juntos. -->
+    <ng-content select="[readTools]" />
+  </div>
+</section>

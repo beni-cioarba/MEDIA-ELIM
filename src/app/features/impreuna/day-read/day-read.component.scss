@@ -1,0 +1,36 @@
+/* Citirea zilei: tarjeta con las filas de lectura compartidas y un pie con
+   versión, tienda, el día en la app y las acciones del día. Docs:
+   32-impreuna.md → Diseño. */
+@use 'ds' as *;
+@use '../imp';
+@use '../../../shared/bible/bible';
+
+:host {
+  display: block;
+}
+
+.rd {
+  @include imp.card;
+  overflow: hidden;
+}
+
+.rd__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4);
+  border-top: 1px solid var(--c-hairline);
+  background: var(--c-surface-accent);
+}
+
+.rd__chip {
+  @include bible.chip;
+}
+
+/* En el móvil, algo menos de margen: versión y plan caben en una línea a 375 px. */
+@include until('xs') {
+  .rd__foot {
+    padding-inline: var(--sp-3);
+  }
+}

@@ -58,11 +58,14 @@
  * Anillo de foco único de la app. Usa `:focus-visible` para no molestar
  * al ratón, con respaldo `:focus` en navegadores antiguos.
  */
+// El contorno sigue la forma del propio elemento (los navegadores actuales
+// lo dibujan con su `border-radius`). Antes llevaba `border-radius: inherit`:
+// al enfocar, el elemento tomaba el radio de su padre y las píldoras y los
+// círculos se volvían cuadrados mientras tenían el foco (12/11/2026).
 @mixin focus-ring($offset: 2px) {
   &:focus-visible {
     outline: 2px solid var(--c-focus);
     outline-offset: $offset;
-    border-radius: inherit;
   }
 
   &:focus:not(:focus-visible) {

@@ -1,0 +1,221 @@
+/* Filas de lectura: abrir (casi todo el ancho) · escuchar. Sin marco propio:
+   la tarjeta la pone quien las usa. Navy u oro según `--kind`. */
+@use 'ds' as *;
+@use './bible';
+
+:host {
+  display: block;
+  @include bible.kind-colors;
+  // Gris de texto pequeño derivado del texto: ≥ 4,5:1 en cualquier página
+  // (en la de los bloques, `--c-muted` es más claro y daba 4,26).
+  --bp-muted: color-mix(in srgb, var(--c-text) 72%, var(--c-surface));
+}
+
+/* ── Android sin la app ─────────────────────────────────────────────── */
+.bp__alert {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-warning) 35%, transparent);
+  background: color-mix(in srgb, var(--c-warning) 9%, var(--c-surface));
+}
+
+.bp__alert-icon {
+  margin-top: 0.1rem;
+  font-size: 1.25rem;
+  color: color-mix(in srgb, var(--c-warning) 60%, var(--c-text));
+}
+
+.bp__alert-title {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.bp__alert-text {
+  max-inline-size: none;
+  margin: 0.15rem 0 0;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--bp-muted);
+}
+
+.bp__alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.bp-btn {
+  @include bible.btn;
+}
+
+.bp-btn--primary {
+  @include bible.btn-primary;
+}
+
+.bp__close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bp-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  @include bible.focus;
+
+  &:hover {
+    background: var(--c-veil);
+    color: var(--c-text);
+  }
+}
+
+/* ── Rótulo y total ─────────────────────────────────────────────────── */
+.bp__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 var(--sp-3);
+  max-inline-size: none;
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4) 0;
+  font-size: var(--fs-sm);
+
+  strong {
+    color: var(--c-text);
+  }
+
+  span {
+    font-size: var(--fs-xs);
+    color: var(--bp-muted);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ── Filas ───────────────────────────────────────────────────────────── */
+.bp__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bp__item {
+  display: flex;
+  align-items: stretch;
+
+  & + & {
+    border-top: 1px solid var(--c-hairline);
+  }
+}
+
+.bp__open {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--sp-3);
+  min-width: 0;
+  min-height: 3.5rem;
+  padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  @include bible.focus(-3px);
+  @include bible.motion-off;
+
+  &:hover {
+    background: var(--kind-tint);
+
+    .bp__go {
+      color: var(--kind);
+      transform: translateX(2px);
+    }
+  }
+}
+
+/* El libro en su color: el gesto principal se ve de lejos. */
+.bp__icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--r-md);
+  background: var(--kind);
+  color: var(--c-on-primary);
+  font-size: 1.15rem;
+}
+
+.bp__text {
+  min-width: 0;
+}
+
+.bp__label {
+  display: block;
+  font: 700 var(--fs-sm) / 1.25 var(--font-sans);
+  color: var(--kind);
+}
+
+.bp__meta {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+  color: var(--bp-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bp__go {
+  font-size: 1.1rem;
+  color: var(--bp-muted);
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+  @include bible.motion-off;
+}
+
+.bp__listen {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 3.25rem;
+  padding-inline: var(--sp-3);
+  border-inline-start: 1px solid var(--c-hairline);
+  color: var(--kind);
+  font: 600 var(--fs-xs) / 1 var(--font-sans);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  @include bible.focus(-3px);
+  @include bible.motion-off;
+
+  &:hover {
+    background: var(--kind-tint);
+  }
+
+  app-icon {
+    font-size: 1.15rem;
+  }
+}
+
+/* En el móvil: escuchar sólo con icono (el nombre va en aria-label) y algo
+   menos de margen. Al final: gana a las reglas de arriba. */
+@include until('xs') {
+  .bp__listen-text {
+    @include visually-hidden;
+  }
+
+  .bp__open,
+  .bp__head {
+    padding-inline-start: var(--sp-3);
+  }
+}

@@ -35,6 +35,7 @@
  * ===================================================================== */
 
 .onair {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   padding-inline: var(--page-gutter);
   background: var(--c-primary-darkest);
   color: var(--c-text-inverse);
@@ -53,7 +54,7 @@
 }
 
 .onair__inner:focus-visible {
-  outline: 2px solid #d4af37;
+  outline: 2px solid var(--c-focus);
   outline-offset: -3px;
 }
 
@@ -280,7 +281,7 @@
 }
 
 .notice__all:focus-visible {
-  outline: 2px solid #d4af37;
+  outline: 2px solid var(--c-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -337,7 +338,7 @@
 }
 
 .notice__item:focus-visible {
-  outline: 2px solid #d4af37;
+  outline: 2px solid var(--c-focus);
   outline-offset: -2px;
 }
 
@@ -459,6 +460,29 @@
   max-width: calc(var(--page-max) + 2 * var(--page-gutter));
   margin-inline: auto;
   padding: 1rem var(--page-gutter) 0;
+}
+
+/* Citirea Bibliei, pegada a «Când ne întâlnim»: menos aire que entre
+   secciones, se leen como pareja (mismo ancho, mismas columnas). */
+.week--bible {
+  padding-top: 0.75rem;
+}
+
+/* Hueco de la semana de lectura mientras llega (`@defer`): su alto medido
+   (12/11/2026: 361 px a 375 · 161 px a 768 · 158 px a 1024 · 141 px a 1440),
+   para que la página no salte al pintarla. El domingo suma la línea de la
+   semana siguiente (~45 px), por debajo de lo que se ve. */
+.bw-placeholder {
+  min-height: 23.5rem;
+
+  // Desde ~720 px la tarjeta pasa a siete columnas (contenedor ≥ 40rem).
+  @media (min-width: 720px) {
+    min-height: 9.5rem;
+  }
+
+  @media (min-width: 1200px) {
+    min-height: 8.25rem;
+  }
 }
 
 /* =====================================================================
@@ -625,7 +649,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
   }
 }
@@ -776,7 +800,7 @@
 }
 
 .airing:focus-visible {
-  outline: 2px solid #d4af37;
+  outline: 2px solid var(--c-focus);
   outline-offset: 3px;
   border-radius: var(--r-card);
 }
@@ -1132,7 +1156,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--c-gold);
+    outline: 2px solid var(--c-focus);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -1265,5 +1289,22 @@
 @media (max-width: 859.98px) {
   .depts__list {
     justify-content: flex-start;
+  }
+}
+
+/* Hueco de la franja de Proiectul Împreună mientras llega (`@defer`): el alto
+   aproximado de la franja, para que la página no salte al pintarla. */
+.impt-placeholder {
+  // Medido con la tarjeta blanca (12/11/2026): 371 px a 375 · 179 px a 1440
+  // (+ el aire de la franja).
+  min-height: 25rem;
+
+  // md / lg de los tokens (860 / 1024 px): esta hoja usa media queries a mano.
+  @media (min-width: 860px) {
+    min-height: 16rem;
+  }
+
+  @media (min-width: 1024px) {
+    min-height: 12.5rem;
   }
 }

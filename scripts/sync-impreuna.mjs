@@ -34,7 +34,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DATA_DIR = resolve(ROOT, 'src/app/core/impreuna/data');
-const BOOKS_FILE = resolve(ROOT, 'src/app/core/impreuna/bible-books.json');
+const BOOKS_FILE = resolve(ROOT, 'src/app/core/bible/bible-books.json');
 const ICS_DIR = resolve(ROOT, 'src/assets/calendars');
 
 /** Origen público de la web (enlaces de los eventos del calendario). */
@@ -131,7 +131,7 @@ const stripTags = (html) => decodeEntities(html.replace(/<[^>]+>/g, ' ')).replac
  * de erratas). `null` si no es una entrada diaria.
  */
 export function parseWpPost(post) {
-  const title = decodeEntities(post?.title?.rendered ?? '').trim();
+  const title = decodeEntities(post?.title?.rendered ?? '').normalize('NFC').trim();
   const match =
     /^Ziua\s+0*(\d{1,3})\s*[–—-]\s*(.+?)\s*[–—-]\s*\d{1,2}\s+\p{L}+\s+\d{4}\s*$/u.exec(title) ??
     /^Ziua\s+0*(\d{1,3})\s*[–—-]?\s*(.*?)\s*$/u.exec(title);
@@ -159,7 +159,8 @@ export function parseWpPost(post) {
  * `parseYoutubeUpload` de la app (core/impreuna/impreuna-plan.ts).
  */
 export function parseYoutubeUpload(item, year) {
-  const title = item?.snippet?.title?.trim() ?? '';
+  // NFC: YouTube manda a veces los diacríticos descompuestos («a» + breve).
+  const title = (item?.snippet?.title ?? '').normalize('NFC').trim();
   const video = item?.snippet?.resourceId?.videoId ?? '';
   const match = /^Ziua\s+0*(\d{1,3})\b\s*[–—-]?\s*(.*?)\s*$/u.exec(title);
   if (!match || !/^[\w-]{11}$/.test(video)) return null;

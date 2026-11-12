@@ -221,6 +221,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
        */
       .hero {
         position: relative;
+        --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
@@ -487,7 +488,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       }
 
       .hero__ctl:focus-visible {
-        outline: 2px solid var(--c-gold);
+        outline: 2px solid var(--c-focus);
         outline-offset: 2px;
       }
 
@@ -617,7 +618,7 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
       }
 
       .hero__dot:focus-visible {
-        outline: 2px solid var(--c-gold);
+        outline: 2px solid var(--c-focus);
         outline-offset: 2px;
         border-radius: var(--r-xs);
       }

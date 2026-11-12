@@ -64,7 +64,7 @@ variante, que es la única desviación de fondo respecto a la referencia.
 | Portada | Cuándo | Qué lleva |
 | --- | --- | --- |
 | **`photo`** | La sección tiene una imagen que dice algo (anuncios, eventos) | Foto a sangre + velo + titular y descripción encima |
-| **`data`** (`promo__cover--data`) | El contenido de la sección **es una agenda** (programa semanal, plan de lectura) | El tono de la tarjeta con trama diagonal y halo, el icono de la sección de marca de agua, y **la semana comprimida**: día · qué · hora, tres líneas |
+| **`data`** (`promo__cover--data`) | El contenido **es una agenda** o un evento sin cartel (en la portada, desde el 12/11/2026, sólo esto último) | El tono de la tarjeta con trama diagonal y halo, el icono de la sección de marca de agua, y **los datos comprimidos**: día · qué · hora, tres líneas |
 
 La regla detrás: **ninguna foto de archivo informa tanto como el propio dato
 bien puesto**. Si hay que elegir entre una imagen de relleno y la agenda de la
@@ -76,10 +76,10 @@ Todo lo que ya existía en el modelo de datos y no se estaba usando:
 
 | Tarjeta | Titular | Descripción | Pie (línea 2) | Agenda |
 | --- | --- | --- | --- | --- |
-| Programa semanal | Día · hora del próximo culto | Título del culto | **Cuenta atrás** («Începe în 3 h 57 min», «Acum, în desfășurare», «Mâine») | El resto de la semana (4 líneas) |
+| ~~Programa semanal~~ (retirada 12/11/2026) | Día · hora del próximo culto | Título del culto | **Cuenta atrás** («Începe în 3 h 57 min», «Acum, în desfășurare», «Mâine») | El resto de la semana (4 líneas) |
 | Anuncios | Título del anuncio | **`lead`**: el resumen de 1-2 frases que ya traía el modelo | Fecha · hora · **lugar** | — |
 | Eventos | Título del evento | `description` del evento | Días que faltan · hora · **predicador** | — |
-| Lectura bíblica | Pasaje de hoy | **`summary`**: el tramo de toda la semana | «Ziua 2 din 7» | Las 4 lecturas siguientes, con su **Nuevo Testamento** |
+| ~~Lectura bíblica~~ (retirada 12/11/2026) | Pasaje de hoy | **`summary`**: el tramo de toda la semana | «Ziua 2 din 7» | Las 4 lecturas siguientes, con su **Nuevo Testamento** |
 
 ## Cómo se comporta el carrusel
 
@@ -120,8 +120,8 @@ Aquí se aplica lo mismo:
 | --- | --- | --- |
 | **Anuncios vigentes** | Franja propia encima del carrusel, una línea por aviso | Es lo único con fecha de caducidad: o se ve hoy o no sirve. Dentro del carrusel se podía pasar de largo |
 | **Eventos** | **Una tarjeta por evento** (tope de cuatro) | Son elementos reales y equivalentes: es exactamente el caso del carrusel |
-| **Programa semanal** | Una tarjeta con portada de datos | Es una agenda recurrente, no un evento: la tarjeta lleva la semana comprimida |
-| **Plan de lectura** | Una tarjeta con portada de datos | Igual: la lectura de hoy de titular y las tres siguientes en la agenda |
+| **Programa semanal** | ~~Una tarjeta con portada de datos~~ → fuera del carrusel: «Când ne întâlnim», encima (12/11/2026) | Una agenda que tiene que verse sí o sí no va en un carrusel (regla 1) |
+| **Plan de lectura** | ~~Una tarjeta con portada de datos~~ → fuera del carrusel: franja «Citirea Bibliei» bajo el horario (12/11/2026) | Igual |
 
 Cada tarjeta de evento toma una foto y un tono distintos de la paleta medida,
 en orden, así dos seguidas nunca repiten color.
@@ -397,7 +397,7 @@ opacidad 0,78: **6:1** sobre el crema (antes 3,8:1, no cumplía AA).
 | Mecánica del carrusel (pista, ajuste, flechas, degradados) | `src/styles/_primitives.scss` → `ui-carousel*` |
 | Estado de las flechas y de los bordes | `src/app/shared/card-carousel/card-carousel.component.ts` |
 | Tarjeta de promoción | `src/styles/_showcase.scss` → `.promo*` |
-| Datos de las tarjetas (una por sección) | `home.component.ts` → `boardCards()` |
+| Datos de las tarjetas (una por evento) | `home.component.ts` → `boardCards()` |
 | Ejemplo vivo | `/stil` → «Carrusel y tarjeta de promoción» |
 
 ## Portada: eventos sin fotos inventadas (08/11/2026)
@@ -413,8 +413,35 @@ evento (la fanfara en una «Conferință de familie»).
 El mismo día, los eventos van también en la tarjeta «Program săptămânal»
 (bloque «Azi», sin icono: una línea por evento, hora · título, recortada a una
 línea; cada evento resta una fila a «Restul săptămânii») y en las celdas de
-la semana.
+la semana. *(La tarjeta del programa se retiró el 12/11/2026: ver abajo. Los
+eventos de hoy siguen en las celdas de «Când ne întâlnim» y en su tarjeta.)*
 
 **Degradados de borde del carrusel**: apagados en todos los tamaños
 (`_primitives.scss`): tapaban el borde de las fotos y tarjetas; la tarjeta que
 asoma y las flechas ya indican que hay más.
+
+## Portada: el tablero, sólo eventos (12/11/2026)
+
+Decisión del usuario: el carrusel de la portada se queda **sólo para
+eventos**. Las dos tarjetas de datos que llevaba además salen porque su
+contenido ya tiene sitio fijo encima, a la vista y sin deslizar (regla 1: lo
+que tiene que verse sí o sí no va en un carrusel):
+
+| Tarjeta retirada | Dónde está ahora |
+| --- | --- |
+| «Program săptămânal» (próximo culto, cuenta atrás, resto de la semana, «Toată săptămâna», eventos de hoy) | «Când ne întâlnim» justo encima (la semana entera, eventos en su día); la cuenta atrás, en el hero («Azi · 20:30 … în 5 h»); las semanas de oración, en la **franja de avisos** (`AnnouncementsService.active` ya las incluye) |
+| «Citirea Bibliei» (lectura de hoy y las siguientes) | Franja propia `app-bible-week` bajo «Când ne întâlnim», con las siete columnas del horario (30-presentation.md → «Bloque Citirea Bibliei» → «En la portada») |
+
+Con ello salen también `BoardCard.notices` / `events`, la cuenta atrás de la
+tarjeta (`countdownLabel`, `sessionProgress`), los estilos
+`.promo__agenda-notice*` y `.promo__agenda-event*` (`_showcase.scss`) y las
+claves `home.board.{rest_week, rest_readings, whole_week, today_events,
+day_of}`. **Sin eventos futuros el tablero no se pinta** (antes nunca quedaba
+vacío porque las dos tarjetas de datos estaban siempre). Medido a 1440: la
+banda pasa de 476 a 355 px.
+
+**Posición** (12/11/2026, a petición del usuario): el tablero de eventos va
+**justo debajo de la franja de avisos**, antes de «Când ne întâlnim» y de la
+semana de lectura. Orden de la portada: hero → avisos → eventos → horario →
+Citirea Bibliei → Proiectul Împreună → familias.
+

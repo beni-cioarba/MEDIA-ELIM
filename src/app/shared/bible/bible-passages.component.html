@@ -1,0 +1,89 @@
+<!-- Android sin la app: Chrome volvió aquí desde el intent. Instalar o leer ya. -->
+@if (missing(); as ref) {
+  <div class="bp__alert" role="status">
+    <app-icon class="bp__alert-icon" name="info" />
+    <div class="bp__alert-body">
+      <p class="bp__alert-title">{{ 'bible_app.missing_title' | translate }}</p>
+      <p class="bp__alert-text">{{ 'bible_app.missing_text' | translate }}</p>
+      <div class="bp__alert-actions">
+        @if (links.store; as store) {
+          <a class="bp-btn bp-btn--primary" [href]="store.url" target="_blank" rel="noopener">
+            <app-icon name="download" />
+            {{ 'bible_app.install_' + store.kind | translate }}
+          </a>
+        }
+        <a class="bp-btn" [href]="links.web(ref)" target="_blank" rel="noopener">
+          {{ 'bible_app.in_browser' | translate }}
+          <app-icon name="external" />
+        </a>
+      </div>
+    </div>
+    <button type="button" class="bp__close" [attr.aria-label]="'common.close' | translate" (click)="missing.set(null)">
+      <app-icon name="close" />
+    </button>
+  </div>
+}
+
+<!-- Rótulo y total (varios textos o quien lo pida); cada fila, el suyo. -->
+@if (heading(); as h) {
+  <p class="bp__head">
+    <strong>{{ h }}</strong>
+    @if (passages().length > 1) {
+      <span>
+        {{ versesKey(total().verses) | translate: { count: total().verses } }}
+        @if (total().minutes) {
+          · ≈ {{ total().minutes }} min
+        }
+      </span>
+    }
+  </p>
+}
+
+<ul class="bp__list">
+  @for (p of passages(); track p.ref.code) {
+    <li class="bp__item">
+      <a
+        class="bp__open"
+        [href]="p.open.href"
+        [attr.target]="p.open.newTab ? '_blank' : null"
+        rel="noopener"
+        [attr.aria-label]="
+          'bible_app.read_aria'
+            | translate
+              : {
+                  passage: p.label,
+                  version: links.version().name,
+                  verses: (versesKey(p.verses) | translate: { count: p.verses }),
+                  minutes: p.minutes,
+                }
+        "
+        (click)="opened(p.open)"
+      >
+        <span class="bp__icon" aria-hidden="true"><app-icon name="book-open" /></span>
+        <span class="bp__text">
+          <span class="bp__label">
+            {{ named() ? p.label : ('bible_app.read' | translate: { passage: p.label }) }}
+          </span>
+          <!-- La versión no se repite en cada fila: se elige y se ve en el pie. -->
+          <span class="bp__meta">
+            {{ versesKey(p.verses) | translate: { count: p.verses } }}
+            @if (p.minutes) {
+              · ≈ {{ p.minutes }} min
+            }
+          </span>
+        </span>
+        <app-icon class="bp__go" name="chevron-right" />
+      </a>
+      <a
+        class="bp__listen"
+        [href]="p.audio"
+        target="_blank"
+        rel="noopener"
+        [attr.aria-label]="'bible_app.listen_aria' | translate: { passage: p.label, version: links.version().name }"
+      >
+        <app-icon name="headphones" />
+        <span class="bp__listen-text">{{ 'bible_app.listen' | translate }}</span>
+      </a>
+    </li>
+  }
+</ul>

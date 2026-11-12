@@ -1,0 +1,380 @@
+/* Proiectul Împreună en la portada: tarjeta blanca (la misma superficie que
+   «Când ne întâlnim» y Citirea Bibliei, 12/11/2026; antes, banda navy) con
+   tres zonas —qué es y el avance del año · el texto de hoy · la meditación—
+   y el acceso al módulo. En el móvil, apilado y sin entradilla.
+   Docs: 32-impreuna.md → «En la portada». */
+@use 'ds' as *;
+
+:host {
+  display: block;
+}
+
+.impt {
+  padding: clamp(0.75rem, 2vh, 1.5rem) var(--page-gutter);
+}
+
+.impt__card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-areas:
+    'id'
+    'today'
+    'video'
+    'cta';
+  gap: var(--sp-3);
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: var(--sp-4);
+  overflow: hidden;
+  border: 1px solid rgb(26 54 93 / 0.1);
+  border-radius: 18px;
+  color: var(--c-text);
+  background: var(--c-surface);
+}
+
+@include from('md') {
+  .impt__card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    grid-template-areas:
+      'id today'
+      'video cta';
+    align-items: start;
+    gap: var(--sp-4) clamp(1.25rem, 3vw, 2.5rem);
+    padding: clamp(0.9rem, 1.2vw, 1.15rem) clamp(1.1rem, 2vw, 1.5rem);
+  }
+}
+
+/* Escritorio: tres columnas; la meditación y el botón comparten la tercera,
+   así la franja mide lo que la identidad (~180 px) y no lo que una miniatura. */
+@include from('lg') {
+  .impt__card {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr) 15rem;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'id today video'
+      'id today cta';
+    row-gap: var(--sp-3);
+  }
+}
+
+/* ── Qué es ─────────────────────────────────────────────────────────── */
+.impt__id {
+  grid-area: id;
+  min-width: 0;
+}
+
+.impt__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-inline-size: none;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.impt__dot {
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--c-gold);
+  box-shadow: 0 0 0 3px rgb(212 175 55 / 0.22);
+}
+
+.impt__title {
+  margin: 0.3rem 0 0;
+  // Margen para la «Î» (el acento no se corta con el interlineado apretado).
+  padding-top: 0.08em;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: var(--c-primary);
+}
+
+.impt__lead {
+  max-inline-size: none;
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+/* Avance del año: dato, barra fina en oro y porcentaje. */
+.impt__progress {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  max-inline-size: none;
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.impt__day {
+  color: var(--c-primary);
+}
+
+.impt__bar {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgb(26 54 93 / 0.08);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--c-gold-soft), var(--c-gold));
+  }
+}
+
+.impt__pct {
+  color: var(--c-gold-deep);
+}
+
+/* ── Hoy ─────────────────────────────────────────────────────────────── */
+.impt__today {
+  grid-area: today;
+  min-width: 0;
+}
+
+.impt__kicker {
+  max-inline-size: none;
+  margin: 0 0 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.impt__read {
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: 12px;
+  background: var(--c-surface);
+  color: var(--c-text);
+}
+
+/* Debajo de la tarjeta, una línea: ayuno, mañana y la racha propia. */
+.impt__more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  max-inline-size: none;
+  margin: 0.6rem 0 0;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--c-muted);
+
+  &:empty {
+    display: none;
+  }
+
+  app-icon {
+    flex: none;
+    font-size: 1.05em;
+  }
+}
+
+.impt__fast {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-weight: 700;
+}
+
+.impt__next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+.impt__mine {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--c-gold-deep);
+}
+
+/* ── Meditación ──────────────────────────────────────────────────────── */
+.impt__video {
+  grid-area: video;
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  padding: 0.4rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: 12px;
+  background: var(--c-surface-accent);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--c-hairline-strong);
+    background: var(--c-veil);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  // Sin miniatura (el vídeo aún no está): sólo el texto.
+  &:not(:has(.impt__thumb)) {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.6rem 0.75rem;
+  }
+}
+
+@include from('lg') {
+  .impt__video {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+  }
+}
+
+.impt__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: calc(var(--r-md) - 0.25rem);
+  background: #000;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.impt__play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1rem;
+  transform: translate(-50%, -50%);
+}
+
+.impt__video-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  font-size: var(--fs-sm);
+
+  strong {
+    overflow: hidden;
+    color: var(--c-primary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.impt__video-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.impt__video-pending {
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+/* ── Al módulo ───────────────────────────────────────────────────────── */
+.impt__cta {
+  grid-area: cta;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  justify-self: stretch;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--r-pill);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font: 700 var(--fs-sm) / 1.2 var(--font-sans);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--c-primary-deep);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@include from('md') {
+  .impt__cta {
+    align-self: center;
+    justify-self: end;
+  }
+}
+
+@include from('lg') {
+  .impt__cta {
+    align-self: end;
+    justify-self: stretch;
+  }
+}
+
+/* Móvil: sin entradilla (el título ya dice qué es); el resto, compacto. */
+@include until('md') {
+  .impt__lead {
+    display: none;
+  }
+}

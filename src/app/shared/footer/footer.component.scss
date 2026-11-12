@@ -19,6 +19,7 @@
 // identidad = logo + lema + redes; enlaces más juntos; herramientas como
 // texto pequeño agrupado a la derecha.
 .footer {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: relative;
   /* Abajo, además, el hueco de la barra de pestañas del móvil (0 sin ella):
      el pie se ve entero al llegar al final, con la barra flotando sobre su

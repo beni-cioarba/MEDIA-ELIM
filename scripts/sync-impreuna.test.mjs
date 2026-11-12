@@ -19,7 +19,7 @@ import {
   toJson,
 } from './sync-impreuna.mjs';
 
-const { books } = JSON.parse(await readFile(new URL('../src/app/core/impreuna/bible-books.json', import.meta.url), 'utf8'));
+const { books } = JSON.parse(await readFile(new URL('../src/app/core/bible/bible-books.json', import.meta.url), 'utf8'));
 
 const POST = {
   id: 12449,

@@ -4,14 +4,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { map } from 'rxjs';
 import { PLAN_DAYS } from '../../../core/impreuna/impreuna-edition';
-import {
-  PassageRef,
-  isFastingDay,
-  localDateOfDay,
-  monthOfDay,
-  monthRange,
-  refLabel,
-} from '../../../core/impreuna/impreuna-plan';
+import { isFastingDay, localDateOfDay, monthOfDay, monthRange } from '../../../core/impreuna/impreuna-plan';
+import { PassageRef, refLabel } from '../../../core/bible/bible-refs';
 import { ImpreunaService } from '../../../core/impreuna/impreuna.service';
 import { APP_PATHS } from '../../../core/navigation/app-paths';
 import { IconComponent } from '../../../shared/icon/icon.component';

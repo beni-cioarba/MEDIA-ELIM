@@ -39,6 +39,7 @@
 }
 
 .tabs {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   /* Verde de la pestaña activa: el mismo «hoy / ahora» de la portada
      (`--hero-next-accent`, «AZI · 20:30»), así el verde significa en toda la
      app «aquí / ahora». Sobre el navy de la cápsula da ~7:1. */

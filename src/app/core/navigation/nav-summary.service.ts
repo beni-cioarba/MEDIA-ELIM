@@ -2,7 +2,7 @@ import { Injectable, Signal, computed, inject } from '@angular/core';
 import { CHURCH_CONFIG } from '../church.config';
 import { departmentById } from '../departments.config';
 import { editionToday, planDay } from '../impreuna/impreuna-edition';
-import { formatReading } from '../impreuna/impreuna-plan';
+import { formatReading } from '../bible/bible-refs';
 import { LEADERSHIP_OFFICES, SERVICE_AREAS } from '../leadership.config';
 import { AnnouncementsService } from '../services/announcements.service';
 import { BaptismsService } from '../services/baptisms.service';

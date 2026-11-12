@@ -109,7 +109,9 @@ const PEOPLE = [
   { id: 'maria-copran', name: 'Maria Copran' },
   { id: 'matias-zagrean', name: 'Matias Zăgrean' },
   { id: 'david-dobre', name: 'David Dobre' },
-  { id: 'samuel-balean', name: 'Samuel Balean' },
+  // «Balean» en la lista de Sunet; «Băleanu» en la de Proiecție (12/11/2026) y
+  // en la familia de rugăciune pentru familii: se queda la forma completa.
+  { id: 'samuel-baleanu', name: 'Samuel Băleanu' },
   { id: 'fineas-les', name: 'Fineas Les' },
   // Profesoras de la școala duminicală (Copii), por grupos — 18/10/2026.
   { id: 'cristina-bucurici', name: 'Cristina Bucurici' },
@@ -158,6 +160,11 @@ const PEOPLE = [
   { id: 'florin-biris', name: 'Florin Biriș' },
   { id: 'nicu-teglas', name: 'Nicu Teglas' },
   { id: 'oleg-ciobanu', name: 'Oleg Ciobanu' },
+  // Proiecție (12/11/2026). «Andrey Stanuș» en la lista = `andrei-stanus`.
+  { id: 'david-pintilei', name: 'David Pintilei' },
+  { id: 'vlad-valean', name: 'Vlad Vălean' },
+  { id: 'david-dulca', name: 'David Dulcă' },
+  { id: 'samuel-apalaghiei', name: 'Samuel Apalaghiei' },
 ] as const satisfies readonly Person[];
 
 /** Unión derivada del registro: referenciar a alguien inexistente no compila. */
@@ -440,14 +447,22 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
           { person: 'kevin-mitoseriu' },
           { person: 'matias-zagrean' },
           { person: 'david-dobre' },
-          { person: 'samuel-balean' },
+          { person: 'samuel-baleanu' },
           { person: 'fineas-les' },
         ],
       },
       {
         id: 'projection',
         i18nKey: 'projection',
-        members: [{ person: 'natanael-beniamin-cioarba' }, { person: 'andrei-stanus' }],
+        members: [
+          { person: 'natanael-beniamin-cioarba', roles: ['lead'] },
+          { person: 'andrei-stanus' },
+          { person: 'david-pintilei' },
+          { person: 'vlad-valean' },
+          { person: 'samuel-baleanu' },
+          { person: 'david-dulca' },
+          { person: 'samuel-apalaghiei' },
+        ],
       },
       {
         id: 'live_stream',

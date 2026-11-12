@@ -8,19 +8,8 @@ import { LoggerService } from '../services/logger.service';
 import media from './data/2026.media.json';
 import { IMPREUNA_WP_API, IMPREUNA_YOUTUBE_UPLOADS, YOUTUBE_PLAYLIST_ITEMS_API } from './impreuna.config';
 import { IMPREUNA_EDITION, PlanDay, editionToday, planDay } from './impreuna-edition';
-import {
-  BibleLang,
-  PassageGroup,
-  WpDayPost,
-  WpPostJson,
-  YoutubePlaylistItemJson,
-  formatReading,
-  groupRefs,
-  isoDateOfDay,
-  parseWpPost,
-  parseYoutubeUpload,
-  readingStreak,
-} from './impreuna-plan';
+import { WpDayPost, WpPostJson, YoutubePlaylistItemJson, isoDateOfDay, parseWpPost, parseYoutubeUpload, readingStreak } from './impreuna-plan';
+import { BibleLang, PassageGroup, formatReading, groupRefs } from '../bible/bible-refs';
 
 /** La meditación de un día: vídeo de YouTube, quién la da y su entrada en la web del proyecto. */
 export interface DayMedia {

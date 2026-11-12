@@ -18,7 +18,7 @@ El mismo objeto se pinta en **tres sitios** con **un solo renderizador**
 | Web `/anunturi`               | `AnnouncementsComponent` lista los vigentes, el más próximo primero  |
 | Web `/anunturi/<id>`          | El mismo componente con uno solo: **enlace para compartir** (WhatsApp) |
 | Proyección                    | Bloque `announcements`, **un anuncio = una o varias diapositivas** (páginas), al principio del carrusel |
-| Portada `/`, tarjeta «Program săptămânal» | Sólo los **de toda la semana** (`AnnouncementsService.weekLong`: sin `date`, `publishedOn` → `expiresOn` ≥ 6 días): fila «TOATĂ SĂPTĂMÂNA» + título encima de «Restul săptămânii»; cada una ocupa el sitio de una línea de la agenda (23/10/2026) |
+| Portada `/`, franja de avisos | **Todos los vigentes** (`AnnouncementsService.active`), semanas de oración incluidas. La tarjeta «Program săptămânal» del carrusel, que repetía los de toda la semana como «TOATĂ SĂPTĂMÂNA», se retiró el 12/11/2026 (48-carousel-cards.md); `weekLong` sigue en el servicio |
 | Panel completo de la web (`/media`) | **No aparecen** (decisión del usuario, 22/09/2026): los anuncios sólo viven en su sección y en la proyección; `/media/anunturi` redirige a `/anunturi` |
 
 Vigencia: desde `publishedOn` (opcional, incluido) hasta `expiresOn`

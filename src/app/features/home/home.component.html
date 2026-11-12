@@ -156,24 +156,19 @@
 }
 
 <!-- ===================================================================
-     La semana de un vistazo (lunes → domingo), debajo de los avisos: el
-     mismo componente que en Contact, sin la franja del próximo culto (la
-     tarjeta del programa del tablero ya lleva la cuenta atrás).
-     =================================================================== -->
-<div class="week">
-  <app-week-schedule [showNext]="false" />
-</div>
-
-<!-- ===================================================================
      Tablero «lo que viene»: carrusel de tarjetas de promoción.
      La anatomía está calcada del carrusel de play.google.com/store/apps
      (medido, no mirado): portada con foto, insignia superpuesta arriba a la
      izquierda, titular grande sobre el fondo tonal de la tarjeta y barra
      inferior con el icono de la sección, su nombre, el dato vivo y una flecha.
-     Cada tarjeta es una sección de la web y lleva delante lo más inmediato
-     que tiene; debajo, las dos siguientes.
+     Una tarjeta por evento futuro, en orden. Desde el 12/11/2026 sólo
+     eventos: el programa y la lectura tienen su sitio fijo encima («Când ne
+     întâlnim» y Citirea Bibliei) y las semanas de oración van en los avisos.
+     Sin eventos, el tablero no se pinta. Va justo debajo de los avisos
+     (12/11/2026, a petición del usuario): lo que viene, antes de la semana.
      Detalle y medidas: docs/ai/48-carousel-cards.md.
      =================================================================== -->
+@if (boardCards().length > 0) {
 <section class="board" aria-labelledby="board-title">
   <!-- Rótulo «Ce urmează» sólo para el lector de pantalla (29/09/2026, a
        petición del usuario): a la vista sobraba —cada tarjeta ya dice qué es
@@ -254,29 +249,6 @@
 
               @if (card.agenda.length > 0) {
                 <div class="promo__agenda">
-                  <!-- Avisos de toda la semana (semanas de oración): `div` y no
-                       `p` para no contar en el `nth-of-type` que recorta las
-                       filas en móvil. -->
-                  @for (n of card.notices; track n.id) {
-                    <div class="promo__agenda-notice">
-                      <span class="promo__agenda-notice-when">{{ 'home.board.whole_week' | translate }}</span>
-                      <span class="promo__agenda-notice-what">{{ n.title }}</span>
-                    </div>
-                  }
-                  <!-- Eventos de hoy: un bloque, una línea por evento (hora · título). -->
-                  @if (card.events.length) {
-                    <div class="promo__agenda-notice promo__agenda-notice--events">
-                      <span class="promo__agenda-notice-when">{{ 'home.board.today_events' | translate }}</span>
-                      @for (ev of card.events; track ev.id) {
-                        <span class="promo__agenda-event">
-                          @if (ev.time) {
-                            <span class="promo__agenda-event-time">{{ ev.time }}</span>
-                          }
-                          {{ ev.title }}
-                        </span>
-                      }
-                    </div>
-                  }
                   <p class="promo__agenda-head">{{ card.agendaKey | translate }}</p>
                   @for (row of card.agenda; track row.id) {
                     <p class="promo__agenda-row">
@@ -329,6 +301,47 @@
     </ng-template>
   </app-card-carousel>
 </section>
+}
+
+<!-- ===================================================================
+     La semana de un vistazo (lunes → domingo), debajo de los avisos: el
+     mismo componente que en Contact, sin la franja del próximo culto (la
+     cuenta atrás ya va en el hero, «Azi · 20:30 … în 5 h»).
+     =================================================================== -->
+<div class="week">
+  <app-week-schedule [showNext]="false" />
+</div>
+
+<!-- ===================================================================
+     Citirea Bibliei: la semana del plan de lectura de la iglesia, pareja de
+     «Când ne întâlnim» (mismas siete columnas: cada lectura cae bajo su día
+     y «hoy» es una columna dorada en las dos). Cada día abre la lectura en
+     la app Biblia; «Vezi planul complet» lleva a la página. Sustituye a la
+     tarjeta de lectura del carrusel (12/11/2026). `@defer`: los versículos y
+     el enlace a la app no pesan en la carga inicial; el hueco reserva el alto.
+     =================================================================== -->
+@if (bible.currentWeek()) {
+  <div class="week week--bible">
+    @defer (on viewport; prefetch on idle) {
+      <app-bible-week />
+    } @placeholder {
+      <div class="bw-placeholder" aria-hidden="true"></div>
+    }
+  </div>
+}
+
+<!-- ===================================================================
+     Proiectul Împreună: la lectura de hoy del Cult (texto en la app Biblia,
+     audio, versículos y minutos, meditación del día) y acceso al módulo.
+     Tras la semana de lectura y antes de las familias: la vida espiritual de la semana
+     junta. `@defer`: el servicio, los vídeos y los versículos se cargan al
+     llegar aquí, no con la portada. Docs: 32-impreuna.md → «En la portada».
+     =================================================================== -->
+@defer (on viewport) {
+  <app-impreuna-teaser />
+} @placeholder {
+  <div class="impt-placeholder" aria-hidden="true"></div>
+}
 
 <!-- ===================================================================
      Quiénes somos. Dos columnas: el texto a la izquierda y el versículo

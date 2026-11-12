@@ -147,6 +147,7 @@
 // ---------------------------------------------------------------------
 
 .gst-hero {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: relative;
   isolation: isolate;
   display: flex;
@@ -1666,6 +1667,7 @@
 // ---------------------------------------------------------------------
 
 .gst-close {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: relative;
   overflow: hidden;
   background:

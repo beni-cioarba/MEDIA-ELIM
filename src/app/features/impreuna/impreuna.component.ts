@@ -14,10 +14,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { QRCodeComponent } from 'angularx-qrcode';
-import { map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import {
   IMPREUNA_CULT_URL,
@@ -33,24 +33,21 @@ import {
 } from '../../core/impreuna/impreuna.config';
 import { EDITION_STATS, planDay } from '../../core/impreuna/impreuna-edition';
 import {
-  BIBLE_VERSIONS,
-  PassageRef,
-  bibleUrl,
   isFastingDay,
   isoDateOfDay,
   localDateOfDay,
   nextFastingDay,
-  refLabel,
   relativeDay,
 } from '../../core/impreuna/impreuna-plan';
 import { ImpreunaService } from '../../core/impreuna/impreuna.service';
-import { APP_PATHS } from '../../core/navigation/app-paths';
+import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { SeoService } from '../../core/seo/seo.service';
 import { CalendarService } from '../../core/services/calendar.service';
 import { ClockService } from '../../core/services/clock.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { DayCalendarComponent } from './day-calendar/day-calendar.component';
+import { DayReadComponent } from './day-read/day-read.component';
 import { DayVideoComponent } from './day-video/day-video.component';
 import { ImpreunaHeaderComponent } from './impreuna-header/impreuna-header.component';
 import { ImpreunaReminderComponent } from './reminder/impreuna-reminder.component';
@@ -94,6 +91,7 @@ interface FastView {
     IconComponent,
     QRCodeComponent,
     DayCalendarComponent,
+    DayReadComponent,
     DayVideoComponent,
     ImpreunaHeaderComponent,
     ImpreunaReminderComponent,
@@ -107,6 +105,14 @@ export class ImpreunaComponent {
   private readonly clock = inject(ClockService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  /**
+   * Cada navegación (también la que sólo limpia la dirección, como la vuelta
+   * de Android con `?biblia=lipsa`) quita el título propio de la página: el
+   * efecto del título lo vuelve a poner aunque el día no haya cambiado.
+   */
+  private readonly navigated = toSignal(this.router.events.pipe(filter((e) => e instanceof NavigationEnd)), {
+    initialValue: null,
+  });
   private readonly translate = inject(TranslateService);
   private readonly calendar = inject(CalendarService);
   private readonly document = inject(DOCUMENT);
@@ -144,9 +150,6 @@ export class ImpreunaComponent {
   );
   protected readonly isRunning = computed(() => this.impreuna.today().status === 'running');
 
-  protected readonly version = computed(() => BIBLE_VERSIONS[this.lang()]);
-  protected readonly otherLang = computed(() => (this.lang() === 'ro' ? 'es' : 'ro'));
-
   // ── Post și rugăciune ─────────────────────────────────────────────────
   protected readonly purposeKeys = FAST_PURPOSES;
   protected readonly fast = computed<FastView | null>(() => {
@@ -183,9 +186,6 @@ export class ImpreunaComponent {
   });
 
   // ── Enlaces ───────────────────────────────────────────────────────────
-  protected readonly bibleUrl = (ref: PassageRef) => bibleUrl(ref, this.lang());
-  protected readonly otherBibleUrl = (ref: PassageRef) => bibleUrl(ref, this.otherLang());
-  protected readonly refLabel = (ref: PassageRef) => refLabel(ref, this.lang());
   protected readonly postUrl = computed(() => {
     const id = this.day().media?.postId;
     return id ? impreunaPostUrl(id) : null;
@@ -194,13 +194,20 @@ export class ImpreunaComponent {
     const id = this.day().media?.video;
     return id ? IMPREUNA_YOUTUBE.watch(id) : null;
   });
-  protected readonly youversionDayUrl = computed(() =>
-    youversionDayUrl(this.impreuna.edition.youversionPlan, this.day().youversionDay),
-  );
   protected readonly youversionPlanUrl = youversionPlanUrl(this.impreuna.edition.youversionPlan);
+  /** La lectura de hoy en el plan de la app Biblia (su número va un día por delante). */
+  protected readonly appToday = computed(() => {
+    const today = this.impreuna.today();
+    const view = today.status === 'running' ? this.impreuna.view(today.day) : null;
+    return view
+      ? { day: view.youversionDay, url: youversionDayUrl(this.impreuna.edition.youversionPlan, view.youversionDay) }
+      : null;
+  });
   protected readonly youtube = IMPREUNA_YOUTUBE;
   protected readonly site = IMPREUNA_SITE;
   protected readonly cultUrl = IMPREUNA_CULT_URL;
+  /** Citirea Bibliei: el plan de lectura de la propia iglesia. */
+  protected readonly churchPlanPath = blockPath('bible');
   protected readonly planPath = ['/', APP_PATHS.impreuna, APP_PATHS.impreunaPlan];
 
   private readonly calendarFile = computed(() => impreunaCalendarFile(this.year, this.lang()));
@@ -254,6 +261,7 @@ export class ImpreunaComponent {
     // La pestaña del navegador dice qué día se está viendo: «Iacov 1 · Azi ·
     // Proiectul Împreună» o «Psalmii 113…; · 6 oct. · Proiectul Împreună».
     effect(() => {
+      this.navigated();
       this.lang();
       const day = this.day();
       const when = day.isToday ? this.relative() : this.formatDate(day.day, { day: 'numeric', month: 'short' });

@@ -521,3 +521,16 @@ Borradas en el barrido del rediseño (portada, galería, conducere): el bloque
 `gallery.open_drive` y los `*.subtitle` de `gallery`, `streams`, `upcoming`,
 `weekly`, `home.quick` y `home.visit`. El 06/10/2026 se borraron enteros
 `home.quick.*` y `home.visit.*` (sus secciones salieron de la portada).
+
+### Lectura bíblica en el paquete principal (12/11/2026)
+
+`bible_app.*` (filas de lectura compartidas: «Citește …», plurales
+`verses_one|few|other` y `chapters_*` —el rumano dice «de» desde 20, se elige
+con `Intl.PluralRules`—, audio, versión, aviso de app ausente y tiendas),
+`bible.read.*` (Citirea Bibliei en la web: día elegido, enlace a Împreună),
+`home.impreuna.*` (franja de Împreună en la portada) y `home.bible_week.*`
+(semana de lectura bajo «Când ne întâlnim»: `all`, `from_tomorrow`, `next`).
+Retiradas con las tarjetas de datos del carrusel (12/11/2026):
+`home.board.{rest_week, rest_readings, whole_week, today_events, day_of}`. Van en `ro.json` / `es.json` y no en
+el paquete del módulo porque se pintan fuera de `/impreuna`. Ver
+`32-impreuna.md` → «Citirea zilei».

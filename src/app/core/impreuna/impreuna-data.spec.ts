@@ -8,11 +8,12 @@ import { DEFAULT_CHURCH_CONFIG } from '../church.config';
 import { APP_PATHS, STAGE_BLOCK_SLUGS } from '../navigation/app-paths';
 import { MAIN_NAV } from '../navigation/navigation.config';
 import { NavItem } from '../navigation/nav.model';
-import booksJson from './bible-books.json';
+import booksJson from '../bible/bible-books.json';
 import media from './data/2026.media.json';
 import plan from './data/2026.plan.json';
 import { EDITION_STATS, IMPREUNA_EDITION, PLAN_DAYS, editionToday, planDay } from './impreuna-edition';
-import { daysInYear, parseReading } from './impreuna-plan';
+import { daysInYear } from './impreuna-plan';
+import { parseReading } from '../bible/bible-refs';
 import packEs from '../../../assets/i18n/impreuna.es.json';
 import packRo from '../../../assets/i18n/impreuna.ro.json';
 import mainEs from '../../../assets/i18n/es.json';
@@ -79,6 +80,13 @@ describe('Proiectul Împreună · vídeos generados', () => {
       if (row[0] !== null) expect(row[0]).toMatch(/^[\w-]{11}$/);
       if (row[2] !== null) expect(Number.isInteger(row[2])).toBe(true);
     }
+  });
+
+  it('los nombres de los ponentes van compuestos (NFC): se pintan y se buscan bien', () => {
+    const speakers = (media.days as unknown as ([string | null, string | null, number | null] | null)[])
+      .map((row) => row?.[1])
+      .filter((s): s is string => !!s);
+    expect(speakers.filter((s) => s !== s.normalize('NFC'))).toEqual([]);
   });
 });
 

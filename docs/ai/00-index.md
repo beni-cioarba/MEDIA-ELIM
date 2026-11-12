@@ -32,6 +32,7 @@ src/app/
     family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
     impreuna/               ⭐ Proiectul Împreună: plan generado (`data/`), lógica pura, servicio — `32-impreuna.md`
+    bible/                  Motor bíblico de toda la web: libros, pasajes (+ textos en rumano), bible.com/audio, app Biblia, versículos — `32-impreuna.md` «Citirea zilei»
     push/                   Web push por temas (OneSignal bajo demanda; hoy la amintire de Împreună) — `32-impreuna.md` § 7
     guests.config.ts        ⭐ Invitați: anfitriones, departamentos, preguntas y anclas de `/invitati`
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
@@ -73,7 +74,7 @@ src/app/
       pwa-update.service.ts          Auto-actualización del Service Worker
       seo.service.ts / AppTitleStrategy  Título y meta por ruta
   features/
-    home/                   Portada pública (hero, bienvenida, accesos, visita)
+    home/                   Portada pública (hero, avisos, «Când ne întâlnim» + semana de lectura `bible-week/`, eventos, Împreună `impreuna-teaser/`, bienvenida…)
     nav-hub/                Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`)
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
     impreuna/               ⭐ Proiectul Împreună: hoy/día, plan por meses, hoja A4 (`/impreuna/tipar`) — `32-impreuna.md`
@@ -106,7 +107,7 @@ src/app/
     styles/                 Parciales SCSS compartidos (botones, page-hero, hero-content: contenido del carrusel de portada)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
 src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
-scripts/                      Utilidades Node (imágenes, icono de la app, YouTube, `sync-impreuna.mjs`, `impreuna-push.mjs`)
+scripts/                      Utilidades Node (imágenes, icono de la app, YouTube, `sync-impreuna.mjs`, `impreuna-push.mjs`, `generate-bible-verses.mjs`)
   assets-src/emblema-elim.png Máster del emblema (674 px, no se publica)
 .github/workflows/            Deploy a Pages + cron de datos de YouTube + aviso diario de Împreună (`impreuna-push.yml`)
 src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push/onesignal/`, asset de angular.json)

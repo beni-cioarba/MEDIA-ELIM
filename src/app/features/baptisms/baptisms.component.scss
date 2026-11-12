@@ -27,6 +27,7 @@
 // 1 · Cabecera «de agua»
 // ---------------------------------------------------------------------
 .bz-hero {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   @include bz.water-surface;
   // Compacta: la cabecera presenta, no ocupa la pantalla. A 1440×900 el
   // carrusel de candidatos asoma ya en la primera vista.
@@ -156,6 +157,7 @@
 // Sin `backdrop-filter`: está encima de las ondas animadas y el desenfoque
 // se recalcularía en cada fotograma. Un fondo opaco tintado da lo mismo.
 .bz-feature {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: relative;
   display: grid;
   overflow: hidden;
@@ -895,8 +897,9 @@
   &:focus-visible {
     outline: none;
 
+    // Anillo sólido del token (el halo suave daba 1,3:1 sobre el lienzo).
     .bz-tile__photo {
-      box-shadow: var(--focus-ring);
+      box-shadow: 0 0 0 3px var(--c-focus);
     }
   }
 }

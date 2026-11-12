@@ -22,7 +22,8 @@
     "test:scripts": "node --test \"scripts/**/*.test.mjs\"",
     "pdf:familii": "node scripts/generate-family-pdfs.mjs",
     "impreuna:sync": "node scripts/sync-impreuna.mjs",
-    "impreuna:push": "node scripts/impreuna-push.mjs"
+    "impreuna:push": "node scripts/impreuna-push.mjs",
+    "bible:verses": "node scripts/generate-bible-verses.mjs"
   },
   "private": true,
   "dependencies": {

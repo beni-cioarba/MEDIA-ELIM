@@ -22,7 +22,10 @@ _tokens.scss (Sass, primitivas) → _semantic.scss (variables CSS) → component
   `_tokens.scss` si hace falta). No la inventes en el componente.
 - Breakpoints: `@include from('lg') { … }` / `@include until('sm') { … }`.
 - Animaciones: siempre con su bloque `@include motion-reduce { … }`.
-- Foco: usa `@include focus-ring`; no elimines outlines.
+- Foco: usa `@include focus-ring`; no elimines outlines. Color siempre
+  `var(--c-focus)` (nunca oro a mano). Superficie oscura con interactivos:
+  `--c-focus: var(--c-focus-on-dark);` en su contenedor (ver
+  `docs/ai/45-design-system.md` → «Foco»).
 
 ## Angular Material
 

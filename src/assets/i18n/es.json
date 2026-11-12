@@ -342,7 +342,7 @@
   },
   "bible": {
     "title": "Lectura bíblica",
-    "subtitle": "El tramo de la semana del plan de lectura de la iglesia, con la lectura de cada día.",
+    "subtitle": "El tramo de la semana del plan de lectura de la iglesia. Elige un día para leerlo o escucharlo.",
     "week_label": "Semana",
     "week": "Semana {{n}}",
     "starts_tomorrow": "Empieza mañana",
@@ -352,7 +352,34 @@
     "plan_range": "{{range}} · {{weeks}} semanas",
     "week_short": "Sem.",
     "current": "En curso",
-    "progress": "Día {{day}} de {{total}}"
+    "progress": "Día {{day}} de {{total}}",
+    "read": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "pick_aria": "Ver la lectura del {{day}}: {{passage}}",
+      "impreuna": "Hoy en el Proiectul Împreună: {{reading}}"
+    }
+  },
+  "bible_app": {
+    "read": "Leer {{passage}}",
+    "read_aria": "Leer {{passage}} en la Biblia, {{version}}: {{verses}}, unos {{minutes}} min",
+    "verses_one": "{{count}} versículo",
+    "verses_few": "{{count}} versículos",
+    "verses_other": "{{count}} versículos",
+    "chapters_one": "{{count}} capítulo",
+    "chapters_few": "{{count}} capítulos",
+    "chapters_other": "{{count}} capítulos",
+    "listen": "Escuchar",
+    "listen_aria": "Escuchar {{passage}} en audio ({{version}})",
+    "version": "Versión de la Biblia",
+    "missing_title": "La app Biblia no está en este teléfono.",
+    "missing_text": "Instálala gratis para leer y escuchar en la app, o lee ahora en el navegador.",
+    "install_play": "Instalar desde Google Play",
+    "install_appstore": "Instalar desde la App Store",
+    "in_browser": "Leer en el navegador",
+    "app_missing": "Instalar la app Biblia",
+    "app_ios": "App Biblia (App Store)",
+    "app_reset": "Ya la tengo"
   },
   "family_prayer": {
     "title": "Oración por las familias",
@@ -1046,14 +1073,14 @@
     },
     "board": {
       "title": "Lo que viene",
-      "today_events": "Hoy",
       "event_details": "Detalles",
-      "rest_week": "El resto de la semana",
-      "whole_week": "Toda la semana",
-      "day_of": "Día {{n}} de {{total}}",
       "calendar": "Calendario",
-      "rest_readings": "El resto de las lecturas",
       "all": "Ver todo"
+    },
+    "bible_week": {
+      "all": "Ver el plan completo",
+      "from_tomorrow": "Desde mañana",
+      "next": "Después"
     },
     "hero": {
       "title": "Bienvenido a casa",
@@ -1092,6 +1119,23 @@
       "title": "Un servicio para cada edad",
       "subtitle": "Todo creyente recibe dones para el bien común: cada departamento es una puerta abierta para ponerlos a servir.",
       "cta": "Ver toda la estructura"
+    },
+    "impreuna": {
+      "aria": "Proiectul Împreună: la lectura de hoy",
+      "eyebrow": "Iglesia Pentecostal de Rumanía · Edición {{year}}",
+      "lead": "Un texto al día y una meditación en vídeo, junto a todo el Cult.",
+      "day": "Día {{day}} de {{total}}",
+      "today": "Hoy · {{date}}",
+      "multi": "Hoy se leen {{count}} textos",
+      "video": "Meditación del día",
+      "video_pending": "La meditación en vídeo aparece durante el día.",
+      "fast_today": "Hoy: día de ayuno y oración",
+      "fast_tomorrow": "Mañana: día de ayuno y oración",
+      "cta": "Ver el día completo",
+      "tomorrow": "Mañana: {{reading}}",
+      "streak_one": "Tu racha: un día",
+      "streak": "Tu racha: {{count}} días",
+      "read_count": "Has leído {{count}} de {{total}}"
     }
   },
   "about": {

@@ -272,30 +272,26 @@
   color: var(--kind);
 }
 
-.imp-day__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-2) var(--sp-4);
+/* Citirea zilei (`day-read/`): el control de leer y escuchar. Sus acciones
+   del día («Am citit», «Trimite») van proyectadas en su pie, a la derecha. */
+.imp-day__read {
   margin-top: var(--sp-1);
 }
 
-.imp-day__passages,
 .imp-day__tools {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
+  margin-inline-start: auto;
 }
 
-/* En el móvil cada botón llena su fila: destino grande y sin huecos. */
+/* En el móvil, una fila propia al pie, cada botón a partes iguales. */
 @include until('xs') {
-  .imp-day__passages,
   .imp-day__tools {
     width: 100%;
 
     > .imp-btn {
-      flex: 1 1 auto;
+      flex: 1 1 0;
     }
   }
 }
@@ -437,31 +433,6 @@
     color: var(--c-primary);
 
     @include imp.focus;
-  }
-}
-
-/* Varias lecturas el mismo día: rótulo + piezas con el mismo peso. */
-.imp-read-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-inline-end: var(--sp-1);
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  color: var(--c-primary);
-
-  app-icon {
-    font-size: 1.05em;
-  }
-}
-
-.imp-btn.imp-btn--part {
-  border-color: var(--c-primary);
-  color: var(--c-primary);
-
-  &:hover {
-    background: var(--c-primary);
-    color: var(--c-on-primary);
   }
 }
 
@@ -1056,6 +1027,46 @@
     font-size: var(--fs-sm);
     line-height: 1.55;
     color: var(--c-muted);
+  }
+}
+
+/* Seguir el plan en la app Biblia: tres pasos cortos y dos enlaces. */
+.imp-app__steps {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-muted);
+
+  li::marker {
+    font-weight: 700;
+    color: var(--c-primary);
+  }
+}
+
+.imp-app__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: var(--sp-2) !important;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+    color: var(--c-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  app-icon {
+    font-size: 0.85em;
   }
 }
 

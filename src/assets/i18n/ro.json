@@ -342,7 +342,7 @@
   },
   "bible": {
     "title": "Citirea Bibliei",
-    "subtitle": "Porțiunea săptămânii din planul de citire al bisericii, cu citirea fiecărei zile.",
+    "subtitle": "Porțiunea săptămânii din planul de citire al bisericii. Alege o zi ca s-o citești sau s-o asculți.",
     "week_label": "Săptămâna",
     "week": "Săptămâna {{n}}",
     "starts_tomorrow": "Începe mâine",
@@ -352,7 +352,34 @@
     "plan_range": "{{range}} · {{weeks}} săptămâni",
     "week_short": "Săpt.",
     "current": "În curs",
-    "progress": "Ziua {{day}} din {{total}}"
+    "progress": "Ziua {{day}} din {{total}}",
+    "read": {
+      "today": "Azi",
+      "tomorrow": "Mâine",
+      "pick_aria": "Vezi citirea de {{day}}: {{passage}}",
+      "impreuna": "Azi în Proiectul Împreună: {{reading}}"
+    }
+  },
+  "bible_app": {
+    "read": "Citește {{passage}}",
+    "read_aria": "Citește {{passage}} în Biblie, {{version}}: {{verses}}, cam {{minutes}} min",
+    "verses_one": "{{count}} verset",
+    "verses_few": "{{count}} versete",
+    "verses_other": "{{count}} de versete",
+    "chapters_one": "{{count}} capitol",
+    "chapters_few": "{{count}} capitole",
+    "chapters_other": "{{count}} de capitole",
+    "listen": "Ascultă",
+    "listen_aria": "Ascultă {{passage}} în audio ({{version}})",
+    "version": "Versiunea Bibliei",
+    "missing_title": "Aplicația Biblia nu este pe acest telefon.",
+    "missing_text": "Instaleaz-o gratuit ca să citești și să asculți în aplicație, sau citește acum în browser.",
+    "install_play": "Instalează din Google Play",
+    "install_appstore": "Instalează din App Store",
+    "in_browser": "Citește în browser",
+    "app_missing": "Instalează aplicația Biblia",
+    "app_ios": "Aplicația Biblia (App Store)",
+    "app_reset": "Am instalat-o"
   },
   "family_prayer": {
     "title": "Rugăciune pentru familii",
@@ -1046,14 +1073,14 @@
     },
     "board": {
       "title": "Ce urmează",
-      "today_events": "Azi",
       "event_details": "Detalii",
-      "rest_week": "Restul săptămânii",
-      "whole_week": "Toată săptămâna",
-      "day_of": "Ziua {{n}} din {{total}}",
       "calendar": "Calendar",
-      "rest_readings": "Restul lecturilor",
       "all": "Vezi tot"
+    },
+    "bible_week": {
+      "all": "Vezi planul complet",
+      "from_tomorrow": "De mâine",
+      "next": "Urmează"
     },
     "hero": {
       "title": "Bine ai venit acasă",
@@ -1092,6 +1119,23 @@
       "title": "Slujire pentru fiecare vârstă",
       "subtitle": "Fiecare credincios primește daruri pentru folosul comun: fiecare departament este o ușă deschisă ca să le pui în slujire.",
       "cta": "Vezi toată structura"
+    },
+    "impreuna": {
+      "aria": "Proiectul Împreună: citirea de azi",
+      "eyebrow": "Cultul Penticostal · Ediția {{year}}",
+      "lead": "Un text pe zi și o meditație video, împreună cu tot Cultul.",
+      "day": "Ziua {{day}} din {{total}}",
+      "today": "Azi · {{date}}",
+      "multi": "Citește azi: {{count}} texte",
+      "video": "Meditația zilei",
+      "video_pending": "Meditația video apare în cursul zilei.",
+      "fast_today": "Azi: zi de post și rugăciune",
+      "fast_tomorrow": "Mâine: zi de post și rugăciune",
+      "cta": "Vezi ziua completă",
+      "tomorrow": "Mâine: {{reading}}",
+      "streak_one": "Seria ta: o zi",
+      "streak": "Seria ta: {{count}} zile",
+      "read_count": "Ai citit {{count}} din {{total}}"
     }
   },
   "about": {

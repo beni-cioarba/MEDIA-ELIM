@@ -306,7 +306,7 @@ app-stage {
   &:active { transform: scale(0.94); }
 
   &:focus-visible {
-    outline: 2px solid $color-gold;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
   }
 }
@@ -337,7 +337,7 @@ app-stage {
   &:hover { transform: translateY(-1px); }
 
   &:focus-visible {
-    outline: 2px solid $color-gold;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
     border-radius: 999px;
   }
@@ -440,7 +440,7 @@ app-stage {
     text-decoration: none;
 
     &:focus-visible {
-      outline: 2px solid $color-gold;
+      outline: 2px solid var(--c-focus);
       outline-offset: 4px;
       border-radius: $radius-lg;
     }
@@ -642,7 +642,7 @@ app-stage {
 
     &:hover { transform: translateY(-3px); }
     &:focus-visible {
-      outline: 2px solid $color-gold;
+      outline: 2px solid var(--c-focus);
       outline-offset: 3px;
     }
   }
@@ -759,7 +759,7 @@ app-stage {
   }
 
   &:focus-visible {
-    outline: 2px solid $color-gold;
+    outline: 2px solid var(--c-focus);
     outline-offset: 4px;
   }
 
@@ -931,7 +931,7 @@ app-stage {
     }
 
     &:focus-visible {
-      outline: 2px solid $color-gold;
+      outline: 2px solid var(--c-focus);
       outline-offset: 2px;
     }
   }
@@ -1009,7 +1009,7 @@ app-stage {
     }
 
     &:focus-visible {
-      outline: 2px solid $color-gold;
+      outline: 2px solid var(--c-focus);
       outline-offset: 3px;
     }
   }
@@ -1114,6 +1114,7 @@ app-stage {
   // Cristal navy al 68 %: el blanco encima pasa 4,5:1 aunque la foto sea
   // blanca (paredes del baptisterio).
   &__editions {
+    --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
     position: absolute;
     z-index: 4;
     top: clamp(0.6rem, 1.4vw, 1.1rem);
@@ -1200,7 +1201,7 @@ app-stage {
     &:hover { background: rgba(255, 255, 255, 0.14); }
 
     &:focus-visible {
-      outline: 2px solid $color-gold;
+      outline: 2px solid var(--c-focus);
       outline-offset: 2px;
     }
 
@@ -1284,7 +1285,7 @@ app-stage {
     }
 
     &:focus-visible {
-      outline: 2px solid $color-gold;
+      outline: 2px solid var(--c-focus);
       outline-offset: 2px;
     }
 

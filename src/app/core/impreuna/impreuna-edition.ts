@@ -9,15 +9,8 @@
  * import de abajo (`docs/ai/32-impreuna.md` → «Edición nueva»).
  */
 import plan from './data/2026.plan.json';
-import {
-  DayKind,
-  PassageRef,
-  dayKind,
-  dayOfEdition,
-  isoDateOfDay,
-  parseReading,
-  youversionDay,
-} from './impreuna-plan';
+import { DayKind, dayKind, dayOfEdition, isoDateOfDay, youversionDay } from './impreuna-plan';
+import { PassageRef, parseReading } from '../bible/bible-refs';
 
 export interface ImpreunaEdition {
   readonly year: number;

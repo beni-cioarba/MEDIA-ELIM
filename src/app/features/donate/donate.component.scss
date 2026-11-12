@@ -185,7 +185,7 @@
   text-underline-offset: 3px;
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -195,6 +195,7 @@
 // Tarjeta de donación — «cartera» navy con brillo dorado
 // ---------------------------------------------------------------------
 .wallet {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: sticky;
   top: calc(var(--nav-height, 4rem) + 1rem);
   display: grid;
@@ -490,7 +491,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #d4af37;
+    outline: 2px solid var(--c-focus);
     outline-offset: 2px;
     border-radius: 4px;
   }

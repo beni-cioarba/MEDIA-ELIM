@@ -46,11 +46,6 @@
       <ul class="imp-day__meta">
         <li>{{ 'impreuna.day.of_total' | translate: { day: day().day, total } }}</li>
         <li class="imp-kind">{{ 'impreuna.day.kind_' + day().kind | translate }}</li>
-        <li>
-          <a [href]="youversionDayUrl()" target="_blank" rel="noopener">
-            {{ 'impreuna.day.youversion' | translate: { day: day().youversionDay } }}
-          </a>
-        </li>
       </ul>
 
       <!-- Primer jueves: post și rugăciune, con su motivo (y el tema del mes si lo hay). -->
@@ -99,40 +94,16 @@
         </p>
       }
 
-      <div class="imp-day__actions">
-        <div class="imp-day__passages">
-          @if (day().refs.length === 1) {
-            <a
-              class="imp-btn imp-btn--primary"
-              [href]="bibleUrl(day().refs[0])"
-              target="_blank"
-              rel="noopener"
-              [attr.aria-label]="'impreuna.day.read_aria' | translate: { passage: refLabel(day().refs[0]), version: version().name }"
-            >
-              <app-icon name="book-open" />
-              {{ 'impreuna.day.read' | translate: { passage: refLabel(day().refs[0]) } }}
-            </a>
-          } @else {
-            <!-- Varias lecturas: todas con el mismo peso (son partes del mismo día). -->
-            <span class="imp-read-label">
-              <app-icon name="book-open" />
-              {{ 'impreuna.day.read_group' | translate }}
-            </span>
-            @for (ref of day().refs; track ref.code) {
-              <a
-                class="imp-btn imp-btn--part"
-                [href]="bibleUrl(ref)"
-                target="_blank"
-                rel="noopener"
-                [attr.aria-label]="'impreuna.day.read_aria' | translate: { passage: refLabel(ref), version: version().name }"
-              >
-                {{ refLabel(ref) }}
-              </a>
-            }
-          }
-        </div>
-
-        <div class="imp-day__tools">
+      <!-- Citirea zilei: leer (en la app Biblia si está) y escuchar, con versión,
+           versículos y minutos; «Am citit» y «Trimite» van en su pie. -->
+      <app-impreuna-read
+        class="imp-day__read"
+        [refs]="day().refs"
+        [day]="day().day"
+        [youversionDay]="day().youversionDay"
+        [kind]="day().kind"
+      >
+        <div readTools class="imp-day__tools">
           <button
             type="button"
             class="imp-btn"
@@ -148,9 +119,10 @@
             {{ (copied() ? 'impreuna.day.copied' : 'impreuna.day.share') | translate }}
           </button>
         </div>
-      </div>
+      </app-impreuna-read>
 
       <app-impreuna-video
+        id="video"
         class="imp-day__video"
         [video]="day().media?.video ?? null"
         [speaker]="day().media?.speaker ?? null"
@@ -183,12 +155,6 @@
             </a>
           </li>
         }
-        <li>
-          <a [href]="otherBibleUrl(day().refs[0])" target="_blank" rel="noopener" [attr.lang]="otherLang()">
-            <app-icon name="globe" />
-            {{ 'impreuna.day.other_lang' | translate }}
-          </a>
-        </li>
       </ul>
     </section>
 
@@ -426,9 +392,26 @@
         <h3>{{ 'impreuna.how.behind_title' | translate }}</h3>
         <p>{{ 'impreuna.how.behind_text' | translate }}</p>
       </div>
-      <div class="imp-note-card">
+      <!-- Una vez y ya: cómo seguir el mismo plan en la app Biblia. Aquí, junto
+           a «ritmo» y «si te quedas atrás», y no en la tarjeta del día, que se
+           mira a diario. Enlaces: el plan y la lectura de hoy en la app. -->
+      <div class="imp-note-card imp-app" id="aplicatia-biblia">
         <h3>{{ 'impreuna.how.youversion_title' | translate }}</h3>
-        <p>{{ 'impreuna.how.youversion_text' | translate }}</p>
+        <ol class="imp-app__steps">
+          <li>{{ 'impreuna.how.app_step1' | translate }}</li>
+          <li>{{ 'impreuna.how.app_step2' | translate }}</li>
+          <li>{{ 'impreuna.how.app_step3' | translate }}</li>
+        </ol>
+        <p class="imp-app__links">
+          <a [href]="youversionPlanUrl" target="_blank" rel="noopener">
+            {{ 'impreuna.how.app_open' | translate }} <app-icon name="external" />
+          </a>
+          @if (appToday(); as app) {
+            <a [href]="app.url" target="_blank" rel="noopener">
+              {{ 'impreuna.how.app_today' | translate: { day: app.day } }} <app-icon name="external" />
+            </a>
+          }
+        </p>
       </div>
     </div>
   </section>
@@ -496,6 +479,17 @@
               <span>{{ 'impreuna.about.cult_hint' | translate }}</span>
             </span>
             <app-icon class="imp-links__go" name="external" />
+          </a>
+        </li>
+        <!-- El otro plan de la web: el de la iglesia (Antiguo Testamento). -->
+        <li>
+          <a class="imp-links__row" [routerLink]="churchPlanPath">
+            <app-icon class="imp-links__icon" name="book" />
+            <span class="imp-links__text">
+              <strong>{{ 'impreuna.about.church_plan' | translate }}</strong>
+              <span>{{ 'impreuna.about.church_plan_hint' | translate }}</span>
+            </span>
+            <app-icon class="imp-links__go" name="chevron-right" />
           </a>
         </li>
       </ul>

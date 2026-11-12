@@ -96,6 +96,20 @@ export class BibleReadingService {
   readonly hasReading = computed<boolean>(() => this.announcedWeek() !== null);
 
   /**
+   * La semana que contiene **hoy** (la que se está leyendo) o, si hoy cae
+   * fuera del plan, la anunciada. Es la de la portada, alineada con «Când ne
+   * întâlnim» (lunes → domingo de la semana en curso): el domingo sigue
+   * siendo la semana que termina —hoy se lee su último día— y la siguiente,
+   * que ya anuncian la proyección y la página, va aparte (`announcedWeek`).
+   * De lunes a sábado coincide con `announcedWeek`.
+   */
+  readonly currentWeek = computed<BibleReadingWeekView | null>(() => {
+    const todayIso = toIsoDate(startOfDay(new Date(this.clock.now())));
+    const containing = this.weeks.find((week) => week.start <= todayIso && todayIso <= endOf(week));
+    return containing ? this.toView(containing) : this.announcedWeek();
+  });
+
+  /**
    * El plan completo, mes a mes, con cada semana marcada como pasada, actual
    * o futura: para la vista «toda la programación» de la web.
    */

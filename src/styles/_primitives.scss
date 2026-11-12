@@ -547,6 +547,7 @@
   padding-inline: clamp(1rem, 4vw, 2.5rem);
   background: var(--c-band);
   color: var(--c-on-band);
+  --c-focus: var(--c-focus-on-dark);
 
   // Dentro de la banda, los encabezados no pueden seguir siendo navy sobre
   // navy: el color de texto manda sobre el de marca.

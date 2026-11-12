@@ -1,0 +1,77 @@
+@if (today(); as t) {
+  <section class="impt" aria-labelledby="impt-title">
+    <div class="impt__card">
+      <!-- Qué es y por dónde va el año. -->
+      <div class="impt__id">
+        <p class="impt__eyebrow">
+          <span class="impt__dot" aria-hidden="true"></span>
+          {{ 'home.impreuna.eyebrow' | translate: { year } }}
+        </p>
+        <h2 class="impt__title" id="impt-title">{{ 'nav.impreuna' | translate }}</h2>
+        <p class="impt__lead">{{ 'home.impreuna.lead' | translate }}</p>
+        <p class="impt__progress">
+          <span class="impt__day">{{ 'home.impreuna.day' | translate: { day: t.view.day, total } }}</span>
+          <span class="impt__bar" aria-hidden="true"><span [style.inline-size.%]="t.percent"></span></span>
+          <span class="impt__pct" aria-hidden="true">{{ t.percent }}%</span>
+        </p>
+      </div>
+
+      <!-- Lo de hoy: las mismas filas que en el módulo (app Biblia, audio, versículos). -->
+      <div class="impt__today">
+        <p class="impt__kicker">{{ 'home.impreuna.today' | translate: { date: t.date } }}</p>
+        <div class="impt__read">
+          <app-bible-passages
+            [refs]="t.view.refs"
+            [returnPath]="t.returnPath"
+            [kind]="t.view.kind"
+            [heading]="t.view.refs.length > 1 ? ('home.impreuna.multi' | translate: { count: t.view.refs.length }) : null"
+          />
+        </div>
+        <!-- Lo siguiente y lo suyo, en una línea: mañana y su racha (si la lleva). -->
+        <p class="impt__more">
+          @if (t.fast) {
+            <span class="impt__fast">
+              <app-icon name="pray" />
+              {{ 'home.impreuna.fast_' + t.fast | translate }}
+            </span>
+          }
+          @if (t.tomorrow; as next) {
+            <a class="impt__next" [routerLink]="dayPath(next.day)">
+              {{ 'home.impreuna.tomorrow' | translate: { reading: next.reading } }}
+              <app-icon name="chevron-right" />
+            </a>
+          }
+          @if (mine(); as m) {
+            <span class="impt__mine">
+              <app-icon name="flame" />
+              {{ m.key | translate: { count: m.count, total: t.view.day } }}
+            </span>
+          }
+        </p>
+      </div>
+
+      <!-- La meditación: al módulo, donde se reproduce (sin cookies hasta pulsar). -->
+      <a class="impt__video" [routerLink]="path" fragment="video">
+        @if (t.thumb) {
+          <span class="impt__thumb">
+            <img [src]="t.thumb" alt="" width="320" height="180" loading="lazy" decoding="async" />
+            <span class="impt__play" aria-hidden="true"><app-icon name="play" /></span>
+          </span>
+        }
+        <span class="impt__video-text">
+          <span class="impt__video-label">{{ 'home.impreuna.video' | translate }}</span>
+          @if (t.view.media?.speaker; as speaker) {
+            <strong>{{ speaker }}</strong>
+          } @else {
+            <span class="impt__video-pending">{{ 'home.impreuna.video_pending' | translate }}</span>
+          }
+        </span>
+      </a>
+
+      <a class="impt__cta" [routerLink]="path">
+        {{ 'home.impreuna.cta' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+  </section>
+}

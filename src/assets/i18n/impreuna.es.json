@@ -21,16 +21,13 @@
       "kind_nt": "Nuevo Testamento",
       "kind_wisdom": "Salmos y Proverbios",
       "kind_ot": "Antiguo Testamento",
-      "youversion": "En la app Biblia: día {{day}}",
       "prev": "Día anterior",
       "next": "Día siguiente",
       "back_today": "Hoy",
       "read": "Leer {{passage}}",
-      "read_aria": "Leer {{passage}} en la Biblia ({{version}}); se abre en otra ventana",
       "mark": "Lo he leído",
       "marked": "Leído",
       "mark_aria": "Día {{day}} leído",
-      "other_lang": "Citește în română (Cornilescu)",
       "prayer": "Motivos de oración",
       "prayer_aria": "Motivos de oración, en la web del proyecto (en rumano); se abre en otra ventana",
       "share": "Enviar",
@@ -40,8 +37,13 @@
       "nav_aria": "Navegar entre días",
       "pick": "Elegir día",
       "close": "Cerrar",
-      "go_today": "Ir al día de hoy",
-      "read_group": "Leer:"
+      "go_today": "Ir al día de hoy"
+    },
+    "read": {
+      "aria": "Lectura del día",
+      "today_multi": "Hoy se leen {{count}} textos",
+      "plan_day": "Biblia: día {{day}}",
+      "plan_day_aria": "Abrir el día {{day}} del plan en la app Biblia"
     },
     "video": {
       "play": "Reproducir la meditación: {{name}}",
@@ -119,8 +121,12 @@
       "rhythm_text": "{{nt}} días del Nuevo Testamento y {{wisdom}} días de Salmos y Proverbios en todo el año.",
       "behind_title": "¿Te has quedado atrás?",
       "behind_text": "No intentes recuperarlo todo en un día. Sigue con el texto de hoy, para ir al paso de toda la iglesia, y recupera poco a poco en los días de Salmos y Proverbios, que son más cortos.",
-      "youversion_title": "¿Usas la app Biblia?",
-      "youversion_text": "El proyecto sigue el plan de YouVersion, pero en 2026 se saltó el día 82 de la app (23 de marzo). Desde entonces, el día de la app es el del proyecto + 1: junto a cada día te mostramos el número de la app."
+      "youversion_title": "Sigue el plan en la app Biblia",
+      "app_step1": "Abre el plan y pulsa Start this Plan (con una cuenta de YouVersion guarda tu progreso).",
+      "app_step2": "Día de la app = día del proyecto + 1 (en 2026 se saltó el día 82).",
+      "app_step3": "Junto a la lectura del día ves siempre el número de la app.",
+      "app_open": "Abrir el plan",
+      "app_today": "Hoy: día {{day}}"
     },
     "about": {
       "title": "Sobre el proyecto",
@@ -138,7 +144,9 @@
       "cult": "cultulpenticostal.ro",
       "cult_hint": "La Iglesia Pentecostal de Rumanía",
       "elim_title": "En la Iglesia Elim",
-      "elim_text": "Leemos el mismo texto el mismo día, con los hermanos de Rumanía y de la diáspora. Esta página te muestra cada día el texto, la meditación y tu progreso, en rumano o en español."
+      "elim_text": "Leemos el mismo texto el mismo día, con los hermanos de Rumanía y de la diáspora. Esta página te muestra cada día el texto, la meditación y tu progreso, en rumano o en español.",
+      "church_plan": "Citirea Bibliei",
+      "church_plan_hint": "El plan de lectura de nuestra iglesia: la porción de la semana, con texto y audio."
     },
     "plan": {
       "title": "Plan completo {{year}}",

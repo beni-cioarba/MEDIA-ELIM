@@ -363,7 +363,66 @@ las tarjetas estrechas dentro de contenedores anchos.
 ## Accesibilidad y movimiento
 
 - Foco visible siempre: `@include focus-ring` ya aplicado en `_base.scss` a
-  botones, enlaces y controles.
+  botones, enlaces y controles. El contorno sigue la forma del propio
+  elemento; el mixin ya **no** pone `border-radius: inherit` (12/11/2026: al
+  enfocar, las píldoras y los círculos tomaban el radio del padre y se volvían
+  cuadrados).
+- **Foco: un color por tipo de superficie** (12/11/2026, WCAG 1.4.11: el
+  anillo ≥ 3:1 contra lo que tiene al lado). Medido sobre los fondos reales:
+  ningún oro pasa en claro y en oscuro a la vez (el mejor término medio,
+  #ab8824, se queda en 2,86); el de antes, oro 600, daba 2,4–2,7 sobre blanco,
+  lienzo y gris frío. Tokens:
+
+  | Token | Valor | Dónde | Contraste mínimo |
+  | --- | --- | --- | --- |
+  | `--c-focus` | = `--c-focus-on-light` (por defecto) | todo lo claro | — |
+  | `--c-focus-on-light` | oro 750 `#856618` | blanco, lienzo, avisos, tinte oro, gris frío | 4,6:1 (5,4 en blanco) |
+  | `--c-focus-on-dark` | oro 300 `#e3c766` | navy 600–900, tonos de tarjeta, fotos con velo | 5,8:1 |
+
+  **Regla**: toda superficie oscura con interactivos dentro declara en su
+  contenedor `--c-focus: var(--c-focus-on-dark);` y todo lo que lleva dentro
+  (incluido el anillo global) cambia solo. Una superficie clara metida en una
+  oscura vuelve con `--c-focus: var(--c-focus-on-light);` (la tarjeta blanca
+  de lectura en la franja de Împreună). Ya declarado en: `.ui-dark`,
+  `.ui-band`, hero (`app-hero-carousel`), pie, barra de pestañas, franja
+  «En directo» (`.onair`), Împreună (`.imp-head`, `.vid`),
+  tarjeta navy de Contact (`.card`), monedero de Donează (`.wallet`), pastor
+  en Conducere (`.feature--pastor`, `.hero--pastor`), Botezuri (`.bz-hero`,
+  `.bz-feature`), Talantul en su página (`.tn-hero`, `.tn-enroll`), Departamente (cierre de
+  la predicación `.close`), Invitați (`.gst-hero`, `.gst-close`), panel del
+  cartel (`.promo__panel`) y ediciones de la galería.
+- **Nunca un color de foco a mano** (`#d4af37`, `var(--c-gold)`,
+  `$color-gold`): sobre claro daban 1,8–2,0:1. Siempre `var(--c-focus)`, que
+  sigue a la superficie. Si el anillo va en sombra (fotos de mosaico):
+  `box-shadow: 0 0 0 3px var(--c-focus)`. El antiguo `--focus-ring` (halo oro
+  al 45 %) se retiró: como único indicador daba 1,3:1, y una variable con
+  `var()` dentro se resuelve en `:root` y no seguiría a la superficie.
+- **Trampa**: `@include focus-ring` dentro de un `&:has(… :focus-visible)`
+  genera `…:has(…):focus-visible`, que nunca casa (la tarjeta del concurso se
+  quedaba sin anillo). Dentro de `:has()` se escribe el `outline` a mano.
+  Otra: un `:focus-visible` metido sólo en la consulta del móvil deja el
+  anillo del navegador en escritorio (`.steps` de la predicación).
+- Campos de formulario: borde + anillo del token encima del borde
+  (`outline-offset: -1px`); el borde oro de 1 px solo no bastaba.
+- **Cómo se audita**: en el navegador, una pulsación real de Tab (modalidad
+  teclado) y después `focus()` elemento a elemento leyendo el `outline`
+  calculado (y el del `::after` o el antepasado, para enlaces estirados)
+  contra el fondo efectivo (capas compuestas; en degradados, cada parada).
+  12/11/2026: 0 fallos en 30 páginas (portada, Împreună, Citirea Bibliei,
+  Program, Biserica, Media y sus bloques, Contact, Donează, Despre noi,
+  Conducere y un perfil, Botezuri y un candidato, Talantul, Departamente y
+  Tineret, Invitați, anuncios, familias, cauzas, credo, `/stil`), menús
+  desplegables, cajón del móvil y barra de pestañas.
 - Objetivos táctiles ≥ 44 px (`@include tap-target`).
 - Todo lo que anime debe tener su bloque `@include motion-reduce`.
 - Contraste: hay un bloque `@media (prefers-contrast: more)` en `_semantic.scss`.
+- **`--c-muted` (texto secundario) = `rgba(#2d3748, .72)`**: ≈ 5,1:1 sobre
+  blanco y ≈ 4,8:1 sobre el fondo de página (AA). Hasta el 12/11/2026 era
+  `.66` = #747b86 = **4,26:1** y suspendía en la miga de pan y los
+  metadatos; varios módulos lo oscurecían por su cuenta. **`--c-faint`**
+  (`.46`, ≈ 2,6:1) es sólo para lo decorativo o deshabilitado: nunca para
+  texto que informe (se corrigieron la nota y «opcional» del formulario de
+  contacto y el final de Rugăciune pentru familii). Barrido con axe
+  (contraste) sin fallos en `/`, `/impreuna`, `/program`, `/contact`,
+  `/media/citirea-bibliei` y `/rugaciune-pentru-familii`; en `/despre-noi`
+  sólo los numerales oro de las épocas, decorativos (`aria-hidden`).

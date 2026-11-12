@@ -1,0 +1,94 @@
+@if (view(); as v) {
+  <section class="bw" aria-labelledby="bw-title">
+    <div class="bw__head">
+      <h2 class="bw__title" id="bw-title">{{ 'nav.bible' | translate }}</h2>
+      <!-- Un solo texto (Angular quita los espacios entre etiquetas): el lector
+           de pantalla dice «Săptămâna 98 · Ezechiel 32–45», no «98Ezechiel». -->
+      <p class="bw__scope">
+        <strong class="bw__scope-week">{{ 'bible.week' | translate: { n: v.week.number } }}</strong> · {{ v.week.summary }}
+      </p>
+      <a class="bw__more" [routerLink]="fullPath">
+        {{ 'home.bible_week.all' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+
+    <!-- Las siete columnas del horario de arriba: cada lectura bajo su día. -->
+    <ol class="bw__days" role="list">
+      @for (d of v.days; track d.date) {
+        <li
+          class="bw__day"
+          [class.is-today]="d.isToday"
+          [class.is-past]="d.isPast"
+          [attr.aria-current]="d.isToday ? 'date' : null"
+        >
+          <span class="bw__when" aria-hidden="true">
+            <span class="bw__weekday">{{ d.weekday }} {{ d.dayNumber }}</span>
+            @if (d.isToday) {
+              <span class="bw__today">{{ 'weekly.today' | translate }}</span>
+            }
+          </span>
+
+          <!-- Enlace extendido: su `::after` cubre la celda (toda es «leer»);
+               los auriculares quedan encima, sin anidar interactivos. -->
+          @if (d.open; as open) {
+            <a
+              class="bw__read"
+              [href]="open.href"
+              [attr.target]="open.newTab ? '_blank' : null"
+              rel="noopener"
+              [attr.aria-label]="
+                d.label +
+                ': ' +
+                ('bible_app.read_aria'
+                  | translate
+                    : {
+                        passage: d.passage,
+                        version: links.version().name,
+                        verses: (versesKey(d.verses) | translate: { count: d.verses }),
+                        minutes: d.minutes,
+                      })
+              "
+              (click)="opened(open)"
+            >
+              <span class="bw__passage">{{ d.passage }}</span>
+            </a>
+          } @else {
+            <span class="bw__read"><span class="bw__passage">{{ d.passage }}</span></span>
+          }
+
+          @if (d.verses) {
+            <span class="bw__meta" aria-hidden="true">
+              <span class="bw__verses">{{ versesKey(d.verses) | translate: { count: d.verses } }} · </span><span class="bw__min">≈ {{ d.minutes }} min</span>
+            </span>
+          }
+
+          @if (d.audio; as audio) {
+            <a
+              class="bw__listen"
+              [href]="audio.href"
+              target="_blank"
+              rel="noopener"
+              [attr.aria-label]="'bible_app.listen_aria' | translate: { passage: audio.label, version: links.version().name }"
+            >
+              <app-icon name="headphones" />
+            </a>
+          }
+        </li>
+      }
+    </ol>
+
+    <!-- El domingo: la semana que empieza mañana (la que ya anuncia la página). -->
+    @if (v.next; as next) {
+      <a class="bw__next" [routerLink]="fullPath">
+        <span class="bw__next-label">
+          {{ (next.startsTomorrow ? 'home.bible_week.from_tomorrow' : 'home.bible_week.next') | translate }}
+          · {{ 'bible.week' | translate: { n: next.number } }}
+        </span>
+        <span class="u-sr-only">: </span>
+        <span class="bw__next-range">{{ next.summary }}</span>
+        <app-icon class="bw__next-go" name="arrow-right" />
+      </a>
+    }
+  </section>
+}

@@ -58,8 +58,19 @@
           class="bible__day"
           [class.is-today]="day.isToday"
           [class.is-past]="day.isPast"
+          [class.is-selected]="!fullscreen() && selectedDate() === day.date"
           [attr.aria-current]="day.isToday ? 'date' : null"
         >
+          <!-- Sólo web: toda la ficha elige el día cuya lectura sale debajo. -->
+          @if (!fullscreen()) {
+            <button
+              type="button"
+              class="bible__day-pick"
+              [attr.aria-pressed]="selectedDate() === day.date"
+              [attr.aria-label]="'bible.read.pick_aria' | translate: { day: bible.formatDayLabel(day.date), passage: day.passage }"
+              (click)="select(day.date)"
+            ></button>
+          }
           <span class="bible__day-date" aria-hidden="true">
             <span class="bible__day-weekday">{{ bible.formatWeekday(day.date, 'short') }}</span>
             <span class="bible__day-num">{{ bible.formatDayNumber(day.date) }}</span>
@@ -77,6 +88,34 @@
         </li>
       }
     </ol>
+
+    <!--
+      Sólo web: la lectura del día elegido, capítulo a capítulo, para abrirla
+      en la app Biblia (o el navegador) y escucharla; versión y tienda en el
+      pie, y la lectura de hoy del otro plan de la web (Proiectul Împreună).
+    -->
+    @if (!fullscreen() && selected(); as s) {
+      <div class="bible__read">
+        <app-bible-passages
+          [refs]="s.refs"
+          [returnPath]="returnPath"
+          kind="ot"
+          [heading]="
+            (s.when ? ('bible.read.' + s.when | translate) : s.label) + ' · ' + s.day.passage
+          "
+        />
+        <div class="bible__read-foot">
+          <app-bible-options />
+          @if (impreunaToday(); as reading) {
+            <a class="bible__read-link" [routerLink]="impreunaPath">
+              <app-icon name="book-open" />
+              {{ 'bible.read.impreuna' | translate: { reading } }}
+              <app-icon name="chevron-right" />
+            </a>
+          }
+        </div>
+      </div>
+    }
 
     <p class="bible__meta">
       <app-icon name="book" class="bible__meta-icon" />

@@ -618,12 +618,16 @@ Detectado al montar Proiectul Împreună (11/2026):
   `scripts/generate-events-calendar.mjs` desde `church.config.ts` en prestart,
   prebuild y el deploy (`50-build-deploy.md` → «Calendario de suscripción»), y
   la base de la URL ya no depende de la ruta actual.
-- El mixin global `focus-ring` (`styles/_mixins.scss`) pone `border-radius: inherit`
-  al enfocar: en elementos redondos (píldoras, círculos) el anillo sale con
-  el radio del padre, a menudo cuadrado. Proiectul Împreună usa su propio
-  `imp.focus`; revisar el global aparte (afecta a toda la app).
-- Contraste global: la miga de pan (`.crumbs__link`) usa `--c-muted` sobre
-  blanco a **4,26:1** (axe, 12/11/2026), por debajo de AA (4,5:1) en su
-  tamaño. Proiectul Împreună sube el suyo localmente; el token global, aparte.
+- ~~El mixin global `focus-ring` ponía `border-radius: inherit` al enfocar~~:
+  resuelto (12/11/2026). Las píldoras y los círculos ya no se vuelven
+  cuadrados con el foco (`45-design-system.md` → Accesibilidad).
+- ~~Contraste global: `--c-muted` a 4,26:1~~: resuelto (12/11/2026), ahora
+  `.72` ≈ 5,1:1; y los usos de `--c-faint` en texto informativo pasan a
+  `--c-muted` (`45-design-system.md` → Accesibilidad).
+- ~~Anillo de foco oro a 2,4–2,7:1 en claro (y a 1,8–2,0 donde el oro iba a
+  mano)~~: resuelto (12/11/2026) con un color por superficie
+  (`--c-focus-on-light` / `--c-focus-on-dark`), la tarjeta del concurso que
+  se quedaba sin anillo y los campos de Contact. Auditoría en 30 páginas, 0
+  fallos (`45-design-system.md` → Accesibilidad → «Foco»).
 - El inicial ya estaba en **652,8 kB** (> 620 kB de aviso) antes del módulo;
   Proiectul Împreună suma +1,5 kB. Ver `75-plan-evolucion.md`.

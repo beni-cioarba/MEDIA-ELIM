@@ -1,0 +1,78 @@
+@use 'ds' as *;
+@use './bible';
+
+:host {
+  display: contents;
+  --bo-muted: color-mix(in srgb, var(--c-text) 72%, var(--c-surface));
+}
+
+/* Versión: control segmentado de dos. */
+.bo__versions {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+}
+
+.bo__version {
+  min-height: 1.875rem;
+  padding: 0.2rem 0.7rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--bo-muted);
+  font: 600 var(--fs-xs) / 1.2 var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  @include bible.focus;
+  @include bible.motion-off;
+
+  &:hover {
+    color: var(--c-primary);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+}
+
+.bo__chip {
+  @include bible.chip;
+}
+
+/* Sin la app (Android): la tienda, en oro. */
+.bo__chip--install {
+  background: var(--c-gold-tint);
+  color: color-mix(in srgb, var(--c-gold-deep) 70%, var(--c-text));
+
+  &:hover {
+    background: color-mix(in srgb, var(--c-gold) 30%, var(--c-surface));
+  }
+}
+
+.bo__reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bo-muted);
+  font-size: var(--fs-xs);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  @include bible.focus;
+
+  &:hover {
+    color: var(--c-primary);
+  }
+}
+
+@include until('xs') {
+  .bo__version {
+    padding-inline: 0.6rem;
+  }
+}

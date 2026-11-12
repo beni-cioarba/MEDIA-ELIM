@@ -6,6 +6,7 @@
 }
 
 .vid {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;

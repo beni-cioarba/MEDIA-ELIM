@@ -78,4 +78,5 @@ export type IconName =
   | 'book-open'
   | 'bell'
   | 'bell-ring'
-  | 'bell-off';
+  | 'bell-off'
+  | 'headphones';

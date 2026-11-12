@@ -21,16 +21,13 @@
       "kind_nt": "Noul Testament",
       "kind_wisdom": "Psalmi și Proverbe",
       "kind_ot": "Vechiul Testament",
-      "youversion": "În aplicația Biblia: ziua {{day}}",
       "prev": "Ziua anterioară",
       "next": "Ziua următoare",
       "back_today": "Azi",
       "read": "Citește {{passage}}",
-      "read_aria": "Citește {{passage}} în Biblie ({{version}}); se deschide în altă fereastră",
       "mark": "Am citit",
       "marked": "Citit",
       "mark_aria": "Ziua {{day}} citită",
-      "other_lang": "Leer en español (RVR1960)",
       "prayer": "Motive de rugăciune",
       "prayer_aria": "Motive de rugăciune, pe site-ul proiectului; se deschide în altă fereastră",
       "share": "Trimite",
@@ -40,8 +37,13 @@
       "nav_aria": "Navigare între zile",
       "pick": "Alege ziua",
       "close": "Închide",
-      "go_today": "Mergi la ziua de azi",
-      "read_group": "Citește:"
+      "go_today": "Mergi la ziua de azi"
+    },
+    "read": {
+      "aria": "Citirea zilei",
+      "today_multi": "Citește azi: {{count}} texte",
+      "plan_day": "Biblia: ziua {{day}}",
+      "plan_day_aria": "Deschide ziua {{day}} a planului în aplicația Biblia"
     },
     "video": {
       "play": "Redă meditația: {{name}}",
@@ -119,8 +121,12 @@
       "rhythm_text": "{{nt}} zile din Noul Testament și {{wisdom}} zile din Psalmi și Proverbe în tot anul.",
       "behind_title": "Ai rămas în urmă?",
       "behind_text": "Nu încerca să recuperezi totul într-o zi. Continuă cu textul de azi, ca să rămâi în pas cu toată biserica, și recuperează pe rând, în zilele cu Psalmi și Proverbe, care sunt mai scurte.",
-      "youversion_title": "Folosești aplicația Biblia?",
-      "youversion_text": "Proiectul urmează planul de YouVersion, dar în 2026 a sărit ziua 82 a aplicației (23 martie). De atunci, ziua din aplicație este ziua proiectului + 1: lângă fiecare zi îți arătăm numărul din aplicație."
+      "youversion_title": "Urmează planul în aplicația Biblia",
+      "app_step1": "Deschide planul și apasă Start this Plan (cu un cont YouVersion îți păstrează progresul).",
+      "app_step2": "Ziua din aplicație = ziua proiectului + 1 (în 2026 a sărit ziua 82).",
+      "app_step3": "Lângă citirea zilei vezi mereu numărul din aplicație.",
+      "app_open": "Deschide planul",
+      "app_today": "Azi: ziua {{day}}"
     },
     "about": {
       "title": "Despre proiect",
@@ -138,7 +144,9 @@
       "cult": "cultulpenticostal.ro",
       "cult_hint": "Cultul Creștin Penticostal din România",
       "elim_title": "La Biserica Elim",
-      "elim_text": "Citim același text în aceeași zi, cu frații din toată țara și din diaspora. Pagina aceasta îți arată în fiecare zi textul, meditația și progresul tău, în română sau în spaniolă."
+      "elim_text": "Citim același text în aceeași zi, cu frații din toată țara și din diaspora. Pagina aceasta îți arată în fiecare zi textul, meditația și progresul tău, în română sau în spaniolă.",
+      "church_plan": "Citirea Bibliei",
+      "church_plan_hint": "Planul de citire al bisericii noastre: porțiunea săptămânii, cu text și audio."
     },
     "plan": {
       "title": "Planul complet {{year}}",

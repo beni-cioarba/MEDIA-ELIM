@@ -371,6 +371,14 @@
   padding: 0;
   list-style: none;
 
+  // Lleva `tabindex="0"` en todos los anchos (en el teléfono es una tira que
+  // se desliza con el teclado): el anillo, también en todos. Sólo dentro de
+  // la consulta del móvil, en escritorio salía el anillo del navegador.
+  &:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
   @container (min-width: 760px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -392,8 +400,8 @@
       display: none;
     }
 
+    // A sangre: el anillo, por dentro.
     &:focus-visible {
-      outline: 2px solid var(--c-focus);
       outline-offset: -2px;
     }
 
@@ -500,6 +508,7 @@
 // Cierre: el llamamiento y su versículo, en navy
 // ---------------------------------------------------------------------
 .close {
+  --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   display: grid;
   gap: var(--sp-4);
   padding: var(--sp-5);

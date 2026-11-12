@@ -1,5 +1,5 @@
 {
-  "$comment": "Libros de la Biblia por código USFM (el de bible.com/YouVersion). ro = Cornilescu (VDC), es = Reina-Valera 1960. roOne/esOne: nombre con un solo capítulo citado (Psalmul 23 / Salmo 23). chapters: 1 = libro de un solo capítulo (se cita sin número: «Filimon»). Lo leen la app (core/impreuna) y scripts/sync-impreuna.mjs.",
+  "$comment": "Libros de la Biblia por código USFM (el de bible.com/YouVersion). ro = Cornilescu (VDC), es = Reina-Valera 1960. roOne/esOne: nombre con un solo capítulo citado (Psalmul 23 / Salmo 23). chapters: 1 = libro de un solo capítulo (se cita sin número: «Filimon»). Lo leen la app (core/bible) y scripts/sync-impreuna.mjs y generate-bible-verses.mjs.",
   "books": {
     "GEN": { "ro": "Geneza", "es": "Génesis" },
     "EXO": { "ro": "Exodul", "es": "Éxodo" },
