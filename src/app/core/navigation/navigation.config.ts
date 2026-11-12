@@ -104,6 +104,15 @@ export const MAIN_NAV: readonly NavItem[] = [
         icon: 'book',
       },
       {
+        // Junto al plan de lectura de la iglesia: la lectura diaria del
+        // Cultul Penticostal (texto + meditación en vídeo de cada día).
+        id: 'impreuna',
+        labelKey: 'nav.impreuna',
+        descriptionKey: 'nav.impreuna_desc',
+        path: `/${APP_PATHS.impreuna}`,
+        icon: 'book-open',
+      },
+      {
         id: 'family-prayer',
         labelKey: 'nav.family_prayer',
         descriptionKey: 'nav.family_prayer_desc',

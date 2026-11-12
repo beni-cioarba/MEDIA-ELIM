@@ -36,6 +36,11 @@
                 "glob": "{pdf.min.mjs,pdf.worker.min.mjs}",
                 "input": "node_modules/pdfjs-dist/legacy/build",
                 "output": "assets/pdfjs"
+              },
+              {
+                "glob": "OneSignalSDKWorker.js",
+                "input": "src/push/onesignal",
+                "output": "push/onesignal"
               }
             ],
             "styles": [

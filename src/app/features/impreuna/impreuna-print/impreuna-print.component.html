@@ -1,0 +1,63 @@
+<div class="bar">
+  <a class="bar__btn" [routerLink]="planLink" [queryParams]="{ luna: month() + 1 }">
+    <app-icon name="chevron-left" />
+    {{ 'impreuna.print.back' | translate }}
+  </a>
+  <p class="bar__hint">{{ 'impreuna.print.hint' | translate }}</p>
+  <button type="button" class="bar__btn bar__btn--primary" (click)="print()">
+    <app-icon name="printer" />
+    {{ 'impreuna.print.button' | translate }}
+  </button>
+</div>
+
+<article class="sheet">
+  <header class="sheet__head">
+    <div>
+      <p class="sheet__church">{{ 'brand.name' | translate }}</p>
+      <h1 class="sheet__title">{{ 'impreuna.print.title' | translate: { month: monthName(), year } }}</h1>
+      <p class="sheet__sub">{{ 'impreuna.print.subtitle' | translate }}</p>
+    </div>
+    <qrcode
+      class="sheet__qr"
+      [qrdata]="pageUrl()"
+      [width]="256"
+      [margin]="0"
+      [errorCorrectionLevel]="'M'"
+      [colorDark]="'#1a365d'"
+      [colorLight]="'#ffffff'"
+      [elementType]="'svg'"
+    />
+  </header>
+
+  <table class="sheet__table">
+    <thead>
+      <tr>
+        <th scope="col">{{ 'impreuna.plan.col_day' | translate }}</th>
+        <th scope="col">{{ 'impreuna.plan.col_date' | translate }}</th>
+        <th scope="col">{{ 'impreuna.plan.col_reading' | translate }}</th>
+        <th scope="col" class="sheet__tick-col">✓</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of rows(); track r.day) {
+        <tr [class.is-wisdom]="r.wisdom">
+          <td class="sheet__day">{{ r.day }}</td>
+          <td class="sheet__date">
+            {{ r.date }}
+            @if (r.fasting) {
+              <span class="sheet__fast">{{ 'impreuna.plan.fast_tag' | translate }}</span>
+            }
+          </td>
+          <td class="sheet__reading">{{ r.reading }}</td>
+          <td class="sheet__tick"><span aria-hidden="true"></span></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <footer class="sheet__foot">
+    <span class="sheet__legend"><span class="sheet__sw" aria-hidden="true"></span>{{ 'impreuna.plan.legend_nt' | translate }}</span>
+    <span class="sheet__legend is-wisdom"><span class="sheet__sw" aria-hidden="true"></span>{{ 'impreuna.plan.legend_wisdom' | translate }}</span>
+    <p>{{ 'impreuna.print.footer' | translate }}</p>
+  </footer>
+</article>

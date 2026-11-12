@@ -1,0 +1,124 @@
+<app-impreuna-header active="plan" />
+
+<div class="plan">
+  <div class="plan-bar">
+    <h2 class="plan-title">
+      {{ 'impreuna.plan.title' | translate: { year } }}
+      <span class="plan-title__month">· {{ monthLabel() }}</span>
+    </h2>
+    <div class="plan-bar__tools">
+      <label class="plan-toggle">
+        <input type="checkbox" [checked]="onlyUnread()" (change)="onlyUnread.set($any($event.target).checked)" />
+        {{ 'impreuna.plan.only_unread' | translate }}
+      </label>
+      @if (impreuna.today().status === 'running') {
+        <a class="plan-btn" [routerLink]="[]" [queryParams]="{ luna: null }" [fragment]="todayFragment()">
+          {{ 'impreuna.plan.today' | translate }}
+        </a>
+      }
+      <a class="plan-btn" [routerLink]="printPath" [queryParams]="{ luna: month() + 1 }">
+        <app-icon name="printer" />
+        {{ 'impreuna.plan.print' | translate }}
+      </a>
+    </div>
+  </div>
+
+  <div class="plan-months" role="group" [attr.aria-label]="'impreuna.plan.months_aria' | translate">
+    @for (m of months(); track m.index) {
+      <button
+        type="button"
+        class="plan-month"
+        [class.is-active]="m.index === month()"
+        [class.is-current]="m.isCurrent"
+        [attr.aria-pressed]="m.index === month()"
+        [attr.aria-label]="m.long"
+        (click)="selectMonth(m.index)"
+      >
+        <span class="plan-month__name">{{ m.short }}</span>
+        <span class="plan-month__bar" aria-hidden="true"><span [style.inline-size.%]="m.pct"></span></span>
+      </button>
+    }
+  </div>
+
+  <div class="plan-meta">
+    <p class="plan-meta__summary">{{ 'impreuna.plan.summary' | translate: { days: days().length, read: readInMonth() } }}</p>
+    <p class="plan-legend">
+      <span class="plan-legend__item"><span class="plan-legend__sw" aria-hidden="true"></span>{{ 'impreuna.plan.legend_nt' | translate }}</span>
+      <span class="plan-legend__item is-wisdom"><span class="plan-legend__sw" aria-hidden="true"></span>{{ 'impreuna.plan.legend_wisdom' | translate }}</span>
+    </p>
+  </div>
+
+  <table class="plan-table">
+    <caption class="u-sr-only">{{ 'impreuna.plan.title' | translate: { year } }} · {{ monthLabel() }}</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="c-day">{{ 'impreuna.plan.col_day' | translate }}</th>
+        <th scope="col" class="c-date">{{ 'impreuna.plan.col_date' | translate }}</th>
+        <th scope="col" class="c-reading">{{ 'impreuna.plan.col_reading' | translate }}</th>
+        <th scope="col" class="c-video">{{ 'impreuna.plan.col_video' | translate }}</th>
+        <th scope="col" class="c-read">{{ 'impreuna.plan.col_read' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (d of rows(); track d.day) {
+        <tr
+          class="plan-row"
+          [id]="'ziua-' + d.day"
+          [class.is-wisdom]="d.kind === 'wisdom'"
+          [class.is-today]="d.isToday"
+          [class.is-read]="d.isRead"
+        >
+          <td class="c-day">
+            <a class="plan-day" [routerLink]="dayLink(d.day)" [attr.aria-label]="'impreuna.plan.open_day' | translate: { day: d.day }">
+              {{ d.day }}
+            </a>
+          </td>
+          <td class="c-date">
+            {{ date(d.day) }}
+            @if (d.isToday) {
+              <span class="plan-today">{{ 'impreuna.day.today' | translate }}</span>
+            }
+            @if (isFasting(d.day)) {
+              <span class="plan-fast" [title]="'impreuna.fast.badge' | translate">{{ 'impreuna.plan.fast_tag' | translate }}</span>
+            }
+          </td>
+          <!-- La lectura abre el día en la web (con «Citește», vídeo y «Am
+               citit»), no bible.com: un enlace de tabla que saca del sitio
+               sorprende. -->
+          <td class="c-reading">
+            <a [routerLink]="dayLink(d.day)">
+              @for (ref of d.refs; track ref.code; let last = $last) {
+                {{ refLabel(ref) }}@if (!last) {<span class="plan-sep" aria-hidden="true"> · </span>}
+              }
+            </a>
+          </td>
+          <td class="c-video">
+            @if (d.media?.video) {
+              <a class="plan-watch" [routerLink]="dayLink(d.day)">
+                <app-icon name="play" />
+                <span>{{ d.media.speaker || ('impreuna.plan.watch' | translate) }}</span>
+              </a>
+            } @else {
+              <span class="plan-none" aria-hidden="true">—</span>
+            }
+          </td>
+          <td class="c-read">
+            <button
+              type="button"
+              class="plan-check"
+              [attr.aria-pressed]="d.isRead"
+              [attr.aria-label]="'impreuna.day.mark_aria' | translate: { day: d.day }"
+              (click)="impreuna.toggleRead(d.day)"
+            >
+              <app-icon name="check" />
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td class="plan-empty" colspan="5">{{ 'impreuna.plan.empty' | translate }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

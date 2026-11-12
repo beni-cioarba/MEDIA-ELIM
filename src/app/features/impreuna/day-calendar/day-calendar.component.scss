@@ -1,0 +1,248 @@
+/* Calendario del plan. Estados con una codificación por propiedad, para que
+   no se confundan entre sí (antes «elegido» y «tipo de día» compartían color):
+     día abierto = relleno navy · hoy = aro navy · leído = punto verde ·
+     post și rugăciune = fondo oro. Docs: 32-impreuna.md → Diseño. */
+@use 'ds' as *;
+@use '../imp';
+
+:host {
+  display: block;
+}
+
+.cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.cal__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem var(--sp-2);
+  min-width: 0;
+}
+
+/* Vuelve al mes de hoy: píldora pequeña junto al nombre del mes. */
+.cal__today {
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--c-primary);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-primary);
+  font: 700 var(--fs-xs) / 1.4 var(--font-sans);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+
+  @include imp.focus;
+
+  @media (pointer: coarse) {
+    padding-block: 0.35rem;
+  }
+}
+
+.cal__month {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.cal__nav {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 50%;
+  background: var(--c-surface);
+  color: var(--c-primary);
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--c-primary);
+    background: var(--c-veil);
+  }
+
+  @include imp.focus;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  @media (pointer: coarse) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+/* La rejilla se reparte el ancho: 7 columnas iguales, casillas cuadradas. */
+.cal__grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 2px;
+  table-layout: fixed;
+
+  th {
+    padding: 0 0 var(--sp-1);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  td {
+    padding: 0;
+    text-align: center;
+  }
+}
+
+.cal__day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 2.75rem;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: none;
+  color: var(--c-text);
+  font: 600 var(--fs-sm) / 1 var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background: var(--c-veil-strong);
+  }
+
+  @include imp.focus;
+
+  // Post și rugăciune: fondo oro suave (no compite con el relleno navy).
+  &.is-fasting {
+    background: var(--c-gold-tint);
+    color: var(--c-gold-deep);
+    font-weight: 800;
+  }
+
+  // Hoy: aro navy.
+  &.is-today {
+    border-color: var(--c-primary);
+    color: var(--c-primary);
+    font-weight: 800;
+  }
+
+  // Día abierto: relleno navy (manda sobre los demás estados).
+  &.is-selected {
+    border-color: var(--c-primary);
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+
+  // Abierto y hoy a la vez: un segundo aro, separado del relleno.
+  &.is-selected.is-today {
+    box-shadow:
+      0 0 0 2px var(--c-surface),
+      0 0 0 4px var(--c-primary);
+  }
+
+  // Abierto y de ayuno: el oro pasa a un aro para no perderse.
+  &.is-selected.is-fasting {
+    box-shadow:
+      0 0 0 2px var(--c-surface),
+      0 0 0 4px var(--c-gold);
+  }
+}
+
+.cal__num {
+  // Un poco hacia arriba: deja sitio al punto de «leído».
+  transform: translateY(-1px);
+}
+
+.cal__dot {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+
+  .is-read & {
+    background: var(--c-success);
+  }
+
+  .is-selected.is-read & {
+    background: var(--c-on-primary);
+  }
+}
+
+/* Leyenda: una muestra por estado, en la misma letra pequeña. */
+.cal__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3) 0 0;
+  border-top: 1px solid var(--c-hairline);
+  list-style: none;
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.cal__key {
+  position: relative;
+  box-sizing: border-box;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+}
+
+.cal__key--selected {
+  background: var(--c-primary);
+}
+
+.cal__key--today {
+  border: 2px solid var(--c-primary);
+}
+
+.cal__key--read::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-success);
+  transform: translate(-50%, -50%);
+}
+
+.cal__key--fasting {
+  background: var(--c-gold-tint);
+  box-shadow: inset 0 0 0 1px var(--c-gold);
+}

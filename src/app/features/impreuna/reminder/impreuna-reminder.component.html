@@ -1,0 +1,118 @@
+@if (visible()) {
+  <!-- Toda la tarjeta acciona el interruptor (su ::after la cubre): en el
+       móvil se acierta sin apuntar. Título y texto quedan fuera del botón
+       (un h2 no puede ir dentro) y le dan nombre y descripción. -->
+  <section
+    class="rem"
+    [class.is-on]="state() === 'on'"
+    [class.is-busy]="push.busy()"
+    [class.is-blocked]="state() === 'blocked'"
+    aria-labelledby="rem-title"
+  >
+    <span class="rem__icon" aria-hidden="true"><app-icon [name]="icon()" /></span>
+
+    <div class="rem__body">
+      <h2 id="rem-title" class="rem__title">{{ 'impreuna.reminder.title' | translate: { time: next().time } }}</h2>
+      <p id="rem-text" class="rem__text">
+        @if (push.busy()) {
+          {{ (state() === 'on' ? 'impreuna.reminder.disabling' : 'impreuna.reminder.enabling') | translate }}
+        } @else {
+          @switch (state()) {
+            @case ('on') {
+              <span class="rem__ok">
+                <app-icon name="check" />
+                {{ (outcome() === 'on' ? 'impreuna.reminder.done' : 'impreuna.reminder.on') | translate }}
+              </span>
+              @if (next().reading; as reading) {
+                <span class="rem__next">
+                  ·
+                  @if (next().when; as when) {
+                    {{ 'impreuna.reminder.' + when | translate }}:
+                  }
+                  {{ reading }}
+                </span>
+              }
+            }
+            @case ('off') {
+              @switch (outcome()) {
+                @case ('dismissed') {
+                  {{ 'impreuna.reminder.dismissed' | translate }}
+                }
+                @case ('error') {
+                  <span class="rem__warn">{{ 'impreuna.reminder.error' | translate }}</span>
+                }
+                @case ('off') {
+                  {{ 'impreuna.reminder.stopped' | translate }}
+                }
+                @default {
+                  {{ 'impreuna.reminder.lead' | translate }}
+                }
+              }
+            }
+            @case ('blocked') {
+              {{ 'impreuna.reminder.blocked' | translate }}
+            }
+            @case ('ios-install') {
+              <app-icon class="rem__glyph" name="share-ios" />
+              {{ 'impreuna.reminder.ios' | translate }}
+            }
+            @case ('open-browser') {
+              {{ 'impreuna.reminder.open_browser' | translate }}
+            }
+            @default {
+              {{ 'impreuna.reminder.unsupported' | translate }}
+            }
+          }
+        }
+      </p>
+    </div>
+
+    @if (switchable()) {
+      <button
+        type="button"
+        class="rem__switch"
+        role="switch"
+        [attr.aria-checked]="state() === 'on'"
+        [attr.aria-busy]="push.busy() || null"
+        aria-labelledby="rem-title"
+        aria-describedby="rem-text"
+        (click)="toggle()"
+      >
+        <span class="rem__thumb"></span>
+      </button>
+    }
+
+    @if (switchable() && (state() === 'off' || next().churchTime)) {
+      <p class="rem__note">
+        @if (state() === 'off') {
+          {{ 'impreuna.reminder.privacy' | translate }}
+        }
+        @if (next().churchTime; as churchTime) {
+          {{ 'impreuna.reminder.church_time' | translate: { time: churchTime } }}
+        }
+      </p>
+    }
+
+    <!-- Lo que pasó al tocar, para el lector de pantalla (el estado del
+         interruptor ya lo anuncia `aria-checked`). -->
+    <p class="u-sr-only" role="status">
+      @switch (outcome()) {
+        @case ('on') {
+          {{ 'impreuna.reminder.done' | translate }}
+        }
+        @case ('off') {
+          {{ 'impreuna.reminder.stopped' | translate }}
+        }
+        @case ('dismissed') {
+          {{ 'impreuna.reminder.dismissed' | translate }}
+        }
+        @case ('denied') {
+          {{ 'impreuna.reminder.blocked' | translate }}
+        }
+        @case ('error') {
+          {{ 'impreuna.reminder.error' | translate }}
+        }
+      }
+    </p>
+  </section>
+}

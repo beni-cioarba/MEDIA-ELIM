@@ -1,0 +1,61 @@
+<section class="ib" aria-labelledby="ib-title">
+  <!-- Columna principal: qué es, en qué día vamos y la semana de lecturas. -->
+  <div class="ib__main">
+    <p class="ib__eyebrow">
+      <span class="ib__dot" aria-hidden="true"></span>
+      @if (today().status === 'running') {
+        {{ 'impreuna_slide.eyebrow_day' | translate: { day: today().day, total } }}
+      } @else {
+        {{ 'impreuna_slide.eyebrow' | translate }}
+      }
+    </p>
+    <h2 class="ib__title" id="ib-title">{{ 'impreuna_slide.title' | translate }}</h2>
+
+    <div class="ib__head">
+      <p class="ib__label">
+        {{ (startsTomorrow() ? 'impreuna_slide.next_week' : 'impreuna_slide.this_week') | translate }}
+      </p>
+      @if (startsTomorrow()) {
+        <span class="ib__badge">{{ 'impreuna_slide.starts_tomorrow' | translate }}</span>
+      }
+    </div>
+
+    <!-- Subrejilla: día · número · lectura alineados en las siete filas. -->
+    <ol class="ib__week">
+      @for (row of week(); track row.day) {
+        <li class="ib__day" [class.is-today]="row.isToday" [class.is-past]="row.isPast" [class.is-wisdom]="row.wisdom">
+          <span class="ib__wd">{{ row.weekday }}</span>
+          <span class="ib__num">{{ row.date }}</span>
+          <span class="ib__reading">{{ row.reading }}</span>
+          <span class="ib__flag">
+            @if (row.isToday) {
+              <span>{{ 'impreuna_slide.today' | translate }}</span>
+            }
+            @if (row.fasting) {
+              <span class="ib__fast-tag">{{ 'impreuna_slide.fast_tag' | translate }}</span>
+            }
+          </span>
+        </li>
+      }
+    </ol>
+  </div>
+
+  <!-- Columna lateral: QR a la página y el próximo día de ayuno. -->
+  <aside class="ib__side">
+    <p class="ib__side-label">{{ 'impreuna_slide.qr_title' | translate }}</p>
+    <div class="ib__qr">
+      <app-qr-panel [data]="qrUrl" [captionKey]="null" />
+    </div>
+    <div class="ib__qr-text">
+      <p class="ib__qr-url">{{ qrHost }}<span class="ib__qr-path">{{ qrPath }}</span></p>
+      <p class="ib__qr-caption">{{ 'impreuna_slide.qr' | translate }}</p>
+    </div>
+    <p class="ib__fast">
+      <span class="ib__fast-label">{{ 'impreuna_slide.fast' | translate }}</span>
+      <span class="ib__fast-date">{{ nextFast() }}</span>
+      @if (nextFastTheme(); as theme) {
+        <span class="ib__fast-theme" lang="ro">{{ theme }}</span>
+      }
+    </p>
+  </aside>
+</section>

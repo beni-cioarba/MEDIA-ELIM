@@ -253,6 +253,11 @@ nombre en la tarjeta que ya se titula «Cenzori».
 No hace falta borrar los pasados: `ScheduleService` los filtra solos (y
 salen en el desplegable «Evenimente trecute»).
 
+El **calendario de suscripción** («Abonează-te», `assets/calendars/elim-events.ics`)
+sale solo de esta lista y de `weeklyProgram` al publicar: nada que tocar.
+Sin `time` → de día completo; a la hora de un culto → lo sustituye ese día.
+Detalle en `50-build-deploy.md` → «Calendario de suscripción».
+
 **Eventos automáticos de las reglas mensuales** (08/11/2026): Cina Domnului
 y Seară de tineret (primer domingo, `weeklyProgram → duminica → monthly`) no
 se cargan a mano: `ScheduleService.monthlyEvents` genera **la próxima vez

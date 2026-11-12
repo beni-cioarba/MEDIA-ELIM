@@ -1,0 +1,86 @@
+<div class="cal">
+  <div class="cal__head">
+    <button
+      type="button"
+      class="cal__nav"
+      [disabled]="!canPrev()"
+      [attr.aria-label]="'impreuna.calendar.prev_month' | translate"
+      (click)="showMonth(-1)"
+    >
+      <app-icon name="chevron-left" />
+    </button>
+    <div class="cal__title">
+      <p class="cal__month" [id]="labelId" aria-live="polite">{{ monthLabel() }}</p>
+      @if (showToday()) {
+        <button type="button" class="cal__today" (click)="goToday()">{{ 'impreuna.calendar.today' | translate }}</button>
+      }
+    </div>
+    <button
+      type="button"
+      class="cal__nav"
+      [disabled]="!canNext()"
+      [attr.aria-label]="'impreuna.calendar.next_month' | translate"
+      (click)="showMonth(1)"
+    >
+      <app-icon name="chevron-right" />
+    </button>
+  </div>
+
+  <table class="cal__grid" role="grid" [attr.aria-labelledby]="labelId">
+    <thead>
+      <tr>
+        @for (w of weekdays(); track w.long) {
+          <th scope="col" [attr.abbr]="w.long">
+            <span aria-hidden="true">{{ w.short }}</span>
+            <span class="u-sr-only">{{ w.long }}</span>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (week of weeks(); track $index) {
+        <tr>
+          @for (cell of week; track $index) {
+            <td [attr.aria-selected]="cell ? cell.isSelected : null">
+              @if (cell) {
+                <button
+                  type="button"
+                  class="cal__day"
+                  [attr.data-day]="cell.day"
+                  [class.is-selected]="cell.isSelected"
+                  [class.is-today]="cell.isToday"
+                  [class.is-read]="cell.isRead"
+                  [class.is-fasting]="cell.isFasting"
+                  [attr.tabindex]="cell.day === tabDay() ? 0 : -1"
+                  [attr.aria-current]="cell.isToday ? 'date' : null"
+                  [attr.aria-label]="
+                    cell.dateLabel +
+                    ': ' +
+                    cell.reading +
+                    (cell.isToday ? ' · ' + ('impreuna.calendar.state_today' | translate) : '') +
+                    (cell.isRead ? ' · ' + ('impreuna.calendar.state_read' | translate) : '') +
+                    (cell.isFasting ? ' · ' + ('impreuna.fast.badge' | translate) : '')
+                  "
+                  [title]="cell.isFasting ? cell.reading + ' · ' + ('impreuna.fast.badge' | translate) : cell.reading"
+                  (click)="choose(cell.day)"
+                  (keydown)="onKey($event, cell.day)"
+                >
+                  <span class="cal__num">{{ cell.date }}</span>
+                  <span class="cal__dot" aria-hidden="true"></span>
+                </button>
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Leyenda visual (los estados ya van en el nombre de cada día). -->
+  <ul class="cal__legend" aria-hidden="true">
+    <li><span class="cal__key cal__key--selected"></span>{{ 'impreuna.calendar.legend_selected' | translate }}</li>
+    <li><span class="cal__key cal__key--today"></span>{{ 'impreuna.calendar.legend_today' | translate }}</li>
+    <li><span class="cal__key cal__key--read"></span>{{ 'impreuna.calendar.legend_read' | translate }}</li>
+    <li><span class="cal__key cal__key--fasting"></span>{{ 'impreuna.calendar.legend_fasting' | translate }}</li>
+  </ul>
+</div>

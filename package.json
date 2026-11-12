@@ -4,13 +4,14 @@
   "scripts": {
     "ng": "ng",
     "postinstall": "node scripts/generate-version.mjs",
-    "prestart": "node scripts/generate-version.mjs",
+    "prestart": "node scripts/generate-version.mjs && node scripts/generate-events-calendar.mjs",
     "start": "ng serve",
-    "prebuild": "node scripts/generate-version.mjs && npm run check",
+    "prebuild": "node scripts/generate-version.mjs && node scripts/generate-events-calendar.mjs && npm run check",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "version:generate": "node scripts/generate-version.mjs",
+    "calendar:events": "node scripts/generate-events-calendar.mjs",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs",
     "posters": "node scripts/optimize-posters.mjs",
@@ -19,7 +20,9 @@
     "check:drive": "node scripts/check-drive-links.mjs",
     "check": "npm run i18n:check && npm run check:projection && node scripts/check-drive-links.mjs --offline && npm run test:scripts",
     "test:scripts": "node --test \"scripts/**/*.test.mjs\"",
-    "pdf:familii": "node scripts/generate-family-pdfs.mjs"
+    "pdf:familii": "node scripts/generate-family-pdfs.mjs",
+    "impreuna:sync": "node scripts/sync-impreuna.mjs",
+    "impreuna:push": "node scripts/impreuna-push.mjs"
   },
   "private": true,
   "dependencies": {

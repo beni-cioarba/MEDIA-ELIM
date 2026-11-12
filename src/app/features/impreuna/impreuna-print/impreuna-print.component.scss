@@ -1,0 +1,250 @@
+/* Hoja imprimible de un mes: A4 vertical, tinta navy, sin fondos grandes. */
+@use 'ds' as *;
+@use '../imp';
+
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: var(--sp-4) var(--sp-4) var(--sp-10);
+  background: var(--c-surface-3);
+}
+
+/* ── Barra de pantalla (no se imprime) ────────────────────────────────── */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  max-width: 210mm;
+  margin: 0 auto var(--sp-4);
+}
+
+.bar__hint {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 1.1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-primary);
+  font: 600 var(--fs-sm) / 1.2 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+
+  @include imp.focus;
+}
+
+.bar__btn--primary {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+/* ── La hoja ──────────────────────────────────────────────────────────── */
+.sheet {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 210mm;
+  margin-inline: auto;
+  padding: clamp(1rem, 4vw, 12mm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: var(--e-3);
+  font-family: var(--font-sans);
+}
+
+.sheet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6mm;
+  padding-bottom: 4mm;
+  border-bottom: 2px solid var(--c-primary);
+}
+
+.sheet__church {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.sheet__title {
+  margin: 1mm 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  line-height: 1.15;
+  color: var(--c-primary);
+}
+
+.sheet__sub {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--c-muted);
+}
+
+.sheet__qr {
+  display: block;
+  flex: none;
+  width: 24mm;
+  height: 24mm;
+
+  ::ng-deep svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.sheet__table {
+  width: 100%;
+  margin-top: 3mm;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+
+  th {
+    padding: 1.2mm 2mm;
+    border-bottom: 1px solid var(--c-primary);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-align: start;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  // 31 filas × ~6,3 mm + cabecera caben en un A4 con márgenes de 10 mm.
+  td {
+    padding: 0.9mm 2mm;
+    border-bottom: 0.5px solid var(--c-border);
+    line-height: 1.3;
+    vertical-align: middle;
+  }
+
+  tr.is-wisdom td:first-child {
+    border-inline-start: 2.5px solid var(--c-gold-deep);
+  }
+
+  tr:not(.is-wisdom) td:first-child {
+    border-inline-start: 2.5px solid var(--c-primary);
+  }
+}
+
+.sheet__day {
+  width: 9mm;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-primary);
+}
+
+.sheet__date {
+  width: 18mm;
+  white-space: nowrap;
+  color: var(--c-muted);
+  text-transform: capitalize;
+}
+
+// Post și rugăciune: palabra en oro, se ve también en blanco y negro (negrita).
+.sheet__fast {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.sheet__reading {
+  font-weight: 600;
+}
+
+.sheet__tick-col,
+.sheet__tick {
+  width: 9mm;
+  text-align: center;
+}
+
+.sheet__tick span {
+  display: inline-block;
+  width: 4mm;
+  height: 4mm;
+  border: 1px solid var(--c-muted);
+  border-radius: 1px;
+  vertical-align: middle;
+}
+
+.sheet__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1mm 5mm;
+  margin-top: 4mm;
+  font-size: 0.72rem;
+  color: var(--c-muted);
+
+  p {
+    flex-basis: 100%;
+    margin: 0;
+  }
+}
+
+.sheet__legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5mm;
+  font-weight: 700;
+  color: var(--c-primary);
+
+  &.is-wisdom {
+    color: var(--c-gold-deep);
+  }
+}
+
+/* Muestra de color hecha con borde: los fondos no se imprimen por defecto. */
+.sheet__sw {
+  width: 0;
+  height: 0;
+  border: 1.5mm solid var(--c-primary);
+  border-radius: 0.5mm;
+
+  .is-wisdom & {
+    border-color: var(--c-gold-deep);
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  :host {
+    min-height: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .bar {
+    display: none;
+  }
+
+  .sheet {
+    max-width: none;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .sheet__table tr {
+    break-inside: avoid;
+  }
+}

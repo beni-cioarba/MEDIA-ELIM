@@ -1,0 +1,37 @@
+<div class="vid">
+  @if (video(); as id) {
+    @if (playing() && embed(); as src) {
+      <iframe
+        class="vid__frame"
+        [src]="src"
+        [title]="speaker() ? ('impreuna.video.play' | translate: { name: speaker() }) : ('impreuna.video.play_generic' | translate)"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    } @else {
+      <button
+        type="button"
+        class="vid__poster"
+        (click)="playing.set(true)"
+        [attr.aria-label]="speaker() ? ('impreuna.video.play' | translate: { name: speaker() }) : ('impreuna.video.play_generic' | translate)"
+      >
+        @if (thumb(); as src) {
+          <img class="vid__img" [src]="src" alt="" decoding="async" (load)="onThumbLoad($event)" (error)="nextThumb()" />
+        }
+        <!-- Sin rótulo con el nombre: las miniaturas del Cultul ya lo llevan
+             impreso abajo a la izquierda (y la página lo repite debajo). -->
+        <span class="vid__play" aria-hidden="true"><app-icon name="play" /></span>
+      </button>
+    }
+  } @else {
+    <div class="vid__empty">
+      <app-icon class="vid__empty-icon" name="film" />
+      <p>{{ (reason() === 'pending' ? 'impreuna.video.pending' : 'impreuna.video.missing') | translate }}</p>
+      <a class="vid__channel" [href]="youtube.videos" target="_blank" rel="noopener">
+        {{ 'impreuna.video.channel' | translate }}
+        <app-icon name="external" />
+      </a>
+    </div>
+  }
+</div>

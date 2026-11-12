@@ -646,6 +646,19 @@
       "join": "Inscripciones con"
     }
   },
+  "impreuna_slide": {
+    "title": "Proiectul Împreună",
+    "eyebrow": "Iglesia Pentecostal de Rumanía · La Biblia día a día",
+    "eyebrow_day": "Iglesia Pentecostal de Rumanía · Día {{day}} de {{total}}",
+    "this_week": "Lecturas de la semana",
+    "next_week": "Lecturas de la semana que viene",
+    "starts_tomorrow": "Empieza mañana",
+    "today": "Hoy",
+    "qr_title": "En tu teléfono",
+    "qr": "El texto, la meditación en vídeo y el calendario diario",
+    "fast": "Ayuno y oración",
+    "fast_tag": "Ayuno"
+  },
   "website_slide": {
     "block": "Web de la iglesia",
     "eyebrow": "Toda la información",
@@ -891,6 +904,8 @@
     "announcements_desc": "Avisos de la iglesia en vigor",
     "bible": "Lectura bíblica",
     "bible_desc": "La semana del plan de lectura",
+    "impreuna": "Proiectul Împreună",
+    "impreuna_desc": "El texto y la meditación en vídeo del día",
     "family_prayer": "Oración por las familias",
     "family_prayer_desc": "Las familias de la semana y sus motivos",
     "prayer_causes": "Motivos de oración",
@@ -928,6 +943,7 @@
     "upcoming_none": "Ningún evento programado",
     "upcoming_next": "Próximo evento",
     "bible_day": "Lectura del {{day}}",
+    "impreuna_day": "Hoy · día {{day}}",
     "families_week": "Semana {{range}}",
     "causes_updated": "Actualizada el {{date}}",
     "causes_count": "{{count}} causas",
@@ -1007,6 +1023,17 @@
     "talent_contest": {
       "title": "Talantul în Negoț 2027 · Concurso bíblico",
       "description": "Todo para participar en el concurso bíblico Talantul în Negoț 2027 desde la Iglesia Elim Arganda: fases y fechas, categorías, libros y versículos, examen y materiales oficiales."
+    },
+    "impreuna": {
+      "title": "Proiectul Împreună · La lectura bíblica de hoy",
+      "description": "El texto del día, la meditación en vídeo y tu progreso: el Nuevo Testamento, los Salmos y los Proverbios en un año, con la Iglesia Pentecostal de Rumanía. Calendario para el móvil y el plan completo."
+    },
+    "impreuna_plan": {
+      "title": "Proiectul Împreună · El plan de lectura completo",
+      "description": "Los 365 días del Proiectul Împreună, mes a mes: el texto de cada día, la meditación en vídeo y lo que llevas leído."
+    },
+    "impreuna_print": {
+      "title": "Proiectul Împreună · Hoja del mes para imprimir"
     },
     "baptisms": {
       "title": "Bautismos",

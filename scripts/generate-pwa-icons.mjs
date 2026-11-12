@@ -23,6 +23,9 @@
 //                            mancha). Ver la nota en `main()`.
 //  · shortcut-*-192       → atajos del manifiesto (pulsación larga): baldosa
 //                            navy con un icono de trazo blanco (los de la app).
+//  · badge-impreuna-96    → insignia de la amintire zilnică (web push): el
+//                            libro abierto en blanco sobre transparente, para
+//                            la barra de estado de Android.
 //
 // Todo se rasteriza desde el máster de 674 px. Se ejecuta con
 // `npm run pwa:icons` (usa `sharp`, ya en devDependencies). Los PNG se
@@ -182,7 +185,30 @@ const SHORTCUT_ICONS = {
   weekly: ['M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', 'M16 2v4M8 2v4M3 10h18'],
   live: ['M8 5.5v13l11-6.5z'],
   donate: ['M20 12v9H4v-9', 'M2.5 7h19v5h-19z', 'M12 21V7', 'M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z', 'M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z'],
+  // Proiectul Împreună: Lucide «book-open», el mismo glifo que su entrada del menú.
+  impreuna: ['M12 7v14', 'M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z'],
 };
+
+/**
+ * Insignia de una notificación (`chrome_web_badge`): el icono pequeño que
+ * Android pinta en la barra de estado. Sólo cuenta el canal alfa, así que es
+ * trazo blanco sobre transparente, grueso para que se lea a 24 dp.
+ */
+function badge(size, paths) {
+  const s = size * 0.8;
+  const o = (size - s) / 2;
+  return sharp(
+    Buffer.from(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+        <svg x="${o}" y="${o}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none"
+             stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          ${paths.map((d) => `<path d="${d}"/>`).join('')}
+        </svg>
+      </svg>`),
+  )
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+}
 
 /** Contenedor ICO: cabecera + directorio + los PNG tal cual. */
 function ico(frames) {
@@ -238,6 +264,9 @@ async function main() {
   for (const [id, paths] of Object.entries(SHORTCUT_ICONS)) {
     await write(`shortcut-${id}-192.png`, await shortcut(192, paths));
   }
+
+  // Insignia de la amintire zilnică de Proiectul Împreună (web push).
+  await write('badge-impreuna-96.png', await badge(96, SHORTCUT_ICONS.impreuna));
 
   // Vista previa al compartir (og:image, 1200×630). JPEG: una foto de
   // degradados pesa un 80 % menos que en PNG y WhatsApp la carga antes.

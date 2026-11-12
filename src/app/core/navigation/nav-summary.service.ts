@@ -1,6 +1,8 @@
 import { Injectable, Signal, computed, inject } from '@angular/core';
 import { CHURCH_CONFIG } from '../church.config';
 import { departmentById } from '../departments.config';
+import { editionToday, planDay } from '../impreuna/impreuna-edition';
+import { formatReading } from '../impreuna/impreuna-plan';
 import { LEADERSHIP_OFFICES, SERVICE_AREAS } from '../leadership.config';
 import { AnnouncementsService } from '../services/announcements.service';
 import { BaptismsService } from '../services/baptisms.service';
@@ -184,6 +186,17 @@ export class NavSummaryService {
           kicker: { key: 'nav_hub.bible_day', params: { day: this.schedule.formatWeekdayLong(day.date) } },
           value: day.passage,
           live: day.isToday,
+        };
+      }
+      case 'impreuna': {
+        // Sólo el plan (~8 kB), no los vídeos: el resumen no arrastra el módulo.
+        const today = editionToday(new Date(this.clock.now()));
+        const day = planDay(today.day);
+        if (today.status !== 'running' || !day) return null;
+        return {
+          kicker: { key: 'nav_hub.impreuna_day', params: { day: day.day } },
+          value: formatReading(day.refs, this.language.current()),
+          live: true,
         };
       }
       case 'family-prayer': {

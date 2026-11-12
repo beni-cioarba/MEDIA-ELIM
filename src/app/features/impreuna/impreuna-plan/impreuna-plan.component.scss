@@ -1,0 +1,470 @@
+/* Proiectul Împreună · plan completo. Diseño: docs/ai/32-impreuna.md → Diseño. */
+@use 'ds' as *;
+@use '../imp';
+
+:host {
+  display: block;
+  // Texto secundario a ≥ 4,5:1 sobre blanco (AA). El `--c-muted` global
+  // (66 % de opacidad) se queda en ~4,3:1, y aquí va en letra pequeña.
+  --c-muted: color-mix(in srgb, var(--c-text) 76%, var(--c-surface));
+}
+
+.plan {
+  // El contenedor de todos los módulos: tope + márgenes por fuera (antes
+  // el margen iba dentro del tope y, a partir de ~1550 px, el módulo
+  // quedaba 58 px más estrecho por lado que la cabecera y las demás páginas).
+  @include container;
+  padding-block: var(--sp-4) var(--sp-12);
+
+  @include from('md') {
+    padding-top: var(--sp-6);
+  }
+}
+
+/* ── Barra: título + herramientas ─────────────────────────────────────── */
+.plan-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.plan-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.plan-title__month {
+  font-weight: 500;
+  color: var(--c-muted);
+}
+
+.plan-bar__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.plan-btn {
+  @include imp.btn;
+}
+
+.plan-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding-inline: var(--sp-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--c-primary);
+  }
+}
+
+/* ── Meses: resumen del año (cada uno con su barra) ───────────────────── */
+.plan-months {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-3);
+
+  @include from('md') {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.plan-month {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.4rem 0.5rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font: 600 var(--fs-sm) / 1 var(--font-sans);
+  text-transform: capitalize;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  @include imp.focus;
+
+  &.is-current .plan-month__name::after {
+    content: '';
+    display: inline-block;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-inline-start: 0.3rem;
+    vertical-align: middle;
+    border-radius: 50%;
+    background: var(--c-gold);
+  }
+
+  &.is-active {
+    border-color: var(--c-primary);
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+
+    .plan-month__bar {
+      background: rgb(255 255 255 / 0.25);
+    }
+  }
+}
+
+.plan-month__bar {
+  display: block;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-3);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--c-success);
+  }
+}
+
+.plan-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-4);
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+.plan-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.plan-legend__item {
+  @include imp.kind-colors;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--kind);
+}
+
+.plan-legend__sw {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+  background: var(--kind);
+}
+
+/* ── Tabla ─────────────────────────────────────────────────────────────── */
+.plan-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  overflow: hidden;
+  font-size: var(--fs-sm);
+
+  th {
+    padding: 0.6rem var(--sp-3);
+    background: var(--c-surface-2);
+    border-bottom: 1px solid var(--c-hairline);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: start;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  td {
+    padding: 0.45rem var(--sp-3);
+    border-bottom: 1px solid var(--c-hairline);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .c-day {
+    width: 4.5rem;
+  }
+
+  .c-date {
+    width: 9.5rem;
+    white-space: nowrap;
+  }
+
+  .c-video {
+    width: 15rem;
+  }
+
+  .c-read {
+    width: 4.5rem;
+    text-align: center;
+  }
+}
+
+.plan-row {
+  @include imp.kind-colors;
+
+  // Canto del tipo de día: borde, no `box-shadow: inset` (deja filetes
+  // fantasma en Chrome).
+  > td:first-child {
+    border-inline-start: 3px solid var(--kind);
+  }
+
+  &.is-today {
+    background: var(--c-gold-tint);
+  }
+
+  &.is-read // Post și rugăciune (primer jueves): etiqueta oro junto a la fecha.
+.plan-fast {
+  margin-inline-start: 0.35rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--c-gold);
+  border-radius: var(--r-pill);
+  background: var(--c-gold-tint);
+  color: var(--c-gold-deep);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.c-reading a {
+    color: var(--c-muted);
+    font-weight: 500;
+  }
+}
+
+.plan-day {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.25rem;
+  height: 2rem;
+  padding-inline: 0.35rem;
+  border-radius: var(--r-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include imp.focus;
+}
+
+.plan-today {
+  margin-inline-start: 0.35rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--r-pill);
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.c-reading a {
+  font-weight: 600;
+  color: var(--c-text);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--c-primary);
+    text-decoration: underline;
+  }
+
+  @include imp.focus;
+}
+
+.plan-sep {
+  color: var(--c-faint);
+}
+
+.plan-watch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  app-icon {
+    flex: none;
+    color: #c00;
+  }
+
+  &:hover span {
+    text-decoration: underline;
+  }
+
+  @include imp.focus;
+}
+
+.plan-none {
+  color: var(--c-faint);
+}
+
+.plan-check {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid var(--c-hairline-strong);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--c-success);
+    color: color-mix(in srgb, var(--c-success) 45%, transparent);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: var(--c-success);
+    background: var(--c-success);
+    color: #fff;
+  }
+
+  @include imp.focus;
+
+  @media (pointer: coarse) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+.plan-empty {
+  padding: var(--sp-6) !important;
+  text-align: center;
+  color: var(--c-muted);
+}
+
+/* ── Móvil y tableta estrecha: cada fila, una ficha de tres líneas ─────── */
+@include until('md') {
+  .plan-table {
+    display: block;
+    border: 0;
+    background: none;
+    overflow: visible;
+
+    thead {
+      @include visually-hidden;
+    }
+
+    tbody {
+      display: grid;
+      gap: var(--sp-1);
+    }
+
+    td {
+      padding: 0;
+      border: 0;
+    }
+
+    .c-day,
+    .c-date,
+    .c-video,
+    .c-read {
+      width: auto;
+    }
+  }
+
+  .plan-row {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      'day date read'
+      'day reading read'
+      'day video read';
+    align-items: center;
+    column-gap: var(--sp-2);
+    row-gap: 2px;
+    padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-2);
+    border: 1px solid var(--c-hairline);
+    border-inline-start: 3px solid var(--kind);
+    border-radius: var(--r-md);
+    background: var(--c-surface);
+
+    > td:first-child {
+      border-inline-start: 0;
+    }
+
+    &.is-today {
+      background: color-mix(in srgb, var(--c-gold) 10%, var(--c-surface));
+    }
+
+    .c-day {
+      grid-area: day;
+      align-self: start;
+    }
+
+    .c-date {
+      grid-area: date;
+      font-size: var(--fs-xs);
+      color: var(--c-muted);
+    }
+
+    .c-reading {
+      grid-area: reading;
+      font-size: var(--fs-body);
+      line-height: 1.35;
+    }
+
+    .c-video {
+      grid-area: video;
+      font-size: var(--fs-xs);
+
+      &:has(.plan-none) {
+        display: none;
+      }
+    }
+
+    .c-read {
+      grid-area: read;
+    }
+  }
+
+  .plan-empty {
+    display: block;
+    border: 1px dashed var(--c-hairline-strong) !important;
+    border-radius: var(--r-md);
+  }
+}

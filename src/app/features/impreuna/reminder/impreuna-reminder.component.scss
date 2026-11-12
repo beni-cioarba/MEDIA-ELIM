@@ -1,0 +1,188 @@
+/* Amintire zilnică: una fila (icono · título y estado · interruptor) y, en
+   apagado, la nota de privacidad. Toda la tarjeta acciona el interruptor
+   (`.rem__switch::after` la cubre). Docs: 32-impreuna.md → Notificaciones. */
+@use 'ds' as *;
+@use '../imp';
+
+:host {
+  display: block;
+}
+
+:host(.is-hidden) {
+  display: none;
+}
+
+.rem {
+  @include imp.card;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: var(--sp-3);
+  align-items: center;
+  padding: var(--sp-3) var(--sp-4);
+  transition: border-color 0.15s ease;
+  @include imp.motion-off;
+
+  @media (hover: hover) {
+    &:has(.rem__switch:hover) {
+      border-color: var(--c-hairline-strong);
+    }
+  }
+
+  &:has(.rem__switch:focus-visible) {
+    border-color: var(--c-primary);
+  }
+}
+
+/* Icono: navy apagado, oro activo (la marca), ámbar si el navegador lo bloquea. */
+.rem__icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 50%;
+  background: var(--c-veil);
+  color: var(--c-primary);
+  font-size: 1.2rem;
+
+  .is-on & {
+    background: var(--c-gold-tint);
+    // Oro oscurecido: ≥ 3:1 sobre su fondo (el oro de marca solo da 2,5).
+    color: color-mix(in srgb, var(--c-gold-deep) 70%, var(--c-text));
+  }
+
+  .is-blocked & {
+    background: color-mix(in srgb, var(--c-warning) 14%, var(--c-surface));
+    color: color-mix(in srgb, var(--c-warning) 60%, var(--c-text));
+  }
+}
+
+.rem__body {
+  min-width: 0;
+}
+
+.rem__title {
+  margin: 0;
+  font: 700 var(--fs-sm) / 1.3 var(--font-sans);
+  color: var(--c-text);
+}
+
+.rem__text {
+  margin: 0.15rem 0 0;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--c-muted);
+
+  app-icon {
+    font-size: 1.05em;
+    vertical-align: -0.15em;
+  }
+}
+
+.rem__ok {
+  font-weight: 700;
+  color: color-mix(in srgb, var(--c-success) 70%, var(--c-text));
+}
+
+.rem__warn {
+  color: color-mix(in srgb, var(--c-danger) 75%, var(--c-text));
+}
+
+.rem__glyph {
+  margin-inline-end: 0.15rem;
+  color: var(--c-primary);
+}
+
+.rem__note {
+  grid-column: 2 / -1;
+  // La medida global de los párrafos (65ch) dejaba el filete a medias.
+  max-inline-size: none;
+  margin: var(--sp-2) 0 0;
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--c-hairline);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+/* Interruptor: pista de 44 × 26 y pulgar de 16. Apagado = contorno y pulgar
+   grises (≥ 3:1, WCAG 1.4.11; antes, blanco sobre gris claro: 1,1); encendido
+   = navy con pulgar blanco. El destino táctil es la tarjeta entera (::after). */
+.rem__switch {
+  --track-w: 2.75rem;
+  --thumb: 1rem;
+  --inset: 3px;
+  --border: 2px;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  box-sizing: border-box;
+  inline-size: var(--track-w);
+  block-size: 1.625rem;
+  padding: 0;
+  border: var(--border) solid var(--c-muted);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  @include imp.focus(3px);
+  @include imp.motion-off;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--r-lg);
+  }
+
+  &[aria-checked='true'] {
+    border-color: var(--c-primary);
+    background: var(--c-primary);
+  }
+
+  &[aria-busy='true'] {
+    cursor: progress;
+  }
+}
+
+.rem__thumb {
+  inline-size: var(--thumb);
+  block-size: var(--thumb);
+  border-radius: 50%;
+  background: var(--c-muted);
+  transform: translateX(var(--inset));
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+  @include imp.motion-off;
+
+  [aria-checked='true'] > & {
+    background: var(--c-surface);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.28);
+    // Ancho de la pista − pulgar − margen − los dos bordes.
+    transform: translateX(calc(var(--track-w) - var(--thumb) - var(--inset) - 2 * var(--border)));
+  }
+
+  .is-busy & {
+    animation: rem-pulse 0.9s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes rem-pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+/* Alto contraste de Windows: los fondos se pierden; pulgar y pista con colores del sistema. */
+@media (forced-colors: active) {
+  .rem__thumb {
+    background: CanvasText;
+  }
+
+  .rem__switch[aria-checked='true'] {
+    background: Highlight;
+  }
+}

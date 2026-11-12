@@ -37,6 +37,7 @@ const FILES = [
   'src/app/features/prayer-causes/causes-board/causes-board.component.scss',
   'src/app/features/stage/blocks/website-block/website-block.component.scss',
   'src/app/features/stage/blocks/upcoming-block/upcoming-block.component.scss',
+  'src/app/features/stage/blocks/impreuna-block/impreuna-block.component.scss',
 ];
 
 const errors = [];

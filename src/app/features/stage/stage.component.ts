@@ -41,6 +41,7 @@ import { LocationBlockComponent } from './blocks/location-block/location-block.c
 import { FamilyBlockComponent } from './blocks/family-block/family-block.component';
 import { CausesBlockComponent } from './blocks/causes-block/causes-block.component';
 import { TalentBlockComponent } from './blocks/talent-block/talent-block.component';
+import { ImpreunaBlockComponent } from './blocks/impreuna-block/impreuna-block.component';
 import { WebsiteBlockComponent } from './blocks/website-block/website-block.component';
 
 /**
@@ -55,6 +56,7 @@ const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>([
   'families',
   'causes',
   'talent',
+  'impreuna',
   'bible',
   'website',
 ]);
@@ -105,6 +107,7 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
         FamilyBlockComponent,
         CausesBlockComponent,
         TalentBlockComponent,
+        ImpreunaBlockComponent,
         WebsiteBlockComponent,
         LocationBlockComponent,
     ],
@@ -180,11 +183,15 @@ export class StageComponent implements OnInit {
    *   · `causes`: navy entero, para que la pantalla no ilumine la sala
    *     mientras se ora.
    *   · `talent`: el cartel de Talantul în Negoț, superficie oscura entera.
+   *   · `impreuna`: la semana de Proiectul Împreună, navy entero con el QR.
    * El texto conserva su propio aire dentro de cada panel.
    */
   protected readonly bleed = computed<boolean>(() => {
     const block = (this.soloSlide() ?? this.carousel.currentSlide())?.block;
-    return this.fullscreen() && (block === 'families' || block === 'causes' || block === 'talent');
+    return (
+      this.fullscreen() &&
+      (block === 'families' || block === 'causes' || block === 'talent' || block === 'impreuna')
+    );
   });
 
   private readonly queryParams = toSignal(this.route.queryParamMap);

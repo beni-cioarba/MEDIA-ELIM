@@ -17,14 +17,15 @@ La CI usa `actions/setup-node@v4` con `node-version: '24'`.
 ## Comandos
 
 ```bash
-npm start        # ng serve (prestart regenera version.ts)
-npm run build    # ng build (producción; prebuild = version.ts + npm run check)
+npm start        # ng serve (prestart regenera version.ts y el calendario de suscripción)
+npm run build    # ng build (producción; prebuild = version.ts + calendario + npm run check)
 npm run watch    # build --watch en desarrollo
 npm test         # Vitest (@angular/build:unit-test) — configurado, aún sin specs
 npm run check    # i18n:check + check:projection + Drive sin red (puertas de calidad, también en CI)
 npm run i18n:check
 npm run check:projection   # presupuesto de legibilidad de la proyección
 npm run version:generate
+npm run calendar:events    # assets/calendars/elim-events.ics desde church.config.ts
 npm run pwa:icons
 ```
 
@@ -58,6 +59,8 @@ pedir cuando alguien reporta un fallo.
   `node_modules`). `serve` → `@angular/build:dev-server`, `test` →
   `@angular/build:unit-test` (Vitest + jsdom).
 - Assets: `favicon.ico`, `manifest.webmanifest`, `src/assets/**`.
+- Proiectul Împreună: el workflow de deploy corre `npm run impreuna:sync` antes del
+  build (`continue-on-error`) para llevar los vídeos del día; ver `32-impreuna.md`.
 - Presupuestos en producción: **bundle inicial 620 kB warning / 800 kB error**;
   bundle `styles` 80 kB / 120 kB; estilos por componente 36 kB / 48 kB.
 - `stylePreprocessorOptions.includePaths: ["src", "src/styles"]` — es lo que
@@ -78,7 +81,8 @@ Medido tras la subida a Angular 22 + tema M3 + idioma activo: **585 kB raw /
 
 ## Despliegue — `.github/workflows/deploy.yml`
 
-Node 24 → `npm ci` → `ng build --configuration production --base-href /`
+Node 24 → `npm ci` → calendario de suscripción (`npm run calendar:events`, ver
+abajo) → `npm run check` → `ng build --configuration production --base-href /`
 → copia `index.html` a `404.html` (fallback SPA, imprescindible ahora que hay
 router) → crea `.nojekyll` → publica en GitHub Pages.
 
@@ -98,6 +102,67 @@ fallback). Sus tests (`scripts/*.test.mjs`, `node --test`) corren en
 > Compilar en local desde Git Bash: `--base-href /` se convierte en
 > `C:/Program Files/Git/` (conversión de rutas de MSYS). Usa
 > `MSYS_NO_PATHCONV=1` delante o PowerShell; el CI (Linux) no tiene el problema.
+
+## Calendario de suscripción — `assets/calendars/elim-events.ics`
+
+«Abonează-te» de Evenimente (`CalendarSyncButtonComponent` →
+`CalendarService.webcalUrlForAll()`) abre
+`webcal://<host>/assets/calendars/elim-events.ics` (la base sale de
+`document.baseURI`: igual desde `/` que desde `/media/evenimente`). El fichero
+**no se sube al repo** (`.gitignore`): lo escribe
+`scripts/generate-events-calendar.mjs` (`npm run calendar:events`) desde
+`core/church.config.ts` en `prestart`, en `prebuild` y en el deploy (paso
+propio antes de las puertas de calidad y del build, que lo copia con
+`src/assets/**`). Para que salga un evento basta con añadirlo al config y
+publicar (11/11/2026).
+
+Qué lleva, todo del config:
+
+- **Cada `upcomingEvents`**, también los pasados (a quien se suscribe le quedan
+  como historial; se van al borrarlos del config). Una entrada por hora
+  (`'10:00 & 18:00'` → dos; la primera con el UID de las descargas,
+  `slug(id)-AAAAMMDD@elim-arganda`), 2 h, aviso 12 h antes. **Sin hora** → de
+  día completo, no a las 00:00 (cuando se le pone hora, el mismo UID la
+  recibe). `URL` = su tarjeta, `/media/evenimente#ev-<id>`.
+- **El `weeklyProgram`**, como series `RRULE` desde `PROGRAM_SINCE`
+  (01/09/2026): una por culto y hora, sin alarmas y `TRANSP:TRANSPARENT` (no
+  marca «ocupado»). Las sesiones `monthly` son series propias, descontadas de
+  la normal: el domingo a las 10:00, `BYDAY=2SU,3SU,4SU,5SU` «Închinare și
+  învățătură» + `BYDAY=1SU` «Cina Domnului». `ordinalsFor` encuentra el `BYDAY`
+  exacto de cualquier combinación de `MonthlyRule` (también «el último»); si
+  alguna no cabe en una `RRULE`, avisa y sale de más, nunca de menos.
+- **Un evento a la hora de un culto lo sustituye ese día** (`EXDATE`), como en
+  la web (`ScheduleService`: «manda el manual»).
+- Horas con `TZID=Europe/Madrid` + `VTIMEZONE` (no «flotantes» como las
+  descargas sueltas: desde otro huso, p. ej. Rumanía, se ve la hora buena),
+  `REFRESH-INTERVAL` / `X-PUBLISHED-TTL` de 6 h, líneas plegadas a 75
+  **octetos** (no caracteres: los diacríticos ocupan 2) y CRLF.
+- **Determinista**: `DTSTAMP` fijo y orden estable → mismo config, mismo
+  fichero byte a byte (y si no cambia, no se reescribe).
+
+**Por qué un cargador propio y no el type stripping de Node 24.** Node sólo
+borra anotaciones, y `church.config.ts` importa sin extensión
+(`'./social-link.model'`), importa interfaces sin `type`
+(`import { SocialLink }`) y usa el `InjectionToken` de Angular: con un
+`import()` directo falla. `scripts/lib/load-ts-module.mjs` pasa cada fichero
+por `ts.transpileModule` —el `typescript` del proyecto, el mismo que compila la
+app—, resuelve los imports relativos como el bundler y sustituye
+`@angular/core`. Da el mismo fichero con el Node 20 del PATH que con el 24 del
+CI, y sirve a cualquier script que hoy lea un `.config.ts` con expresiones
+regulares. Depende de la API de JS de `typescript` (la que usa también el
+compilador de Angular).
+
+Tests (`generate-events-calendar.test.mjs`, `lib/load-ts-module.test.mjs`,
+dentro de `npm run check`): formato, series, `EXDATE` y el config real (genera,
+UID únicos, todos los eventos dentro, y la ruta es la que pide
+`CalendarService`). Las series se contrastaron además con `python-dateutil`:
+de 09/2026 a 12/2028, cada domingo tiene exactamente una entrada a las 10:00 y
+otra a las 18:00, con el título que toca.
+
+> Con `ng serve` a pelo (el `web` de `.claude/launch.json` no pasa por
+> `prestart`) el fichero puede faltar o estar viejo: `npm run calendar:events`.
+> Cada cliente refresca a su ritmo (6 h es una sugerencia; Google Calendar
+> tarda horas y no se puede forzar).
 
 ## Dominio — `elimarganda.com`
 
@@ -144,6 +209,26 @@ publica `youtube.json` en la rama `youtube-data`. `YouTubeService` combina:
    detectar el **EN DIRECTO** con fiabilidad.
 
 Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
+
+## Aviso diario de Proiectul Împreună — `.github/workflows/impreuna-push.yml`
+
+Web push con OneSignal a las 08:00 de España a quien activó la «Amintire
+zilnică» en `/impreuna` (detalle, decisión y activación: `32-impreuna.md` § 7).
+
+- Cuatro cron (05:05 · 05:35 · 06:05 · 06:35 UTC): GitHub no sabe del horario
+  de verano y retrasa los cron; `scripts/impreuna-push.mjs` espera a las 08:00
+  exactas y la clave de idempotencia del día impide duplicados. `concurrency`
+  `impreuna-push` los pone en fila. `npm ci --ignore-scripts` (sólo hace falta
+  `typescript`, para leer el TypeScript de la app).
+- Manual (Run workflow): `dry-run` (enseña el aviso), `now` (envía el de hoy,
+  no duplica), `test` (sólo a un Subscription ID).
+- Secreto: **`ONESIGNAL_API_KEY`** (App API key). Sin él, o sin
+  `oneSignalAppId` en `church.config.ts`, termina con un aviso y no envía.
+- El service worker de OneSignal se publica en `/push/onesignal/` (asset de
+  `angular.json` desde `src/push/onesignal/`), con ámbito propio para no pisar
+  `ngsw-worker.js`.
+- Repositorio público: GitHub desactiva los cron tras **60 días sin commits**
+  (avisa por correo); se reactiva en Actions.
 
 ## PWA
 
@@ -221,6 +306,8 @@ Secretos: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID` en GitHub Secrets.
 | Script                   | Qué hace                                                     |
 | ------------------------ | ------------------------------------------------------------ |
 | `generate-version.mjs`   | Escribe `src/environments/version.ts` (semver + contador git) |
+| `generate-events-calendar.mjs` | `src/assets/calendars/elim-events.ics` (suscripción de Evenimente) desde `church.config.ts`: eventos + programa semanal. En prestart, prebuild y deploy («Calendario de suscripción») |
+| `lib/load-ts-module.mjs` | Carga en Node un `.ts` de la app (transpila con `typescript`, imports sin extensión, `@angular/core` sustituido): leer un config sin expresiones regulares |
 | `optimize-images.js`     | `src/assets/drive-media/*.{jpg,png}` → `.webp` 1600px + `-thumb.webp` 480px |
 | `generate-pwa-icons.mjs` | Icono de la app (PWA, Apple, favicon PNG + ICO) desde el emblema |
 | `responsive-audit.snippet.js` | **No es de Node**: se pega en la consola del navegador. Informe de scroll horizontal, desbordes, solapes y `nowrap` recortados en el ancho actual (`docs/ai/40-styling.md` → Responsive) |

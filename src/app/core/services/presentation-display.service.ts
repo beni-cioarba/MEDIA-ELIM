@@ -30,6 +30,8 @@ const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
   // si se ora más rato, el operador lo alarga desde el panel.
   causes: 30,
   talent: 25,
+  // La semana y el QR: da para leerla y escanear.
+  impreuna: 15,
   // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
   website: 15,
 };

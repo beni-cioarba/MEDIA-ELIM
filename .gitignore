@@ -48,3 +48,7 @@ Thumbs.db
 # En GitHub Pages los genera el despliegue: nunca se suben.
 /src/assets/family-prayer/*/*.pdf
 /src/assets/family-prayer/pdf.json
+
+# Calendario de suscripción («Abonează-te»): lo genera desde church.config.ts
+# scripts/generate-events-calendar.mjs en prestart, prebuild y el deploy.
+/src/assets/calendars/elim-events.ics

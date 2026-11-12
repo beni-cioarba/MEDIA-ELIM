@@ -59,6 +59,9 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'departamente/<slug>'` | `DepartmentPageComponent` | Una ruta por departamento (`departmentRoute()`), mismo chunk |
 | `'invitati'`        | `GuestsComponent`      | Bienvenida a invitados, **fuera del menú** (QR + enlace del pie), `noindex` — `33-guests.md` |
 | `'invitati/qr'`     | `GuestsQrComponent`    | Hoja imprimible del QR (fuera del shell, antes del layout) |
+| `'impreuna'`        | `ImpreunaComponent`    | Proiectul Împreună: hoy (`/impreuna/ziua/:day` = un día, mismo chunk) — `32-impreuna.md` |
+| `'impreuna/plan'`   | `ImpreunaPlanComponent` | Plan completo por meses (`?luna=N`) |
+| `'impreuna/tipar'`  | `ImpreunaPrintComponent` | Hoja A4 de un mes (fuera del shell, noindex) |
 | `'contact'`         | `ContactComponent`     | Formulario `mailto:`, datos y mapa |
 | `'doneaza'`         | `DonateComponent`      | Donativos y datos bancarios    |
 | `**`                | redirect a `''`        | GitHub Pages sirve 404.html    |
@@ -91,7 +94,8 @@ Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
 | `CarouselService`              | `slides`, `currentIndex`, `currentSlide`, `currentDurationMs`, `isActive(key)`, `isBlockActive(id)`, `progress`, `isPaused`, `next/prev/setIndex/togglePause` |
 | `YouTubeService`               | `liveStream`, `recentStreams`, `start('ligero' \| 'completo')`            |
 | `youtube-thumb.ts`             | `youtubeThumb()` / `youtubeThumbFallback()`: miniatura en **16:9 real** (`hq720`, respaldo `mqdefault`). La API da `hqdefault`, que es 4:3 y ya viene recortada de lado |
-| `CalendarService`              | `.ics`, `webcal://`, URL de Google Calendar, portapapeles                |
+| `CalendarService`              | `.ics`, `webcal://` (`webcalUrlFor(fichero)`, base = `<base href>`), URL de Google Calendar (`googleSubscribeUrl`), portapapeles |
+| `ImpreunaService` (`core/impreuna/`) | Proiectul Împreună: `today`, `view(día)`, vídeos (instantánea + API de WordPress), progreso en `localStorage` — `32-impreuna.md` |
 | `LanguageService`              | `current`, `use()`, `toggle()` + persistencia                            |
 | `LoggerService`                | `prefix('ámbito')` → `debug/info/warn/error`. **Nada de `console.*`**    |
 | `PwaUpdateService`             | Comprueba y aplica versiones nuevas del Service Worker                   |

@@ -51,6 +51,10 @@ export const ROUTE_PAGES = [
       alt: 'Bienvenido a casa — Iglesia Elim, los domingos a las 10:00 y 18:00',
     },
   },
+  // Proiectul Împreună: el enlace que más se comparte (grupos de WhatsApp,
+  // QR de la hoja impresa). Página 200 con su título y descripción propios;
+  // la imagen es la genérica de la web.
+  { path: 'impreuna', seo: 'impreuna' },
 ];
 
 const argv = process.argv.slice(2);

@@ -1,0 +1,1160 @@
+/* Proiectul Împreună · hoy / un día. Diseño: docs/ai/32-impreuna.md → Diseño. */
+@use 'ds' as *;
+@use 'imp';
+
+:host {
+  display: block;
+  // Texto secundario a ≥ 4,5:1 sobre blanco (AA). El `--c-muted` global
+  // (66 % de opacidad) se queda en ~4,3:1, y aquí va en letra pequeña.
+  --c-muted: color-mix(in srgb, var(--c-text) 76%, var(--c-surface));
+}
+
+.imp {
+  // El contenedor de todos los módulos: tope + márgenes por fuera (antes
+  // el margen iba dentro del tope y, a partir de ~1550 px, el módulo
+  // quedaba 58 px más estrecho por lado que la cabecera y las demás páginas).
+  @include container;
+  padding-block: var(--sp-4) var(--sp-12);
+
+  @include from('md') {
+    padding-top: var(--sp-6);
+  }
+}
+
+.imp-notice {
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--c-gold);
+  border-radius: var(--r-md);
+  background: var(--c-gold-tint);
+  font-size: var(--fs-sm);
+}
+
+/* ── Rejilla: el día + lateral (≥ lg) ─────────────────────────────────── */
+.imp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    align-items: start;
+    gap: var(--sp-5);
+  }
+
+  @include from('xl') {
+    grid-template-columns: minmax(0, 1fr) 23rem;
+    gap: var(--sp-6);
+  }
+}
+
+/* ── Botones ───────────────────────────────────────────────────────────── */
+.imp-btn {
+  @include imp.btn;
+
+  &.imp-btn--primary {
+    @include imp.btn-primary;
+  }
+
+  &.is-done {
+    @include imp.btn-done;
+  }
+}
+
+.imp-btn--block {
+  width: 100%;
+}
+
+.imp-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 50%;
+  color: var(--c-primary);
+  font-size: 1.1rem;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--c-primary);
+    background: var(--c-veil);
+  }
+
+  @include imp.focus;
+
+  &.is-disabled {
+    opacity: 0.35;
+  }
+}
+
+.imp-today-btn {
+  @include imp.btn;
+  min-height: 2.5rem;
+  padding-inline: 0.85rem;
+}
+
+.imp-link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--c-primary);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  @include imp.focus;
+}
+
+/* ── El día ───────────────────────────────────────────────────────────── */
+.imp-day {
+  @include imp.card;
+  @include imp.kind-colors;
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-top: 4px solid var(--kind);
+
+  @include from('sm') {
+    padding: var(--sp-5) var(--sp-6) var(--sp-6);
+  }
+}
+
+/* Barra del día. Móvil: la fecha a todo el ancho (un selector) y debajo
+   «dónde cae» a la izquierda y ‹ Azi › a la derecha. Desde `sm`, una fila:
+   [fecha ▾] [relativa] ··· [‹] [Azi] [›]. */
+.imp-day__bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'date date'
+    'rel  nav';
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+
+  @include from('sm') {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: 'date rel . nav';
+  }
+}
+
+.imp-date {
+  grid-area: date;
+}
+
+.imp-rel {
+  grid-area: rel;
+  justify-self: start;
+}
+
+.imp-day__nav {
+  grid-area: nav;
+}
+
+/* La fecha es el botón del calendario: icono + texto + flecha, como un selector. */
+.imp-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  max-width: 100%;
+  padding: 0.35rem 0.6rem 0.35rem 0.75rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font: 700 var(--fs-sm) / 1.2 var(--font-sans);
+  cursor: pointer;
+
+  @include until('sm') {
+    width: 100%;
+    max-width: none;
+    min-height: 2.75rem;
+
+    .imp-date__caret {
+      margin-inline-start: auto;
+    }
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+    background: var(--c-veil);
+  }
+
+  @include imp.focus;
+
+  @media (pointer: coarse) {
+    min-height: 2.75rem;
+  }
+}
+
+.imp-date__icon {
+  flex: none;
+  color: var(--c-primary);
+  font-size: 1.05rem;
+}
+
+.imp-date__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imp-date__caret {
+  flex: none;
+  color: var(--c-muted);
+  font-size: 0.9rem;
+}
+
+/* Dónde cae el día respecto a hoy. Hoy: sólido navy; el resto, neutro. */
+.imp-rel {
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--c-muted);
+  white-space: nowrap;
+
+  &.is-today {
+    border-color: var(--c-primary);
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+.imp-day__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.imp-day__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 1.2rem + 2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--c-text);
+  text-wrap: balance;
+}
+
+.imp-day__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+
+  a {
+    color: inherit;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+
+    &:hover {
+      color: var(--c-primary);
+    }
+
+    @include imp.focus;
+  }
+}
+
+.imp-kind {
+  font-weight: 700;
+  color: var(--kind);
+}
+
+.imp-day__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-1);
+}
+
+.imp-day__passages,
+.imp-day__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* En el móvil cada botón llena su fila: destino grande y sin huecos. */
+@include until('xs') {
+  .imp-day__passages,
+  .imp-day__tools {
+    width: 100%;
+
+    > .imp-btn {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+/* ── Post și rugăciune ─────────────────────────────────────────────────
+   El primer jueves, un panel oro dentro del día: qué es, (tema del mes) y
+   por qué se ora; fuente enlazada. La víspera, una línea de aviso. */
+.imp-fast {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border: 1px solid color-mix(in srgb, var(--c-gold) 55%, transparent);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--c-gold) 9%, var(--c-surface));
+}
+
+.imp-fast__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.imp-fast__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: 1.25rem;
+}
+
+.imp-fast__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--c-text);
+}
+
+.imp-fast__lead {
+  margin: 0.15rem 0 0;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+.imp-fast__theme {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  line-height: 1.4;
+
+  .imp-fast__label {
+    display: block;
+    margin-bottom: 0.1rem;
+  }
+}
+
+.imp-fast__label {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.imp-fast__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--sp-1) var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    padding-inline-start: 1.1rem;
+    font-size: var(--fs-sm);
+    line-height: 1.45;
+
+    // Rombo oro, como las listas de los anuncios.
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0.5em;
+      left: 0.15rem;
+      width: 0.42rem;
+      height: 0.42rem;
+      background: var(--c-gold);
+      transform: rotate(45deg);
+    }
+  }
+}
+
+.imp-fast__source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--sp-2);
+  margin: var(--sp-1) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 700;
+    color: var(--c-primary);
+
+    @include imp.focus;
+  }
+}
+
+.imp-fast-eve {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem var(--sp-2);
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--c-gold-tint);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+
+  app-icon {
+    color: var(--c-gold-deep);
+  }
+
+  a {
+    margin-inline-start: auto;
+    font-weight: 700;
+    color: var(--c-primary);
+
+    @include imp.focus;
+  }
+}
+
+/* Varias lecturas el mismo día: rótulo + piezas con el mismo peso. */
+.imp-read-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-inline-end: var(--sp-1);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--c-primary);
+
+  app-icon {
+    font-size: 1.05em;
+  }
+}
+
+.imp-btn.imp-btn--part {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+
+  &:hover {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+}
+
+/* ── Calendario en diálogo ───────────────────────────────────────────── */
+.imp-picker {
+  width: min(100% - 2rem, 23rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: var(--e-4);
+
+  &::backdrop {
+    background: rgb(10 25 47 / 0.55);
+  }
+}
+
+.imp-picker__panel {
+  padding: var(--sp-4);
+}
+
+.imp-picker__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.imp-picker__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+
+.imp-picker__today {
+  margin-top: var(--sp-3);
+}
+
+.imp-day__video {
+  margin-top: var(--sp-1);
+}
+
+.imp-day__privacy {
+  margin: calc(var(--sp-2) * -1) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+}
+
+.imp-day__links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: var(--sp-1) var(--sp-3);
+
+  @include from('sm') {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-5);
+  }
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2rem;
+    font-weight: 600;
+    color: var(--c-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    @include imp.focus;
+  }
+}
+
+.imp-day__speaker {
+  font-weight: 700;
+  color: var(--c-text);
+
+  app-icon {
+    color: var(--c-gold-deep);
+  }
+}
+
+/* ── Lateral ───────────────────────────────────────────────────────────── */
+.imp-side {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+
+  // Tableta: semana y progreso a la par; la amintire, una fila entera encima.
+  @include between('sm', 'lg') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+
+    .imp-side__reminder {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.imp-card {
+  @include imp.card;
+  padding: var(--sp-4);
+}
+
+.imp-card__title {
+  @include imp.kicker;
+  margin-bottom: var(--sp-3);
+}
+
+.imp-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+
+  .imp-card__title {
+    margin: 0;
+  }
+}
+
+.imp-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include imp.focus;
+}
+
+.imp-note {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+/* Progreso. */
+.imp-progress__count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0 0 var(--sp-2);
+  font-variant-numeric: tabular-nums;
+
+  strong {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--c-primary);
+  }
+
+  span {
+    font-size: var(--fs-sm);
+    color: var(--c-muted);
+  }
+}
+
+.imp-progress__bar {
+  height: 8px;
+  margin-bottom: var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-3);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--c-success);
+  }
+}
+
+.imp-progress__facts {
+  display: grid;
+  gap: var(--sp-1);
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  app-icon {
+    color: var(--c-gold-deep);
+  }
+
+  .is-ok app-icon {
+    color: var(--c-success);
+  }
+}
+
+/* «Am marcat N zile · Anulează» tras marcar todo hasta hoy. */
+.imp-undo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem var(--sp-2);
+  margin: 0 0 var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--c-success) 10%, var(--c-surface));
+  font-size: var(--fs-sm);
+  font-weight: 600;
+
+  app-icon {
+    color: var(--c-success);
+  }
+
+  .imp-link-btn {
+    margin-inline-start: auto;
+  }
+}
+
+/* Filas de enlace (teléfono, fuentes oficiales). */
+.imp-links {
+  display: grid;
+  margin: var(--sp-2) calc(var(--sp-2) * -1) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.imp-links__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: 0.55rem var(--sp-2);
+  border: 0;
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--c-text);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  @include imp.focus(-2px);
+}
+
+.imp-links__icon {
+  box-sizing: content-box;
+  padding: 0.45rem;
+  border-radius: var(--r-md);
+  background: var(--c-veil);
+  color: var(--c-primary);
+  font-size: 1.05rem;
+}
+
+.imp-links__text {
+  display: grid;
+  gap: 2px;
+
+  strong {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  span {
+    font-size: var(--fs-xs);
+    line-height: 1.4;
+    color: var(--c-muted);
+  }
+}
+
+.imp-links__go {
+  color: var(--c-faint);
+}
+
+/* ── En el teléfono: franja de mosaicos a todo el ancho ─────────────── */
+.imp-phone {
+  margin-top: var(--sp-4);
+
+  @include from('lg') {
+    margin-top: var(--sp-5);
+  }
+}
+
+.imp-phone__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+.imp-phone__intro {
+  .imp-card__title {
+    margin-bottom: var(--sp-1);
+  }
+
+  .imp-note {
+    margin: 0;
+  }
+}
+
+.imp-phone__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // El mosaico llena la fila; el enlace extra (.ics), si lo hay, debajo.
+  > li {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 2px;
+  }
+}
+
+.imp-tile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-3);
+  width: 100%;
+  height: 100%;
+  padding: var(--sp-3);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--c-primary);
+    background: var(--c-surface-accent);
+  }
+
+  @include imp.focus;
+}
+
+.imp-tile__icon {
+  box-sizing: content-box;
+  padding: 0.45rem;
+  border-radius: var(--r-md);
+  background: var(--c-veil);
+  color: var(--c-primary);
+  font-size: 1.05rem;
+}
+
+.imp-tile__text {
+  display: grid;
+  gap: 2px;
+
+  strong {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  span {
+    font-size: var(--fs-xs);
+    line-height: 1.45;
+    color: var(--c-muted);
+  }
+}
+
+.imp-tile__ext {
+  margin-inline-start: 0.15rem;
+  font-size: 0.8em;
+  color: var(--c-faint);
+  vertical-align: -0.05em;
+}
+
+.imp-tile__extra {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  justify-self: start;
+  min-height: 1.75rem;
+  padding-inline: var(--sp-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--c-primary);
+
+  @include imp.focus;
+}
+
+/* QR para pasar al teléfono: sólo en escritorio, a la derecha de la cabecera. */
+.imp-qr {
+  display: none;
+
+  @include from('lg') {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--sp-3);
+    max-width: 17rem;
+  }
+}
+
+.imp-qr__code {
+  display: block;
+  flex: none;
+  order: 1;
+  width: 4.5rem;
+  height: 4.5rem;
+
+  ::ng-deep svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.imp-qr__text {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  text-align: end;
+
+  strong {
+    font-size: var(--fs-sm);
+  }
+
+  span {
+    font-size: var(--fs-xs);
+    color: var(--c-muted);
+  }
+}
+
+/* ── Cómo funciona ─────────────────────────────────────────────────────── */
+.imp-how,
+.imp-about {
+  margin-top: var(--sp-10);
+  scroll-margin-top: calc(var(--nav-height) + var(--sp-4));
+}
+
+.imp-section-head {
+  display: grid;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-4);
+}
+
+.imp-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--c-text);
+}
+
+.imp-section-lead {
+  max-width: 70ch;
+  margin: 0;
+  color: var(--c-muted);
+}
+
+.imp-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.imp-step {
+  @include imp.card;
+  padding: var(--sp-4);
+
+  h3 {
+    margin: var(--sp-2) 0 var(--sp-1);
+    font-size: var(--fs-body);
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--c-muted);
+  }
+}
+
+.imp-step__n {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.imp-step--gold .imp-step__n {
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+}
+
+.imp-step__date {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--c-gold-tint);
+  color: var(--c-gold-deep);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include imp.focus;
+
+  span:first-child::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.imp-step__when {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+.imp-step__theme {
+  margin-top: var(--sp-1);
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.imp-notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+.imp-note-card {
+  padding: var(--sp-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-accent);
+
+  h3 {
+    margin: 0 0 var(--sp-1);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--c-muted);
+  }
+}
+
+.imp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin-top: var(--sp-2) !important;
+}
+
+.imp-legend__item {
+  @include imp.kind-colors;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--kind);
+}
+
+.imp-legend__sw {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+  background: var(--kind);
+}
+
+/* ── Sobre el proyecto ─────────────────────────────────────────────────── */
+.imp-about {
+  display: grid;
+  gap: var(--sp-5);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    align-items: start;
+  }
+
+  @include from('xl') {
+    grid-template-columns: minmax(0, 1fr) 23rem;
+    gap: var(--sp-6);
+  }
+}
+
+.imp-about__main {
+  > p {
+    max-width: 72ch;
+    margin: var(--sp-3) 0 0;
+    line-height: 1.6;
+  }
+}
+
+.imp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: var(--sp-2);
+  margin: var(--sp-5) 0;
+
+  div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+    padding: var(--sp-3);
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--r-md);
+    background: var(--c-surface);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--c-primary);
+  }
+
+  dt {
+    font-size: var(--fs-xs);
+    line-height: 1.3;
+    color: var(--c-muted);
+  }
+}
+
+.imp-elim {
+  padding: var(--sp-4);
+  border-inline-start: 3px solid var(--c-gold);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: var(--c-gold-tint);
+
+  h3 {
+    margin: 0 0 var(--sp-1);
+    font-size: var(--fs-body);
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+  }
+}

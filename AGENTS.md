@@ -73,6 +73,7 @@ salvo que el usuario lo pida expresamente en esa tarea.
 | `docs/ai/16-state.md`        | Signals, servicios con estado y SignalStore                |
 | `docs/ai/20-content-i18n.md` | Eventos, redes, programa semanal, traducciones             |
 | `docs/ai/30-presentation.md` | Fullscreen, carrusel, bloques a proyectar, atajos, QR, escala `--pj-u` |
+| `docs/ai/32-impreuna.md`     | **Proiectul Împreună**: lectura bíblica diaria del Cultul Penticostal (`/impreuna`): auditoría de fuentes, plan 2026 (YouVersion 43657, salto del día 82), vídeos, calendario, progreso, hoja A4, edición nueva, **amintire zilnică 08:00** (web push OneSignal + Action: activación) |
 | `docs/ai/33-guests.md`       | **Invitați**: página de bienvenida fuera del menú (`/invitati`, QR y enlace discreto en el pie), QR imprimible, página estática 200 |
 | `docs/ai/34-baptisms.md`     | **Botezuri**: registro de bautismos, candidatos y perfiles, retratos (original / estudio), YouTube |
 | `docs/ai/35-announcements.md`| **Anunțuri**: modelo, vigencia, límites de proyección, protocolo de redacción |

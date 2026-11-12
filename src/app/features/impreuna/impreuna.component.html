@@ -1,0 +1,504 @@
+<app-impreuna-header active="day" [showLead]="true" />
+
+<div class="imp">
+  @if (notFound(); as raw) {
+    <p class="imp-notice" role="status">{{ 'impreuna.day.not_found' | translate: { day: raw, year } }}</p>
+  }
+
+  <div class="imp-grid">
+    <!-- ═══ El día: qué día es, qué se lee y la meditación ═══════════════ -->
+    <section class="imp-day" [class.is-wisdom]="day().kind === 'wisdom'" aria-labelledby="imp-day-title">
+      <!-- Barra del día: la fecha abre el calendario; la etiqueta dice dónde
+           cae respecto a hoy; las flechas van día a día y «Azi» vuelve.
+           Hijos directos: en el móvil se recolocan en rejilla (ver SCSS). -->
+      <div class="imp-day__bar">
+        <button type="button" class="imp-date" aria-haspopup="dialog" (click)="openPicker()">
+          <app-icon class="imp-date__icon" name="calendar" />
+          <span class="imp-date__text">{{ dateLong() }}</span>
+          <app-icon class="imp-date__caret" name="chevron-down" />
+          <span class="u-sr-only">· {{ 'impreuna.day.pick' | translate }}</span>
+        </button>
+        <span class="imp-rel" [class.is-today]="day().isToday">{{ relative() }}</span>
+
+        <nav class="imp-day__nav" [attr.aria-label]="'impreuna.day.nav_aria' | translate">
+          @if (day().day > 1) {
+            <a class="imp-icon-btn" [routerLink]="dayLink(day().day - 1)" [attr.aria-label]="'impreuna.day.prev' | translate">
+              <app-icon name="chevron-left" />
+            </a>
+          } @else {
+            <span class="imp-icon-btn is-disabled" aria-hidden="true"><app-icon name="chevron-left" /></span>
+          }
+          @if (isRunning() && !day().isToday) {
+            <a class="imp-today-btn" [routerLink]="todayLink">{{ 'impreuna.day.back_today' | translate }}</a>
+          }
+          @if (day().day < total) {
+            <a class="imp-icon-btn" [routerLink]="dayLink(day().day + 1)" [attr.aria-label]="'impreuna.day.next' | translate">
+              <app-icon name="chevron-right" />
+            </a>
+          } @else {
+            <span class="imp-icon-btn is-disabled" aria-hidden="true"><app-icon name="chevron-right" /></span>
+          }
+        </nav>
+      </div>
+
+      <h2 id="imp-day-title" class="imp-day__title">{{ day().reading }}</h2>
+
+      <ul class="imp-day__meta">
+        <li>{{ 'impreuna.day.of_total' | translate: { day: day().day, total } }}</li>
+        <li class="imp-kind">{{ 'impreuna.day.kind_' + day().kind | translate }}</li>
+        <li>
+          <a [href]="youversionDayUrl()" target="_blank" rel="noopener">
+            {{ 'impreuna.day.youversion' | translate: { day: day().youversionDay } }}
+          </a>
+        </li>
+      </ul>
+
+      <!-- Primer jueves: post și rugăciune, con su motivo (y el tema del mes si lo hay). -->
+      @if (fast(); as f) {
+        <section class="imp-fast" aria-labelledby="imp-fast-title">
+          <div class="imp-fast__head">
+            <span class="imp-fast__icon" aria-hidden="true"><app-icon name="pray" /></span>
+            <div>
+              <h3 id="imp-fast-title" class="imp-fast__title">{{ 'impreuna.fast.badge' | translate }}</h3>
+              <p class="imp-fast__lead">{{ 'impreuna.fast.lead' | translate }}</p>
+            </div>
+          </div>
+          @if (f.theme) {
+            <p class="imp-fast__theme">
+              <span class="imp-fast__label">{{ 'impreuna.fast.theme' | translate }}</span>
+              <span lang="ro">{{ f.theme }}</span>
+            </p>
+          }
+          <p class="imp-fast__label">{{ (f.reasons ? 'impreuna.fast.why_month' : 'impreuna.fast.why') | translate }}</p>
+          <ul class="imp-fast__list">
+            @if (f.reasons) {
+              @for (reason of f.reasons; track $index) {
+                <li lang="ro">{{ reason }}</li>
+              }
+            } @else {
+              @for (key of purposeKeys; track key) {
+                <li>{{ key | translate }}</li>
+              }
+            }
+          </ul>
+          <p class="imp-fast__source">
+            <a [href]="f.source" target="_blank" rel="noopener">
+              {{ (f.theme ? 'impreuna.fast.source_month' : 'impreuna.fast.source') | translate }}
+              <app-icon name="external" />
+            </a>
+            @if (!f.theme) {
+              <span>{{ 'impreuna.fast.source_hint' | translate }}</span>
+            }
+          </p>
+        </section>
+      } @else if (fastTomorrow(); as next) {
+        <p class="imp-fast-eve">
+          <app-icon name="pray" />
+          <span>{{ 'impreuna.fast.tomorrow' | translate }}</span>
+          <a [routerLink]="dayLink(next)">{{ 'impreuna.fast.open' | translate }}</a>
+        </p>
+      }
+
+      <div class="imp-day__actions">
+        <div class="imp-day__passages">
+          @if (day().refs.length === 1) {
+            <a
+              class="imp-btn imp-btn--primary"
+              [href]="bibleUrl(day().refs[0])"
+              target="_blank"
+              rel="noopener"
+              [attr.aria-label]="'impreuna.day.read_aria' | translate: { passage: refLabel(day().refs[0]), version: version().name }"
+            >
+              <app-icon name="book-open" />
+              {{ 'impreuna.day.read' | translate: { passage: refLabel(day().refs[0]) } }}
+            </a>
+          } @else {
+            <!-- Varias lecturas: todas con el mismo peso (son partes del mismo día). -->
+            <span class="imp-read-label">
+              <app-icon name="book-open" />
+              {{ 'impreuna.day.read_group' | translate }}
+            </span>
+            @for (ref of day().refs; track ref.code) {
+              <a
+                class="imp-btn imp-btn--part"
+                [href]="bibleUrl(ref)"
+                target="_blank"
+                rel="noopener"
+                [attr.aria-label]="'impreuna.day.read_aria' | translate: { passage: refLabel(ref), version: version().name }"
+              >
+                {{ refLabel(ref) }}
+              </a>
+            }
+          }
+        </div>
+
+        <div class="imp-day__tools">
+          <button
+            type="button"
+            class="imp-btn"
+            [class.is-done]="day().isRead"
+            [attr.aria-pressed]="day().isRead"
+            (click)="impreuna.toggleRead(day().day)"
+          >
+            <app-icon [name]="day().isRead ? 'check' : 'add-box'" />
+            {{ (day().isRead ? 'impreuna.day.marked' : 'impreuna.day.mark') | translate }}
+          </button>
+          <button type="button" class="imp-btn" (click)="share()">
+            <app-icon [name]="copied() ? 'check' : 'share'" />
+            {{ (copied() ? 'impreuna.day.copied' : 'impreuna.day.share') | translate }}
+          </button>
+        </div>
+      </div>
+
+      <app-impreuna-video
+        class="imp-day__video"
+        [video]="day().media?.video ?? null"
+        [speaker]="day().media?.speaker ?? null"
+        [reason]="day().isFuture ? 'pending' : 'missing'"
+      />
+      @if (day().media?.video) {
+        <p class="imp-day__privacy">{{ 'impreuna.video.privacy' | translate }}</p>
+      }
+
+      <ul class="imp-day__links">
+        @if (day().media?.speaker; as speaker) {
+          <li class="imp-day__speaker">
+            <app-icon name="mic-vocal" />
+            {{ speaker }}
+          </li>
+        }
+        @if (postUrl(); as url) {
+          <li>
+            <a [href]="url" target="_blank" rel="noopener" [attr.aria-label]="'impreuna.day.prayer_aria' | translate">
+              <app-icon name="pray" />
+              {{ 'impreuna.day.prayer' | translate }}
+            </a>
+          </li>
+        }
+        @if (watchUrl(); as url) {
+          <li>
+            <a [href]="url" target="_blank" rel="noopener">
+              <app-icon name="play" />
+              {{ 'impreuna.video.open_youtube' | translate }}
+            </a>
+          </li>
+        }
+        <li>
+          <a [href]="otherBibleUrl(day().refs[0])" target="_blank" rel="noopener" [attr.lang]="otherLang()">
+            <app-icon name="globe" />
+            {{ 'impreuna.day.other_lang' | translate }}
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ═══ Lateral: calendario del plan y progreso ══════════════════════ -->
+    <aside class="imp-side">
+      <!-- Amintire zilnică (08:00): arriba del lateral; en el móvil queda
+           justo después del día, antes del calendario. -->
+      <app-impreuna-reminder class="imp-side__reminder" />
+
+      <section class="imp-card" aria-labelledby="imp-cal-title">
+        <div class="imp-card__head">
+          <h2 id="imp-cal-title" class="imp-card__title">{{ 'impreuna.calendar.title' | translate }}</h2>
+          <a class="imp-card__more" [routerLink]="planPath">
+            {{ 'impreuna.calendar.full_plan' | translate }}
+            <app-icon name="chevron-right" />
+          </a>
+        </div>
+        <app-impreuna-calendar [selected]="day().day" (pick)="goTo($event)" />
+      </section>
+
+      <section class="imp-card imp-progress" aria-labelledby="imp-progress-title">
+        <h2 id="imp-progress-title" class="imp-card__title">{{ 'impreuna.progress.title' | translate }}</h2>
+        <p class="imp-progress__count">
+          <strong>{{ impreuna.readCount() }}</strong>
+          <span>/ {{ total }}</span>
+        </p>
+        <div class="imp-progress__bar" aria-hidden="true">
+          <span [style.inline-size.%]="(impreuna.readCount() / total) * 100"></span>
+        </div>
+        <ul class="imp-progress__facts">
+          @if (impreuna.streak() > 0) {
+            <li>
+              <app-icon name="flame" />
+              {{ (impreuna.streak() === 1 ? 'impreuna.progress.streak_one' : 'impreuna.progress.streak') | translate: { count: impreuna.streak() } }}
+            </li>
+          }
+          @if (impreuna.today().status !== 'before') {
+            <li [class.is-ok]="impreuna.behind() === 0">
+              @if (impreuna.behind() === 0) {
+                <app-icon name="check" />
+                {{ 'impreuna.progress.up_to_date' | translate }}
+              } @else {
+                <app-icon name="clock" />
+                {{ (impreuna.behind() === 1 ? 'impreuna.progress.behind_one' : 'impreuna.progress.behind') | translate: { count: impreuna.behind() } }}
+              }
+            </li>
+          }
+        </ul>
+        @if (undo(); as u) {
+          <!-- Marcar todo es masivo: se puede deshacer durante unos segundos. -->
+          <p class="imp-undo" role="status">
+            <app-icon name="check" />
+            <span>{{ 'impreuna.progress.marked' | translate: { count: u.added } }}</span>
+            <button type="button" class="imp-link-btn" (click)="undoMarkThrough()">
+              {{ 'impreuna.progress.undo' | translate }}
+            </button>
+          </p>
+        } @else if (impreuna.behind() > 0) {
+          <button type="button" class="imp-btn imp-btn--block" (click)="markThrough()">
+            {{ 'impreuna.progress.mark_through' | translate }}
+          </button>
+          <p class="imp-note">{{ 'impreuna.progress.mark_through_hint' | translate }}</p>
+        }
+        <p class="imp-note">
+          {{ 'impreuna.progress.local' | translate }}
+          @if (impreuna.readCount() > 0) {
+            <button type="button" class="imp-link-btn" (click)="resetProgress()">{{ 'impreuna.progress.reset' | translate }}</button>
+          }
+        </p>
+      </section>
+    </aside>
+  </div>
+
+  <!-- Calendario en diálogo: lo abre la fecha. Imprescindible en el móvil,
+       donde el calendario del lateral queda debajo del vídeo. -->
+  <dialog
+    #picker
+    class="imp-picker"
+    aria-labelledby="imp-picker-title"
+    (close)="pickerOpen.set(false)"
+    (click)="onPickerClick($event)"
+  >
+    <div class="imp-picker__panel">
+      <div class="imp-picker__head">
+        <h2 id="imp-picker-title" class="imp-picker__title">{{ 'impreuna.day.pick' | translate }}</h2>
+        <button type="button" class="imp-icon-btn" [attr.aria-label]="'impreuna.day.close' | translate" (click)="closePicker()">
+          <app-icon name="close" />
+        </button>
+      </div>
+      @if (pickerOpen()) {
+        <app-impreuna-calendar #pickerCalendar [selected]="day().day" (pick)="pickDay($event)" />
+      }
+      @if (isRunning() && !day().isToday) {
+        <button type="button" class="imp-btn imp-btn--block imp-picker__today" (click)="pickDay(impreuna.todayDay())">
+          {{ 'impreuna.day.go_today' | translate }}
+        </button>
+      }
+    </div>
+  </dialog>
+
+  <!-- ═══ En el teléfono: franja a todo el ancho ═══════════════════════ -->
+  <section class="imp-card imp-phone" aria-labelledby="imp-phone-title">
+    <div class="imp-phone__head">
+      <div class="imp-phone__intro">
+        <h2 id="imp-phone-title" class="imp-card__title">{{ 'impreuna.phone.title' | translate }}</h2>
+        <p class="imp-note">{{ 'impreuna.phone.lead' | translate }}</p>
+      </div>
+      <!-- Sólo en escritorio: pasar al teléfono con la cámara. El QR se
+           carga al verse; en móvil el bloque está oculto y no se descarga. -->
+      <div class="imp-qr">
+        @defer (on viewport) {
+          <qrcode
+            class="imp-qr__code"
+            [qrdata]="shareUrl()"
+            [width]="256"
+            [margin]="1"
+            [errorCorrectionLevel]="'M'"
+            [colorDark]="'#1a365d'"
+            [colorLight]="'#ffffff'"
+            [elementType]="'svg'"
+          />
+        } @placeholder {
+          <div class="imp-qr__code"></div>
+        }
+        <p class="imp-qr__text">
+          <strong>{{ 'impreuna.phone.qr' | translate }}</strong>
+          <span>{{ 'impreuna.phone.qr_hint' | translate }}</span>
+        </p>
+      </div>
+    </div>
+    <ul class="imp-phone__grid">
+      <li>
+        <a class="imp-tile" [href]="webcalUrl()">
+          <app-icon class="imp-tile__icon" name="calendar" />
+          <span class="imp-tile__text">
+            <strong>{{ 'impreuna.phone.calendar' | translate }}</strong>
+            <span>{{ 'impreuna.phone.calendar_hint' | translate }}</span>
+          </span>
+        </a>
+        <a class="imp-tile__extra" [href]="icsUrl()" download>
+          <app-icon name="download" />
+          {{ 'impreuna.phone.ics' | translate }} (.ics)
+        </a>
+      </li>
+      <li>
+        <a class="imp-tile" [href]="googleCalendarUrl()" target="_blank" rel="noopener">
+          <app-icon class="imp-tile__icon" name="add-box" />
+          <span class="imp-tile__text">
+            <strong>{{ 'impreuna.phone.google' | translate }} <app-icon class="imp-tile__ext" name="external" /></strong>
+            <span>{{ 'impreuna.phone.google_hint' | translate }}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a class="imp-tile" [href]="youversionPlanUrl" target="_blank" rel="noopener">
+          <app-icon class="imp-tile__icon" name="book" />
+          <span class="imp-tile__text">
+            <strong>{{ 'impreuna.phone.youversion' | translate }} <app-icon class="imp-tile__ext" name="external" /></strong>
+            <span>{{ 'impreuna.phone.youversion_hint' | translate }}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a class="imp-tile" [href]="youtube.subscribe" target="_blank" rel="noopener">
+          <app-icon class="imp-tile__icon" name="play" />
+          <span class="imp-tile__text">
+            <strong>{{ 'impreuna.phone.youtube' | translate }} <app-icon class="imp-tile__ext" name="external" /></strong>
+            <span>{{ 'impreuna.phone.youtube_hint' | translate }}</span>
+          </span>
+        </a>
+      </li>
+      @if (pwa.canPromptNatively()) {
+        <li>
+          <button type="button" class="imp-tile" (click)="install()">
+            <app-icon class="imp-tile__icon" name="install-app" />
+            <span class="imp-tile__text">
+              <strong>{{ 'impreuna.phone.home' | translate }}</strong>
+              <span>{{ 'impreuna.phone.home_hint_android' | translate }}</span>
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ═══ Cómo funciona ════════════════════════════════════════════════ -->
+  <section id="cum-functioneaza" class="imp-how" aria-labelledby="imp-how-title">
+    <div class="imp-section-head">
+      <h2 id="imp-how-title" class="imp-section-title">{{ 'impreuna.how.title' | translate }}</h2>
+      <p class="imp-section-lead">{{ 'impreuna.how.lead' | translate }}</p>
+    </div>
+
+    <ol class="imp-steps">
+      <li class="imp-step">
+        <span class="imp-step__n" aria-hidden="true">1</span>
+        <h3>{{ 'impreuna.how.step1_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.step1_text' | translate }}</p>
+      </li>
+      <li class="imp-step">
+        <span class="imp-step__n" aria-hidden="true">2</span>
+        <h3>{{ 'impreuna.how.step2_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.step2_text' | translate }}</p>
+      </li>
+      <li class="imp-step">
+        <span class="imp-step__n" aria-hidden="true">3</span>
+        <h3>{{ 'impreuna.how.step3_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.step3_text' | translate }}</p>
+      </li>
+      <li class="imp-step imp-step--gold">
+        <span class="imp-step__n" aria-hidden="true">4</span>
+        <h3>{{ 'impreuna.how.step4_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.step4_text' | translate }}</p>
+        @if (nextFastDay(); as next) {
+          <a class="imp-step__date" [routerLink]="dayLink(next)">
+            <span>{{ 'impreuna.how.next_fast' | translate: { date: nextFastLabel() } }}</span>
+            <span class="imp-step__when">{{ nextFastRelative() }}</span>
+            @if (nextFastTheme(); as theme) {
+              <span class="imp-step__theme" lang="ro">{{ theme }}</span>
+            }
+          </a>
+        }
+      </li>
+    </ol>
+
+    <div class="imp-notes">
+      <div class="imp-note-card">
+        <h3>{{ 'impreuna.how.rhythm_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.rhythm_text' | translate: { nt: stats.ntDays, wisdom: stats.wisdomDays } }}</p>
+        <p class="imp-legend">
+          <span class="imp-legend__item"><span class="imp-legend__sw" aria-hidden="true"></span>{{ 'impreuna.plan.legend_nt' | translate }}</span>
+          <span class="imp-legend__item is-wisdom"><span class="imp-legend__sw" aria-hidden="true"></span>{{ 'impreuna.plan.legend_wisdom' | translate }}</span>
+        </p>
+      </div>
+      <div class="imp-note-card">
+        <h3>{{ 'impreuna.how.behind_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.behind_text' | translate }}</p>
+      </div>
+      <div class="imp-note-card">
+        <h3>{{ 'impreuna.how.youversion_title' | translate }}</h3>
+        <p>{{ 'impreuna.how.youversion_text' | translate }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Sobre el proyecto ════════════════════════════════════════════ -->
+  <section class="imp-about" aria-labelledby="imp-about-title">
+    <div class="imp-about__main">
+      <h2 id="imp-about-title" class="imp-section-title">{{ 'impreuna.about.title' | translate }}</h2>
+      <p>{{ 'impreuna.about.text' | translate: { since } }}</p>
+      <p>{{ 'impreuna.about.edition' | translate: { year, count: editionCount } }}</p>
+
+      <dl class="imp-stats">
+        <div>
+          <dt>{{ 'impreuna.about.stat_days' | translate }}</dt>
+          <dd>{{ stats.days }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'impreuna.about.stat_books' | translate }}</dt>
+          <dd>{{ stats.ntBooks }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'impreuna.about.stat_psalms' | translate }}</dt>
+          <dd>{{ stats.psalms }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'impreuna.about.stat_proverbs' | translate }}</dt>
+          <dd>{{ stats.proverbs }}</dd>
+        </div>
+      </dl>
+
+      <div class="imp-elim">
+        <h3>{{ 'impreuna.about.elim_title' | translate }}</h3>
+        <p>{{ 'impreuna.about.elim_text' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="imp-card imp-about__links">
+      <h3 class="imp-card__title">{{ 'impreuna.about.links_title' | translate }}</h3>
+      <ul class="imp-links">
+        <li>
+          <a class="imp-links__row" [href]="site" target="_blank" rel="noopener">
+            <app-icon class="imp-links__icon" name="globe" />
+            <span class="imp-links__text">
+              <strong>{{ 'impreuna.about.site' | translate }}</strong>
+              <span>{{ 'impreuna.about.site_hint' | translate }}</span>
+            </span>
+            <app-icon class="imp-links__go" name="external" />
+          </a>
+        </li>
+        <li>
+          <a class="imp-links__row" [href]="youtube.channel" target="_blank" rel="noopener">
+            <app-icon class="imp-links__icon" name="play" />
+            <span class="imp-links__text">
+              <strong>{{ 'impreuna.about.youtube' | translate }}</strong>
+              <span>{{ 'impreuna.about.youtube_hint' | translate }}</span>
+            </span>
+            <app-icon class="imp-links__go" name="external" />
+          </a>
+        </li>
+        <li>
+          <a class="imp-links__row" [href]="cultUrl" target="_blank" rel="noopener">
+            <app-icon class="imp-links__icon" name="church" />
+            <span class="imp-links__text">
+              <strong>{{ 'impreuna.about.cult' | translate }}</strong>
+              <span>{{ 'impreuna.about.cult_hint' | translate }}</span>
+            </span>
+            <app-icon class="imp-links__go" name="external" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>

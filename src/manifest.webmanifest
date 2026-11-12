@@ -28,6 +28,13 @@
       "icons": [{ "src": "assets/pwa/shortcut-announcements-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
+      "name": "Proiectul Împreună: citirea de azi",
+      "short_name": "Citirea de azi",
+      "description": "Textul și meditația video a zilei",
+      "url": "./impreuna",
+      "icons": [{ "src": "assets/pwa/shortcut-impreuna-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Program săptămânal",
       "short_name": "Program",
       "description": "Serviciile fiecărei zile",

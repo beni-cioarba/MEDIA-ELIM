@@ -55,6 +55,16 @@ export const APP_PATHS = {
   baptisms: 'botezuri',
   /** Talantul în Negoț: el concurso bíblico, contado para quien quiera participar. */
   talentContest: 'talantul-in-negot',
+  /**
+   * Proiectul Împreună (lectura bíblica diaria del Cultul Penticostal):
+   * `/impreuna` es hoy; `/impreuna/ziua/<n>` un día concreto (enlace para
+   * compartir y destino del calendario); `/impreuna/plan` el plan completo
+   * por meses; `/impreuna/tipar` la hoja imprimible de un mes (sin shell).
+   */
+  impreuna: 'impreuna',
+  impreunaDay: 'ziua',
+  impreunaPlan: 'plan',
+  impreunaPrint: 'tipar',
   /** Página de contacto: formulario, datos directos y cómo llegar. */
   contact: 'contact',
   /** Donativos: transferencia bancaria y por qué se dona. */
@@ -100,6 +110,8 @@ export const STAGE_BLOCK_SLUGS = {
   causes: 'cauze-de-rugaciune',
   // Web: `/media/talantul-in-negot` redirige a la página del concurso.
   talent: 'talantul-in-negot',
+  // Web: `/media/impreuna` redirige a la página del proyecto.
+  impreuna: 'impreuna',
   // Sólo proyección (en la web ya se está en el sitio): `/media/site` → portada.
   website: 'site',
   location: 'locatie',

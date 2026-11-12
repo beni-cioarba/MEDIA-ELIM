@@ -38,8 +38,9 @@ export interface AllDayEntry {
  *  ▸ **Exportación puntual (.ics)** — descarga directa de uno o todos
  *    los eventos. El usuario lo abre y se añade manualmente.
  *  ▸ **Suscripción (webcal://)** — URL estable que el cliente de calendario
- *    consulta periódicamente; las actualizaciones son automáticas. Requiere
- *    publicar `assets/calendars/elim-events.ics` desde el servidor estático.
+ *    consulta periódicamente; las actualizaciones son automáticas. El fichero,
+ *    `assets/calendars/elim-events.ics`, lo genera desde el config
+ *    `scripts/generate-events-calendar.mjs` (prestart, prebuild y deploy).
  *
  * No depende de librerías externas: el formato iCalendar se construye a mano
  * para mantener el bundle reducido.
@@ -161,6 +162,23 @@ export class CalendarService {
   /** URL `https://...` equivalente a la `webcal://` (para Google Calendar web). */
   httpsUrlForAll(): string {
     return this.webcalUrlForAll().replace(/^webcal:\/\//i, 'https://');
+  }
+
+  /**
+   * Suscripción `webcal://` a cualquier calendario estático de
+   * `assets/calendars/` (p. ej. el de Proiectul Împreună, que genera
+   * `scripts/sync-impreuna.mjs`).
+   */
+  webcalUrlFor(filename: string): string {
+    return this.buildWebcalUrl(filename);
+  }
+
+  /**
+   * Suscribirse desde Google Calendar (Android, Gmail): abre su diálogo
+   * «Añadir calendario» con la URL ya puesta.
+   */
+  googleSubscribeUrl(webcalUrl: string): string {
+    return `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcalUrl)}`;
   }
 
   /**
@@ -312,11 +330,15 @@ export class CalendarService {
   }
 
   private computeBasePath(): string {
-    if (typeof window === 'undefined') return '/';
-    const pathname = window.location.pathname || '/';
-    // Si la URL es .../index.html, recorta hasta el último segmento.
-    const idx = pathname.lastIndexOf('/');
-    return idx >= 0 ? pathname.substring(0, idx + 1) : '/';
+    if (typeof document === 'undefined') return '/';
+    // La base de la app (`<base href>`), no el directorio de la ruta actual:
+    // antes, desde `/media/evenimente` o `/impreuna/ziua/3` salía
+    // `/media/assets/calendars/…` (404). `baseURI` ya resuelve `<base href>`.
+    try {
+      return new URL(document.baseURI).pathname.replace(/[^/]*$/, '') || '/';
+    } catch {
+      return '/';
+    }
   }
 
   private buildUid(event: UpcomingEvent): string {

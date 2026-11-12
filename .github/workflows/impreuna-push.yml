@@ -1,0 +1,81 @@
+name: Proiectul Împreună · amintire 08:00
+
+# Cada mañana, a las 08:00 de España, avisa (web push con OneSignal) a quien
+# activó la «Amintire zilnică» en /impreuna: el texto del día, la meditación
+# en vídeo y el ayuno del primer jueves. scripts/impreuna-push.mjs;
+# docs/ai/32-impreuna.md → Notificaciones.
+#
+# ── Por qué cuatro horarios ─────────────────────────────────────────────────
+# GitHub no sabe del horario de verano y retrasa los cron (más a en punto).
+# Así que arranca antes y el script espera hasta las 08:00 exactas (como mucho
+# 65 min): 05:05 y 05:35 UTC sirven en verano (08:00 = 06:00 UTC) y 06:05 y
+# 06:35 en invierno (07:00 UTC). El segundo de cada par es el respaldo: si el
+# primero ya envió, OneSignal reconoce la clave de idempotencia del día y no
+# repite nada. Los que llegan con demasiada antelación salen sin hacer nada.
+#
+# Sin el secreto ONESIGNAL_API_KEY (o sin App ID en church.config.ts) no envía:
+# termina con un aviso. Ojo: GitHub desactiva los cron de un repositorio
+# público tras 60 días sin commits (avisa por correo; se reactiva en Actions).
+on:
+  schedule:
+    - cron: '5 5 * * *'
+    - cron: '35 5 * * *'
+    - cron: '5 6 * * *'
+    - cron: '35 6 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run: enseñar sin enviar · now: enviar ya el de hoy (no duplica) · test: sólo a una suscripción'
+        type: choice
+        options: [dry-run, now, test]
+        default: dry-run
+      date:
+        description: 'Sólo dry-run: fecha AAAA-MM-DD (vacío = hoy)'
+        required: false
+        type: string
+      subscription:
+        description: 'Sólo test: Subscription ID de OneSignal (Audience → Subscriptions)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+# Una ejecución a la vez: la de respaldo espera a la principal y, si ésta ya
+# envió, sólo comprueba (idempotencia) y termina.
+concurrency:
+  group: impreuna-push
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # El script carga el TypeScript de la app (lecturas, fechas, textos):
+      # necesita el paquete `typescript`. Sin scripts de instalación (no hace
+      # falta ningún binario).
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Amintire zilnică
+        env:
+          ONESIGNAL_API_KEY: ${{ secrets.ONESIGNAL_API_KEY }}
+          MODE: ${{ inputs.mode }}
+          DATE: ${{ inputs.date }}
+          SUBSCRIPTION: ${{ inputs.subscription }}
+        run: |
+          case "$MODE" in
+            dry-run) node scripts/impreuna-push.mjs --dry-run ${DATE:+--date "$DATE"} ;;
+            now) node scripts/impreuna-push.mjs --now ;;
+            test) node scripts/impreuna-push.mjs --test "$SUBSCRIPTION" ;;
+            *) node scripts/impreuna-push.mjs ;;
+          esac

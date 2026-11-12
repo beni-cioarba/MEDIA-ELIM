@@ -34,10 +34,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Calendario de suscripción («Abonează-te» de Evenimente): escribe
+      # assets/calendars/elim-events.ics desde church.config.ts (eventos +
+      # programa semanal). Antes del build, que lo copia con el resto de assets.
+      # No se sube al repo. scripts/generate-events-calendar.mjs.
+      - name: Events calendar (assets/calendars/elim-events.ics)
+        run: npm run calendar:events
+
       # Puertas de calidad: paridad de traducciones y presupuesto de
       # legibilidad de la proyección. Si fallan, no se publica.
       - name: Checks (i18n parity, projection sizes)
         run: npm run check
+
+      # Proiectul Împreună: refresca la instantánea de vídeos del día desde la
+      # API pública de proiectulimpreuna.ro (y los .ics). No bloquea: si su
+      # web no responde se publica con la instantánea del repo, y la página
+      # completa lo que falte en el navegador. docs/ai/32-impreuna.md.
+      - name: Proiectul Împreună (vídeos del día)
+        continue-on-error: true
+        run: npm run impreuna:sync
 
       - name: Build (production, base href = / (dominio propio elimarganda.com))
         run: npx ng build --configuration production --base-href /

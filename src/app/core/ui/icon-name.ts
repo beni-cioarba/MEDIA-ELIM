@@ -74,4 +74,8 @@ export type IconName =
   | 'sprout'
   | 'layout-grid'
   | 'layers'
-  | 'droplet';
+  | 'droplet'
+  | 'book-open'
+  | 'bell'
+  | 'bell-ring'
+  | 'bell-off';

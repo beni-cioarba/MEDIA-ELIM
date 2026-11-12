@@ -1,0 +1,57 @@
+<header class="imp-head">
+  <div class="imp-head__inner">
+    <div class="imp-head__brand">
+      <p class="imp-head__eyebrow">{{ 'impreuna.eyebrow' | translate: { year } }}</p>
+      <h1 class="imp-head__title">
+        <app-icon class="imp-head__mark" name="book-open" />
+        {{ 'impreuna.title' | translate }}
+      </h1>
+      @if (showLead()) {
+        <p class="imp-head__lead">{{ 'impreuna.lead' | translate }}</p>
+      }
+    </div>
+
+    <div class="imp-head__year" role="group" [attr.aria-label]="'impreuna.year.aria' | translate: { percent: percent() }">
+      <p class="imp-head__year-label">
+        @switch (today().status) {
+          @case ('before') {
+            {{ 'impreuna.year.before' | translate: { year } }}
+          }
+          @case ('ended') {
+            {{ 'impreuna.year.ended' | translate: { year } }}
+          }
+          @default {
+            <strong>{{ 'impreuna.year.progress' | translate: { day: today().day, total } }}</strong>
+            <span class="imp-head__pct">{{ percent() }}%</span>
+          }
+        }
+      </p>
+      <div class="imp-head__bar" aria-hidden="true">
+        <span class="imp-head__fill" [style.inline-size.%]="percent()"></span>
+      </div>
+    </div>
+
+    <nav class="imp-tabs" [attr.aria-label]="'impreuna.tabs.aria' | translate">
+      <a
+        class="imp-tabs__tab"
+        [routerLink]="paths.day"
+        [class.is-active]="active() === 'day'"
+        [attr.aria-current]="active() === 'day' ? 'page' : null"
+      >
+        {{ 'impreuna.tabs.day' | translate }}
+      </a>
+      <a
+        class="imp-tabs__tab"
+        [routerLink]="paths.plan"
+        [class.is-active]="active() === 'plan'"
+        [attr.aria-current]="active() === 'plan' ? 'page' : null"
+      >
+        {{ 'impreuna.tabs.plan' | translate }}
+      </a>
+      <!-- En la página del día, el ancla sin salir del día abierto. -->
+      <a class="imp-tabs__tab" [routerLink]="active() === 'day' ? [] : paths.day" fragment="cum-functioneaza">
+        {{ 'impreuna.tabs.how' | translate }}
+      </a>
+    </nav>
+  </div>
+</header>

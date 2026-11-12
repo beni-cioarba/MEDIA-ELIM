@@ -236,6 +236,30 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   maximize: ['M15 3h6v6', 'M9 21H3v-6', 'M21 3l-7 7', 'M3 21l7-7'],
   // Lucide «droplet»: Botezuri.
   droplet: ['M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z'],
+  // Lucide «book-open»: Proiectul Împreună (lectura del día). `book` ya es el
+  // plan de lectura de la iglesia y el credo; el libro abierto dice «leer hoy».
+  'book-open': [
+    'M12 7v14',
+    'M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z',
+  ],
+  // Lucide «bell», «bell-ring» y «bell-off»: amintire zilnică de Proiectul
+  // Împreună (apagada, activa y bloqueada por el navegador).
+  bell: [
+    'M10.268 21a2 2 0 0 0 3.464 0',
+    'M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326',
+  ],
+  'bell-ring': [
+    'M10.268 21a2 2 0 0 0 3.464 0',
+    'M22 8c0-2.3-.8-4.3-2-6',
+    'M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326',
+    'M4 2C2.8 3.7 2 5.7 2 8',
+  ],
+  'bell-off': [
+    'M10.268 21a2 2 0 0 0 3.464 0',
+    'M17 17H4a1 1 0 0 1-.74-1.673C4.59 13.956 6 12.499 6 8a6 6 0 0 1 .258-1.742',
+    'm2 2 20 20',
+    'M8.668 3.01A6 6 0 0 1 18 8c0 2.687.77 4.653 1.707 6.05',
+  ],
   // Lucide «layers»: álbum de la galería con varias ediciones.
   layers: [
     'M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z',

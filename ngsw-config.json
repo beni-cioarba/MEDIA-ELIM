@@ -44,6 +44,16 @@
       }
     },
     {
+      "name": "impreuna-wp",
+      "urls": ["https://proiectulimpreuna.ro/wp-json/**"],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "1d",
+        "timeout": "6s",
+        "strategy": "freshness"
+      }
+    },
+    {
       "name": "fonts-google",
       "urls": [
         "https://fonts.googleapis.com/**",

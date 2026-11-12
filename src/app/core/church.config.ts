@@ -434,6 +434,20 @@ export interface ChurchConfig {
   /** API Key restringida por HTTP referrer; segura para uso en cliente. */
   readonly youtubeApiKey: string;
   /**
+   * App ID de OneSignal (web push): la amintire zilnică de Proiectul Împreună.
+   * Es público (va en el navegador). **Vacío = función apagada**: no se pinta
+   * el interruptor ni se envía nada. La clave secreta de envío NO va aquí:
+   * es el secreto `ONESIGNAL_API_KEY` de GitHub. Activación paso a paso:
+   * docs/ai/32-impreuna.md → Notificaciones.
+   */
+  readonly oneSignalAppId: string;
+  /**
+   * Safari Web ID que OneSignal genera para la app (`web.onesignal.auto.…`,
+   * público: va en su fragmento oficial). Sólo lo usa el Safari antiguo de
+   * macOS; se pasa igual para arrancar el SDK exactamente como lo indican.
+   */
+  readonly oneSignalSafariWebId: string;
+  /**
    * URL pública canónica (`https://elimarganda.com/`). De ella salen los QR,
    * la dirección escrita en la proyección (`publicHost`), los enlaces que se
    * comparten, `og:url` y el calendario.
@@ -498,6 +512,8 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
   youtubeLiveUrl: 'https://www.youtube.com/@ElimArganda/live',
   youtubeChannelId: 'UCJqLlk6CS6uNtJWS5r-7P9g',
   youtubeApiKey: 'AIzaSyCliQqAiyf0qZuKoOi76MbU-NOrQrDcCoA',
+  oneSignalAppId: '438db2da-b582-4eca-8b0e-8bd24bf61e9b',
+  oneSignalSafariWebId: 'web.onesignal.auto.66a57acb-1f7c-44c2-af57-20e68d9690d6',
   publicUrl: 'https://elimarganda.com/',
   socials: [
     {
@@ -1156,6 +1172,47 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       footnote: 'Numele Domnului să fie proslăvit în toate lucrurile!',
       publishedOn: '2026-11-08',
       expiresOn: '2026-11-14',
+    },
+    /*
+     * Lanzamiento de Proiectul Împreună en la web (`/impreuna`,
+     * docs/ai/32-impreuna.md). Redactado por la IA a petición del usuario
+     * (11/11/2026), no llegó como aviso en bruto: revisar el tono antes de
+     * leerlo. Dos domingos en pantalla (15 y 22/11); después la semana del
+     * proyecto sigue proyectándose sola en su propio bloque, con QR.
+     * Qué hacer en una columna y lo del teléfono en `highlight`; la cita de
+     * Cornilescu (Psalmul 119:105) cortada con «…» por el límite de una línea.
+     */
+    {
+      id: 'proiectul_impreuna',
+      title: 'Proiectul Împreună: citim Biblia zi de zi',
+      lead: 'Un text pe zi și o meditație video scurtă, împreună cu frații din tot Cultul Penticostal. Totul pe elimarganda.com/impreuna.',
+      sections: [
+        {
+          heading: 'Cum îl urmezi',
+          kind: 'list',
+          items: [
+            { label: 'Citește textul zilei: 5–10 minute' },
+            { label: 'Urmărește meditația video a zilei' },
+            { label: 'Bifează ce ai citit și vezi progresul' },
+          ],
+        },
+        {
+          heading: 'Pe telefon',
+          kind: 'list',
+          highlight: true,
+          items: [
+            { label: 'Calendar cu citirea zilnică, la 07:00' },
+            { label: 'Planul în aplicația Biblia (YouVersion)' },
+            { label: 'Fișa lunii, pentru tipar' },
+          ],
+        },
+      ],
+      footnote: 'Prima joi din fiecare lună: zi de post și rugăciune.',
+      verse: {
+        text: 'Cuvântul Tău este o candelă pentru picioarele mele…',
+        reference: 'Psalmul 119:105',
+      },
+      expiresOn: '2026-11-22',
     },
     {
       id: 'aniversare_25_ani',

@@ -31,6 +31,8 @@ src/app/
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
     family-prayer.config.ts ⭐ Familias por las que se ora cada semana (una entrada por domingo)
     prayer-causes.config.ts ⭐ Cauzele Bisericii Elim: lista vigente de causas de oración
+    impreuna/               ⭐ Proiectul Împreună: plan generado (`data/`), lógica pura, servicio — `32-impreuna.md`
+    push/                   Web push por temas (OneSignal bajo demanda; hoy la amintire de Împreună) — `32-impreuna.md` § 7
     guests.config.ts        ⭐ Invitați: anfitriones, departamentos, preguntas y anclas de `/invitati`
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
     talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
@@ -74,6 +76,7 @@ src/app/
     home/                   Portada pública (hero, bienvenida, accesos, visita)
     nav-hub/                Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`)
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
+    impreuna/               ⭐ Proiectul Împreună: hoy/día, plan por meses, hoja A4 (`/impreuna/tipar`) — `32-impreuna.md`
     guests/                 ⭐ Invitați: bienvenida fuera del menú (`/invitati`) + hoja del QR (`/invitati/qr`) — `33-guests.md`
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Índice del organigrama + `person-profile/` (perfil `/conducere/<id>`)
@@ -103,9 +106,10 @@ src/app/
     styles/                 Parciales SCSS compartidos (botones, page-hero, hero-content: contenido del carrusel de portada)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
 src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
-scripts/                      Utilidades Node (imágenes, icono de la app, YouTube)
+scripts/                      Utilidades Node (imágenes, icono de la app, YouTube, `sync-impreuna.mjs`, `impreuna-push.mjs`)
   assets-src/emblema-elim.png Máster del emblema (674 px, no se publica)
-.github/workflows/            Deploy a Pages + cron de datos de YouTube
+.github/workflows/            Deploy a Pages + cron de datos de YouTube + aviso diario de Împreună (`impreuna-push.yml`)
+src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push/onesignal/`, asset de angular.json)
 ```
 
 ## Dónde tocar según la petición
@@ -113,6 +117,7 @@ scripts/                      Utilidades Node (imágenes, icono de la app, YouTu
 | Petición típica                                     | Fichero(s)                                              |
 | --------------------------------------------------- | ------------------------------------------------------- |
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
+| «Proiectul Împreună» · «lectura / vídeo del día del Cult» · «plan 2027» · «proyectar la semana del proyecto» | `docs/ai/32-impreuna.md` → `npm run impreuna:sync` (vídeos; lo hace cada deploy) · `-- --plan --year <año>` (edición nueva) · diapositiva `impreuna` (sale sola; se apaga en el panel) · tema del ayuno del primer jueves → `IMPREUNA_FASTING_THEMES` · **aviso de las 08:00** (activar OneSignal, probar, `dry-run`) → § 7 |
 | «Página para los que vienen por primera vez» · «QR de bienvenida» · «imprimir el QR» | `docs/ai/33-guests.md` → `/invitati`, `/invitati/qr`, `core/guests.config.ts` |
 | «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
 | «Nuevo botez» · «candidatos al bautismo» · «fotos / directo de un botez» | `docs/ai/34-baptisms.md` → `core/baptisms.config.ts` + `scripts/import-baptism-photos.mjs` |

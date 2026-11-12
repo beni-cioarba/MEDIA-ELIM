@@ -8,6 +8,7 @@ const BUNDLES = [
   'credo-articles.{lang}.json',
   'departments.{lang}.json',
   'guests.{lang}.json',
+  'impreuna.{lang}.json',
 ];
 
 const flatten = (obj, prefix = '') =>

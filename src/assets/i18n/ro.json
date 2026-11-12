@@ -646,6 +646,19 @@
       "join": "Înscrieri la"
     }
   },
+  "impreuna_slide": {
+    "title": "Proiectul Împreună",
+    "eyebrow": "Cultul Creștin Penticostal · Citim Biblia zi de zi",
+    "eyebrow_day": "Cultul Creștin Penticostal · Ziua {{day}} din {{total}}",
+    "this_week": "Citirile săptămânii",
+    "next_week": "Citirile săptămânii viitoare",
+    "starts_tomorrow": "Începe mâine",
+    "today": "Azi",
+    "qr_title": "Pe telefonul tău",
+    "qr": "Textul, meditația video și calendarul zilnic",
+    "fast": "Post și rugăciune",
+    "fast_tag": "Post"
+  },
   "website_slide": {
     "block": "Site-ul bisericii",
     "eyebrow": "Toate informațiile",
@@ -891,6 +904,8 @@
     "announcements_desc": "Avizele bisericii în vigoare",
     "bible": "Citirea Bibliei",
     "bible_desc": "Săptămâna din planul de citire",
+    "impreuna": "Proiectul Împreună",
+    "impreuna_desc": "Textul și meditația video a zilei",
     "family_prayer": "Rugăciune pentru familii",
     "family_prayer_desc": "Familiile săptămânii și motivele lor",
     "prayer_causes": "Cauze de rugăciune",
@@ -928,6 +943,7 @@
     "upcoming_none": "Niciun eveniment programat",
     "upcoming_next": "Următorul eveniment",
     "bible_day": "Lectura de {{day}}",
+    "impreuna_day": "Azi · ziua {{day}}",
     "families_week": "Săptămâna {{range}}",
     "causes_updated": "Actualizată pe {{date}}",
     "causes_count": "{{count}} cauze",
@@ -1007,6 +1023,17 @@
     "talent_contest": {
       "title": "Talantul în Negoț 2027 · Concurs biblic",
       "description": "Tot ce trebuie ca să participi la concursul biblic Talantul în Negoț 2027 cu Biserica Elim Arganda: faze și date, categorii, cărți și versete, testul și materialele oficiale."
+    },
+    "impreuna": {
+      "title": "Proiectul Împreună · Citirea Bibliei de azi",
+      "description": "Textul zilei, meditația video și progresul tău: Noul Testament, Psalmii și Proverbele într-un an, cu Cultul Creștin Penticostal. Calendar pentru telefon și planul complet."
+    },
+    "impreuna_plan": {
+      "title": "Proiectul Împreună · Planul complet de citire",
+      "description": "Toate cele 365 de zile ale Proiectului Împreună, lună cu lună: textul fiecărei zile, meditația video și ce ai citit."
+    },
+    "impreuna_print": {
+      "title": "Proiectul Împreună · Fișa lunii pentru tipar"
     },
     "baptisms": {
       "title": "Botezuri",

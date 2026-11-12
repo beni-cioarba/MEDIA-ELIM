@@ -6,6 +6,7 @@ import { FamilyPrayerService, PrayerFamilyView, PrayerWeekView } from './family-
 import { ClockService } from './clock.service';
 import { PrayerCausesService } from './prayer-causes.service';
 import { TalentContestService } from './talent-contest.service';
+import { editionToday } from '../impreuna/impreuna-edition';
 import { toIsoDate } from '../util/iso-date';
 import { PresentationDisplayService } from './presentation-display.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
@@ -22,6 +23,7 @@ export type PresentationBlockId =
   | 'families'
   | 'causes'
   | 'talent'
+  | 'impreuna'
   | 'website';
 
 /** Preferencia manual del operador. `null` ⇒ decide la regla automática. */
@@ -174,6 +176,8 @@ const BLOCK_DEFS: readonly PresentationBlockDef[] = [
   { id: 'causes', titleKey: 'prayer_causes.title' },
   { id: 'families', titleKey: 'family_prayer.title' },
   { id: 'bible', titleKey: 'bible.title' },
+  // Proiectul Împreună: junto a la lectura de la iglesia (es la otra lectura).
+  { id: 'impreuna', titleKey: 'impreuna_slide.title' },
   { id: 'socials', titleKey: 'socials.section_title' },
   { id: 'streams', titleKey: 'streams.title' },
   { id: 'gallery', titleKey: 'gallery.title' },
@@ -361,6 +365,8 @@ export class PresentationBlocksService {
     causes: this.prayerCauses.hasCauses,
     // Mientras quede alguna fase por delante (o se esté celebrando).
     talent: this.talentContest.focusPhase() !== null,
+    // Mientras la edición esté en marcha (sólo el plan: no carga vídeos).
+    impreuna: editionToday(new Date(this.clock.now())).status === 'running',
     website: true,
   }));
 

@@ -553,6 +553,12 @@ ambos idiomas; `npm run check` y `npm run build` en verde.
    - `UiStore`: transiciones de drawer/grupo.
 2. **Contenido real pendiente** en `church.config.ts`: `foundedYear: 2000` sigue
    sin confirmar. El organigrama ya está completo en `leadership.config.ts`.
+   **Amintire zilnică de Proiectul Împreună** (12/11/2026): hecha y OneSignal
+   configurado (plataforma Web, App ID, secreto `ONESIGNAL_API_KEY`). Falta
+   desplegar y probarla en un móvil (`32-impreuna.md` § 7.4). Después, posibles
+   temas nuevos con el mismo `PushService` (anunțuri, directo del domingo):
+   una etiqueta y un interruptor por tema; ojo al límite de 6 etiquetas del
+   plan gratuito.
 3. **`stage.component.scss` sigue con ~1.750 líneas.** La proyección y el
    responsive ya viven en parciales-mixin; falta partir los bloques
    (`styles/_socials.scss`, `_streams.scss`, …) con el mismo patrón.
@@ -605,3 +611,19 @@ Mejoras sobre lo existente:
 - Contador en vivo para el evento más cercano cuando falta menos de 24 h.
 - Buscador global (rutas + eventos + predicaciones) con `MatAutocomplete`.
 - Migas de pan en las páginas interiores.
+
+Detectado al montar Proiectul Împreună (11/2026):
+
+- ~~`elim-events.ics` no existía~~: resuelto (11/2026). Lo genera
+  `scripts/generate-events-calendar.mjs` desde `church.config.ts` en prestart,
+  prebuild y el deploy (`50-build-deploy.md` → «Calendario de suscripción»), y
+  la base de la URL ya no depende de la ruta actual.
+- El mixin global `focus-ring` (`styles/_mixins.scss`) pone `border-radius: inherit`
+  al enfocar: en elementos redondos (píldoras, círculos) el anillo sale con
+  el radio del padre, a menudo cuadrado. Proiectul Împreună usa su propio
+  `imp.focus`; revisar el global aparte (afecta a toda la app).
+- Contraste global: la miga de pan (`.crumbs__link`) usa `--c-muted` sobre
+  blanco a **4,26:1** (axe, 12/11/2026), por debajo de AA (4,5:1) en su
+  tamaño. Proiectul Împreună sube el suyo localmente; el token global, aparte.
+- El inicial ya estaba en **652,8 kB** (> 620 kB de aviso) antes del módulo;
+  Proiectul Împreună suma +1,5 kB. Ver `75-plan-evolucion.md`.

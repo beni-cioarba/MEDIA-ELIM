@@ -1,0 +1,316 @@
+// =====================================================================
+// Diapositiva «Proiectul Împreună» (sólo proyección, a sangre)
+// ---------------------------------------------------------------------
+// Todo en `--pj-*` (unidad de diapositiva): igual en Full HD y en 4K.
+// Presupuesto de legibilidad (`30-presentation.md`): nada por debajo de
+// 3,2u; la lectura de cada día a cuerpo (4,6u) y la de hoy a destacado
+// (5,6u). Línea visual: la banda navy con oro de la página `/impreuna`.
+// =====================================================================
+
+// `contents`: el bloque no mete una caja entre la diapositiva y `.ib`.
+:host {
+  display: contents;
+}
+
+.ib {
+  --ib-ink: var(--c-text-inverse);
+  --ib-ink-soft: color-mix(in srgb, var(--c-text-inverse) 72%, transparent);
+  --ib-line: color-mix(in srgb, var(--c-text-inverse) 16%, transparent);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 46);
+  gap: calc(var(--pj-u) * 6);
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  padding: calc(var(--pj-u) * 6) calc(var(--pj-u) * 7);
+  overflow: hidden;
+  color: var(--ib-ink);
+  background:
+    radial-gradient(ellipse 55% 70% at 90% 0%, color-mix(in srgb, var(--c-gold) 22%, transparent) 0%, transparent 60%),
+    linear-gradient(160deg, var(--c-primary-darkest) 0%, var(--c-primary-deep) 60%, var(--c-primary) 100%);
+}
+
+// ---- Columna principal -------------------------------------------------
+.ib__main {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--pj-u) * 1.6);
+  min-width: 0;
+  min-height: 0;
+}
+
+.ib__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--pj-u) * 1.2);
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+.ib__dot {
+  width: calc(var(--pj-u) * 1.3);
+  height: calc(var(--pj-u) * 1.3);
+  border-radius: 50%;
+  background: var(--c-gold);
+}
+
+.ib__title {
+  margin: calc(var(--pj-u) * -2.2) 0 0;
+  font-family: var(--font-display);
+  font-size: calc(var(--pj-u) * 9.5);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  // `background-clip: text` recorta a la caja de la línea: aire arriba para
+  // el circunflejo de la «Î» (medido: salía chato) y abajo para la «ț». El
+  // margen negativo devuelve el sitio que añade el relleno de arriba.
+  padding: 0.12em 0 0.1em;
+  background: linear-gradient(100deg, var(--ib-ink) 0%, var(--ib-ink) 50%, var(--c-gold-soft) 85%, var(--c-gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ib__head {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--pj-u) * 2);
+}
+
+.ib__label {
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ib-ink-soft);
+}
+
+.ib__badge {
+  padding: calc(var(--pj-u) * 0.5) calc(var(--pj-u) * 1.6);
+  border-radius: 999px;
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+// La semana: siete filas que se reparten el alto (`1fr` = nunca por debajo
+// de su contenido). Subrejilla: día · número · lectura · marca alineados.
+.ib__week {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-auto-rows: 1fr;
+  column-gap: calc(var(--pj-u) * 2.6);
+  row-gap: calc(var(--pj-u) * 0.8);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ib__day {
+  position: relative;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  padding: calc(var(--pj-u) * 0.6) calc(var(--pj-u) * 2) calc(var(--pj-u) * 0.6) calc(var(--pj-u) * 2.8);
+  border-radius: var(--pj-r-sm);
+
+  // Canto del tipo de día: claro = Noul Testament, oro = Psalmi și Proverbe.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: calc(var(--pj-u) * 1) auto calc(var(--pj-u) * 1) 0;
+    width: calc(var(--pj-u) * 0.6);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c-text-inverse) 55%, transparent);
+  }
+
+  &.is-wisdom::before {
+    background: var(--c-gold);
+  }
+
+  &.is-past {
+    opacity: 0.5;
+  }
+
+  &.is-today {
+    background: color-mix(in srgb, var(--c-gold) 18%, transparent);
+    box-shadow: inset 0 0 0 max(2px, calc(var(--pj-u) * 0.25)) color-mix(in srgb, var(--c-gold) 70%, transparent);
+  }
+}
+
+.ib__wd {
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ib-ink-soft);
+}
+
+.ib__num {
+  font-size: var(--pj-fs-lead);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+
+  .is-today & {
+    color: var(--c-gold-soft);
+  }
+}
+
+.ib__reading {
+  font-size: var(--pj-fs-body);
+  font-weight: 600;
+  line-height: 1.2;
+  text-wrap: balance;
+
+  .is-today & {
+    font-size: var(--pj-fs-lead);
+    font-weight: 800;
+  }
+}
+
+.ib__flag {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(var(--pj-u) * 1.2);
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+// Post și rugăciune (primer jueves): pastilla oro en su fila.
+.ib__fast-tag {
+  padding: calc(var(--pj-u) * 0.4) calc(var(--pj-u) * 1.3);
+  border-radius: 999px;
+  background: var(--c-gold);
+  color: var(--c-on-gold);
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+// ---- Columna lateral: QR + ayuno ---------------------------------------
+.ib__side {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: calc(var(--pj-u) * 2);
+  min-height: 0;
+  padding: calc(var(--pj-u) * 3.5);
+  border: var(--pj-stroke) solid var(--ib-line);
+  border-radius: var(--pj-r);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--c-text-inverse) 11%, transparent),
+    color-mix(in srgb, var(--c-text-inverse) 3%, transparent)
+  );
+}
+
+.ib__side-label {
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+
+// El QR llena el sitio que queda: con la caja como contenedor, el código
+// mide el mínimo entre su ancho y su alto (cuadrado y entero siempre).
+.ib__qr {
+  container-type: size;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  --qr-frame-pad: calc(var(--pj-u) * 1.6);
+  --qr-frame-radius: var(--pj-r-sm);
+
+  app-qr-panel {
+    width: min(100cqw, 100cqh);
+    height: min(100cqw, 100cqh);
+  }
+}
+
+.ib__qr-text {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--pj-u) * 1);
+}
+
+// Dominio en blanco y ruta en oro debajo: lo que se teclea.
+.ib__qr-url {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--pj-fs-body);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.ib__qr-path {
+  display: block;
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+  color: var(--c-gold-soft);
+}
+
+.ib__qr-caption {
+  margin: 0;
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  color: color-mix(in srgb, var(--c-text-inverse) 90%, transparent);
+}
+
+.ib__fast {
+  display: grid;
+  gap: calc(var(--pj-u) * 0.5);
+  margin: 0;
+  padding-top: calc(var(--pj-u) * 2);
+  border-top: var(--pj-stroke) solid var(--ib-line);
+  text-align: center;
+}
+
+.ib__fast-label {
+  font-size: var(--pj-fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ib-ink-soft);
+}
+
+.ib__fast-theme {
+  font-size: var(--pj-fs-caption);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ib__fast-date {
+  font-size: var(--pj-fs-caption);
+  font-weight: 800;
+  color: var(--c-gold-soft);
+
+  // Hijo de una rejilla: ya es de bloque, así que `::first-letter` aplica.
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}

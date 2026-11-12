@@ -5,6 +5,21 @@ import { APP_PATHS, DEPARTMENT_SLUGS, DepartmentId } from './core/navigation/app
 import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
 import { departmentsTranslationsResolver } from './features/departments/departments-translations.resolver';
 import { guestsTranslationsResolver } from './features/guests/guests-translations.resolver';
+import { impreunaTranslationsResolver } from './features/impreuna/impreuna-translations.resolver';
+
+/**
+ * Proiectul Împreună: hoy y un día concreto comparten componente y chunk
+ * (`/impreuna`, `/impreuna/ziua/<n>`). Públicas e indexables.
+ */
+const impreunaSeo = { titleKey: 'seo.impreuna.title', descriptionKey: 'seo.impreuna.description' };
+function impreunaDayRoute(path: string): Route {
+  return {
+    path,
+    loadComponent: () => import('./features/impreuna/impreuna.component').then((m) => m.ImpreunaComponent),
+    resolve: { i18n: impreunaTranslationsResolver },
+    data: { seo: impreunaSeo },
+  };
+}
 
 /**
  * Portada de sección de un grupo de `MAIN_NAV` (`/biserica`, `/program`,
@@ -87,6 +102,17 @@ export const APP_ROUTES: Routes = [
     resolve: { i18n: guestsTranslationsResolver },
     data: {
       seo: { titleKey: 'seo.guests_qr.title', descriptionKey: 'seo.guests_qr.description', noindex: true },
+    },
+  },
+  {
+    // Proiectul Împreună: hoja imprimible de un mes (`?luna=11`). Sin shell:
+    // se imprime tal cual (A4) para quien lee en papel.
+    path: `${APP_PATHS.impreuna}/${APP_PATHS.impreunaPrint}`,
+    loadComponent: () =>
+      import('./features/impreuna/impreuna-print/impreuna-print.component').then((m) => m.ImpreunaPrintComponent),
+    resolve: { i18n: impreunaTranslationsResolver },
+    data: {
+      seo: { titleKey: 'seo.impreuna_print.title', descriptionKey: 'seo.impreuna.description', noindex: true },
     },
   },
   {
@@ -227,6 +253,11 @@ export const APP_ROUTES: Routes = [
         // El bloque proyectable tiene su página propia en la web.
         path: `${APP_PATHS.media}/${APP_PATHS.talentContest}`,
         redirectTo: APP_PATHS.talentContest,
+      },
+      {
+        // Igual: la diapositiva de Proiectul Împreună vive en `/impreuna`.
+        path: `${APP_PATHS.media}/${APP_PATHS.impreuna}`,
+        redirectTo: APP_PATHS.impreuna,
       },
       {
         // Un bloque como página propia (`/media/galerie`, `/media/program`…).
@@ -376,6 +407,16 @@ export const APP_ROUTES: Routes = [
             descriptionKey: 'seo.talent_contest.description',
           },
         },
+      },
+      // Proiectul Împreună: hoy, un día, y el plan completo por meses.
+      impreunaDayRoute(APP_PATHS.impreuna),
+      impreunaDayRoute(`${APP_PATHS.impreuna}/${APP_PATHS.impreunaDay}/:day`),
+      {
+        path: `${APP_PATHS.impreuna}/${APP_PATHS.impreunaPlan}`,
+        loadComponent: () =>
+          import('./features/impreuna/impreuna-plan/impreuna-plan.component').then((m) => m.ImpreunaPlanComponent),
+        resolve: { i18n: impreunaTranslationsResolver },
+        data: { seo: { titleKey: 'seo.impreuna_plan.title', descriptionKey: 'seo.impreuna_plan.description' } },
       },
       {
         path: APP_PATHS.contact,

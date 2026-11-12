@@ -345,6 +345,7 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 | `announcements` | `AnnouncementBlockComponent` | `AnnouncementsService.hasActive()`   |
 | `bible`         | `BibleBlockComponent`        | `BibleReadingService.hasReading()`   |
 | `website`       | `WebsiteBlockComponent`      | siempre — «Toate informațiile, pe site»: el QR grande, al final de la vuelta (ver «Lienzo») |
+| `impreuna`      | `ImpreunaBlockComponent`     | edición de Proiectul Împreună en marcha (`editionToday`) — cartel navy a sangre: la semana que contiene **mañana** (el domingo, la que empieza el lunes, con «Începe mâine»), hoy resaltado, QR a `/impreuna` y el próximo primer jueves de ayuno. Va tras `bible`; 15 s; `/media/impreuna` → `/impreuna` (`32-impreuna.md`) |
 | `causes`        | `CausesBlockComponent`       | lista no vacía — toda la lista en una diapositiva (`docs/ai/37-prayer-causes.md`) |
 | `talent`        | `TalentBlockComponent`       | queda alguna fase por delante (`TalentContestService.focusPhase`) — cartel de Talantul în Negoț a sangre: fases, categorías, cuenta atrás y QR a `/talantul-in-negot` (`docs/ai/38-talent-contest.md`) |
 | `families`      | `FamilyBlockComponent`       | `FamilyPrayerService.hasCurrent()` — resumen (mosaico de fotos) + una diapositiva por familia, detrás de los anuncios y de las causas (`causes` va antes desde el 04/10/2026; `docs/ai/36-family-prayer.md`) |
