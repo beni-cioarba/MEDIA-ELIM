@@ -122,6 +122,19 @@ export class BibleReadingService {
     })),
   );
 
+  /** Todas las semanas del plan, en orden, ya resueltas (navegar por la web). */
+  readonly allWeeks = computed<readonly BibleReadingWeekView[]>(() => this.weeks.map((week) => this.toView(week)));
+
+  /** Todas las fechas con lectura (`YYYY-MM-DD`), en orden. */
+  readonly planDates = computed<readonly string[]>(() =>
+    this.allWeeks().flatMap((week) => week.days.map((day) => day.date)),
+  );
+
+  /** La semana del plan que contiene `isoDate`, o `null`. */
+  weekOn(isoDate: string): BibleReadingWeekView | null {
+    return this.allWeeks().find((week) => week.days.some((day) => day.date === isoDate)) ?? null;
+  }
+
   /** Total de semanas y extremos del plan, para el rótulo del desplegable. */
   readonly planSpan = computed<{ readonly weeks: number; readonly start: string; readonly end: string } | null>(
     () => {

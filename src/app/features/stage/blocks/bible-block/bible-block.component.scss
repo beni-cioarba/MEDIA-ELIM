@@ -137,51 +137,7 @@ app-bible-block {
   color: var(--c-on-primary);
 }
 
-// ---- Avance de la semana (sólo web) -----------------------------------
-// Siete segmentos: hechos en oro apagado, hoy en oro pleno, por venir en
-// blanco translúcido. Ocupa la mitad derecha del panel, que antes quedaba
-// vacía, con un dato útil («vas por el día 3»).
-
-.bible__progress {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--sp-2);
-  min-width: 12rem;
-}
-
-.bible__progress-label {
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.bible__progress-track {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: 4px;
-  width: 100%;
-}
-
-.bible__progress-seg {
-  height: 6px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.18);
-
-  &.is-done {
-    background: rgba(227, 199, 102, 0.55);
-  }
-
-  &.is-today {
-    background: var(--c-gold);
-    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.28);
-  }
-}
-
-// Móvil y tableta: el avance baja a su propia fila, a todo el ancho.
+// Móvil y tableta.
 @include until('md') {
   .bible__week {
     grid-template-columns: auto minmax(0, 1fr);
@@ -193,12 +149,6 @@ app-bible-block {
     display: none;
   }
 
-  .bible__progress {
-    grid-column: 1 / -1;
-    align-items: stretch;
-    padding-top: var(--sp-4);
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-  }
 }
 
 // ---- Lecturas diarias -----------------------------------------------
@@ -370,110 +320,8 @@ app-bible-block {
   }
 }
 
-// ---- Elegir día y leerlo (sólo web) -----------------------------------
-// Cada ficha es un botón (estirado sobre ella) que elige el día cuya lectura
-// sale debajo, en `.bible__read`. Elegido = aro navy; hoy sigue en oro. En la
-// proyección no hay botón ni tarjeta: no se toca nada de allí.
-.stage:not(.is-fullscreen) {
-  .bible__day {
-    position: relative;
-    transition: background-color 0.15s ease;
-
-    @media (hover: hover) {
-      &:hover:not(.is-today) {
-        background: var(--c-veil);
-      }
-    }
-
-    &.is-selected {
-      outline: 2px solid var(--c-primary);
-      outline-offset: -2px;
-    }
-
-    @include motion-reduce {
-      transition: none;
-    }
-  }
-
-  // Encima de la ficha pero transparente: el texto se sigue leyendo debajo.
-  .bible__day-pick {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-
-    &:focus-visible {
-      outline: 2px solid var(--c-focus);
-      outline-offset: -4px;
-    }
-
-    &:focus:not(:focus-visible) {
-      outline: none;
-    }
-  }
-
-  // «Azi» por encima del botón (en la tira de escritorio va en absoluto; en
-  // la lista, el botón es transparente y se ve igual). Sin cambiar su posición.
-  .bible__today {
-    z-index: 2;
-    pointer-events: none;
-  }
-}
-
-// La lectura del día elegido: filas compartidas (`app-bible-passages`) en una
-// tarjeta, y un pie con versión, tienda y el otro plan de la web.
-.bible__read {
-  margin-top: var(--sp-3);
-  overflow: hidden;
-  border: 1px solid var(--c-hairline);
-  border-radius: var(--r-lg);
-  background: var(--c-surface);
-}
-
-.bible__read-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-2) var(--sp-3);
-  padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4);
-  border-top: 1px solid var(--c-hairline);
-  background: var(--c-surface-accent);
-}
-
-.bible__read-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-inline-start: auto;
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--c-primary);
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--c-focus);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-}
-
-@include until('xs') {
-  .bible__read-foot {
-    padding-inline: var(--sp-3);
-  }
-
-  .bible__read-link {
-    margin-inline-start: 0;
-  }
-}
+// La web (elegir día, leer, marcar, calendario) vive en `bible-web/` con su
+// propia hoja (13/11/2026); aquí queda lo común y la proyección.
 
 // ---- Pie --------------------------------------------------------------
 // Firma del plan: icono · nombre · tramo del mes, en una línea discreta.

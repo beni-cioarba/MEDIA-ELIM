@@ -995,3 +995,39 @@ componente mide la proporción al cargar (`onPosterLoad`, ≥ 1,2 →
 ancho); 560-900 px: banda a todo el ancho arriba; móvil: la banda de
 siempre. En la portada, la tarjeta de cartel lo enseña entero sobre su
 copia difuminada.
+
+**Aviso diario** (13/11/2026): junto a la lectura del día, la tarjeta
+`app-push-reminder` con el tema `biblia` (08:00, combinado con el de
+Proiectul Împreună si se tienen los dos). Ver `32-impreuna.md` → «Aviso
+diario de Citirea Bibliei y aviso combinado».
+
+#### Citirea Bibliei · Web (13/11/2026)
+
+La web ya no comparte marcado con la proyección: `bible-block` pinta la
+proyección tal cual (panel navy + lista de días) y, fuera de pantalla
+completa, `app-bible-web` (`bible-block/bible-web/`, hoja propia, BEM `cbw__`):
+
+- **Barra** (tarjeta blanca): ‹ semana › con «Săptămâna 98 · 9–15 noiembrie
+  2026» y el tramo; «Azi» (sólo si se ha ido a otro día) y «Calendar» (sólo
+  en estrecho); a la derecha **cómo vas**: «4/104 citite», «4 zile la rând» y
+  lo pendiente hasta hoy (sólo si ya se ha marcado algo: a quien empieza hoy,
+  «61 necitite» le desanimaría, el plan empezó en septiembre).
+- **Tira de la semana**: siete días con su ✓ (círculo verde si está leído);
+  hoy en oro, el elegido con aro navy. Desde 760 px, con el pasaje y los
+  minutos; en el móvil sólo día y ✓ (el pasaje va en la tarjeta).
+- **Lectura del día elegido** (`app-bible-passages`) con, en el pie, la
+  versión y **«Am citit»** (navy; ya leído, verde «Citit», se desmarca).
+- **Calendario del plan** (mes a la vista, ‹ › entre los meses del plan,
+  días fuera del plan apagados; leído = punto verde, hoy = aro oro, elegido
+  = navy). Teclado: rejilla con una casilla tabulable, flechas día / semana
+  (saltando huecos) y RePág / AvPág mes. Desde 1100 px siempre a la derecha
+  (20rem); en estrecho se abre con «Calendar» bajo la barra.
+- Debajo de la lectura: el aviso diario y «Azi în Proiectul Împreună».
+- `?zi=AAAA-MM-DD` abre ese día.
+
+Progreso: `core/bible/bible-progress.service.ts` (`elim.bible.read`, fechas
+ISO en este dispositivo; `planStreak` no rompe la racha si hoy aún no se ha
+marcado). `BibleReadingService.allWeeks` / `planDates` / `weekOn` dan todo
+el plan para navegar. Medido a 1440: barra 69 px, tira 90, lectura 221 +
+aviso a la izquierda y calendario 377 a la derecha. axe sin fallos.
+

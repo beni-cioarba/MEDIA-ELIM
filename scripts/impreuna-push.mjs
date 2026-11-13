@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 /**
- * Proiectul Împreună — **amintire zilnică**: la notificación web push de las
- * 08:00 (hora de España) con el texto del día, la meditación en vídeo y el
- * ayuno del primer jueves. La manda OneSignal a quien activó el interruptor
- * de /impreuna. docs/ai/32-impreuna.md → Notificaciones.
+ * **Avisos diarios de las 08:00** (hora de España), web push con OneSignal:
+ *  · Proiectul Împreună (etiqueta `impreuna`): el texto del día, la meditación
+ *    en vídeo y el ayuno del primer jueves.
+ *  · Citirea Bibliei (etiqueta `biblia`): la lectura del plan de la iglesia,
+ *    con versículos y minutos, leer y escuchar.
+ *  · Quien tiene **los dos** recibe **un solo aviso** (el de Împreună con una
+ *    línea más, la del plan de la iglesia): dos avisos casi iguales a la misma
+ *    hora se leen como ruido. Las tres audiencias no se solapan (filtros de
+ *    etiqueta `exists` / `not_exists`).
+ * docs/ai/32-impreuna.md → Notificaciones.
  *
  *   node scripts/impreuna-push.mjs                 Envío del día (GitHub Action): si se lanza
  *                                                  antes de las 08:00, espera a la hora exacta
@@ -53,6 +59,7 @@ export const LATE_MS = 3 * 3_600_000;
 export const TTL_S = 14 * 3_600;
 /** Etiqueta del aviso en el navegador: el de hoy sustituye al de ayer si sigue ahí. */
 export const WEB_PUSH_TOPIC = 'impreuna-zilnic';
+export const BIBLE_WEB_PUSH_TOPIC = 'biblia-zilnic';
 const LANGS = /** @type {const} */ (['ro', 'es']);
 const YT_UPLOADS = 'UUqKwJYXPbht3Oh0riWfT1bg';
 const YT_REFERER = 'https://elimarganda.com/';
@@ -112,9 +119,13 @@ export function buildMessage({
   appId,
   topic,
   testSubscription = null,
+  extraLine = null,
+  filters = null,
+  idempotencyName = null,
 }) {
   const title = interpolate(fasting ? copy.title_fast : copy.title, { day });
   const lines = [[`📖 ${reading}`, video ? `▶ ${speaker ?? copy.video}` : null].filter(Boolean).join(' · ')];
+  if (extraLine) lines.push(extraLine);
   if (fasting && fastingTheme) lines.push(`🙏 ${fastingTheme}`);
   if (eve) lines.push(`🙏 ${copy.eve}`);
   const body = lines.join('\n');
@@ -126,10 +137,10 @@ export function buildMessage({
     app_id: appId,
     name: `Împreună · ${date} · ziua ${day} · ${lang}${testSubscription ? ' · prueba' : ''}`,
     // Prueba: clave nueva cada vez (no puede bloquear el envío real del día).
-    idempotency_key: testSubscription ? randomUUID() : uuidV5(`impreuna/${date}/${lang}`),
+    idempotency_key: testSubscription ? randomUUID() : uuidV5(idempotencyName ?? `impreuna/${date}/${lang}`),
     ...(testSubscription
       ? { include_subscription_ids: [testSubscription] }
-      : { filters: [{ field: 'tag', key: topic, relation: '=', value: lang }] }),
+      : { filters: filters ?? [{ field: 'tag', key: topic, relation: '=', value: lang }] }),
     headings: { en: title, [lang]: title },
     contents: { en: body, [lang]: body },
     url: new URL(`impreuna/ziua/${day}`, site).href,
@@ -139,6 +150,54 @@ export function buildMessage({
     chrome_web_badge: new URL('assets/pwa/badge-impreuna-96.png', site).href,
     ...(image ? { chrome_web_image: image } : {}),
     web_push_topic: WEB_PUSH_TOPIC,
+    ttl: TTL_S,
+    priority: 10,
+  };
+}
+
+/** Filtros de OneSignal: etiqueta con el idioma, con o sin la otra. */
+export const tagIs = (key, lang) => ({ field: 'tag', key, relation: '=', value: lang });
+export const tagExists = (key) => ({ field: 'tag', key, relation: 'exists' });
+export const tagMissing = (key) => ({ field: 'tag', key, relation: 'not_exists' });
+
+/**
+ * El aviso de Citirea Bibliei (plan de la iglesia) para quien sólo tiene ese
+ * tema. Título = plan + día de la semana; cuerpo = pasaje · versículos ·
+ * minutos; botones: leer y escuchar el primer capítulo; tocarlo abre la
+ * página del plan.
+ */
+export function buildBibleMessage({
+  lang,
+  copy,
+  date,
+  church,
+  detail = null,
+  readUrl,
+  audioUrl,
+  site,
+  appId,
+  filters,
+  testSubscription = null,
+}) {
+  const title = interpolate(copy.title, { day: church.day, days: church.days });
+  const body = [`📖 ${church.passage}`, detail].filter(Boolean).join(' · ');
+  const icon = new URL('assets/pwa/icon-any-192.png', site).href;
+  return {
+    app_id: appId,
+    name: `Citirea Bibliei · ${date} · ${lang}${testSubscription ? ' · prueba' : ''}`,
+    idempotency_key: testSubscription ? randomUUID() : uuidV5(`biblia/${date}/${lang}`),
+    ...(testSubscription ? { include_subscription_ids: [testSubscription] } : { filters }),
+    headings: { en: title, [lang]: title },
+    contents: { en: body, [lang]: body },
+    url: new URL('media/citirea-bibliei', site).href,
+    web_buttons: [
+      { id: 'read', text: `📖 ${copy.read}`, url: readUrl },
+      { id: 'listen', text: `🎧 ${copy.listen}`, url: audioUrl },
+    ],
+    chrome_web_icon: icon,
+    firefox_icon: icon,
+    chrome_web_badge: new URL('assets/pwa/badge-impreuna-96.png', site).href,
+    web_push_topic: BIBLE_WEB_PUSH_TOPIC,
     ttl: TTL_S,
     priority: 10,
   };
@@ -280,6 +339,8 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   const refs = loadTsModule(src('app/core/bible/bible-refs.ts'));
   const { zonedDate, zonedInstant, dayOfYear } = loadTsModule(src('app/core/push/push-schedule.ts'));
   const { DEFAULT_CHURCH_CONFIG: config } = loadTsModule(src('app/core/church.config.ts'));
+  const { churchReadingOn, BIBLE_PUSH_TOPIC: bibleTopic } = loadTsModule(src('app/core/bible/church-plan.ts'));
+  const verses = loadTsModule(src('app/core/bible/bible-verses.ts'));
   const { timeZone, hour, topic } = reminder;
 
   const now = args.at ? Date.parse(args.at) : Date.now();
@@ -287,10 +348,11 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   const at = zonedInstant(date, hour, timeZone);
   const day = Number(date.slice(0, 4)) === edition.year ? dayOfYear(date) : 0;
   const entry = planDay(day);
+  const church = churchReadingOn(date);
   const when = `${date} · ${String(hour).padStart(2, '0')}:00 en ${timeZone} = ${new Date(at).toISOString()}`;
 
-  if (!entry) {
-    notice(`${date}: fuera de la edición ${edition.year}; no hay aviso.`);
+  if (!entry && !church) {
+    notice(`${date}: ni Proiectul Împreună (edición ${edition.year}) ni el plan de la iglesia tienen lectura; no hay aviso.`);
     return 0;
   }
   // En seco, `--now` y `--test` no esperan; aun así se dice qué haría la Action a esa hora.
@@ -325,23 +387,30 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   // Contenido antes de esperar: si la red tarda, no retrasa las 08:00.
   const snapshot = JSON.parse(await readFile(src(`app/core/impreuna/data/${edition.year}.media.json`), 'utf8'));
   const lookup = () =>
-    findMedia({ day, date, year: edition.year, plan, snapshot, youtubeKey: env.YOUTUBE_API_KEY || config.youtubeApiKey });
+    entry
+      ? findMedia({ day, date, year: edition.year, plan, snapshot, youtubeKey: env.YOUTUBE_API_KEY || config.youtubeApiKey })
+      : Promise.resolve({ video: null, speaker: null, source: null });
   let media = await lookup();
   if (decision === 'wait') {
     const ms = Math.max(0, at - Date.now());
     console.log(`Esperando ${Math.round(ms / 60_000)} min, hasta las ${hhmm(at, timeZone)} de España…`);
     await sleep(ms);
-    if (!media.video) media = await lookup(); // por si lo han subido tarde
+    if (entry && !media.video) media = await lookup(); // por si lo han subido tarde
   }
   const image = media.video ? await chooseThumbnail(media.video) : null;
 
-  const fasting = plan.isFastingDay(edition.year, day);
-  const eve = day < edition.total && plan.isFastingDay(edition.year, day + 1);
+  const fasting = entry ? plan.isFastingDay(edition.year, day) : false;
+  const eve = entry ? day < edition.total && plan.isFastingDay(edition.year, day + 1) : false;
   const fastingTheme = IMPREUNA_FASTING_THEMES.find((t) => t.date === date)?.theme ?? null;
+  const churchRefs = church ? refs.parseRomanianPassage(church.passage) : [];
+  const site = config.publicUrl;
+  const appId = config.oneSignalAppId || '(sin App ID)';
   const messages = [];
   for (const lang of LANGS) {
     const pack = JSON.parse(await readFile(src(`assets/i18n/impreuna.${lang}.json`), 'utf8'));
-    messages.push(
+    const core = JSON.parse(await readFile(src(`assets/i18n/${lang}.json`), 'utf8'));
+    const bibleCopy = core.bible.push;
+    const impreunaMessage = (variant) =>
       buildMessage({
         lang,
         copy: pack.impreuna.push,
@@ -355,12 +424,61 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
         fastingTheme,
         eve,
         image,
-        site: config.publicUrl,
-        appId: config.oneSignalAppId || '(sin App ID)',
+        site,
+        appId,
         topic,
+        testSubscription: args.test,
+        ...variant,
+      });
+
+    // 1 · Sólo Proiectul Împreună (o sin plan de la iglesia hoy: todos los de Împreună).
+    if (entry) {
+      messages.push(impreunaMessage(church ? { filters: [tagIs(topic, lang), tagMissing(bibleTopic)] } : {}));
+    }
+    if (!church) continue;
+    // 2 · Los dos temas: un solo aviso, el de Împreună con la línea del plan.
+    if (entry) {
+      messages.push(
+        impreunaMessage({
+          extraLine: `📘 ${interpolate(bibleCopy.line, { passage: church.passage })}`,
+          filters: [tagIs(topic, lang), tagExists(bibleTopic)],
+          idempotencyName: `impreuna+biblia/${date}/${lang}`,
+        }),
+      );
+    }
+    // 3 · Sólo Citirea Bibliei (o, fuera de la edición de Împreună, todos los suyos).
+    const count = churchRefs.reduce((sum, ref) => sum + verses.passageVerses(ref), 0);
+    const minutes = churchRefs.reduce((sum, ref) => sum + verses.readingMinutes([ref]), 0);
+    const rule = new Intl.PluralRules(lang).select(count);
+    const versesText = count
+      ? interpolate(core.bible_app[`verses_${rule === 'one' || rule === 'few' ? rule : 'other'}`], { count })
+      : null;
+    messages.push(
+      buildBibleMessage({
+        lang,
+        copy: bibleCopy,
+        date,
+        church,
+        detail: versesText ? `${versesText} · ≈ ${minutes} min` : null,
+        readUrl: refs.bibleUrl(churchRefs[0] ?? { code: 'GEN.1' }, lang),
+        audioUrl: refs.bibleAudioUrl(churchRefs[0] ?? { code: 'GEN.1' }, lang),
+        site,
+        appId,
+        filters: entry ? [tagIs(bibleTopic, lang), tagMissing(topic)] : [tagIs(bibleTopic, lang)],
         testSubscription: args.test,
       }),
     );
+  }
+  // Prueba a una suscripción: un aviso por idioma, el más completo (el
+  // combinado si hoy hay las dos lecturas), no las tres variantes.
+  if (args.test) {
+    const pick = new Map();
+    for (const m of messages) {
+      const lang = Object.keys(m.contents).find((k) => k !== 'en');
+      const rank = m.contents.en.includes('📘') ? 2 : 1;
+      if (!pick.has(lang) || pick.get(lang).rank < rank) pick.set(lang, { m, rank });
+    }
+    messages.splice(0, messages.length, ...[...pick.values()].map((x) => x.m));
   }
 
   const rows = [];
@@ -387,9 +505,11 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   await summary(
     env,
     [
-      `### Proiectul Împreună · ziua ${day} · ${date}`,
+      `### Avisos del ${date}${entry ? ` · Proiectul Împreună ziua ${day}` : ''}${church ? ` · Citirea Bibliei ${church.passage}` : ''}`,
       '',
-      `Vídeo: ${media.video ? `${media.speaker ?? '—'} (${media.source})` : 'aún no publicado'}${fasting ? ' · post și rugăciune' : ''}`,
+      entry
+        ? `Vídeo: ${media.video ? `${media.speaker ?? '—'} (${media.source})` : 'aún no publicado'}${fasting ? ' · post și rugăciune' : ''}`
+        : 'Fuera de la edición de Proiectul Împreună.',
       '',
       '| Idioma | Aviso | Resultado |',
       '| --- | --- | --- |',

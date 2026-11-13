@@ -7,27 +7,27 @@
     [class.is-on]="state() === 'on'"
     [class.is-busy]="push.busy()"
     [class.is-blocked]="state() === 'blocked'"
-    aria-labelledby="rem-title"
+    [attr.aria-labelledby]="ids.title"
   >
     <span class="rem__icon" aria-hidden="true"><app-icon [name]="icon()" /></span>
 
     <div class="rem__body">
-      <h2 id="rem-title" class="rem__title">{{ 'impreuna.reminder.title' | translate: { time: next().time } }}</h2>
-      <p id="rem-text" class="rem__text">
+      <h2 [id]="ids.title" class="rem__title">{{ k + '.title' | translate: { time: next().time } }}</h2>
+      <p [id]="ids.text" class="rem__text">
         @if (push.busy()) {
-          {{ (state() === 'on' ? 'impreuna.reminder.disabling' : 'impreuna.reminder.enabling') | translate }}
+          {{ k + (state() === 'on' ? '.disabling' : '.enabling') | translate }}
         } @else {
           @switch (state()) {
             @case ('on') {
               <span class="rem__ok">
                 <app-icon name="check" />
-                {{ (outcome() === 'on' ? 'impreuna.reminder.done' : 'impreuna.reminder.on') | translate }}
+                {{ k + (outcome() === 'on' ? '.done' : '.on') | translate }}
               </span>
               @if (next().reading; as reading) {
                 <span class="rem__next">
                   ·
                   @if (next().when; as when) {
-                    {{ 'impreuna.reminder.' + when | translate }}:
+                    {{ k + '.' + when | translate }}:
                   }
                   {{ reading }}
                 </span>
@@ -36,31 +36,31 @@
             @case ('off') {
               @switch (outcome()) {
                 @case ('dismissed') {
-                  {{ 'impreuna.reminder.dismissed' | translate }}
+                  {{ k + '.dismissed' | translate }}
                 }
                 @case ('error') {
-                  <span class="rem__warn">{{ 'impreuna.reminder.error' | translate }}</span>
+                  <span class="rem__warn">{{ k + '.error' | translate }}</span>
                 }
                 @case ('off') {
-                  {{ 'impreuna.reminder.stopped' | translate }}
+                  {{ k + '.stopped' | translate }}
                 }
                 @default {
-                  {{ 'impreuna.reminder.lead' | translate }}
+                  {{ k + '.lead' | translate }}
                 }
               }
             }
             @case ('blocked') {
-              {{ 'impreuna.reminder.blocked' | translate }}
+              {{ k + '.blocked' | translate }}
             }
             @case ('ios-install') {
               <app-icon class="rem__glyph" name="share-ios" />
-              {{ 'impreuna.reminder.ios' | translate }}
+              {{ k + '.ios' | translate }}
             }
             @case ('open-browser') {
-              {{ 'impreuna.reminder.open_browser' | translate }}
+              {{ k + '.open_browser' | translate }}
             }
             @default {
-              {{ 'impreuna.reminder.unsupported' | translate }}
+              {{ k + '.unsupported' | translate }}
             }
           }
         }
@@ -74,8 +74,8 @@
         role="switch"
         [attr.aria-checked]="state() === 'on'"
         [attr.aria-busy]="push.busy() || null"
-        aria-labelledby="rem-title"
-        aria-describedby="rem-text"
+        [attr.aria-labelledby]="ids.title"
+        [attr.aria-describedby]="ids.text"
         (click)="toggle()"
       >
         <span class="rem__thumb"></span>
@@ -85,10 +85,10 @@
     @if (switchable() && (state() === 'off' || next().churchTime)) {
       <p class="rem__note">
         @if (state() === 'off') {
-          {{ 'impreuna.reminder.privacy' | translate }}
+          {{ k + '.privacy' | translate }}
         }
         @if (next().churchTime; as churchTime) {
-          {{ 'impreuna.reminder.church_time' | translate: { time: churchTime } }}
+          {{ k + '.church_time' | translate: { time: churchTime } }}
         }
       </p>
     }
@@ -98,19 +98,19 @@
     <p class="u-sr-only" role="status">
       @switch (outcome()) {
         @case ('on') {
-          {{ 'impreuna.reminder.done' | translate }}
+          {{ k + '.done' | translate }}
         }
         @case ('off') {
-          {{ 'impreuna.reminder.stopped' | translate }}
+          {{ k + '.stopped' | translate }}
         }
         @case ('dismissed') {
-          {{ 'impreuna.reminder.dismissed' | translate }}
+          {{ k + '.dismissed' | translate }}
         }
         @case ('denied') {
-          {{ 'impreuna.reminder.blocked' | translate }}
+          {{ k + '.blocked' | translate }}
         }
         @case ('error') {
-          {{ 'impreuna.reminder.error' | translate }}
+          {{ k + '.error' | translate }}
         }
       }
     </p>

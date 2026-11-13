@@ -617,3 +617,28 @@ rejilla y sombras; el anillo de foco vuelve al de claro. Medido a 1440:
 Împreună 179 px (antes 190), Talantul 125 px (antes 156); a 375: 371 / 272.
 axe sin fallos de contraste.
 
+### Aviso diario de Citirea Bibliei y aviso combinado (13/11/2026)
+
+- **Un tema más**, `biblia` (`core/bible/church-plan.ts` → `BIBLE_PUSH_TOPIC`),
+  activado desde Citirea Bibliei (`/media/citirea-bibliei`, junto a la
+  lectura del día; a la derecha desde 1100 px, debajo en estrecho).
+- **La tarjeta es compartida**: `shared/push-reminder/` (`app-push-reminder`,
+  entradas `topic`, `keys`, `welcomeKeys`, `path`, `readingFor`, `active`,
+  `idPrefix`). `app-impreuna-reminder` es ahora un envoltorio con el tema
+  `impreuna`. Textos de Citirea Bibliei en el paquete principal
+  (`bible.reminder.*`, `bible.push.*`).
+- **Una sola franja, las 08:00** (`DAILY_PUSH` en `core/push/push-schedule.ts`):
+  dos avisos casi iguales con minutos de diferencia (p. ej. 07:45 y 08:00)
+  se leen como ruido y acaban silenciados los dos. El mismo envío
+  (`scripts/impreuna-push.mjs`, misma Action) manda tres audiencias que no
+  se solapan, por idioma, con filtros de etiqueta de OneSignal:
+
+  | Tiene | Filtros | Aviso | Clave |
+  | --- | --- | --- | --- |
+  | sólo `impreuna` | `impreuna = lang` · `biblia not_exists` | el de siempre | `impreuna/<fecha>/<lang>` |
+  | los dos | `impreuna = lang` · `biblia exists` | el de Împreună + «📘 Citirea Bibliei: Ezechiel 40–41» | `impreuna+biblia/…` |
+  | sólo `biblia` | `biblia = lang` · `impreuna not_exists` | «Citirea Bibliei · ziua 5 din 7» — «📖 Ezechiel 40–41 · 75 de versete · ≈ 14 min», botones Citește / Ascultă, abre la página | `biblia/…` |
+
+  Sin plan de la iglesia ese día: sólo Împreună para todos los suyos. Fuera
+  de la edición de Împreună: el de la Biblia para todos los de `biblia`.
+  `--test` manda un aviso por idioma, el más completo.

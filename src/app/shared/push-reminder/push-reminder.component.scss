@@ -1,8 +1,15 @@
-/* Amintire zilnică: una fila (icono · título y estado · interruptor) y, en
-   apagado, la nota de privacidad. Toda la tarjeta acciona el interruptor
-   (`.rem__switch::after` la cubre). Docs: 32-impreuna.md → Notificaciones. */
+/* Aviso diario (web push): una fila (icono · título y estado · interruptor)
+   y, en apagado, la nota de privacidad. Toda la tarjeta acciona el
+   interruptor (`.rem__switch::after` la cubre). La usan Proiectul Împreună y
+   Citirea Bibliei. Docs: 32-impreuna.md → Notificaciones. */
 @use 'ds' as *;
-@use '../imp';
+
+@mixin motion-off {
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+    animation: none !important;
+  }
+}
 
 :host {
   display: block;
@@ -13,7 +20,9 @@
 }
 
 .rem {
-  @include imp.card;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -21,7 +30,7 @@
   align-items: center;
   padding: var(--sp-3) var(--sp-4);
   transition: border-color 0.15s ease;
-  @include imp.motion-off;
+  @include motion-off;
 
   @media (hover: hover) {
     &:has(.rem__switch:hover) {
@@ -127,8 +136,8 @@
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease;
-  @include imp.focus(3px);
-  @include imp.motion-off;
+  @include focus-ring(3px);
+  @include motion-off;
 
   &::after {
     content: '';
@@ -156,7 +165,7 @@
   transition:
     transform 0.2s ease,
     background-color 0.2s ease;
-  @include imp.motion-off;
+  @include motion-off;
 
   [aria-checked='true'] > & {
     background: var(--c-surface);

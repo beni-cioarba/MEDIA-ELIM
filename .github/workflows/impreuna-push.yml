@@ -1,9 +1,10 @@
-name: Proiectul Împreună · amintire 08:00
+name: Avisos diarios 08:00 · Împreună y Citirea Bibliei
 
 # Cada mañana, a las 08:00 de España, avisa (web push con OneSignal) a quien
-# activó la «Amintire zilnică» en /impreuna: el texto del día, la meditación
-# en vídeo y el ayuno del primer jueves. scripts/impreuna-push.mjs;
-# docs/ai/32-impreuna.md → Notificaciones.
+# activó el aviso diario: en /impreuna (texto del día, meditación en vídeo,
+# ayuno del primer jueves) y/o en Citirea Bibliei (lectura del plan de la
+# iglesia). Quien tiene los dos recibe UN solo aviso combinado.
+# scripts/impreuna-push.mjs; docs/ai/32-impreuna.md → Notificaciones.
 #
 # ── Por qué cuatro horarios ─────────────────────────────────────────────────
 # GitHub no sabe del horario de verano y retrasa los cron (más a en punto).

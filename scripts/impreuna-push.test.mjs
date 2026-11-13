@@ -9,6 +9,10 @@ import {
   TTL_S,
   WEB_PUSH_TOPIC,
   buildMessage,
+  buildBibleMessage,
+  tagIs,
+  tagExists,
+  tagMissing,
   chooseThumbnail,
   decide,
   findMedia,
@@ -253,7 +257,7 @@ test('main: en seco compone los dos idiomas sin clave; sin clave no envía nada'
     assert.match(out, /la Action: wait/);
     assert.match(out, /\[ro\] Ziua 317 · Proiectul Împreună — 📖 Iacov 3 · ▶ Paul Răducanu/);
     assert.match(out, /\[es\] Día 317 · Proiectul Împreună — 📖 Santiago 3 · ▶ Paul Răducanu/);
-    assert.match(await readFile(summaryFile, 'utf8'), /ziua 317 · 2026-11-13/);
+    assert.match(await readFile(summaryFile, "utf8"), /2026-11-13 · Proiectul Împreună ziua 317/);
 
     // Envío real sin ONESIGNAL_API_KEY: aviso y salida limpia, sin red.
     globalThis.fetch = fakeFetch();
@@ -264,3 +268,59 @@ test('main: en seco compone los dos idiomas sin clave; sin clave no envía nada'
     globalThis.fetch = realFetch;
   }
 });
+
+test('buildBibleMessage: Citirea Bibliei sola, con leer y escuchar y su propia clave', () => {
+  const m = buildBibleMessage({
+    lang: 'ro',
+    copy: { title: 'Citirea Bibliei · ziua {{day}} din {{days}}', read: 'Citește', listen: 'Ascultă' },
+    date: '2026-11-13',
+    church: { passage: 'Ezechiel 40–41', week: 98, summary: 'Ezechiel 32–45', day: 5, days: 7 },
+    detail: '75 de versete · ≈ 14 min',
+    readUrl: 'https://www.bible.com/bible/191/EZK.40.VDC',
+    audioUrl: 'https://www.bible.com/audio-bible/191/EZK.40.VDC',
+    site: 'https://elimarganda.com/',
+    appId: 'app-id',
+    filters: [tagIs('biblia', 'ro'), tagMissing('impreuna')],
+  });
+  assert.equal(m.headings.ro, 'Citirea Bibliei · ziua 5 din 7');
+  assert.equal(m.contents.ro, '📖 Ezechiel 40–41 · 75 de versete · ≈ 14 min');
+  assert.equal(m.url, 'https://elimarganda.com/media/citirea-bibliei');
+  assert.deepEqual(m.web_buttons.map((b) => b.id), ['read', 'listen']);
+  assert.equal(m.idempotency_key, uuidV5('biblia/2026-11-13/ro'));
+  assert.deepEqual(m.filters, [
+    { field: 'tag', key: 'biblia', relation: '=', value: 'ro' },
+    { field: 'tag', key: 'impreuna', relation: 'not_exists' },
+  ]);
+});
+
+test('buildMessage: con los dos temas, un solo aviso con la línea del plan', async () => {
+  const m = buildMessage({
+    ...base('ro', await copy('ro')),
+    extraLine: '📘 Citirea Bibliei: Ezechiel 40–41',
+    filters: [tagIs('impreuna', 'ro'), tagExists('biblia')],
+    idempotencyName: 'impreuna+biblia/2026-11-13/ro',
+  });
+  assert.equal(m.contents.ro, '📖 Iacov 3\n📘 Citirea Bibliei: Ezechiel 40–41');
+  assert.equal(m.idempotency_key, uuidV5('impreuna+biblia/2026-11-13/ro'));
+  assert.deepEqual(m.filters[1], { field: 'tag', key: 'biblia', relation: 'exists' });
+});
+
+test('main: tres audiencias que no se solapan (sólo Împreună · las dos · sólo Biblia)', async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = fakeFetch({ body: { items: [] } }, { body: [] });
+  const log = console.log;
+  const lines = [];
+  console.log = (...a) => lines.push(a.join(' '));
+  try {
+    assert.equal(await main(['--dry-run', '--date', '2026-11-13', '--at', '2026-11-13T06:05:00Z'], {}), 0);
+    const out = lines.join('\n');
+    assert.equal(out.match(/^\[ro\] /gm)?.length, 3);
+    assert.match(out, /\[ro\] Ziua 317 · Proiectul Împreună — 📖 Iacov 3.* \/ 📘 Citirea Bibliei: Ezechiel 40–41/);
+    assert.match(out, /\[ro\] Citirea Bibliei · ziua 5 din 7 — 📖 Ezechiel 40–41 · 75 de versete · ≈ 14 min/);
+    assert.match(out, /\[es\] Lectura bíblica · día 5 de 7 — 📖 Ezechiel 40–41 · 75 versículos/);
+  } finally {
+    console.log = log;
+    globalThis.fetch = realFetch;
+  }
+});
+

@@ -10,6 +10,15 @@
 
 const DAY_MS = 86_400_000;
 
+/**
+ * La hora de los avisos diarios de la web (Proiectul Împreună y Citirea
+ * Bibliei): **una sola franja**, las 08:00 de España. Quien activa los dos
+ * recibe un único aviso con las dos lecturas (`scripts/impreuna-push.mjs`):
+ * dos avisos casi iguales con minutos de diferencia se leen como ruido y se
+ * acaban silenciando los dos.
+ */
+export const DAILY_PUSH = { hour: 8, timeZone: 'Europe/Madrid' } as const;
+
 /** Fecha `YYYY-MM-DD` que marca el calendario de `timeZone` en el instante `ms`. */
 export function zonedDate(ms: number, timeZone: string): string {
   // `en-CA` escribe las fechas como ISO (2026-11-13).

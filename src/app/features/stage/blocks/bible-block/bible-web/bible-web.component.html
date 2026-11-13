@@ -1,0 +1,238 @@
+@if (week(); as w) {
+  <div class="cbw" [class.is-cal-open]="calendarOpen()">
+    <!-- ── Barra: la semana a la vista, moverse y cómo vas ─────────────── -->
+    <div class="cbw__bar">
+      <div class="cbw__nav">
+        <button
+          type="button"
+          class="cbw__arrow"
+          [disabled]="!canPrev()"
+          [attr.aria-label]="'bible.web.prev_week' | translate"
+          (click)="goWeek(-1)"
+        >
+          <app-icon name="chevron-left" />
+        </button>
+        <div class="cbw__week" aria-live="polite">
+          <p class="cbw__week-top">
+            <strong>{{ 'bible.week' | translate: { n: w.number } }}</strong>
+            <span class="cbw__week-range">{{ bible.formatRange(w.start, w.end) }}</span>
+          </p>
+          <p class="cbw__week-scope">{{ w.summary }}</p>
+        </div>
+        <button
+          type="button"
+          class="cbw__arrow"
+          [disabled]="!canNext()"
+          [attr.aria-label]="'bible.web.next_week' | translate"
+          (click)="goWeek(1)"
+        >
+          <app-icon name="chevron-right" />
+        </button>
+      </div>
+
+      <div class="cbw__tools">
+        @if (awayFromDefault()) {
+          <button type="button" class="cbw__chip" (click)="goToday()">
+            <app-icon name="calendar" />
+            {{ 'bible.web.today' | translate }}
+          </button>
+        }
+        <button
+          type="button"
+          class="cbw__chip cbw__cal-toggle"
+          [attr.aria-expanded]="calendarOpen()"
+          aria-controls="cbw-cal"
+          (click)="calendarOpen.set(!calendarOpen())"
+        >
+          <app-icon name="calendar" />
+          {{ 'bible.web.calendar' | translate }}
+        </button>
+      </div>
+
+      <!-- Cómo vas: lo marcado en este dispositivo. -->
+      @if (progress.stats(); as st) {
+        <ul class="cbw__stats" [attr.aria-label]="'bible.web.stats_aria' | translate">
+          <li class="cbw__stat">
+            <app-icon name="check" />
+            <span>{{ 'bible.web.read_count' | translate: { count: st.read, total: st.total } }}</span>
+          </li>
+          @if (st.streak > 0) {
+            <li class="cbw__stat cbw__stat--gold">
+              <span>{{ countKey('bible.web.streak', st.streak) | translate: { count: st.streak } }}</span>
+            </li>
+          }
+          <!-- Lo pendiente, sólo a quien ya lleva el plan (a quien empieza hoy,
+               «61 sin leer» le desanimaría: el plan empezó en septiembre). -->
+          @if (st.read > 0) {
+            <li class="cbw__stat" [class.is-ok]="st.behind === 0">
+              @if (st.behind === 0) {
+                <span>{{ 'bible.web.up_to_date' | translate }}</span>
+              } @else {
+                <span>{{ countKey('bible.web.behind', st.behind) | translate: { count: st.behind } }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- ── La semana: siete días, cada uno con su lectura y su ✓ ─────────── -->
+    <ol class="cbw__days" role="list">
+      @for (day of days(); track day.date) {
+        <li
+          class="cbw__day"
+          [class.is-today]="day.isToday"
+          [class.is-past]="day.isPast"
+          [class.is-read]="day.isRead"
+          [class.is-selected]="day.isSelected"
+        >
+          <button
+            type="button"
+            class="cbw__day-pick"
+            [attr.aria-pressed]="day.isSelected"
+            [attr.aria-current]="day.isToday ? 'date' : null"
+            [attr.aria-label]="
+              ('bible.read.pick_aria' | translate: { day: bible.formatDayLabel(day.date), passage: day.passage }) +
+              (day.isRead ? ' · ' + ('bible.web.state_read' | translate) : '')
+            "
+            (click)="select(day.date)"
+          >
+            <span class="cbw__day-head">
+              <span class="cbw__day-name">{{ bible.formatWeekday(day.date, 'short') }}</span>
+              <span class="cbw__day-num">{{ bible.formatDayNumber(day.date) }}</span>
+              <span class="cbw__check" aria-hidden="true">
+                @if (day.isRead) {
+                  <app-icon name="check" />
+                }
+              </span>
+            </span>
+            <span class="cbw__day-passage">{{ day.passage }}</span>
+            @if (day.minutes) {
+              <span class="cbw__day-meta">≈ {{ day.minutes }} min</span>
+            }
+          </button>
+        </li>
+      }
+    </ol>
+
+    <!-- ── La lectura del día elegido ────────────────────────────────────── -->
+    @if (selected(); as s) {
+      <div class="cbw__read">
+        <app-bible-passages
+          [refs]="s.refs"
+          [returnPath]="returnPath"
+          kind="ot"
+          [heading]="(s.when ? ('bible.read.' + s.when | translate) : s.label) + ' · ' + s.day.passage"
+        />
+        <div class="cbw__read-foot">
+          <app-bible-options />
+          <button
+            type="button"
+            class="cbw__mark"
+            [class.is-done]="s.isRead"
+            [attr.aria-pressed]="s.isRead"
+            (click)="progress.toggle(s.day.date)"
+          >
+            <app-icon [name]="s.isRead ? 'check' : 'add-box'" />
+            {{ (s.isRead ? 'bible.web.marked' : 'bible.web.mark') | translate }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ── Calendario del plan (escritorio: siempre; móvil: desde la barra) ─ -->
+    <section id="cbw-cal" class="cbw__cal" [attr.aria-label]="'bible.web.cal_title' | translate">
+      <div class="cbw__cal-head">
+        <button
+          type="button"
+          class="cbw__arrow cbw__arrow--sm"
+          [disabled]="!canPrevMonth()"
+          [attr.aria-label]="'bible.web.prev_month' | translate"
+          (click)="showMonth(-1)"
+        >
+          <app-icon name="chevron-left" />
+        </button>
+        <p class="cbw__cal-month" id="cbw-cal-month" aria-live="polite">{{ monthLabel() }}</p>
+        <button
+          type="button"
+          class="cbw__arrow cbw__arrow--sm"
+          [disabled]="!canNextMonth()"
+          [attr.aria-label]="'bible.web.next_month' | translate"
+          (click)="showMonth(1)"
+        >
+          <app-icon name="chevron-right" />
+        </button>
+      </div>
+      <table class="cbw__grid" role="grid" aria-labelledby="cbw-cal-month">
+        <thead>
+          <tr>
+            @for (wd of weekdays(); track wd.long) {
+              <th scope="col" [attr.abbr]="wd.long">
+                <span aria-hidden="true">{{ wd.short }}</span>
+                <span class="u-sr-only">{{ wd.long }}</span>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of calendar(); track $index) {
+            <tr>
+              @for (cell of row; track $index) {
+                <td [attr.aria-selected]="cell?.inPlan ? cell?.isSelected : null">
+                  @if (cell) {
+                    <button
+                      type="button"
+                      class="cbw__cell"
+                      [attr.data-date]="cell.iso"
+                      [class.is-plan]="cell.inPlan"
+                      [class.is-read]="cell.isRead"
+                      [class.is-today]="cell.isToday"
+                      [class.is-selected]="cell.isSelected"
+                      [disabled]="!cell.inPlan"
+                      [attr.tabindex]="cell.iso === tabDate() ? 0 : -1"
+                      [attr.aria-current]="cell.isToday ? 'date' : null"
+                      [attr.aria-label]="
+                        cell.label +
+                        (cell.isToday ? ' · ' + ('bible.web.state_today' | translate) : '') +
+                        (cell.isRead ? ' · ' + ('bible.web.state_read' | translate) : '')
+                      "
+                      (click)="choose(cell)"
+                      (keydown)="onKey($event, cell)"
+                    >
+                      {{ cell.num }}
+                    </button>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+      <ul class="cbw__legend" aria-hidden="true">
+        <li><span class="cbw__key cbw__key--selected"></span>{{ 'bible.web.legend_selected' | translate }}</li>
+        <li><span class="cbw__key cbw__key--today"></span>{{ 'bible.web.legend_today' | translate }}</li>
+        <li><span class="cbw__key cbw__key--read"></span>{{ 'bible.web.legend_read' | translate }}</li>
+      </ul>
+    </section>
+
+    <!-- ── Debajo de la lectura: aviso diario y el otro plan de la web ───── -->
+    <div class="cbw__side">
+      <app-push-reminder
+        [topic]="pushTopic"
+        keys="bible.reminder"
+        welcomeKeys="bible.reminder"
+        [path]="returnPath"
+        [readingFor]="readingFor"
+        idPrefix="bible-rem"
+      />
+      @if (impreunaToday(); as reading) {
+        <a class="cbw__link" [routerLink]="impreunaPath">
+          <app-icon name="book-open" />
+          <span>{{ 'bible.read.impreuna' | translate: { reading } }}</span>
+          <app-icon name="chevron-right" />
+        </a>
+      }
+      <p class="cbw__local">{{ 'bible.web.local' | translate }}</p>
+    </div>
+  </div>
+}
