@@ -284,7 +284,8 @@
             <!-- Barra de avance: decorativa, `meta` lo dice con palabras. -->
             <span class="promo__progress" aria-hidden="true"
                   [style.--promo-progress]="card.progress"></span>
-            <span class="promo__tile"><app-icon [name]="card.icon" /></span>
+            <!-- Sin icono a la izquierda (13/11/2026): el destello de
+                 «Evenimente» le daba un aire infantil a la tarjeta. -->
             <span class="promo__id">
               <a class="promo__name promo__link" [routerLink]="card.link" draggable="false">
                 {{ card.titleKey | translate }}

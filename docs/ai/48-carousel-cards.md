@@ -445,3 +445,11 @@ banda pasa de 476 a 355 px.
 semana de lectura. Orden de la portada: hero → avisos → eventos → horario →
 Citirea Bibliei → Proiectul Împreună → familias.
 
+
+## Pie de la tarjeta de evento sin icono (13/11/2026)
+
+Petición del usuario: el destello (`sparkles`) en su baldosa a la izquierda de
+«Evenimente» daba un aire infantil a la portada. El pie de las tarjetas de
+`boardCards()` queda en texto (nombre + cuenta atrás · hora · invitado) y
+flecha; `.promo__tile` sigue en `_showcase.scss` y en `/stil` para quien lo
+quiera. La marca de agua de la tarjeta de datos pasa a `calendar`.

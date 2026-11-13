@@ -78,11 +78,12 @@ export const YOUTH_FRIDAY_PROGRAM: readonly MeetingTopic[] = [
     speaker: 'samuel-bogdan',
   },
   {
-    // En el calendario, de 19:00 a 20:00 (no a la hora de siempre).
+    // Cartel (13/11/2026): a las 20:00, no a las 20:30 de siempre. Abre la
+    // Conferință de familie; el evento con cartel está en `upcomingEvents`.
     date: '2026-11-20',
     title: 'Înainte să spui „da”',
-    guest: 'Condrat',
-    time: '19:00',
+    guest: 'Marian Condrat',
+    time: '20:00',
   },
   // ── Diciembre: Daniel ────────────────────────────────────────────────
   {

@@ -315,7 +315,9 @@ export class HomeComponent {
       return {
         id: `event-${evento.id}`,
         cover: evento.poster ? ('poster' as const) : ('data' as const),
-        icon: 'sparkles' as const,
+        // Marca de agua de la tarjeta de datos: calendario, sobrio (el
+        // destello parecía infantil, 13/11/2026).
+        icon: 'calendar' as const,
         tone,
         poster: evento.poster ?? '',
         thumb: '',
