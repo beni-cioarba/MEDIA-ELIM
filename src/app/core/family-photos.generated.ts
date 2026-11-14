@@ -64,4 +64,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-11-08/cioarba-daniel-maria-magdalena': { width: 1152, height: 1289, variants: [[480, 429], [960, 858], [1289, 1152]] },
   '2026-11-08/ciobanu-oleg-maria': { width: 1600, height: 1066, variants: [[480, 480], [960, 960], [1600, 1600]] },
   '2026-11-08/circu-onita': { width: 415, height: 672, variants: [[480, 296], [672, 415]] },
+  '2026-11-15/codre-ioan-cristina': { width: 966, height: 944, variants: [[480, 480], [960, 960], [966, 966]] },
+  '2026-11-15/copran-dan-maria': { width: 1600, height: 1554, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-11-15/corjuc-ioan-camelia': { width: 747, height: 1327, variants: [[480, 270], [960, 540], [1327, 747]] },
+  '2026-11-15/crainiciuc-andrei-anca': { width: 671, height: 972, variants: [[480, 331], [960, 663], [972, 671]] },
+  '2026-11-15/creta-andrei-naomii': { width: 1600, height: 846, variants: [[480, 480], [960, 960], [1600, 1600]] },
 };

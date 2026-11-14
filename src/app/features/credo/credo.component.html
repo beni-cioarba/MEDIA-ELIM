@@ -203,7 +203,12 @@
           {{ 'credo.outro.cta_leadership' | translate }}
         </a>
       </p>
-      <p class="credo-source">{{ 'credo.source' | translate }}</p>
+      <p class="credo-source">
+        {{ 'credo.source' | translate }}
+        <a [href]="officialPdf" target="_blank" rel="noopener noreferrer">{{
+          'credo.source_link' | translate
+        }}</a>
+      </p>
     </section>
   </div>
 

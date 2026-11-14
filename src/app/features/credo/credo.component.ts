@@ -17,7 +17,13 @@ import { DocTocComponent, TocEntry } from '../../shared/doc-toc/doc-toc.componen
 import { DockActionsService } from '../../shared/floating-actions/dock-actions.service';
 import { DockOverlapService } from '../../shared/floating-actions/dock-overlap.service';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { CREDO_ANCHOR as ANCLA, CREDO_ARTICLE_COUNT, CREDO_PARTS, CredoArticle } from './credo.data';
+import {
+  CREDO_ANCHOR as ANCLA,
+  CREDO_ARTICLE_COUNT,
+  CREDO_OFFICIAL_PDF,
+  CREDO_PARTS,
+  CredoArticle,
+} from './credo.data';
 
 /** Un artículo ya resuelto para pintar: textos traducidos y estado de apertura. */
 interface ArticleView {
@@ -83,6 +89,7 @@ export class CredoComponent {
 
   protected readonly total = CREDO_ARTICLE_COUNT;
   protected readonly partCount = CREDO_PARTS.length;
+  protected readonly officialPdf = CREDO_OFFICIAL_PDF;
 
   protected readonly links = {
     about: `/${APP_PATHS.about}`,

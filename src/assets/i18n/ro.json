@@ -782,7 +782,15 @@
     "control": "Panou de control",
     "admin_schedule": "Programare · Administrativ",
     "call": "Sună la telefon",
-    "whatsapp": "Scrie pe WhatsApp"
+    "whatsapp": "Scrie pe WhatsApp",
+    "resources": {
+      "title": "Linkuri utile",
+      "bible": "Biblia",
+      "bible_version": "Versiunea Bibliei",
+      "songs": "Cântări creștine",
+      "poems": "Poezii creștine",
+      "cult": "Cultul Penticostal"
+    }
   },
   "install": {
     "cta": "Instalează",
@@ -1047,8 +1055,8 @@
       "description": "Codul QR de tipărit care duce la pagina de bun venit a Bisericii Elim."
     },
     "home": {
-      "title": "Acasă",
-      "description": "Biserica Elim din Arganda del Rey: program, evenimente, transmisiuni în direct și rețele sociale."
+      "title": "Biserică penticostală română",
+      "description": "Biserică creștină penticostală română din Arganda del Rey (Madrid). Te așteptăm duminica la 10:00 și 18:00. Program, transmisiuni în direct și cum ajungi."
     },
     "about": {
       "title": "Cine suntem",
@@ -1116,6 +1124,37 @@
     "baptisms": {
       "title": "Botezuri",
       "description": "Registrul botezurilor Bisericii Elim din Arganda del Rey și candidații fiecărui botez."
+    },
+    "site_name": "Biserica Elim Arganda",
+    "block": {
+      "program": {
+        "title": "Program săptămânal",
+        "description": "Serviciile Bisericii Elim Arganda în fiecare zi a săptămânii: duminica la 10:00 și 18:00, rugăciune și învățătură, seara de tineret."
+      },
+      "evenimente": {
+        "title": "Evenimente",
+        "description": "Următoarele evenimente speciale ale Bisericii Elim din Arganda del Rey: conferințe, botezuri, sărbători și întâlniri."
+      },
+      "citirea-bibliei": {
+        "title": "Citirea Bibliei",
+        "description": "Săptămâna din planul de citire a Bibliei al Bisericii Elim: textele fiecărei zile, cu link la Biblia Cornilescu."
+      },
+      "galerie": {
+        "title": "Galerie foto",
+        "description": "Fotografii din viața Bisericii Elim Arganda: slujbe, botezuri, tineret, cor și evenimente."
+      },
+      "retele": {
+        "title": "Rețele sociale",
+        "description": "Instagram, Facebook și YouTube ale Bisericii Elim Arganda: urmărește-ne și rămâi la curent."
+      },
+      "transmisiuni": {
+        "title": "Transmisiuni în direct",
+        "description": "Slujbele Bisericii Elim Arganda în direct pe YouTube și ultimele transmisiuni, oriunde te-ai afla."
+      },
+      "locatie": {
+        "title": "Cum ajungi la noi",
+        "description": "Adresa Bisericii Elim: Av. de Madrid, 30, 28500 Arganda del Rey (Madrid). Hartă, program și cum ajungi."
+      }
     }
   },
   "home": {
@@ -1615,6 +1654,7 @@
     "title": "Mărturisirea de credință",
     "lead": "Credem, mărturisim și trăim adevărurile Sfintelor Scripturi.",
     "source": "Text adoptat în Congresul Cultului Creștin Penticostal din 8-10 octombrie 2025.",
+    "source_link": "Textul oficial complet (PDF)",
     "part_label": "Capitol",
     "articles_count": "Articole: {{count}}",
     "refs_label": "Referințe biblice:",

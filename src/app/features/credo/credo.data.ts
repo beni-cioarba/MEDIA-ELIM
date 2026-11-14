@@ -89,6 +89,13 @@ export const CREDO_PARTS: readonly CredoPart[] = [
   },
 ];
 
+/**
+ * Texto oficial íntegro, tal y como lo publica el Cult (PDF, sólo en rumano).
+ * La página es un resumen; quien necesite la redacción literal la tiene aquí.
+ */
+export const CREDO_OFFICIAL_PDF =
+  'https://cultulpenticostal.ro/wp-content/uploads/2026/03/02-Marturisire.pdf';
+
 /** Número total de artículos, para los rótulos («30 de articole»). */
 export const CREDO_ARTICLE_COUNT = CREDO_PARTS.reduce(
   (total, part) => total + part.articles.length,

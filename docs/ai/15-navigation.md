@@ -65,6 +65,15 @@ Los slugs viven en `STAGE_BLOCK_SLUGS` y se traducen con `blockPath(id)` /
 
 4. `navigation.config.ts` → entrada en `MAIN_NAV` (o dentro de un grupo).
 5. `es.json` **y** `ro.json` → `nav.donations`, `seo.donations.*` y los textos.
+6. `scripts/generate-route-pages.mjs` → entrada en `ROUTE_PAGES` (mismas claves
+   SEO). Sin ella la página responde 404 en GitHub Pages y **Google no la
+   indexa** (`50-build-deploy.md`).
+
+`SeoService` pone título, descripción, Open Graph, `robots` y la **canónica**
+(`publicUrl` + ruta + `/`; ninguna si la ruta es `noindex`). Las claves de
+`data.seo` admiten parámetros de la ruta (`seo.block.:blockId.title` en
+`/media/:blockId`) con `fallback` si el slug no tiene textos propios. Las
+herramientas (`/media/control`, `/media/ecran`, `/stil`) llevan `noindex`.
 
 Las **rutas del operador** (`/media/control`, `/media/ecran`) no cuelgan del
 `MainLayoutComponent`: se declaran antes que él en `APP_ROUTES`, sin cabecera
@@ -258,6 +267,16 @@ temporizador fallaba. Se usa la proporción (`intersectionRatio`), no
 Administrativ.
 
 Email y teléfono del pie: los reales de `church.config.ts → contact`.
+
+**Linkuri utile** (14/11/2026): fila tenue entre el mapa del sitio y la franja
+legal (rótulo en versalitas + enlaces externos en `flex-wrap`, 13 px al 66 %).
+Datos en `core/resource-links.config.ts` (`RESOURCE_LINKS`: Resurse Creștine
+cântări y poezii, Cultul Penticostal; rótulos `footer.resources.*`). La
+Biblia va aparte con un selector **RO / ES** (segmentos de 28 × 24 px,
+`aria-pressed`): `linkedSignal` del idioma de la web —arranca y se reinicia
+en él— y abre la versión en bible.com con la interfaz en ese idioma
+(`/ro/bible/191` Cornilescu, `/es/bible/149` RVR 1960, ids de
+`BIBLE_VERSIONS`). Un recurso nuevo = una línea en el config + su rótulo.
 
 **Teléfono con acciones** (29/09/2026): tras el número, dos botones redondos
 pegados a él —llamar (`tel:`) y WhatsApp (`wa.me` con el saludo ya escrito

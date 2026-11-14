@@ -270,6 +270,12 @@ export interface Announcement {
   };
   /** Cartel del anuncio, si lo tiene. Mismas reglas que `UpcomingEvent.poster`. */
   readonly poster?: string;
+  /**
+   * Sólo en la web: el anuncio sigue en `/anunturi` y en la portada, pero no
+   * sale en la presentación ni en el panel de control. Para lo que se quiere
+   * tener publicado sin leerlo en el templo.
+   */
+  readonly webOnly?: boolean;
   /** Primer día en que se muestra (`YYYY-MM-DD`, incluido). Sin valor: ya. */
   readonly publishedOn?: string;
   /** Último día en que se muestra (`YYYY-MM-DD`, incluido). Obligatorio. */
@@ -1193,6 +1199,34 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
       expiresOn: '2026-11-14',
     },
     /*
+     * Semana de intercesión por los candidatos al bautismo (15/11 → 21/11).
+     *
+     * Erratas del original: «pt»→pentru, «da a-l»→«de a-L», «care au
+     * luat-o»→«pe care au luat-o», «ispita»→ispită. Mismo patrón que las
+     * semanas anteriores: lo que se pide en una lista y la bendición al pie.
+     * La segunda mención de «hotărârea care au luat-o» se acorta a «în
+     * hotărârea lor» para no repetir la frase entera en dos líneas seguidas.
+     */
+    {
+      id: 'mijlocire_candidati_botez',
+      title: 'Săptămână de rugăciune pentru candidații la botez',
+      lead: 'În săptămâna aceasta ne rugăm pentru candidații la botez.',
+      sections: [
+        {
+          heading: 'Ce cerem pentru ei',
+          kind: 'list',
+          items: [
+            { label: 'Multă biruință în hotărârea pe care au luat-o de a-L urma pe Dumnezeu' },
+            { label: 'Putere de a birui orice piedică și ispită' },
+            { label: 'Să rămână statornici în hotărârea lor până la capăt' },
+          ],
+        },
+      ],
+      footnote: 'Domnul să-i binecuvânteze!',
+      publishedOn: '2026-11-15',
+      expiresOn: '2026-11-21',
+    },
+    /*
      * Lanzamiento de Proiectul Împreună en la web (`/impreuna`,
      * docs/ai/32-impreuna.md). Redactado por la IA a petición del usuario
      * (11/11/2026), no llegó como aviso en bruto: revisar el tono antes de
@@ -1231,6 +1265,9 @@ export const DEFAULT_CHURCH_CONFIG: ChurchConfig = {
         text: 'Cuvântul Tău este o candelă pentru picioarele mele…',
         reference: 'Psalmul 119:105',
       },
+      // Fuera de la presentación a petición del usuario (15/11/2026): se
+      // queda sólo en la web.
+      webOnly: true,
       expiresOn: '2026-11-22',
     },
     {

@@ -569,8 +569,20 @@ ambos idiomas; `npm run check` y `npm run build` en verde.
 4. **`angularx-qrcode` arrastra `qrcode` (CommonJS)** y provoca un bailout de
    optimización. Ya está aislado en un chunk `@defer`; evaluar alternativa ESM.
 5. **`npm test` no tiene CI**: añadir un job de build+test a los workflows.
-6. **SEO estructurado**: `sitemap.xml`, `robots.txt` y JSON-LD (`Church`,
-   `Event`) ahora que hay varias rutas indexables.
+6. **SEO** — hecho el 14/11/2026: páginas 200 para todas las rutas públicas,
+   canónica, `sitemap.xml`, `robots.txt`, JSON-LD `WebSite` + `Church`, títulos
+   propios por bloque, favicon de 96 px (`50-build-deploy.md`). Queda:
+   - **Fuera del código** (lo hace el responsable de la web): Google Search
+     Console (verificar el dominio, enviar `sitemap.xml`, pedir indexación de
+     la portada) y perfil de empresa de Google (Maps) con la misma dirección,
+     teléfono y horario; es lo que más pesa en «biserica arganda».
+   - Páginas estáticas de las URL con datos (`/anunturi/<id>`,
+     `/conducere/<persona>`, `/impreuna/ziua/<n>`): hoy responden 404 y no se
+     indexan. Generarlas exige leer esos datos desde el script.
+   - JSON-LD `Event` de los eventos próximos y del programa semanal.
+   - El español no tiene URL propia (el idioma se cambia en el navegador):
+     Google sólo indexa el rumano. Para posicionar en español haría falta
+     `/es/...` + `hreflang`.
 7. **Imágenes responsive**: la galería y el hero sirven una sola resolución.
    `ngSrcset` + `sizes` reduciría bastante en móvil.
 

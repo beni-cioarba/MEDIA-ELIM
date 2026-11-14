@@ -672,4 +672,82 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 11,
+    presentedOn: '2026-11-15',
+    // Orden tal como lo pasó la iglesia.
+    families: [
+      {
+        id: 'codre-ioan-cristina',
+        surname: 'Codre',
+        names: 'Ioan și Cristina',
+        children: ['Carolina'],
+        // El original venía en mayúsculas y sin diacríticos; se pasa a caja
+        // normal sin cambiar el texto.
+        message: [
+          'Mulțumesc lui Dumnezeu pentru dragostea, bunătatea și credincioșia Lui față de noi și casa noastră.',
+          'El a făcut lucruri mari pentru noi și a fost cu mine în cele mai grele momente.',
+          'Mulțumesc Bisericii Elim pentru susținerea în rugăciune.',
+          'Domnul să lucreze în continuare în casa mea cu mântuire.',
+        ],
+      },
+      {
+        id: 'copran-dan-maria',
+        surname: 'Copran',
+        names: 'Dan și Maria',
+        children: ['Beniamin', 'David', 'Denis', 'Matias', 'Miriam'],
+        message: [
+          'Mulțumim Domnului pentru toate binecuvântările revărsate peste casa noastră.',
+          'Dorința noastră e ca toți copiii să-L cunoască pe Dumnezeu personal.',
+        ],
+        verse: {
+          text: 'Pacea lui Hristos, la care ați fost chemați ca să alcătuiți un singur trup, să stăpânească în inimile voastre, și fiți recunoscători.',
+          reference: 'Coloseni 3:15',
+        },
+      },
+      {
+        id: 'corjuc-ioan-camelia',
+        surname: 'Corjuc',
+        names: 'Ioan și Camelia',
+        children: ['Sofia', 'Mateo'],
+        message: [
+          'Familia este unul dintre cele mai prețioase daruri primite de la Dumnezeu. De aceea, vreau să o încredințez în mâinile Lui, pentru că știu că atunci când Dumnezeu este temelia casei noastre, avem speranță și putere să mergem înainte.',
+          'Domnul să fie și să rămână temelia familiei noastre astăzi și în toate zilele vieții noastre!',
+        ],
+      },
+      {
+        id: 'crainiciuc-andrei-anca',
+        surname: 'Crainiciuc',
+        names: 'Andrei și Anca',
+        children: ['Andres', 'Elisa', 'Levi', 'Lois'],
+        // Su primera frase parafrasea el salmo que citan; el versículo va
+        // completo (Cornilescu), como en Cioarba (semana 10).
+        message: [
+          'Dumnezeu a fost și este adăpostul și sprijinul nostru, un ajutor care nu a lipsit și nu lipsește niciodată în nevoi.',
+          'Mulțumim Domnului pentru purtarea Lui de grijă.',
+          'Dorim ca Domnul să lase protecția Lui peste familia noastră și să ne ajute să împlinim voia Lui în toate.',
+        ],
+        verse: {
+          text: 'Dumnezeu este adăpostul și sprijinul nostru, un ajutor care nu lipsește niciodată în nevoi.',
+          reference: 'Psalmul 46:1',
+        },
+      },
+      {
+        // «Naomii» tal como lo escribe la familia (texto y nombre de la foto).
+        id: 'creta-andrei-naomii',
+        surname: 'Creța',
+        names: 'Andrei și Naomii',
+        children: ['Miriam', 'Erik'],
+        // Su deseo adapta el pasaje a la primera persona; el versículo va
+        // completo (Cornilescu).
+        message: [
+          'Dorința noastră este ca Domnul să ne ajute să ne purtăm într-un chip vrednic de chemarea pe care am primit-o de la Domnul, cu toată smerenia și blândețea, cu îndelungă răbdare, îngăduindu-ne unii pe alții în dragoste.',
+        ],
+        verse: {
+          text: 'Vă sfătuiesc dar eu, cel întemnițat pentru Domnul, să vă purtați într-un chip vrednic de chemarea pe care ați primit-o, cu toată smerenia și blândețea, cu îndelungă răbdare; îngăduiți-vă unii pe alții în dragoste.',
+          reference: 'Efeseni 4:1-2',
+        },
+      },
+    ],
+  },
 ];

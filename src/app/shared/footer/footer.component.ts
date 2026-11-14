@@ -6,10 +6,14 @@ import {
   afterNextRender,
   computed,
   inject,
+  linkedSignal,
 } from '@angular/core';
+import { UpperCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
+import { BIBLE_VERSIONS, BibleLang } from '../../core/bible/bible-refs';
+import { RESOURCE_LINKS, bibleHomeUrl } from '../../core/resource-links.config';
 import { activeBrandSeal } from '../../core/anniversary.config';
 import { YOUTH_ADMIN_APP_URL } from '../../core/departments.config';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
@@ -66,6 +70,7 @@ interface FooterColumn {
     imports: [
         RouterLink,
         TranslatePipe,
+        UpperCasePipe,
         BrandLogoComponent,
         IconComponent,
         InebLogoComponent,
@@ -151,6 +156,20 @@ export class FooterComponent {
   protected readonly appVersion = APP_VERSION;
 
   private readonly language = inject(LanguageService);
+
+  /** Linkuri utile: recursos externos (cântări, poezii, Cultul Penticostal). */
+  protected readonly resourceLinks = RESOURCE_LINKS;
+  protected readonly versions = BIBLE_VERSIONS;
+  protected readonly bibleLangs: readonly BibleLang[] = ['ro', 'es'];
+
+  /**
+   * Versión de la Biblia del enlace: arranca (y se reinicia al cambiar de
+   * idioma) en la del idioma de la web; el selector RO / ES la cambia sin
+   * tocar el idioma de la página.
+   */
+  protected readonly bibleLang = linkedSignal<BibleLang>(() => this.language.current());
+  protected readonly bibleVersion = computed(() => BIBLE_VERSIONS[this.bibleLang()]);
+  protected readonly bibleUrl = computed(() => bibleHomeUrl(this.bibleLang()));
 
   constructor() {
     // El pie repite las acciones del dock flotante: mientras está a la vista

@@ -89,13 +89,37 @@ router) → crea `.nojekyll` → publica en GitHub Pages.
 > Si añades rutas nuevas, el fallback `404.html` ya las cubre. No hace falta
 > `withHashLocation()`.
 
-**Páginas estáticas por ruta** (09/11/2026): tras el fallback,
-`node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser`
-escribe `<ruta>/index.html` para las rutas de `ROUTE_PAGES` (hoy `invitati`,
-destino del QR de bienvenida): copia de `index.html` con su título,
-descripción, Open Graph y `noindex`, sacados de `seo.<clave>` de `ro.json`.
-GitHub Pages las sirve con **200** (el resto de rutas siguen con el 404 del
-fallback). Sus tests (`scripts/*.test.mjs`, `node --test`) corren en
+**Páginas estáticas por ruta, sitemap, robots y JSON-LD** (09/11/2026,
+ampliado el 14/11/2026): tras el fallback,
+`node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser`:
+
+- Escribe `<ruta>/index.html` para **todas las páginas públicas**
+  (`ROUTE_PAGES` + una por slug de `DEPARTMENT_SLUGS`): copia de `index.html`
+  con su título («<página> · Biserica Elim Arganda»), descripción, Open Graph,
+  `og:url` y **canónica con barra final**, o `noindex` (sin canónica) en las de
+  datos personales (familias, causas, botezuri, invitați). Textos: las mismas
+  claves que `data.seo` de la ruta, en rumano (`seo.site_name` = nombre del
+  sitio). GitHub Pages sirve `/<ruta>/` con **200** y `/<ruta>` con 301 hacia
+  ella. **Por qué**: hasta el 14/11/2026 sólo `/` e `/impreuna` respondían 200;
+  el resto salía por `404.html` con estado **404** y Google no las indexaba
+  (sólo aparecía la portada, sin enlaces de sitio). **Toda página pública nueva
+  entra en `ROUTE_PAGES`** (el test comprueba que sus claves existen en ro y es).
+- Portada: título «Biserica Elim Arganda · Biserică penticostală română»,
+  canónica y **JSON-LD** (`WebSite` + `Church`/`Organization`: nombre y
+  alternativos, logo `icon-any-512.png`, dirección, teléfono, correo, mapa y
+  redes `*_main`), todo leído de `church.config.ts` y `ro.json`.
+- Como `index.html` cambia después de `ng build`, **recalcula su SHA-1 en
+  `ngsw.json`**; si no, el service worker vería el hash descuadrado y dejaría de
+  servir la app desde caché.
+- `sitemap.xml` (portada + páginas indexables) y `robots.txt` (bloquea sólo las
+  herramientas: `ROBOTS_DISALLOW`; las `noindex` quedan rastreables para que
+  Google lea su `noindex`).
+
+Pendiente fuera del código (ver `70-roadmap.md`): dar de alta el dominio en
+Google Search Console, enviar el sitemap y crear / verificar el perfil de
+empresa de Google (Maps).
+
+Sus tests (`scripts/*.test.mjs`, `node --test`) corren en
 `npm run check` (`test:scripts`, con el glob entre comillas: desde Node 22
 `--test` no acepta un directorio), así que un fallo no llega a publicarse.
 

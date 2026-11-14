@@ -139,6 +139,54 @@
       </section>
     </div>
 
+    <!-- Linkuri utile: recursos externos recomendados, en una sola línea
+         tenue entre el mapa del sitio y la franja legal (datos en
+         `resource-links.config.ts`). La Biblia lleva un selector de versión
+         que arranca en el idioma de la web: Cornilescu (RO) / RVR 1960 (ES). -->
+    <nav class="footer__resources" aria-labelledby="footer-resources">
+      <h2 class="footer__resources-title" id="footer-resources">{{ 'footer.resources.title' | translate }}</h2>
+      <ul class="footer__resources-list">
+        <li class="footer__resource">
+          <app-icon class="footer__resource-icon" name="book-open" />
+          <a
+            class="footer__link"
+            [href]="bibleUrl()"
+            target="_blank"
+            rel="noopener"
+            [attr.lang]="bibleLang()"
+          >
+            {{ 'footer.resources.bible' | translate }} · {{ bibleVersion().short }}
+          </a>
+          <span
+            class="footer__bible-switch"
+            role="group"
+            [attr.aria-label]="'footer.resources.bible_version' | translate"
+          >
+            @for (lang of bibleLangs; track lang) {
+              <button
+                type="button"
+                class="footer__bible-opt"
+                [attr.aria-pressed]="bibleLang() === lang"
+                [attr.aria-label]="versions[lang].name"
+                [title]="versions[lang].name"
+                (click)="bibleLang.set(lang)"
+              >
+                {{ lang | uppercase }}
+              </button>
+            }
+          </span>
+        </li>
+        @for (link of resourceLinks; track link.id) {
+          <li class="footer__resource">
+            <app-icon class="footer__resource-icon" [name]="link.icon" />
+            <a class="footer__link" [href]="link.url" target="_blank" rel="noopener" lang="ro">
+              {{ 'footer.resources.' + link.id | translate }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
     <!-- Franja legal e institucional. -->
     <div class="footer__legal">
       <p class="footer__copy">

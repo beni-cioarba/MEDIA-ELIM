@@ -6,7 +6,6 @@ import { FamilyPrayerService, PrayerFamilyView, PrayerWeekView } from './family-
 import { ClockService } from './clock.service';
 import { PrayerCausesService } from './prayer-causes.service';
 import { TalentContestService } from './talent-contest.service';
-import { editionToday } from '../impreuna/impreuna-edition';
 import { toIsoDate } from '../util/iso-date';
 import { PresentationDisplayService } from './presentation-display.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
@@ -354,7 +353,7 @@ export class PresentationBlocksService {
 
   /** Reglas automáticas: un bloque sólo se auto-proyecta si tiene contenido. */
   private readonly autoAvailability: Signal<Record<PresentationBlockId, boolean>> = computed(() => ({
-    announcements: this.announcements.hasActive(),
+    announcements: this.announcements.projectable().length > 0,
     socials: this.config.socials.length > 0,
     streams: true,
     gallery: this.config.mediaEvents.length > 0,
@@ -365,8 +364,9 @@ export class PresentationBlocksService {
     causes: this.prayerCauses.hasCauses,
     // Mientras quede alguna fase por delante (o se esté celebrando).
     talent: this.talentContest.focusPhase() !== null,
-    // Mientras la edición esté en marcha (sólo el plan: no carga vídeos).
-    impreuna: editionToday(new Date(this.clock.now())).status === 'running',
+    // Fuera de la presentación por defecto (petición del usuario,
+    // 15/11/2026): no sale sola. El operador puede encenderla en el panel.
+    impreuna: false,
     website: true,
   }));
 
@@ -405,7 +405,7 @@ export class PresentationBlocksService {
   readonly announcementStates = computed<readonly AnnouncementSlideState[]>(() => {
     const hidden = this.hiddenAnnouncementIds();
     return this.announcements
-      .active()
+      .projectable()
       .map((announcement) => ({ announcement, visible: !hidden.has(announcement.id) }));
   });
 
@@ -484,7 +484,7 @@ export class PresentationBlocksService {
     const paginate = view !== 'web';
 
     if (id === 'announcements') {
-      const active = this.announcements.active();
+      const active = this.announcements.projectable();
       if (active.length === 0) return this.emptySlide(id);
       const shown = projection ? this.visibleAnnouncements() : active;
       // Un anuncio en varias partes (`AnnouncementSection.part`) da una
@@ -919,7 +919,7 @@ export class PresentationBlocksService {
     switch (block) {
       case 'announcements':
         return {
-          ids: this.announcements.active().map((a) => a.id),
+          ids: this.announcements.projectable().map((a) => a.id),
           hidden: this.hiddenAnnouncementIds,
           key: HIDDEN_ANNOUNCEMENTS_KEY,
         };

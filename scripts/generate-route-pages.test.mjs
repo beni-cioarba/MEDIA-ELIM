@@ -1,9 +1,26 @@
 // Tests del generador de páginas estáticas por ruta.
 // Uso: node --test scripts/   (o `npm run test:scripts`)
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { ROUTE_PAGES, escapeAttr, renderRoutePage, upsertMeta } from './generate-route-pages.mjs';
+import {
+  ROBOTS_DISALLOW,
+  ROUTE_PAGES,
+  churchJsonLd,
+  deepMerge,
+  departmentPages,
+  escapeAttr,
+  injectJsonLd,
+  lookup,
+  pageKeys,
+  readChurchData,
+  renderRobots,
+  renderRoutePage,
+  renderSitemap,
+  upsertCanonical,
+  updateNgswHash,
+  upsertMeta,
+} from './generate-route-pages.mjs';
 
 const INDEX = `<!doctype html>
 <html lang="ro">
@@ -91,4 +108,95 @@ test('sin image deja la tarjeta genérica', () => {
 test('sin noindex no añade robots', () => {
   const html = renderRoutePage(INDEX, { title: 't', description: 'd', url: 'u', noindex: false });
   assert.doesNotMatch(html, /name="robots"/);
+});
+
+// ── Cobertura, canónica, sitemap, robots y JSON-LD (14/11/2026) ──────────
+
+const ro = JSON.parse(readFileSync('src/assets/i18n/ro.json', 'utf8'));
+const es = JSON.parse(readFileSync('src/assets/i18n/es.json', 'utf8'));
+const deptRo = JSON.parse(readFileSync('src/assets/i18n/departments.ro.json', 'utf8'));
+const deptEs = JSON.parse(readFileSync('src/assets/i18n/departments.es.json', 'utf8'));
+const withDepts = (main, pack) => deepMerge(structuredClone(main), pack);
+const appPaths = readFileSync('src/app/core/navigation/app-paths.ts', 'utf8');
+const config = readFileSync('src/app/core/church.config.ts', 'utf8');
+const routes = readFileSync('src/app/app.routes.ts', 'utf8');
+
+test('cada página estática tiene título y descripción en ro y es', () => {
+  const pages = [...ROUTE_PAGES, ...departmentPages(appPaths)];
+  for (const [lang, dict] of [['ro', withDepts(ro, deptRo)], ['es', withDepts(es, deptEs)]]) {
+    for (const page of pages) {
+      const keys = pageKeys(page);
+      assert.equal(typeof lookup(dict, keys.title), 'string', `${lang}: ${keys.title}`);
+      assert.equal(typeof lookup(dict, keys.description), 'string', `${lang}: ${keys.description}`);
+    }
+  }
+  assert.equal(typeof lookup(ro, 'seo.site_name'), 'string');
+});
+
+test('las páginas de bloque usan las claves seo.block.<slug> que pide la ruta', () => {
+  assert.match(routes, /titleKey: 'seo\.block\.:blockId\.title'/);
+  for (const page of ROUTE_PAGES.filter((p) => p.path.startsWith('media/'))) {
+    assert.equal(page.seo, `block.${page.path.slice('media/'.length)}`, page.path);
+  }
+});
+
+test('departamentos: una página por slug de DEPARTMENT_SLUGS', () => {
+  const pages = departmentPages(appPaths);
+  assert.ok(pages.length >= 6);
+  assert.ok(pages.some((p) => p.path === 'departamente/tineret' && p.title === 'departments.youth.name'));
+});
+
+test('canónica con barra final en las indexables; ninguna en las noindex', () => {
+  const html = renderRoutePage(INDEX, { title: 't', description: 'd', url: 'https://elimarganda.com/contact/' });
+  assert.match(html, /<link rel="canonical" href="https:\/\/elimarganda.com\/contact\/">/);
+  const again = renderRoutePage(html, { title: 't', description: 'd', url: 'https://elimarganda.com/doneaza/' });
+  assert.equal(again.match(/rel="canonical"/g).length, 1);
+  assert.match(again, /doneaza\//);
+  const hidden = renderRoutePage(html, { title: 't', description: 'd', url: 'x', noindex: true });
+  assert.doesNotMatch(hidden, /rel="canonical"/);
+  assert.equal(upsertCanonical(INDEX, null), INDEX);
+});
+
+test('sitemap y robots', () => {
+  const xml = renderSitemap(['https://elimarganda.com/', 'https://elimarganda.com/a&b/'], '2026-11-14');
+  assert.match(xml, /^<\?xml version="1.0" encoding="UTF-8"\?>/);
+  assert.equal(xml.match(/<url>/g).length, 2);
+  assert.match(xml, /a&amp;b/);
+  const robots = renderRobots('https://elimarganda.com/', ROBOTS_DISALLOW);
+  assert.match(robots, /^User-agent: \*/);
+  assert.match(robots, /Disallow: \/media\/control/);
+  assert.match(robots, /Sitemap: https:\/\/elimarganda.com\/sitemap.xml/);
+  // Las páginas noindex deben poder rastrearse (si no, Google no lee su noindex).
+  for (const page of ROUTE_PAGES.filter((p) => p.noindex)) {
+    assert.ok(!ROBOTS_DISALLOW.includes(`/${page.path}`), page.path);
+  }
+});
+
+test('JSON-LD con los datos de church.config.ts', () => {
+  const church = readChurchData(config);
+  assert.match(church.address, /28500 Arganda del Rey/);
+  assert.ok(church.sameAs.length >= 3);
+  assert.ok(church.sameAs.every((url) => !url.includes('tineret')));
+  const data = churchJsonLd({
+    publicUrl: 'https://elimarganda.com/',
+    church,
+    siteName: 'Biserica Elim Arganda',
+    altNames: ['Iglesia Elim Arganda'],
+    description: 'd',
+  });
+  const org = data['@graph'][1];
+  assert.deepEqual(org['@type'], ['Church', 'Organization']);
+  assert.equal(org.address.postalCode, '28500');
+  assert.equal(org.address.addressLocality, 'Arganda del Rey');
+  assert.ok(existsSync('src/assets/pwa/icon-any-512.png'));
+  const html = injectJsonLd(INDEX, { a: '</script>' });
+  assert.ok(html.includes('<script type="application/ld+json">{"a":"\\u003c/script>"}</script>\n</head>'));
+});
+
+test('updateNgswHash pone el SHA-1 del index.html modificado', () => {
+  const manifest = { hashTable: { '/index.html': 'viejo', '/main.js': 'x' } };
+  updateNgswHash(manifest, '/index.html', 'abc');
+  assert.equal(manifest.hashTable['/index.html'], 'a9993e364706816aba3e25717850c26c9cd0d89d');
+  assert.equal(manifest.hashTable['/main.js'], 'x');
+  assert.throws(() => updateNgswHash({ hashTable: {} }, '/index.html', 'abc'));
 });

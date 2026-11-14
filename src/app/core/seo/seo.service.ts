@@ -1,4 +1,4 @@
-import { Injectable, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,13 @@ export interface RouteSeo {
    * contenido personal, como las fotos de las familias por las que se ora.
    */
   readonly noindex?: boolean;
+  /**
+   * Claves de reserva si las de arriba no existen. Para rutas con parámetro
+   * cuyas claves lo llevan dentro (`seo.block.:blockId.title` en
+   * `/media/:blockId`, que `AppTitleStrategy` sustituye por el valor real):
+   * un slug sin textos propios cae en los genéricos en vez de pintar la clave.
+   */
+  readonly fallback?: Pick<RouteSeo, 'titleKey' | 'descriptionKey'>;
 }
 
 /** Título y descripción de una página que dependen de sus datos (ya traducidos). */
@@ -37,6 +44,7 @@ export class SeoService {
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
   private readonly config = inject(CHURCH_CONFIG);
+  private readonly document = inject(DOCUMENT);
 
   private readonly current = signal<RouteSeo | null>(null);
 
@@ -75,19 +83,64 @@ export class SeoService {
     this.current.set(seo);
   }
 
-  /** URL pública absoluta de la página activa (sin ancla: el ancla es del enlace). */
+  /**
+   * URL pública absoluta de la página activa (sin ancla: el ancla es del
+   * enlace), **con barra final** salvo la portada: es la forma que GitHub
+   * Pages sirve con 200 (`/contact/` → `contact/index.html`, generada por
+   * `scripts/generate-route-pages.mjs`); `/contact` responde 301 hacia ella.
+   */
   private pageUrl(): string {
-    return `${this.config.publicUrl.replace(/\/$/, '')}${this.path()}`;
+    const path = this.path().replace(/\/+$/, '');
+    return `${this.config.publicUrl.replace(/\/$/, '')}${path ? `${path}/` : '/'}`;
+  }
+
+  /** Traduce `key`; si no existe (ngx-translate devuelve la clave), `fallback`. */
+  private text(key: string | undefined, fallback: string | undefined): string {
+    if (key) {
+      const value = this.translate.instant(key) as string;
+      if (value !== key) return value;
+    }
+    return fallback ? (this.translate.instant(fallback) as string) : '';
+  }
+
+  /**
+   * `<link rel="canonical">`: la dirección única de la página para los
+   * buscadores (con o sin barra, `?rol=`, anclas… → una sola). Una página
+   * `noindex` no lleva: canónica + noindex son señales contradictorias.
+   */
+  private setCanonical(url: string | null): void {
+    const head = this.document.head;
+    let link = head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!url) {
+      link?.remove();
+      return;
+    }
+    if (!link) {
+      link = this.document.createElement('link');
+      link.rel = 'canonical';
+      head.appendChild(link);
+    }
+    link.href = url;
   }
 
   private apply(seo: RouteSeo | null, override: PageSeoOverride | null): void {
-    const brand = this.translate.instant('brand.name') as string;
-    const pageTitle = override?.title ?? (seo ? (this.translate.instant(seo.titleKey) as string) : '');
-    const title = pageTitle && pageTitle !== brand ? `${pageTitle} · ${brand}` : brand;
+    // Nombre del sitio en buscadores: con «Arganda» (lo que se busca y lo
+    // que Google muestra como nombre del sitio); `brand.name` es el de la UI.
+    // Sin traducciones aún (primer instante del arranque): no se toca nada. Lo
+    // estático del HTML (`generate-route-pages.mjs`) ya es correcto, y pisarlo
+    // con las claves crudas pintaba «brand.name» en la pestaña un momento.
+    if (this.translate.instant('brand.name') === 'brand.name') return;
+    const brand = this.text('seo.site_name', 'brand.name');
+    const pageTitle = override?.title ?? (seo ? this.text(seo.titleKey, seo.fallback?.titleKey) : '');
+    // Portada: la marca delante («Biserica Elim Arganda · Biserică
+    // penticostală…»); el resto, la página delante y la marca detrás.
+    const title = !pageTitle || pageTitle === brand
+      ? brand
+      : this.path() === '/' ? `${brand} · ${pageTitle}` : `${pageTitle} · ${brand}`;
 
     const description =
       override?.description ??
-      (this.translate.instant(seo?.descriptionKey ?? 'app.description') as string);
+      this.text(seo?.descriptionKey, seo?.fallback?.descriptionKey ?? 'app.description');
 
     this.titleService.setTitle(title);
     this.meta.updateTag({ name: 'description', content: description });
@@ -108,5 +161,6 @@ export class SeoService {
     } else {
       this.meta.removeTag('name="robots"');
     }
+    this.setCanonical(seo?.noindex ? null : this.pageUrl());
   }
 }

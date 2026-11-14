@@ -782,7 +782,15 @@
     "control": "Panel de control",
     "admin_schedule": "Programare · Administrativ",
     "call": "Llamar por teléfono",
-    "whatsapp": "Escribir por WhatsApp"
+    "whatsapp": "Escribir por WhatsApp",
+    "resources": {
+      "title": "Enlaces de interés",
+      "bible": "Biblia",
+      "bible_version": "Versión de la Biblia",
+      "songs": "Cantos cristianos (RO)",
+      "poems": "Poesías cristianas (RO)",
+      "cult": "Culto Pentecostal de Rumanía"
+    }
   },
   "install": {
     "cta": "Instalar",
@@ -1047,8 +1055,8 @@
       "description": "El código QR para imprimir que lleva a la página de bienvenida de la Iglesia Elim."
     },
     "home": {
-      "title": "Inicio",
-      "description": "Iglesia Elim de Arganda del Rey: programa, eventos, directos y redes sociales."
+      "title": "Iglesia pentecostal rumana",
+      "description": "Iglesia cristiana pentecostal rumana en Arganda del Rey (Madrid). Te esperamos los domingos a las 10:00 y 18:00. Programa, directos y cómo llegar."
     },
     "about": {
       "title": "Quiénes somos",
@@ -1116,6 +1124,37 @@
     "baptisms": {
       "title": "Bautismos",
       "description": "Registro de bautismos de la Iglesia Elim de Arganda del Rey y los candidatos de cada uno."
+    },
+    "site_name": "Iglesia Elim Arganda",
+    "block": {
+      "program": {
+        "title": "Programa semanal",
+        "description": "Los cultos de la Iglesia Elim Arganda cada día de la semana: domingos a las 10:00 y 18:00, oración y enseñanza, noche de jóvenes."
+      },
+      "evenimente": {
+        "title": "Eventos",
+        "description": "Los próximos eventos especiales de la Iglesia Elim de Arganda del Rey: conferencias, bautismos, celebraciones y encuentros."
+      },
+      "citirea-bibliei": {
+        "title": "Lectura de la Biblia",
+        "description": "La semana del plan de lectura bíblica de la Iglesia Elim: los textos de cada día, con enlace a la Biblia."
+      },
+      "galerie": {
+        "title": "Galería de fotos",
+        "description": "Fotos de la vida de la Iglesia Elim Arganda: cultos, bautismos, jóvenes, coro y eventos."
+      },
+      "retele": {
+        "title": "Redes sociales",
+        "description": "Instagram, Facebook y YouTube de la Iglesia Elim Arganda: síguenos y mantente al día."
+      },
+      "transmisiuni": {
+        "title": "Directos",
+        "description": "Los cultos de la Iglesia Elim Arganda en directo en YouTube y las últimas emisiones, estés donde estés."
+      },
+      "locatie": {
+        "title": "Cómo llegar",
+        "description": "Dirección de la Iglesia Elim: Av. de Madrid, 30, 28500 Arganda del Rey (Madrid). Mapa, horarios y cómo llegar."
+      }
     }
   },
   "home": {
@@ -1615,6 +1654,7 @@
     "title": "Declaración de fe",
     "lead": "Creemos, confesamos y vivimos las verdades de las Sagradas Escrituras.",
     "source": "Texto adoptado en el Congreso del Culto Cristiano Pentecostal del 8 al 10 de octubre de 2025.",
+    "source_link": "Texto oficial completo (PDF, en rumano)",
     "part_label": "Capítulo",
     "articles_count": "Artículos: {{count}}",
     "refs_label": "Referencias bíblicas:",

@@ -725,6 +725,20 @@
   font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--c-faint);
+
+  /* El único enlace de la nota: subrayado para que se distinga sin depender
+     del color, y en el navy de marca para que pase contraste. */
+  a {
+    color: var(--c-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+
+    &:hover {
+      color: var(--c-gold-deep);
+    }
+
+    @include focus-ring(2px);
+  }
 }
 
 @include motion-reduce {

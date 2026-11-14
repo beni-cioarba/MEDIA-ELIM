@@ -480,6 +480,99 @@
 //   < lg   © ……………………………………………………
 //          v2.0 · ▭▯▯ 100%            INEB
 //          [Instalar] ↑ ⇪ ▶ 🎨
+// ---------------------------------------------------------------------
+// Linkuri utile (14/11/2026)
+// ---------------------------------------------------------------------
+// Una sola línea tenue entre el mapa del sitio y la franja legal: rótulo en
+// versalitas + enlaces en fila que se parten solos (flex-wrap), así entra un
+// recurso más sin rediseñar nada. Más discreto que las columnas del menú
+// (0,8125 rem y 62 % de opacidad) porque son destinos externos, no la web.
+.footer__resources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-5);
+  padding-block: var(--sp-3);
+  border-block-start: 1px solid rgba(247, 250, 252, 0.1);
+}
+
+.footer__resources-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.85);
+}
+
+.footer__resources-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  > .footer__link {
+    font-size: 0.8125rem;
+    color: rgba(247, 250, 252, 0.66);
+  }
+}
+
+.footer__resource-icon {
+  flex: none;
+  font-size: 0.95rem;
+  color: rgba(212, 175, 55, 0.7);
+}
+
+// Selector de versión: dos segmentos de 24 px (mínimo táctil de WCAG 2.5.8),
+// el activo en oro sobre navy. Sólo cambia el destino del enlace.
+.footer__bible-switch {
+  display: inline-flex;
+  margin-inline-start: 0.15rem;
+  padding: 1px;
+  border: 1px solid rgba(247, 250, 252, 0.18);
+  border-radius: 999px;
+}
+
+.footer__bible-opt {
+  // En px y no en rem: con la raíz a 15 px, 1,5 rem daba 23 px (< 24).
+  min-width: 28px;
+  min-height: 24px;
+  padding: 0 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(247, 250, 252, 0.6);
+  font: 700 0.625rem / 1 var(--font-sans);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    color var(--mo-base) var(--ea-standard),
+    background-color var(--mo-base) var(--ea-standard);
+
+  &:hover {
+    color: var(--c-on-primary);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--c-gold);
+    color: var(--c-primary-deep);
+  }
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+}
+
 .footer__legal {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

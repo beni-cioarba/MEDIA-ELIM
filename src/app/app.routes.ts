@@ -80,7 +80,7 @@ export const APP_ROUTES: Routes = [
     loadComponent: () =>
       import('./features/presenter/presenter.component').then((m) => m.PresenterComponent),
     data: {
-      seo: { titleKey: 'seo.control.title', descriptionKey: 'seo.control.description' },
+      seo: { titleKey: 'seo.control.title', descriptionKey: 'seo.control.description', noindex: true },
     },
   },
   {
@@ -90,7 +90,7 @@ export const APP_ROUTES: Routes = [
     loadComponent: () =>
       import('./features/projection/projection.component').then((m) => m.ProjectionComponent),
     data: {
-      seo: { titleKey: 'seo.projection.title', descriptionKey: 'seo.projection.description' },
+      seo: { titleKey: 'seo.projection.title', descriptionKey: 'seo.projection.description', noindex: true },
     },
   },
   {
@@ -227,7 +227,7 @@ export const APP_ROUTES: Routes = [
         loadComponent: () =>
           import('./features/styleguide/styleguide.component').then((m) => m.StyleguideComponent),
         data: {
-          seo: { titleKey: 'seo.styleguide.title', descriptionKey: 'seo.styleguide.description' },
+          seo: { titleKey: 'seo.styleguide.title', descriptionKey: 'seo.styleguide.description', noindex: true },
         },
       },
       {
@@ -267,7 +267,14 @@ export const APP_ROUTES: Routes = [
         loadComponent: () =>
           import('./features/stage/stage.component').then((m) => m.StageComponent),
         data: {
-          seo: { titleKey: 'seo.media.title', descriptionKey: 'seo.media.description' },
+          // Título y descripción propios de cada bloque (`seo.block.<slug>`):
+          // con los genéricos de Media, siete páginas compartían título y
+          // Google las trataba como duplicadas.
+          seo: {
+            titleKey: 'seo.block.:blockId.title',
+            descriptionKey: 'seo.block.:blockId.description',
+            fallback: { titleKey: 'seo.media.title', descriptionKey: 'seo.media.description' },
+          },
         },
       },
       {

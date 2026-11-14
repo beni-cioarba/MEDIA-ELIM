@@ -45,6 +45,15 @@ export class AnnouncementsService {
   readonly hasActive = computed<boolean>(() => this.active().length > 0);
 
   /**
+   * Vigentes que **se proyectan**: los que no llevan `webOnly`. Es la única
+   * lista que ve la presentación (diapositivas y panel de control); la web
+   * (`/anunturi`, portada) sigue usando `active`.
+   */
+  readonly projectable = computed<readonly Announcement[]>(() =>
+    this.active().filter((a) => !a.webOnly),
+  );
+
+  /**
    * Vigentes que abarcan **toda una semana** (sin `date` propia y con
    * `publishedOn` → `expiresOn` de al menos `WEEK_MIN_DAYS` días): las semanas
    * de oración y mijlocire. No son de un día concreto, así que la tarjeta del

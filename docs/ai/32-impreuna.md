@@ -138,8 +138,9 @@ scripts/impreuna-push.mjs aviso diario (GitHub Action impreuna-push.yml) → § 
   la misma que el bloque de lectura de la iglesia: el domingo ya anuncia la
   semana que empieza el lunes, con «Începe mâine»), hoy resaltado y lo pasado
   atenuado, el primer jueves con la pastilla «POST», QR a `/impreuna` con la
-  dirección escrita y el próximo día de ayuno (con su tema si está cargado). Sólo importa el plan (sin vídeos ni red). Se proyecta sola
-  mientras la edición está en marcha; 15 s por defecto. Vigilada por
+  dirección escrita y el próximo día de ayuno (con su tema si está cargado). Sólo importa el plan (sin vídeos ni red). **Apagada por
+  defecto** desde el 15/11/2026 (petición del usuario: `impreuna: false` en
+  `autoAvailability`); el operador la enciende en el panel. 15 s por defecto. Vigilada por
   `check:projection` (nada bajo 3,2u). Textos en `impreuna_slide.*` del
   diccionario principal (la consola los necesita sin el paquete del módulo).
 
@@ -353,8 +354,8 @@ Pasos sugeridos para lanzarlo — **no hechos en código, los decide la iglesia*
 5. **Primer jueves** (ayuno): la página lo explica ese día y avisa la víspera;
    la diapositiva del domingo anterior lo marca en su fila. Cargar el tema del
    mes en cuanto el Cult lo publique (receta en «Recetas»).
-6. **Diapositiva** de la semana con QR: hecha (bloque `impreuna`, sale sola
-   en la rotación tras «Citirea Bibliei»; se apaga desde el panel si no toca).
+6. **Diapositiva** de la semana con QR: hecha (bloque `impreuna`, tras «Citirea Bibliei»
+   en la rotación). Desde el 15/11/2026 no sale sola: se enciende en el panel.
 
 ## 6 · Pruebas
 

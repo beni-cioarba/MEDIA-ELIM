@@ -159,6 +159,10 @@ Maquetación (`announcement-card.component.scss`, bloque `.stage.is-fullscreen`)
 - **`webOnly: true`** en una sección la deja sólo para la web (`/anunturi`),
   no para el cartel: es la válvula para el detalle que no cabe legible (listas
   largas de nombres, condiciones).
+- **`webOnly: true`** en el **anuncio entero** (14/11/2026) lo saca de la
+  presentación y del panel de control; sigue en `/anunturi` y en la portada.
+  La proyección lee `AnnouncementsService.projectable`, la web `active`.
+  Primer uso: `proiectul_impreuna` (15/11/2026).
 - **`part: 2`** en una sección la proyecta en una **segunda diapositiva**
   («1/2», «2/2», 03/10/2026): para cuando todo el texto importa y no cabe
   legible en una. Cada parte repite la cabecera (fecha, título, lugar); la 1

@@ -18,7 +18,8 @@
 //                            paloma + cruz + llama, extraída píxel a píxel del
 //                            propio emblema (lo que no es el disco blanco).
 //  · icon-180             → apple-touch-icon: a sangre (iOS redondea solo).
-//  · favicon-32 + favicon.ico (16/32/48) → la pestaña: el emblema a color a
+//  · favicon-32 + favicon-96 + favicon.ico (16/32/48) → la pestaña y el
+//                            resultado de Google (96 = múltiplo de 48): el emblema a color a
 //                            sangre (antes, el disco al 84 % sobre navy: una
 //                            mancha). Ver la nota en `main()`.
 //  · shortcut-*-192       → atajos del manifiesto (pulsación larga): baldosa
@@ -255,6 +256,9 @@ async function main() {
   // claras y oscuras, y rima con el icono instalado.
   const fav = (size) => sharp(SRC).resize(size, size).png({ compressionLevel: 9 }).toBuffer();
   await write('favicon-32.png', await fav(32));
+  // Google pinta el favicon junto a cada resultado y pide un múltiplo de
+  // 48 px: con sólo 32 y el .ico (48) se veía blando en pantallas 2×/3×.
+  await write('favicon-96.png', await fav(96));
   const frames = await Promise.all([16, 32, 48].map(async (size) => ({ size, png: await fav(size) })));
   const icoBuf = ico(frames);
   await writeFile(FAVICON_ICO, icoBuf);
