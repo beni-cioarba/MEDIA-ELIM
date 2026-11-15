@@ -958,15 +958,15 @@
   }
 
   // Tarjetas destacadas en el teléfono: la foto marca el alto y el texto
-  // cabe dentro (resumen a dos líneas, nombre en una). Pastor 9 rem → foto
-  // de 144 × 180; asistente 7,5 rem → 120 × 150.
+  // cabe dentro (resumen a dos líneas, nombre en una). Las dos fotos miden
+  // lo mismo, 9 rem → 144 × 180 (petición del usuario, 15/11/2026: la del
+  // asistente iba a 7,5 rem → 120 × 150 y se veía menor). El pastor destaca
+  // por la tarjeta navy y el nombre mayor, no por la foto.
   .feature {
-    --feature-photo: 7.5rem;
+    --feature-photo: 9rem;
   }
 
   .feature--pastor {
-    --feature-photo: 9rem;
-
     .feature__name {
       font-size: 1.375rem;
     }
