@@ -84,17 +84,14 @@ jobs:
       - name: Route pages (200 + own meta)
         run: node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser
 
-      # Prueba de humo sobre lo que se va a publicar, servido como lo sirve
-      # GitHub Pages: cada página en dos anchos (estado, consola, h1, contraste,
-      # objetivos táctiles, claves sin traducir), todos los enlaces internos y
-      # la proyección a 1080p. Si falla, no se publica. scripts/e2e/smoke.mjs.
-      - name: Smoke test (pages, links, projection)
-        env:
-          PDF_BROWSER: chrome
-        run: npm run e2e -- --dist dist/iglesia-redes/browser
-
-      - name: Add .nojekyll
-        run: touch dist/iglesia-redes/browser/.nojekyll
+      # Manifiesto vacío de los PDF: la web siempre pide
+      # assets/family-prayer/pdf.json y, si el paso siguiente fallara, sin él
+      # daría 404 (en la web y en la prueba de humo). El generador lo
+      # sustituye por el real.
+      - name: Family prayer PDFs (empty manifest)
+        run: |
+          mkdir -p dist/iglesia-redes/browser/assets/family-prayer
+          echo '{"weeks":[]}' > dist/iglesia-redes/browser/assets/family-prayer/pdf.json
 
       # PDF de «Rugăciune pentru familii» (uno por semana, para el grupo de la
       # iglesia): imprime con el Chrome del runner las mismas diapositivas que
@@ -108,6 +105,8 @@ jobs:
       # cada semana. La clave lleva el número de ejecución para que cada
       # despliegue guarde la suya; `restore-keys` trae la más reciente. Si la
       # caché caduca (7 días sin uso), se imprimen todas una vez y ya.
+      # Va antes de la prueba de humo: así la prueba revisa la web tal como se
+      # publica, con el manifiesto de los PDF ya escrito.
       - name: Family prayer PDFs (cache)
         uses: actions/cache@v4
         with:
@@ -120,6 +119,18 @@ jobs:
         env:
           PDF_BROWSER: chrome
         run: npm run pdf:familii -- --dist dist/iglesia-redes/browser --reuse .cache/family-pdfs
+
+      # Prueba de humo sobre lo que se va a publicar, servido como lo sirve
+      # GitHub Pages: cada página en dos anchos (estado, consola, h1, contraste,
+      # objetivos táctiles, claves sin traducir), todos los enlaces internos y
+      # la proyección a 1080p. Si falla, no se publica. scripts/e2e/smoke.mjs.
+      - name: Smoke test (pages, links, projection)
+        env:
+          PDF_BROWSER: chrome
+        run: npm run e2e -- --dist dist/iglesia-redes/browser
+
+      - name: Add .nojekyll
+        run: touch dist/iglesia-redes/browser/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
