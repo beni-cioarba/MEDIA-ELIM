@@ -126,7 +126,14 @@ process.exit(1);
  */
 function isThirdParty(message) {
   const url = message.location()?.url ?? '';
-  return /^https?:/.test(url) && !url.startsWith(origin);
+  if (/^https?:/.test(url) && !url.startsWith(origin)) return true;
+  // CORS de una web ajena: el navegador lo atribuye a nuestra página, pero el
+  // recurso es de otro dominio. Pasa en la prueba porque se sirve desde
+  // 127.0.0.1 y esas APIs sólo admiten el dominio publicado (p. ej.
+  // proiectulimpreuna.ro → `Access-Control-Allow-Origin: https://elimarganda.com`):
+  // en la web real no ocurre y la página ya completa lo que falte.
+  const cors = message.text().match(/Access to (?:XMLHttpRequest|fetch) at '(https?:\/\/[^']+)'/);
+  return !!cors && !cors[1].startsWith(origin);
 }
 
 /** El mensaje de consola con la dirección del recurso que lo causó (el texto solo no la trae). */
