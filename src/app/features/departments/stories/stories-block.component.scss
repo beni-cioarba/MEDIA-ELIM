@@ -330,7 +330,7 @@
   // Áreas: en estrecho cabecera → medios → texto (las fotos justo bajo el
   // título); en ancho, cabecera y texto a la izquierda, medios a la derecha.
   display: grid;
-  grid-template-areas: 'head' 'media' 'text' 'sermon';
+  grid-template-areas: 'cover' 'head' 'media' 'text' 'sermon';
   gap: var(--sp-4);
   padding: var(--sp-5);
   border: 1px solid var(--c-hairline);
@@ -339,19 +339,52 @@
   box-shadow: var(--e-2);
 
   @container (min-width: 560px) {
-    grid-template-areas: 'head' 'text' 'media' 'sermon';
+    grid-template-areas: 'cover' 'head' 'text' 'media' 'sermon';
   }
 
   @container (min-width: 1100px) {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    grid-template-areas: 'head media' 'text media' 'sermon sermon';
-    grid-template-rows: auto 1fr auto;
+    grid-template-areas: 'cover cover' 'head media' 'text media' 'sermon sermon';
+    grid-template-rows: auto auto 1fr auto;
     align-items: start;
   }
 
   @container (max-width: 559.98px) {
     padding: var(--sp-4);
     border-radius: var(--r-lg);
+  }
+}
+
+// Portada (`StoryPhoto.cover`): arriba, a sangre dentro de la tarjeta (llega
+// a sus bordes y toma su radio) y entera a su proporción; un tope de alto
+// para que una foto casi cuadrada no se coma la crónica.
+.story__cover {
+  grid-area: cover;
+  position: relative;
+  overflow: hidden;
+  margin: calc(-1 * var(--sp-5)) calc(-1 * var(--sp-5)) 0;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  background: var(--c-surface-2);
+  cursor: zoom-in;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 30rem;
+    object-fit: cover;
+    transition: transform var(--mo-slow) var(--ea-standard);
+  }
+
+  @container (max-width: 559.98px) {
+    margin: calc(-1 * var(--sp-4)) calc(-1 * var(--sp-4)) 0;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+  }
+}
+
+@media (hover: hover) {
+  .story__cover:hover img {
+    transform: scale(1.02);
   }
 }
 
@@ -393,6 +426,10 @@
 
 .reel {
   position: relative;
+  // A su tamaño, arriba y fijo al bajar: si el mosaico es más alto que el
+  // vídeo (tabără: doce piezas) no se estira dejando un recuadro vacío; si
+  // es más bajo (ANCORAT), el mosaico sigue estirándose a su alto (filas 1fr).
+  align-self: start;
   margin: 0;
   overflow: hidden;
   border-radius: var(--r-lg);
@@ -401,6 +438,13 @@
 
   @include dept.gold-edge(15%);
 
+  // Con columnas, fijo bajo la cabecera y las pestañas de departamentos
+  // mientras se recorre un mosaico más alto que él (mismo tope que la
+  // columna lateral de la página).
+  @container (min-width: 560px) {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--dept-switcher-h, 3rem) + 1rem);
+  }
 }
 
 .reel__video {
@@ -573,7 +617,30 @@
   }
 }
 
+// Pieza de vídeo: ▶ en la esquina (no en el centro: no tapa a nadie) sobre
+// una pastilla oscura; al apuntar crece un poco.
+.tile__play {
+  position: absolute;
+  right: var(--sp-2);
+  bottom: var(--sp-2);
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: rgb(6 18 40 / 0.62);
+  color: #fff;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+  pointer-events: none;
+  transition: transform var(--mo-base) var(--ea-standard);
+}
+
 @media (hover: hover) {
+  .tile__frame:hover .tile__play {
+    transform: scale(1.12);
+  }
+
   .tile__frame:hover img {
     transform: scale(1.04);
   }

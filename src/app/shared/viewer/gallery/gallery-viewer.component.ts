@@ -90,7 +90,14 @@ export class GalleryViewerComponent {
 
   protected readonly index = linkedSignal(() => this.startIndex());
   protected readonly item = computed(() => this.items()[this.index()]);
-  protected readonly kind = computed(() => (resolveCategory(this.item()) === 'pdf' ? 'pdf' : 'image'));
+  /**
+   * Qué se pinta: PDF, vídeo (reproductor nativo, sin zoom ni gestos) o
+   * imagen. Una galería puede mezclar fotos y vídeos (crónicas de tineret).
+   */
+  protected readonly kind = computed<'pdf' | 'video' | 'image'>(() => {
+    const category = resolveCategory(this.item());
+    return category === 'pdf' ? 'pdf' : category === 'video' ? 'video' : 'image';
+  });
   /** Título del elemento (pie de foto y barra). */
   protected readonly title = computed(() => this.item().name ?? null);
   protected readonly multiple = computed(() => this.items().length > 1);

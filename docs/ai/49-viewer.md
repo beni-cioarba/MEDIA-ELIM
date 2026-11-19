@@ -63,6 +63,15 @@ En móvil se ocultan imprimir y abrir fuera y los datos de la barra.
 No se proyecta: en la proyección del templo la directiva va desactivada
 (`[appViewableDisabled]="fullscreen()"` en la ficha de familia).
 
+## Galería con vídeo (19/11/2026)
+
+La galería admite **vídeo** además de imagen y PDF (`kind()` = `video` si
+`resolveCategory` lo dice: `mimeType: 'video/mp4'` o extensión). Se pinta el
+reproductor nativo entero (`object-fit: contain` sobre negro), arranca solo,
+`playsinline`, póster = `thumb`; sin zoom ni gestos (los manejadores de
+puntero sólo actúan con imagen) y la autorreproducción de la galería se para
+en él. Primer uso: la crónica de la tabără (`StoryPhoto.video`).
+
 ## Galería: la foto siempre entera (09/10/2026)
 
 `.mv__img` ocupa el escenario entero (`position: absolute; inset: 0`) con

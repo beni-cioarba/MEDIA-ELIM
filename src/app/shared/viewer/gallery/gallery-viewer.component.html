@@ -54,6 +54,21 @@
           </a>
         </div>
       }
+    } @else if (kind() === 'video') {
+      <!-- Vídeo: el reproductor del navegador, entero (contain). Arranca solo
+           al abrirlo o al llegar a él; la autorreproducción de la galería se
+           para en los vídeos (no pasa al siguiente a mitad). -->
+      <video
+        class="mv__video"
+        [src]="item().src"
+        [attr.poster]="item().thumb ?? null"
+        controls
+        autoplay
+        playsinline
+        preload="metadata"
+        controlslist="nodownload"
+        [attr.aria-label]="title() ?? ('viewer.document' | translate)"
+      ></video>
     } @else {
       @if (loading()) {
         <span class="mv__spinner" role="status" [attr.aria-label]="'viewer.loading' | translate"></span>

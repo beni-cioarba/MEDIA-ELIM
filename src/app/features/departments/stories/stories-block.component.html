@@ -81,6 +81,23 @@
           }
         </div>
 
+        @if (v.cover; as cover) {
+          <!-- Portada: entera y a todo el ancho; abre la galería (la primera). -->
+          <div class="story__cover" [appViewable]="v.gallery" [appViewableIndex]="0" appViewableMode="gallery">
+            <img
+              [src]="cover.src"
+              [attr.srcset]="cover.medium + ' 960w, ' + cover.src + ' ' + cover.width + 'w'"
+              sizes="(min-width: 1200px) 75rem, 100vw"
+              [attr.width]="cover.width"
+              [attr.height]="cover.height"
+              [style.object-position]="cover.focus"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        }
+
         <div class="story__media" [class.has-video]="!!s.video" data-no-swipe>
           @if (s.video; as video) {
             <figure class="reel">
@@ -108,17 +125,21 @@
           <ul class="mosaic" [class.mosaic--single]="v.photos.length === 1 && !s.video" role="list" [attr.aria-label]="'departments.open_gallery' | translate">
             @for (photo of v.photos; track photo.src; let i = $index) {
               <li class="tile" [class.tile--portrait]="photo.portrait" [class.tile--featured]="photo.featured">
-                <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="i" appViewableMode="gallery">
+                <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="v.cover ? i + 1 : i" appViewableMode="gallery">
                   <img
                     [src]="photo.medium"
                     [attr.srcset]="photo.thumb + ' 480w, ' + photo.medium + ' 960w'"
                     sizes="(min-width: 1024px) 16vw, (min-width: 720px) 30vw, 60vw"
                     [attr.width]="photo.width"
                     [attr.height]="photo.height"
+                    [style.object-position]="photo.focus"
                     alt=""
                     loading="lazy"
                     decoding="async"
                   />
+                  @if (photo.video) {
+                    <span class="tile__play" aria-hidden="true"><app-icon name="play" /></span>
+                  }
                 </div>
               </li>
             }

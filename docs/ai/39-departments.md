@@ -170,9 +170,34 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
   y Ajutorare «Zâmbetul din Cutie» → una foto (mosaico `--single`, 16:9) +
   Drive. Sin fecha exacta conocida, la crónica muestra su **periodo** en
   texto (`<base>.period`), nunca una fecha inventada.
-- **Tabăra 2026** (25–26/07/2026, Granja Casavieja, Ávila): sus dos carpetas
-  de Drive estaban **vacías**. Al subir fotos: optimizarlas, `photos` en
-  `YOUTH_STORIES` y `driveFolderId`; la tarjeta pasa sola a la versión grande.
+- **Tabăra 2026** (Granja Casavieja, Ávila; material del 19/11/2026, carpeta
+  «TABARA › FINAL»: 3 fotos y 11 vídeos, 944 MB). **Ojo a la fecha**: la
+  configuración dice 25–26/07/2026, pero el dron y el iPhone marcan el
+  26–27/06/2026 (pendiente de confirmar con el usuario).
+  **Todo el material tal cual** (decisión del usuario: nada de montajes ni
+  fotogramas sacados de los vídeos):
+  - **Portada** (`StoryPhoto.cover`): la foto de grupo con el recorte
+    panorámico del usuario (1465 × 654), arriba de la tarjeta, a sangre y
+    entera (tope 30 rem); en la galería, la primera.
+  - **Lateral**: IMG_3731 (la sesión bajo la encina), `video` de la crónica.
+    El reel ya no se estira al alto del mosaico (`align-self: start`) y, con
+    columnas, queda fijo bajo la cabecera y las pestañas mientras se recorre
+    (`sticky`); ANCORAT no cambia (su mosaico sigue estirándose a él).
+  - **Mosaico**: 12 piezas, 4 × 6 sin huecos (10 verticales + 2 apaisadas) en
+    orden de la hora de la cámara: 2 fotos y **10 vídeos como vídeos**
+    (`StoryPhoto.video`): la casilla pinta su portada (un fotograma) con un ▶
+    en la esquina y la galería los reproduce (vídeo en `GalleryViewer`,
+    `49-viewer.md`). IMG_3704 es un **juego** de equipo (no una oración):
+    `joc.mp4`. `StoryPhoto.focus` encuadra el pabellón apaisado (`50% 85%`).
+  - **Vídeos** en `assets/video/tabara-2026/`: 720p, 30 fps, H.264 CRF 28
+    (los dos más densos con tope de 1,5 Mbps), AAC 96k, `faststart`: 59 MB en
+    total frente a 944 MB. `preload="none"`: no se descargan hasta pulsar ▶.
+  - Drive con todo el material: `15stXH7Cv4-lo5qXV7pfHegICrJXSlrWk`
+    («Toate fotografiile», enlace discreto bajo los puntos).
+  - Medido en `ng serve` (1440 y 390 px): 13 imágenes cargadas, portada entera,
+    las 13 piezas de la galería se abren (los 10 vídeos avanzan), sin errores.
+    Ojo: `ng serve` no siempre sirve ficheros de `assets` creados después de
+    arrancar (devuelve el HTML): reiniciarlo antes de revisar.
 - Textos de las dos: provisionales (TODO(iglesia)).
 
 **Vídeo y PWA**: `ngsw-config.json` excluye `/assets/video/**`. El Service

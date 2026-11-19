@@ -186,14 +186,34 @@ para proyectar a cada candidato mientras se presenta. Bloque `baptism`
   retratos en fila del mayor tamaño que cabe: una fila hasta siete, dos a
   partir de ocho; medido con *container queries*) y, detrás, **uno por
   diapositiva** en el orden de la presentación.
-- **Candidato**: el retrato de estudio entero (4:5) pegado al borde a todo el
-  alto (864 px de 1920) y un panel navy con «Candidat la botez · fecha», el
-  nombre de pila (9u) y el apellido en oro (6,4u), «Părinții: …», la
-  mărturie (4,4u, sans al 80 %) y el versículo (serif cursiva oro, la
-  referencia como nota al pie). El panel se ajusta entero (`appFitToBox`
-  0,7 → 1,3) y arranca arriba; la firma «Botez nou-testamental» (también el rótulo del resumen) va en la esquina.
-  Misma familia visual que las fichas de familias; el acento propio es el
-  «agua»: un resplandor azul claro, quieto, en el fondo.
+- **Candidato** (revisión del 19/11/2026, «fondo blanco, más limpio y
+  comprimido»): **fondo blanco** (es un bautismo; los retratos de estudio,
+  claros, ya no quedan recortados sobre navy). Retrato entero (4:5) pegado al
+  borde a todo el alto, con un filo oro entre foto y panel. El panel se
+  reparte en **tres zonas a todo el alto**: quién es (rótulo «Candidat la
+  botez», nombre en UNA línea —nombre navy + apellido oro— y padres), su voz
+  en el centro (frase destacada a 5,6u o mărturie corta a 4,4u, con filete oro
+  a la izquierda) y la Escritura al pie (serif cursiva, referencia en oro). El
+  panel crece hasta ×1,35 (antes el texto corrido se topaba en ×1,15 y dejaba
+  el tercio inferior vacío). Medido a 1080p: ocupación 83-85 % y mínimo 3,2u en
+  todas. La firma «Botez nou-testamental» va en la esquina.
+- **Resumen**: también en blanco, cabecera centrada (rótulo, título, fecha y
+  rejilla en x = 960 exactos; la interletra del rótulo se compensa) y, con una
+  fila (≤ 7), retratos que llenan el **alto** disponible (tope 2:3, recortados
+  por los lados, que son fondo de estudio): 337 × 476 px con 5 candidatos,
+  antes 340 × 425 limitados por el 4:5. Altura de nombre reservada igual para
+  todos: las fotos no se descolocan con un nombre largo. Con dos filas, 4:5 y
+  el nombre encima.
+- **Legibilidad a distancia** (segunda revisión, 19/11/2026): el versículo pasa
+  de serif cursiva fina a sans recto (4,2u, oscuro); rótulos a 3,8u en 800;
+  textos secundarios más oscuros. La firma «Botez nou-testamental» queda como
+  marca tenue pegada a la esquina (3,2u, oro al 42 %) y ya no reserva franja:
+  el contenido llega a 6u del borde.
+- **Tercera revisión** (19/11/2026): el rótulo «Candidat la botez» toma el
+  estilo de la firma (3,2u, oro al 42 %, sin protagonismo) y los márgenes del
+  panel bajan a 3,6u / 4,6u / 4,4u (separaciones internas también). Medido a
+  1080p: ocupación 91-92 %, nombre 8,1-9,8u, frase 5,3-6,4u, versículo
+  3,9-4,8u; la referencia y la firma comparten la franja inferior sin pisarse.
 - La edad y la ciudad tampoco se proyectan. Sin mărturie, la frase
   destacada; sin nada, sólo nombre y padres (el panel crece).
 

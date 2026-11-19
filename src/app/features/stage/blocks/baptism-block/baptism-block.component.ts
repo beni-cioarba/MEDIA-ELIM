@@ -51,12 +51,6 @@ export class BaptismBlockComponent {
     return `${this.baptisms.formatDate(baptism.date, 'day')}, ${this.baptisms.formatDate(baptism.date)}`;
   });
 
-  /** Fecha corta para el rótulo del candidato («22 noiembrie 2026»). */
-  protected readonly shortDate = computed(() => {
-    const baptism = this.baptism();
-    return baptism ? this.baptisms.formatDate(baptism.date) : '';
-  });
-
   /** Columnas y filas del resumen. */
   protected readonly grid = computed(() => {
     const n = Math.max(1, this.candidates().length);

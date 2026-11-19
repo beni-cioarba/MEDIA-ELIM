@@ -1,22 +1,29 @@
 // =====================================================================
-// Diapositiva «Botez» (sólo proyección, a sangre)
+// Diapositiva «Botez» (sólo proyección, a sangre) — línea blanca
 // ---------------------------------------------------------------------
 //
-//   Candidato                              Resumen
-//   ┌──────────┬───────────────────┐       ┌──────────────────────────────┐
-//   │          │ CANDIDAT · fecha  │       │ BOTEZ ÎN APĂ                 │
-//   │ retrato  │ Nombre            │       │ Candidații la botez          │
-//   │   4:5    │ Apellido          │       │ fecha · hora · n candidați   │
-//   │ a todo   │ Părinți …         │       │ ┌───┐┌───┐┌───┐┌───┐┌───┐    │
-//   │ el alto  │ mărturie          │       │ │   ││   ││   ││   ││   │    │
-//   │          │ versículo   firma │       │ └───┘└───┘└───┘└───┘└───┘    │
-//   └──────────┴───────────────────┘       └──────────────────────────────┘
+//   Candidato                               Resumen
+//   ┌──────────┬────────────────────┐       ┌──────────────────────────────┐
+//   │          │ CANDIDAT LA BOTEZ  │       │      BOTEZ NOU-TESTAMENTAL   │
+//   │ retrato  │ Sara Suciu         │       │      Candidații la botez     │
+//   │   4:5    │ Părinții: …        │       │  fecha · hora · n candidați  │
+//   │ a todo   │ ┃ su frase o su     │       │ ┌───┐┌───┐┌───┐┌───┐┌───┐   │
+//   │ el alto  │ ┃ mărturie (centro) │       │ │   ││   ││   ││   ││   │   │
+//   │          │ versículo     firma│       │ └───┘└───┘└───┘└───┘└───┘   │
+//   └──────────┴────────────────────┘       └──────────────────────────────┘
 //
-// Misma familia que las fichas de «Rugăciune pentru familii»: manda la foto,
-// panel navy con oro, una escala tipográfica fija que se ajusta ENTERA
-// (`--fit`, `appFitToBox`) y la firma pegada a la esquina. El acento propio
-// del módulo Botezuri es el «agua»: un resplandor azul claro, quieto, en el
-// fondo del panel (sin movimiento: se proyecta mientras se habla).
+// Revisión del 19/11/2026 (a petición del usuario: «fondo blanco, más
+// limpio, más comprimido y profesional»). Lo que cambia y por qué:
+//   · Fondo BLANCO: es un bautismo (blanco = lo que visten) y los retratos
+//     de estudio, claros, ya no quedan como un recorte sobre navy.
+//   · El panel se reparte EN TRES ZONAS a todo el alto: quién es (arriba),
+//     su voz (centro, crece) y la Escritura (al pie). Antes todo se apilaba
+//     arriba y el tercio inferior quedaba vacío.
+//   · El texto puede crecer hasta llenar (×1,35): antes el tope de ×1,15 lo
+//     dejaba pequeño con media diapositiva libre.
+//   · Nombre en UNA línea (nombre en navy + apellido en oro), sin partirlo.
+//   · La cita lleva un filete oro a la izquierda, no un «„» suelto que se
+//     leía como una coma perdida.
 //
 // Todo en `--pj-u` (unidad de diapositiva). Presupuesto de legibilidad
 // (`30-presentation.md`): nada por debajo de 3,2u.
@@ -27,11 +34,10 @@
   @return calc(#{$value} * var(--fit, 1));
 }
 
-/// Texto corrido (mărturie, versículo): encoge con el panel pero crece como
-/// mucho × 1,15; si sobra sitio, va al aire y no a la letra (el texto no
-/// compite con el nombre). Nunca por debajo de 3,2u.
+/// Texto corrido: sigue al autoajuste entero (crece hasta llenar), nunca
+/// por debajo de 3,2u.
 @function text-fit($value) {
-  @return max(calc(var(--pj-u) * 3.2), min(fit($value), calc(#{$value} * 1.15)));
+  @return max(calc(var(--pj-u) * 3.2), fit($value));
 }
 
 :host {
@@ -39,10 +45,13 @@
 }
 
 .bzs {
-  --bzs-ink: var(--c-text-inverse);
-  --bzs-ink-soft: color-mix(in srgb, var(--c-text-inverse) 80%, transparent);
-  --bzs-ink-mute: color-mix(in srgb, var(--c-text-inverse) 58%, transparent);
-  --bzs-water: #9fd3f0;
+  // Colores propios: sobre blanco, fijos (no siguen el tema oscuro de la web).
+  --bzs-bg: #fff;
+  --bzs-ink: var(--c-primary-darkest);
+  --bzs-body: #253041;
+  --bzs-mute: #4d5869;
+  --bzs-gold: var(--c-gold-deep);
+  --bzs-line: #e6e9ef;
   position: relative;
   isolation: isolate;
   box-sizing: border-box;
@@ -50,36 +59,29 @@
   min-height: 0;
   overflow: hidden;
   color: var(--bzs-ink);
-  background:
-    radial-gradient(ellipse 70% 55% at 100% 100%, color-mix(in srgb, var(--bzs-water) 16%, transparent) 0%, transparent 62%),
-    radial-gradient(ellipse 50% 45% at 0% 0%, color-mix(in srgb, var(--c-gold) 10%, transparent) 0%, transparent 60%),
-    linear-gradient(160deg, var(--c-primary-darkest) 0%, var(--c-primary-deep) 70%, var(--c-primary) 100%);
+  background: var(--bzs-bg);
 }
 
-// ---- Rótulos comunes ---------------------------------------------------
+// ---- Piezas comunes ----------------------------------------------------
 .bzs__eyebrow {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   margin: 0;
-  font-size: calc(var(--pj-u) * 3.2);
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: calc(var(--pj-u) * 3.8);
+  font-weight: 800;
+  letter-spacing: 0.1em;
   line-height: 1.2;
   text-transform: uppercase;
-  color: var(--c-gold-soft);
+  color: var(--bzs-gold);
 }
 
-// Punto separador: más limpio que «·» a este tamaño y no se lee en voz alta.
+// Punto separador: más limpio que «·» a este tamaño.
 .bzs__sep {
   display: inline-block;
   flex: none;
-  width: 0.32em;
-  height: 0.32em;
-  margin: 0 0.7em;
+  width: 0.3em;
+  height: 0.3em;
+  margin: 0 0.75em;
   border-radius: 50%;
-  background: currentColor;
-  opacity: 0.7;
+  background: var(--bzs-gold);
 }
 
 .bzs__img {
@@ -98,8 +100,8 @@
   font-family: var(--font-display);
   font-size: calc(var(--pj-u) * 14);
   font-weight: 700;
-  color: var(--c-gold-soft);
-  background: color-mix(in srgb, var(--c-text-inverse) 8%, transparent);
+  color: var(--bzs-gold);
+  background: #eef1f5;
 }
 
 // =====================================================================
@@ -108,9 +110,8 @@
 .bzs--candidate {
   display: grid;
   // El retrato manda: a todo el alto y a su proporción (4:5 → 80u de ancho
-  // para 100u de alto), pegado al borde; el panel se lleva el resto. Tope del
-  // 48 % para lienzos más estrechos que 16:9 (ahí recorta los lados, que en
-  // los retratos de estudio son fondo).
+  // para 100u de alto), pegado al borde. Tope del 48 % en lienzos más
+  // estrechos que 16:9 (recorta los lados, que son fondo de estudio).
   grid-template-columns: min(calc(var(--pj-u) * 80), 48%) minmax(0, 1fr);
 }
 
@@ -118,17 +119,24 @@
   position: relative;
   height: 100%;
   overflow: hidden;
-  background: var(--c-primary-darkest);
+  background: #eef1f5;
 
   .bzs__img {
     position: absolute;
     inset: 0;
   }
+
+  // Filo oro entre la foto y el panel: separa sin una línea gris.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: calc(var(--pj-u) * 0.5);
+    background: linear-gradient(to bottom, var(--c-gold-soft), var(--c-gold), var(--c-gold-deep));
+  }
 }
 
-// El host de `appFitToBox`: caja fija que recorta. El relleno va en el hijo
-// medido (`.bzs__inner`): si no, lo que no cabe pisaría el relleno inferior
-// sin contar como desborde.
+// Host de `appFitToBox`: caja fija que recorta; el relleno va en el hijo.
 .bzs__panel {
   min-width: 0;
   min-height: 0;
@@ -140,40 +148,40 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  // Arriba, como una página (centrado «flotaba» en las fichas de familias);
-  // abajo, la franja de la firma.
-  padding: fit(calc(var(--pj-u) * 6.5)) calc(var(--pj-u) * 7) calc(var(--pj-u) * 9) calc(var(--pj-u) * 6.5);
+  // A todo el alto: así la voz puede ocupar el centro y la Escritura el pie.
+  min-height: 100%;
+  padding: fit(calc(var(--pj-u) * 3.6)) calc(var(--pj-u) * 4.6) calc(var(--pj-u) * 4.4) calc(var(--pj-u) * 4.6);
+}
+
+// ---- Quién es ----------------------------------------------------------
+// El rótulo, como la firma de la esquina: una marca tenue que dice qué es
+// sin quitarle sitio ni protagonismo al nombre y a su voz.
+.bzs--candidate .bzs__eyebrow {
+  font-size: calc(var(--pj-u) * 3.2);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--c-gold-deep) 42%, transparent);
 }
 
 .bzs__name {
-  display: flex;
-  color: var(--bzs-ink);
-  flex-direction: column;
-  margin: fit(calc(var(--pj-u) * 2.2)) 0 0;
+  margin: fit(calc(var(--pj-u) * 0.6)) 0 0;
   font-family: var(--font-display);
+  font-size: max(calc(var(--pj-u) * 6), fit(calc(var(--pj-u) * 8.6)));
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.02em;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
   text-wrap: balance;
-}
-
-.bzs__given {
-  font-size: max(calc(var(--pj-u) * 5.6), fit(calc(var(--pj-u) * 9)));
   color: var(--bzs-ink);
 }
 
-// El apellido, un escalón por debajo y en oro: se lee el nombre de pila
-// primero (es como se le llama en la iglesia).
 .bzs__family {
-  margin-top: fit(calc(var(--pj-u) * 0.6));
-  font-size: max(calc(var(--pj-u) * 4.6), fit(calc(var(--pj-u) * 6.4)));
   font-weight: 600;
-  color: var(--c-gold-soft);
+  color: var(--bzs-gold);
 }
 
 .bzs__parents {
-  margin: fit(calc(var(--pj-u) * 2.4)) 0 0;
-  font-size: max(calc(var(--pj-u) * 3.2), fit(calc(var(--pj-u) * 3.8)));
+  margin: fit(calc(var(--pj-u) * 1.2)) 0 0;
+  font-size: text-fit(calc(var(--pj-u) * 4.2));
   font-weight: 600;
   line-height: 1.3;
   color: var(--bzs-ink);
@@ -181,15 +189,42 @@
 
 .bzs__label {
   font-weight: 400;
-  color: var(--bzs-ink-mute);
+  color: var(--bzs-mute);
 }
 
-// La voz del candidato: sans, blanco al 80 %, con su medida de lectura.
+// ---- Su voz (centro, crece) -------------------------------------------
+.bzs__voice {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: fit(calc(var(--pj-u) * 2.4));
+}
+
+// La frase destacada: la protagonista. Filete oro a la izquierda.
+.bzs__quote {
+  margin: 0;
+  padding-left: fit(calc(var(--pj-u) * 2.6));
+  border-left: calc(var(--pj-u) * 0.7) solid var(--c-gold);
+
+  p {
+    margin: 0;
+    font-size: text-fit(calc(var(--pj-u) * 5.6));
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--bzs-ink);
+    text-wrap: pretty;
+  }
+}
+
+// La mărturie entera (cuando es corta): cuerpo de lectura.
 .bzs__testimony {
-  margin-top: fit(calc(var(--pj-u) * 4));
+  padding-left: fit(calc(var(--pj-u) * 2.6));
+  border-left: calc(var(--pj-u) * 0.7) solid var(--c-gold);
   font-size: text-fit(calc(var(--pj-u) * 4.4));
   line-height: 1.42;
-  color: var(--bzs-ink-soft);
+  color: var(--bzs-body);
   text-wrap: pretty;
 
   p {
@@ -197,74 +232,60 @@
   }
 
   p + p {
-    margin-top: fit(calc(var(--pj-u) * 1.8));
+    margin-top: fit(calc(var(--pj-u) * 1.6));
   }
 }
 
-// Mărturie larga: su frase destacada, como cita (la entera, en el perfil).
-.bzs__quote {
-  position: relative;
-  margin: fit(calc(var(--pj-u) * 4.5)) 0 0;
-  padding-left: fit(calc(var(--pj-u) * 5));
-  font-size: text-fit(calc(var(--pj-u) * 5.4));
-  font-weight: 500;
-  line-height: 1.32;
-  color: var(--bzs-ink);
-  text-wrap: pretty;
-
-  &::before {
-    content: '„';
-    position: absolute;
-    left: 0;
-    top: -0.32em;
-    font-family: var(--font-serif);
-    font-size: 2.2em;
-    line-height: 1;
-    color: var(--c-gold);
-  }
-}
-
-// La Escritura: serif cursiva en oro, el cierre (un escalón por debajo).
+// ---- La Escritura (al pie) --------------------------------------------
 .bzs__verse {
-  margin: fit(calc(var(--pj-u) * 3.4)) 0 0;
-  padding: 0;
+  margin: 0;
+  padding-top: fit(calc(var(--pj-u) * 2));
+  border-top: 1px solid var(--bzs-line);
 }
 
 .bzs__verse-text {
+  // Sans y recto, no serif cursiva: a 15-20 m los trazos finos de la
+  // cursiva se pierden (revisión del 19/11/2026). La Escritura se distingue
+  // por el filete superior y la referencia en oro, no por la letra.
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: text-fit(calc(var(--pj-u) * 3.8));
-  font-style: italic;
+  font-size: text-fit(calc(var(--pj-u) * 4.2));
+  font-weight: 450;
   line-height: 1.38;
-  color: var(--c-gold-soft);
+  color: var(--bzs-body);
   text-wrap: pretty;
 }
 
-// Sin mărturie, el versículo es el mensaje: sube a destacado.
-.bzs__verse--lead .bzs__verse-text {
-  font-size: text-fit(calc(var(--pj-u) * 5));
+// Sin mărturie, el versículo es el mensaje: sube un escalón.
+.bzs__verse--lead {
+  border-top: 0;
+
+  .bzs__verse-text {
+    font-size: text-fit(calc(var(--pj-u) * 5));
+    color: var(--bzs-ink);
+  }
 }
 
-// Referencia = nota al pie (mismo criterio que familias y anuncios).
 .bzs__verse-ref {
-  display: block;
-  margin-top: fit(calc(var(--pj-u) * 1));
-  font-size: calc(var(--pj-u) * 3.2);
-  font-style: normal;
-  font-weight: 500;
-  color: var(--bzs-ink-mute);
+  margin-top: fit(calc(var(--pj-u) * 0.7));
+  font-size: max(calc(var(--pj-u) * 3.4), fit(calc(var(--pj-u) * 3.8)));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bzs-gold);
 }
 
 // Firma pegada a la esquina inferior derecha, fuera del flujo y sin `--fit`.
 .bzs__signature {
+  // Una marca, no un dato: pegada a la esquina, al tamaño mínimo y tenue.
+  // No reserva franja: el contenido llega hasta 6u del borde.
   position: absolute;
-  right: calc(var(--pj-u) * 1.6);
-  bottom: calc(var(--pj-u) * 1.4);
+  right: calc(var(--pj-u) * 1.2);
+  bottom: calc(var(--pj-u) * 0.9);
   font-size: calc(var(--pj-u) * 3.2);
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--c-gold) 55%, transparent);
+  color: color-mix(in srgb, var(--c-gold-deep) 42%, transparent);
   pointer-events: none;
 }
 
@@ -274,31 +295,47 @@
 .bzs--summary {
   display: flex;
   flex-direction: column;
-  padding: calc(var(--pj-u) * 6) calc(var(--pj-u) * 7) calc(var(--pj-u) * 5.5);
+  padding: calc(var(--pj-u) * 5.5) calc(var(--pj-u) * 6) calc(var(--pj-u) * 5);
+  // Un velo oro muy leve arriba: el blanco no queda plano en el proyector.
+  background:
+    radial-gradient(ellipse 60% 38% at 50% 0%, color-mix(in srgb, var(--c-gold) 9%, transparent), transparent 70%),
+    var(--bzs-bg);
 }
 
+// Cabecera centrada, en el mismo eje que la fila de retratos.
 .bzs__head {
+  display: flex;
   flex: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  // La interletra deja un hueco tras la última letra: se compensa delante
+  // para que el rótulo quede centrado de verdad sobre el título.
+  .bzs__eyebrow {
+    padding-left: 0.1em;
+  }
 }
 
 .bzs__title {
-  margin: calc(var(--pj-u) * 1.2) 0 0;
-  color: var(--bzs-ink);
+  margin: calc(var(--pj-u) * 0.8) 0 0;
   font-family: var(--font-display);
   font-size: calc(var(--pj-u) * 8.6);
   font-weight: 700;
   line-height: 1.04;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  color: var(--bzs-ink);
 }
 
 .bzs__when {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  margin: calc(var(--pj-u) * 1.6) 0 0;
+  margin: calc(var(--pj-u) * 1.4) 0 0;
   font-size: calc(var(--pj-u) * 4.6);
   font-weight: 500;
-  color: var(--bzs-ink-soft);
+  color: var(--bzs-mute);
 }
 
 .bzs__date {
@@ -306,28 +343,30 @@
   color: var(--bzs-ink);
 }
 
-// El sitio que queda bajo la cabecera, medido con container queries: cada
-// retrato es tan grande como permitan a la vez el ancho (columnas) y el alto
-// (filas, menos el nombre), sin pasarse de ninguno.
+// El sitio bajo la cabecera, medido con container queries: cada retrato es
+// tan grande como permitan a la vez el ancho (columnas) y el alto (filas,
+// menos el nombre), sin pasarse de ninguno.
 .bzs__stage {
   flex: 1 1 auto;
   min-height: 0;
-  margin-top: calc(var(--pj-u) * 4.5);
+  margin-top: calc(var(--pj-u) * 4);
   container-type: size;
 }
 
 .bzs__grid {
-  --bzs-gap: calc(var(--pj-u) * 2.6);
-  // Alto del nombre bajo la foto: dos líneas a 4,6u + su separación.
-  --bzs-name-h: calc(var(--pj-u) * 13.5);
+  --bzs-gap: calc(var(--pj-u) * 2.4);
+  // Una fila (hasta siete): columnas del ancho que toque y retratos que
+  // llenan el ALTO disponible. Con 4:5 fijo el ancho mandaba y quedaba un
+  // tercio de la diapositiva vacío; el retrato se recorta por los lados,
+  // que en los de estudio son fondo (tope 2:3, para no quedarse en un palo).
   --bzs-w: min(
     (100cqw - (var(--bzs-cols) - 1) * var(--bzs-gap)) / var(--bzs-cols),
-    ((100cqh - (var(--bzs-rows) - 1) * var(--bzs-gap)) / var(--bzs-rows) - var(--bzs-name-h)) * 0.8
+    calc(var(--pj-u) * 46)
   );
   display: grid;
   grid-template-columns: repeat(var(--bzs-cols), var(--bzs-w));
+  grid-template-rows: minmax(0, 1fr);
   justify-content: center;
-  align-content: center;
   gap: var(--bzs-gap);
   height: 100%;
   margin: 0;
@@ -339,24 +378,35 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   min-width: 0;
+  min-height: 0;
 }
 
 .bzs__frame {
-  aspect-ratio: 4 / 5;
+  flex: 0 1 auto;
+  // Lo que deje el alto, sin pasar de 2:3.
+  height: calc(var(--bzs-w) * 1.5);
+  min-height: 0;
   overflow: hidden;
-  border-radius: calc(var(--pj-u) * 1.2);
-  background: var(--c-primary-darkest);
+  border-radius: calc(var(--pj-u) * 1.4);
+  background: #eef1f5;
   box-shadow:
-    0 calc(var(--pj-u) * 0.4) calc(var(--pj-u) * 1.2) rgb(0 0 0 / 0.28),
-    0 0 0 calc(var(--pj-u) * 0.25) color-mix(in srgb, var(--c-gold) 35%, transparent);
+    0 calc(var(--pj-u) * 0.3) calc(var(--pj-u) * 0.8) rgb(15 36 64 / 0.1),
+    0 calc(var(--pj-u) * 1.4) calc(var(--pj-u) * 3.2) rgb(15 36 64 / 0.12);
 }
 
 .bzs__card-name {
   display: flex;
+  flex: none;
   flex-direction: column;
-  margin: calc(var(--pj-u) * 1.6) 0 0;
-  font-size: calc(var(--pj-u) * 4.6);
+  justify-content: flex-start;
+  // Misma altura para todos (nombre de pila en hasta dos líneas + apellido):
+  // así las fotos quedan alineadas y del mismo tamaño aunque un nombre sea
+  // largo («Natalia Florina»).
+  min-height: calc(var(--pj-u) * 5 * 1.12 * 2 + var(--pj-u) * 0.4 + var(--pj-u) * 4.4 * 1.12);
+  margin: calc(var(--pj-u) * 1.8) 0 0;
+  font-size: calc(var(--pj-u) * 5);
   line-height: 1.12;
   text-align: center;
   text-wrap: balance;
@@ -368,30 +418,46 @@
 }
 
 .bzs__card-family {
-  margin-top: calc(var(--pj-u) * 0.3);
-  font-size: calc(var(--pj-u) * 3.8);
-  font-weight: 500;
-  color: var(--c-gold-soft);
+  margin-top: calc(var(--pj-u) * 0.4);
+  font-size: calc(var(--pj-u) * 4.4);
+  font-weight: 600;
+  color: var(--bzs-gold);
 }
 
 // Dos filas (ocho candidatos o más): el nombre va SOBRE la foto, como en las
-// tarjetas del carrusel de `/botezuri`. Debajo, la altura del nombre se
-// comía la mitad del retrato.
+// tarjetas del carrusel de `/botezuri`. Debajo se comía la mitad del retrato.
 .bzs__grid--dense {
-  --bzs-name-h: 0px;
+  --bzs-w: min(
+    (100cqw - (var(--bzs-cols) - 1) * var(--bzs-gap)) / var(--bzs-cols),
+    ((100cqh - (var(--bzs-rows) - 1) * var(--bzs-gap)) / var(--bzs-rows)) * 0.8
+  );
+  grid-template-rows: repeat(var(--bzs-rows), auto);
+  align-content: center;
+
+  .bzs__frame {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
 
   .bzs__card-name {
     position: absolute;
     inset: auto 0 0;
+    min-height: 0;
     margin: 0;
     padding: calc(var(--pj-u) * 6) calc(var(--pj-u) * 0.8) calc(var(--pj-u) * 1.2);
-    border-radius: 0 0 calc(var(--pj-u) * 1.2) calc(var(--pj-u) * 1.2);
-    background: linear-gradient(to top, rgb(6 18 40 / 0.92) 0%, rgb(6 18 40 / 0.7) 45%, transparent 100%);
+    border-radius: 0 0 calc(var(--pj-u) * 1.4) calc(var(--pj-u) * 1.4);
+    background: linear-gradient(to top, rgb(6 18 40 / 0.88) 0%, rgb(6 18 40 / 0.6) 45%, transparent 100%);
     font-size: calc(var(--pj-u) * 3.6);
+  }
+
+  .bzs__card-given {
+    color: #fff;
   }
 
   .bzs__card-family {
     font-size: calc(var(--pj-u) * 3.2);
+    color: var(--c-gold-soft);
   }
 }
 

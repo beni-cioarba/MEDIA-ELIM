@@ -172,6 +172,15 @@ a {
   }
 }
 
+.mv__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
 .mv__img {
   // La caja ocupa el escenario entero y la foto se encaja dentro
   // (`contain`): entera siempre, sea vertical o apaisada (09/10/2026).

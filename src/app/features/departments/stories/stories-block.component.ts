@@ -21,6 +21,10 @@ interface PhotoView {
   readonly thumb: string;
   readonly portrait: boolean;
   readonly featured: boolean;
+  /** `object-position` en el mosaico (centrado si no se da). */
+  readonly focus: string | null;
+  /** Vídeo de la pieza (la foto es su portada), o `null` si es una foto. */
+  readonly video: string | null;
   readonly width: number;
   readonly height: number;
 }
@@ -31,8 +35,11 @@ interface StoryView {
   readonly base: string;
   /** Fechas formateadas; `null` = usar `<base>.period` (texto). */
   readonly range: string | null;
+  /** Portada a todo el ancho (`StoryPhoto.cover`), fuera del mosaico. */
+  readonly cover: PhotoView | null;
+  /** Fotos del mosaico (sin la portada). */
   readonly photos: readonly PhotoView[];
-  /** Las mismas fotos para la galería del visor (‹ › entre ellas). */
+  /** Portada + mosaico, para la galería del visor (‹ › entre ellas). */
   readonly gallery: readonly ViewerDocument[];
   readonly driveUrl: string | null;
   readonly youtubeUrl: string | null;
@@ -57,6 +64,8 @@ const toView = (photo: StoryPhoto): PhotoView => ({
   thumb: `${ROOT}${photo.base}-thumb.webp`,
   portrait: photo.height > photo.width,
   featured: photo.featured ?? false,
+  focus: photo.focus ?? null,
+  video: photo.video ?? null,
   width: photo.width,
   height: photo.height,
 });
@@ -96,21 +105,29 @@ export class StoriesBlockComponent {
     const dept = this.department();
     return this.stories().map((story) => {
       const base = `departments.${dept}.stories.${story.id}`;
-      const photos = story.photos.map(toView);
+      const coverPhoto = story.photos.find((p) => p.cover);
+      const cover = coverPhoto ? toView(coverPhoto) : null;
+      const photos = story.photos.filter((p) => !p.cover).map(toView);
+      const all = cover ? [cover, ...photos] : photos;
       const title = this.translate.instant(`${base}.title`);
       return {
         story,
         base,
         range: story.start ? formatRange(lang, story.start, story.end) : null,
+        cover,
         photos,
         // El visor ya pone «n / total»: el nombre es sólo el título.
-        gallery: photos.map((p) => ({
-          src: p.src,
-          srcset: `${p.thumb} 480w, ${p.medium} 960w, ${p.src} ${p.width}w`,
-          thumb: p.thumb,
-          name: title,
-          alt: title,
-        })),
+        gallery: all.map((p) =>
+          p.video
+            ? { src: p.video, mimeType: 'video/mp4', thumb: p.thumb, name: title, alt: title }
+            : {
+                src: p.src,
+                srcset: `${p.thumb} 480w, ${p.medium} 960w, ${p.src} ${p.width}w`,
+                thumb: p.thumb,
+                name: title,
+                alt: title,
+              },
+        ),
         driveUrl: story.driveFolderId
           ? driveFolderUrl(story.driveFolderId, this.config.mediaGalleryUrl)
           : null,

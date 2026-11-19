@@ -1,5 +1,5 @@
 @if (candidate(); as c) {
-  <!-- Un candidato: retrato a todo el alto + panel con su mărturie. -->
+  <!-- Un candidato: retrato a todo el alto + panel blanco con su mărturie. -->
   <article class="bzs bzs--candidate" [attr.aria-label]="c.name">
     <div class="bzs__portrait">
       @if (c.photo; as photo) {
@@ -18,38 +18,46 @@
       }
     </div>
 
-    <div class="bzs__panel" appFitToBox [appFitToBoxMax]="1.3">
+    <div class="bzs__panel" appFitToBox [appFitToBoxMax]="1.35">
       <div class="bzs__inner">
-        <p class="bzs__eyebrow">
-          {{ 'baptism_slide.candidate' | translate }}<span class="bzs__sep" aria-hidden="true"></span>{{ shortDate() }}
-        </p>
-        <h2 class="bzs__name">
-          <span class="bzs__given">{{ nameParts(c).given }}</span>
-          @if (nameParts(c).family) {
-            <span class="bzs__family">{{ nameParts(c).family }}</span>
-          }
-        </h2>
-        @if (c.parents) {
-          <p class="bzs__parents">
-            <span class="bzs__label">{{ 'baptism_slide.parents' | translate }}</span>&ngsp;{{ c.parents }}
-          </p>
-        }
-
-        @let told = story(c);
-        @if (told.paragraphs.length) {
-          <div class="bzs__testimony">
-            @for (p of told.paragraphs; track $index) {
-              <p>{{ p }}</p>
+        <!-- Quién es: arriba, como la cabecera de una página. -->
+        <header class="bzs__id">
+          <p class="bzs__eyebrow">{{ 'baptism_slide.candidate' | translate }}</p>
+          <h2 class="bzs__name">
+            <span class="bzs__given">{{ nameParts(c).given }}</span>
+            @if (nameParts(c).family) {
+              &ngsp;<span class="bzs__family">{{ nameParts(c).family }}</span>
             }
-          </div>
-        } @else if (told.quote) {
-          <p class="bzs__quote">{{ told.quote }}</p>
-        }
+          </h2>
+          @if (c.parents) {
+            <p class="bzs__parents">
+              <span class="bzs__label">{{ 'baptism_slide.parents' | translate }}</span>&ngsp;{{ c.parents }}
+            </p>
+          }
+        </header>
+
+        <!-- Su voz: ocupa el centro y crece con el sitio que haya. -->
+        @let told = story(c);
+        <div class="bzs__voice">
+          @if (told.paragraphs.length) {
+            <div class="bzs__testimony">
+              @for (p of told.paragraphs; track $index) {
+                <p>{{ p }}</p>
+              }
+            </div>
+          } @else if (told.quote) {
+            <blockquote class="bzs__quote">
+              <p>{{ told.quote }}</p>
+            </blockquote>
+          }
+        </div>
+
+        <!-- La Escritura: el cierre, al pie. -->
         @if (c.story?.verse; as verse) {
-          <blockquote class="bzs__verse" [class.bzs__verse--lead]="!told.paragraphs.length && !told.quote">
-            <p class="bzs__verse-text">{{ verse.text }}</p>
-            <cite class="bzs__verse-ref">{{ verse.ref }}</cite>
-          </blockquote>
+          <figure class="bzs__verse" [class.bzs__verse--lead]="!told.paragraphs.length && !told.quote">
+            <blockquote class="bzs__verse-text">{{ verse.text }}</blockquote>
+            <figcaption class="bzs__verse-ref">{{ verse.ref }}</figcaption>
+          </figure>
         }
       </div>
     </div>

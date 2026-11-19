@@ -99,6 +99,23 @@ export interface StoryPhoto {
    * 2 apaisadas llenan 4 × 4 sin huecos.
    */
   readonly featured?: boolean;
+  /**
+   * Punto de encuadre en el mosaico (`object-position`, p. ej. `'50% 85%'`).
+   * Las casillas cambian de proporción (3:1 junto al reel, 3:2 en la tira del
+   * móvil) y el recorte centrado puede dejar fuera lo importante.
+   */
+  readonly focus?: string;
+  /**
+   * Portada de la crónica: se pinta arriba, a todo el ancho de la tarjeta y
+   * entera (una panorámica de grupo no cabe en una casilla del mosaico sin
+   * perder a media gente). Fuera del mosaico; en la galería, la primera.
+   */
+  readonly cover?: boolean;
+  /**
+   * La pieza es un **vídeo** (`assets/video/…mp4`): la casilla muestra su
+   * portada (`base`, como una foto) con un ▶ y la galería lo reproduce.
+   */
+  readonly video?: string;
 }
 
 /** Vídeo propio (en `assets/video/`, fuera de la caché de la PWA). */
@@ -236,9 +253,8 @@ export interface DepartmentConfig {
  * de «ELIM - MEDIA POZE» (planos de sala, ponentes, oración y alabanza: sin
  * primeros planos de menores) + IMG_3026 / 3050 / 3091, que facilitó el
  * usuario (cântare, predică, interviu). Vídeo: «VIDEO FINAL - INTRARE».
- * La tabără aún no tiene fotos en Drive (sus dos carpetas, vacías al
- * 09/10/2026): cuando las haya, `photos` + optimizar con
- * `scripts/optimize-images.js`.
+ * Tabăra: material entregado por el usuario (carpeta «TABARA › FINAL»,
+ * 19/11/2026) y su carpeta de Drive con todo el contenido.
  */
 const YOUTH_STORIES: readonly DepartmentStory[] = [
   {
@@ -305,7 +321,38 @@ const YOUTH_STORIES: readonly DepartmentStory[] = [
     end: '2026-07-26',
     place: 'Granja Casavieja, Ávila',
     points: ['together', 'word', 'nature'],
-    photos: [],
+    // Todo el material de «TABARA › FINAL» (19/11/2026), tal cual: tres fotos y
+    // once vídeos. Portada: la foto de grupo con el recorte del usuario. En el
+    // lateral, IMG_3731 (`video`). El resto, en el mosaico: cada vídeo como
+    // vídeo (portada + ▶; se reproduce en la galería). Orden por la hora de la
+    // cámara; 10 verticales + 2 apaisadas llenan 4 × 6 sin huecos.
+    // Vídeos comprimidos a 720p / 30 fps (H.264 CRF 28, AAC 96k); portadas,
+    // un fotograma de cada uno.
+    photos: [
+      { base: 'tabara_2026_grup', width: 1465, height: 654, cover: true },
+      { base: 'tabara_2026_v-cor', width: 720, height: 1280, video: 'assets/video/tabara-2026/cor.mp4' },
+      { base: 'tabara_2026_v-joc', width: 720, height: 1280, video: 'assets/video/tabara-2026/joc.mp4' },
+      { base: 'tabara_2026_v-stejar-seara', width: 720, height: 1280, video: 'assets/video/tabara-2026/stejar-seara.mp4' },
+      { base: 'tabara_2026_stejar', width: 1080, height: 1620 },
+      // Apaisado: la gente está abajo (arriba, el techo del pabellón).
+      { base: 'tabara_2026_v-pavilion', width: 1280, height: 720, video: 'assets/video/tabara-2026/pavilion.mp4', focus: '50% 85%' },
+      { base: 'tabara_2026_v-lauda', width: 720, height: 1280, video: 'assets/video/tabara-2026/lauda.mp4' },
+      { base: 'tabara_2026_v-formatie', width: 720, height: 1280, video: 'assets/video/tabara-2026/formatie.mp4' },
+      { base: 'tabara_2026_noapte', width: 1600, height: 1067 },
+      { base: 'tabara_2026_v-noapte-1', width: 720, height: 1280, video: 'assets/video/tabara-2026/noapte-1.mp4' },
+      { base: 'tabara_2026_v-noapte-2', width: 720, height: 1280, video: 'assets/video/tabara-2026/noapte-2.mp4' },
+      { base: 'tabara_2026_v-sesiune-aer-liber', width: 720, height: 1280, video: 'assets/video/tabara-2026/sesiune-aer-liber.mp4' },
+      { base: 'tabara_2026_v-camp', width: 720, height: 1280, video: 'assets/video/tabara-2026/camp.mp4' },
+    ],
+    // IMG_3731: la sesión bajo la encina, en el lateral.
+    video: {
+      src: 'assets/video/tabara-2026/lateral.mp4',
+      poster: 'assets/video/tabara-2026/lateral-poster.webp',
+      width: 720,
+      height: 1280,
+    },
+    // Drive: carpeta con todo el material de la tabără (la dio el usuario, 19/11/2026).
+    driveFolderId: '15stXH7Cv4-lo5qXV7pfHegICrJXSlrWk',
   },
 ];
 
