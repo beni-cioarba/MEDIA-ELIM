@@ -532,6 +532,14 @@
       "songs": "Cântări creștine",
       "poems": "Poezii creștine",
       "cult": "Cultul Penticostal"
+    },
+    "update": {
+      "check": "Caută actualizări",
+      "checking": "Se verifică…",
+      "current": "Ai ultima versiune",
+      "updating": "Se instalează v{{v}}…",
+      "offline": "Fără conexiune",
+      "reload": "Reîncarcă"
     }
   },
   "install": {

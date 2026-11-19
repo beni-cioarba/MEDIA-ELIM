@@ -532,6 +532,14 @@
       "songs": "Cantos cristianos (RO)",
       "poems": "Poesías cristianas (RO)",
       "cult": "Culto Pentecostal de Rumanía"
+    },
+    "update": {
+      "check": "Buscar actualizaciones",
+      "checking": "Comprobando…",
+      "current": "Tienes la última versión",
+      "updating": "Instalando v{{v}}…",
+      "offline": "Sin conexión",
+      "reload": "Recargar"
     }
   },
   "install": {

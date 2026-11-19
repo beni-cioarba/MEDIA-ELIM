@@ -206,18 +206,24 @@
           cuando alguien reporta una incidencia. Es focusable para que también
           se abra con teclado y con un toque en móvil.
         -->
-        <span
-          class="footer__version"
-          tabindex="0"
-          role="button"
-          aria-describedby="footer-build"
-          [attr.aria-label]="'footer.version' | translate"
-        >
-          <!-- «+»: compilado con cambios sin commitear (como en Administrativ):
-               de un vistazo se sabe que no es una versión reproducible. -->
-          v{{ appVersion.release }}{{ appVersion.dirty ? '+' : '' }}
+        <!-- Pulsar la versión comprueba si hay una nueva y, si la hay, la
+             instala y recarga (`PwaUpdateService.updateNow`). El globo enseña
+             el detalle técnico y en qué va la comprobación. -->
+        <span class="footer__ver" [class.is-open]="versionOpen()" (keydown.escape)="versionOpen.set(false)">
+          <button
+            type="button"
+            class="footer__version"
+            aria-controls="footer-build"
+            [attr.aria-expanded]="versionOpen()"
+            [attr.aria-label]="'footer.version' | translate"
+            (click)="onVersionClick()"
+          >
+            <!-- «+»: compilado con cambios sin commitear (como en Administrativ):
+                 de un vistazo se sabe que no es una versión reproducible. -->
+            v{{ appVersion.release }}{{ appVersion.dirty ? '+' : '' }}
+          </button>
 
-          <span class="footer__build" id="footer-build" role="tooltip">
+          <span class="footer__build" id="footer-build" role="group" [attr.aria-label]="'footer.version' | translate">
             <span class="footer__build-row">
               <span>{{ 'footer.build' | translate }}</span>
               <b>{{ appVersion.build }}</b>
@@ -229,6 +235,33 @@
             <span class="footer__build-row">
               <span>{{ 'footer.built_at' | translate }}</span>
               <b>{{ builtAt() }}</b>
+            </span>
+
+            <!-- Actualización: estado de la comprobación y su acción. -->
+            <span class="footer__update" aria-live="polite">
+              @switch (update.status()) {
+                @case ('checking') {
+                  <span class="footer__update-state"><span class="footer__spin" aria-hidden="true"></span>{{ 'footer.update.checking' | translate }}</span>
+                }
+                @case ('updating') {
+                  <span class="footer__update-state footer__update-state--new">
+                    <span class="footer__spin" aria-hidden="true"></span>{{ 'footer.update.updating' | translate: { v: update.latest()?.release } }}
+                  </span>
+                }
+                @case ('current') {
+                  <span class="footer__update-state footer__update-state--ok">{{ 'footer.update.current' | translate }}</span>
+                  <button type="button" class="footer__update-btn" (click)="update.reload()">{{ 'footer.update.reload' | translate }}</button>
+                }
+                @case ('offline') {
+                  <span class="footer__update-state">{{ 'footer.update.offline' | translate }}</span>
+                  <button type="button" class="footer__update-btn" (click)="update.reload()">{{ 'footer.update.reload' | translate }}</button>
+                }
+                @default {
+                  <button type="button" class="footer__update-btn footer__update-btn--main" (click)="update.updateNow()">
+                    {{ 'footer.update.check' | translate }}
+                  </button>
+                }
+              }
             </span>
           </span>
         </span>

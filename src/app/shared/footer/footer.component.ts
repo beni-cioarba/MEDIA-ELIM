@@ -3,10 +3,12 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  HostListener,
   afterNextRender,
   computed,
   inject,
   linkedSignal,
+  signal,
 } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -20,6 +22,7 @@ import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
 import { LanguageService } from '../../core/services/language.service';
+import { PwaUpdateService } from '../../core/services/pwa-update.service';
 import { telHref, whatsappHref } from '../../core/util/contact-links';
 import { APP_VERSION } from '../../../environments/version';
 import { BrandLogoComponent } from '../brand-logo/brand-logo.component';
@@ -201,6 +204,29 @@ export class FooterComponent {
   /** Quien llega al pie ya ha recorrido la página entera. */
   protected backToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /** Comprobación manual de versión nueva (botón de la versión). */
+  protected readonly update = inject(PwaUpdateService);
+  /** Globo de la versión abierto a mano (además del hover / foco). */
+  protected readonly versionOpen = signal(false);
+
+  /**
+   * Pulsar la versión: abre el globo y comprueba ya si hay una versión nueva;
+   * si la hay, se instala y la página se recarga sola. Pulsar otra vez lo cierra.
+   */
+  protected onVersionClick(): void {
+    const open = !this.versionOpen();
+    this.versionOpen.set(open);
+    if (open) void this.update.updateNow();
+  }
+
+  /** Un clic fuera del globo lo cierra. */
+  @HostListener('document:click', ['$event'])
+  protected closeVersionOutside(event: MouseEvent): void {
+    if (!this.versionOpen()) return;
+    const target = event.target as Element | null;
+    if (target && !target.closest('.footer__ver')) this.versionOpen.set(false);
   }
 
   /** Fecha de compilación en el formato del idioma activo. */

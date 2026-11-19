@@ -28,6 +28,7 @@
             "assets": [
               "src/favicon.ico",
               "src/manifest.webmanifest",
+              "src/version.json",
               "src/assets",
               {
                 "glob": "{pdf.min.mjs,pdf.worker.min.mjs}",

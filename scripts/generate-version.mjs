@@ -111,6 +111,18 @@ mkdirSync(dirname(OUTPUT), { recursive: true });
 
 writeFileSync(OUTPUT, contents, 'utf8');
 
+// La misma versión, publicada como fichero suelto en la raíz de la web: la app
+// lo consulta sin caché (`PwaUpdateService`) para saber si hay una versión
+// más nueva SIN depender del Service Worker, que sirve su copia guardada hasta
+// terminar de descargar la nueva (por eso «había que refrescar 4 veces»). Está
+// fuera de los grupos de `ngsw-config.json`: el SW no lo guarda nunca.
+writeFileSync(
+  join(ROOT, 'src', 'version.json'),
+  `${JSON.stringify({ release, build, commit, dirty, builtAt })}
+`,
+  'utf8',
+);
+
 console.log(
   `✓ version.ts — v${release} · build ${build} · ${commit}${dirty ? ' (dirty)' : ''}`,
 );

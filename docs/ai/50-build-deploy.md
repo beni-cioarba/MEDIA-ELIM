@@ -340,6 +340,47 @@ zilnică» en `/impreuna` (detalle, decisión y activación: `32-impreuna.md` §
 
 ## PWA
 
+### Detección de versiones nuevas (auditoría del 19/11/2026)
+
+Síntoma: «no se detectan las versiones nuevas y, con la app instalada, hay que
+refrescar 4 veces o más». Medido en `elimarganda.com`:
+
+- Toda la web va con `Cache-Control: max-age=600` (CDN de GitHub Pages), también
+  `index.html`, `ngsw.json` y `ngsw-worker.js`.
+- El SW servía **cada navegación desde su copia** y sólo pasaba a la versión
+  nueva cuando terminaba de descargarla **entera** (`ngsw.json`: 166 ficheros
+  de código en `prefetch` + recursos cambiados de 909). En el móvil eso tarda;
+  cada recarga antes de acabar volvía a dar la vieja. El aviso
+  (`VERSION_READY`) dependía del mismo SW.
+
+Arreglo (calcado de elim-25, que no tiene SW y detecta con un `version.json`):
+
+1. **`/version.json`** en la raíz (lo escribe `scripts/generate-version.mjs`
+   junto a `version.ts`; en `angular.json` → assets; fuera de los grupos del
+   SW, que no lo guarda; en `.gitignore`). `PwaUpdateService` lo lee sin caché
+   (`cache: 'no-store'` + `?t=`) en cada comprobación: si la **fecha de
+   compilación** publicada es posterior a la de la pestaña, hay versión nueva
+   aunque el SW vaya a medias. Por fecha y no por commit: la reconstrucción
+   nocturna publica el mismo commit con el contenido del día.
+2. **`navigationRequestStrategy: "freshness"`** en `ngsw-config.json`: las
+   navegaciones van primero a la red (sin red, la copia). Una sola recarga
+   trae la página nueva; sus chunks nuevos, que el SW viejo no conoce, van a
+   la red.
+3. **Recargas con URL de un solo uso** (`?_v=<ms>`): el CDN no puede dar la
+   página vieja de sus 10 minutos. `init()` quita el parámetro de la barra.
+4. **Botón de la versión** (pie): pulsarlo abre el globo y llama a
+   `updateNow()`: comprueba ya y, si hay versión nueva, la aplica (activa la
+   del SW si está lista; si no, da de baja el SW y borra sus cachés `ngsw:`
+   para que la recarga venga entera de la red; una vez por versión y pestaña)
+   y recarga. Si no la hay: «Ai ultima versiune» + «Reîncarcă». Globo sin
+   parpadeo: puente invisible sobre el hueco y 180 ms de espera al cerrar.
+
+Probado en `ng serve` simulando una versión nueva en `version.json`:
+«Se instalează v2.3.5…» → recarga con `?_v=` → barra limpia. En la compilación
+de producción: `ngsw.json` lleva `freshness` y `version.json` no está en
+`hashTable`.
+
+
 - `ngsw-config.json` + `provideServiceWorker` (sólo en producción).
 - **Actualizaciones** (`PwaUpdateService`, rehecho el 05/10/2026). El SW
   sirve siempre la copia guardada y descarga la nueva por detrás; aplicarla =

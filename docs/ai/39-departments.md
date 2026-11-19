@@ -30,7 +30,7 @@ features/departments/
   department.view.ts               Responsables derivados del organigrama
   departments-home/                Portada /departamente
   department-page/                 Página de un departamento
-  dept-switcher/                   Acceso rápido: pestañas de línea fijas bajo la cabecera (36 px, `--dept-switcher-h`)
+  dept-switcher/                   Acceso rápido: pestañas de texto (sin iconos desde el 19/11/2026) fijas bajo la cabecera (36 px, `--dept-switcher-h`); «Toate» separada por un filete
   meeting/                         Reunión fija semanal o mensual (`app-meeting-block`) + hueco para su pieza propia
   ticket/                          Billete de la próxima fecha (`app-date-ticket`), común a las reuniones
   stories/                         Crónicas: texto + reel vertical + mosaico (galería del visor) + resumen de predicación (sermon-notes)

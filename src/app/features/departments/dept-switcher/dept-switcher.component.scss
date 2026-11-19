@@ -1,9 +1,12 @@
 @use 'ds' as *;
 
-// Acceso rápido entre departamentos (compacto, 10/10/2026): pestañas de
-// línea, el patrón de las consolas (Google Cloud, GitHub): sin borde por
-// elemento, 36 px de alto, la activa con texto navy en negrita, icono dorado y
-// subrayado dorado. Antes eran pastillas con borde en una fila de ~52 px.
+// Acceso rápido entre departamentos (revisión del 19/11/2026, «más
+// profesional, sin iconos, compacto»): pestañas de texto, el patrón de las
+// consolas (Google Cloud, GitHub, Vercel). 36 px de alto, sin borde ni fondo
+// por elemento; la activa en navy semibold con un subrayado dorado del ancho
+// de su texto. «Toate» (la portada, no un departamento) va separada del
+// resto por un filete vertical. Sin iconos los nombres ocupan menos y caben
+// más a la vista.
 // El alto es `--dept-switcher-h` (lo define la página de departamento, que
 // lo usa también en sus anclas y en el lateral fijo; 2,25 rem por defecto).
 
@@ -24,7 +27,8 @@
 
 .switch__list {
   display: flex;
-  gap: 0.125rem;
+  align-items: stretch;
+  gap: 0.25rem;
   height: var(--dept-switcher-h, 2.25rem);
   margin: 0;
   padding: 0;
@@ -32,9 +36,8 @@
   list-style: none;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  // Desvanecido a la derecha: dice «hay más» sin flechas (a la izquierda no:
-  // apagaría el icono de «Toate», que va pegado al margen).
-  mask-image: linear-gradient(90deg, #000 calc(100% - 1rem), transparent);
+  // Desvanecido a la derecha: dice «hay más» sin flechas.
+  mask-image: linear-gradient(90deg, #000 calc(100% - 1.25rem), transparent);
 
   &::-webkit-scrollbar {
     display: none;
@@ -44,38 +47,46 @@
     display: flex;
     flex: none;
   }
+
+  // Filete entre «Toate» y los departamentos.
+  > li:first-child {
+    position: relative;
+    margin-right: 0.35rem;
+    padding-right: 0.35rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: 1rem;
+      background: var(--c-hairline-strong, var(--c-hairline));
+      transform: translateY(-50%);
+    }
+  }
 }
 
 .switch__chip {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0 0.6rem;
-  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  padding: 0 0.55rem;
   color: var(--c-muted);
-  font-family: var(--font-display);
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.005em;
   white-space: nowrap;
   text-decoration: none;
-  transition:
-    color var(--mo-fast) var(--ea-standard),
-    background var(--mo-fast) var(--ea-standard);
+  transition: color var(--mo-fast) var(--ea-standard);
 
   @include focus-ring(-2px);
 
-  app-icon {
-    font-size: 0.95rem;
-    color: var(--c-faint);
-    transition: color var(--mo-fast) var(--ea-standard);
-  }
-
-  // Subrayado de la activa (2 px dorado, pegado al filete inferior).
+  // Subrayado de la activa: 2 px dorado, del ancho del texto, sobre el filete.
   &::after {
     content: '';
     position: absolute;
-    inset: auto 0.6rem 0;
+    inset: auto 0.55rem 0;
     height: 2px;
     border-radius: 2px 2px 0 0;
     background: var(--c-gold);
@@ -85,11 +96,7 @@
 
   &.is-active {
     color: var(--c-primary-deep);
-    font-weight: 700;
-
-    app-icon {
-      color: var(--c-gold-deep);
-    }
+    font-weight: 600;
 
     &::after {
       transform: scaleX(1);
@@ -99,12 +106,7 @@
 
 @media (hover: hover) {
   .switch__chip:not(.is-active):hover {
-    background: var(--c-veil);
     color: var(--c-primary-deep);
-
-    app-icon {
-      color: var(--c-primary-soft);
-    }
   }
 }
 

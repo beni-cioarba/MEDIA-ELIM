@@ -8,6 +8,7 @@
 
 # Generado en postinstall/prestart/prebuild por scripts/generate-version.mjs
 /src/environments/version.ts
+/src/version.json
 
 # Node
 /node_modules

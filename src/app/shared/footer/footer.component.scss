@@ -704,7 +704,10 @@
   letter-spacing: 0.04em;
   color: rgba(247, 250, 252, 0.45);
   white-space: nowrap;
-  cursor: help;
+  background: none;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
   transition: color var(--mo-base) var(--ea-standard),
     border-color var(--mo-base) var(--ea-standard);
 
@@ -717,6 +720,13 @@
   &:focus-visible {
     @include focus-ring;
   }
+}
+
+// Contenedor de la píldora y su globo: el globo es hermano del botón (lleva
+// botones dentro) y se abre con hover, con foco o fijado con un clic.
+.footer__ver {
+  position: relative;
+  display: inline-block;
 }
 
 // Tooltip propio en vez de MatTooltip: son tres líneas estáticas dentro de un
@@ -748,8 +758,24 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(0.25rem);
-  transition: opacity var(--mo-fast) var(--ea-standard),
-    transform var(--mo-fast) var(--ea-decelerate), visibility var(--mo-fast);
+  // Al cerrar, un respiro de 180 ms antes de esconderse: cruzar con el ratón
+  // de la píldora al globo (o salirse un instante) ya no lo hace parpadear.
+  transition:
+    opacity var(--mo-fast) var(--ea-standard) 180ms,
+    transform var(--mo-fast) var(--ea-decelerate) 180ms,
+    visibility 0s linear calc(var(--mo-fast) + 180ms);
+
+  // Puente invisible sobre el hueco entre el globo y la píldora: el puntero
+  // pasa de una al otro sin salir nunca de `.footer__ver` (antes, al cruzar
+  // los ~10 px se perdía el hover y el globo se cerraba y volvía a abrir).
+  &::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 0.75rem;
+  }
 
   // Flecha.
   &::after {
@@ -763,11 +789,90 @@
     border-block-start-color: var(--c-primary-darkest);
   }
 
-  .footer__version:hover &,
-  .footer__version:focus-visible & {
+  .footer__ver:hover &,
+  .footer__ver:focus-within &,
+  .footer__ver.is-open & {
     opacity: 1;
     visibility: visible;
     transform: none;
+    // Al abrir, sin espera.
+    transition:
+      opacity var(--mo-fast) var(--ea-standard),
+      transform var(--mo-fast) var(--ea-decelerate),
+      visibility 0s;
+  }
+}
+
+// Fila de actualización, separada del detalle técnico por un filete.
+.footer__update {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: 0.3rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(247, 250, 252, 0.12);
+  min-height: 1.6rem;
+}
+
+.footer__update-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(247, 250, 252, 0.7);
+
+  &--ok {
+    color: #9ae6b4;
+  }
+
+  &--new {
+    color: var(--c-gold-soft);
+  }
+}
+
+.footer__update-btn {
+  @include tap-target(24px);
+
+  flex: none;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(247, 250, 252, 0.22);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: rgba(247, 250, 252, 0.92);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--mo-fast) var(--ea-standard), border-color var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    border-color: rgba(247, 250, 252, 0.45);
+    background: rgba(247, 250, 252, 0.08);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  // Acción principal (sin comprobar aún): ocupa la fila, en oro.
+  &--main {
+    flex: 1;
+    border-color: color-mix(in srgb, var(--c-gold) 55%, transparent);
+    color: var(--c-gold-soft);
+  }
+}
+
+.footer__spin {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: footer-spin 0.8s linear infinite;
+}
+
+@keyframes footer-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -823,6 +928,10 @@
   .footer__quick-btn,
   .footer__build {
     transition: none;
+  }
+
+  .footer__spin {
+    animation-duration: 2.4s;
   }
 
   .footer__quick-btn:hover,
