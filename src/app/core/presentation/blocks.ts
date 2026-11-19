@@ -40,6 +40,8 @@ export interface BlockSources {
   readonly talentContest: TalentContestService;
   /** ¿Hay una semana de familias que proyectar (la vigente o la siguiente elegida)? */
   readonly hasFamiliesWeek: () => boolean;
+  /** ¿Hay un botez con candidatos en los próximos días (o hoy)? */
+  readonly hasBaptismSoon: () => boolean;
 }
 
 export interface BlockDef {
@@ -82,6 +84,16 @@ export const PRESENTATION_BLOCKS = [
     // párrafos que se leen en voz alta mientras se ve la familia.
     durationS: 20,
     auto: (s) => s.hasFamiliesWeek(),
+  },
+  {
+    // Botez: los candidatos, uno a uno, mientras se presentan en el culto.
+    // Sólo la semana del botez (y el día): `BaptismsService.presentedSoon`.
+    id: 'baptism',
+    titleKey: 'baptism_slide.title',
+    // Un retrato y su mărturie: se lee mientras suena su audio. En el culto
+    // se pasan a mano (atajo «Botez» del panel).
+    durationS: 20,
+    auto: (s) => s.hasBaptismSoon(),
   },
   {
     id: 'bible',

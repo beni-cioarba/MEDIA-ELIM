@@ -96,6 +96,8 @@
     "clock_seconds": "Con segundos",
     "select_families": "Familias",
     "select_families_hint": "Presentación de las familias: sólo las de esta semana (resumen + cada familia), en avance manual, desde el resumen",
+    "select_baptism": "Bautismo",
+    "select_baptism_hint": "Presentación de los candidatos al bautismo: todos (juntos + cada uno), en avance manual, desde el primero",
     "select_ending": "Terminare",
     "select_ending_hint": "Final del culto: todos los anuncios, el resumen de las familias, la lectura bíblica, el programa semanal y los próximos eventos, en avance automático: los anuncios a 12 s y el resto a 10 s"
   }

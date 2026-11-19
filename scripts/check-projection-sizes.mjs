@@ -38,6 +38,7 @@ const FILES = [
   'src/app/features/stage/blocks/website-block/website-block.component.scss',
   'src/app/features/stage/blocks/upcoming-block/upcoming-block.component.scss',
   'src/app/features/stage/blocks/impreuna-block/impreuna-block.component.scss',
+  'src/app/features/stage/blocks/baptism-block/baptism-block.component.scss',
 ];
 
 const errors = [];

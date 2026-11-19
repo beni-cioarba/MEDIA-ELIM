@@ -370,6 +370,17 @@
       "pages": "{{count}} pagini"
     }
   },
+  "baptism_slide": {
+    "title": "Botez",
+    "candidate": "Candidat la botez",
+    "summary": "Toți candidații",
+    "summary_title": "Candidații la botez",
+    "parents": "Părinții:",
+    "signature": "Botez în apă",
+    "at": "ora {{time}}",
+    "count": "{{n}} candidați",
+    "empty": "Nu este anunțat niciun botez cu candidați."
+  },
   "prayer_causes": {
     "title": "Cauzele Bisericii Elim",
     "eyebrow": "Program",

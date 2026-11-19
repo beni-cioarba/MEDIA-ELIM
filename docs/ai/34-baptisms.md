@@ -50,6 +50,13 @@ siguen el mismo orden.
   botez existe sólo como directo. Los títulos dan quién predicó → `ministers`.
   Para repetir la búsqueda: listar el playlist de subidas
   (`UU` + id del canal sin `UC`) y filtrar títulos por «botez».
+- **Audios de mărturie** (`BOTEZURI/2026-11-22`, 19/11/2026): foto + audio
+  (`.mp4` sin vídeo / `.ogg`) por candidato, sin presentación. Transcritos en
+  local con `faster-whisper` `large-v3` (venv de fotos; el audio se decodifica
+  con `ffmpeg` y se pasa como array: el PyAV del venv no abre ficheros). Si
+  entra en bucle (repite una frase), repetir sin VAD y con
+  `condition_on_previous_text=False`. Nombres de los padres que el
+  reconocimiento deforma: confirmarlos con la iglesia.
 - **Presentaciones con perfil** (testimonio, edad, padres, versículo; sin
   ciudad): 2026-05-31 y **2025-11-30** (14/10/2026: 10 candidatos; fotos de la
   presentación salvo Andrea Sidor, de `IMAGINI` a 1200 × 1600; caras de
@@ -163,6 +170,32 @@ sola con cuenta atrás. Candidatos y retratos se añaden cuando se tengan.
 Lo que no se puede arreglar con la foto: cabeza cortada en el original (queda
 pegada al borde), fotos de muy baja resolución (se publican a su tamaño, nunca
 se amplían). Pedir otra foto.
+
+## Proyección: bloque «Botez» (19/11/2026)
+
+Pedido del usuario: un apartado en la consola, como el de las familias,
+para proyectar a cada candidato mientras se presenta. Bloque `baptism`
+(`features/stage/blocks/baptism-block/`, registro en
+`core/presentation/blocks.ts`; panel y atajo en `30-presentation.md` →
+«Atajo «Botez»»).
+
+- **Qué botez**: `BaptismsService.presented` = el de hoy o el próximo, si ya
+  tiene candidatos. Sale solo desde 7 días antes hasta el mismo día
+  (`presentedSoon`, `BAPTISM_PRESENTATION_DAYS`).
+- **Diapositivas**: los candidatos juntos (rótulo, fecha · hora · nº y los
+  retratos en fila del mayor tamaño que cabe: una fila hasta siete, dos a
+  partir de ocho; medido con *container queries*) y, detrás, **uno por
+  diapositiva** en el orden de la presentación.
+- **Candidato**: el retrato de estudio entero (4:5) pegado al borde a todo el
+  alto (864 px de 1920) y un panel navy con «Candidat la botez · fecha», el
+  nombre de pila (9u) y el apellido en oro (6,4u), «Părinții: …», la
+  mărturie (4,4u, sans al 80 %) y el versículo (serif cursiva oro, la
+  referencia como nota al pie). El panel se ajusta entero (`appFitToBox`
+  0,7 → 1,3) y arranca arriba; la firma «Botez în apă» va en la esquina.
+  Misma familia visual que las fichas de familias; el acento propio es el
+  «agua»: un resplandor azul claro, quieto, en el fondo.
+- La edad y la ciudad tampoco se proyectan. Sin mărturie, la frase
+  destacada; sin nada, sólo nombre y padres (el panel crece).
 
 ## Diseño (decisiones)
 

@@ -54,6 +54,13 @@ export interface CandidatePhoto {
  */
 export const PORTRAIT_STYLE: 'studio' | 'original' = 'studio';
 
+/**
+ * Días antes del botez en que la proyección lo presenta sola (bloque
+ * `baptism`): la semana anterior y el mismo día. Fuera de ese margen el
+ * operador puede encenderlo a mano desde el panel (para ensayarlo).
+ */
+export const BAPTISM_PRESENTATION_DAYS = 7;
+
 /** Base de la ruta del módulo, sin barra inicial. */
 const BASE = APP_PATHS.baptisms;
 
@@ -137,6 +144,26 @@ export class BaptismsService {
   readonly candidateYears = computed(() =>
     [...new Set(this.candidates().map((c) => c.baptism.year))].sort((a, b) => b - a),
   );
+
+  /**
+   * El botez que se presenta en la proyección: el de hoy o el próximo,
+   * **si ya tiene candidatos** (sin lista no hay nada que presentar).
+   */
+  readonly presented = computed<BaptismView | null>(() => {
+    const next = this.next();
+    return next && next.candidates.length > 0 ? next : null;
+  });
+
+  /** ¿Toca presentarlo sin que nadie lo encienda? (ver `BAPTISM_PRESENTATION_DAYS`). */
+  readonly presentedSoon = computed<boolean>(() => {
+    const baptism = this.presented();
+    return baptism !== null && baptism.daysLeft <= BAPTISM_PRESENTATION_DAYS;
+  });
+
+  /** Los candidatos de un botez, con retrato y enlace, en el orden de la presentación. */
+  candidatesOf(baptism: BaptismView): readonly CandidateView[] {
+    return baptism.candidates.map((c) => this.candidateView(baptism, c));
+  }
 
   byDate(date: string | null | undefined): BaptismView | null {
     return this.all().find((b) => b.date === date) ?? null;

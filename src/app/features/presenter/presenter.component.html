@@ -100,6 +100,18 @@
               [title]="'presenter.select_families_hint' | translate"
               (click)="presentFamilies()"
             >{{ 'presenter.select_families' | translate }}</button>
+            <!-- Presentación de los candidatos al botez: sólo la semana del
+                 botez (si no, ni se pinta), todos, en avance manual. -->
+            @if (blocks.hasBaptism()) {
+              <button
+                type="button"
+                class="seg__btn seg__btn--prayer"
+                [disabled]="blocks.baptismOnly() && !display.autoAdvance()"
+                [attr.aria-pressed]="blocks.baptismOnly() && !display.autoAdvance()"
+                [title]="'presenter.select_baptism_hint' | translate"
+                (click)="presentBaptism()"
+              >{{ 'presenter.select_baptism' | translate }}</button>
+            }
             <!-- Cierre del culto: anuncios, resumen de familias, lectura,
                  programa y eventos, en avance automático (anuncios 12 s, resto 10 s). -->
             <button
@@ -243,7 +255,8 @@
                   [class.is-hidden]="
                     (slide.announcement && !isAnnouncementVisible(slide)) ||
                     !isEventVisible(slide) ||
-                    (!slide.pastFamily && familyId(slide) !== null && !blocks.isFamilyVisible(familyId(slide)!))
+                    (!slide.pastFamily && familyId(slide) !== null && !blocks.isFamilyVisible(familyId(slide)!)) ||
+                    (candidateId(slide) !== null && !blocks.isCandidateVisible(candidateId(slide)!))
                   "
                 >
                   @if (slide.announcement && !slide.page?.index) {
@@ -284,6 +297,15 @@
                       [checked]="blocks.isFamilyVisible(famId)"
                       [disabled]="!group.state.enabled"
                       (change)="setFamilyVisible(famId, $event)"
+                      [attr.aria-label]="label(slide)"
+                    />
+                  } @else if (candidateId(slide); as candId) {
+                    <input
+                      type="checkbox"
+                      class="check"
+                      [checked]="blocks.isCandidateVisible(candId)"
+                      [disabled]="!group.state.enabled"
+                      (change)="setCandidateVisible(candId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
                   } @else {

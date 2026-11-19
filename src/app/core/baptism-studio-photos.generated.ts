@@ -89,4 +89,9 @@ export const BAPTISM_STUDIO_PHOTOS: Readonly<Record<string, readonly number[]>> 
   '2026-05-31/parasca-rad': [320, 640, 655],
   '2026-05-31/rebeca-sangeorzan-cotut': [320, 640, 1030],
   '2026-05-31/timotei-halas': [320, 640, 1080],
+  '2026-11-22/darius-mihalca': [320, 640, 1080],
+  '2026-11-22/matias-zagrean': [320, 640, 1023],
+  '2026-11-22/natalia-florina-marian': [320, 640, 897],
+  '2026-11-22/roland-filimon': [320, 640, 1064],
+  '2026-11-22/sara-suciu': [320, 640, 1030],
 };

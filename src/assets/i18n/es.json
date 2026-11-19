@@ -370,6 +370,17 @@
       "pages": "{{count}} páginas"
     }
   },
+  "baptism_slide": {
+    "title": "Bautismo",
+    "candidate": "Candidato al bautismo",
+    "summary": "Todos los candidatos",
+    "summary_title": "Candidatos al bautismo",
+    "parents": "Padres:",
+    "signature": "Bautismo en agua",
+    "at": "a las {{time}}",
+    "count": "{{n}} candidatos",
+    "empty": "No hay ningún bautismo anunciado con candidatos."
+  },
   "prayer_causes": {
     "title": "Causas de la Iglesia Elim",
     "eyebrow": "Programa",

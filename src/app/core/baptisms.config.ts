@@ -673,9 +673,107 @@ export const BAPTISMS: readonly Baptism[] = [
     ],
   },
   {
-    // Botez anunțat (Evenimente viitoare): candidatos y fotos cuando lleguen.
     date: '2026-11-22',
     time: '10:00',
-    candidates: [],
+    // Sin presentación: cada candidato mandó su foto y su mărturie en audio
+    // (transcrita y adaptada como las escritas, sin la frase con nombre y
+    // edad). Orden: el de las fotos (alfabético por el nombre).
+    candidates: [
+      {
+        id: 'darius-mihalca',
+        name: 'Darius Mihalca',
+        age: 18,
+        // Los padres no se entienden bien en el audio («Veniamin și …»):
+        // falta confirmarlos.
+        story: {
+          summary: 'Cu anii am înțeles că nu pot să trăiesc fără Dumnezeu.',
+          testimony: [
+            'M-am născut într-o familie de creștini. Din copilăria mea, părinții mei m-au dus la biserică.',
+            'Cu anii am înțeles că nu pot să trăiesc fără Dumnezeu, Cel pe care L-am văzut cum lucrează în viața mea și în viața părinților mei. Amin.',
+          ],
+          // Citó «Psalmul 34» y leyó los versículos 18 y 19 (Cornilescu).
+          verse: {
+            text: 'Domnul este aproape de cei cu inima înfrântă și mântuiește pe cei cu duhul zdrobit. Deseori vin multe nenorociri peste cel neprihănit, dar Domnul îl scapă totdeauna din ele.',
+            ref: 'Psalmul 34:18-19',
+          },
+        },
+      },
+      {
+        id: 'matias-zagrean',
+        name: 'Matias Zagrean',
+        age: 19,
+        parents: 'Michael și Manuela',
+        story: {
+          summary: 'Dumnezeu mi-a dat putere și încredințare în El și am decis cu siguranță că trebuie să-L urmez pe El cu totul.',
+          testimony: [
+            'Vin dintr-o familie penticostală, unde părinții mei mi-au arătat valorile creștine de mic. Familia mea a fost încercată de multe ori de Dumnezeu, dar, cu ajutorul Lui, am ieșit înainte și nu ne-am pierdut credința în El.',
+            'Eu de mult timp am fost cercetat pentru a mă boteza, dar nu aveam curajul să dau pasul acesta.',
+            'În iulie 2026, după multe întrebări și multe răspunsuri, Dumnezeu mi-a dat putere și încredințare în El și am decis cu siguranță că trebuie să-L urmez pe El cu totul. Amin.',
+          ],
+          verse: {
+            text: 'Veniți la Mine, toți cei trudiți și împovărați, și Eu vă voi da odihnă. Luați jugul Meu asupra voastră și învățați de la Mine, căci Eu sunt blând și smerit cu inima; și veți găsi odihnă pentru sufletele voastre. Căci jugul Meu este bun, și sarcina Mea este ușoară.',
+            ref: 'Matei 11:28-30',
+          },
+        },
+      },
+      {
+        id: 'natalia-florina-marian',
+        name: 'Natalia Florina Marian',
+        age: 19,
+        // Los padres: en el audio sólo se entiende «Daniela și … Marian»;
+        // falta confirmar el nombre del padre.
+        story: {
+          summary: 'Astăzi nu este sfârșitul unei povești, ci începutul unei vieți noi, al cărei autor este Dumnezeu.',
+          testimony: [
+            'Dumnezeu m-a binecuvântat cu trei frați. Astăzi fac unul dintre cei mai importanți pași din viața mea: botezul în apă. Nu sunt aici doar pentru a împlini un obicei sau pentru că așa am fost învățată, ci pentru că am ales personal să-L urmez pe Dumnezeu și să-mi predau viața în mâinile Lui.',
+            'Într-o noapte întunecată, cu lacrimi în ochi, I-am cerut lui Dumnezeu să mă ajute. Aveam nevoie să știu dacă încă mă iubește. Am luat Biblia și am cerut Domnului să-mi vorbească prin Cuvântul Său, și atunci Dumnezeu m-a călăuzit la Matei 3:11.',
+            'Prin aceste cuvinte am înțeles că Dumnezeu nu mă chemase doar să citesc un verset, ci să mă apropii mai mult de El. Am simțit îmbrățișarea Lui și, din acel moment, nu am mai dorit să-L las deoparte în viața mea.',
+            'Astăzi nu spun că sunt perfectă sau că nu voi mai greși niciodată. Spun doar că am ales Cui vreau să-I aparțin și în mâinile Cui vreau să-mi las viitorul. Astăzi nu este sfârșitul unei povești, ci începutul unei vieți noi, al cărei autor este Dumnezeu. Amin.',
+          ],
+          verse: {
+            text: 'Cât despre mine, eu vă botez cu apă, spre pocăință; dar Cel ce vine după mine este mai puternic decât mine, și eu nu sunt vrednic să-I duc încălțămintea. El vă va boteza cu Duhul Sfânt și cu foc.',
+            ref: 'Matei 3:11',
+          },
+        },
+      },
+      {
+        id: 'roland-filimon',
+        // En su mărturie se presenta como «Roland Beniamin Filimon».
+        name: 'Roland Filimon',
+        age: 23,
+        parents: 'Gabriel și Lenuța',
+        story: {
+          summary: 'Decizia mea este să-L urmez pe El toată viața și îmi încredințez viața în mâna Lui, știind că El va lucra.',
+          testimony: [
+            'Provin dintr-o familie de credincioși. Părinții mei m-au adus la biserică de mic, unde am învățat calea Domnului, și am ales să închei legământ cu Domnul în apă.',
+            'Decizia aceasta am luat-o după ce Domnul mi-a atins inima și m-a făcut să văd care este calea adevărată spre veșnicie. Am simțit nevoia de a-L cunoaște, așa că am lăsat lumea în urmă și am început transformarea mea și apropierea de Dumnezeu.',
+            'Decizia mea este să-L urmez pe El toată viața și îmi încredințez viața în mâna Lui, știind că El va lucra. Amin.',
+          ],
+          verse: {
+            text: 'Căci Domnul va fi nădejdea ta și El îți va păzi piciorul de cădere.',
+            ref: 'Proverbe 3:26',
+          },
+        },
+      },
+      {
+        id: 'sara-suciu',
+        name: 'Sara Suciu',
+        age: 16,
+        parents: 'Aron și Sorina',
+        story: {
+          summary: 'Am devenit răspunsul unei rugăciuni, împlinirea unei făgăduințe și o minune prin care Dumnezeu a adus bucurie și binecuvântare în familia mea.',
+          testimony: [
+            'Povestea vieții mele a început cu o făgăduință făcută înaintea lui Dumnezeu de mama mea, într-un moment în care părea că nu va putea avea niciodată copii. Dar Dumnezeu a ascultat rugăciunea ei, a privit spre dorința inimii sale și mi-a dăruit viață.',
+            'Astfel, am devenit răspunsul unei rugăciuni, împlinirea unei făgăduințe și o minune prin care Dumnezeu a adus bucurie și binecuvântare în familia mea.',
+            'Astăzi, prin botez, vreau să-I mulțumesc lui Dumnezeu pentru darul vieții, pentru dragostea și credincioșia Sa și pentru că a fost prezent în povestea mea încă dinainte de a mă naște.',
+            'Aleg să-mi încredințez viața în mâinile Lui, să-L urmez cu toată inima și să pășesc alături de El într-un nou început. Pentru că astăzi nu sărbătoresc doar o zi specială, ci aleg să mărturisesc credința și dorința de a trăi o viață nouă în Hristos. Amin.',
+          ],
+          verse: {
+            text: 'Căci, dacă este cineva în Hristos, este o făptură nouă. Cele vechi s-au dus: iată că toate lucrurile s-au făcut noi.',
+            ref: '2 Corinteni 5:17',
+          },
+        },
+      },
+    ],
   },
 ];

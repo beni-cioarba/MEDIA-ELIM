@@ -284,6 +284,24 @@ la orden antes que la lista nueva; la clave espera a que la diapositiva
 aparezca (`CarouselService.currentIndex` resuelve primero por
 `requestedKey`), mientras que un índice caería en la equivocada.
 
+## Atajo «Botez» (19/11/2026)
+
+Botón de la selección global que **sólo se pinta cuando hay un botez con
+candidatos por delante** (`PresentationBlocksService.hasBaptism`): no ocupa
+sitio el resto del año. Calca «Familii»: `selectBaptismPresentation()` deja
+encendido sólo el bloque `baptism` con todos sus candidatos (`selectAll`); el
+panel (`presentBaptism()`) pone el **avance en manual**, apaga la cuenta
+atrás y salta a la primera diapositiva (`gotoKey` con
+`BAPTISM_SUMMARY_SLIDE_KEY`). Quien está en el panel pasa al siguiente
+cuando termina la mărturie de cada uno. Activo (`baptismOnly` y avance
+manual) se pinta pulsado.
+
+En el bloque, casilla por fila (los candidatos juntos y cada candidato:
+`…baptism.hidden`, `BAPTISM_SUMMARY_ID`), «Doar primul» / «Toate» y tiempo
+propio por fila (`b:<id>`, `b:summary`). Fuera de su semana el bloque se
+puede encender a mano (MANUAL) para ensayarlo: proyecta el próximo botez
+con candidatos. `/media/botez` lleva a `/botezuri` (sólo proyección).
+
 ## Atajo «Rugăciune» (03/10/2026)
 
 Tercer botón de la selección global (junto a «Doar primul» / «Toate»):
@@ -336,6 +354,7 @@ coinciden, salvo dos bloques que `PresentationBlocksService.expand()` pagina:
   «n/N» junto al título. Para paginar otro bloque, sigue el mismo patrón en
   `expand()`.
 - `families` → resumen + una diapositiva por familia (`36-family-prayer.md`).
+- `baptism` → los candidatos juntos + una diapositiva por candidato (`34-baptisms.md`).
 
 Los dots, los atajos `1…9` y `CarouselService` trabajan sobre diapositivas; el
 panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
@@ -348,6 +367,7 @@ panel de ajustes, sobre bloques (y, dentro de «Anunțuri», sobre anuncios).
 | `impreuna`      | `ImpreunaBlockComponent`     | edición de Proiectul Împreună en marcha (`editionToday`) — cartel navy a sangre: la semana que contiene **mañana** (el domingo, la que empieza el lunes, con «Începe mâine»), hoy resaltado, QR a `/impreuna` y el próximo primer jueves de ayuno. Va tras `bible`; 15 s; `/media/impreuna` → `/impreuna` (`32-impreuna.md`) |
 | `causes`        | `CausesBlockComponent`       | lista no vacía — toda la lista en una diapositiva (`docs/ai/37-prayer-causes.md`) |
 | `talent`        | `TalentBlockComponent`       | queda alguna fase por delante (`TalentContestService.focusPhase`) — cartel de Talantul în Negoț a sangre: fases, categorías, cuenta atrás y QR a `/talantul-in-negot` (`docs/ai/38-talent-contest.md`) |
+| `baptism`       | `BaptismBlockComponent`      | `BaptismsService.presentedSoon()` — botez con candidatos en los próximos 7 días o hoy (`BAPTISM_PRESENTATION_DAYS`). Los candidatos juntos + uno por diapositiva, a sangre (ver «Atajo «Botez»» y `34-baptisms.md`) |
 | `families`      | `FamilyBlockComponent`       | `FamilyPrayerService.hasCurrent()` — resumen (mosaico de fotos) + una diapositiva por familia, detrás de los anuncios y de las causas (`causes` va antes desde el 04/10/2026; `docs/ai/36-family-prayer.md`) |
 | `socials`  | `SocialsBlockComponent`  | `socials.length > 0`               |
 | `streams`  | `StreamsBlockComponent`  | siempre                            |

@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PAGE_PREVIEW } from '../../core/navigation/page-preview';
+import { BaptismsService } from '../../core/services/baptisms.service';
 import { FamilyPrayerService } from '../../core/services/family-prayer.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -40,6 +41,7 @@ import { WeeklyBlockComponent } from './blocks/weekly-block/weekly-block.compone
 import { UpcomingBlockComponent } from './blocks/upcoming-block/upcoming-block.component';
 import { BibleBlockComponent } from './blocks/bible-block/bible-block.component';
 import { LocationBlockComponent } from './blocks/location-block/location-block.component';
+import { BaptismBlockComponent } from './blocks/baptism-block/baptism-block.component';
 import { FamilyBlockComponent } from './blocks/family-block/family-block.component';
 import { CausesBlockComponent } from './blocks/causes-block/causes-block.component';
 import { TalentBlockComponent } from './blocks/talent-block/talent-block.component';
@@ -59,6 +61,7 @@ const PANEL_TITLE_KEY = 'seo.media.title';
 const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>([
   'announcements',
   'families',
+  'baptism',
   'causes',
   'talent',
   'impreuna',
@@ -110,6 +113,7 @@ interface StageSlide extends Omit<PresentationSlide, 'block'> {
         UpcomingBlockComponent,
         BibleBlockComponent,
         FamilyBlockComponent,
+        BaptismBlockComponent,
         CausesBlockComponent,
         TalentBlockComponent,
         ImpreunaBlockComponent,
@@ -125,15 +129,20 @@ export class StageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly pagePreview = inject(PAGE_PREVIEW);
   private readonly familyPrayer = inject(FamilyPrayerService);
+  private readonly baptisms = inject(BaptismsService);
 
   /**
-   * Páginas de la vista `solo` de familias (resumen + fichas), para quien
-   * imprime el PDF: así no tiene que conocer los datos. `null` fuera de ella.
+   * Páginas de la vista `solo` de familias o de un botez (resumen + una por
+   * familia o candidato), para quien la recorre o imprime: así no tiene que
+   * conocer los datos. `null` fuera de ella.
    */
   protected readonly soloPages = computed<number | null>(() => {
     if (!this.presentation.isSolo()) return null;
-    const week = this.familyPrayer.anyByDate(this.queryParams()?.get('familii'));
-    return week ? week.families.length + 1 : null;
+    const params = this.queryParams();
+    const week = this.familyPrayer.anyByDate(params?.get('familii'));
+    if (week) return week.families.length + 1;
+    const baptism = this.baptisms.byDate(params?.get('botez'));
+    return baptism ? baptism.candidates.length + 1 : null;
   });
   private readonly youtube = inject(YouTubeService);
   private readonly announcements = inject(AnnouncementsService);
@@ -207,13 +216,18 @@ export class StageComponent implements OnInit {
    *     mientras se ora.
    *   · `talent`: el cartel de Talantul în Negoț, superficie oscura entera.
    *   · `impreuna`: la semana de Proiectul Împreună, navy entero con el QR.
+   *   · `baptism`: el retrato del candidato llega al borde, como las familias.
    * El texto conserva su propio aire dentro de cada panel.
    */
   protected readonly bleed = computed<boolean>(() => {
     const block = (this.soloSlide() ?? this.carousel.currentSlide())?.block;
     return (
       this.fullscreen() &&
-      (block === 'families' || block === 'causes' || block === 'talent' || block === 'impreuna')
+      (block === 'families' ||
+        block === 'baptism' ||
+        block === 'causes' ||
+        block === 'talent' ||
+        block === 'impreuna')
     );
   });
 
@@ -228,6 +242,8 @@ export class StageComponent implements OnInit {
    *    familias (0 = resumen, 1… = fichas en orden), aunque aún no le toque.
    *    Es la fuente del **PDF de la semana** (`scripts/generate-family-pdfs.mjs`
    *    imprime una a una); el total va en `data-solo-pages` del escenario.
+   *  - `&botez=<fecha>&pagina=<n>`: la página n de ese botez (0 = los
+   *    candidatos juntos, 1… = cada candidato), para revisarlo antes del día.
    */
   protected readonly soloSlide = computed<StageSlide | null>(() => {
     if (!this.presentation.isSolo()) return null;
@@ -235,6 +251,11 @@ export class StageComponent implements OnInit {
     const familyWeek = this.familyPrayer.anyByDate(params?.get('familii'));
     if (familyWeek) {
       const slides = this.blocks.familyWeekSlides(familyWeek);
+      return slides[Math.min(slides.length - 1, Math.max(0, Number(params?.get('pagina')) || 0))] ?? null;
+    }
+    const baptism = this.baptisms.byDate(params?.get('botez'));
+    if (baptism) {
+      const slides = this.blocks.baptismSlides(baptism);
       return slides[Math.min(slides.length - 1, Math.max(0, Number(params?.get('pagina')) || 0))] ?? null;
     }
     const announcement = this.announcements.anyById(params?.get('anunt'));

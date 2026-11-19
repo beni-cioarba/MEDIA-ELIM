@@ -109,6 +109,8 @@ export const STAGE_BLOCK_SLUGS = {
   upcoming: 'evenimente',
   bible: 'citirea-bibliei',
   families: 'rugaciune-pentru-familii',
+  // Sólo proyección: `/media/botez` lleva al registro de botezuri.
+  baptism: 'botez',
   causes: 'cauze-de-rugaciune',
   // Web: `/media/talantul-in-negot` redirige a la página del concurso.
   talent: 'talantul-in-negot',

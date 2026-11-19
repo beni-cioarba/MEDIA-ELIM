@@ -20,6 +20,7 @@ export const STAGE_ROUTES: ModuleRoutes = {
     // Las redirecciones, ANTES de `:blockId` (el router prueba en orden).
     redirect(APP_PATHS.announcements, APP_PATHS.announcements),
     redirect(APP_PATHS.familyPrayer, APP_PATHS.familyPrayer),
+    redirect('botez', APP_PATHS.baptisms),
     // La diapositiva del QR sólo tiene sentido proyectada.
     redirect('site', APP_PATHS.home),
     redirect(APP_PATHS.prayerCauses, APP_PATHS.prayerCauses),

@@ -2,6 +2,7 @@ import { DestroyRef, Injectable, Signal, WritableSignal, computed, inject, signa
 import { Announcement, CHURCH_CONFIG } from '../church.config';
 import { AnnouncementsService, announcementParts } from './announcements.service';
 import { BibleReadingService } from './bible-reading.service';
+import { BaptismView, BaptismsService, CandidateView } from './baptisms.service';
 import { FamilyPrayerService, PrayerFamilyView, PrayerWeekView } from './family-prayer.service';
 import { ClockService } from './clock.service';
 import { PrayerCausesService } from './prayer-causes.service';
@@ -51,6 +52,7 @@ export interface SlidePage {
  *                      ninguno se corte y cada página tenga su tiempo.
  *  - `families`      → el resumen de la semana y, detrás, una ficha por
  *                      familia (como el PowerPoint del domingo).
+ *  - `baptism`       → los candidatos juntos y, detrás, uno por diapositiva.
  */
 export interface PresentationSlide {
   /** Clave estable: el id del bloque, `announcements:<id>` o `upcoming:<n>`. */
@@ -73,6 +75,12 @@ export interface PresentationSlide {
    * hoy (ver `PresentationBlocksService.setPastFamilyShown`).
    */
   readonly pastFamily?: boolean;
+  /** Sólo en `baptism`: el botez que se presenta. */
+  readonly baptism?: BaptismView;
+  /** Sólo en las diapositivas de un candidato: el candidato. */
+  readonly candidate?: CandidateView;
+  /** Sólo en el resumen de `baptism`: todos sus candidatos, con retrato. */
+  readonly candidates?: readonly CandidateView[];
 }
 
 /** Una familia de una semana anterior, para el desplegable del panel. */
@@ -129,6 +137,7 @@ const HIDDEN_EVENTS_KEY = 'iglesia-redes.presentation.events.hidden';
 const HIDDEN_FAMILIES_KEY = 'iglesia-redes.presentation.families.hidden';
 const PAST_FAMILIES_KEY = 'iglesia-redes.presentation.families.past';
 const NEXT_FAMILY_WEEK_KEY = 'iglesia-redes.presentation.families.next';
+const HIDDEN_CANDIDATES_KEY = 'iglesia-redes.presentation.baptism.hidden';
 
 /** Id de la diapositiva de resumen dentro de la selección de `families`. */
 export const FAMILY_SUMMARY_ID = 'summary';
@@ -136,8 +145,14 @@ export const FAMILY_SUMMARY_ID = 'summary';
 /** Clave de la diapositiva de resumen de las familias (la primera del bloque). */
 export const FAMILY_SUMMARY_SLIDE_KEY = 'families';
 
+/** Id de la diapositiva con todos los candidatos dentro de la selección de `baptism`. */
+export const BAPTISM_SUMMARY_ID = 'summary';
+
+/** Clave de esa diapositiva (la primera del bloque). */
+export const BAPTISM_SUMMARY_SLIDE_KEY = 'baptism';
+
 /** Bloques cuyas diapositivas se eligen una a una en el panel. */
-export type SelectableBlockId = 'announcements' | 'upcoming' | 'families';
+export type SelectableBlockId = 'announcements' | 'upcoming' | 'families' | 'baptism';
 
 /** Estado de la selección de un bloque, para los atajos «Doar primul» / «Toate». */
 export interface BlockSelection {
@@ -150,7 +165,7 @@ export interface BlockSelection {
 }
 
 /** Bloques con selección elemento a elemento, en el orden del panel. */
-const SELECTABLE_BLOCKS: readonly SelectableBlockId[] = ['announcements', 'upcoming', 'families'];
+const SELECTABLE_BLOCKS: readonly SelectableBlockId[] = ['announcements', 'upcoming', 'families', 'baptism'];
 const ORDER_KEY = 'iglesia-redes.presentation.order';
 
 /**
@@ -186,6 +201,7 @@ export class PresentationBlocksService {
   private readonly announcements = inject(AnnouncementsService);
   private readonly bible = inject(BibleReadingService);
   private readonly familyPrayer = inject(FamilyPrayerService);
+  private readonly baptisms = inject(BaptismsService);
   private readonly prayerCauses = inject(PrayerCausesService);
   private readonly talentContest = inject(TalentContestService);
   private readonly display = inject(PresentationDisplayService);
@@ -209,6 +225,9 @@ export class PresentationBlocksService {
    * familias por semana no siempre se proyectan todas.
    */
   private readonly hiddenFamilyIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_FAMILIES_KEY));
+
+  /** Diapositivas del botez que no se proyectan: el resumen o un candidato (id). */
+  private readonly hiddenCandidateIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_CANDIDATES_KEY));
 
   /**
    * Familias de semanas anteriores que el operador ha añadido **para hoy**.
@@ -309,6 +328,9 @@ export class PresentationBlocksService {
       if (event.key === null || event.key === HIDDEN_FAMILIES_KEY) {
         this.hiddenFamilyIds.set(readHiddenIds(HIDDEN_FAMILIES_KEY));
       }
+      if (event.key === null || event.key === HIDDEN_CANDIDATES_KEY) {
+        this.hiddenCandidateIds.set(readHiddenIds(HIDDEN_CANDIDATES_KEY));
+      }
       if (event.key === null || event.key === PAST_FAMILIES_KEY) {
         this.pastFamilyPick.set(readPastFamilyPick());
       }
@@ -332,6 +354,7 @@ export class PresentationBlocksService {
     prayerCauses: this.prayerCauses,
     talentContest: this.talentContest,
     hasFamiliesWeek: () => this.familiesWeek() !== null,
+    hasBaptismSoon: () => this.baptisms.presentedSoon(),
   };
 
   /**
@@ -442,6 +465,7 @@ export class PresentationBlocksService {
       this.hiddenAnnouncementIds().size > 0 ||
       this.hiddenEventIds().size > 0 ||
       this.hiddenFamilyIds().size > 0 ||
+      this.hiddenCandidateIds().size > 0 ||
       this.pastFamilyIds().size > 0 ||
       this.showingNextFamilyWeek(),
   );
@@ -565,7 +589,32 @@ export class PresentationBlocksService {
       return [...all.filter((slide) => !hidden.has(familySelectionId(slide))), ...past];
     }
 
+    if (id === 'baptism') {
+      // Los candidatos juntos y, detrás, uno a uno en el orden de la
+      // presentación. El panel los lista todos; la proyección, los marcados.
+      const baptism = this.baptisms.presented();
+      if (!baptism) return this.emptySlide(id);
+      const all = this.baptismSlides(baptism);
+      if (!projection) return all;
+      const hidden = this.hiddenCandidateIds();
+      return all.filter((slide) => !hidden.has(candidateSelectionId(slide)));
+    }
+
     return [{ key: id, block: id, titleKey }];
+  }
+
+  /**
+   * Las diapositivas de un botez: sus candidatos juntos y uno por diapositiva.
+   * Única fuente: la proyección (`expand`) y la vista fija `?botez=<fecha>`.
+   */
+  baptismSlides(baptism: BaptismView): PresentationSlide[] {
+    const id: PresentationBlockId = 'baptism';
+    const titleKey = this.titleKeyOf(id);
+    const candidates = this.baptisms.candidatesOf(baptism);
+    return [
+      { key: BAPTISM_SUMMARY_SLIDE_KEY, block: id, titleKey, baptism, candidates },
+      ...candidates.map((candidate) => ({ key: `${id}:${candidate.id}`, block: id, titleKey, baptism, candidate })),
+    ];
   }
 
   /**
@@ -625,6 +674,8 @@ export class PresentationBlocksService {
     persistHiddenIds(HIDDEN_EVENTS_KEY, new Set());
     this.hiddenFamilyIds.set(new Set());
     persistHiddenIds(HIDDEN_FAMILIES_KEY, new Set());
+    this.hiddenCandidateIds.set(new Set());
+    persistHiddenIds(HIDDEN_CANDIDATES_KEY, new Set());
     this.clearPastFamilies();
     this.setNextFamilyWeekShown(false);
   }
@@ -678,6 +729,16 @@ export class PresentationBlocksService {
   /** ¿Se proyecta esta diapositiva de familias? */
   isFamilyVisible(id: string): boolean {
     return !this.hiddenFamilyIds().has(id);
+  }
+
+  /** Muestra u oculta una diapositiva del botez (los candidatos juntos o uno). */
+  setCandidateVisible(id: string, visible: boolean): void {
+    this.updateHidden(this.hiddenCandidateIds, HIDDEN_CANDIDATES_KEY, id, visible);
+  }
+
+  /** ¿Se proyecta esta diapositiva del botez? */
+  isCandidateVisible(id: string): boolean {
+    return !this.hiddenCandidateIds().has(id);
   }
 
   /** Añade (para hoy) o quita una familia de una semana anterior. */
@@ -842,6 +903,31 @@ export class PresentationBlocksService {
   });
 
   /**
+   * Atajo «Botez»: la **presentación de los candidatos en el culto**. Sólo
+   * queda encendido el bloque del botez, con todos sus candidatos (juntos y,
+   * detrás, uno a uno). Como «Familii», el panel pone el avance en manual y
+   * salta a la primera: se pasan al ritmo en que cada uno da su mărturie.
+   */
+  selectBaptismPresentation(): void {
+    if (!this.hasBaptism()) return;
+    const next: Partial<Record<PresentationBlockId, boolean>> = {};
+    for (const state of this.states()) next[state.id] = state.id === 'baptism';
+    this.overrides.set(next);
+    persistOverrides(next);
+    this.selectAll('baptism');
+  }
+
+  /** Hay un botez con candidatos por delante (si no, el atajo no aplica). */
+  readonly hasBaptism = computed<boolean>(() => this.baptisms.presented() !== null);
+
+  /** Está aplicado el atajo «Botez» (para pintarlo como activo). */
+  readonly baptismOnly = computed<boolean>(() => {
+    if (!this.hasBaptism()) return false;
+    const sel = this.selection('baptism');
+    return this.states().every((s) => s.enabled === (s.id === 'baptism')) && sel.visible === sel.total;
+  });
+
+  /**
    * Atajo «Terminare»: lo que se deja pasando al acabar el culto. Sólo
    * quedan encendidos los bloques de `ENDING_BLOCKS` que tienen contenido:
    * todos los anuncios y todos los eventos próximos y, de las familias, **sólo
@@ -929,6 +1015,14 @@ export class PresentationBlocksService {
           ids: week ? [FAMILY_SUMMARY_ID, ...week.families.map((f) => f.id)] : [],
           hidden: this.hiddenFamilyIds,
           key: HIDDEN_FAMILIES_KEY,
+        };
+      }
+      case 'baptism': {
+        const baptism = this.baptisms.presented();
+        return {
+          ids: baptism ? [BAPTISM_SUMMARY_ID, ...baptism.candidates.map((c) => c.id)] : [],
+          hidden: this.hiddenCandidateIds,
+          key: HIDDEN_CANDIDATES_KEY,
         };
       }
     }
@@ -1114,4 +1208,9 @@ function persistPastFamilyPick(pick: PastFamilyPick): void {
 /** Id de selección de una diapositiva de familias: el resumen o la familia. */
 export function familySelectionId(slide: PresentationSlide): string {
   return slide.family?.id ?? FAMILY_SUMMARY_ID;
+}
+
+/** Id de selección de una diapositiva del botez: el resumen o el candidato. */
+export function candidateSelectionId(slide: PresentationSlide): string {
+  return slide.candidate?.id ?? BAPTISM_SUMMARY_ID;
 }

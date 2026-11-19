@@ -1,0 +1,115 @@
+@if (candidate(); as c) {
+  <!-- Un candidato: retrato a todo el alto + panel con su mărturie. -->
+  <article class="bzs bzs--candidate" [attr.aria-label]="c.name">
+    <div class="bzs__portrait">
+      @if (c.photo; as photo) {
+        <!-- «eager»: proyectada, la foto no puede esperar a entrar en pantalla. -->
+        <img
+          class="bzs__img"
+          [src]="photo.large"
+          [srcset]="photo.srcset"
+          sizes="45vw"
+          alt=""
+          loading="eager"
+          decoding="async"
+        />
+      } @else {
+        <span class="bzs__monogram" aria-hidden="true">{{ nameParts(c).given.charAt(0) }}</span>
+      }
+    </div>
+
+    <div class="bzs__panel" appFitToBox [appFitToBoxMax]="1.3">
+      <div class="bzs__inner">
+        <p class="bzs__eyebrow">
+          {{ 'baptism_slide.candidate' | translate }}<span class="bzs__sep" aria-hidden="true"></span>{{ shortDate() }}
+        </p>
+        <h2 class="bzs__name">
+          <span class="bzs__given">{{ nameParts(c).given }}</span>
+          @if (nameParts(c).family) {
+            <span class="bzs__family">{{ nameParts(c).family }}</span>
+          }
+        </h2>
+        @if (c.parents) {
+          <p class="bzs__parents">
+            <span class="bzs__label">{{ 'baptism_slide.parents' | translate }}</span>&ngsp;{{ c.parents }}
+          </p>
+        }
+
+        @let told = story(c);
+        @if (told.paragraphs.length) {
+          <div class="bzs__testimony">
+            @for (p of told.paragraphs; track $index) {
+              <p>{{ p }}</p>
+            }
+          </div>
+        } @else if (told.quote) {
+          <p class="bzs__quote">{{ told.quote }}</p>
+        }
+        @if (c.story?.verse; as verse) {
+          <blockquote class="bzs__verse" [class.bzs__verse--lead]="!told.paragraphs.length && !told.quote">
+            <p class="bzs__verse-text">{{ verse.text }}</p>
+            <cite class="bzs__verse-ref">{{ verse.ref }}</cite>
+          </blockquote>
+        }
+      </div>
+    </div>
+
+    <span class="bzs__signature" aria-hidden="true">{{ 'baptism_slide.signature' | translate }}</span>
+  </article>
+} @else if (baptism(); as b) {
+  <!-- Los candidatos juntos: la fecha y todos los retratos. -->
+  <section class="bzs bzs--summary" aria-labelledby="bzs-summary-title">
+    <header class="bzs__head">
+      <p class="bzs__eyebrow">{{ 'baptism_slide.signature' | translate }}</p>
+      <h2 id="bzs-summary-title" class="bzs__title">{{ 'baptism_slide.summary_title' | translate }}</h2>
+      <p class="bzs__when">
+        <span class="bzs__date">{{ date() }}</span>
+        @if (b.time) {
+          <span class="bzs__sep" aria-hidden="true"></span>
+          <span>{{ 'baptism_slide.at' | translate: { time: b.time } }}</span>
+        }
+        <span class="bzs__sep" aria-hidden="true"></span>
+        <span>{{ 'baptism_slide.count' | translate: { n: candidates().length } }}</span>
+      </p>
+    </header>
+
+    <div class="bzs__stage">
+      <ul
+        class="bzs__grid"
+        [class.bzs__grid--dense]="grid().rows > 1"
+        role="list"
+        [style.--bzs-cols]="grid().cols"
+        [style.--bzs-rows]="grid().rows"
+      >
+        @for (c of candidates(); track c.id) {
+          <li class="bzs__card">
+            <div class="bzs__frame">
+              @if (c.photo; as photo) {
+                <img
+                  class="bzs__img"
+                  [src]="photo.medium"
+                  [srcset]="photo.srcset"
+                  sizes="20vw"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
+              } @else {
+                <span class="bzs__monogram" aria-hidden="true">{{ nameParts(c).given.charAt(0) }}</span>
+              }
+            </div>
+            <p class="bzs__card-name">
+              <span class="bzs__card-given">{{ nameParts(c).given }}</span>
+              <span class="bzs__card-family">{{ nameParts(c).family }}</span>
+            </p>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+} @else {
+  <section class="announcements-empty" aria-labelledby="baptism-empty-title">
+    <h2 id="baptism-empty-title" class="announcements-empty__title">{{ 'baptism_slide.title' | translate }}</h2>
+    <p class="announcements-empty__text">{{ 'baptism_slide.empty' | translate }}</p>
+  </section>
+}

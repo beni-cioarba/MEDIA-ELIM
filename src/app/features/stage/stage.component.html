@@ -132,6 +132,17 @@
                   <div class="slide__loading" aria-hidden="true"></div>
                 }
               }
+              @case ('baptism') {
+                @defer (on immediate) {
+                  <app-baptism-block
+                    [baptism]="slide.baptism ?? null"
+                    [candidate]="slide.candidate ?? null"
+                    [candidates]="slide.candidates ?? []"
+                  />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
               @case ('location') {
                 @defer (on immediate) {
                   <app-location-block />

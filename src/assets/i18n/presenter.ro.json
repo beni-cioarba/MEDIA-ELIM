@@ -96,6 +96,8 @@
     "clock_seconds": "Cu secunde",
     "select_families": "Familii",
     "select_families_hint": "Prezentarea familiilor: doar familiile din săptămâna aceasta (rezumat + fiecare familie), pe avans manual, de la rezumat",
+    "select_baptism": "Botez",
+    "select_baptism_hint": "Prezentarea candidaților la botez: toți candidații (împreună + fiecare), pe avans manual, de la primul",
     "select_ending": "Terminare",
     "select_ending_hint": "Sfârșitul slujbei: toate anunțurile, rezumatul familiilor, citirea Bibliei, programul săptămânal și evenimentele viitoare, pe avans automatic, anunțurile câte 12 s și restul câte 10 s"
   }

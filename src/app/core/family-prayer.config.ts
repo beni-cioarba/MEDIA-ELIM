@@ -750,4 +750,70 @@ export const FAMILY_PRAYER_WEEKS: readonly PrayerWeek[] = [
       },
     ],
   },
+  {
+    number: 12,
+    presentedOn: '2026-11-22',
+    // Orden alfabético (en rumano, «ș» va detrás de «s»: Cristea antes que
+    // Crișan); entre los Cristea, por el nombre.
+    families: [
+      {
+        id: 'cristea-beni-cristina',
+        surname: 'Cristea',
+        names: 'Beni și Cristina',
+        children: ['Ruben', 'Rebeca'],
+        // Sólo dieron la referencia («Filipeni 4-6»); el versículo va
+        // completo (Cornilescu).
+        verse: {
+          text: 'Nu vă îngrijorați de nimic; ci, în orice lucru, aduceți cererile voastre la cunoștința lui Dumnezeu, prin rugăciuni și cereri, cu mulțumiri.',
+          reference: 'Filipeni 4:6',
+        },
+      },
+      {
+        id: 'cristea-daniel-laura',
+        surname: 'Cristea',
+        names: 'Daniel și Laura',
+        children: ['Melisa', 'Sofia'],
+        message: [
+          'Dorim ca Domnul să lase garda Sa de îngeri în preajma familiei noastre și harul Lui să ne însoțească la fiecare pas.',
+        ],
+        verse: {
+          text: 'Pot totul în Hristos, care mă întărește.',
+          reference: 'Filipeni 4:13',
+        },
+      },
+      {
+        id: 'cristea-vasile-dina',
+        surname: 'Cristea',
+        names: 'Vasile și Dina',
+        message: ['Dorința noastră este ca toată familia să facem voia lui Dumnezeu și să fim mântuiți.'],
+        // Sólo la referencia; el pasaje va completo (Cornilescu).
+        verse: {
+          text: 'Fiindcă Mă iubește – zice Domnul –, de aceea îl voi izbăvi; îl voi ocroti, căci cunoaște Numele Meu. Când Mă va chema, îi voi răspunde; voi fi cu el în strâmtorare, îl voi izbăvi și-l voi proslăvi. Îl voi sătura cu viață lungă și-i voi arăta mântuirea Mea.',
+          reference: 'Psalmul 91:14-16',
+        },
+      },
+      {
+        id: 'crisan-ionut-ioana',
+        surname: 'Crișan',
+        names: 'Ionuț și Ioana',
+        children: ['Thomas'],
+        message: [
+          'Mulțumim Domnului pentru mila și îndurarea pe care și-a arătat-o față de noi, pentru bunătatea și dragostea Lui. Dorința noastră este ca Thomas să aibă o întâlnire personală cu Domnul.',
+          'Domnul să ne ajute să stăm lângă El și să-I fim credincioși până la venirea Sa.',
+        ],
+      },
+      {
+        id: 'cucu-dumitru-ana',
+        surname: 'Cucu',
+        names: 'Dumitru și Ana',
+        // Hijos ya mayores: los nombra su propio mensaje.
+        children: ['Adela', 'Lavinia', 'Ionuț'],
+        message: [
+          'Mulțumim Domnului că ne-a scos din groapa pieirii, din fundul mocirlei, și ne-a pus în gură o cântare nouă, spre slava și gloria lui Dumnezeu.',
+          'Mulțumim pentru încercări și mulțumim pentru dragostea, bunătatea și credincioșia Lui față de noi și copiii noștri.',
+          'Dorința noastră este ca cei trei copii ai noștri, Adela, Lavinia și Ionuț, cu toți copiii lor, să fie mântuiți, însă și pentru noi, ca să ne putem duce mântuirea până la capăt.',
+        ],
+      },
+    ],
+  },
 ];

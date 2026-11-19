@@ -26,6 +26,8 @@ import {
   PresentationSlide,
   SelectableBlockId,
   FAMILY_SUMMARY_SLIDE_KEY,
+  BAPTISM_SUMMARY_SLIDE_KEY,
+  candidateSelectionId,
   familySelectionId,
 } from '../../core/services/presentation-blocks.service';
 import {
@@ -419,6 +421,10 @@ export class PresenterComponent implements OnInit {
       return `${slide.announcement.title}${part}`;
     }
     if (slide.family) return slide.family.fullName;
+    if (slide.candidate) return slide.candidate.name;
+    if (slide.baptism) {
+      return `${this.translate.instant(slide.titleKey)} · ${this.translate.instant('baptism_slide.summary')}`;
+    }
     if (slide.prayerWeek) {
       return `${this.translate.instant(slide.titleKey)} · ${this.translate.instant('family_prayer.summary')}`;
     }
@@ -446,7 +452,16 @@ export class PresenterComponent implements OnInit {
    * «todos»), o `null` si el bloque es una sola diapositiva.
    */
   protected selectable(id: PresentationBlockId): SelectableBlockId | null {
-    return id === 'announcements' || id === 'upcoming' || id === 'families' ? id : null;
+    return id === 'announcements' || id === 'upcoming' || id === 'families' || id === 'baptism' ? id : null;
+  }
+
+  /** Id de selección de una diapositiva del botez (los candidatos juntos o uno), o `null`. */
+  protected candidateId(slide: PresentationSlide): string | null {
+    return slide.block === 'baptism' && slide.baptism ? candidateSelectionId(slide) : null;
+  }
+
+  protected setCandidateVisible(id: string, event: Event): void {
+    this.blocks.setCandidateVisible(id, (event.target as HTMLInputElement).checked);
   }
 
   /** Id de selección de una diapositiva de familias (resumen o ficha), o `null`. */
@@ -592,6 +607,19 @@ export class PresenterComponent implements OnInit {
     this.display.setAutoAdvance(false);
     this.display.setCountdownEnabled(false);
     this.sync.sendCommand({ type: 'gotoKey', key: FAMILY_SUMMARY_SLIDE_KEY });
+  }
+
+  /**
+   * Atajo «Botez»: presentar a los candidatos en el culto. Como «Familii»:
+   * sólo ellos (juntos + uno a uno), **avance manual** —se pasa al siguiente
+   * cuando termina su mărturie—, sin cuenta atrás y desde el primero.
+   */
+  protected presentBaptism(): void {
+    this.display.applyShortcutDurations(null);
+    this.blocks.selectBaptismPresentation();
+    this.display.setAutoAdvance(false);
+    this.display.setCountdownEnabled(false);
+    this.sync.sendCommand({ type: 'gotoKey', key: BAPTISM_SUMMARY_SLIDE_KEY });
   }
 
   /**

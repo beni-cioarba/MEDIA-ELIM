@@ -69,4 +69,9 @@ export const FAMILY_PHOTOS: Readonly<Record<string, FamilyPhotoManifestEntry>> =
   '2026-11-15/corjuc-ioan-camelia': { width: 747, height: 1327, variants: [[480, 270], [960, 540], [1327, 747]] },
   '2026-11-15/crainiciuc-andrei-anca': { width: 671, height: 972, variants: [[480, 331], [960, 663], [972, 671]] },
   '2026-11-15/creta-andrei-naomii': { width: 1600, height: 846, variants: [[480, 480], [960, 960], [1600, 1600]] },
+  '2026-11-22/crisan-ionut-ioana': { width: 673, height: 694, variants: [[480, 465], [694, 673]] },
+  '2026-11-22/cristea-beni-cristina': { width: 1265, height: 941, variants: [[480, 480], [960, 960], [1265, 1265]] },
+  '2026-11-22/cristea-daniel-laura': { width: 1360, height: 1156, variants: [[480, 480], [960, 960], [1360, 1360]] },
+  '2026-11-22/cristea-vasile-dina': { width: 640, height: 503, variants: [[480, 480], [640, 640]] },
+  '2026-11-22/cucu-dumitru-ana': { width: 1200, height: 1600, variants: [[480, 360], [960, 720], [1600, 1200]] },
 };

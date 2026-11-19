@@ -28,6 +28,8 @@ export interface TimedSlide {
   readonly events?: readonly { readonly id: string }[];
   readonly family?: { readonly id: string };
   readonly prayerWeek?: unknown;
+  readonly candidate?: { readonly id: string };
+  readonly baptism?: unknown;
 }
 
 /**
@@ -37,6 +39,7 @@ export interface TimedSlide {
  * eventos: dura lo que el más largo de los dos.
  *
  *  - `a:<id>` anuncio · `e:<id>` evento · `f:<id>` ficha · `f:summary` resumen
+ *  - `b:<id>` candidato al botez · `b:summary` sus candidatos juntos
  *  - Bloques de una sola diapositiva: ninguna (su tiempo es el del bloque).
  *
  * Un bloque nuevo con varias diapositivas sólo tiene que añadir aquí cómo se
@@ -46,6 +49,7 @@ export function slideTimeKeys(slide: TimedSlide): readonly string[] {
   if (slide.announcement) return [`a:${slide.announcement.id}`];
   if (slide.block === 'upcoming' && slide.events) return slide.events.map((e) => `e:${e.id}`);
   if (slide.block === 'families' && slide.prayerWeek) return [`f:${slide.family?.id ?? 'summary'}`];
+  if (slide.block === 'baptism' && slide.baptism) return [`b:${slide.candidate?.id ?? 'summary'}`];
   return [];
 }
 
