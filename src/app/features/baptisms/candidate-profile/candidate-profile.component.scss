@@ -317,7 +317,16 @@
 // Grupo del día: rejilla de retratos que se rellena sola.
 .cp-peers {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+
+  // En la columna lateral (escritorio, con mărturie) las columnas las elige
+  // `peerCols` para que la última fila no quede con uno suelto.
+  @include from('lg') {
+    .cp-layout:not(.cp-layout--solo) & {
+      grid-template-columns: repeat(var(--cp-cols, 4), minmax(0, 1fr));
+    }
+  }
+
   gap: 0.85rem 0.6rem;
   margin: 0;
   padding: 0;
@@ -397,7 +406,7 @@
 }
 
 .cp-peer__name {
-  @include line-clamp(2);
+  @include line-clamp(3); // nombres de tres palabras («Natalia Florina Marian») enteros
   font-size: 0.8rem;
   font-weight: 650;
   line-height: 1.25;

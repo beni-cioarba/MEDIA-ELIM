@@ -548,6 +548,11 @@ pintado**: el arranque lo espera. Lo que sólo usa una página no va ahí.
   `departments`, `guests`, `impreuna`, `legal`.
 - Cada paquete conserva **las mismas raíces** que tenía (`about.story.…`) y se
   fusiona en el diccionario: las plantillas no cambian.
+- **Se fusiona cuando el principal YA está cargado** (`LanguageService.ready`,
+  19/11/2026). ngx-translate fija el idioma activo nada más pedirlo, antes de
+  tener el JSON: fusionar al ver «hay idioma» hacía que la carga del principal
+  borrase el paquete (claves a la vista en ~1 de cada 3 cargas en frío de
+  `/botezuri` y del panel).
 - Lo que también pinta otra página **se queda en el principal**: `about.stats`
   (portada), `talent_contest.{eyebrow,title,countdown,phases,categories,teaser,slide}`
   (portada y proyección), `leadership.{titles,roles,departments,ministries}`

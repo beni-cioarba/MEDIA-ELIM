@@ -191,13 +191,24 @@ para proyectar a cada candidato mientras se presenta. Bloque `baptism`
   nombre de pila (9u) y el apellido en oro (6,4u), «Părinții: …», la
   mărturie (4,4u, sans al 80 %) y el versículo (serif cursiva oro, la
   referencia como nota al pie). El panel se ajusta entero (`appFitToBox`
-  0,7 → 1,3) y arranca arriba; la firma «Botez în apă» va en la esquina.
+  0,7 → 1,3) y arranca arriba; la firma «Botez nou-testamental» (también el rótulo del resumen) va en la esquina.
   Misma familia visual que las fichas de familias; el acento propio es el
   «agua»: un resplandor azul claro, quieto, en el fondo.
 - La edad y la ciudad tampoco se proyectan. Sin mărturie, la frase
   destacada; sin nada, sólo nombre y padres (el panel crece).
 
 ## Diseño (decisiones)
+
+- **Tarjeta del próximo botez sin foto de grupo** (19/11/2026): mosaico en
+  filas parejas que llenan el ancho (≤ 3 en una fila; 4 → 2 + 2; 5 → 3 + 2;
+  6 → 3 + 3; `mosaicLayout`, rejilla de 6 columnas con `span`). Todos los
+  retratos a la misma escala, anclados arriba; la celda más ancha se rellena
+  con el color del fondo de estudio (rgb 215 223 231) y los lados del retrato
+  se funden con máscara. La pastilla de la cuenta atrás va abajo (arriba
+  tapaba una cara). Antes: rejilla fija de 3 con hueco y caras cortadas.
+- **«Botezați împreună»** en la columna lateral: 5 ó 4 columnas, la que deje
+  la última fila más llena (`peerCols`, la foto de grupo cuenta dos); nombre
+  en hasta 3 líneas.
 
 - **Cabecera** «de agua»: superficie navy con ondas concéntricas (gota sobre
   el agua; respiran despacio, quietas con `prefers-reduced-motion`), cifras en

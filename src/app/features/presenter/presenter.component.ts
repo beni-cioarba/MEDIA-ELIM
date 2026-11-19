@@ -444,6 +444,7 @@ export class PresenterComponent implements OnInit {
   }
 
   protected setEventVisible(id: string, event: Event): void {
+    if (this.revealed('upcoming', id, event)) return;
     this.blocks.setEventVisible(id, (event.target as HTMLInputElement).checked);
   }
 
@@ -461,6 +462,7 @@ export class PresenterComponent implements OnInit {
   }
 
   protected setCandidateVisible(id: string, event: Event): void {
+    if (this.revealed('baptism', id, event)) return;
     this.blocks.setCandidateVisible(id, (event.target as HTMLInputElement).checked);
   }
 
@@ -470,7 +472,42 @@ export class PresenterComponent implements OnInit {
   }
 
   protected setFamilyVisible(id: string, event: Event): void {
+    if (this.revealed('families', id, event)) return;
     this.blocks.setFamilyVisible(id, (event.target as HTMLInputElement).checked);
+  }
+
+  /** ¿Se proyecta el bloque? (sus casillas se pintan vacías si no). */
+  protected isBlockOn(block: PresentationBlockId): boolean {
+    return this.blocks.states().find((s) => s.id === block)?.enabled ?? false;
+  }
+
+  /**
+   * Casilla marcada en un bloque apagado: se enciende el bloque sólo con ese
+   * elemento y se proyecta ya. Devuelve `true` si lo ha resuelto así.
+   */
+  private revealed(block: SelectableBlockId, id: string, event: Event): boolean {
+    if (this.isBlockOn(block) || !(event.target as HTMLInputElement).checked) return false;
+    this.blocks.showOnly(block, id);
+    return true;
+  }
+
+  /**
+   * Fila de una familia de otra semana ya añadida: con el bloque encendido,
+   * desmarcarla la quita; apagado (casilla vacía), marcarla enciende el
+   * bloque sólo con ella.
+   */
+  protected togglePickedFamily(slide: PresentationSlide, event: Event): void {
+    const family = slide.family;
+    if (!family) return;
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked && !this.isBlockOn('families')) {
+      this.blocks.showOnly('families', null);
+      if (slide.nextFamily) this.blocks.setNextFamilyShown(family.id, true);
+      else this.blocks.setPastFamilyShown(family.id, true);
+      return;
+    }
+    if (slide.nextFamily) this.blocks.setNextFamilyShown(family.id, checked);
+    else this.blocks.setPastFamilyShown(family.id, checked);
   }
 
   protected isAnnouncementVisible(slide: PresentationSlide): boolean {
@@ -516,12 +553,23 @@ export class PresenterComponent implements OnInit {
 
   /** Interruptor de prueba: proyectar hoy la semana siguiente en lugar de la actual. */
   protected setNextFamilyWeek(event: Event): void {
-    this.blocks.setNextFamilyWeekShown((event.target as HTMLInputElement).checked);
+    const checked = (event.target as HTMLInputElement).checked;
+    this.blocks.setNextFamilyWeekShown(checked);
+    if (checked && !this.isBlockOn('families')) this.blocks.setEnabled('families', true);
   }
 
   /** Marcar en el desplegable: la familia pasa (para hoy) a la lista del bloque. */
+  /** Marcar en el desplegable: la familia de la semana siguiente pasa (hoy) a la lista. */
+  protected addNextFamily(id: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.checked && !this.isBlockOn('families')) this.blocks.showOnly('families', null);
+    this.blocks.setNextFamilyShown(id, input.checked);
+    input.checked = false;
+  }
+
   protected addPastFamily(id: string, event: Event): void {
     const input = event.target as HTMLInputElement;
+    if (input.checked && !this.isBlockOn('families')) this.blocks.showOnly('families', null);
     this.blocks.setPastFamilyShown(id, input.checked);
     input.checked = false;
   }
@@ -588,6 +636,7 @@ export class PresenterComponent implements OnInit {
   }
 
   protected setAnnouncementVisible(id: string, event: Event): void {
+    if (this.revealed('announcements', id, event)) return;
     this.blocks.setAnnouncementVisible(id, (event.target as HTMLInputElement).checked);
   }
 

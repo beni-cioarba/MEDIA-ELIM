@@ -62,11 +62,13 @@
               decoding="async"
             />
           } @else if (featureMosaic().length) {
-            <div class="bz-feature__mosaic">
-              @for (c of featureMosaic(); track c.key) {
-                @if (c.photo; as p) {
-                  <img [src]="p.small" alt="" decoding="async" />
-                }
+            <div class="bz-feature__mosaic" [style.--bz-rows]="mosaicLayout().rows">
+              @for (c of featureMosaic(); track c.key; let i = $index) {
+                <span class="bz-feature__tile" [style.grid-column]="'span ' + mosaicLayout().spans[i]">
+                  @if (c.photo; as p) {
+                    <img [src]="p.medium" alt="" decoding="async" />
+                  }
+                </span>
               }
             </div>
           } @else {
@@ -74,7 +76,7 @@
               <app-icon name="droplet" />
             </div>
           }
-          <span class="bz-feature__badge">
+          <span class="bz-feature__badge" [class.bz-feature__badge--low]="!f.baptism.cover && featureMosaic().length > 0">
             @if (f.kind === 'next') {
               {{ countdownKey(f.baptism) | translate: { days: f.baptism.daysLeft } }}
             } @else {

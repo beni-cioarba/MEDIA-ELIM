@@ -376,7 +376,7 @@
     "summary": "Todos los candidatos",
     "summary_title": "Candidatos al bautismo",
     "parents": "Padres:",
-    "signature": "Bautismo en agua",
+    "signature": "Bautismo neotestamentario",
     "at": "a las {{time}}",
     "count": "{{n}} candidatos",
     "empty": "No hay ningún bautismo anunciado con candidatos."

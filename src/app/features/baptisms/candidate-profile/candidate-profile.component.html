@@ -116,7 +116,7 @@
         <h2 class="cp-panel__title" id="cp-peers-title">{{ 'baptisms.profile.peers' | translate }}</h2>
         <span class="cp-panel__count">{{ date(baptism().date) }}</span>
       </div>
-      <ul class="cp-peers" role="list">
+      <ul class="cp-peers" role="list" [style.--cp-cols]="peerCols()">
         <!-- Foto de grupo del día, primero (se amplía en el visor). -->
         @if (baptism().cover; as cover) {
           <li class="cp-peers__group">

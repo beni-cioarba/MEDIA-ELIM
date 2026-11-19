@@ -296,9 +296,13 @@ atrás y salta a la primera diapositiva (`gotoKey` con
 cuando termina la mărturie de cada uno. Activo (`baptismOnly` y avance
 manual) se pinta pulsado.
 
-En el bloque, casilla por fila (los candidatos juntos y cada candidato:
-`…baptism.hidden`, `BAPTISM_SUMMARY_ID`), «Doar primul» / «Toate» y tiempo
-propio por fila (`b:<id>`, `b:summary`). Fuera de su semana el bloque se
+En el bloque, casilla por fila (los candidatos juntos y cada candidato) y
+tiempo propio por fila (`b:<id>`, `b:summary`). **Por defecto sólo se
+proyecta el resumen** (los candidatos juntos), también tras «Toate» global:
+las fichas una a una son para el culto del botez y las enciende «Botez» (o
+el operador, casilla a casilla, o el «Toate» del propio bloque). Lo marcado
+vale sólo ese día (`…baptism.hidden.today` guarda `{date, ids}`; al día
+siguiente vuelve al resumen solo). Fuera de su semana el bloque se
 puede encender a mano (MANUAL) para ensayarlo: proyecta el próximo botez
 con candidatos. `/media/botez` lleva a `/botezuri` (sólo proyección).
 
@@ -585,6 +589,13 @@ de ids elegibles y su conjunto de ocultos (`localStorage`
 `…announcements.hidden`, `…events.hidden`, `…families.hidden`; el resumen de
 familias es `FAMILY_SUMMARY_ID`). Si se desmarcan todas, el bloque no aporta
 diapositivas. «Restablecer» limpia también estas selecciones.
+
+**Casillas con el bloque apagado** (19/11/2026, a petición del usuario):
+nunca se deshabilitan. Con el bloque apagado se pintan **vacías** (no se
+proyecta nada de él) y marcar una **enciende el bloque sólo con ese
+elemento** (`PresentationBlocksService.showOnly`; con familias de otra
+semana, el bloque se enciende vacío y se añade esa familia). Caso típico:
+tras «Botez» o «Familii», proyectar ya un anuncio concreto.
 
 **Global, sobre los bloques** (fila «BLOCURI · n din N» bajo el título de la
 lista): «Doar primul» deja encendido sólo el primer bloque con contenido (en

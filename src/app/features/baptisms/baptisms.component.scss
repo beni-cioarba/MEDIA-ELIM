@@ -199,15 +199,51 @@
 }
 
 .bz-feature__mosaic {
+  // Filas parejas que llenan el ancho (reparto en `mosaicLayout`): sin
+  // huecos con ningún número de candidatos. Los retratos se encuadran por
+  // la cara (fondo de estudio a los lados y arriba: el recorte sólo quita
+  // fondo y pecho).
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(var(--bz-rows, 1), minmax(0, 1fr));
+  gap: 2px;
+  background: var(--c-primary-darkest);
+
+  // Un degradado al pie, para la pastilla de la cuenta atrás.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 38%;
+    background: linear-gradient(to top, rgba(6, 18, 40, 0.7), transparent);
+    pointer-events: none;
+  }
+}
+
+.bz-feature__tile {
+  // Todos los retratos a la MISMA escala (la del alto de la fila), anclados
+  // arriba y centrados. Una celda más ancha que el retrato (la segunda fila)
+  // se rellena con el color del fondo de estudio (medido en los retratos:
+  // rgb(215 223 231) en los bordes) y los lados del retrato se funden con él:
+  // no hay costura ni caras más grandes que otras.
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: rgb(215 223 231);
 
   img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 135%;
+    width: auto;
+    max-width: none;
+    transform: translateX(-50%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
   }
 }
 
@@ -234,6 +270,12 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
+
+  // Sobre la tira de retratos va abajo: arriba tapaba la cara del primero.
+  &--low {
+    top: auto;
+    bottom: 0.7rem;
+  }
 }
 
 .bz-feature__body {

@@ -79,7 +79,8 @@ export const UPCOMING_EVENTS: readonly UpcomingEvent[] = [
   {
     // Programa de la conferencia: sesiones I y II con pausa entre medias.
     id: 'conferinta_familie_2026_11_21',
-    poster: 'assets/posters/conferinta-familie-2026.webp',
+    // Cartel propio de la tarde del sábado (sesiones I y II).
+    poster: 'assets/posters/conferinta-familie-2026-11-21.webp',
     date: '2026-11-21',
     time: '18:00',
     title: 'Conferință de familie: "Familia dincolo de aparențe”',

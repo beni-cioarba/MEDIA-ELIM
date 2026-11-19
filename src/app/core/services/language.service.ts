@@ -34,6 +34,17 @@ export class LanguageService {
 
   readonly supported = SUPPORTED;
 
+  private markReady: () => void = () => undefined;
+
+  /**
+   * Se cumple cuando el diccionario principal del idioma de arranque **ya
+   * está cargado** (fin de `init()`). No basta con que ngx-translate tenga
+   * idioma: lo fija nada más pedirlo, antes de que llegue el JSON. Lo espera
+   * `TranslationPackService` para no fusionar un paquete que luego se
+   * llevaría por delante la carga del principal.
+   */
+  readonly ready = new Promise<void>((resolve) => (this.markReady = resolve));
+
   /**
    * Arranque: elige el idioma (elegido por el usuario → rumano) y **espera** a
    * que su JSON esté cargado antes de pintar nada. El idioma de reserva lo fija
@@ -46,7 +57,9 @@ export class LanguageService {
     // ver `withShareLang`): manda sobre lo guardado, para que quien lo abre
     // vea lo mismo que vio quien se lo envió. No se guarda como elección
     // suya: en su próxima visita sin `?lang` vuelve a su idioma de siempre.
-    return this.apply(this.readFromUrl() ?? this.readFromStorage() ?? DEFAULT_LANG);
+    return this.apply(this.readFromUrl() ?? this.readFromStorage() ?? DEFAULT_LANG).finally(() =>
+      this.markReady(),
+    );
   }
 
   /**

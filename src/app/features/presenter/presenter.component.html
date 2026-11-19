@@ -247,6 +247,47 @@
               }
             }
 
+            <!-- Familias de la semana siguiente (ya cargadas): plegado y arriba,
+                 para el caso en que haya que presentarlas antes de su domingo.
+                 Toda la semana en lugar de la actual, o familias sueltas
+                 (pasan a la lista, sólo hoy). -->
+            @if (group.state.id === 'families' && blocks.nextFamilyWeek(); as next) {
+              <details class="past past--next">
+                <summary class="past__summary">
+                  {{ 'presenter.next_families' | translate: { range: familyPrayer.formatShortRange(next), n: next.families.length } }}
+                </summary>
+                <label class="switch switch--row next-week">
+                  <input
+                    type="checkbox"
+                    [checked]="blocks.showingNextFamilyWeek()"
+                    aria-describedby="next-week-hint"
+                    (change)="setNextFamilyWeek($event)"
+                  />
+                  <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+                  <span class="switch__text">
+                    <span class="switch__label">{{ 'presenter.next_week_whole' | translate }}</span>
+                    <span id="next-week-hint" class="switch__hint">{{ 'presenter.next_families_hint' | translate }}</span>
+                  </span>
+                </label>
+                @if (blocks.nextFamilyOptions().length > 0) {
+                  <ul class="past__list" role="list">
+                    @for (family of blocks.nextFamilyOptions(); track family.id) {
+                      <li>
+                        <label class="past__item">
+                          <input
+                            type="checkbox"
+                            class="check"
+                            (change)="addNextFamily(family.id, $event)"
+                          />
+                          <span class="past__name">{{ family.fullName }}</span>
+                        </label>
+                      </li>
+                    }
+                  </ul>
+                }
+              </details>
+            }
+
             <ol class="rows" role="list">
               @for (slide of group.slides; track slide.key) {
                 <li
@@ -255,7 +296,7 @@
                   [class.is-hidden]="
                     (slide.announcement && !isAnnouncementVisible(slide)) ||
                     !isEventVisible(slide) ||
-                    (!slide.pastFamily && familyId(slide) !== null && !blocks.isFamilyVisible(familyId(slide)!)) ||
+                    (!slide.pastFamily && !slide.nextFamily && familyId(slide) !== null && !blocks.isFamilyVisible(familyId(slide)!)) ||
                     (candidateId(slide) !== null && !blocks.isCandidateVisible(candidateId(slide)!))
                   "
                 >
@@ -265,8 +306,7 @@
                     <input
                       type="checkbox"
                       class="check"
-                      [checked]="isAnnouncementVisible(slide)"
-                      [disabled]="!group.state.enabled"
+                      [checked]="group.state.enabled && isAnnouncementVisible(slide)"
                       (change)="setAnnouncementVisible(slide.announcement.id, $event)"
                       [attr.aria-label]="slide.announcement.title"
                     />
@@ -274,9 +314,18 @@
                     <input
                       type="checkbox"
                       class="check"
-                      [checked]="isEventVisible(slide)"
-                      [disabled]="!group.state.enabled"
+                      [checked]="group.state.enabled && isEventVisible(slide)"
                       (change)="setEventVisible(eventoId, $event)"
+                      [attr.aria-label]="label(slide)"
+                    />
+                  } @else if (slide.nextFamily && slide.family) {
+                    <!-- Familia de la semana siguiente añadida para hoy:
+                         desmarcarla la devuelve al desplegable. -->
+                    <input
+                      type="checkbox"
+                      class="check"
+                      [checked]="group.state.enabled"
+                      (change)="togglePickedFamily(slide, $event)"
                       [attr.aria-label]="label(slide)"
                     />
                   } @else if (slide.pastFamily && slide.family) {
@@ -285,17 +334,15 @@
                     <input
                       type="checkbox"
                       class="check"
-                      [checked]="true"
-                      [disabled]="!group.state.enabled"
-                      (change)="blocks.setPastFamilyShown(slide.family.id, false)"
+                      [checked]="group.state.enabled"
+                      (change)="togglePickedFamily(slide, $event)"
                       [attr.aria-label]="label(slide)"
                     />
                   } @else if (familyId(slide); as famId) {
                     <input
                       type="checkbox"
                       class="check"
-                      [checked]="blocks.isFamilyVisible(famId)"
-                      [disabled]="!group.state.enabled"
+                      [checked]="group.state.enabled && blocks.isFamilyVisible(famId)"
                       (change)="setFamilyVisible(famId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
@@ -303,8 +350,7 @@
                     <input
                       type="checkbox"
                       class="check"
-                      [checked]="blocks.isCandidateVisible(candId)"
-                      [disabled]="!group.state.enabled"
+                      [checked]="group.state.enabled && blocks.isCandidateVisible(candId)"
                       (change)="setCandidateVisible(candId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
@@ -324,6 +370,8 @@
                       {{ label(slide) }}
                       @if (slide.pastFamily) {
                         <span class="row__tag">{{ 'presenter.past_tag' | translate }}</span>
+                      } @else if (slide.nextFamily) {
+                        <span class="row__tag">{{ 'presenter.next_tag' | translate }}</span>
                       }
                     </span>
                     @if (isCurrent(slide)) {
@@ -386,27 +434,6 @@
               }
             </ol>
 
-            <!-- Prueba: proyectar la semana siguiente (ya cargada) en lugar de la
-                 que toca. Sólo hoy: caduca a medianoche. -->
-            @if (group.state.id === 'families' && blocks.nextFamilyWeek(); as next) {
-              <label class="switch switch--row next-week">
-                <input
-                  type="checkbox"
-                  [checked]="blocks.showingNextFamilyWeek()"
-                  [disabled]="!group.state.enabled"
-                  aria-describedby="next-week-hint"
-                  (change)="setNextFamilyWeek($event)"
-                />
-                <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
-                <span class="switch__text">
-                  <span class="switch__label">
-                    {{ 'presenter.next_families' | translate: { range: familyPrayer.formatShortRange(next) } }}
-                  </span>
-                  <span id="next-week-hint" class="switch__hint">{{ 'presenter.next_families_hint' | translate }}</span>
-                </span>
-              </label>
-            }
-
             <!-- Familias de semanas anteriores: plegado, para el caso excepcional.
                  Al marcar una pasa a la lista de arriba (sólo hoy). -->
             @if (group.state.id === 'families' && blocks.pastFamilyOptions().length > 0) {
@@ -422,7 +449,6 @@
                         <input
                           type="checkbox"
                           class="check"
-                          [disabled]="!group.state.enabled"
                           (change)="addPastFamily(option.family.id, $event)"
                         />
                         <span class="past__name">{{ option.family.fullName }}</span>

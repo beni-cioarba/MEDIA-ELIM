@@ -677,42 +677,24 @@ export const BAPTISMS: readonly Baptism[] = [
     time: '10:00',
     // Sin presentación: cada candidato mandó su foto y su mărturie en audio
     // (transcrita y adaptada como las escritas, sin la frase con nombre y
-    // edad). Orden: el de las fotos (alfabético por el nombre).
+    // edad). Orden: el que dio la iglesia (19/11/2026).
     candidates: [
       {
-        id: 'darius-mihalca',
-        name: 'Darius Mihalca',
-        age: 18,
-        // Los padres no se entienden bien en el audio («Veniamin și …»):
-        // falta confirmarlos.
+        id: 'sara-suciu',
+        name: 'Sara Suciu',
+        age: 16,
+        parents: 'Aron și Sorina',
         story: {
-          summary: 'Cu anii am înțeles că nu pot să trăiesc fără Dumnezeu.',
+          summary: 'Am devenit răspunsul unei rugăciuni, împlinirea unei făgăduințe și o minune prin care Dumnezeu a adus bucurie și binecuvântare în familia mea.',
           testimony: [
-            'M-am născut într-o familie de creștini. Din copilăria mea, părinții mei m-au dus la biserică.',
-            'Cu anii am înțeles că nu pot să trăiesc fără Dumnezeu, Cel pe care L-am văzut cum lucrează în viața mea și în viața părinților mei. Amin.',
-          ],
-          // Citó «Psalmul 34» y leyó los versículos 18 y 19 (Cornilescu).
-          verse: {
-            text: 'Domnul este aproape de cei cu inima înfrântă și mântuiește pe cei cu duhul zdrobit. Deseori vin multe nenorociri peste cel neprihănit, dar Domnul îl scapă totdeauna din ele.',
-            ref: 'Psalmul 34:18-19',
-          },
-        },
-      },
-      {
-        id: 'matias-zagrean',
-        name: 'Matias Zagrean',
-        age: 19,
-        parents: 'Michael și Manuela',
-        story: {
-          summary: 'Dumnezeu mi-a dat putere și încredințare în El și am decis cu siguranță că trebuie să-L urmez pe El cu totul.',
-          testimony: [
-            'Vin dintr-o familie penticostală, unde părinții mei mi-au arătat valorile creștine de mic. Familia mea a fost încercată de multe ori de Dumnezeu, dar, cu ajutorul Lui, am ieșit înainte și nu ne-am pierdut credința în El.',
-            'Eu de mult timp am fost cercetat pentru a mă boteza, dar nu aveam curajul să dau pasul acesta.',
-            'În iulie 2026, după multe întrebări și multe răspunsuri, Dumnezeu mi-a dat putere și încredințare în El și am decis cu siguranță că trebuie să-L urmez pe El cu totul. Amin.',
+            'Povestea vieții mele a început cu o făgăduință făcută înaintea lui Dumnezeu de mama mea, într-un moment în care părea că nu va putea avea niciodată copii. Dar Dumnezeu a ascultat rugăciunea ei, a privit spre dorința inimii sale și mi-a dăruit viață.',
+            'Astfel, am devenit răspunsul unei rugăciuni, împlinirea unei făgăduințe și o minune prin care Dumnezeu a adus bucurie și binecuvântare în familia mea.',
+            'Astăzi, prin botez, vreau să-I mulțumesc lui Dumnezeu pentru darul vieții, pentru dragostea și credincioșia Sa și pentru că a fost prezent în povestea mea încă dinainte de a mă naște.',
+            'Aleg să-mi încredințez viața în mâinile Lui, să-L urmez cu toată inima și să pășesc alături de El într-un nou început. Pentru că astăzi nu sărbătoresc doar o zi specială, ci aleg să mărturisesc credința și dorința de a trăi o viață nouă în Hristos. Amin.',
           ],
           verse: {
-            text: 'Veniți la Mine, toți cei trudiți și împovărați, și Eu vă voi da odihnă. Luați jugul Meu asupra voastră și învățați de la Mine, căci Eu sunt blând și smerit cu inima; și veți găsi odihnă pentru sufletele voastre. Căci jugul Meu este bun, și sarcina Mea este ușoară.',
-            ref: 'Matei 11:28-30',
+            text: 'Căci, dacă este cineva în Hristos, este o făptură nouă. Cele vechi s-au dus: iată că toate lucrurile s-au făcut noi.',
+            ref: '2 Corinteni 5:17',
           },
         },
       },
@@ -737,6 +719,24 @@ export const BAPTISMS: readonly Baptism[] = [
         },
       },
       {
+        id: 'matias-zagrean',
+        name: 'Matias Zăgrean',
+        age: 19,
+        parents: 'Michael și Manuela',
+        story: {
+          summary: 'Dumnezeu mi-a dat putere și încredințare în El și am decis cu siguranță că trebuie să-L urmez pe El cu totul.',
+          testimony: [
+            'Vin dintr-o familie penticostală, unde părinții mei mi-au arătat valorile creștine de mic. Familia mea a fost încercată de multe ori de Dumnezeu, dar, cu ajutorul Lui, am ieșit înainte și nu ne-am pierdut credința în El.',
+            'Eu de mult timp am fost cercetat pentru a mă boteza, dar nu aveam curajul să dau pasul acesta.',
+            'În iulie 2026, după multe întrebări și multe răspunsuri, Dumnezeu mi-a dat putere și încredințare în El și am decis cu siguranță că trebuie să-L urmez pe El cu totul. Amin.',
+          ],
+          verse: {
+            text: 'Veniți la Mine, toți cei trudiți și împovărați, și Eu vă voi da odihnă. Luați jugul Meu asupra voastră și învățați de la Mine, căci Eu sunt blând și smerit cu inima; și veți găsi odihnă pentru sufletele voastre. Căci jugul Meu este bun, și sarcina Mea este ușoară.',
+            ref: 'Matei 11:28-30',
+          },
+        },
+      },
+      {
         id: 'roland-filimon',
         // En su mărturie se presenta como «Roland Beniamin Filimon».
         name: 'Roland Filimon',
@@ -756,21 +756,21 @@ export const BAPTISMS: readonly Baptism[] = [
         },
       },
       {
-        id: 'sara-suciu',
-        name: 'Sara Suciu',
-        age: 16,
-        parents: 'Aron și Sorina',
+        id: 'darius-mihalca',
+        name: 'Darius Mihalca',
+        age: 18,
+        // Los padres no se entienden bien en el audio («Veniamin și …»):
+        // falta confirmarlos.
         story: {
-          summary: 'Am devenit răspunsul unei rugăciuni, împlinirea unei făgăduințe și o minune prin care Dumnezeu a adus bucurie și binecuvântare în familia mea.',
+          summary: 'Cu anii am înțeles că nu pot să trăiesc fără Dumnezeu.',
           testimony: [
-            'Povestea vieții mele a început cu o făgăduință făcută înaintea lui Dumnezeu de mama mea, într-un moment în care părea că nu va putea avea niciodată copii. Dar Dumnezeu a ascultat rugăciunea ei, a privit spre dorința inimii sale și mi-a dăruit viață.',
-            'Astfel, am devenit răspunsul unei rugăciuni, împlinirea unei făgăduințe și o minune prin care Dumnezeu a adus bucurie și binecuvântare în familia mea.',
-            'Astăzi, prin botez, vreau să-I mulțumesc lui Dumnezeu pentru darul vieții, pentru dragostea și credincioșia Sa și pentru că a fost prezent în povestea mea încă dinainte de a mă naște.',
-            'Aleg să-mi încredințez viața în mâinile Lui, să-L urmez cu toată inima și să pășesc alături de El într-un nou început. Pentru că astăzi nu sărbătoresc doar o zi specială, ci aleg să mărturisesc credința și dorința de a trăi o viață nouă în Hristos. Amin.',
+            'M-am născut într-o familie de creștini. Din copilăria mea, părinții mei m-au dus la biserică.',
+            'Cu anii am înțeles că nu pot să trăiesc fără Dumnezeu, Cel pe care L-am văzut cum lucrează în viața mea și în viața părinților mei. Amin.',
           ],
+          // Citó «Psalmul 34» y leyó los versículos 18 y 19 (Cornilescu).
           verse: {
-            text: 'Căci, dacă este cineva în Hristos, este o făptură nouă. Cele vechi s-au dus: iată că toate lucrurile s-au făcut noi.',
-            ref: '2 Corinteni 5:17',
+            text: 'Domnul este aproape de cei cu inima înfrântă și mântuiește pe cei cu duhul zdrobit. Deseori vin multe nenorociri peste cel neprihănit, dar Domnul îl scapă totdeauna din ele.',
+            ref: 'Psalmul 34:18-19',
           },
         },
       },

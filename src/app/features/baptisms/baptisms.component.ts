@@ -71,6 +71,20 @@ export class BaptismsComponent {
     this.feature() ? this.candidatesOf(this.feature()!.baptism).slice(0, 6) : [],
   );
 
+  /**
+   * Reparto del mosaico en filas parejas que llenan siempre el ancho (sin
+   * huecos): hasta 3 en una fila; 4 → 2 + 2; 5 → 3 + 2; 6 → 3 + 3. Rejilla
+   * de 6 columnas: cada retrato ocupa `6 / retratos de su fila`.
+   */
+  protected readonly mosaicLayout = computed(() => {
+    const n = this.featureMosaic().length;
+    const first = n <= 3 ? n : Math.ceil(n / 2);
+    return {
+      rows: n <= 3 ? 1 : 2,
+      spans: Array.from({ length: n }, (_, i) => 6 / (i < first ? first : n - first)),
+    };
+  });
+
   // ── Carrusel ─────────────────────────────────────────────────────────
   protected readonly years = this.baptisms.candidateYears;
   /** Año elegido en el filtro (`null` = todos). */

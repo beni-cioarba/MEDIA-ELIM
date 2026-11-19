@@ -973,11 +973,18 @@ a.mini {
   }
 }
 
-/* Prueba de la semana siguiente: una fila discreta sobre las anteriores. */
+/* Semana siguiente, arriba del bloque: el mismo plegado discreto que las
+   anteriores, con el filete abajo (separa de la lista que sigue). Dentro, la
+   semana entera como primera opción y, debajo, las familias sueltas. */
+.past--next {
+  margin: 0 4px 2px;
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
+}
+
 .next-week {
-  margin: 0 4px;
-  padding: 6px 4px;
-  border-top: 1px solid var(--line);
+  margin: 0 4px 2px;
+  padding: 4px 4px 6px;
   font-size: 11px;
 
   .switch__label {

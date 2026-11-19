@@ -49,8 +49,14 @@ Pedido del usuario: poder revisar las semanas ya cargadas antes de su domingo.
   «Distribuie»** (su enlace `/<domingo>` no abre nada hasta que le toque:
   `byDate` sigue sin adelantar semanas); el PDF sí, para revisarlo. No entran
   en el feed ni en el índice. Fuente: `FamilyPrayerService.upcoming` / `next`.
-- **Panel de control**: en el bloque de familias, interruptor «Probă:
-  săptămâna următoare (5–11 oct.)» → el bloque proyecta la semana siguiente
+- **Panel de control** (revisión del 19/11/2026): arriba del bloque de
+  familias, desplegable cerrado «Familii din săptămâna următoare · 22–28 nov.
+  (5)», con el mismo estilo que el de semanas anteriores (filete abajo).
+  Dentro: familias **sueltas** con casilla (pasan a la lista detrás de las
+  de la semana, etiqueta «următoare», sólo hoy: `…families.upcoming`,
+  `setNextFamilyShown`, `nextFamilyOptions`; ningún «Toate» las añade,
+  «Doar primul», «Familii» y «Terminare» las retiran) y, como primera opción,
+  el interruptor «Toată săptămâna, în locul celei de acum» → el bloque proyecta la semana siguiente
   en lugar de la actual (`PresentationBlocksService.familiesWeek`,
   `setNextFamilyWeekShown`). Guarda el día en `localStorage`
   (`…families.next`) y **caduca a medianoche**, como las familias

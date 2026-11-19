@@ -69,6 +69,17 @@ export class CandidateProfileComponent {
     this.baptisms.candidates().filter((c) => c.baptism.date === this.baptism().date),
   );
 
+  /**
+   * Columnas de «Botezați împreună» en la columna lateral (escritorio): 5 ó 4,
+   * la que deje la última fila más llena. Cuenta casillas: la foto de grupo
+   * ocupa dos. 5 → una fila; foto + 10 → 4 × 3 justas; 7 → 4 + 3.
+   */
+  protected readonly peerCols = computed(() => {
+    const slots = this.peers().length + (this.baptism().cover ? 2 : 0);
+    const empty = (cols: number) => (cols - (slots % cols)) % cols;
+    return empty(5) <= empty(4) ? 5 : 4;
+  });
+
   protected readonly siblings = computed(() => this.baptisms.neighbours(this.candidate()));
 
   protected readonly photoDoc = computed<ViewerDocument | null>(() => {

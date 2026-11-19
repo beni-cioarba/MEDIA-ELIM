@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService, TranslationObject } from '@ngx-translate/core';
-import { firstValueFrom, map } from 'rxjs';
+import { LanguageService } from '../services/language.service';
 
 /**
  * Función que descarga el paquete de traducciones de un idioma concreto.
@@ -22,14 +22,17 @@ export type TranslationPackLoader = (lang: string) => Promise<TranslationObject>
  *
  * **Orden de arranque.** La primera navegación corre a la vez que el
  * inicializador de idioma (`withEnabledBlockingInitialNavigation`, ver
- * `app.config.ts`). Si el paquete se fusionara antes de que haya idioma
- * activo, iría al de reserva y la carga del diccionario principal lo
- * reemplazaría entero: claves a la vista. Por eso, sin idioma activo, se
- * espera al primero.
+ * `app.config.ts`). Si el paquete se fusionara antes de que el diccionario
+ * principal haya llegado, esa carga lo reemplazaría entero: claves a la
+ * vista. Y no basta con mirar si hay idioma activo: ngx-translate lo fija
+ * nada más pedirlo, antes de tener el JSON (pasaba en una de cada tres
+ * cargas de `/botezuri` y del panel). Por eso se espera a
+ * `LanguageService.ready`, que se cumple con el diccionario ya cargado.
  */
 @Injectable({ providedIn: 'root' })
 export class TranslationPackService {
   private readonly translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
 
   /** Paquetes registrados, para poder reaplicarlos al cambiar de idioma. */
   private readonly loaders = new Map<string, TranslationPackLoader>();
@@ -49,10 +52,8 @@ export class TranslationPackService {
   /** Registra el paquete y lo fusiona con el idioma activo. Idempotente. */
   async load(id: string, loader: TranslationPackLoader): Promise<void> {
     this.loaders.set(id, loader);
-    const lang =
-      this.translate.getCurrentLang() ??
-      (await firstValueFrom(this.translate.onLangChange.pipe(map((event) => event.lang))));
-    await this.apply(id, loader, lang);
+    await this.language.ready;
+    await this.apply(id, loader, this.translate.getCurrentLang() ?? this.language.current());
   }
 
   private async applyAll(lang: string): Promise<void> {

@@ -75,6 +75,11 @@ export interface PresentationSlide {
    * hoy (ver `PresentationBlocksService.setPastFamilyShown`).
    */
   readonly pastFamily?: boolean;
+  /**
+   * Ficha de una familia de la **semana siguiente**, añadida a mano para hoy
+   * (ver `PresentationBlocksService.setNextFamilyShown`).
+   */
+  readonly nextFamily?: boolean;
   /** Sólo en `baptism`: el botez que se presenta. */
   readonly baptism?: BaptismView;
   /** Sólo en las diapositivas de un candidato: el candidato. */
@@ -137,7 +142,8 @@ const HIDDEN_EVENTS_KEY = 'iglesia-redes.presentation.events.hidden';
 const HIDDEN_FAMILIES_KEY = 'iglesia-redes.presentation.families.hidden';
 const PAST_FAMILIES_KEY = 'iglesia-redes.presentation.families.past';
 const NEXT_FAMILY_WEEK_KEY = 'iglesia-redes.presentation.families.next';
-const HIDDEN_CANDIDATES_KEY = 'iglesia-redes.presentation.baptism.hidden';
+const NEXT_FAMILIES_KEY = 'iglesia-redes.presentation.families.upcoming';
+const HIDDEN_CANDIDATES_KEY = 'iglesia-redes.presentation.baptism.hidden.today';
 
 /** Id de la diapositiva de resumen dentro de la selección de `families`. */
 export const FAMILY_SUMMARY_ID = 'summary';
@@ -226,8 +232,38 @@ export class PresentationBlocksService {
    */
   private readonly hiddenFamilyIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_FAMILIES_KEY));
 
-  /** Diapositivas del botez que no se proyectan: el resumen o un candidato (id). */
-  private readonly hiddenCandidateIds = signal<ReadonlySet<string>>(readHiddenIds(HIDDEN_CANDIDATES_KEY));
+  /**
+   * Diapositivas del botez que no se proyectan (el resumen o un candidato),
+   * tal como las dejó el operador **hoy**. Caduca a medianoche.
+   */
+  private readonly candidatePick = signal<PastFamilyPick>(readPastFamilyPick(HIDDEN_CANDIDATES_KEY));
+
+  /**
+   * Ocultas en el botez. **Por defecto sólo se proyecta el resumen** (los
+   * candidatos juntos): las fichas una a una son para el culto del botez y
+   * las enciende el atajo «Botez» (o el operador, una a una). Lo que se
+   * marque vale para ese día; al siguiente, vuelve al resumen solo.
+   */
+  private readonly hiddenCandidateIds = computed<ReadonlySet<string>>(() => {
+    const pick = this.candidatePick();
+    if (pick.date === this.today()) return new Set(pick.ids);
+    return new Set(this.baptisms.presented()?.candidates.map((c) => c.id) ?? []);
+  });
+
+  private writeHiddenCandidates(ids: ReadonlySet<string>): void {
+    const next: PastFamilyPick = { date: this.today(), ids: [...ids] };
+    this.candidatePick.set(next);
+    // Se guarda SIEMPRE, también vacía: «hoy, ninguna oculta» (todas las
+    // fichas) no es lo mismo que «sin elegir» (sólo el resumen). Si se
+    // borrase la clave, las demás ventanas —la que lleva el carrusel—
+    // volverían al resumen solo y no dejarían pasar a ninguna ficha.
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem(HIDDEN_CANDIDATES_KEY, JSON.stringify(next));
+    } catch {
+      /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
+    }
+  }
 
   /**
    * Familias de semanas anteriores que el operador ha añadido **para hoy**.
@@ -235,7 +271,14 @@ export class PresentationBlocksService {
    * pocas fichas): por eso se añade a mano, nunca entra con «Toate» y caduca
    * sola a medianoche, como el aviso de directo.
    */
-  private readonly pastFamilyPick = signal<PastFamilyPick>(readPastFamilyPick());
+  private readonly pastFamilyPick = signal<PastFamilyPick>(readPastFamilyPick(PAST_FAMILIES_KEY));
+
+  /**
+   * Familias de la semana siguiente que el operador ha añadido **para hoy**
+   * (una que hay que presentar ya). Misma regla que las anteriores: caduca a
+   * medianoche y ningún «Toate» la añade.
+   */
+  private readonly nextFamilyPick = signal<PastFamilyPick>(readPastFamilyPick(NEXT_FAMILIES_KEY));
 
   private readonly today = computed<string>(() => toIsoDate(new Date(this.clock.now())));
 
@@ -263,6 +306,32 @@ export class PresentationBlocksService {
   private readonly pastFamilyIds = computed<ReadonlySet<string>>(() => {
     const pick = this.pastFamilyPick();
     return pick.date === this.today() ? new Set(pick.ids) : new Set();
+  });
+
+  /** Ids de las familias de la semana siguiente añadidas hoy. */
+  private readonly nextFamilyIds = computed<ReadonlySet<string>>(() => {
+    const pick = this.nextFamilyPick();
+    return new Set(pick.date === this.today() ? pick.ids : []);
+  });
+
+  /**
+   * Familias de la semana siguiente que aún se pueden añadir sueltas: ninguna
+   * mientras se proyecta la semana entera (ya están todas), y sin las que ya
+   * están en la lista.
+   */
+  readonly nextFamilyOptions = computed<readonly PrayerFamilyView[]>(() => {
+    const next = this.nextFamilyWeek();
+    if (!next || this.showingNextFamilyWeek()) return [];
+    const picked = this.nextFamilyIds();
+    return next.families.filter((family) => !picked.has(family.id));
+  });
+
+  /** Familias de la semana siguiente añadidas hoy, en su orden. */
+  private readonly pickedNextFamilies = computed<readonly PrayerFamilyView[]>(() => {
+    const next = this.nextFamilyWeek();
+    if (!next || this.showingNextFamilyWeek()) return [];
+    const picked = this.nextFamilyIds();
+    return next.families.filter((family) => picked.has(family.id));
   });
 
   /**
@@ -329,10 +398,13 @@ export class PresentationBlocksService {
         this.hiddenFamilyIds.set(readHiddenIds(HIDDEN_FAMILIES_KEY));
       }
       if (event.key === null || event.key === HIDDEN_CANDIDATES_KEY) {
-        this.hiddenCandidateIds.set(readHiddenIds(HIDDEN_CANDIDATES_KEY));
+        this.candidatePick.set(readPastFamilyPick(HIDDEN_CANDIDATES_KEY));
       }
       if (event.key === null || event.key === PAST_FAMILIES_KEY) {
-        this.pastFamilyPick.set(readPastFamilyPick());
+        this.pastFamilyPick.set(readPastFamilyPick(PAST_FAMILIES_KEY));
+      }
+      if (event.key === null || event.key === NEXT_FAMILIES_KEY) {
+        this.nextFamilyPick.set(readPastFamilyPick(NEXT_FAMILIES_KEY));
       }
       if (event.key === null || event.key === NEXT_FAMILY_WEEK_KEY) {
         this.nextFamilyWeekDate.set(readStoredString(NEXT_FAMILY_WEEK_KEY));
@@ -465,8 +537,9 @@ export class PresentationBlocksService {
       this.hiddenAnnouncementIds().size > 0 ||
       this.hiddenEventIds().size > 0 ||
       this.hiddenFamilyIds().size > 0 ||
-      this.hiddenCandidateIds().size > 0 ||
+      this.candidatePick().date === this.today() ||
       this.pastFamilyIds().size > 0 ||
+      this.nextFamilyIds().size > 0 ||
       this.showingNextFamilyWeek(),
   );
 
@@ -580,13 +653,26 @@ export class PresentationBlocksService {
           family,
           pastFamily: true,
         }));
+      // Familias de la semana siguiente añadidas hoy: justo detrás de las de
+      // la semana (antes que las anteriores).
+      const nextWeek = this.nextFamilyWeek();
+      const upcoming: PresentationSlide[] = nextWeek
+        ? this.pickedNextFamilies().map((family) => ({
+            key: `${id}:next:${family.id}`,
+            block: id,
+            titleKey,
+            prayerWeek: nextWeek,
+            family,
+            nextFamily: true,
+          }))
+        : [];
       const all = this.familyWeekSlides(week);
       // El panel las lista todas (para poder volver a marcarlas); la
       // proyección, sólo las elegidas. Si se desmarcan todas, el bloque no
       // aporta diapositivas (como los eventos).
-      if (!projection) return [...all, ...past];
+      if (!projection) return [...all, ...upcoming, ...past];
       const hidden = this.hiddenFamilyIds();
-      return [...all.filter((slide) => !hidden.has(familySelectionId(slide))), ...past];
+      return [...all.filter((slide) => !hidden.has(familySelectionId(slide))), ...upcoming, ...past];
     }
 
     if (id === 'baptism') {
@@ -674,9 +760,10 @@ export class PresentationBlocksService {
     persistHiddenIds(HIDDEN_EVENTS_KEY, new Set());
     this.hiddenFamilyIds.set(new Set());
     persistHiddenIds(HIDDEN_FAMILIES_KEY, new Set());
-    this.hiddenCandidateIds.set(new Set());
-    persistHiddenIds(HIDDEN_CANDIDATES_KEY, new Set());
+    this.candidatePick.set({ date: null, ids: [] });
+    persistPastFamilyPick(HIDDEN_CANDIDATES_KEY, { date: null, ids: [] });
     this.clearPastFamilies();
+    this.clearNextFamilies();
     this.setNextFamilyWeekShown(false);
   }
 
@@ -733,7 +820,10 @@ export class PresentationBlocksService {
 
   /** Muestra u oculta una diapositiva del botez (los candidatos juntos o uno). */
   setCandidateVisible(id: string, visible: boolean): void {
-    this.updateHidden(this.hiddenCandidateIds, HIDDEN_CANDIDATES_KEY, id, visible);
+    const next = new Set(this.hiddenCandidateIds());
+    if (visible) next.delete(id);
+    else next.add(id);
+    this.writeHiddenCandidates(next);
   }
 
   /** ¿Se proyecta esta diapositiva del botez? */
@@ -748,7 +838,17 @@ export class PresentationBlocksService {
     else ids.delete(id);
     const next: PastFamilyPick = { date: this.today(), ids: [...ids] };
     this.pastFamilyPick.set(next);
-    persistPastFamilyPick(next);
+    persistPastFamilyPick(PAST_FAMILIES_KEY, next);
+  }
+
+  /** Añade (para hoy) o quita una familia de la semana siguiente. */
+  setNextFamilyShown(id: string, shown: boolean): void {
+    const ids = new Set(this.nextFamilyIds());
+    if (shown) ids.add(id);
+    else ids.delete(id);
+    const next: PastFamilyPick = { date: this.today(), ids: [...ids] };
+    this.nextFamilyPick.set(next);
+    persistPastFamilyPick(NEXT_FAMILIES_KEY, next);
   }
 
   /**
@@ -764,7 +864,13 @@ export class PresentationBlocksService {
   private clearPastFamilies(): void {
     const empty: PastFamilyPick = { date: null, ids: [] };
     this.pastFamilyPick.set(empty);
-    persistPastFamilyPick(empty);
+    persistPastFamilyPick(PAST_FAMILIES_KEY, empty);
+  }
+
+  private clearNextFamilies(): void {
+    const empty: PastFamilyPick = { date: null, ids: [] };
+    this.nextFamilyPick.set(empty);
+    persistPastFamilyPick(NEXT_FAMILIES_KEY, empty);
   }
 
   // ---- Selección rápida ---------------------------------------------------
@@ -791,11 +897,12 @@ export class PresentationBlocksService {
    * retira las de semanas anteriores: «todo menos el primero» es todo.
    */
   selectOnlyFirst(block: SelectableBlockId): void {
-    const { ids, hidden, key } = this.selectable(block);
-    const next = new Set(ids.slice(1));
-    hidden.set(next);
-    persistHiddenIds(key, next);
-    if (block === 'families') this.clearPastFamilies();
+    const { ids, write } = this.selectable(block);
+    write(new Set(ids.slice(1)));
+    if (block === 'families') {
+      this.clearPastFamilies();
+      this.clearNextFamilies();
+    }
   }
 
   /**
@@ -803,9 +910,23 @@ export class PresentationBlocksService {
    * anteriores **no**: son una excepción que se añade a mano, una a una.
    */
   selectAll(block: SelectableBlockId): void {
-    const { hidden, key } = this.selectable(block);
-    hidden.set(new Set());
-    persistHiddenIds(key, new Set());
+    this.selectable(block).write(new Set());
+  }
+
+  /**
+   * Marcar un elemento de un bloque **apagado**: el bloque se enciende sólo
+   * con ese elemento (el resto queda sin marcar), para proyectarlo ya. Con
+   * `id` nulo, el bloque se enciende vacío (lo usa quien añade después una
+   * familia de otra semana).
+   */
+  showOnly(block: SelectableBlockId, id: string | null): void {
+    const { ids, write } = this.selectable(block);
+    write(new Set(ids.filter((x) => x !== id)));
+    if (block === 'families') {
+      this.clearPastFamilies();
+      this.clearNextFamilies();
+    }
+    this.setEnabled(block, true);
   }
 
   // ---- Selección global (bloques) -----------------------------------------
@@ -826,7 +947,8 @@ export class PresentationBlocksService {
     const primero = conContenido[0];
     const elementosCompletos = SELECTABLE_BLOCKS.every((block) => {
       const sel = this.selection(block);
-      return sel.visible === sel.total;
+      // El botez cuenta como completo con su resumen (lo que deja «Toate»).
+      return block === 'baptism' ? sel.total === 0 || sel.onlyFirst : sel.visible === sel.total;
     });
     return {
       total: conContenido.length,
@@ -884,6 +1006,7 @@ export class PresentationBlocksService {
     persistOverrides(next);
     this.setNextFamilyWeekShown(false);
     this.clearPastFamilies();
+    this.clearNextFamilies();
     this.selectAll('families');
   }
 
@@ -898,6 +1021,7 @@ export class PresentationBlocksService {
       this.states().every((s) => s.enabled === (s.id === 'families')) &&
       sel.visible === sel.total &&
       this.pastFamilyIds().size === 0 &&
+      this.nextFamilyIds().size === 0 &&
       !this.showingNextFamilyWeek()
     );
   });
@@ -943,6 +1067,7 @@ export class PresentationBlocksService {
     this.overrides.set(next);
     persistOverrides(next);
     this.setNextFamilyWeekShown(false);
+    this.clearNextFamilies();
     this.selectAll('announcements');
     this.selectAll('upcoming');
     this.selectOnlyFirst('families');
@@ -969,6 +1094,7 @@ export class PresentationBlocksService {
       (!on('families') ||
         (this.selection('families').onlyFirst &&
           this.pastFamilyIds().size === 0 &&
+          this.nextFamilyIds().size === 0 &&
           !this.showingNextFamilyWeek()))
     );
   });
@@ -987,34 +1113,42 @@ export class PresentationBlocksService {
   selectAllBlocks(): void {
     this.overrides.set({});
     persistOverrides({});
-    for (const block of SELECTABLE_BLOCKS) this.selectAll(block);
+    // El botez, no: con «Toate» sólo su resumen (las fichas, con «Botez»).
+    for (const block of SELECTABLE_BLOCKS) {
+      if (block === 'baptism') this.selectOnlyFirst(block);
+      else this.selectAll(block);
+    }
   }
 
   /** Ids elegibles de un bloque, en orden de proyección, y dónde se guardan. */
   private selectable(block: SelectableBlockId): {
     readonly ids: readonly string[];
-    readonly hidden: WritableSignal<ReadonlySet<string>>;
-    readonly key: string;
+    readonly hidden: Signal<ReadonlySet<string>>;
+    readonly write: (hidden: ReadonlySet<string>) => void;
   } {
+    const stored = (signal: WritableSignal<ReadonlySet<string>>, key: string) => (next: ReadonlySet<string>) => {
+      signal.set(next);
+      persistHiddenIds(key, next);
+    };
     switch (block) {
       case 'announcements':
         return {
           ids: this.announcements.projectable().map((a) => a.id),
           hidden: this.hiddenAnnouncementIds,
-          key: HIDDEN_ANNOUNCEMENTS_KEY,
+          write: stored(this.hiddenAnnouncementIds, HIDDEN_ANNOUNCEMENTS_KEY),
         };
       case 'upcoming':
         return {
           ids: this.schedule.upcomingEvents().map((e) => e.id),
           hidden: this.hiddenEventIds,
-          key: HIDDEN_EVENTS_KEY,
+          write: stored(this.hiddenEventIds, HIDDEN_EVENTS_KEY),
         };
       case 'families': {
         const week = this.familiesWeek();
         return {
           ids: week ? [FAMILY_SUMMARY_ID, ...week.families.map((f) => f.id)] : [],
           hidden: this.hiddenFamilyIds,
-          key: HIDDEN_FAMILIES_KEY,
+          write: stored(this.hiddenFamilyIds, HIDDEN_FAMILIES_KEY),
         };
       }
       case 'baptism': {
@@ -1022,7 +1156,7 @@ export class PresentationBlocksService {
         return {
           ids: baptism ? [BAPTISM_SUMMARY_ID, ...baptism.candidates.map((c) => c.id)] : [],
           hidden: this.hiddenCandidateIds,
-          key: HIDDEN_CANDIDATES_KEY,
+          write: (next) => this.writeHiddenCandidates(next),
         };
       }
     }
@@ -1180,11 +1314,12 @@ interface PastFamilyPick {
   readonly ids: readonly string[];
 }
 
-function readPastFamilyPick(): PastFamilyPick {
+/** Familias añadidas a mano para hoy (anteriores o de la semana siguiente). */
+function readPastFamilyPick(key: string): PastFamilyPick {
   const empty: PastFamilyPick = { date: null, ids: [] };
   if (typeof localStorage === 'undefined') return empty;
   try {
-    const raw = localStorage.getItem(PAST_FAMILIES_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return empty;
     const parsed = JSON.parse(raw) as Partial<Record<keyof PastFamilyPick, unknown>>;
     const date = typeof parsed.date === 'string' ? parsed.date : null;
@@ -1195,11 +1330,11 @@ function readPastFamilyPick(): PastFamilyPick {
   }
 }
 
-function persistPastFamilyPick(pick: PastFamilyPick): void {
+function persistPastFamilyPick(key: string, pick: PastFamilyPick): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    if (pick.ids.length === 0) localStorage.removeItem(PAST_FAMILIES_KEY);
-    else localStorage.setItem(PAST_FAMILIES_KEY, JSON.stringify(pick));
+    if (pick.ids.length === 0) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(pick));
   } catch {
     /* almacenamiento no disponible (modo privado): la sesión sigue funcionando */
   }
