@@ -24,14 +24,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # El número de compilación es `git rev-list --count HEAD`: con el
           # clon superficial por defecto (depth 1) siempre saldría 1.
           fetch-depth: 0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Angular 22 exige Node ^22.22 || ^24.15 (ver "engines" en package.json).
           node-version: '24'
@@ -108,7 +108,7 @@ jobs:
       # Va antes de la prueba de humo: así la prueba revisa la web tal como se
       # publica, con el manifiesto de los PDF ya escrito.
       - name: Family prayer PDFs (cache)
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .cache/family-pdfs
           key: family-pdfs-${{ github.run_id }}
@@ -133,7 +133,7 @@ jobs:
         run: touch dist/iglesia-redes/browser/.nojekyll
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist/iglesia-redes/browser
 
@@ -146,7 +146,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # Lo publicado responde: la portada, una página estática, una URL de datos,
   # el sitemap y el manifiesto del service worker. Si GitHub Pages sirviera
