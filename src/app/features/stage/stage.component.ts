@@ -4,9 +4,11 @@ import {
   HostListener,
   OnInit,
   ViewEncapsulation,
+  booleanAttribute,
   computed,
   effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -51,6 +53,9 @@ import { WebsiteBlockComponent } from './blocks/website-block/website-block.comp
  * `/cauze-de-rugaciune` y la lectura bíblica en
  * `/media/citirea-bibliei`. En la proyección siguen entrando.
  */
+/** Título de la página del panel completo (`/media`): el mismo que su `<title>`. */
+const PANEL_TITLE_KEY = 'seo.media.title';
+
 const WEB_PANEL_EXCLUDED: ReadonlySet<StageBlockId> = new Set<StageBlockId>([
   'announcements',
   'families',
@@ -152,12 +157,30 @@ export class StageComponent implements OnInit {
     'location',
   ]);
 
+  /**
+   * El escenario es **el** contenido principal del documento: sólo en la
+   * ventana de proyección, donde va sin maqueta. En la web ya está dentro del
+   * `main` de `MainLayoutComponent`.
+   */
+  readonly landmark = input(false, { transform: booleanAttribute });
+
   private readonly params = toSignal(this.route.paramMap);
 
   /** Bloque pedido por la URL (`/media/galerie`), o `null` para verlos todos. */
   protected readonly selectedBlock = computed<StageBlockId | null>(() =>
     blockIdFromSlug(this.params()?.get('blockId')),
   );
+
+  /**
+   * Clave del título de la página (`h1`) en la web: el del bloque pedido por
+   * la URL o, en el panel completo, el de la sección. `null` al proyectar:
+   * una diapositiva no es una página.
+   */
+  protected readonly pageTitleKey = computed<string | null>(() => {
+    if (this.fullscreen()) return null;
+    if (!this.selectedBlock()) return PANEL_TITLE_KEY;
+    return this.renderedSlides()[0]?.titleKey ?? PANEL_TITLE_KEY;
+  });
 
   /**
    * Diapositivas que se renderizan:

@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { detectInstallEnvironment, InstallEnvironment } from '../util/install-platform';
+import { TelemetryService } from '../telemetry/telemetry.service';
+import { injectIsBrowser } from '../util/platform';
 
 /**
  * Evento de Chromium (no estándar, sin tipos en `lib.dom`). Guardarlo permite
@@ -58,7 +60,10 @@ const APP_DISPLAY_MODES = ['standalone', 'fullscreen', 'minimal-ui', 'window-con
 @Injectable({ providedIn: 'root' })
 export class PwaInstallService {
   private readonly document = inject(DOCUMENT);
-  private readonly window = this.document.defaultView;
+  private readonly telemetry = inject(TelemetryService);
+  // En el prerender, como si no hubiera ventana: el DOM del servidor tiene
+  // `matchMedia` pero lanza «NotYetImplemented».
+  private readonly window = injectIsBrowser() ? this.document.defaultView : null;
 
   /** Plataforma de quien mira (pura, calculada una vez). */
   readonly env: InstallEnvironment = detectInstallEnvironment(
@@ -139,6 +144,7 @@ export class PwaInstallService {
   }
 
   private markInstalled(): void {
+    this.telemetry.event('app-instalata');
     this.deferred.set(null);
     this.installed.set(true);
     try {

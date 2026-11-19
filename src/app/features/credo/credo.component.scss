@@ -651,11 +651,16 @@
 
 /* Enlace permanente: discreto en reposo, legible al apuntar el artículo. */
 .article__anchor {
+  // «#12» mide 15 × 18 px: área de pulsación de 24 px (WCAG 2.5.8).
+  @include tap-target(24px);
+
   flex: none;
   font-size: 0.75rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--c-faint);
+  // `--c-muted`: con `--c-faint` el enlace quedaba en 2,5:1 justo donde
+  // siempre está a la vista (táctil).
+  color: var(--c-muted);
   text-decoration: none;
   opacity: 0;
   transition: opacity var(--mo-fast) var(--ea-standard);
@@ -724,7 +729,9 @@
   margin: var(--sp-6) 0 0;
   font-size: 0.8125rem;
   line-height: 1.6;
-  color: var(--c-faint);
+  // `--c-muted`: es una nota que se lee (la fuente del texto), y con
+  // `--c-faint` quedaba en 2,5:1.
+  color: var(--c-muted);
 
   /* El único enlace de la nota: subrayado para que se distinga sin depender
      del color, y en el navy de marca para que pase contraste. */

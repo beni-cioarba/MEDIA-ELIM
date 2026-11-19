@@ -89,6 +89,8 @@ salvo que el usuario lo pida expresamente en esa tarea.
 | `docs/ai/50-build-deploy.md` | Build, PWA, GitHub Actions, scripts de datos e imágenes    |
 | `docs/ai/60-conventions.md`  | Convenciones y recetas paso a paso                         |
 | `docs/ai/70-roadmap.md`      | Deuda técnica y mejoras pendientes                         |
+| `docs/ai/76-plan-maestro.md` | **Plan maestro** (auditoría 16/11/2026): fases 0-5, estado de cada una, decisiones |
+| `docs/ai/77-analitica-errores.md` | **Analítica sin cookies y registro de errores**: `core/telemetry`, eventos, qué se envía y qué no |
 | `docs/ai/75-plan-evolucion.md` | **Plan por fases**: carga rápida, proyección legible, web compacta, arquitectura modular, Angular 20/zoneless, CI. Leer antes de empezar cualquier fase |
 
 Instrucciones automáticas por tipo de fichero (se aplican solas al editar):

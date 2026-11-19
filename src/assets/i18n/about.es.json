@@ -1,0 +1,222 @@
+{
+  "about": {
+    "eyebrow": "Quiénes somos",
+    "lead": "Nos une la fe en Jesucristo y el deseo de servir a nuestra ciudad.",
+    "story": {
+      "eyebrow": "2001 – 2026",
+      "title": "Nuestra historia",
+      "subtitle": "De una chispa a una iglesia viva: 25 años de gracia.",
+      "chapters": {
+        "start": {
+          "title": "Un comienzo pequeño, en la voluntad de Dios",
+          "body": "Antes de Elim, los hermanos rumanos de Arganda se reunían en la iglesia «Muntele Sionului». A finales de 2000, un pequeño grupo de hermanos presentó ante el Señor una sola pregunta: ¿es esta obra su voluntad? El primer culto de la Iglesia Elim se celebró el último domingo de diciembre de 2000, en un lugar sencillo —no un fuego, sino una chispa—. En 2001 se ordenaron los primeros ministros y nació el coro."
+        },
+        "growth": {
+          "title": "Crecida por el Espíritu Santo",
+          "body": "De unas 50 personas al principio, la iglesia llegó a las 100 almas, no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». Llegaron la banda de música, el grupo de misión que llevó el Evangelio por ciudades de España y las conferencias de jóvenes. También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
+        },
+        "today": {
+          "title": "Hasta aquí, y más allá",
+          "body": "La iglesia se ha mudado de un lugar a otro, ha construido y reconstruido; muchos salieron de aquí para servir en otros lugares, y otros llegaron. Una nueva generación se ha bautizado, desde 2021 adoramos en un templo nuevo, renovado en 2025, y la misión ha llegado hasta Uganda. Tras 24 años de pastorado de Gavrilă Zăgrean, hoy dirige la iglesia el pastor Pavel Negrușier, y somos unos 450 miembros y 270 allegados. La gracia que nos ha traído hasta aquí nos llevará más lejos."
+        }
+      },
+      "facts": {
+        "founded": "Año del comienzo",
+        "members": "Miembros",
+        "adherents": "Allegados",
+        "as_of": "Cifras de {{date}}"
+      },
+      "timeline": {
+        "title": "25 años, en breve",
+        "lead": "Cinco etapas, de la iglesia antigua a la casa nueva. Detrás de cada hito hay una grabación del archivo de la iglesia.",
+        "era": "Etapa {{n}}",
+        "watch": "Ver",
+        "watch_long": "Ver la grabación en YouTube"
+      },
+      "eras": {
+        "beginnings": {
+          "title": "Los comienzos",
+          "summary": "Unas pocas personas, un lugar sencillo y una pregunta: ¿es esta obra la voluntad del Señor?",
+          "milestones": {
+            "first_service": "Primer culto de la Iglesia Elim, con un pequeño grupo de hermanos",
+            "ordination": "Primera ordenación: el pastor Gavrilă Zăgrean y los diáconos Mircea Coptil y Adrian Mureșan",
+            "choir": "Nace el coro, dirigido por Sabin Tofan",
+            "youth": "Programas de jóvenes en la iglesia antigua",
+            "christmas": "Concierto de Navidad y Nochevieja: el coro, la orquesta y los grupos"
+          }
+        },
+        "growth": {
+          "title": "Crecimiento",
+          "summary": "La iglesia se organiza y sale fuera: banda de música, grupo de misión, conferencias.",
+          "milestones": {
+            "conference": "Conferencia «La buena batalla»",
+            "brass": "La banda de música de la iglesia, dirigida por Damian Onofrei",
+            "mission": "El grupo de misión en Alcalá de Henares, Getafe, Cuéllar, Azuqueca y Roquetas de Mar",
+            "youth_conf": "Conferencia regional de jóvenes en Elim",
+            "choir7": "El coro cumple 7 años: «Eben-Ezer» y «No a nosotros, Señor»",
+            "assembly": "La Asamblea de Arganda del Rey (31 de octubre – 1 de noviembre)"
+          }
+        },
+        "fruit": {
+          "title": "Frutos",
+          "summary": "Diez años del comienzo y una iglesia en plena obra, con conferencias para jóvenes, líderes y misiones.",
+          "milestones": {
+            "ten": "10 años de la inauguración de la iglesia",
+            "cuellar": "Conferencia en Cuéllar",
+            "conferences": "Conferencias en Poveda, para líderes y jóvenes y para maestros de niños",
+            "mission_conf": "Conferencia de misiones (4–6 de diciembre)"
+          }
+        },
+        "generation": {
+          "title": "Una nueva generación",
+          "summary": "Un templo nuevo, niños que crecieron en la iglesia y se bautizan, nuevos ministros y una misión que cruza fronteras.",
+          "milestones": {
+            "temple": "El nuevo templo, levantado con el trabajo y las ofrendas de los hermanos",
+            "baptisms": "Bautismos, año tras año",
+            "ordination": "Ordenación de ministros",
+            "uganda": "Misión en Uganda (20 oct. – 7 nov.): dos iglesias construidas, con la tribu IK",
+            "children": "Bendición de los niños",
+            "pastors": "Gavrilă Zăgrean concluye 24 años de pastorado; el pastor de la iglesia es Pavel Negrușier"
+          }
+        },
+        "house": {
+          "title": "Una casa renovada",
+          "summary": "El templo se renueva y el llamado sigue siendo el del principio.",
+          "milestones": {
+            "renovation": "Renovación del templo",
+            "anchored": "Conferencia «Anclado en Cristo»",
+            "shoebox": "«Una sonrisa en una caja» y el concierto de villancicos de los niños",
+            "hope": "Conferencia «Esperanza para ti»",
+            "ordination": "Ordenación de ministros",
+            "jubilee": "25 años: un altar de gratitud"
+          }
+        }
+      },
+      "people": {
+        "title": "Los del principio",
+        "lead": "Algunos de los que pusieron las bases de la obra, tal como la iglesia los recordó en el aniversario.",
+        "items": {
+          "zagrean": "Pastor de la iglesia durante 24 años, de 2001 a 2024",
+          "coptil": "Uno de los primeros diáconos; hoy pastor en Rumanía",
+          "muresan": "Uno de los primeros diáconos; hoy presbítero en Rumanía",
+          "tofan": "Director del coro desde su fundación; dejó una huella profunda en el canto de la iglesia",
+          "cazacu": "El primer organista de la iglesia, siendo aún adolescente",
+          "carbune": "La primera maestra de los niños de la iglesia"
+        },
+        "note": "De Elim han salido ministros que hoy son presbíteros y pastores en Rumanía, Bélgica y el País Vasco."
+      },
+      "works": {
+        "title": "Lo que Dios ha hecho en {{count}} años",
+        "groups": {
+          "events": {
+            "title": "Evangelización y conferencias",
+            "items": {
+              "evangelism": "Campañas de evangelización",
+              "national": "Conferencias regionales y nacionales",
+              "music": "Encuentros de coros, bandas de música y grupos de alabanza",
+              "family": "Conferencias para la familia",
+              "youth": "Conferencias de jóvenes",
+              "mission": "Conferencias de misiones"
+            }
+          },
+          "mission": {
+            "title": "Misiones",
+            "items": {
+              "projects": "Proyectos misioneros en Uganda y Liberia",
+              "churches": "Iglesias construidas en Uganda",
+              "wells": "Pozos de agua"
+            }
+          },
+          "help": {
+            "title": "Ayuda social",
+            "items": {
+              "departments": "Departamentos de ayuda",
+              "shoebox": "El proyecto «Una sonrisa en una caja»",
+              "more": "Ayudas de todo tipo"
+            }
+          },
+          "servants": {
+            "title": "Ministerio y familia",
+            "items": {
+              "ordained": "Ministros reconocidos: diáconos, presbíteros y pastores",
+              "baptisms": "Bautismos, año tras año",
+              "children": "La bendición de los niños"
+            }
+          }
+        }
+      },
+      "verse": {
+        "text": "«Hasta aquí nos ayudó el Señor».",
+        "ref": "1 Samuel 7:12",
+        "note": "El 18 de octubre de 2026, al cumplir 25 años, levantamos un altar de gratitud. No a nosotros, Señor, no a nosotros, sino a tu nombre da gloria."
+      },
+      "image_alt": "La congregación reunida en el templo durante un culto"
+    },
+    "pillars": {
+      "eyebrow": "La obra de la Iglesia",
+      "title": "Lo que hacemos",
+      "subtitle": "No son lemas elegidos por nosotros: son las cinco obras que la Declaración de fe encomienda a la Iglesia, en el artículo 16, con su nombre.",
+      "items": {
+        "worship": {
+          "title": "La adoración",
+          "body": "Los domingos nos reunimos para darle a Dios lo que le corresponde: canto, oración y Palabra."
+        },
+        "gospel": {
+          "title": "El anuncio del Evangelio",
+          "body": "Transmitimos el llamado del Evangelio: el mismo al que se responde con fe y arrepentimiento."
+        },
+        "discipleship": {
+          "title": "La formación de discípulos",
+          "body": "No bautizamos y nos despedimos: acompañamos a cada persona a crecer en semejanza a Cristo, toda la vida."
+        },
+        "service": {
+          "title": "El servicio",
+          "body": "Amamos a todas las personas, sin distinción alguna, y servimos a las necesidades de alrededor."
+        },
+        "fellowship": {
+          "title": "La comunión fraterna",
+          "body": "Somos una familia: la Cena del Señor fortalece nuestra unidad y las cargas las llevamos juntos."
+        }
+      },
+      "ref": "Art. {{n}}",
+      "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
+    },
+    "credo": {
+      "eyebrow": "Declaración de fe",
+      "title": "En qué creemos",
+      "subtitle": "Compartimos la Declaración de fe del Culto Cristiano Pentecostal. No es un texto de archivo: es lo que creemos y lo que se predica cada domingo.",
+      "cta": "Leer la declaración completa ({{count}} artículos)"
+    },
+    "visit": {
+      "title": "Tu primera visita",
+      "subtitle": "Lo que pasa, por orden, si vienes un domingo — el día que la Declaración señala como día de adoración.",
+      "items": {
+        "welcome": {
+          "title": "Una acogida cercana",
+          "body": "Alguien te recibe en la entrada y te acompaña a un sitio."
+        },
+        "worship": {
+          "title": "Alabanza",
+          "body": "El culto empieza con cantos de alabanza, en rumano. No hace falta que te las sepas: la letra se proyecta y nadie te mira."
+        },
+        "word": {
+          "title": "La Palabra",
+          "body": "Después hay un mensaje bíblico de unos 40 minutos, práctico y comprensible, sin palabras que tengas que buscar luego."
+        },
+        "family": {
+          "title": "Los niños",
+          "body": "Los niños tienen programa aparte, por edades, durante el mensaje. Los dejas y los recoges a la salida."
+        }
+      },
+      "cta_program": "Ver el programa",
+      "cta_leadership": "Conocer al equipo",
+      "note": "La Cena del Señor se celebra el primer domingo de cada mes, en el culto de la mañana. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
+    },
+    "facts_years": "{{count}} años sirviendo",
+    "facts_services": "{{count}} cultos por semana",
+    "facts_departments": "{{count}} departamentos",
+    "visit_when": "Cuándo nos reunimos",
+    "visit_where": "Dónde estamos",
+    "visit_step": "Paso {{n}}"
+  }
+}

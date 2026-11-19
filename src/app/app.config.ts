@@ -1,46 +1,55 @@
 import {
   ApplicationConfig,
+  ErrorHandler,
   inject,
   isDevMode,
   provideAppInitializer,
-  provideZoneChangeDetection,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
+import { Location, ViewportScroller } from '@angular/common';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import {
-  PreloadAllModules,
+  NavigationError,
   TitleStrategy,
   provideRouter,
+  withEnabledBlockingInitialNavigation,
   withInMemoryScrolling,
+  withNavigationErrorHandler,
   withPreloading,
   withRouterConfig,
 } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { TranslateLoader, provideTranslateService } from '@ngx-translate/core';
 import { APP_ROUTES } from './app.routes';
-import { CHURCH_CONFIG, DEFAULT_CHURCH_CONFIG } from './core/church.config';
+import { AppErrorHandler } from './core/errors/app-error-handler';
+import { isChunkLoadError } from './core/errors/chunk-load-error';
+import { StaleBuildRecovery } from './core/errors/stale-build-recovery';
 import { InlineTranslateLoader } from './core/i18n/inline-translate-loader';
+import { PublicPreloadingStrategy } from './core/navigation/public-preloading.strategy';
 import { AppTitleStrategy } from './core/seo/app-title.strategy';
-import { provideElimIcons } from './core/ui/icon-registry';
 import { LanguageService } from './core/services/language.service';
 import { PwaUpdateService } from './core/services/pwa-update.service';
+import { provideTelemetry } from './core/telemetry/provide-telemetry';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Detección de cambios con zone.js, explícita desde Angular 21 (antes era
-    // el valor por defecto implícito). Toda la app ya es OnPush + signals, así
-    // que el paso a `provideZonelessChangeDetection()` es una línea; queda
-    // pendiente de decisión (docs/ai/75-plan-evolucion.md, fase 5).
-    provideZoneChangeDetection(),
+    // **Sin zone.js** (17/11/2026). Toda la app es OnPush + signals: la vista se
+    // repinta cuando cambia una signal o salta un evento de su plantilla, no
+    // en cada temporizador de la página. Fuera 35 kB del arranque y el ciclo
+    // de detección global que disparaba cada tick del carrusel. Los `NgZone.run`
+    // que quedan (carrusel, sincronización entre ventanas) son inocuos: sin
+    // zona, ejecutan la función tal cual; lo que repinta son las signals.
+    provideZonelessChangeDetection(),
+    // Errores que nadie recoge (plantillas, efectos, promesas rechazadas,
+    // `window.onerror`): un solo destino, que además sabe salir de una
+    // versión caducada. Ver `core/errors/app-error-handler.ts`.
+    provideBrowserGlobalErrorListeners(),
+    { provide: ErrorHandler, useClass: AppErrorHandler },
     provideHttpClient(withXhr()),
-    // Angular Material necesita el motor de animaciones. `...Async` lo carga
-    // en un chunk aparte tras el primer pintado: el bundle inicial no paga
-    // los ~40 kB de @angular/animations y el LCP no se resiente.
-    provideAnimationsAsync(),
-    // Iconos propios como SVG en línea dentro de `MatIconRegistry`
-    // (cero peticiones de red, cero layout shift).
-    provideElimIcons(),
+    // Sin `provideAnimations*()`: Angular Material 22 anima con CSS y ya no
+    // depende de `@angular/animations` (el paquete está en retirada). Lo que
+    // se anima en la app son transiciones CSS con su `motion-reduce`.
     provideRouter(
       APP_ROUTES,
       // Páginas largas: restauramos scroll y permitimos anclas
@@ -49,11 +58,28 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled',
       }),
-      // El sitio es pequeño (≈200 kB de chunks diferidos en total): precargarlos
-      // tras el primer pintado hace que la navegación sea instantánea, algo
-      // crítico cuando se maneja desde el portátil durante un servicio.
-      withPreloading(PreloadAllModules),
+      // Las páginas públicas se precargan tras el primer pintado, en reposo:
+      // navegar es instantáneo, algo crítico cuando se maneja desde el
+      // portátil durante un servicio. Las herramientas del operador
+      // (`data.preload: false`) y quien tiene «Ahorro de datos», no.
+      // Ver `PublicPreloadingStrategy`.
+      withPreloading(PublicPreloadingStrategy),
+      // Un chunk que ya no existe (pestaña con la versión anterior a un
+      // despliegue): en vez de un clic que no hace nada, carga completa del
+      // destino, que trae la versión nueva.
+      withNavigationErrorHandler((failure: NavigationError) => {
+        if (!isChunkLoadError(failure.error)) return;
+        inject(StaleBuildRecovery).reload(inject(Location).prepareExternalUrl(failure.url));
+      }),
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+      // Las páginas públicas llegan **prerenderizadas** (HTML con contenido).
+      // Sin hidratación —el contenido depende de la hora: «AZI», cuentas
+      // atrás, anuncios vigentes; el del build ya no cuadra con el del
+      // visitante—, Angular sustituye ese HTML por el suyo. Esperar a la
+      // primera navegación (chunk perezoso y resolvers incluidos) hace que la
+      // sustitución sea de una vez: del HTML del build a la página completa,
+      // sin un fotograma con el `<main>` vacío. Ver `docs/ai/50-build-deploy.md`.
+      withEnabledBlockingInitialNavigation(),
     ),
     provideTranslateService({
       fallbackLang: 'ro',
@@ -78,8 +104,9 @@ export const appConfig: ApplicationConfig = {
       // Comprueba actualizaciones en cuanto la app se estabiliza (≈30s).
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    // Visitas sin cookies (GoatCounter) y errores (Sentry): docs/ai/77-analitica-errores.md.
+    provideTelemetry(),
     // Título y metaetiquetas por ruta, traducidos y reactivos al idioma.
     { provide: TitleStrategy, useClass: AppTitleStrategy },
-    { provide: CHURCH_CONFIG, useValue: DEFAULT_CHURCH_CONFIG },
   ],
 };

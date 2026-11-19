@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   DestroyRef,
   ElementRef,
   HostListener,
@@ -10,7 +11,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { PlatformLocation } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { injectIsBrowser } from '../../core/util/platform';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { DocTocComponent, TocEntry } from '../../shared/doc-toc/doc-toc.component';
@@ -23,7 +26,7 @@ import {
   CREDO_OFFICIAL_PDF,
   CREDO_PARTS,
   CredoArticle,
-} from './credo.data';
+} from './public/credo.data';
 
 /** Un artículo ya resuelto para pintar: textos traducidos y estado de apertura. */
 interface ArticleView {
@@ -361,8 +364,11 @@ export class CredoComponent {
    * enseñando la portada. Un enlace permanente que te saca del documento es
    * exactamente lo contrario de un enlace permanente.
    */
+  /** La dirección actual también en el prerender (`location` no existe allí). */
+  private readonly platformLocation = inject(PlatformLocation);
+
   protected enlaceA(anchor: string): string {
-    return `${location.pathname}${location.search}#${anchor}`;
+    return `${this.platformLocation.pathname}${this.platformLocation.search}#${anchor}`;
   }
 
   protected async copiarEnlace(evento: Event, anchor: string): Promise<void> {
@@ -426,10 +432,11 @@ export class CredoComponent {
     // Si no se limpia, el botón se queda en el dock del resto del sitio.
     destroyRef.onDestroy(() => dock.clear());
 
-    document.body.classList.add('has-doc-bar');
+    const body = inject(DOCUMENT).body;
+    body.classList.add('has-doc-bar');
     destroyRef.onDestroy(() => {
-      document.body.classList.remove('has-doc-bar');
-      document.body.classList.remove('has-doc-panel');
+      body.classList.remove('has-doc-bar');
+      body.classList.remove('has-doc-panel');
     });
 
     /*
@@ -447,9 +454,11 @@ export class CredoComponent {
     // El enlace permanente de un artículo sólo cambia el ancla, así que el
     // salto lo tiene que atender esto (no hay recarga).
     const alCambiarElAncla = () => this.abrirDesdeElEnlace();
-    addEventListener('hashchange', alCambiarElAncla);
+    const view = inject(DOCUMENT).defaultView;
+    // En el prerender no hay ventana cuyo ancla cambie.
+    if (injectIsBrowser()) view?.addEventListener('hashchange', alCambiarElAncla);
     destroyRef.onDestroy(() => {
-      removeEventListener('hashchange', alCambiarElAncla);
+      view?.removeEventListener('hashchange', alCambiarElAncla);
       if (this.tiempoCopiado !== null) clearTimeout(this.tiempoCopiado);
     });
   }

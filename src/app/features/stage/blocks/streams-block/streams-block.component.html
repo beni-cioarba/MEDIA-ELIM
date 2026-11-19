@@ -39,7 +39,8 @@
   <!-- Últimas transmisiones (siempre visibles si existen) -->
   @if (youtube.recentStreams().length > 0) {
     <div class="streams" aria-labelledby="streams-title">
-      <h3 id="streams-title" class="streams__title">{{ 'streams.recent_title' | translate }}</h3>
+      <!-- h2: es el título del bloque (debajo sólo está el h1 de la página). -->
+      <h2 id="streams-title" class="streams__title">{{ 'streams.recent_title' | translate }}</h2>
       <ul class="streams__list">
         @for (v of visibleStreams(); track v.id) {
           <li class="streams__item">

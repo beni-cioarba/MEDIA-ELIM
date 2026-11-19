@@ -237,7 +237,10 @@
 // enlace ocupaba 31 px para 21 de texto. Era el grueso del alto sobrante.
 .footer__links {
   display: grid;
-  gap: 0.3rem;
+  // 0,35 rem y no 0,3: con el enlace a 18,8 px de alto, el paso entre dos
+  // enlaces pasa de 23,4 a 24,2 px, que es lo que hace falta para que sus
+  // áreas de pulsación de 24 px (`.footer__link`) no se pisen.
+  gap: 0.35rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -258,6 +261,9 @@
 }
 
 .footer__link {
+  // Área de pulsación de 24 px (WCAG 2.5.8): el texto mide 18,8 px de alto.
+  @include tap-target(24px);
+
   display: inline-block;
   color: rgba(247, 250, 252, 0.74);
   font-size: 0.875rem;
@@ -685,6 +691,9 @@
 // que esté disponible al reportar incidencias sin robar atención al aviso
 // legal. El detalle completo vive en el tooltip.
 .footer__version {
+  // Área de pulsación de 24 px (WCAG 2.5.8): la píldora mide 22 px de alto.
+  @include tap-target(24px);
+
   position: relative;
   display: inline-block;
   padding: 0.1em 0.5em;

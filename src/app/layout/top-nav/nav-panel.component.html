@@ -1,0 +1,266 @@
+<!-- Panel de grupo del mega-menú (ver el porqué en `top-nav.component.ts`).
+     Componente aparte para descargarse **al abrir el menú**, no en el
+     arranque: es lo único de la cabecera que necesita los datos de las
+     familias, del plan de lectura y del programa. -->
+@let grupo = group();
+<div
+  class="nav__panel u-desktop-only"
+  [id]="'nav-panel-' + grupo.id"
+  role="group"
+  [attr.aria-label]="grupo.labelKey | translate"
+>
+  <div class="nav__panel-inner" [class.has-aside]="asideKind() !== null">
+    <ul class="nav__panel-links" role="list">
+      @for (child of grupo.children; track child.id) {
+        <li>
+          <a
+            class="nav__panel-link"
+            [class.is-active]="activeIds().has(child.id)"
+            [attr.aria-current]="activeIds().has(child.id) ? 'page' : null"
+            [routerLink]="isExternal(child) ? null : child.path"
+            [attr.href]="isExternal(child) ? child.externalUrl : null"
+            [attr.target]="isExternal(child) ? '_blank' : null"
+            [attr.rel]="isExternal(child) ? 'noopener noreferrer' : null"
+            (click)="ui.closeAll()"
+          >
+            @if (child.icon; as icono) {
+              <app-icon class="nav__panel-icon" [name]="icono" />
+            }
+            <span class="nav__panel-text">
+              <span class="nav__panel-label">{{ child.labelKey | translate }}</span>
+              @if (child.descriptionKey) {
+                <span class="nav__panel-desc">{{ child.descriptionKey | translate }}</span>
+              }
+            </span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- ===============================================================
+         Bloque destacado: **la segunda zona del panel**, a la derecha de
+         los enlaces y no debajo. Es lo que convierte los 568 px que
+         sobraban a la derecha de la fila de enlaces en contenido y baja
+         el panel de 390 px a ~250. Ver `asideKind` en el componente.
+         =============================================================== -->
+    @if (asideKind(); as destacado) {
+      <div class="nav__aside">
+        @switch (destacado) {
+          @case ('media') {
+            <!-- Tira de álbumes: el contenido real de la galería dentro
+                 del menú. **No se mueve sola** — ver 47-design-language.md:
+                 en una superficie que se abre para elegir, lo que se mueve
+                 es lo que te quita de delante lo que ibas a pulsar. -->
+            <div class="nav__aside-head">
+              <span class="nav__aside-title" id="nav-aside-title">
+                {{ 'nav.gallery' | translate }}
+              </span>
+              <a class="nav__aside-all" [routerLink]="galleryPath" (click)="ui.closeAll()">
+                {{ 'home.board.all' | translate }}
+              </a>
+            </div>
+            <ul class="nav__albums" role="list" aria-labelledby="nav-aside-title">
+              @for (album of albums; track album.id) {
+                <li>
+                  <a class="nav__album" [routerLink]="galleryPath" (click)="ui.closeAll()">
+                    <span class="nav__album-frame">
+                      <img class="nav__album-ambient" [src]="album.thumb" alt="" loading="lazy" decoding="async" />
+                      <img
+                        class="nav__album-img"
+                        [src]="album.thumb"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </span>
+                    <span class="nav__album-name">
+                      {{ 'gallery.events.' + album.i18nKey + '.name' | translate }}
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+
+          @case ('program') {
+            <!-- «¿Y ahora qué?»: la respuesta sin entrar en ninguna
+                 entrada. Es el único grupo cuyas cuatro secciones son
+                 tiempo. -->
+            <div class="nav__aside-head">
+              <span class="nav__aside-title" id="nav-aside-title">
+                {{ 'nav.panel_next' | translate }}
+              </span>
+            </div>
+            <ul class="nav__next" role="list" aria-labelledby="nav-aside-title">
+              @if (nextService(); as culto) {
+                <li>
+                  <a class="nav__next-item" [routerLink]="weeklyPath" (click)="ui.closeAll()">
+                    <span class="nav__next-when">{{ culto.dayLabel }} · {{ culto.time }}</span>
+                    <span class="nav__next-what">{{ culto.title }}</span>
+                  </a>
+                </li>
+              }
+              @if (nextEvent(); as evento) {
+                <li>
+                  <a class="nav__next-item" [routerLink]="upcomingPath" (click)="ui.closeAll()">
+                    <span class="nav__next-when">
+                      {{ schedule.formatEventDateShort(evento.date) }} · {{ evento.time }}
+                    </span>
+                    <span class="nav__next-what">{{ evento.title }}</span>
+                  </a>
+                </li>
+              }
+              @if (todayReading(); as lectura) {
+                <li>
+                  <a class="nav__next-item" [routerLink]="biblePath" (click)="ui.closeAll()">
+                    <span class="nav__next-when">
+                      {{ lectura.when }} · {{ 'nav.bible' | translate }}
+                    </span>
+                    <span class="nav__next-what">{{ lectura.passage }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+
+            <!-- La semana entera. Rotada para empezar por hoy: se lee
+                 hacia delante desde el día en que se está mirando. -->
+            <div class="nav__week">
+              <span class="nav__aside-title" id="nav-week-title">
+                {{ 'nav.weekly' | translate }}
+              </span>
+              <ul class="nav__week-list" role="list" aria-labelledby="nav-week-title">
+                @for (dia of week(); track dia.id) {
+                  <li class="nav__week-day" [class.is-today]="dia.id === todayId()">
+                    <span class="nav__week-when">{{ dia.dayLabel }}</span>
+                    <span class="nav__week-time">{{ dia.time }}</span>
+                    <span class="nav__week-what">{{ dia.title }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <!-- Familias de la semana: carrusel. Caben cinco; si la semana
+                 trae más, avanza solo (pausa con el puntero o el foco
+                 dentro, con `prefers-reduced-motion` y en cuanto el
+                 usuario lo toca: ver `CardCarouselComponent`). -->
+            @if (prayerWeek(); as semana) {
+              @if (semana.families.length > 0) {
+                <div class="nav__families">
+                  <div class="nav__aside-head">
+                    <span class="nav__aside-title" id="nav-families-title">
+                      {{ 'family_prayer.week_title' | translate }}
+                      <span class="nav__families-range">· {{ prayer.formatRange(semana) }}</span>
+                    </span>
+                    <a class="nav__aside-all" [routerLink]="familyPrayerPath" (click)="ui.closeAll()">
+                      {{ 'home.board.all' | translate }}
+                    </a>
+                  </div>
+                  <app-card-carousel
+                    class="nav__families-carousel"
+                    labelKey="family_prayer.week_title"
+                    itemWidth="9.5rem"
+                    gap="0.75rem"
+                    [autoplayMs]="4000"
+                    [loop]="true"
+                  >
+                    <ng-template>
+                      @for (familia of semana.families; track familia.id) {
+                        <li class="ui-carousel__item">
+                          <a
+                            class="nav__family"
+                            [routerLink]="familyPrayerPath"
+                            [fragment]="familia.id"
+                            draggable="false"
+                            (click)="ui.closeAll()"
+                          >
+                            <app-family-photo
+                              class="nav__family-photo"
+                              [family]="familia"
+                              sizes="12rem"
+                            />
+                            <span class="nav__family-name">
+                              <span class="nav__family-surname">{{ familia.surname }}</span>
+                              <span class="nav__family-given">{{ familia.names }}</span>
+                            </span>
+                          </a>
+                        </li>
+                      }
+                    </ng-template>
+                  </app-card-carousel>
+                </div>
+              }
+            }
+          }
+
+          @case ('departments') {
+            <!-- Los departamentos con su cara: una miniatura por cada uno
+                 (la foto, o el icono sobre navy si no la tiene). -->
+            <div class="nav__aside-head">
+              <span class="nav__aside-title" id="nav-aside-title">
+                {{ 'departments.home.eyebrow' | translate }}
+              </span>
+              <a class="nav__aside-all" [routerLink]="departmentsPath" (click)="ui.closeAll()">
+                {{ 'home.board.all' | translate }}
+              </a>
+            </div>
+            <!-- Diferido: plantilla, estilos y datos se descargan al abrir el
+                 panel, no en el arranque. `on immediate` y no `prefetch on
+                 idle`: este bloque sólo existe con el panel abierto, así que
+                 una precarga «en reposo» nunca llegaba antes (y Angular
+                 avisa, NG8021, de que sin disparador principal no actúa). -->
+            @defer (on immediate) {
+              <app-departments-aside />
+            } @placeholder {
+              <div class="nav__depts-ph" aria-hidden="true"></div>
+            }
+          }
+
+          @case ('about') {
+            <!-- Quien mira «La iglesia» está decidiendo si viene. Cuándo y
+                 dónde es exactamente lo que le falta, y no está en ninguna
+                 de las tres entradas del grupo. -->
+            <div class="nav__aside-head">
+              <span class="nav__aside-title" id="nav-aside-title">
+                {{ 'nav.panel_visit' | translate }}
+              </span>
+            </div>
+            <div class="nav__visit" role="group" aria-labelledby="nav-aside-title">
+              <p class="nav__visit-lead">{{ 'nav.panel_visit_lead' | translate }}</p>
+              <ul class="nav__visit-facts" role="list">
+                @if (nextService(); as culto) {
+                  <li class="nav__visit-fact">
+                    <app-icon class="nav__visit-icon" name="clock" />
+                    <span class="nav__visit-text">
+                      <span class="nav__visit-label">{{ 'nav.panel_service' | translate }}</span>
+                      <span class="nav__visit-value">{{ culto.dayLabel }} · {{ culto.time }}</span>
+                    </span>
+                  </li>
+                }
+                <li class="nav__visit-fact">
+                  <app-icon class="nav__visit-icon" name="map-pin" />
+                  <span class="nav__visit-text">
+                    <span class="nav__visit-label">{{ 'nav.panel_address' | translate }}</span>
+                    <span class="nav__visit-value">{{ location.address }}</span>
+                  </span>
+                </li>
+              </ul>
+              <div class="nav__visit-actions">
+                <a
+                  class="nav__visit-cta"
+                  [href]="location.mapsShareUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'nav.panel_directions' | translate }}
+                </a>
+                <a class="nav__visit-link" [routerLink]="contactPath" (click)="ui.closeAll()">
+                  {{ 'nav.contact' | translate }}
+                </a>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -66,7 +66,7 @@ Aproximado, para no leer el fichero entero:
 | Carrusel                          | `.carousel`, `.slide`, `.stage__hover-zone`, `.stage__controls`, `.carousel__dot*`, `.carousel__nav`, `.carousel__pause` |
 | Bloque redes (sólo proyección)    | `.socials*`, `.card*` (`__network`, `__handle`). La web usa `.nets*` en la hoja del componente |
 | Bloque transmisiones              | `.broadcasts*`, `.streams*`, `.live-now*`                 |
-| Bloque galería                    | `.gallery*`                                               |
+| Bloque galería                    | `.gallery*` en **su propia hoja** (`gallery-block.component.scss`, global) desde el 17/11/2026 |
 | Bloque semanal                    | `.weekly*`                                                |
 | Bloque próximos eventos           | `.upcoming*` (cabecera + proyección). La web usa `.ev*` en la hoja del componente |
 | QR y pie                          | `.qr*`, `.bar*`                                           |
@@ -287,8 +287,8 @@ cabeza y pies; la variante `medium` (960) y `tone` no se usaban; rotaba cada
 `tablist`. Con 20 eventos la rejilla de miniaturas habría crecido en filas
 bajo la foto.
 
-Ahora (`gallery-block.component.*`, sección `.gallery` de
-`stage.component.scss`, § 8 de `_projection.scss`):
+Ahora (`gallery-block.component.*`, con su hoja global propia —salió de
+`stage.component.scss` el 17/11/2026—, y § 8 de `_projection.scss`):
 
 - **Escenario + carril.** ≥ 1025 px: foto a la izquierda y carril vertical a
   la derecha (`--gallery-rail`, 18–24 rem), con filas `minmax(4.75rem, 1fr)`:

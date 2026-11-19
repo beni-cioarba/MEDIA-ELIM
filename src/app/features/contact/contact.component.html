@@ -212,17 +212,10 @@
 
 
         <!-- El mapa, junto a la dirección (antes, solo al final de la página).
-             Sin botón propio: el mapa ya trae «Abrir en Maps» y la cabecera,
-             «Cum ajungi»; uno más tapaba los avisos legales de Google. -->
+             Se carga sólo si se pide (`app-map-embed`): hasta entonces, ni
+             Google recibe la visita ni se descarga su mapa. -->
         <div class="card__map">
-          <iframe
-            class="card__map-frame"
-            [src]="mapEmbedUrl"
-            [title]="'contact.map.title' | translate"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-          ></iframe>
+          <app-map-embed [title]="'contact.map.title' | translate" />
         </div>
       </section>
 

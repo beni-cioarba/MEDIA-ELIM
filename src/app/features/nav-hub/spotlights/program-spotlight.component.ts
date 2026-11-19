@@ -5,7 +5,7 @@ import { APP_PATHS, blockPath } from '../../../core/navigation/app-paths';
 import { FamilyPrayerService } from '../../../core/services/family-prayer.service';
 import { ScheduleService } from '../../../core/services/schedule.service';
 import { CardCarouselComponent } from '../../../shared/card-carousel/card-carousel.component';
-import { FamilyPhotoComponent } from '../../family-prayer/family-photo/family-photo.component';
+import { FamilyPhotoComponent } from '../../../shared/family-photo/family-photo.component';
 import { HubSectionComponent } from '../hub-section/hub-section.component';
 
 /**

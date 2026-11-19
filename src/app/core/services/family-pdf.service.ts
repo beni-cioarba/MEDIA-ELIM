@@ -1,4 +1,5 @@
 import { DOCUMENT, Injectable, inject, signal } from '@angular/core';
+import { injectIsBrowser } from '../util/platform';
 import { LoggerService } from './logger.service';
 
 /** El PDF de una semana, tal como lo describe el manifiesto. */
@@ -43,6 +44,7 @@ const MANIFEST = 'assets/family-prayer/pdf.json';
 @Injectable({ providedIn: 'root' })
 export class FamilyPdfService {
   private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = injectIsBrowser();
   private readonly log = inject(LoggerService).prefix('family-pdf');
 
   private readonly byWeek = signal<ReadonlyMap<string, FamilyPdf>>(new Map());
@@ -59,7 +61,9 @@ export class FamilyPdfService {
   }
 
   private load(): void {
-    if (this.requested) return;
+    // El manifiesto lo escribe el despliegue después del build: en el
+    // prerender no existe todavía (y no hay `fetch` contra una URL relativa).
+    if (this.requested || !this.isBrowser) return;
     this.requested = true;
     const base = this.document.baseURI;
     fetch(new URL(MANIFEST, base), { cache: 'no-cache' })

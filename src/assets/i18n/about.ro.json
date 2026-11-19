@@ -1,0 +1,222 @@
+{
+  "about": {
+    "eyebrow": "Cine suntem",
+    "lead": "Ne unește credința în Isus Hristos și dorința de a sluji orașului nostru.",
+    "story": {
+      "eyebrow": "2001 – 2026",
+      "title": "Povestea noastră",
+      "subtitle": "De la o scânteie la o biserică vie: 25 de ani de har.",
+      "chapters": {
+        "start": {
+          "title": "Un început mic, în voia Domnului",
+          "body": "Înainte de Elim, frații români din Arganda se adunau la biserica „Muntele Sionului”. Spre sfârșitul anului 2000, un grup mic de frați a pus înaintea Domnului o singură întrebare: este lucrarea aceasta în voia Lui? Prima slujbă a Bisericii Elim s-a ținut în ultima duminică din decembrie 2000, într-un loc simplu — nu un foc, ci o scânteie. În 2001 au fost ordinați primii slujitori și s-a înființat corul."
+        },
+        "growth": {
+          "title": "Crescută prin Duhul Sfânt",
+          "body": "Din aproximativ 50 de persoane la început, biserica a ajuns la 100 de suflete — nu pentru că avea oameni pregătiți pentru lucrări mari, ci pentru că a crezut Cuvântul: „nici prin putere, nici prin tărie, ci prin Duhul Meu”. Au venit fanfara, grupul de misiune care a dus Evanghelia prin orașele Spaniei și conferințele de tineret. Au fost și încercări — despărțiri, pierderi, furtuni —, dar după fiecare am putut spune: „Dreapta Domnului câștigă biruința.”"
+        },
+        "today": {
+          "title": "Până aici, și mai departe",
+          "body": "Biserica s-a mutat dintr-un loc în altul, a construit și a reconstruit; mulți au plecat de aici să slujească în alte locuri, alții au venit. O nouă generație s-a botezat, din 2021 ne închinăm într-un locaș nou, înnoit în 2025, iar misiunea a ajuns până în Uganda. După 24 de ani de păstorire a fratelui Gavrilă Zăgrean, biserica este condusă astăzi de pastorul Pavel Negrușier și numără în jur de 450 de membri și 270 de aparținători. Harul care ne-a dus până aici ne va duce mai departe."
+        }
+      },
+      "facts": {
+        "founded": "Anul începutului",
+        "members": "Membri",
+        "adherents": "Aparținători",
+        "as_of": "Cifre din {{date}}"
+      },
+      "timeline": {
+        "title": "25 de ani, pe scurt",
+        "lead": "Cinci etape, din biserica veche până în casa nouă. În spatele fiecărui reper este o înregistrare din arhiva bisericii.",
+        "era": "Etapa {{n}}",
+        "watch": "Vezi",
+        "watch_long": "Vezi înregistrarea pe YouTube"
+      },
+      "eras": {
+        "beginnings": {
+          "title": "Începuturile",
+          "summary": "Câțiva oameni, un loc simplu și o întrebare: este lucrarea aceasta în voia Domnului?",
+          "milestones": {
+            "first_service": "Prima slujbă a Bisericii Elim, cu un grup mic de frați",
+            "ordination": "Prima ordinare: pastorul Gavrilă Zăgrean și diaconii Mircea Coptil și Adrian Mureșan",
+            "choir": "Se înființează corul, dirijat de Sabin Tofan",
+            "youth": "Programe de tineret în biserica veche",
+            "christmas": "Concert de Crăciun și seara de Revelion: corul, orchestra și grupurile"
+          }
+        },
+        "growth": {
+          "title": "Creștere",
+          "summary": "Biserica se organizează și iese în afară: fanfară, grup de misiune, conferințe.",
+          "milestones": {
+            "conference": "Conferința „Lupta cea bună”",
+            "brass": "Fanfara bisericii, sub bagheta lui Damian Onofrei",
+            "mission": "Grupul de misiune la Alcalá de Henares, Getafe, Cuéllar, Azuqueca și Roquetas de Mar",
+            "youth_conf": "Conferință regională de tineret la Elim",
+            "choir7": "Corul împlinește 7 ani: „Eben-Ezer” și „Nu nouă, Doamne”",
+            "assembly": "Adunarea de la Arganda del Rey (31 octombrie – 1 noiembrie)"
+          }
+        },
+        "fruit": {
+          "title": "Roade",
+          "summary": "Zece ani de la început și o biserică în plină lucrare, cu conferințe pentru tineri, lideri și misiune.",
+          "milestones": {
+            "ten": "10 ani de la inaugurarea bisericii",
+            "cuellar": "Conferința de la Cuéllar",
+            "conferences": "Conferințe la Poveda, pentru lideri și tineret și pentru profesorii de copii",
+            "mission_conf": "Conferința de misiune (4–6 decembrie)"
+          }
+        },
+        "generation": {
+          "title": "O nouă generație",
+          "summary": "Un nou locaș de închinare, copii crescuți în biserică care se botează, slujitori noi și o misiune care trece granițele.",
+          "milestones": {
+            "temple": "Noul locaș de închinare, ridicat cu munca și darurile fraților",
+            "baptisms": "Botezuri nou-testamentare, an de an",
+            "ordination": "Ordinare de slujitori",
+            "uganda": "Misiune în Uganda (20 oct. – 7 nov.): două biserici construite, la tribul IK",
+            "children": "Binecuvântarea copiilor",
+            "pastors": "Gavrilă Zăgrean încheie 24 de ani de păstorire; pastorul bisericii este Pavel Negrușier"
+          }
+        },
+        "house": {
+          "title": "O casă înnoită",
+          "summary": "Locașul de închinare se înnoiește, iar chemarea rămâne cea de la început.",
+          "milestones": {
+            "renovation": "Renovarea locașului de închinare",
+            "anchored": "Conferința „Ancorat în Hristos”",
+            "shoebox": "„Zâmbetul din cutie” și concertul de colinde al copiilor",
+            "hope": "Conferința „Speranță pentru tine”",
+            "ordination": "Ordinare de slujitori",
+            "jubilee": "25 de ani: un altar de mulțumire"
+          }
+        }
+      },
+      "people": {
+        "title": "Oamenii începutului",
+        "lead": "Câțiva dintre cei care au pus bazele lucrării, așa cum i-a amintit biserica la aniversare.",
+        "items": {
+          "zagrean": "Pastorul bisericii timp de 24 de ani, din 2001 până în 2024",
+          "coptil": "Unul dintre primii diaconi; astăzi pastor în România",
+          "muresan": "Unul dintre primii diaconi; astăzi prezbiter în România",
+          "tofan": "Dirijorul corului de la înființare; a lăsat o amprentă adâncă în cântarea bisericii",
+          "cazacu": "Primul organist al bisericii, încă adolescent",
+          "carbune": "Prima educatoare a copiilor din biserică"
+        },
+        "note": "Din Elim au plecat slujitori care astăzi sunt prezbiteri și păstori în România, Belgia și Țara Bascilor."
+      },
+      "works": {
+        "title": "Ce a lucrat Dumnezeu în {{count}} de ani",
+        "groups": {
+          "events": {
+            "title": "Evanghelizare și conferințe",
+            "items": {
+              "evangelism": "Evanghelizări",
+              "national": "Conferințe regionale și naționale",
+              "music": "Conferințe de coruri, fanfare și grupuri de laudă",
+              "family": "Conferințe pentru familie",
+              "youth": "Conferințe de tineret",
+              "mission": "Conferințe de misiune"
+            }
+          },
+          "mission": {
+            "title": "Misiune",
+            "items": {
+              "projects": "Proiecte misionare în Uganda și Liberia",
+              "churches": "Biserici construite în Uganda",
+              "wells": "Fântâni de apă"
+            }
+          },
+          "help": {
+            "title": "Ajutorare",
+            "items": {
+              "departments": "Departamente de ajutorare",
+              "shoebox": "Proiectul „Zâmbetul din cutie”",
+              "more": "Fel de fel de ajutoare"
+            }
+          },
+          "servants": {
+            "title": "Slujire și familie",
+            "items": {
+              "ordained": "Slujitori promovați: diaconi, prezbiteri și păstori",
+              "baptisms": "Botezuri, an de an",
+              "children": "Binecuvântarea copiilor"
+            }
+          }
+        }
+      },
+      "verse": {
+        "text": "„Până aici Domnul ne-a ajutat.”",
+        "ref": "1 Samuel 7:12",
+        "note": "Pe 18 octombrie 2026, la 25 de ani, am ridicat un altar de mulțumire. Nu nouă, Doamne, nu nouă, ci Numelui Tău dă slavă."
+      },
+      "image_alt": "Biserica adunată în sală, în timpul unui serviciu"
+    },
+    "pillars": {
+      "eyebrow": "Lucrarea Bisericii",
+      "title": "Ce facem",
+      "subtitle": "Nu sunt lozinci alese de noi: sunt cele cinci lucrări pe care Mărturisirea de credință le dă Bisericii, în articolul 16, cu numele lor.",
+      "items": {
+        "worship": {
+          "title": "Închinarea",
+          "body": "Duminica ne adunăm ca să-I aducem lui Dumnezeu ce I se cuvine: cântare, rugăciune și Cuvânt."
+        },
+        "gospel": {
+          "title": "Vestirea Evangheliei",
+          "body": "Spunem mai departe chemarea Evangheliei — aceeași la care omul răspunde prin credință și pocăință."
+        },
+        "discipleship": {
+          "title": "Facerea de ucenici",
+          "body": "Nu botezăm și ne luăm rămas-bun: însoțim pe fiecare să crească în asemănare cu Hristos, toată viața."
+        },
+        "service": {
+          "title": "Slujirea",
+          "body": "Îi iubim pe toți oamenii, fără nicio deosebire, și slujim nevoilor celor din jur."
+        },
+        "fellowship": {
+          "title": "Părtășia frățească",
+          "body": "Suntem o familie: Cina Domnului ne întărește unitatea, iar poverile le purtăm împreună."
+        }
+      },
+      "ref": "Art. {{n}}",
+      "ref_long": "Citește articolul {{n}} din Mărturisirea de credință"
+    },
+    "credo": {
+      "eyebrow": "Mărturisirea de credință",
+      "title": "În ce credem",
+      "subtitle": "Împărtășim Mărturisirea de credință a Cultului Creștin Penticostal. Nu e un text de arhivă: este ce credem și ce predicăm duminică de duminică.",
+      "cta": "Citește mărturisirea completă ({{count}} articole)"
+    },
+    "visit": {
+      "title": "Prima ta vizită",
+      "subtitle": "Ce se întâmplă, în ordine, dacă vii duminica — ziua pe care Mărturisirea o așază ca zi a închinării.",
+      "items": {
+        "welcome": {
+          "title": "O primire caldă",
+          "body": "Cineva te întâmpină la intrare și te conduce la un loc."
+        },
+        "worship": {
+          "title": "Închinare",
+          "body": "Serviciul începe cu cântări de laudă, în română. Nu trebuie să știi cântările: versurile se proiectează și nimeni nu se uită la tine."
+        },
+        "word": {
+          "title": "Cuvântul",
+          "body": "Urmează un mesaj biblic de aproximativ 40 de minute, practic și pe înțelesul tuturor, fără termeni pe care să trebuiască să îi cauți după."
+        },
+        "family": {
+          "title": "Copiii",
+          "body": "Copiii au program separat, pe vârste, în timpul mesajului. Îi lași și îi iei la ieșire."
+        }
+      },
+      "cta_program": "Vezi programul",
+      "cta_leadership": "Cunoaște echipa",
+      "note": "Cina Domnului se ține în prima duminică a fiecărei luni, la serviciul de dimineață. Se împărtășesc credincioșii botezați; dacă ești în vizită, poți rămâne liniștit pe locul tău."
+    },
+    "facts_years": "{{count}} ani de slujire",
+    "facts_services": "{{count}} servicii pe săptămână",
+    "facts_departments": "{{count}} departamente",
+    "visit_when": "Când ne adunăm",
+    "visit_where": "Unde ne găsești",
+    "visit_step": "Pasul {{n}}"
+  }
+}

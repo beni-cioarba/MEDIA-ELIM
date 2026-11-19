@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
   FormBuilder,
   FormControl,
@@ -16,6 +15,7 @@ import { APP_PATHS } from '../../core/navigation/app-paths';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { CopyButtonComponent } from '../../shared/copy-button/copy-button.component';
 import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.component';
+import { MapEmbedComponent } from '../../shared/map-embed/map-embed.component';
 import { IconName } from '../../core/ui/icon-name';
 
 /** Una vía de contacto de la columna lateral. */
@@ -60,13 +60,13 @@ const MIN_FILL_MS = 3000;
         IconComponent,
         CopyButtonComponent,
         WeekScheduleComponent,
+        MapEmbedComponent,
     ],
     templateUrl: './contact.component.html',
     styleUrl: './contact.component.scss'
 })
 export class ContactComponent {
   protected readonly config = inject(CHURCH_CONFIG);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly fb = inject(FormBuilder);
   private readonly contactForm = inject(ContactFormService);
   private readonly language = inject(LanguageService);
@@ -118,18 +118,6 @@ export class ContactComponent {
   protected whatsappLink(number: string, text: string): string {
     return whatsappHref(number, text);
   }
-
-  /**
-   * Mapa incrustado. Se marca como recurso de confianza porque la consulta
-   * es una constante de `church.config.ts`: no hay entrada de usuario, así
-   * que no existe superficie de inyección.
-   */
-  protected readonly mapEmbedUrl: SafeResourceUrl =
-    this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.google.com/maps?q=${encodeURIComponent(
-        this.config.location.mapsQuery,
-      )}&hl=${this.language.current()}&z=16&output=embed`,
-    );
 
   /** Longitudes máximas: coinciden con el `maxlength` de la plantilla. */
   protected readonly max = { name: 100, email: 254, subject: 150, message: 5000 } as const;

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TextSegment, highlight } from './leadership.view';
+import { TextSegment, highlight } from './public/leadership.view';
 
 /**
  * `{{ name | leadHighlight: needle }}` → trozos con o sin coincidencia, para

@@ -1,14 +1,18 @@
 ---
-applyTo: "src/app/app.routes.ts,src/app/core/navigation/**,src/app/layout/**,src/app/features/**/*.component.ts"
+applyTo: "src/app/app.routes.ts,src/app/core/navigation/**,src/app/core/modules/**,src/app/layout/**,src/app/features/**/*.component.ts,src/app/features/**/*.pages.ts,src/app/features/**/*.routes.ts"
 description: "Reglas de rutas, menú y layout para que la app escale por módulos."
 ---
 
 # Rutas, navegación y layout
 
-- Toda ruta cuelga del padre `MainLayoutComponent` en `app.routes.ts`.
-  Nada renderiza su propia cabecera, pie o dock flotante.
-- Todos los hijos usan `loadComponent` (lazy) y llevan
-  `data: { seo: { title: 'seo.x.title', description: 'seo.x.description' } }`.
+- Las rutas son **de cada módulo**: `features/<x>/<x>.pages.ts` (ruta y SEO,
+  datos puros) + `<x>.routes.ts` (`pageRoute(página, { loadComponent, … })`).
+  `app.routes.ts` sólo tiene una línea por módulo. Módulo nuevo:
+  `node scripts/new-module.mjs <id>`. Receta: `docs/ai/10-architecture.md`.
+- Dentro de la maqueta (`shell`) salvo herramientas sin cabecera ni pie
+  (`bare`). Nada renderiza su propia cabecera, pie o dock flotante.
+- Una feature no importa el interior de otra: sólo su `public/`
+  (`npm run check:boundaries`).
 - El segmento de URL se declara en `core/navigation/app-paths.ts`.
   Prohibido escribir rutas literales en plantillas o servicios: usa
   `APP_PATHS.*` y `blockPath(id)`.

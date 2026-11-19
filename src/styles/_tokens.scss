@@ -82,6 +82,30 @@ $status: (
   'live': #e53e3e,
 );
 
+// Los mismos estados, como **tinta de texto pequeño** (un chip de 12 px).
+//
+// Los de arriba valen para un punto, un icono o un filete (les basta 3:1),
+// pero como texto no llegaban: medido el 16/11/2026 sobre el velo de un chip,
+// en claro daban 3,95 (éxito), 3,17 (aviso) y 3,59 (directo) contra un mínimo
+// de 4,5; y en la superficie oscura de la consola, entre 2,2 y 3,7 los cinco.
+// Un escalón más oscuro para fondo claro y uno claro para fondo oscuro:
+// todos quedan entre 4,7 y 7,4.
+$status-text: (
+  'success': #276749,
+  'warning': #975a16,
+  'danger': #c53030,
+  'info': #2b6cb0,
+  'live': #c53030,
+);
+
+$status-text-on-dark: (
+  'success': #68d391,
+  'warning': #f6ad55,
+  'danger': #fc8181,
+  'info': #63b3ed,
+  'live': #fc8181,
+);
+
 // Canales externos. Es el único sitio donde entra un color ajeno a la marca:
 // el control pertenece a otro producto y se reconoce por su color antes que
 // por su rótulo.

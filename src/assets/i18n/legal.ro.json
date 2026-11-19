@@ -1,0 +1,80 @@
+{
+  "legal": {
+    "eyebrow": "Transparență",
+    "title": "Informații legale și confidențialitate",
+    "lead": "Cine răspunde de acest site, ce date ajung la noi și ce servicii externe folosește. Pe scurt și fără litere mici.",
+    "new_tab": "se deschide într-o filă nouă",
+    "updated": "Ultima actualizare: {{date}}",
+    "who": {
+      "title": "Cine răspunde de acest site",
+      "entity": "Titular",
+      "tax_id": "NIF",
+      "registry": "Registrul Entităților Religioase",
+      "address": "Adresa",
+      "contact": "Contact"
+    },
+    "data": {
+      "title": "Ce date ajung la noi",
+      "lead": "Site-ul se poate citi în întregime fără cont și fără să ne spui cine ești. Primim date doar în aceste cazuri:",
+      "form": {
+        "title": "Formularul de contact",
+        "sent": "Numele, adresa de e-mail și mesajul tău ajung pe e-mailul bisericii prin serviciul Web3Forms. Le folosim doar ca să îți răspundem; nu le păstrăm pe site și nu le dăm mai departe.",
+        "mail_app": "Formularul deschide aplicația ta de e-mail cu mesajul pregătit: îl trimiți tu, din contul tău. Site-ul nu primește și nu păstrează nimic."
+      },
+      "push": {
+        "title": "Amintirea zilnică",
+        "body": "Dacă o activezi, serviciul OneSignal păstrează un identificator anonim al browserului tău, fără nume și fără e-mail. O oprești oricând din aceeași pagină sau din setările browserului."
+      },
+      "device": {
+        "title": "Preferințe păstrate pe dispozitivul tău",
+        "body": "Limba aleasă, progresul tău de citire a Bibliei și alegerea de a vedea harta se păstrează în browserul tău. Nu ajung la noi și le ștergi oricând golind datele site-ului din browser."
+      },
+      "no_tracking": "Nu folosim cookie-uri proprii, nu urmărim vizitele și nu afișăm publicitate.",
+      "no_tracking_counted": "Nu folosim cookie-uri și nu afișăm publicitate. Numărăm vizitele în mod anonim, fără cookie-uri și fără să păstrăm adresa IP: doar câte persoane deschid fiecare pagină, ca să știm ce folosește biserica."
+    },
+    "services": {
+      "title": "Servicii externe",
+      "lead": "Ca să funcționeze, site-ul ia legătura cu alte servere. Fiecare vede adresa IP a dispozitivului tău, ca orice site pe care îl deschizi.",
+      "always": "La deschiderea paginilor",
+      "on_request": "Doar dacă le ceri",
+      "policy": "Politica lor",
+      "map_allowed": "Ai ales să vezi harta Google: de acum se încarcă singură pe acest dispozitiv.",
+      "map_revoke": "Nu o mai încărca",
+      "github": {
+        "purpose": "Găzduiește site-ul și datele despre transmisiuni."
+      },
+      "goatcounter": {
+        "purpose": "Numără vizitele pe fiecare pagină, fără cookie-uri și fără să păstreze adresa IP. Paginile cu date personale se numără fără nume. Datele stau în Uniunea Europeană."
+      },
+      "sentry": {
+        "purpose": "Doar dacă apare o eroare în site: primim descrierea tehnică a erorii (pagina, fără nume, și browserul), ca s-o putem repara. Datele stau în Uniunea Europeană."
+      },
+      "youtube_images": {
+        "purpose": "Imaginile de previzualizare ale transmisiunilor vin direct de la YouTube, iar site-ul îl întreabă dacă suntem în direct și care este meditația video a zilei."
+      },
+      "impreuna": {
+        "purpose": "Meditația video a zilei se citește de pe site-ul proiectului, când deschizi pagina Proiectul Împreună."
+      },
+      "youtube_player": {
+        "purpose": "Un videoclip pornește doar când apeși pe el, în varianta fără cookie-uri de urmărire."
+      },
+      "maps": {
+        "purpose": "Harta se încarcă doar după ce apeși «Arată harta»."
+      },
+      "web3forms": {
+        "purpose": "Duce mesajul din formularul de contact pe e-mailul bisericii."
+      },
+      "onesignal": {
+        "purpose": "Trimite amintirea zilnică celor care au activat-o."
+      }
+    },
+    "people": {
+      "title": "Nume și fotografii publicate",
+      "body": "Pe site apar nume și fotografii ale membrilor bisericii: slujitorii, familiile pentru care ne rugăm, candidații la botez și cauzele de rugăciune. Paginile cu familii, botezuri și cauze de rugăciune nu apar în motoarele de căutare. Dacă apari pe site și vrei să fii scos, scrie-ne și retragem numele sau fotografia."
+    },
+    "rights": {
+      "title": "Drepturile tale",
+      "body": "Poți cere oricând să vezi, să corectezi sau să ștergi datele tale, scriindu-ne la"
+    }
+  }
+}

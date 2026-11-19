@@ -3,6 +3,7 @@ import { CHURCH_CONFIG } from '../church.config';
 import { LanguageService } from '../services/language.service';
 import { LoggerService } from '../services/logger.service';
 import { PwaInstallService } from '../services/pwa-install.service';
+import { TelemetryService } from '../telemetry/telemetry.service';
 import { InstallPlatform } from '../util/install-platform';
 import { ONESIGNAL_SW_SCOPE } from './onesignal.provider';
 import { PUSH_PROVIDER, PushClient, PushWelcome } from './push-client';
@@ -80,6 +81,7 @@ export class PushService {
   private readonly provider = inject(PUSH_PROVIDER);
   private readonly language = inject(LanguageService);
   private readonly log = inject(LoggerService).prefix('push');
+  private readonly telemetry = inject(TelemetryService);
   private readonly config = inject(CHURCH_CONFIG, { optional: true });
   private readonly appId = this.config?.oneSignalAppId ?? '';
 
@@ -151,6 +153,7 @@ export class PushService {
       client.setLanguage(lang);
       this.save({ ...this.topics(), [topic]: lang });
       this.reconciled = true;
+      this.telemetry.event(`aviz-activat-${topic}`);
       return 'on';
     } catch (err) {
       this.log.warn('No se pudo activar el aviso.', err);

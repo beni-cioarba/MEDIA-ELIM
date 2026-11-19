@@ -466,26 +466,10 @@
         <span class="u-sr-only"> ({{ 'guests.new_tab' | translate }})</span>
       </a>
     </div>
-    <div class="gst-where__map" [class.is-loaded]="mapLoaded()">
-      @if (mapLoaded()) {
-        <iframe
-          [src]="mapEmbedUrl()"
-          [title]="'guests.directions.map_title' | translate"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen
-        ></iframe>
-      } @else {
-        <!-- Google Maps sólo si se pide: sin cookies de terceros ni su peso. -->
-        <div class="gst-map-gate">
-          <span class="gst-map-gate__pin" aria-hidden="true"><app-icon name="map-pin" /></span>
-          <p class="gst-map-gate__place">{{ 'footer.church' | translate }}</p>
-          <button type="button" class="gst-btn gst-btn--line" (click)="mapLoaded.set(true)">
-            <app-icon name="globe" />
-            {{ 'guests.directions.show_map' | translate }}
-          </button>
-          <p class="gst-map-gate__note">{{ 'guests.directions.map_note' | translate }}</p>
-        </div>
-      }
+    <!-- Google Maps sólo si se pide (`app-map-embed`, el mismo de Contact):
+         sin cookies de terceros ni su peso hasta entonces. -->
+    <div class="gst-where__map">
+      <app-map-embed [title]="'guests.directions.map_title' | translate" />
     </div>
   </section>
 

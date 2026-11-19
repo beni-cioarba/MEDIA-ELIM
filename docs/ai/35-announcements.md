@@ -7,7 +7,7 @@
 ## Qué es un anuncio y dónde vive
 
 Un anuncio es **contenido estructurado** declarado en
-`src/app/core/church.config.ts → announcements` (tipo `Announcement`). No hay
+`src/app/core/content/announcements.content.ts` → `ANNOUNCEMENTS` (tipo `Announcement`, definido en `church.config.ts`). No hay
 CMS ni backend: añadir un anuncio es añadir un objeto y desplegar.
 
 El mismo objeto se pinta en **tres sitios** con **un solo renderizador**

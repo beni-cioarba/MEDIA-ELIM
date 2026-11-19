@@ -17,6 +17,11 @@
  *  2. Afina la portada (`index.html`): título, canónica y JSON-LD de la
  *     iglesia (`WebSite` + `Church`/`Organization`).
  *  3. Escribe `sitemap.xml` (las páginas indexables) y `robots.txt`.
+ *  4. Escribe también una página por cada **URL con datos** (`dataPages`):
+ *     cada anuncio, cada perfil de la conducere, cada día de Proiectul
+ *     Împreună, cada botez y candidato, cada semana de familias. Son los
+ *     enlaces que más se comparten y, sin página propia, respondían 404 (131
+ *     de los 163 enlaces internos de la web el 16/11/2026).
  *
  * Textos: los mismos que pone `SeoService` en la SPA (claves de `data.seo` de
  * cada ruta, del rumano —idioma por defecto— salvo que la página diga otro),
@@ -27,88 +32,63 @@
  */
 
 import { createHash } from 'node:crypto';
+import { readdirSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { loadTsModule } from './lib/load-ts-module.mjs';
 
 /**
- * Rutas con página estática. `seo` = clave bajo `seo.*` (atajo de
- * `title: 'seo.<x>.title'` + `description: 'seo.<x>.description'`);
- * `title` / `description` = claves i18n completas. Deben ser las mismas que
- * `data.seo` de la ruta en `app.routes.ts`: si no, Google y WhatsApp dicen una
- * cosa y la pestaña otra.
- * `image` (opcional): tarjeta propia al compartir (1200 × 630, ruta bajo la
- * raíz publicada); sin ella queda la genérica de `index.html`.
- * `noindex`: la página existe (200, tarjeta al compartir) pero no va a los
- * buscadores ni al sitemap. Sin `noindex` entra en `sitemap.xml`.
+ * Páginas de los módulos (`src/app/features/*`/`*.pages.ts`), la misma fuente
+ * que usan las rutas de la app: lo que declara un módulo es lo que se publica.
+ * Antes esta lista se copiaba a mano y se desincronizaba de `app.routes.ts`.
  *
- * **Toda página pública debe estar aquí** (las de departamento salen solas de
- * `DEPARTMENT_SLUGS`). Sin ella responde 404 y Google no la indexa nunca: el
- * 14/11/2026 sólo la portada y `/impreuna` estaban en el índice.
+ * Reglas (ver `core/modules/module.model.ts`):
+ *  · herramienta (`tool`) → sin página estática y fuera de `robots.txt`;
+ *  · `staticPage: false` → sin página (la portada es el propio `index.html`);
+ *  · ruta con parámetros → sólo sus `expand` (las de datos: `dataPages`);
+ *  · el resto → una página; `noindex` la deja fuera del sitemap.
  */
-export const ROUTE_PAGES = [
-  // ── Iglesia ───────────────────────────────────────────────────────────
-  { path: 'biserica', title: 'nav.about', description: 'nav.about_desc' },
-  { path: 'despre-noi', seo: 'about' },
-  { path: 'marturisirea-de-credinta', seo: 'credo' },
-  { path: 'conducere', seo: 'leadership' },
-  // ── Program ───────────────────────────────────────────────────────────
-  { path: 'program', title: 'nav.program', description: 'nav.program_desc' },
-  { path: 'anunturi', seo: 'announcements' },
-  { path: 'media/program', seo: 'block.program' },
-  { path: 'media/evenimente', seo: 'block.evenimente' },
-  { path: 'media/citirea-bibliei', seo: 'block.citirea-bibliei' },
-  // Proiectul Împreună: el enlace que más se comparte (grupos de WhatsApp,
-  // QR de la hoja impresa). La imagen es la genérica de la web.
-  { path: 'impreuna', seo: 'impreuna' },
-  { path: 'impreuna/plan', seo: 'impreuna_plan' },
-  { path: 'talantul-in-negot', seo: 'talent_contest' },
-  // Con datos personales (familias, enfermos, menores): se comparten por
-  // enlace, nunca en buscadores.
-  { path: 'rugaciune-pentru-familii', seo: 'family_prayer', noindex: true },
-  { path: 'cauze-de-rugaciune', seo: 'prayer_causes', noindex: true },
-  { path: 'botezuri', seo: 'baptisms', noindex: true },
-  // ── Departamente (cada departamento: `departmentPages`) ──────────────
-  { path: 'departamente', title: 'nav.departments', description: 'nav.departments_desc' },
-  // ── Media ─────────────────────────────────────────────────────────────
-  { path: 'multimedia', title: 'nav.media', description: 'nav.media_desc' },
-  { path: 'media', seo: 'media' },
-  { path: 'media/galerie', seo: 'block.galerie' },
-  { path: 'media/retele', seo: 'block.retele' },
-  { path: 'media/transmisiuni', seo: 'block.transmisiuni' },
-  { path: 'media/locatie', seo: 'block.locatie' },
-  // ── Contacto y donativos ─────────────────────────────────────────────
-  { path: 'contact', seo: 'contact' },
-  { path: 'doneaza', seo: 'donate' },
-  // Invitați: destino del QR de bienvenida. Oculta → noindex.
-  {
-    path: 'invitati',
-    seo: 'guests',
-    noindex: true,
-    image: {
-      path: 'assets/pwa/og-invitati.jpg',
-      alt: 'Bine ai venit acasă — Biserica Elim, duminica la 10:00 și 18:00',
-    },
-  },
-  // La misma en español: el idioma va en la ruta para que la tarjeta de
-  // WhatsApp salga en español (es la URL del QR en español).
-  {
-    path: 'invitati/es',
-    seo: 'guests',
-    lang: 'es',
-    noindex: true,
-    image: {
-      path: 'assets/pwa/og-invitati-es.jpg',
-      alt: 'Bienvenido a casa — Iglesia Elim, los domingos a las 10:00 y 18:00',
-    },
-  },
-];
+export function modulePages(featuresDir = 'src/app/features') {
+  const pages = [];
+  for (const feature of readdirSync(featuresDir).sort()) {
+    const dir = join(featuresDir, feature);
+    for (const file of readdirSync(dir).filter((name) => name.endsWith('.pages.ts')).sort()) {
+      const exports = loadTsModule(join(dir, file));
+      for (const group of Object.values(exports)) {
+        if (group && typeof group === 'object') pages.push(...Object.values(group));
+      }
+    }
+  }
+  return pages;
+}
+
+/** Una página de módulo → entradas del script (`{ path, title, description, … }`). */
+export function staticEntries(page) {
+  if (page.tool || page.staticPage === false || page.path === '') return [];
+  const options = page.staticPage ?? {};
+  const entry = (path, seo) => ({
+    path,
+    title: seo.titleKey,
+    description: seo.descriptionKey,
+    ...(seo.noindex ? { noindex: true } : {}),
+    ...(options.lang ? { lang: options.lang } : {}),
+    ...(options.image ? { image: options.image } : {}),
+  });
+  if (page.path.includes(':')) return (options.expand ?? []).map((one) => entry(one.path, one.seo));
+  return [entry(page.path, page.seo)];
+}
+
+const MODULE_PAGES = modulePages();
+
+/** Rutas con página estática (derivadas de los módulos). */
+export const ROUTE_PAGES = MODULE_PAGES.flatMap(staticEntries);
 
 /**
- * Rutas que no deben rastrearse: herramientas del operador y hojas de
- * imprimir. Las páginas con datos personales **no** van aquí: Google tiene que
- * poder leer su `noindex` (bloqueadas, podrían salir como URL sin texto).
+ * Rutas que no deben rastrearse: las herramientas del operador. Las páginas
+ * con datos personales **no** van aquí: Google tiene que poder leer su
+ * `noindex` (bloqueadas, podrían salir como URL sin texto).
  */
-export const ROBOTS_DISALLOW = ['/media/control', '/media/ecran', '/impreuna/tipar', '/invitati/qr', '/stil'];
+export const ROBOTS_DISALLOW = MODULE_PAGES.filter((page) => page.tool).map((page) => `/${page.path}`);
 
 const argv = process.argv.slice(2);
 const distArg = argv.indexOf('--dist');
@@ -128,22 +108,10 @@ function escapeText(value) {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** Páginas de departamento, una por slug de `DEPARTMENT_SLUGS` (`app-paths.ts`). */
-export function departmentPages(appPathsSource) {
-  const block = /DEPARTMENT_SLUGS\s*=\s*\{([\s\S]*?)\}/.exec(appPathsSource);
-  if (!block) throw new Error('No se encontró DEPARTMENT_SLUGS en app-paths.ts');
-  return [...block[1].matchAll(/(\w+):\s*'([^']+)'/g)].map(([, id, slug]) => ({
-    path: `departamente/${slug}`,
-    title: `departments.${id}.name`,
-    description: `departments.${id}.tagline`,
-  }));
-}
 
-/** Claves de título y descripción de una entrada (atajo `seo` o claves completas). */
+/** Claves de título y descripción de una entrada. */
 export function pageKeys(page) {
-  return page.seo
-    ? { title: `seo.${page.seo}.title`, description: `seo.${page.seo}.description` }
-    : { title: page.title, description: page.description };
+  return { title: page.title, description: page.description };
 }
 
 /** Valor de una clave con puntos (`seo.block.citirea-bibliei.title`); `undefined` si falta. */
@@ -151,10 +119,10 @@ export function lookup(dict, key) {
   return key.split('.').reduce((node, part) => (node == null ? undefined : node[part]), dict);
 }
 
-/** URL pública canónica, de `church.config.ts` (fuente única), con barra final. */
-export function readPublicUrl(configSource) {
-  const match = /publicUrl:\s*'([^']+)'/.exec(configSource);
-  if (!match) throw new Error('No se encontró publicUrl en church.config.ts');
+/** URL pública canónica, de `core/site.ts` (fuente única), con barra final. */
+export function readPublicUrl(siteSource) {
+  const match = /PUBLIC_URL\s*=\s*'([^']+)'/.exec(siteSource);
+  if (!match) throw new Error('No se encontró PUBLIC_URL en src/app/core/site.ts');
   return match[1].endsWith('/') ? match[1] : `${match[1]}/`;
 }
 
@@ -312,6 +280,85 @@ export function deepMerge(target, source) {
   return target;
 }
 
+/** Google corta la descripción hacia los 160 caracteres: se corta antes, por palabra. */
+export function clip(text, max = 158) {
+  const clean = String(text).replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max).replace(/\s+\S*$/, '')}…`;
+}
+
+/**
+ * Páginas de las **URL con datos**, ya resueltas (título y descripción en
+ * texto, no en claves): salen de los mismos ficheros de datos que lee la app.
+ *
+ * `noindex`: datos personales (bautismos, familias) y anuncios ya caducados.
+ * `sitemap: false`: indexable, pero no se anuncia en el mapa del sitio (los
+ * 365 días de Proiectul Împreună: se llega a ellos desde su plan).
+ *
+ * @param {{ texts: object, today: string }} context `texts`: diccionario rumano.
+ */
+export function dataPages({ texts, today }) {
+  const pages = [];
+  const seo = (key) => lookup(texts, `seo.${key}`);
+
+  const { DEFAULT_CHURCH_CONFIG: church } = loadTsModule('src/app/core/church.config.ts');
+  for (const item of church.announcements ?? []) {
+    const active = (!item.publishedOn || item.publishedOn <= today) && item.expiresOn >= today;
+    pages.push({
+      path: `anunturi/${item.id}`,
+      title: item.title,
+      description: clip(item.lead ?? seo('announcements.description')),
+      noindex: !active,
+    });
+  }
+
+  const { PERSON_PROFILES } = loadTsModule('src/app/core/leadership-profiles.config.ts');
+  const { PEOPLE_INDEX } = loadTsModule('src/app/core/leadership.config.ts');
+  for (const id of Object.keys(PERSON_PROFILES)) {
+    const person = PEOPLE_INDEX.get(id);
+    if (!person) continue;
+    pages.push({ path: `conducere/${id}`, title: person.name, description: seo('leadership.description') });
+  }
+
+  const { BAPTISMS } = loadTsModule('src/app/core/baptisms.config.ts');
+  for (const baptism of BAPTISMS) {
+    const base = `botezuri/${baptism.date}`;
+    pages.push({ path: base, title: seo('baptisms.title'), description: seo('baptisms.description'), noindex: true });
+    for (const candidate of baptism.candidates ?? []) {
+      pages.push({
+        path: `${base}/${candidate.id}`,
+        title: candidate.name,
+        description: seo('baptisms.description'),
+        noindex: true,
+      });
+    }
+  }
+
+  const { FAMILY_PRAYER_WEEKS } = loadTsModule('src/app/core/family-prayer.config.ts');
+  for (const week of FAMILY_PRAYER_WEEKS) {
+    pages.push({
+      path: `rugaciune-pentru-familii/${week.presentedOn}`,
+      title: seo('family_prayer.title'),
+      description: seo('family_prayer.description'),
+      noindex: true,
+    });
+  }
+
+  return pages;
+}
+
+/** Un día de Proiectul Împreună por cada lectura del plan del año. */
+export function impreunaDayPages({ texts, plan }) {
+  const title = lookup(texts, 'seo.impreuna.title');
+  const description = lookup(texts, 'seo.impreuna.description');
+  return plan.readings.map((_, index) => ({
+    path: `impreuna/ziua/${index + 1}`,
+    title: `Ziua ${index + 1} · ${title}`,
+    description,
+    sitemap: false,
+  }));
+}
+
 /** Diccionario de un idioma: el principal más el paquete diferido de departamentos. */
 async function readDictionary(lang) {
   const dict = JSON.parse(await readFile(`src/assets/i18n/${lang}.json`, 'utf8'));
@@ -341,13 +388,27 @@ async function refreshServiceWorkerHash(indexHtml) {
   } catch {
     return; // Compilación sin service worker.
   }
+  // Con prerender, el service worker cachea el shell (`index.csr.html`, que
+  // este script no toca) y `index.html` —la portada ya pintada— no está en
+  // su tabla: nada que actualizar.
+  if (!manifest?.hashTable || !('/index.html' in manifest.hashTable)) return;
   await writeFile(file, JSON.stringify(updateNgswHash(manifest, '/index.html', indexHtml), null, 2));
+}
+
+/**
+ * Base de cada página: su HTML **prerenderizado** si el build lo escribió
+ * (`<ruta>/index.html`, con el contenido ya pintado; ver
+ * `src/app/app.routes.server.ts`) o, si no, el shell. En los dos casos se le
+ * ponen encima el título, la descripción, Open Graph y la canónica.
+ */
+async function pageBase(dir, shell) {
+  return readFile(join(dir, 'index.html'), 'utf8').catch(() => shell);
 }
 
 async function main() {
   const configSource = await readFile('src/app/core/church.config.ts', 'utf8');
   const appPathsSource = await readFile('src/app/core/navigation/app-paths.ts', 'utf8');
-  const publicUrl = readPublicUrl(configSource);
+  const publicUrl = readPublicUrl(await readFile('src/app/core/site.ts', 'utf8'));
   const dictionaries = new Map();
   const dict = async (lang) => {
     if (!dictionaries.has(lang)) dictionaries.set(lang, await readDictionary(lang));
@@ -360,6 +421,10 @@ async function main() {
   // ── Portada: título, descripción, canónica y JSON-LD ─────────────────
   // Mismo formato que SeoService en la portada: «<sitio> · <lema>».
   const homeDescription = lookup(ro, 'seo.home.description');
+  // El shell (sin contenido): con prerender, `index.csr.html`; sin él, el
+  // propio `index.html`. Es la base de las páginas que no se prerenderizan.
+  const shellFile = join(DIST, 'index.csr.html');
+  const shell = await readFile(shellFile, 'utf8').catch(() => null);
   const indexHtml = renderRoutePage(await readFile(join(DIST, 'index.html'), 'utf8'), {
     title: `${siteNameOf(ro)} · ${lookup(ro, 'seo.home.title')}`,
     description: homeDescription,
@@ -376,10 +441,13 @@ async function main() {
   await writeFile(join(DIST, 'index.html'), rootHtml);
   await refreshServiceWorkerHash(rootHtml);
   console.log('✓ index.html (canónica + JSON-LD; hash del service worker al día)');
+  // Base de las páginas sin prerender: el shell con los datos de la portada
+  // (se sobrescriben por página).
+  const shellHtml = shell === null ? indexHtml : renderRoutePage(shell, { title: `${siteNameOf(ro)} · ${lookup(ro, 'seo.home.title')}`, description: homeDescription, url: publicUrl });
 
   // ── Una página por ruta ──────────────────────────────────────────────
   const indexable = [publicUrl];
-  for (const page of [...ROUTE_PAGES, ...departmentPages(appPathsSource)]) {
+  for (const page of ROUTE_PAGES) {
     const lang = page.lang ?? 'ro';
     const texts = await dict(lang);
     const keys = pageKeys(page);
@@ -389,7 +457,8 @@ async function main() {
       throw new Error(`Faltan ${keys.title} / ${keys.description} en ${lang}`);
     }
     const url = `${publicUrl}${page.path}/`;
-    const html = renderRoutePage(indexHtml, {
+    const dir = join(DIST, page.path);
+    const html = renderRoutePage(await pageBase(dir, shellHtml), {
       lang: page.lang,
       // Mismo formato que SeoService: «<página> · <sitio>».
       title: `${pageTitle} · ${siteNameOf(texts)}`,
@@ -398,15 +467,32 @@ async function main() {
       noindex: page.noindex,
       image: page.image && { url: `${publicUrl}${page.image.path}`, alt: page.image.alt },
     });
-    const dir = join(DIST, page.path);
     await mkdir(dir, { recursive: true });
     await writeFile(join(dir, 'index.html'), html);
     if (!page.noindex) indexable.push(url);
     console.log(`✓ ${page.path}/index.html${page.noindex ? ' (noindex)' : ''}`);
   }
 
-  // ── sitemap.xml y robots.txt ─────────────────────────────────────────
+  // ── Una página por URL con datos ─────────────────────────────────────
   const today = new Date().toISOString().slice(0, 10);
+  const plan = JSON.parse(await readFile(`src/app/core/impreuna/data/${today.slice(0, 4)}.plan.json`, 'utf8').catch(() => '{"readings":[]}'));
+  const extra = [...dataPages({ texts: ro, today }), ...impreunaDayPages({ texts: ro, plan })];
+  for (const page of extra) {
+    const url = `${publicUrl}${page.path}/`;
+    const dir = join(DIST, page.path);
+    const html = renderRoutePage(await pageBase(dir, shellHtml), {
+      title: `${page.title} · ${siteNameOf(ro)}`,
+      description: page.description,
+      url,
+      noindex: page.noindex,
+    });
+    await mkdir(dir, { recursive: true });
+    await writeFile(join(dir, 'index.html'), html);
+    if (!page.noindex && page.sitemap !== false) indexable.push(url);
+  }
+  console.log(`✓ ${extra.length} páginas de URL con datos (anuncios, perfiles, días, botezuri, familias)`);
+
+  // ── sitemap.xml y robots.txt ─────────────────────────────────────────
   await writeFile(join(DIST, 'sitemap.xml'), renderSitemap(indexable, today));
   await writeFile(join(DIST, 'robots.txt'), renderRobots(publicUrl, ROBOTS_DISALLOW));
   console.log(`✓ sitemap.xml (${indexable.length} URL) y robots.txt`);

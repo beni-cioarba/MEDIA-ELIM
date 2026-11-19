@@ -8,10 +8,10 @@ import {
   ROUTE_PAGES,
   churchJsonLd,
   deepMerge,
-  departmentPages,
   escapeAttr,
   injectJsonLd,
   lookup,
+  modulePages,
   pageKeys,
   readChurchData,
   renderRobots,
@@ -119,10 +119,9 @@ const deptEs = JSON.parse(readFileSync('src/assets/i18n/departments.es.json', 'u
 const withDepts = (main, pack) => deepMerge(structuredClone(main), pack);
 const appPaths = readFileSync('src/app/core/navigation/app-paths.ts', 'utf8');
 const config = readFileSync('src/app/core/church.config.ts', 'utf8');
-const routes = readFileSync('src/app/app.routes.ts', 'utf8');
 
 test('cada página estática tiene título y descripción en ro y es', () => {
-  const pages = [...ROUTE_PAGES, ...departmentPages(appPaths)];
+  const pages = ROUTE_PAGES;
   for (const [lang, dict] of [['ro', withDepts(ro, deptRo)], ['es', withDepts(es, deptEs)]]) {
     for (const page of pages) {
       const keys = pageKeys(page);
@@ -134,16 +133,26 @@ test('cada página estática tiene título y descripción en ro y es', () => {
 });
 
 test('las páginas de bloque usan las claves seo.block.<slug> que pide la ruta', () => {
-  assert.match(routes, /titleKey: 'seo\.block\.:blockId\.title'/);
+  const block = modulePages().find((p) => p.path === 'media/:blockId');
+  assert.equal(block.seo.titleKey, 'seo.block.:blockId.title');
   for (const page of ROUTE_PAGES.filter((p) => p.path.startsWith('media/'))) {
-    assert.equal(page.seo, `block.${page.path.slice('media/'.length)}`, page.path);
+    assert.equal(page.title, `seo.block.${page.path.slice('media/'.length)}.title`, page.path);
   }
 });
 
 test('departamentos: una página por slug de DEPARTMENT_SLUGS', () => {
-  const pages = departmentPages(appPaths);
-  assert.ok(pages.length >= 6);
-  assert.ok(pages.some((p) => p.path === 'departamente/tineret' && p.title === 'departments.youth.name'));
+  const slugs = [...appPaths.matchAll(/^\s+\w+: '([a-z-]+)',$/gm)];
+  assert.ok(ROUTE_PAGES.filter((p) => p.path.startsWith('departamente/')).length >= 6);
+  assert.ok(ROUTE_PAGES.some((p) => p.path === 'departamente/tineret' && p.title === 'departments.youth.name'));
+  assert.ok(slugs.length > 0);
+});
+
+test('herramientas: sin página estática y fuera de robots.txt', () => {
+  for (const path of ['/media/control', '/media/ecran', '/impreuna/tipar', '/invitati/qr', '/stil']) {
+    assert.ok(ROBOTS_DISALLOW.includes(path), path);
+    assert.ok(!ROUTE_PAGES.some((p) => `/${p.path}` === path), path);
+  }
+  assert.ok(!ROUTE_PAGES.some((p) => p.path === ''), 'la portada es index.html');
 });
 
 test('canónica con barra final en las indexables; ninguna en las noindex', () => {

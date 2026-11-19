@@ -96,6 +96,12 @@
   --c-danger: #{map.get($status, 'danger')};
   --c-info: #{map.get($status, 'info')};
   --c-live: #{map.get($status, 'live')};
+  // Como texto pequeño (chips): ver `$status-text` en `_tokens.scss`.
+  --c-success-text: #{map.get($status-text, 'success')};
+  --c-warning-text: #{map.get($status-text, 'warning')};
+  --c-danger-text: #{map.get($status-text, 'danger')};
+  --c-info-text: #{map.get($status-text, 'info')};
+  --c-live-text: #{map.get($status-text, 'live')};
 
   // ---- Canales externos (color propio del producto, no de la marca) ---
   --c-whatsapp: #{map.get($channels, 'whatsapp')};
@@ -233,6 +239,12 @@
   --c-faint: #{rgba(#f7fafc, 0.45)};
   --c-hairline: #{rgba(#ffffff, 0.1)};
   --c-hairline-strong: #{rgba(#ffffff, 0.18)};
+  // Tinta de estado para texto: sobre navy, la versión clara.
+  --c-success-text: #{map.get($status-text-on-dark, 'success')};
+  --c-warning-text: #{map.get($status-text-on-dark, 'warning')};
+  --c-danger-text: #{map.get($status-text-on-dark, 'danger')};
+  --c-info-text: #{map.get($status-text-on-dark, 'info')};
+  --c-live-text: #{map.get($status-text-on-dark, 'live')};
   // El acento sobre oscuro es el oro: el navy desaparecería. `--c-on-primary`
   // NO se toca (sigue siendo la tinta clara sobre el navy de marca).
   --c-primary: #{gold(500)};

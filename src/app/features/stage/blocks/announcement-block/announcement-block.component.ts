@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Announcement } from '../../../../core/church.config';
 import type { SlidePage } from '../../../../core/services/presentation-blocks.service';
-import { AnnouncementCardComponent } from '../../../announcements/announcement-card/announcement-card.component';
+import { AnnouncementCardComponent } from '../../../announcements/public/announcement-card/announcement-card.component';
 
 /**
  * Bloque «Anunțuri»: **una diapositiva por anuncio**.

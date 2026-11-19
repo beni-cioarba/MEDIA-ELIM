@@ -1,6 +1,6 @@
 /* =====================================================================
  * Fila de botones que cierra una sección (`<p class="section-cta">`).
- * Parcial SCSS compartido: @use '../../shared/styles/section-cta' as *;
+ * Parcial SCSS compartido: @use './section-cta' as *;
  *
  * Va en un `<p>` a propósito (agrupa enlaces en un párrafo semántico), así
  * que hereda el `max-width: var(--w-prose)` global de `_base.scss`. Aquí lo

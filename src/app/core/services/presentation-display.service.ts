@@ -1,7 +1,7 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { toIsoDate } from '../util/iso-date';
 import { ClockService } from './clock.service';
-import type { PresentationBlockId } from './presentation-blocks.service';
+import { DEFAULT_BLOCK_DURATIONS_S, PresentationBlockId } from '../presentation/blocks';
 
 /** Límites del tiempo por diapositiva que puede fijar el operador (segundos). */
 export const DURATION_MIN_S = 5;
@@ -9,32 +9,10 @@ export const DURATION_MAX_S = 120;
 export const DURATION_STEP_S = 5;
 
 /**
- * Tiempo por defecto de cada diapositiva, por bloque (segundos).
- * Los anuncios se leen, no se miran: necesitan mucho más que una lista de
- * redes o un programa que la congregación ya conoce.
+ * Tiempo por defecto de cada diapositiva, por bloque (segundos): del registro
+ * de bloques (`core/presentation/blocks.ts`), con el porqué de cada uno.
  */
-const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = {
-  announcements: 30,
-  socials: 12,
-  streams: 12,
-  gallery: 12,
-  weekly: 12,
-  upcoming: 15,
-  // 10 s (01/11/2026, a petición del usuario; antes 20).
-  bible: 10,
-  // Resumen y fichas comparten tiempo: una ficha lleva foto y uno o dos
-  // párrafos que se leen en voz alta mientras se ve la familia.
-  families: 20,
-  // Una sola diapositiva con toda la lista, que se lee en voz alta y se ora
-  // por ella. 30 s por defecto (04/10/2026, a petición del usuario; antes 60):
-  // si se ora más rato, el operador lo alarga desde el panel.
-  causes: 30,
-  talent: 25,
-  // La semana y el QR: da para leerla y escanear.
-  impreuna: 15,
-  // El QR grande: basta con que dé tiempo a sacar el móvil y escanear.
-  website: 15,
-};
+const DEFAULT_DURATIONS_S: Readonly<Record<PresentationBlockId, number>> = DEFAULT_BLOCK_DURATIONS_S;
 
 /** Atajos del panel que traen tiempos propios («Terminare», «Rugăciune»). */
 export type DurationShortcut = 'ending' | 'prayer';

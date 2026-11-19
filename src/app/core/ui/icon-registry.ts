@@ -1,38 +1,21 @@
-import { APP_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material/icon';
 import { IconName } from './icon-name';
 
 /**
- * Catálogo de iconos propios de la app, registrado en `MatIconRegistry`.
+ * Catálogo de iconos propios de la app: los trazados de cada `IconName`.
  *
- * ── Por qué SVG en línea y no la fuente de iconos ──────────────────────
- * `<mat-icon>fontIcon</mat-icon>` obliga a descargar una fuente (~150 kB
- * la de Material Symbols completa) *antes* de poder pintar la cabecera.
- * En la pantalla de la iglesia, donde la app arranca con la red del
- * templo, eso se traduce en una navegación sin iconos durante segundos.
+ * Los pinta `<app-icon>` como **SVG en línea** (17/11/2026; antes, a través de
+ * `MatIconRegistry` y `<mat-icon>`). Así:
+ *  · **0 peticiones de red y 0 saltos**: los trazados viajan en el bundle.
+ *  · **Ni Angular Material ni `DomSanitizer` en el arranque**: el icono es
+ *    una plantilla normal (`<path [attr.d]>`), sin HTML que desinfectar. Quitar
+ *    `<mat-icon>` de la cabecera sacó del bundle inicial el registro de iconos,
+ *    el botón de icono y el *ripple* de Material.
  *
- * Registrándolos con `addSvgIconLiteralInNamespace` conseguimos:
- *  · **0 peticiones de red** — los paths viajan en el bundle (≈2 kB).
- *  · **0 layout shift** — el icono existe desde el primer pintado.
- *  · La API de Material (`<mat-icon svgIcon="elim:home">`), su
- *    accesibilidad (`aria-hidden`, `role="img"`) y su integración con
- *    `mat-icon-button`, `mat-menu-item`, `mat-chip`…
- *
- * La fuente Material Symbols de Google sigue disponible (se carga sin
- * bloquear desde `index.html`) para iconografía secundaria puntual:
- * `<mat-icon fontSet="material-symbols-outlined">volunteer_activism</mat-icon>`.
- *
- * ── Seguridad ─────────────────────────────────────────────────────────
- * `bypassSecurityTrustHtml` se aplica sobre cadenas **constantes escritas
- * en este fichero**, nunca sobre datos externos ni entradas de usuario:
- * no hay superficie de XSS. Cualquier icono que llegue de fuera debe
- * registrarse con `addSvgIcon(url)` y servirse desde nuestro propio
- * origen, jamás con literales dinámicos.
+ * No hay fuente de iconos: un icono nuevo se añade aquí (y su nombre a
+ * `IconName`). La de Material Symbols se declaraba «por si acaso» y no llegó a
+ * usarse nunca (retirada el 16/11/2026).
  */
 
-/** Espacio de nombres de los iconos propios: `elim:<nombre>`. */
-export const ELIM_ICON_NAMESPACE = 'elim';
 
 /**
  * Icono de **relleno** copiado tal cual de un set de referencia (Material
@@ -322,42 +305,20 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   ],
 };
 
-function toSvg(icon: readonly string[] | FilledIcon): string {
-  if (!Array.isArray(icon)) {
-    const filled = icon as FilledIcon;
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${filled.viewBox}" fill="currentColor" data-filled=""><path d="${filled.d}"/></svg>`;
-  }
-  const paths = icon as readonly string[];
-  const body = paths.map((d) => `<path d="${d}"/>`).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+/** Forma de un icono, lista para pintar. */
+export interface IconShape {
+  readonly viewBox: string;
+  readonly paths: readonly string[];
+  /** Relleno (los `FilledIcon`) en vez de trazo. */
+  readonly filled: boolean;
 }
 
-/**
- * Registra el catálogo propio en `MatIconRegistry` y fija la fuente por
- * defecto de `<mat-icon>` a Material Symbols (para el uso puntual de
- * iconos de Google sin repetir `fontSet` en cada plantilla).
- *
- * Se añade en `app.config.ts`: `providers: [ ..., provideElimIcons() ]`.
- */
-export function provideElimIcons(): EnvironmentProviders {
-  return makeEnvironmentProviders([
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory: () => {
-        const registry = inject(MatIconRegistry);
-        const sanitizer = inject(DomSanitizer);
-        return () => {
-          for (const [name, paths] of Object.entries(ICON_PATHS)) {
-            registry.addSvgIconLiteralInNamespace(
-              ELIM_ICON_NAMESPACE,
-              name,
-              sanitizer.bypassSecurityTrustHtml(toSvg(paths)),
-            );
-          }
-          registry.setDefaultFontSetClass('material-symbols-outlined');
-        };
-      },
-    },
-  ]);
+const STROKE_VIEWBOX = '0 0 24 24';
+
+/** Trazados de un icono del catálogo. */
+export function iconShape(name: IconName): IconShape {
+  const icon = ICON_PATHS[name];
+  if (Array.isArray(icon)) return { viewBox: STROKE_VIEWBOX, paths: icon as readonly string[], filled: false };
+  const filled = icon as FilledIcon;
+  return { viewBox: filled.viewBox, paths: [filled.d], filled: true };
 }

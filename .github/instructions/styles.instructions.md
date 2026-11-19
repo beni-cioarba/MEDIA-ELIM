@@ -29,10 +29,9 @@ _tokens.scss (Sass, primitivas) → _semantic.scss (variables CSS) → component
 
 ## Angular Material
 
-- Al importar un `MatXModule` en un componente hay que añadir
-  `@include mat.x-theme($elim-theme);` en `src/styles/_theme.scss`.
-  Si se deja de usar, quitar la línea (CSS muerto = kB en la pantalla).
-- Nunca `mat.all-component-themes`.
+- Tema **M3** único: `mat.theme()` en `src/styles/_theme.scss` emite los
+  tokens una vez; **no** se registra el tema de cada componente.
+- Material se importa donde se usa (chunks perezosos); nunca en `layout/`.
 - Los overlays de Material se renderizan en `<body>`: sus retoques de marca
   van en `src/styles/_material-overrides.scss`, no en el componente.
 

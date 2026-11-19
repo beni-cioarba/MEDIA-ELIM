@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   DestroyRef,
   HostListener,
   afterNextRender,
@@ -27,7 +28,7 @@ import { NearViewportDirective } from '../../shared/near-viewport/near-viewport.
 import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { FamilyCardComponent } from './family-card/family-card.component';
+import { FamilyCardComponent } from './public/family-card/family-card.component';
 import { FamilyPdfComponent } from './family-pdf/family-pdf.component';
 import { FamilySummaryComponent } from './family-summary/family-summary.component';
 
@@ -308,6 +309,7 @@ export class FamilyPrayerComponent {
      */
     if (this.conIndice()) {
       const dock = inject(DockActionsService);
+      const body = inject(DOCUMENT).body;
       dock.set([
         {
           id: 'family-prayer-weeks',
@@ -320,7 +322,7 @@ export class FamilyPrayerComponent {
       ]);
       destroyRef.onDestroy(() => {
         dock.clear();
-        document.body.classList.remove('has-doc-panel');
+        body.classList.remove('has-doc-panel');
       });
     }
 

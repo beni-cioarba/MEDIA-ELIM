@@ -49,6 +49,10 @@ Thumbs.db
 /src/assets/family-prayer/*/*.pdf
 /src/assets/family-prayer/pdf.json
 
+# Caché local de los PDF de familias (`--reuse` del generador; en CI la guarda
+# `actions/cache`).
+/.cache
+
 # Calendario de suscripción («Abonează-te»): lo genera desde church.config.ts
 # scripts/generate-events-calendar.mjs en prestart, prebuild y el deploy.
 /src/assets/calendars/elim-events.ics

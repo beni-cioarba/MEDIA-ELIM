@@ -3,6 +3,12 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Reconstrucción nocturna (≈ 04:20 en España): lo que depende de la fecha
+  # —anuncios que caducan, páginas estáticas de cada anuncio, sitemap, vídeo
+  # del día de Împreună— se pone al día aunque nadie publique. Pasa por las
+  # mismas puertas: si algo falla, se queda lo que había.
+  schedule:
+    - cron: '20 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -41,9 +47,10 @@ jobs:
       - name: Events calendar (assets/calendars/elim-events.ics)
         run: npm run calendar:events
 
-      # Puertas de calidad: paridad de traducciones y presupuesto de
-      # legibilidad de la proyección. Si fallan, no se publica.
-      - name: Checks (i18n parity, projection sizes)
+      # Puertas de calidad: paridad de traducciones, presupuesto de legibilidad
+      # de la proyección, enlaces de Drive, tests de los scripts y **tests
+      # unitarios** (`ng test`, 177 a 16/11/2026). Si algo falla, no se publica.
+      - name: Checks (i18n, projection sizes, script tests, unit tests)
         run: npm run check
 
       # Proiectul Împreună: refresca la instantánea de vídeos del día desde la
@@ -57,14 +64,34 @@ jobs:
       - name: Build (production, base href = / (dominio propio elimarganda.com))
         run: npx ng build --configuration production --base-href /
 
-      - name: Add SPA fallback (404 -> index)
-        run: cp dist/iglesia-redes/browser/index.html dist/iglesia-redes/browser/404.html
+      # Source maps a Sentry (pila legible en los errores) y fuera de la web.
+      # Sin el secreto SENTRY_AUTH_TOKEN sólo los borra; un fallo de la
+      # subida no para el despliegue. Ver docs/ai/77-analitica-errores.md.
+      - name: Sentry source maps
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: node scripts/sentry-sourcemaps.mjs --dist dist/iglesia-redes/browser
 
-      # Páginas estáticas por ruta (hoy `invitati/`, destino del QR de
-      # bienvenida): responden 200 en vez del 404 del fallback y llevan su
+      # El fallback es el **shell** (`index.csr.html`, sin contenido): el
+      # `index.html` ya es la portada prerenderizada y, como 404, enseñaría la
+      # portada un instante antes de la página pedida.
+      - name: Add SPA fallback (404 -> shell)
+        run: cp dist/iglesia-redes/browser/index.csr.html dist/iglesia-redes/browser/404.html
+
+      # Páginas estáticas por ruta (todas las públicas: `ROUTE_PAGES` + una por
+      # departamento): responden 200 en vez del 404 del fallback y llevan su
       # propio título / Open Graph / noindex. Ver scripts/generate-route-pages.mjs.
       - name: Route pages (200 + own meta)
         run: node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser
+
+      # Prueba de humo sobre lo que se va a publicar, servido como lo sirve
+      # GitHub Pages: cada página en dos anchos (estado, consola, h1, contraste,
+      # objetivos táctiles, claves sin traducir), todos los enlaces internos y
+      # la proyección a 1080p. Si falla, no se publica. scripts/e2e/smoke.mjs.
+      - name: Smoke test (pages, links, projection)
+        env:
+          PDF_BROWSER: chrome
+        run: npm run e2e -- --dist dist/iglesia-redes/browser
 
       - name: Add .nojekyll
         run: touch dist/iglesia-redes/browser/.nojekyll
@@ -74,11 +101,25 @@ jobs:
       # se proyectan, sobre la web recién compilada. Deja los PDF y su
       # manifiesto en assets/family-prayer/. No bloquea la publicación: si
       # falla, la web simplemente no ofrece el botón de PDF esa vez.
+      #
+      # `--reuse` + caché: sólo se imprime la semana nueva o la que haya
+      # cambiado (datos o fotos); las demás se copian de la caché. Imprimirlas
+      # todas llegó a ser 108 s de un despliegue de 170 (16/11/2026) y crecía
+      # cada semana. La clave lleva el número de ejecución para que cada
+      # despliegue guarde la suya; `restore-keys` trae la más reciente. Si la
+      # caché caduca (7 días sin uso), se imprimen todas una vez y ya.
+      - name: Family prayer PDFs (cache)
+        uses: actions/cache@v4
+        with:
+          path: .cache/family-pdfs
+          key: family-pdfs-${{ github.run_id }}
+          restore-keys: family-pdfs-
+
       - name: Family prayer PDFs
         continue-on-error: true
         env:
           PDF_BROWSER: chrome
-        run: npm run pdf:familii -- --dist dist/iglesia-redes/browser
+        run: npm run pdf:familii -- --dist dist/iglesia-redes/browser --reuse .cache/family-pdfs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -95,3 +136,26 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Lo publicado responde: la portada, una página estática, una URL de datos,
+  # el sitemap y el manifiesto del service worker. Si GitHub Pages sirviera
+  # otra cosa (caché del CDN, dominio caído), el fallo se ve aquí y no en el
+  # templo. Reintenta: el CDN tarda unos segundos en soltar la versión nueva.
+  verify-live:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Published site responds
+        run: |
+          set -e
+          base="https://elimarganda.com"
+          for path in "/" "/anunturi/" "/impreuna/ziua/1/" "/legal/" "/sitemap.xml" "/ngsw.json"; do
+            ok=""
+            for attempt in 1 2 3 4 5 6; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$base$path" || true)
+              if [ "$code" = "200" ]; then ok="1"; break; fi
+              sleep 10
+            done
+            if [ -z "$ok" ]; then echo "::error::$base$path → $code"; exit 1; fi
+            echo "✓ $path"
+          done

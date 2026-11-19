@@ -563,6 +563,19 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         border: 0;
         background: none;
         cursor: pointer;
+        /* Area de pulsacion de 24 px (WCAG 2.5.8) sin tocar la fila ni el
+           alto del hero: el segmento mide 1rem (15 px en movil). Mismo
+           patron que el mixin tap-target; el ::before es la barra. */
+        position: relative;
+      }
+
+      .hero__dot::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        top: 50%;
+        height: max(100%, 24px);
+        transform: translateY(-50%);
       }
 
       .hero__dot::before {

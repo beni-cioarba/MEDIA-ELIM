@@ -560,11 +560,9 @@
   background: rgb(255 255 255 / 0.06);
 }
 
-.card__map-frame {
-  display: block;
-  width: 100%;
+// El alto lo fija esta caja; `app-map-embed` la llena (mapa o su puerta).
+.card__map > app-map-embed {
   height: 12.5rem;
-  border: 0;
   // Un punto más apagado para que no desentone con el navy.
   filter: saturate(0.85);
 }

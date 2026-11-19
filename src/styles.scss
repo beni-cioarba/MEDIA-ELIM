@@ -22,6 +22,7 @@
  * `index.html` con `preconnect` y carga no bloqueante.
  * ===================================================================== */
 
+@use 'styles/fonts';
 @use '@angular/cdk/overlay-prebuilt.css';
 
 @use 'styles/theme';

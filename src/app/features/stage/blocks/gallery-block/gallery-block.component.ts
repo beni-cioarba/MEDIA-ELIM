@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ViewEncapsulation,
   DestroyRef,
   ElementRef,
   computed,
@@ -70,7 +71,10 @@ function editionsOf(ev: MediaEvent): readonly GalleryEdition[] {
   imports: [TranslatePipe, IconComponent, ShareButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './gallery-block.component.html',
-  styles: [':host { display: contents; }'],
+  // Hoja global con BEM propio (`.gallery__*`): la escala de proyección del
+  // escenario la afina con `.stage.is-fullscreen`. Ver la cabecera de la hoja.
+  encapsulation: ViewEncapsulation.None,
+  styleUrl: './gallery-block.component.scss',
 })
 export class GalleryBlockComponent {
   protected readonly config = inject(CHURCH_CONFIG);

@@ -23,6 +23,10 @@ repositorio, lee el shard que corresponda a tu tarea** (y sólo ese).
 | Build, despliegue, PWA, GitHub Actions, scripts de imágenes/YouTube | `docs/ai/50-build-deploy.md` |
 | Convenciones de código y recetas paso a paso                        | `docs/ai/60-conventions.md` |
 | Deuda técnica conocida y mejoras pendientes                          | `docs/ai/70-roadmap.md`    |
+| **Plan vigente** (auditoría nov. 2026 y fases)                       | `docs/ai/76-plan-maestro.md` |
+
+La tabla completa de shards (módulos 32-39, diseño 47-49) está en `AGENTS.md`:
+es la que manda.
 
 Reglas de uso:
 
@@ -48,22 +52,26 @@ en cada prompt**:
 
 - Angular 22 **standalone** (por defecto, sin `standalone: true`), sin `NgModule`. Siempre `ChangeDetectionStrategy.OnPush`.
 - Estado con **signals** (`signal` / `computed` / `effect`), no `BehaviorSubject`.
-- Datos no traducibles → `src/app/core/church.config.ts`. Textos → `src/assets/i18n/{es,ro}.json`.
+- Datos no traducibles → `src/app/core/church.config.ts` (identidad y tipos) y
+  `src/app/core/content/*.content.ts` (anuncios, eventos, programa, galería, fotos).
+  Textos → `src/assets/i18n/{es,ro}.json`; los de una sola página, en su paquete
+  (`core/i18n/route-packs.ts`).
   **Las dos claves deben existir en ambos idiomas.**
-- Un **anuncio** nuevo es un objeto `Announcement` en `church.config.ts →
-  announcements` con `expiresOn` obligatorio; **nunca** una plantilla o un
+- Un **anuncio** nuevo es un objeto `Announcement` en
+  `core/content/announcements.content.ts` con `expiresOn` obligatorio; **nunca** una plantilla o un
   componente a medida. Redáctalo siguiendo el protocolo de
   `docs/ai/35-announcements.md` (corregir, estructurar, acortar, caducidad).
 - Nada de texto literal en plantillas: siempre `| translate`.
-- Rutas nuevas → `src/app/app.routes.ts`, siempre con `loadComponent`,
-  colgando de `MainLayoutComponent` y con `data.seo`. El segmento se declara
-  en `core/navigation/app-paths.ts`; el menú, en `navigation.config.ts`.
+- Páginas nuevas → `node scripts/new-module.mjs <id>` (módulo con
+  `<x>.pages.ts` + `<x>.routes.ts`, una línea en `app.routes.ts`). El segmento
+  en `core/navigation/app-paths.ts`; el menú, en `navigation.config.ts`. Una
+  feature sólo importa la carpeta `public/` de otra.
 - Estilos: los componentes sólo consumen variables semánticas
   (`var(--c-*)`, `var(--sp-*)`…) tras `@use 'ds' as *`. Prohibido escribir
   colores, píxeles o breakpoints en crudo.
-- Angular Material: al importar un `MatXModule` hay que añadir
-  `@include mat.x-theme($elim-theme);` en `src/styles/_theme.scss`, y quitarlo
-  si se deja de usar. Nunca `mat.all-component-themes`.
+- Angular Material: tema **M3** único (`mat.theme()` en
+  `src/styles/_theme.scss`); no hay que registrar el tema de cada componente.
+  Material se importa **donde se usa** (chunks perezosos), nunca en el layout.
 - Iconos de interfaz: `<app-icon name="…">` con un `IconName` del tipo unión.
 - Estado: local → `signal()`; compartido simple → servicio con signals;
   compartido complejo → SignalStore en `core/state/`. Nada de `console.*`:
@@ -73,7 +81,7 @@ en cada prompt**:
 - TypeScript está en `strict` + `strictTemplates`: no uses `any` ni `!` salvo
   justificación en comentario.
 - No introduzcas librerías nuevas sin necesidad: el bundle inicial se descarga
-  en la pantalla de la iglesia (presupuesto: 500 kB warning / 1 MB error).
+  en la pantalla de la iglesia (presupuesto: 600 kB warning / 620 kB error).
 - Comentarios y documentación **en español**; el código en inglés.
 
 ## Comandos
@@ -81,8 +89,8 @@ en cada prompt**:
 ```bash
 npm start                 # ng serve
 npm run build             # producción
-npm test                  # Vitest (aún sin specs)
-npm run check             # i18n:check + check:projection (puertas de calidad; también corre en prebuild y en CI)
+npm test                  # Vitest, en modo observación
+npm run check             # i18n + proyección + Drive + tests de scripts + tests unitarios (puertas de calidad; prebuild y CI)
 npm run pwa:icons         # regenera el icono de la app (PWA, Apple, favicon) desde el emblema
 node scripts/optimize-images.js   # webp hero+thumb para la galería
 python scripts/import-bible-plan.py <xlsx>   # regenera el plan de lectura bíblica desde el Excel

@@ -3,7 +3,7 @@
 /* =====================================================================
  * Archivo plegable al pie de una página («Anunțuri trecute»,
  * «Săptămânile anterioare»). Parcial compartido:
- *   @use '../../shared/styles/past-archive' as *;
+ *   @use './past-archive' as *;
  * Emite el contenedor `.past`, su cabecera y la lista; la **fila**
  * (`.past__row` y sus columnas) la define cada página, porque cada archivo
  * enseña datos distintos.

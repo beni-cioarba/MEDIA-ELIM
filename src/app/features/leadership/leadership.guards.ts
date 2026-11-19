@@ -2,7 +2,7 @@ import { ActivatedRouteSnapshot, RedirectCommand, Router } from '@angular/router
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { PEOPLE_INDEX, PersonId, isPersonId } from '../../core/leadership.config';
 import { hasProfile } from '../../core/leadership-profiles.config';
-import { PEOPLE_VIEW_PARAM, personLink } from './leadership.view';
+import { PEOPLE_VIEW_PARAM, personLink } from './public/leadership.view';
 
 /**
  * Guardas de «Conducere». Se cargan **perezosamente** desde `app.routes.ts`

@@ -1,0 +1,41 @@
+// =====================================================================
+// Kit de proyección: lo que **cualquier** pieza que se proyecta comparte con
+// el escenario, sin depender de él.
+//
+// Lo usan los bloques del escenario y las piezas públicas de otras features
+// que también se proyectan (el collage de familias, el tablero de causas):
+//   @use 'projection-kit' as pj;   → @include pj.pj-section-title;
+//
+// Sólo mixins y variables CSS (`--pj-u`, `--pj-fs-*`): no emite CSS por sí
+// mismo. La escala y las reglas de la diapositiva siguen en
+// `features/stage/styles/_projection.scss` (ver su cabecera).
+// =====================================================================
+
+/// Rótulo de bloque («CITIREA BIBLIEI»): mismo cuerpo, peso y regla dorada en
+/// todos los bloques. Es **contexto**, no el mensaje: va en `lead` (6,2u ≈ 67 px,
+/// legible desde ~16 m) y en una línea; el título de 8u (`--pj-fs-title`) se
+/// reserva para el contenido que hay que leer (título del anuncio, del evento).
+/// Cualquier panel nuevo lo incluye en su `__title`.
+@mixin pj-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--pj-fs-lead);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+
+  // Regla dorada corta: el acento de marca y la única línea que separa
+  // el título del contenido.
+  &::after {
+    content: '';
+    display: block;
+    width: calc(var(--pj-u) * 7);
+    height: max(3px, calc(var(--pj-u) * 0.4));
+    margin-top: calc(var(--pj-u) * 1.2);
+    border-radius: 999px;
+    background: var(--c-gold);
+  }
+}
+

@@ -1,0 +1,46 @@
+# Actualizaciones de dependencias: una PR al mes por grupo, no una por paquete.
+#
+# Por qué agrupado y mensual: quien mantiene esto es una persona. Una PR suelta
+# por cada parche de cada paquete es ruido que se acaba ignorando; un lote al
+# mes se revisa, se prueba con `npm run check` + build y se publica.
+#
+# Angular va en su propio grupo porque sus paquetes tienen que subir a la vez
+# (se actualizan con `ng update`, ver docs/ai/50-build-deploy.md): la PR sirve
+# de aviso, no para fusionarla tal cual si es un salto de versión mayor.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+          - '@ngrx/*'
+          - 'angularx-qrcode'
+          - 'zone.js'
+          - 'typescript'
+      herramientas:
+        dependency-type: development
+        exclude-patterns:
+          - '@angular/*'
+          - 'typescript'
+      produccion:
+        dependency-type: production
+        exclude-patterns:
+          - '@angular/*'
+          - '@ngrx/*'
+          - 'angularx-qrcode'
+          - 'zone.js'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns:
+          - '*'

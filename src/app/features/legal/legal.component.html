@@ -1,0 +1,132 @@
+<header class="page-hero">
+  <div class="page-hero__inner">
+    <p class="page-hero__eyebrow">{{ 'legal.eyebrow' | translate }}</p>
+    <h1 class="page-hero__title">{{ 'legal.title' | translate }}</h1>
+    <p class="page-hero__lead">{{ 'legal.lead' | translate }}</p>
+  </div>
+</header>
+
+<app-page-section>
+  <div class="lg">
+    <!-- 1 · Quién responde de la web -->
+    <section class="lg__block" aria-labelledby="lg-who">
+      <h2 class="lg__title" id="lg-who">{{ 'legal.who.title' | translate }}</h2>
+      <dl class="lg__facts">
+        <div class="lg__fact">
+          <dt>{{ 'legal.who.entity' | translate }}</dt>
+          <dd>{{ entity }}</dd>
+        </div>
+        @if (legal.taxId; as taxId) {
+          <div class="lg__fact">
+            <dt>{{ 'legal.who.tax_id' | translate }}</dt>
+            <dd>{{ taxId }}</dd>
+          </div>
+        }
+        @if (legal.registry; as registry) {
+          <div class="lg__fact">
+            <dt>{{ 'legal.who.registry' | translate }}</dt>
+            <dd>{{ registry }}</dd>
+          </div>
+        }
+        <div class="lg__fact">
+          <dt>{{ 'legal.who.address' | translate }}</dt>
+          <dd>{{ config.location.address }}</dd>
+        </div>
+        <div class="lg__fact">
+          <dt>{{ 'legal.who.contact' | translate }}</dt>
+          <dd>
+            <a class="lg__link" [href]="mailHref">{{ config.contact.email }}</a>
+            ·
+            <a class="lg__link" [href]="phoneHref">{{ config.contact.phoneDisplay }}</a>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- 2 · Qué datos llegan a la iglesia -->
+    <section class="lg__block" aria-labelledby="lg-data">
+      <h2 class="lg__title" id="lg-data">{{ 'legal.data.title' | translate }}</h2>
+      <p class="lg__text">{{ 'legal.data.lead' | translate }}</p>
+      <ul class="lg__list">
+        <li>
+          <strong>{{ 'legal.data.form.title' | translate }}.</strong>
+          {{ (formConfigured ? 'legal.data.form.sent' : 'legal.data.form.mail_app') | translate }}
+        </li>
+        @if (pushConfigured) {
+          <li>
+            <strong>{{ 'legal.data.push.title' | translate }}.</strong>
+            {{ 'legal.data.push.body' | translate }}
+          </li>
+        }
+        <li>
+          <strong>{{ 'legal.data.device.title' | translate }}.</strong>
+          {{ 'legal.data.device.body' | translate }}
+        </li>
+      </ul>
+      <p class="lg__text lg__text--strong">{{ (countsVisits ? 'legal.data.no_tracking_counted' : 'legal.data.no_tracking') | translate }}</p>
+    </section>
+
+    <!-- 3 · Servicios de terceros -->
+    <section class="lg__block" aria-labelledby="lg-services">
+      <h2 class="lg__title" id="lg-services">{{ 'legal.services.title' | translate }}</h2>
+      <p class="lg__text">{{ 'legal.services.lead' | translate }}</p>
+
+      <h3 class="lg__subtitle">{{ 'legal.services.always' | translate }}</h3>
+      <ul class="ui-list lg__services" role="list">
+        @for (service of alwaysServices; track service.id) {
+          <li class="lg__service">
+            <span class="lg__service-name">{{ service.name }}</span>
+            <span class="lg__service-purpose">{{ 'legal.services.' + service.id + '.purpose' | translate }}</span>
+            <a class="lg__link lg__service-policy" [href]="service.policyUrl" target="_blank" rel="noopener noreferrer">
+              {{ 'legal.services.policy' | translate }}
+              <app-icon name="external" />
+              <span class="u-sr-only"> · {{ service.name }} ({{ 'legal.new_tab' | translate }})</span>
+            </a>
+          </li>
+        }
+      </ul>
+
+      <h3 class="lg__subtitle">{{ 'legal.services.on_request' | translate }}</h3>
+      <ul class="ui-list lg__services" role="list">
+        @for (service of onRequestServices; track service.id) {
+          <li class="lg__service">
+            <span class="lg__service-name">{{ service.name }}</span>
+            <span class="lg__service-purpose">{{ 'legal.services.' + service.id + '.purpose' | translate }}</span>
+            <a class="lg__link lg__service-policy" [href]="service.policyUrl" target="_blank" rel="noopener noreferrer">
+              {{ 'legal.services.policy' | translate }}
+              <app-icon name="external" />
+              <span class="u-sr-only"> · {{ service.name }} ({{ 'legal.new_tab' | translate }})</span>
+            </a>
+          </li>
+        }
+      </ul>
+
+      <!-- Sólo si el visitante pidió ver el mapa: aquí puede desdecirse. -->
+      @if (mapConsent.allowed()) {
+        <p class="lg__choice">
+          <span>{{ 'legal.services.map_allowed' | translate }}</span>
+          <button type="button" class="btn btn--ghost btn--sm" (click)="mapConsent.revoke()">
+            {{ 'legal.services.map_revoke' | translate }}
+          </button>
+        </p>
+      }
+    </section>
+
+    <!-- 4 · Fotos y nombres publicados -->
+    <section class="lg__block" aria-labelledby="lg-people">
+      <h2 class="lg__title" id="lg-people">{{ 'legal.people.title' | translate }}</h2>
+      <p class="lg__text">{{ 'legal.people.body' | translate }}</p>
+    </section>
+
+    <!-- 5 · Derechos -->
+    <section class="lg__block" aria-labelledby="lg-rights">
+      <h2 class="lg__title" id="lg-rights">{{ 'legal.rights.title' | translate }}</h2>
+      <p class="lg__text">
+        {{ 'legal.rights.body' | translate }}
+        <a class="lg__link" [href]="privacyMailHref">{{ legal.privacyEmail }}</a>.
+      </p>
+    </section>
+
+    <p class="lg__updated">{{ 'legal.updated' | translate: { date: updatedOn() } }}</p>
+  </div>
+</app-page-section>

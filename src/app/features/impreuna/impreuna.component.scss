@@ -401,6 +401,9 @@
   color: var(--c-muted);
 
   a {
+    // El enlace mide 18 px de alto: área de pulsación de 24 px (WCAG 2.5.8).
+    @include tap-target(24px);
+
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;

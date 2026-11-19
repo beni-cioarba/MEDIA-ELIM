@@ -69,92 +69,7 @@
     "open_control": "Abrir el panel de control de la proyección"
   },
   "presenter": {
-    "guests_title": "Invitados",
-    "guests_text": "La página de bienvenida para quien viene por primera vez. No aparece en el menú: sólo se abre con el código QR o con la dirección.",
-    "guests_open": "Abrir la página",
-    "guests_qr": "QR para imprimir",
-    "lang_aria": "Idioma de la consola y de la proyección",
-    "title": "Panel de control",
-    "subtitle": "Proyección",
     "window_title": "Proyección · Iglesia Elim",
-    "status_window": "Proyección en pantalla",
-    "status_preview": "Sin ventana de proyección",
-    "open": "Abrir proyección",
-    "open_other_screen": "Proyectar en la 2.ª pantalla",
-    "focus": "Ir a la ventana",
-    "close": "Cerrar proyección",
-    "fullscreen": "Pantalla completa",
-    "fullscreen_exit": "Salir de pantalla completa",
-    "fullscreen_denied": "Este navegador exige el gesto en la propia ventana: pulsa F en la proyección.",
-    "blocked": "El navegador ha bloqueado la ventana. Permite las ventanas emergentes para este sitio y vuelve a pulsar.",
-    "blocked_multi": "El navegador sólo ha abierto una ventana: Chrome permite una por clic. Para abrir todas a la vez, pulsa el icono de ventanas bloqueadas de la barra de direcciones, elige «Permitir siempre» y vuelve a pulsar «Proyectar en todas».",
-    "slides": "Diapositivas",
-    "preview": "Vista previa de la proyección",
-    "preview_only": "Vista previa",
-    "now": "Ahora",
-    "next": "Siguiente",
-    "shortcuts": "Teclas: ← → cambian · Espacio pausa (en manual: siguiente) · 1-9 ir a",
-    "hint_fullscreen": "Pantalla completa: el botón de cada pantalla, o F en la propia ventana.",
-    "reorder": "Mover «{{name}}»: arrastra o usa ↑ ↓",
-    "reorder_hint": "Arrastra los bloques para cambiar el orden de la proyección.",
-    "reset_order": "Orden por defecto",
-    "select_label": "Selección rápida",
-    "select_count": "{{n}} de {{total}} en proyección",
-    "select_first": "Solo el primero",
-    "select_all": "Todos",
-    "global_label": "Bloques",
-    "global_count": "{{n}} de {{total}} en proyección",
-    "slide_time": "Tiempo de esta diapositiva",
-    "slide_time_inherit": "Tiempo del bloque (se puede cambiar solo para esta)",
-    "slide_time_custom": "Tiempo propio (ya no sigue al bloque)",
-    "slide_time_reset": "Volver al tiempo del bloque",
-    "next_families": "Prueba: semana siguiente ({{range}})",
-    "next_families_hint": "Proyecta las familias previstas en lugar de las actuales. Solo hoy.",
-    "past_families": "Familias de semanas anteriores ({{n}})",
-    "past_hint": "Solo para hoy. No entran con «Todos».",
-    "past_tag": "anterior",
-    "auto_advance": "Avance automático",
-    "auto_advance_on": "Cada diapositiva pasa sola, según su tiempo",
-    "auto_advance_off": "Sólo manual: ← → o Espacio",
-    "manual_badge": "Manual",
-    "status_onair": "En directo · {{n}} pantalla(s)",
-    "program": "En pantalla",
-    "outputs": "Pantallas",
-    "identify": "Identificar",
-    "identify_hint": "Cada pantalla muestra su número unos segundos",
-    "screens_prompt": "Deja que el navegador vea las pantallas conectadas para proyectar en la que elijas.",
-    "screens_detect": "Detectar pantallas",
-    "screens_denied": "Acceso a las pantallas denegado: concédelo en el candado de la barra de direcciones. Mientras, abre una ventana y arrástrala a la pantalla.",
-    "screens_unsupported": "Este navegador no detecta pantallas: abre una ventana y arrástrala a la pantalla (F = pantalla completa). Chrome y Edge lo hacen solos.",
-    "screen_primary": "principal",
-    "screen_this": "este panel",
-    "screen_console": "Consola",
-    "screen_project": "Proyectar",
-    "output_hidden": "oculta",
-    "loose_window": "Ventana suelta",
-    "loose_tab": "Pestaña abierta a mano",
-    "open_all": "Proyectar en todas",
-    "new_window": "Nueva ventana",
-    "close_all": "Cerrar todas",
-    "pace": "Ritmo y pantalla",
-    "scheduled": "Anuncios programados",
-    "scheduled_empty": "No hay anuncios pendientes de publicar.",
-    "scheduled_view": "Ver",
-    "scheduled_test": "Probar en ventana",
-    "scheduled_test_hint": "Ábrelo en una ventana y arrástrala al proyector para verlo a tamaño real",
-    "scheduled_from": "Se publica el {{date}}",
-    "close_preview": "Cerrar la vista previa",
-    "countdown": "Cuenta atrás del culto",
-    "countdown_show": "Mostrar en la proyección",
-    "countdown_hint": "Pequeña, en la esquina inferior izquierda, antes de cada culto",
-    "countdown_onair": "En pantalla",
-    "countdown_waiting": "En espera",
-    "countdown_auto": "Horario",
-    "countdown_manual": "Hora manual",
-    "countdown_left": "Faltan",
-    "countdown_from": "Aparece a las {{time}}",
-    "countdown_none": "Hoy no hay más cultos en el horario. Puedes poner una hora a mano.",
-    "countdown_lead": "Mostrar antes",
     "countdown_leads": {
       "15": "15 segundos antes",
       "30": "30 segundos antes",
@@ -164,20 +79,7 @@
       "120": "2 minutos antes",
       "300": "5 minutos antes"
     },
-    "countdown_manual_label": "Hora manual (hoy)",
-    "countdown_set": "Fijar",
-    "countdown_clear": "Quitar",
-    "select_prayer": "Oración",
-    "select_prayer_hint": "Sólo la oración: el resumen de las familias y las causas de la iglesia, en avance automático, las causas a 60 s",
-    "countdown_always": "Siempre",
-    "countdown_from_always": "Siempre, desde las {{time}} (no durante un culto)",
-    "clock_show": "Mostrar la hora",
-    "clock_hint": "Reloj en la esquina superior derecha de la proyección",
-    "clock_seconds": "Con segundos",
-    "select_families": "Familias",
-    "select_families_hint": "Presentación de las familias: sólo las de esta semana (resumen + cada familia), en avance manual, desde el resumen",
-    "select_ending": "Terminare",
-    "select_ending_hint": "Final del culto: todos los anuncios, el resumen de las familias, la lectura bíblica, el programa semanal y los próximos eventos, en avance automático: los anuncios a 12 s y el resto a 10 s"
+    "clock_show": "Mostrar la hora"
   },
   "carousel": {
     "label": "Carrusel de contenido",
@@ -477,16 +379,6 @@
   "talent_contest": {
     "eyebrow": "Concurso bíblico · Edición {{edition}}",
     "title": "Talantul în Negoț",
-    "lead": "El concurso que reta a niños, adolescentes, jóvenes y adultos a estudiar la Biblia en serio, guardarla en el corazón y vivirla. Empieza en nuestra iglesia y puede llevarte hasta la final internacional.",
-    "cta_join": "Quiero participar",
-    "cta_study": "Ver mi categoría",
-    "join_message": "Hola, quiero participar en Talantul în Negoț {{edition}}. Categoría: {{category}}.",
-    "parable": "Inspirado en la parábola de los talentos · {{ref}}",
-    "stats": {
-      "countries": "países",
-      "churches": "iglesias",
-      "participants": "participantes en {{year}}"
-    },
     "countdown": {
       "next": "Próxima fase",
       "live": "Se celebra hoy",
@@ -512,22 +404,6 @@
       "status_next": "Siguiente",
       "add_calendar": "Añadir las fases a mi calendario",
       "diaspora_note": "En la diáspora, las fases las coordina el líder nacional: la sede y la hora de cada una te las confirmamos al inscribirte."
-    },
-    "calendar": {
-      "name": "Talantul în Negoț {{edition}}",
-      "event": "Talantul în Negoț · {{phase}}",
-      "description": "Concurso bíblico Talantul în Negoț {{edition}}. Tu categoría, libros y versículos: {{url}}"
-    },
-    "category": {
-      "eyebrow": "Tu preparación",
-      "title": "Qué tienes que estudiar",
-      "picker": "Elige tu categoría",
-      "books": "Libros para estudiar",
-      "verses": "Versículos para memorizar",
-      "memorization": "Memorización · todas",
-      "ages_note": "La edad es orientativa: la categoría la marca el curso escolar y el líder te confirma cuál te corresponde.",
-      "copy": "Copiar los versículos",
-      "language_note": "El concurso es en rumano, con la Biblia {{version}}: los textos se estudian así."
     },
     "categories": {
       "p-1": {
@@ -561,156 +437,6 @@
       "35-plus": {
         "name": "35+ años",
         "ages": "cumplidos antes del {{date}}"
-      }
-    },
-    "exam": {
-      "eyebrow": "El día del concurso",
-      "title": "Dos secciones, un examen claro",
-      "classic": "Clásico",
-      "classic_desc": "Examen escrito sobre los libros y los versículos de tu categoría.",
-      "memorization": "Memorización de la Escritura",
-      "memorization_desc": "Escribes de memoria {{passage}}, el mismo pasaje para todas las categorías. Se corrige versículo a versículo, palabra a palabra.",
-      "points": "{{points}} puntos",
-      "parts": {
-        "true_false": "Verdadero / falso",
-        "single": "Una respuesta",
-        "match": "Relacionar",
-        "multiple": "Respuesta múltiple",
-        "order": "Ordenar versículos"
-      },
-      "parts_desc": {
-        "true_false": "{{n}} afirmaciones",
-        "single": "{{n}} preguntas, 3 opciones",
-        "match": "{{n}} parejas",
-        "multiple": "{{n}} preguntas: una, varias o ninguna",
-        "order": "3 versículos en 5 fragmentos"
-      },
-      "per_item": "{{p}} p c/u",
-      "sheet_title": "La hoja de respuestas",
-      "sheet_tips": [
-        "Rellena solo el interior de los círculos, sin salirte.",
-        "Escribe los datos de la cabecera completos y con letra clara.",
-        "Para corregir, solo goma: borra del todo la respuesta equivocada.",
-        "No hagas otras marcas: la hoja se corrige con escáner."
-      ]
-    },
-    "benefits": {
-      "eyebrow": "Por qué merece la pena",
-      "title": "Lo que te llevas",
-      "items": [
-        {
-          "title": "Conocer la Biblia",
-          "text": "Aprendes sus enseñanzas y sus principios morales y éticos."
-        },
-        {
-          "title": "Una fe más firme",
-          "text": "Conocer la Palabra ahonda tu relación con Dios."
-        },
-        {
-          "title": "Comunidad",
-          "text": "Te preparas y compites junto a otros: se crean lazos."
-        },
-        {
-          "title": "Mejor memoria",
-          "text": "Memorizar versículos entrena la memoria y la atención."
-        },
-        {
-          "title": "Aprender con retos",
-          "text": "La competición hace el estudio interactivo y apasionante."
-        },
-        {
-          "title": "Premios y reconocimiento",
-          "text": "Los ganadores reciben premios y el reconocimiento de la comunidad."
-        },
-        {
-          "title": "Pensamiento crítico",
-          "text": "Las preguntas te enseñan a pensar y a analizar."
-        },
-        {
-          "title": "Compartir la fe",
-          "text": "Lo que aprendes te sirve para hablar de Dios con otros."
-        }
-      ]
-    },
-    "how": {
-      "eyebrow": "Paso a paso",
-      "title": "Cómo participar",
-      "steps": [
-        {
-          "title": "Dinos que te apuntas",
-          "text": "Llama o escribe por WhatsApp a Simona Pintilei o a Mari Dobre: ellas te inscriben en la plataforma oficial del concurso."
-        },
-        {
-          "title": "Estudia tu categoría",
-          "text": "Libros y versículos de tu categoría; si quieres, también la memorización. Un poco cada día."
-        },
-        {
-          "title": "Primera fase: {{date}}",
-          "text": "El primer examen es en la iglesia, con tu hoja de respuestas."
-        },
-        {
-          "title": "Sigue avanzando",
-          "text": "Si te clasificas, pasas a la siguiente fase, hasta la final internacional."
-        }
-      ],
-      "mindset": [
-        "Céntrate en el proceso, no en el resultado.",
-        "¿No te clasificas? Cada año tienes una nueva oportunidad.",
-        "Siempre gana quien participa: la Palabra aprendida da fruto."
-      ]
-    },
-    "resources": {
-      "eyebrow": "Para estudiar",
-      "title": "Materiales oficiales",
-      "bibliography": "Bibliografía {{edition}}",
-      "bibliography_desc": "Libros y versículos de todas las categorías.",
-      "brochure": "Folleto {{edition}}",
-      "brochure_desc": "Fases, categorías y beneficios en una hoja.",
-      "answer_sheet": "Hoja de respuestas",
-      "answer_sheet_desc": "El modelo oficial, para practicar en casa.",
-      "memorization_key": "Baremo de memorización",
-      "memorization_key_desc": "{{passage}}, con las palabras que cuentan en la corrección.",
-      "exam_keys": "Exámenes 2026 con soluciones",
-      "exam_keys_desc": "Los de la fase internacional: el mejor entrenamiento.",
-      "kind_drive": "Google Drive",
-      "kind_pdf": "PDF",
-      "website": "Web oficial",
-      "rules_soon": "El reglamento {{edition}} se publicará próximamente en la web oficial."
-    },
-    "videos": {
-      "eyebrow": "Fase internacional {{year}}",
-      "title": "Así se vive",
-      "all": "Todos los vídeos",
-      "watch": "Ver en YouTube: {{title}}"
-    },
-    "enroll": {
-      "label": "Las inscripciones las hacen",
-      "call": "Llamar a {{name}}",
-      "whatsapp": "Escribir por WhatsApp a {{name}}"
-    },
-    "final": {
-      "title": "¿Te apuntas?",
-      "text": "Llama o escribe por WhatsApp a una de las educadoras y te inscribe en tu categoría. Estudiar la Palabra siempre merece la pena.",
-      "verse": "«En mi corazón he guardado tus dichos, para no pecar contra ti.»",
-      "verse_ref": "Salmo 119:11"
-    },
-    "official": {
-      "eyebrow": "Web oficial",
-      "title": "¿Quieres saber más?",
-      "text": "Toda la información del concurso, las novedades y los materiales de cada edición están en la web oficial de Talantul în Negoț.",
-      "cta": "Ir a la web oficial",
-      "external": "Se abre en una pestaña nueva",
-      "links": {
-        "about": "Sobre el proyecto",
-        "about_desc": "Qué es, en qué se inspira y cómo se organiza.",
-        "resources": "Recursos",
-        "resources_desc": "Bibliografía, folletos, hoja de respuestas y baremos.",
-        "news": "Novedades",
-        "news_desc": "Avisos de la organización durante la edición.",
-        "videos": "Vídeos",
-        "videos_desc": "Las fases internacionales, en imágenes.",
-        "contact": "Contacto",
-        "contact_desc": "Escribe a la organización del concurso."
       }
     },
     "teaser": {
@@ -749,6 +475,10 @@
     "title": "Cómo llegar",
     "map_title": "Mapa de la ubicación de la iglesia"
   },
+  "map": {
+    "show": "Ver el mapa",
+    "note": "El mapa es de Google Maps: sólo se carga si lo pides."
+  },
   "lang": {
     "label": "Idioma",
     "es": "Español",
@@ -769,6 +499,7 @@
     "guests": "¿Es tu primera visita?",
     "church": "Iglesia ELIM Arganda",
     "rights": "Todos los derechos reservados.",
+    "legal": "Información legal y privacidad",
     "tools": "Herramientas",
     "follow": "Síguenos",
     "visit": "Visítanos",
@@ -896,65 +627,6 @@
       "title": "Datos de contacto"
     }
   },
-  "donate": {
-    "eyebrow": "Generosidad",
-    "title": "Donativos",
-    "lead": "La Iglesia Elim vive de la generosidad de quienes la forman. Cada diezmo y cada ofrenda mantiene abiertas las puertas de la casa de oración, sostiene a las familias que pasan necesidad y lleva el Evangelio más lejos.",
-    "verse": {
-      "text": "«Cada uno dé como propuso en su corazón: no con tristeza ni por obligación, porque Dios ama al que da con alegría.»",
-      "ref": "2 Corintios 9:7"
-    },
-    "purposes": {
-      "title": "A dónde llegan tus ofrendas",
-      "items": {
-        "mission": {
-          "title": "La obra de la iglesia",
-          "body": "Los cultos de adoración, el estudio de la Palabra y la formación de quienes sirven."
-        },
-        "building": {
-          "title": "La casa de oración",
-          "body": "El alquiler, los suministros y el mantenimiento del lugar donde nos reunimos cada semana."
-        },
-        "outreach": {
-          "title": "Ayuda social",
-          "body": "Apoyo concreto a las familias de la comunidad que atraviesan dificultades."
-        },
-        "media": {
-          "title": "Retransmisiones y medios",
-          "body": "Las emisiones en directo y el equipo que lleva el culto a quienes no pueden venir."
-        }
-      },
-      "trust": "Las ofrendas las administra el tesorero de la iglesia, bajo la supervisión de los censores.",
-      "trust_link": "Ver la dirección"
-    },
-    "bank": {
-      "title": "Transferencia bancaria",
-      "holder": "Titular",
-      "entity": "Banco",
-      "bic": "Código SWIFT / BIC",
-      "account": "Cuenta",
-      "note": "¿Necesitas un justificante de tu donativo? Escríbenos y te lo enviamos.",
-      "concept": "En «Concepto» puedes poner, por ejemplo:",
-      "concepts": [
-        "Diezmo",
-        "Ofrenda",
-        "Ayuda social"
-      ]
-    },
-    "thanks": {
-      "title": "Gracias",
-      "subtitle": "Cada ofrenda, por pequeña que sea, es semilla para la obra de Dios.",
-      "contact": "¿Tienes alguna duda?"
-    },
-    "card": {
-      "title": "Cómo dar",
-      "bizum_hint": "Lo más rápido, desde la app de tu banco."
-    },
-    "why": {
-      "title": "Por qué damos",
-      "body": "Dar no es una cuota, sino un acto de adoración: devolvemos a Dios parte de lo que Él nos ha confiado. Te invitamos a formar parte de la obra, con fidelidad, según tus posibilidades y con alegría."
-    }
-  },
   "nav": {
     "primary": "Navegación principal",
     "breadcrumb": "Dónde estás",
@@ -1044,6 +716,13 @@
     "baptisms_next": "Próximo bautismo",
     "baptisms_latest": "Último bautismo",
     "baptisms_count": "{{count}} bautizados"
+  },
+  "not_found": {
+    "eyebrow": "Error 404",
+    "title": "Página no encontrada",
+    "lead": "El enlace que has abierto ya no existe o está mal escrito. No se ha perdido nada: desde aquí llegas a cualquier parte de la web.",
+    "home": "Volver a la portada",
+    "sections_title": "Quizá buscabas"
   },
   "seo": {
     "guests": {
@@ -1155,6 +834,14 @@
         "title": "Cómo llegar",
         "description": "Dirección de la Iglesia Elim: Av. de Madrid, 30, 28500 Arganda del Rey (Madrid). Mapa, horarios y cómo llegar."
       }
+    },
+    "not_found": {
+      "title": "Página no encontrada",
+      "description": "La página que buscas no existe. Ve a la portada de la Iglesia Elim Arganda."
+    },
+    "legal": {
+      "title": "Información legal y privacidad",
+      "description": "Quién responde de la web de la Iglesia Elim Arganda, qué datos nos llegan y qué servicios externos utiliza."
     }
   },
   "home": {
@@ -1229,248 +916,15 @@
     }
   },
   "about": {
-    "eyebrow": "Quiénes somos",
     "title": "Una familia de fe en Arganda del Rey",
-    "lead": "Nos une la fe en Jesucristo y el deseo de servir a nuestra ciudad.",
     "stats": {
       "years": "Años sirviendo",
       "services": "Cultos por semana",
       "departments": "Departamentos activos"
-    },
-    "story": {
-      "eyebrow": "2001 – 2026",
-      "title": "Nuestra historia",
-      "subtitle": "De una chispa a una iglesia viva: 25 años de gracia.",
-      "chapters": {
-        "start": {
-          "title": "Un comienzo pequeño, en la voluntad de Dios",
-          "body": "Antes de Elim, los hermanos rumanos de Arganda se reunían en la iglesia «Muntele Sionului». A finales de 2000, un pequeño grupo de hermanos presentó ante el Señor una sola pregunta: ¿es esta obra su voluntad? El primer culto de la Iglesia Elim se celebró el último domingo de diciembre de 2000, en un lugar sencillo —no un fuego, sino una chispa—. En 2001 se ordenaron los primeros ministros y nació el coro."
-        },
-        "growth": {
-          "title": "Crecida por el Espíritu Santo",
-          "body": "De unas 50 personas al principio, la iglesia llegó a las 100 almas, no porque tuviera personas preparadas para grandes obras, sino porque creyó la Palabra: «no con ejército, ni con fuerza, sino con mi Espíritu». Llegaron la banda de música, el grupo de misión que llevó el Evangelio por ciudades de España y las conferencias de jóvenes. También hubo pruebas —separaciones, pérdidas, tormentas—, pero después de cada una pudimos decir: «La diestra del Señor hace proezas»."
-        },
-        "today": {
-          "title": "Hasta aquí, y más allá",
-          "body": "La iglesia se ha mudado de un lugar a otro, ha construido y reconstruido; muchos salieron de aquí para servir en otros lugares, y otros llegaron. Una nueva generación se ha bautizado, desde 2021 adoramos en un templo nuevo, renovado en 2025, y la misión ha llegado hasta Uganda. Tras 24 años de pastorado de Gavrilă Zăgrean, hoy dirige la iglesia el pastor Pavel Negrușier, y somos unos 450 miembros y 270 allegados. La gracia que nos ha traído hasta aquí nos llevará más lejos."
-        }
-      },
-      "facts": {
-        "founded": "Año del comienzo",
-        "members": "Miembros",
-        "adherents": "Allegados",
-        "as_of": "Cifras de {{date}}"
-      },
-      "timeline": {
-        "title": "25 años, en breve",
-        "lead": "Cinco etapas, de la iglesia antigua a la casa nueva. Detrás de cada hito hay una grabación del archivo de la iglesia.",
-        "era": "Etapa {{n}}",
-        "watch": "Ver",
-        "watch_long": "Ver la grabación en YouTube"
-      },
-      "eras": {
-        "beginnings": {
-          "title": "Los comienzos",
-          "summary": "Unas pocas personas, un lugar sencillo y una pregunta: ¿es esta obra la voluntad del Señor?",
-          "milestones": {
-            "first_service": "Primer culto de la Iglesia Elim, con un pequeño grupo de hermanos",
-            "ordination": "Primera ordenación: el pastor Gavrilă Zăgrean y los diáconos Mircea Coptil y Adrian Mureșan",
-            "choir": "Nace el coro, dirigido por Sabin Tofan",
-            "youth": "Programas de jóvenes en la iglesia antigua",
-            "christmas": "Concierto de Navidad y Nochevieja: el coro, la orquesta y los grupos"
-          }
-        },
-        "growth": {
-          "title": "Crecimiento",
-          "summary": "La iglesia se organiza y sale fuera: banda de música, grupo de misión, conferencias.",
-          "milestones": {
-            "conference": "Conferencia «La buena batalla»",
-            "brass": "La banda de música de la iglesia, dirigida por Damian Onofrei",
-            "mission": "El grupo de misión en Alcalá de Henares, Getafe, Cuéllar, Azuqueca y Roquetas de Mar",
-            "youth_conf": "Conferencia regional de jóvenes en Elim",
-            "choir7": "El coro cumple 7 años: «Eben-Ezer» y «No a nosotros, Señor»",
-            "assembly": "La Asamblea de Arganda del Rey (31 de octubre – 1 de noviembre)"
-          }
-        },
-        "fruit": {
-          "title": "Frutos",
-          "summary": "Diez años del comienzo y una iglesia en plena obra, con conferencias para jóvenes, líderes y misiones.",
-          "milestones": {
-            "ten": "10 años de la inauguración de la iglesia",
-            "cuellar": "Conferencia en Cuéllar",
-            "conferences": "Conferencias en Poveda, para líderes y jóvenes y para maestros de niños",
-            "mission_conf": "Conferencia de misiones (4–6 de diciembre)"
-          }
-        },
-        "generation": {
-          "title": "Una nueva generación",
-          "summary": "Un templo nuevo, niños que crecieron en la iglesia y se bautizan, nuevos ministros y una misión que cruza fronteras.",
-          "milestones": {
-            "temple": "El nuevo templo, levantado con el trabajo y las ofrendas de los hermanos",
-            "baptisms": "Bautismos, año tras año",
-            "ordination": "Ordenación de ministros",
-            "uganda": "Misión en Uganda (20 oct. – 7 nov.): dos iglesias construidas, con la tribu IK",
-            "children": "Bendición de los niños",
-            "pastors": "Gavrilă Zăgrean concluye 24 años de pastorado; el pastor de la iglesia es Pavel Negrușier"
-          }
-        },
-        "house": {
-          "title": "Una casa renovada",
-          "summary": "El templo se renueva y el llamado sigue siendo el del principio.",
-          "milestones": {
-            "renovation": "Renovación del templo",
-            "anchored": "Conferencia «Anclado en Cristo»",
-            "shoebox": "«Una sonrisa en una caja» y el concierto de villancicos de los niños",
-            "hope": "Conferencia «Esperanza para ti»",
-            "ordination": "Ordenación de ministros",
-            "jubilee": "25 años: un altar de gratitud"
-          }
-        }
-      },
-      "people": {
-        "title": "Los del principio",
-        "lead": "Algunos de los que pusieron las bases de la obra, tal como la iglesia los recordó en el aniversario.",
-        "items": {
-          "zagrean": "Pastor de la iglesia durante 24 años, de 2001 a 2024",
-          "coptil": "Uno de los primeros diáconos; hoy pastor en Rumanía",
-          "muresan": "Uno de los primeros diáconos; hoy presbítero en Rumanía",
-          "tofan": "Director del coro desde su fundación; dejó una huella profunda en el canto de la iglesia",
-          "cazacu": "El primer organista de la iglesia, siendo aún adolescente",
-          "carbune": "La primera maestra de los niños de la iglesia"
-        },
-        "note": "De Elim han salido ministros que hoy son presbíteros y pastores en Rumanía, Bélgica y el País Vasco."
-      },
-      "works": {
-        "title": "Lo que Dios ha hecho en {{count}} años",
-        "groups": {
-          "events": {
-            "title": "Evangelización y conferencias",
-            "items": {
-              "evangelism": "Campañas de evangelización",
-              "national": "Conferencias regionales y nacionales",
-              "music": "Encuentros de coros, bandas de música y grupos de alabanza",
-              "family": "Conferencias para la familia",
-              "youth": "Conferencias de jóvenes",
-              "mission": "Conferencias de misiones"
-            }
-          },
-          "mission": {
-            "title": "Misiones",
-            "items": {
-              "projects": "Proyectos misioneros en Uganda y Liberia",
-              "churches": "Iglesias construidas en Uganda",
-              "wells": "Pozos de agua"
-            }
-          },
-          "help": {
-            "title": "Ayuda social",
-            "items": {
-              "departments": "Departamentos de ayuda",
-              "shoebox": "El proyecto «Una sonrisa en una caja»",
-              "more": "Ayudas de todo tipo"
-            }
-          },
-          "servants": {
-            "title": "Ministerio y familia",
-            "items": {
-              "ordained": "Ministros reconocidos: diáconos, presbíteros y pastores",
-              "baptisms": "Bautismos, año tras año",
-              "children": "La bendición de los niños"
-            }
-          }
-        }
-      },
-      "verse": {
-        "text": "«Hasta aquí nos ayudó el Señor».",
-        "ref": "1 Samuel 7:12",
-        "note": "El 18 de octubre de 2026, al cumplir 25 años, levantamos un altar de gratitud. No a nosotros, Señor, no a nosotros, sino a tu nombre da gloria."
-      },
-      "image_alt": "La congregación reunida en el templo durante un culto"
-    },
-    "pillars": {
-      "eyebrow": "La obra de la Iglesia",
-      "title": "Lo que hacemos",
-      "subtitle": "No son lemas elegidos por nosotros: son las cinco obras que la Declaración de fe encomienda a la Iglesia, en el artículo 16, con su nombre.",
-      "items": {
-        "worship": {
-          "title": "La adoración",
-          "body": "Los domingos nos reunimos para darle a Dios lo que le corresponde: canto, oración y Palabra."
-        },
-        "gospel": {
-          "title": "El anuncio del Evangelio",
-          "body": "Transmitimos el llamado del Evangelio: el mismo al que se responde con fe y arrepentimiento."
-        },
-        "discipleship": {
-          "title": "La formación de discípulos",
-          "body": "No bautizamos y nos despedimos: acompañamos a cada persona a crecer en semejanza a Cristo, toda la vida."
-        },
-        "service": {
-          "title": "El servicio",
-          "body": "Amamos a todas las personas, sin distinción alguna, y servimos a las necesidades de alrededor."
-        },
-        "fellowship": {
-          "title": "La comunión fraterna",
-          "body": "Somos una familia: la Cena del Señor fortalece nuestra unidad y las cargas las llevamos juntos."
-        }
-      },
-      "ref": "Art. {{n}}",
-      "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
-    },
-    "credo": {
-      "eyebrow": "Declaración de fe",
-      "title": "En qué creemos",
-      "subtitle": "Compartimos la Declaración de fe del Culto Cristiano Pentecostal. No es un texto de archivo: es lo que creemos y lo que se predica cada domingo.",
-      "cta": "Leer la declaración completa ({{count}} artículos)"
-    },
-    "visit": {
-      "title": "Tu primera visita",
-      "subtitle": "Lo que pasa, por orden, si vienes un domingo — el día que la Declaración señala como día de adoración.",
-      "items": {
-        "welcome": {
-          "title": "Una acogida cercana",
-          "body": "Alguien te recibe en la entrada y te acompaña a un sitio."
-        },
-        "worship": {
-          "title": "Alabanza",
-          "body": "El culto empieza con cantos de alabanza, en rumano. No hace falta que te las sepas: la letra se proyecta y nadie te mira."
-        },
-        "word": {
-          "title": "La Palabra",
-          "body": "Después hay un mensaje bíblico de unos 40 minutos, práctico y comprensible, sin palabras que tengas que buscar luego."
-        },
-        "family": {
-          "title": "Los niños",
-          "body": "Los niños tienen programa aparte, por edades, durante el mensaje. Los dejas y los recoges a la salida."
-        }
-      },
-      "cta_program": "Ver el programa",
-      "cta_leadership": "Conocer al equipo",
-      "note": "La Cena del Señor se celebra el primer domingo de cada mes, en el culto de la mañana. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
-    },
-    "facts_years": "{{count}} años sirviendo",
-    "facts_services": "{{count}} cultos por semana",
-    "facts_departments": "{{count}} departamentos",
-    "visit_when": "Cuándo nos reunimos",
-    "visit_where": "Dónde estamos",
-    "visit_step": "Paso {{n}}"
+    }
   },
   "leadership": {
     "title": "Cómo está organizada la iglesia",
-    "priesthood": {
-      "body": "En la iglesia el sacerdocio es universal: todos los creyentes son sacerdotes de Dios. Para su gobierno espiritual, Dios ha establecido los oficios de pastor, anciano y diácono, a los que se accede por la ordenación.",
-      "ref": "Art. {{n}}",
-      "ref_long": "Leer el artículo {{n}} de la Declaración de fe"
-    },
-    "hint": "Las tarjetas con «Ver perfil» abren la página de esa persona.",
-    "structure": {
-      "title": "Estructura de liderazgo",
-      "subtitle": "Los oficios de gobierno reconocidos por la confesión de fe, a los que se accede por la ordenación."
-    },
-    "committee": {
-      "title": "Comité de la iglesia",
-      "subtitle": "Los miembros que forman el comité y toman las decisiones de la iglesia.",
-      "photo_alt": "El comité de la Iglesia Elim Arganda, juntos, en el 25 aniversario"
-    },
     "titles": {
       "pastor": "Pastor",
       "assistant_pastor": "Pastor asistente",
@@ -1486,36 +940,6 @@
       "assistant": "Ayudante",
       "conductor": "Director",
       "delegate": "Delegado"
-    },
-    "areas": {
-      "pastoral": {
-        "name": "Cuidado espiritual",
-        "description": "Restauración, oración, enseñanza y acompañamiento de la vida de la iglesia."
-      },
-      "generations": {
-        "name": "Generaciones",
-        "description": "Niños, adolescentes y jóvenes: cada edad con su equipo."
-      },
-      "worship": {
-        "name": "Alabanza y música",
-        "description": "Los grupos, el coro y la fanfarria que acompañan cada culto."
-      },
-      "media": {
-        "name": "Medios y técnica",
-        "description": "Sonido, proyección y transmisión en directo."
-      },
-      "relations": {
-        "name": "Relaciones exteriores",
-        "description": "Con otras iglesias, con la filial de San Martín de la Vega y con las instituciones."
-      },
-      "hospitality": {
-        "name": "Acogida",
-        "description": "Quien te recibe en la puerta y quien cuida de los invitados."
-      },
-      "facilities": {
-        "name": "Administración y edificio",
-        "description": "El local, el diseño y el mantenimiento del día a día."
-      }
     },
     "departments": {
       "pastor": "Pastor",
@@ -1588,65 +1012,6 @@
         "name": "Hermanas",
         "description": "Comunión, estudio bíblico y servicio entre las hermanas."
       }
-    },
-    "contact": {
-      "title": "¿Quieres hablar con alguien?",
-      "subtitle": "Escríbenos o ven a cualquiera de nuestros cultos: te esperamos.",
-      "cta_contact": "Escríbenos",
-      "cta_visit": "Cómo llegar"
-    },
-    "directory": {
-      "title": "Quién sirve y dónde",
-      "subtitle": "{{areas}} áreas de servicio · {{people}} personas sirviendo",
-      "search": "Busca una persona o un departamento",
-      "empty": "Ningún resultado para «{{q}}».",
-      "results_one": "Un departamento encontrado",
-      "results_other": "{{n}} departamentos encontrados",
-      "view_label": "Modo de vista",
-      "view_areas": "Departamentos",
-      "view_people": "Personas",
-      "results_people_one": "Una persona encontrada",
-      "results_people_other": "{{n}} personas encontradas",
-      "clear": "Borrar búsqueda",
-      "departments_one": "1 departamento",
-      "departments_other": "{{n}} departamentos"
-    },
-    "serves_one": "un servicio",
-    "serves_other": "{{n}} servicios",
-    "stats": {
-      "people": "Personas",
-      "offices": "Cargos",
-      "areas": "Áreas",
-      "departments": "Departamentos"
-    },
-    "pastoral": {
-      "title": "Cuidado pastoral"
-    },
-    "tier": {
-      "pastor": "Pastor de la iglesia",
-      "assistant": "Pastor asistente",
-      "leader": "Liderazgo de la iglesia",
-      "member": "Servidor"
-    },
-    "view_profile": "Ver perfil",
-    "leaders": {
-      "title": "Liderazgo"
-    },
-    "profile": {
-      "bio": "Biografía",
-      "about": "Sobre su servicio",
-      "serves": "Dónde sirve",
-      "serves_none": "Sirve en el liderazgo de la iglesia.",
-      "peers": "Sirve junto a",
-      "committee": "Comité de la iglesia",
-      "fact_since": "desde",
-      "pager": "Otros perfiles",
-      "prev": "Anterior",
-      "next": "Siguiente",
-      "fact_ministries_one": "servicio",
-      "fact_ministries_other": "servicios",
-      "fact_areas_one": "área",
-      "fact_areas_other": "áreas"
     }
   },
   "credo": {
@@ -1795,58 +1160,5 @@
       "name": "Evangelización",
       "tagline": "La buena noticia, contada con amor."
     }
-  },
-  "baptisms": {
-    "eyebrow": "Bautismos · Iglesia Elim",
-    "title": "El bautismo del Nuevo Testamento",
-    "lead": "«Porque somos sepultados juntamente con él para muerte por el bautismo, a fin de que como Cristo resucitó de los muertos, así también nosotros andemos en vida nueva.» — Romanos 6:4. Aquí guardamos, en orden, cada bautismo de la iglesia y a quienes dieron este paso.",
-    "stats": {
-      "baptisms": "Bautismos",
-      "candidates": "Candidatos",
-      "since": "Desde",
-      "streams": "Transmisiones"
-    },
-    "cta_join": "Quiero bautizarme",
-    "cta_register": "Registro de bautismos",
-    "next": "Próximo bautismo",
-    "latest": "Último bautismo",
-    "today": "Hoy",
-    "tomorrow": "Mañana",
-    "in_days": "En {{days}} días",
-    "ordinal": "Bautismo #{{n}}",
-    "candidates_count": "{{count}} candidatos",
-    "open_register": "Ver en el registro",
-    "photos": "Fotografías",
-    "cands_kicker": "Quienes dieron el paso",
-    "cands_title": "Candidatos al bautismo",
-    "filter_year": "Filtrar por año",
-    "all": "Todos",
-    "reg_kicker": "El más reciente primero",
-    "reg_title": "Registro de bautismos",
-    "reg_note": "Cada bautismo con todos sus candidatos, la transmisión en directo y las fotos. Toca un nombre para ver su perfil.",
-    "pending_title": "La lista de candidatos se añadirá pronto",
-    "pending_body": "Mientras tanto, las fotografías del bautismo ya están disponibles.",
-    "upcoming_title": "Los candidatos se anunciarán",
-    "upcoming_body": "La lista se publica cerca de la fecha del bautismo.",
-    "tbd_date": "Fecha por anunciar",
-    "tbd_title": "Próximo bautismo",
-    "tbd_body": "¿Has decidido seguir al Señor Jesús en las aguas del bautismo? Habla con el pastor: la preparación empieza con una conversación.",
-    "profile": {
-      "kicker": "Bautismo",
-      "date": "Fecha del bautismo",
-      "group": "Ese mismo día",
-      "back": "Volver al registro",
-      "testimony": "Testimonio",
-      "listen": "Escuchar su testimonio",
-      "peers": "Bautizados juntos",
-      "pager": "Otros candidatos",
-      "prev": "Anterior",
-      "next": "Siguiente",
-      "parents": "Padres"
-    },
-    "video": "Transmisión",
-    "ministers": "Ministraron:",
-    "testimony_badge": "Testimonio",
-    "group_photo": "Foto de grupo"
   }
 }

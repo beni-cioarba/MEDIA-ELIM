@@ -6,7 +6,7 @@ import {
   PrayerWeekView,
 } from '../../../core/services/family-prayer.service';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { FamilyPhotoComponent } from '../family-photo/family-photo.component';
+import { FamilyPhotoComponent } from '../../../shared/family-photo/family-photo.component';
 
 /**
  * Resumen de la semana: **por quiénes oramos**, antes de las fichas.

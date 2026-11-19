@@ -15,6 +15,12 @@
  *   node scripts/optimize-posters.mjs --dry-run  (sólo dice qué haría)
  *
  * Es idempotente: un cartel ya optimizado se salta.
+ *
+ * Además deja junto a cada cartel su **miniatura** (`<nombre>-thumb.webp`,
+ * 160 px de lado mayor): en la agenda de eventos el cartel se pinta a 32-40 px
+ * y bajaba el fichero de 1080 px entero (50-130 kB por fila). La app la
+ * localiza por convención de nombre (`core/util/poster-thumb.ts`), así que un
+ * cartel sin miniatura es un icono roto: por eso la crea este script.
  */
 
 import { readdir, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
@@ -31,6 +37,9 @@ const CALIDAD = 80;
 
 /** A partir de aquí se considera que un WebP ya está optimizado. */
 const LIMITE_KB = 320;
+/** Lado mayor de la miniatura: 40 px en pantalla × 3 de densidad, con margen. */
+const LADO_MINIATURA = 160;
+const SUFIJO_MINIATURA = '-thumb.webp';
 
 const dryRun = process.argv.includes('--dry-run');
 
@@ -56,7 +65,7 @@ async function main() {
     process.exit(0);
   }
 
-  const carteles = entradas.filter((f) => /\.(png|jpe?g|webp)$/i.test(f));
+  const carteles = entradas.filter((f) => /\.(png|jpe?g|webp)$/i.test(f) && !f.endsWith(SUFIJO_MINIATURA));
   if (carteles.length === 0) {
     console.log('No hay carteles que optimizar.');
     return;
@@ -107,6 +116,36 @@ async function main() {
       ? `\n${tocados} cartel(es) optimizado(s).`
       : '\nTodo estaba ya optimizado.',
   );
+
+  await miniaturas();
+}
+
+/**
+ * Una miniatura por cartel. Se rehace si falta o si el cartel es más nuevo
+ * que ella (se sustituyó el fichero); si no, se deja.
+ */
+async function miniaturas() {
+  const finales = (await readdir(CARPETA)).filter((f) => f.endsWith('.webp') && !f.endsWith(SUFIJO_MINIATURA));
+  let hechas = 0;
+  for (const archivo of finales) {
+    const origen = join(CARPETA, archivo);
+    const destino = join(CARPETA, archivo.replace(/\.webp$/, SUFIJO_MINIATURA));
+    const [cartel, previa] = await Promise.all([stat(origen), stat(destino).catch(() => null)]);
+    if (previa && previa.mtimeMs >= cartel.mtimeMs) continue;
+    if (dryRun) {
+      console.log(`· [simulación] miniatura de ${archivo}`);
+      hechas++;
+      continue;
+    }
+    const salida = await sharp(await readFile(origen))
+      .resize({ width: LADO_MINIATURA, height: LADO_MINIATURA, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: CALIDAD })
+      .toBuffer();
+    await writeFile(destino, salida);
+    console.log(`✓ miniatura ${basename(destino)} (${kb(salida.length)} kB)`);
+    hechas++;
+  }
+  if (hechas === 0) console.log('Miniaturas al día.');
 }
 
 await main();

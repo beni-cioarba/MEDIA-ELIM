@@ -1,4 +1,7 @@
-import { Injectable, isDevMode } from '@angular/core';
+import { Injectable, inject, isDevMode } from '@angular/core';
+import { firstError } from '../telemetry/telemetry';
+import { TelemetryService } from '../telemetry/telemetry.service';
+import { injectIsBrowser } from '../util/platform';
 
 /**
  * Logger central de la aplicación.
@@ -30,7 +33,9 @@ export interface ScopedLogger {
 
 @Injectable({ providedIn: 'root' })
 export class LoggerService {
-  private readonly verbose = isDevMode();
+  private readonly isBrowser = injectIsBrowser();
+  private readonly telemetry = inject(TelemetryService);
+  private readonly verbose = isDevMode() && this.isBrowser;
 
   debug(scope: string, message: string, ...context: readonly unknown[]): void {
     if (!this.verbose) return;
@@ -43,11 +48,18 @@ export class LoggerService {
   }
 
   warn(scope: string, message: string, ...context: readonly unknown[]): void {
+    // En el prerender los avisos son lo esperado (sin red, sin manifiestos
+    // que aún no existen): sólo ensucian el log del build. Los errores, sí.
+    if (!this.isBrowser) return;
     console.warn(this.tag(scope), message, ...context);
   }
 
   error(scope: string, message: string, ...context: readonly unknown[]): void {
     console.error(this.tag(scope), message, ...context);
+    // Al registro de errores sólo lo que es un `Error`: un fallo de red
+    // (`HttpErrorResponse`: YouTube sin cuota, sin conexión) no lo es.
+    const error = firstError(context);
+    if (error) this.telemetry.error(error, scope, message);
   }
 
   /** Devuelve un logger que ya lleva el ámbito incorporado. */

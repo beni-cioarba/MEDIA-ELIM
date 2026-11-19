@@ -12,6 +12,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { PlatformLocation } from '@angular/common';
 import { DockOverlapService } from '../floating-actions/dock-overlap.service';
 
 /** Una entrada del índice. El rótulo llega **ya traducido** por el anfitrión. */
@@ -135,6 +136,8 @@ export class DocTocComponent {
 
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly destroyRef = inject(DestroyRef);
+  /** La dirección actual también en el prerender (`location` no existe allí). */
+  private readonly platformLocation = inject(PlatformLocation);
   private readonly lista = viewChild<ElementRef<HTMLElement>>('lista');
 
   /** El plegable de pantallas estrechas, para cerrarlo al elegir. */
@@ -480,6 +483,6 @@ export class DocTocComponent {
    * comportamiento sin JavaScript sí.
    */
   protected enlaceA(id: string): string {
-    return `${location.pathname}${location.search}#${id}`;
+    return `${this.platformLocation.pathname}${this.platformLocation.search}#${id}`;
   }
 }

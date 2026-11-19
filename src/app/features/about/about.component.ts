@@ -8,7 +8,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
 import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { TranslateService } from '@ngx-translate/core';
-import { CREDO_ARTICLE_COUNT, CREDO_PARTS, citarArticulo } from '../credo/credo.data';
+import { CREDO_ARTICLE_COUNT, CREDO_PARTS, citarArticulo } from '../credo/public/credo.data';
 import { ScheduleService } from '../../core/services/schedule.service';
 import { LanguageService } from '../../core/services/language.service';
 import {
@@ -20,7 +20,7 @@ import {
   STORY_WORKS,
   StoryEra,
   StoryMilestone,
-} from './about-story.data';
+} from './public/about-story.data';
 
 /** Pilar de identidad (misión, visión, valores…). */
 interface Pillar {
@@ -177,7 +177,7 @@ export class AboutComponent {
 
   /**
    * Partes de la confesión de fe, sólo para el avance de esta página.
-   * La fuente única sigue siendo `features/credo/credo.data.ts`.
+   * La fuente única sigue siendo `features/credo/public/credo.data.ts`.
    */
   protected readonly credoParts = CREDO_PARTS;
   protected readonly credoTotal = CREDO_ARTICLE_COUNT;

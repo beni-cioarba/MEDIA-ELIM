@@ -13,7 +13,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { LanguageService } from '../../core/services/language.service';
 import { storyOf } from '../../core/leadership-profiles.config';
-import { citarArticulo } from '../credo/credo.data';
+import { citarArticulo } from '../credo/public/credo.data';
 import { HighlightPipe } from './highlight.pipe';
 import {
   COMMITTEE_CARDS,
@@ -28,7 +28,7 @@ import {
   normalize,
   photoGallery,
   splitInTwo,
-} from './leadership.view';
+} from './public/leadership.view';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
 import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { PersonAvatarComponent } from './person-avatar/person-avatar.component';

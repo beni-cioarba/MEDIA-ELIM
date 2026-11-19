@@ -11,19 +11,25 @@ Vitest como runner de tests. Sin backend. TypeScript 6 en `strict` +
 el hub hay un Node 24 portable en `C:\workspace\.tools\node24`, ver
 `50-build-deploy.md`).
 
-Detección de cambios: **zone.js explícito** (`provideZoneChangeDetection()` en
-`app.config.ts`). Toda la app es OnPush + signals, así que pasar a
-`provideZonelessChangeDetection()` es una línea; es una decisión pendiente del
-usuario (`75-plan-evolucion.md`, fase 5).
+Detección de cambios: **zoneless** (`provideZonelessChangeDetection()` en
+`app.config.ts`, desde el 17/11/2026; zone.js desinstalado). Toda la app es
+OnPush + signals: repinta lo que cambia una signal o un evento de plantilla.
+Los `NgZone.run` que quedan son inocuos.
 
 ## Bootstrap
 
-`main.ts` → `bootstrapApplication(AppComponent, appConfig)`.
+`main.ts` → `bootstrapApplication(AppComponent, appConfig)` en el navegador;
+`main.server.ts` → lo mismo con `app.config.server.ts` en el **prerender** del
+build (ver `50-build-deploy.md` → «Prerender»).
 
 `app.config.ts` provee:
 
-- `provideZoneChangeDetection()` (explícito desde Angular 21; ver arriba).
-- `provideRouter(APP_ROUTES, withInMemoryScrolling(...), withRouterConfig(...))`
+- `provideZonelessChangeDetection()` (**sin zone.js** desde el 17/11/2026: todo
+  es OnPush + signals; fuera 35 kB del arranque).
+- `provideRouter(APP_ROUTES, withInMemoryScrolling(...), withRouterConfig(...),
+  withEnabledBlockingInitialNavigation())` — la primera navegación (chunk y
+  resolvers) termina antes de pintar: así el HTML prerenderizado se sustituye
+  de una vez, sin fotograma vacío.
 - `provideTranslateService({ fallbackLang: 'ro', loader: InlineTranslateLoader })`:
   el JSON de cada idioma es un **chunk propio** (`import()` dinámico); al
   arrancar sólo se carga el idioma activo (~23 kB) y el otro sólo si se cambia.
@@ -33,13 +39,62 @@ usuario (`75-plan-evolucion.md`, fase 5).
 - `provideAppInitializer(() => inject(LanguageService).init())` y otro para
   `PwaUpdateService.init()`.
 - `provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode() })`
-- `{ provide: CHURCH_CONFIG, useValue: DEFAULT_CHURCH_CONFIG }`
+- `CHURCH_CONFIG` ya no se provee aquí: el token lleva `factory` propia.
+
+**Código que corre también en Node.** Las páginas públicas se pintan en el
+build, así que constructores, inicializadores de campo, `effect` y plantillas
+no pueden tocar `window`, `document` global, `location`, `localStorage`,
+`matchMedia`, `requestAnimationFrame` ni `BroadcastChannel` (Node 24 tiene
+este último y abriría un canal de verdad). Se usa `inject(DOCUMENT)`,
+`PlatformLocation`, `afterNextRender` o `injectIsBrowser()`
+(`core/util/platform.ts`). Si algo se escapa, el build lo dice: el prerender
+registra el error (`[elim:error]`) y la página sale sin contenido.
 
 `AppComponent` sólo monta `<router-outlet />`.
 
-## Rutas (`app.routes.ts`)
+## Módulos y rutas (desde el 17/11/2026)
 
-Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
+La web es un **conjunto de módulos**: cada carpeta `features/<x>/` declara sus
+páginas y sus rutas, y de ahí sale todo lo demás.
+
+| Fichero | Qué es | Quién lo lee |
+| --- | --- | --- |
+| `features/<x>/<x>.pages.ts` | `<X>_PAGES`: ruta, SEO y página estática de cada página. **Datos puros** (sin Angular) | La app y los scripts de Node |
+| `features/<x>/<x>.routes.ts` | `<X>_ROUTES: ModuleRoutes` (`shell` dentro de la maqueta, `bare` sin ella): componente perezoso, resolvers, guardas. Cada ruta con `pageRoute(página, {…})` | `app.routes.ts` |
+| `app.routes.ts` | `MODULES`: **una línea por módulo**; compone lo `bare`, la maqueta con lo `shell` y la 404 | Angular |
+| `features/<x>/public/` | Lo que la feature ofrece a otras (tarjeta de anuncio que pinta la proyección, datos del credo…). Lo demás es privado | Otras features |
+
+Derivado (nadie lo escribe a mano):
+- **Páginas estáticas, sitemap y robots.txt**: `scripts/generate-route-pages.mjs`
+  lee los `*.pages.ts` (`modulePages()`). Herramienta (`tool`) → sin página
+  y en `robots.txt`; ruta con parámetros → sus `expand` y las URL de datos
+  (`dataPages`); `noindex` → fuera del sitemap.
+- **Precarga**: las herramientas llevan `data.preload: false` (lo pone `pageRoute`).
+
+Lo que **no** se deriva, a propósito: el menú (`MAIN_NAV`). Qué entra en el menú
+y en qué orden es una decisión editorial; un test comprueba que cada entrada
+lleva a una ruta que existe (`app.routes.spec.ts`).
+
+Guardas automáticas: `scripts/modules.test.mjs` (cada módulo con páginas tiene
+rutas y está en `app.routes.ts`; rutas únicas), `app.routes.spec.ts` (SEO en cada
+ruta, herramientas sin precarga, redirecciones antes de `media/:blockId`, 404 la
+última, menú → rutas) y `npm run check:boundaries` (sin cruces de capas).
+
+**Receta — añadir una sección nueva:**
+
+```bash
+node scripts/new-module.mjs <id> --title "Titlu" --title-es "Título"
+```
+
+Deja la carpeta con página, rutas y componente, el segmento en `APP_PATHS`, la
+línea en `app.routes.ts` y los textos `seo.<id>.*` / `<id>.*` en los dos idiomas.
+Con eso ya tiene título, precarga, sitemap y página estática. Queda lo
+editorial: el contenido (datos en `core/content/`, nunca en la plantilla;
+textos largos de una página → su paquete en `core/i18n/route-packs.ts`) y, si
+va en el menú, su entrada en `core/navigation/navigation.config.ts`.
+Después, `npm run check`.
+
+Rutas actuales:
 
 | Path                | Componente             | Notas                          |
 | ------------------- | ---------------------- | ------------------------------ |
@@ -64,19 +119,8 @@ Todas cuelgan de `MainLayoutComponent` (eager) y se cargan con `loadComponent`.
 | `'impreuna/tipar'`  | `ImpreunaPrintComponent` | Hoja A4 de un mes (fuera del shell, noindex) |
 | `'contact'`         | `ContactComponent`     | Formulario `mailto:`, datos y mapa |
 | `'doneaza'`         | `DonateComponent`      | Donativos y datos bancarios    |
-| `**`                | redirect a `''`        | GitHub Pages sirve 404.html    |
-
-Detalle de navegación, menú y layout: `docs/ai/15-navigation.md`.
-
-**Receta — añadir una sección nueva:**
-
-1. `core/navigation/app-paths.ts` → declara el segmento en `APP_PATHS`.
-2. `src/app/features/<feature>/<feature>.component.ts` (standalone, OnPush).
-3. Entrada hija en `APP_ROUTES` con `loadComponent` y `data.seo`.
-4. `core/navigation/navigation.config.ts` → entrada en `MAIN_NAV`.
-5. Textos en `assets/i18n/{es,ro}.json` bajo una clave raíz nueva
-   (+ `nav.*` y `seo.*`).
-6. Datos estáticos en `core/church.config.ts` (nunca en la plantilla).
+| `legal`             | `LegalComponent`       | Información legal y privacidad (enlace en el pie) |
+| `**`                | `NotFoundComponent`    | Página «no encontrada» (GitHub Pages sirve 404.html con estado 404) |
 
 ## Servicios de `core/` y su responsabilidad
 

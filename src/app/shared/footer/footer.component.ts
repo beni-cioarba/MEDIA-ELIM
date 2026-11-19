@@ -121,6 +121,7 @@ export class FooterComponent {
     /** Panel de control de la proyección (herramienta del operador). */
     control: `/${APP_PATHS.media}/${APP_PATHS.control}`,
     styleguide: `/${APP_PATHS.styleguide}`,
+    legal: `/${APP_PATHS.legal}`,
     /**
      * App interna de tineret (ADM-TINERET: turnos de la masa, părinți de
      * sprijin). Herramienta de organización: su único sitio en la web es aquí.

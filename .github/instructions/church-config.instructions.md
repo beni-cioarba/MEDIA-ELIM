@@ -1,9 +1,16 @@
 ---
-applyTo: "src/app/core/church.config.ts"
+applyTo: "src/app/core/church.config.ts,src/app/core/content/**"
 description: "Reglas para el contenido estático de la iglesia."
 ---
 
 # `church.config.ts` — contenido de la iglesia
+
+**Dónde va cada cosa** (desde el 16/11/2026): `church.config.ts` tiene los
+tipos y la identidad (canales, contacto, ubicación, donativos); el contenido
+que cambia va en `core/content/`: `announcements.content.ts`,
+`events.content.ts`, `weekly.content.ts`, `gallery.content.ts`,
+`photos.content.ts`. `npm run check` valida fechas, ids, ficheros y claves
+(`scripts/check-content.mjs`).
 
 Este fichero es la **única** fuente de datos no traducibles. Está pensado para
 que alguien no desarrollador pueda actualizarlo.

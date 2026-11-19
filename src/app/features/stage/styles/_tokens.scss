@@ -22,7 +22,9 @@ $color-paper: #faf9f6;  // alabastro base
 
 // ---- Texto ------------------------------------------------------------
 $color-text: #2d3748;                       // gris carbón
-$color-muted: rgba(45, 55, 72, 0.66);       // texto secundario
+// .72, como `--c-muted` del sistema (12/11/2026): con .66 el texto
+// secundario del escenario se quedaba en 4,2:1 sobre el alabastro.
+$color-muted: rgba(45, 55, 72, 0.72);       // texto secundario
 $color-faint: rgba(45, 55, 72, 0.46);       // texto terciario / etiquetas
 
 // ---- Superficies de tarjeta ------------------------------------------

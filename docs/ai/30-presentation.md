@@ -322,8 +322,8 @@ por debajo de 1100 px. Tokens en el `:host` de `presenter.component.scss`.
 
 ## Bloques y diapositivas
 
-Definidos en `BLOCK_DEFS` (`core/services/presentation-blocks.service.ts`).
-El orden del array **es** el orden del carrusel.
+Definidos en el registro `PRESENTATION_BLOCKS` (`core/presentation/blocks.ts`).
+El orden del array **es** el orden por defecto del carrusel.
 
 Un **bloque** es una sección con interruptor propio; una **diapositiva**
 (`PresentationSlide`, clave `key`) es lo que se proyecta. Casi siempre
@@ -498,7 +498,7 @@ reglas antiguas de `.weekly` salieron de `stage.component.scss`.
   como «hora · título» con filete oro. Enlazan a
   `/media/evenimente#ev-<id>`. Un día sin culto pero con evento no dice
   «Fără serviciu». Revisión del 08/11/2026: antes la hora salía dos veces.
-- **Repetiții** (`church.config.ts → rehearsals`, tipo `Rehearsal`): bloque
+- **Repetiții** (`core/content/weekly.content.ts → REHEARSALS`, tipo `Rehearsal`): bloque
   aparte bajo la dirección, **sólo en `/media/program`** (input
   `rehearsals`, que `StageComponent` activa cuando el bloque es la página
   sola; ni en `/media` ni en la proyección ni en la portada). Fila: grupo
@@ -551,7 +551,7 @@ bloques en el mismo orden, **salvo anuncios y lectura bíblica**, que en la web
 sólo se ven en su sección —`/anunturi`, `/media/citirea-bibliei`— y en la
 proyección: `WEB_PANEL_EXCLUDED` en `StageComponent`). Un bloque nuevo en el código que no esté en la
 lista guardada se añade al final en su orden por defecto. «Orden por defecto»
-borra la preferencia; `BLOCK_DEFS` sigue siendo el orden inicial.
+borra la preferencia; `PRESENTATION_BLOCKS` sigue siendo el orden inicial.
 
 ## Selección por elemento y atajos (28/09/2026)
 
@@ -646,8 +646,8 @@ confirma; fuera de límites se acota); el ↺ que aparece al personalizar
 devuelve el defecto y «Restablecer» devuelve todos. Cambiar la duración de la diapositiva en pantalla **reinicia su
 temporizador** (la duración es una signal que lee el `effect` del carrusel).
 Persistencia: `localStorage['iglesia-redes.presentation.display']` (junto al
-aviso de directo). Los defectos viven en `DEFAULT_DURATIONS_S`; un bloque nuevo **debe**
-añadirse ahí (el tipo lo exige).
+aviso de directo). Los defectos son el `durationS` de cada bloque en
+`PRESENTATION_BLOCKS` (`core/presentation/blocks.ts`).
 
 ### Avance automático / sólo manual (03/10/2026)
 
@@ -882,21 +882,45 @@ Reglas fijas del lienzo proyectado:
 
 ## Receta — añadir un bloque proyectable nuevo (anuncios, avisos…)
 
-1. `features/stage/blocks/<nombre>-block/` con componente standalone + OnPush y
-   `styles: [':host { display: contents; }']` (para no romper el layout flex/grid
-   del `.slide` padre).
-2. Añade el id al tipo `PresentationBlockId` y una entrada en `BLOCK_DEFS`
-   (con `titleKey` i18n) en la posición deseada del carrusel.
-3. Añade su regla automática en `autoAvailability` (`true` si siempre aplica).
-4. Registra el componente en `StageComponent.imports` y añade su `@case` en el
-   `@switch` de `stage.component.html`.
-5. Estilos de la web pública: sección nueva en `stage.component.scss` con
-   prefijo BEM propio (`.<nombre>__…`) — ver `docs/ai/40-styling.md`.
-6. Estilos de proyección: sección nueva dentro de `stage-projection` en
-   `styles/_projection.scss`, **sólo** con variables `--pj-*`: el bloque ocupa
-   `height: 100%`, es `flex-direction: column`, su `__title` incluye
-   `pj-section-title` y el cuerpo crece con `flex: 1 1 auto; min-height: 0`.
-7. Claves i18n en `es.json` y `ro.json`.
+Desde el 17/11/2026 (fase 4 de `76-plan-maestro.md`) los bloques son
+**complementos**: un registro dice cuáles hay y cada uno es su propio chunk.
+
+1. **Registro** (`core/presentation/blocks.ts` → `PRESENTATION_BLOCKS`): una
+   entrada en su posición del carrusel con `id`, `titleKey`, `durationS` y
+   `auto` (la regla automática: `() => true` si siempre aplica). De ahí salen el
+   tipo `PresentationBlockId`, el orden, los títulos y los tiempos por defecto.
+2. **Componente** en `features/stage/blocks/<nombre>-block/` (standalone +
+   OnPush). Con hoja propia: `encapsulation: ViewEncapsulation.None` y BEM
+   `.<nombre>__…`, empezando por `app-<nombre>-block { display: contents; }` (para
+   no romper el layout del `.slide` padre). Sin hoja: `styles: [':host { display: contents; }']`.
+3. **Su `@case`** en el `@switch` de `stage.component.html`, **dentro de un
+   `@defer (on immediate)`** con su `@placeholder` (copia uno de los que hay), y el
+   componente en `StageComponent.imports`. Así es un chunk propio: la web sólo
+   lo descarga en la página que lo pinta. Se queda en la plantilla a propósito:
+   las entradas del bloque están tipadas (`strictTemplates`).
+4. **Estilos de proyección**: dentro de `stage-projection` en
+   `styles/_projection.scss`, sólo con variables `--pj-*` y bajo
+   `.stage.is-fullscreen` (gana siempre a la hoja del bloque, se cargue cuando se
+   cargue). El `__title` incluye `pj-section-title` (`@use 'projection-kit' as pj`).
+5. Si tiene página en la web, su slug en `STAGE_BLOCK_SLUGS` y su expansión en
+   `features/stage/stage.pages.ts` (`WEB_BLOCK_SLUGS`).
+6. Claves i18n en `es.json` y `ro.json`.
+
+**Un bloque roto no tumba la proyección**: la regla automática y la
+preparación de diapositivas de cada bloque van protegidas
+(`PresentationBlocksService`): si una lanza una excepción, ese bloque se
+queda fuera, se registra el error y el carrusel sigue con los demás
+(`presentation-blocks.service.spec.ts`). Un chunk que no llega sale por
+`AppErrorHandler` (recarga con la versión nueva).
+
+**Refactor de estilos o de plantilla del escenario**: `npm run visual` compara
+la huella (caja y estilos de cada elemento) de las páginas `/media/*` y de cada
+diapositiva a 1080p contra una sacada antes:
+
+```bash
+npm run visual -- --dist <build antes>/browser --out antes.json
+npm run visual -- --dist <build después>/browser --out despues.json --compare antes.json
+```
 
 ## QR
 

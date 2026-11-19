@@ -1,4 +1,4 @@
-import type { PresentationBlockId } from '../services/presentation-blocks.service';
+import type { PresentationBlockId } from '../presentation/blocks';
 
 /**
  * Rutas de la aplicación en un único sitio.
@@ -55,6 +55,8 @@ export const APP_PATHS = {
   baptisms: 'botezuri',
   /** Talantul în Negoț: el concurso bíblico, contado para quien quiera participar. */
   talentContest: 'talantul-in-negot',
+  /** Información legal y privacidad: sólo se enlaza desde el pie. */
+  legal: 'legal',
   /**
    * Proiectul Împreună (lectura bíblica diaria del Cultul Penticostal):
    * `/impreuna` es hoy; `/impreuna/ziua/<n>` un día concreto (enlace para

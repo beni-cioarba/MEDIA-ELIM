@@ -6,7 +6,10 @@ import { BibleLinkService, BibleOpen } from '../../core/bible/bible-link.service
 import { PassageRef, parseRef, refLabel } from '../../core/bible/bible-refs';
 import { passageVerses, readingMinutes } from '../../core/bible/bible-verses';
 import { LanguageService } from '../../core/services/language.service';
+import { PUBLIC_URL } from '../../core/site';
 import { pluralKey } from '../../core/util/plural';
+import { injectIsBrowser } from '../../core/util/platform';
+import { TelemetryService } from '../../core/telemetry/telemetry.service';
 import { IconComponent } from '../icon/icon.component';
 
 export { pluralKey };
@@ -52,6 +55,8 @@ export class BiblePassagesComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  private readonly isBrowser = injectIsBrowser();
+  private readonly telemetry = inject(TelemetryService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** Volvió de Android sin la app: el pasaje que quería abrir (aviso arriba). */
@@ -112,12 +117,14 @@ export class BiblePassagesComponent implements OnInit {
   }
 
   protected opened(open: BibleOpen): void {
+    this.telemetry.event('citire-deschisa');
     if (open.viaIntent) this.links.watchLaunch();
   }
 
   /** Adónde vuelve Chrome si el `intent:` no encuentra la app: la página que lo pintó, avisada. */
   private fallback(ref: PassageRef): string {
     const query = `biblia=lipsa&text=${encodeURIComponent(ref.code)}`;
-    return new URL(`${this.returnPath()}?${query}`, this.document.baseURI).href;
+    // En el prerender el documento no tiene `baseURI` válido: la URL pública.
+    return new URL(`${this.returnPath()}?${query}`, this.isBrowser ? this.document.baseURI : PUBLIC_URL).href;
   }
 }

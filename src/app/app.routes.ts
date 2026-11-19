@@ -1,491 +1,83 @@
-import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, Route, Router, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
+import { ModuleRoutes } from './core/modules/page-route';
+import { ABOUT_ROUTES } from './features/about/about.routes';
+import { ANNOUNCEMENTS_ROUTES } from './features/announcements/announcements.routes';
+import { BAPTISMS_ROUTES } from './features/baptisms/baptisms.routes';
+import { CONTACT_ROUTES } from './features/contact/contact.routes';
+import { CREDO_ROUTES } from './features/credo/credo.routes';
+import { DEPARTMENTS_ROUTES } from './features/departments/departments.routes';
+import { DONATE_ROUTES } from './features/donate/donate.routes';
+import { FAMILY_PRAYER_ROUTES } from './features/family-prayer/family-prayer.routes';
+import { GUESTS_ROUTES } from './features/guests/guests.routes';
+import { HOME_ROUTES } from './features/home/home.routes';
+import { IMPREUNA_ROUTES } from './features/impreuna/impreuna.routes';
+import { LEADERSHIP_ROUTES } from './features/leadership/leadership.routes';
+import { LEGAL_ROUTES } from './features/legal/legal.routes';
+import { NAV_HUB_ROUTES } from './features/nav-hub/nav-hub.routes';
+import { PRAYER_CAUSES_ROUTES } from './features/prayer-causes/prayer-causes.routes';
+import { PRESENTER_ROUTES } from './features/presenter/presenter.routes';
+import { STAGE_ROUTES } from './features/stage/stage.routes';
+import { STYLEGUIDE_ROUTES } from './features/styleguide/styleguide.routes';
+import { TALENT_CONTEST_ROUTES } from './features/talent-contest/talent-contest.routes';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
-import { APP_PATHS, DEPARTMENT_SLUGS, DepartmentId } from './core/navigation/app-paths';
-import { credoTranslationsResolver } from './features/credo/credo-translations.resolver';
-import { departmentsTranslationsResolver } from './features/departments/departments-translations.resolver';
-import { guestsTranslationsResolver } from './features/guests/guests-translations.resolver';
-import { impreunaTranslationsResolver } from './features/impreuna/impreuna-translations.resolver';
 
 /**
- * Proiectul Împreună: hoy y un día concreto comparten componente y chunk
- * (`/impreuna`, `/impreuna/ziua/<n>`). Públicas e indexables.
- */
-const impreunaSeo = { titleKey: 'seo.impreuna.title', descriptionKey: 'seo.impreuna.description' };
-function impreunaDayRoute(path: string): Route {
-  return {
-    path,
-    loadComponent: () => import('./features/impreuna/impreuna.component').then((m) => m.ImpreunaComponent),
-    resolve: { i18n: impreunaTranslationsResolver },
-    data: { seo: impreunaSeo },
-  };
-}
-
-/**
- * Portada de sección de un grupo de `MAIN_NAV` (`/biserica`, `/program`,
- * `/multimedia`). Un solo componente y un solo chunk para todas: lo que
- * cambia es `data.navGroup` (el `id` del grupo). Ver `NavHubComponent`.
- */
-function navHubRoute(path: string, group: string): Route {
-  return {
-    path,
-    loadComponent: () =>
-      import('./features/nav-hub/nav-hub.component').then((m) => m.NavHubComponent),
-    data: {
-      navGroup: group,
-      seo: { titleKey: `nav.${group}`, descriptionKey: `nav.${group}_desc` },
-    },
-  };
-}
-
-/**
- * Página de un departamento (`/departamente/<slug>`). Una ruta por
- * departamento —no `:slug`— para que cada una lleve su título y su
- * descripción SEO; el componente y el chunk son el mismo para todas.
- * Lee `data.department` (`DEPARTMENT_ROUTE_KEY` en el componente).
- */
-function departmentRoute(id: DepartmentId): Route {
-  return {
-    path: `${APP_PATHS.departments}/${DEPARTMENT_SLUGS[id]}`,
-    loadComponent: () =>
-      import('./features/departments/department-page/department-page.component').then(
-        (m) => m.DepartmentPageComponent,
-      ),
-    resolve: { i18n: departmentsTranslationsResolver },
-    data: {
-      department: id,
-      seo: { titleKey: `departments.${id}.name`, descriptionKey: `departments.${id}.tagline` },
-    },
-  };
-}
-
-/**
- * Mapa de rutas de la aplicación.
+ * Los módulos de la web, **una línea cada uno**.
  *
- * Convenciones (ver `docs/ai/15-navigation.md`):
- *  1. Todas las páginas cuelgan de `MainLayoutComponent` (cabecera + pie),
- *     que es lo único eager: se necesita en el primer pintado.
- *  2. Cada página se carga con `loadComponent` → un chunk por módulo.
- *  3. La ruta declara sus claves SEO en `data.seo`; `AppTitleStrategy` las
- *     traduce y actualiza `<title>` y las metaetiquetas.
- *  4. Las rutas no se escriben como literales sueltos: salen de `APP_PATHS`.
+ * Cada módulo declara sus páginas en `features/<x>/<x>.pages.ts` (ruta y SEO,
+ * datos puros) y sus rutas en `<x>.routes.ts` (componente perezoso,
+ * resolvers, guardas). De las páginas salen también las páginas estáticas,
+ * el sitemap y el robots.txt del despliegue (`scripts/generate-route-pages.mjs`
+ * las lee directamente). Módulo nuevo: `node scripts/new-module.mjs <id>` y
+ * añadirlo aquí. Ver `docs/ai/10-architecture.md`.
+ *
+ * El orden sólo importa dentro de cada módulo (el router prueba en orden: las
+ * redirecciones de `/media/<x>` van antes de `/media/:blockId`, y así).
+ */
+const MODULES: readonly ModuleRoutes[] = [
+  HOME_ROUTES,
+  NAV_HUB_ROUTES,
+  ABOUT_ROUTES,
+  CREDO_ROUTES,
+  LEADERSHIP_ROUTES,
+  DEPARTMENTS_ROUTES,
+  ANNOUNCEMENTS_ROUTES,
+  STAGE_ROUTES,
+  PRESENTER_ROUTES,
+  FAMILY_PRAYER_ROUTES,
+  PRAYER_CAUSES_ROUTES,
+  BAPTISMS_ROUTES,
+  TALENT_CONTEST_ROUTES,
+  IMPREUNA_ROUTES,
+  GUESTS_ROUTES,
+  CONTACT_ROUTES,
+  DONATE_ROUTES,
+  LEGAL_ROUTES,
+  STYLEGUIDE_ROUTES,
+];
+
+/**
+ * Mapa de rutas: primero lo que va **sin maqueta** (panel de control, ventana
+ * de proyección, hojas de imprimir: herramientas que no llevan cabecera ni
+ * pie), después todas las páginas dentro de `MainLayoutComponent` —lo único
+ * eager— y, al final, la página «no encontrada».
  */
 export const APP_ROUTES: Routes = [
-  // ── Rutas del operador (sin shell) ─────────────────────────────────────
-  // Van ANTES del layout: `media/:blockId` las capturaría como un bloque.
-  {
-    // Panel de control de la proyección: lista de diapositivas, transporte,
-    // vista previa y ajustes. Abre la ventana de proyección.
-    path: `${APP_PATHS.media}/${APP_PATHS.control}`,
-    loadComponent: () =>
-      import('./features/presenter/presenter.component').then((m) => m.PresenterComponent),
-    data: {
-      seo: { titleKey: 'seo.control.title', descriptionKey: 'seo.control.description', noindex: true },
-    },
-  },
-  {
-    // Ventana de proyección: sólo el escenario, ya presentando. Con
-    // `?rol=preview` es la vista previa incrustada en el panel.
-    path: `${APP_PATHS.media}/${APP_PATHS.projection}`,
-    loadComponent: () =>
-      import('./features/projection/projection.component').then((m) => m.ProjectionComponent),
-    data: {
-      seo: { titleKey: 'seo.projection.title', descriptionKey: 'seo.projection.description', noindex: true },
-    },
-  },
-  {
-    // Hoja imprimible del QR de «Invitați» (afiche A4 / tarjetas A6). Sin
-    // shell: es una herramienta del operador y se imprime tal cual.
-    path: `${APP_PATHS.guests}/${APP_PATHS.guestsQr}`,
-    loadComponent: () =>
-      import('./features/guests/guests-qr/guests-qr.component').then((m) => m.GuestsQrComponent),
-    resolve: { i18n: guestsTranslationsResolver },
-    data: {
-      seo: { titleKey: 'seo.guests_qr.title', descriptionKey: 'seo.guests_qr.description', noindex: true },
-    },
-  },
-  {
-    // Proiectul Împreună: hoja imprimible de un mes (`?luna=11`). Sin shell:
-    // se imprime tal cual (A4) para quien lee en papel.
-    path: `${APP_PATHS.impreuna}/${APP_PATHS.impreunaPrint}`,
-    loadComponent: () =>
-      import('./features/impreuna/impreuna-print/impreuna-print.component').then((m) => m.ImpreunaPrintComponent),
-    resolve: { i18n: impreunaTranslationsResolver },
-    data: {
-      seo: { titleKey: 'seo.impreuna_print.title', descriptionKey: 'seo.impreuna.description', noindex: true },
-    },
-  },
+  ...MODULES.flatMap((module) => module.bare ?? []),
   {
     path: '',
     component: MainLayoutComponent,
     children: [
+      ...MODULES.flatMap((module) => module.shell),
       {
-        path: APP_PATHS.home,
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./features/home/home.component').then((m) => m.HomeComponent),
+        // Cualquier dirección desconocida: GitHub Pages sirve `404.html`
+        // (= `index.html`) con estado 404 y el router acaba aquí.
+        path: '**',
+        loadComponent: () => import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
         data: {
-          seo: { titleKey: 'seo.home.title', descriptionKey: 'seo.home.description' },
+          seo: { titleKey: 'seo.not_found.title', descriptionKey: 'seo.not_found.description', noindex: true },
         },
       },
-      // Portadas de sección: destino de las pestañas del móvil y de la migaja
-      // de pan de cada grupo.
-      navHubRoute(APP_PATHS.churchHub, 'about'),
-      navHubRoute(APP_PATHS.programHub, 'program'),
-      navHubRoute(APP_PATHS.mediaHub, 'media'),
-      {
-        // Departamente: portada propia (mosaico), no la portada genérica.
-        path: APP_PATHS.departments,
-        loadComponent: () =>
-          import('./features/departments/departments-home/departments-home.component').then(
-            (m) => m.DepartmentsHomeComponent,
-          ),
-        resolve: { i18n: departmentsTranslationsResolver },
-        data: {
-          seo: { titleKey: 'nav.departments', descriptionKey: 'nav.departments_desc' },
-        },
-      },
-      ...(Object.keys(DEPARTMENT_SLUGS) as DepartmentId[]).map(departmentRoute),
-      {
-        path: APP_PATHS.about,
-        loadComponent: () =>
-          import('./features/about/about.component').then((m) => m.AboutComponent),
-        data: {
-          seo: { titleKey: 'seo.about.title', descriptionKey: 'seo.about.description' },
-        },
-      },
-      {
-        path: APP_PATHS.credo,
-        loadComponent: () =>
-          import('./features/credo/credo.component').then((m) => m.CredoComponent),
-        // El texto de los 30 artículos viaja en su propio chunk.
-        resolve: { i18n: credoTranslationsResolver },
-        data: {
-          seo: { titleKey: 'seo.credo.title', descriptionKey: 'seo.credo.description' },
-        },
-      },
-      {
-        path: APP_PATHS.leadership,
-        loadComponent: () =>
-          import('./features/leadership/leadership.component').then(
-            (m) => m.LeadershipComponent,
-          ),
-        // `/conducere#<id>` (ficha antigua en diálogo) → perfil de la persona.
-        canActivate: [
-          (route: ActivatedRouteSnapshot) => {
-            const router = inject(Router);
-            return import('./features/leadership/leadership.guards').then((m) =>
-              m.legacyPersonAnchor(route, router),
-            );
-          },
-        ],
-        data: {
-          seo: {
-            titleKey: 'seo.leadership.title',
-            descriptionKey: 'seo.leadership.description',
-          },
-        },
-      },
-      {
-        // Perfil propio (`/conducere/<id>`): sólo quien lo tiene habilitado en
-        // `PERSON_PROFILES` (core/leadership-profiles.config.ts).
-        path: `${APP_PATHS.leadership}/:id`,
-        loadComponent: () =>
-          import('./features/leadership/person-profile/person-profile.component').then(
-            (m) => m.PersonProfileComponent,
-          ),
-        // Sin perfil → al directorio filtrado por su nombre, antes de pintar.
-        canActivate: [
-          (route: ActivatedRouteSnapshot) => {
-            const router = inject(Router);
-            return import('./features/leadership/leadership.guards').then((m) =>
-              m.personHasProfile(route, router),
-            );
-          },
-        ],
-        data: {
-          seo: {
-            titleKey: 'seo.leadership.title',
-            descriptionKey: 'seo.leadership.description',
-          },
-        },
-      },
-      {
-        // Escenario multimedia completo.
-        path: APP_PATHS.media,
-        loadComponent: () =>
-          import('./features/stage/stage.component').then((m) => m.StageComponent),
-        data: {
-          seo: { titleKey: 'seo.media.title', descriptionKey: 'seo.media.description' },
-        },
-      },
-      {
-        // Guía de estilos viva (`/stil`): tokens, primitivas y patrones.
-        // Herramienta interna, perezosa y fuera del menú; se enlaza desde el
-        // pie junto al panel de control.
-        path: APP_PATHS.styleguide,
-        loadComponent: () =>
-          import('./features/styleguide/styleguide.component').then((m) => m.StyleguideComponent),
-        data: {
-          seo: { titleKey: 'seo.styleguide.title', descriptionKey: 'seo.styleguide.description', noindex: true },
-        },
-      },
-      {
-        // Los anuncios tienen página propia: `/media/anunturi` no es un bloque web.
-        path: `${APP_PATHS.media}/${APP_PATHS.announcements}`,
-        redirectTo: APP_PATHS.announcements,
-      },
-      {
-        // Igual que los anuncios: la oración por las familias tiene página propia.
-        path: `${APP_PATHS.media}/${APP_PATHS.familyPrayer}`,
-        redirectTo: APP_PATHS.familyPrayer,
-      },
-      {
-        // La diapositiva del QR sólo tiene sentido proyectada.
-        path: `${APP_PATHS.media}/site`,
-        redirectTo: APP_PATHS.home,
-      },
-      {
-        path: `${APP_PATHS.media}/${APP_PATHS.prayerCauses}`,
-        redirectTo: APP_PATHS.prayerCauses,
-      },
-      {
-        // El bloque proyectable tiene su página propia en la web.
-        path: `${APP_PATHS.media}/${APP_PATHS.talentContest}`,
-        redirectTo: APP_PATHS.talentContest,
-      },
-      {
-        // Igual: la diapositiva de Proiectul Împreună vive en `/impreuna`.
-        path: `${APP_PATHS.media}/${APP_PATHS.impreuna}`,
-        redirectTo: APP_PATHS.impreuna,
-      },
-      {
-        // Un bloque como página propia (`/media/galerie`, `/media/program`…).
-        // Reutiliza el mismo componente: un único chunk y una única hoja de
-        // estilos para los seis bloques.
-        path: `${APP_PATHS.media}/:blockId`,
-        loadComponent: () =>
-          import('./features/stage/stage.component').then((m) => m.StageComponent),
-        data: {
-          // Título y descripción propios de cada bloque (`seo.block.<slug>`):
-          // con los genéricos de Media, siete páginas compartían título y
-          // Google las trataba como duplicadas.
-          seo: {
-            titleKey: 'seo.block.:blockId.title',
-            descriptionKey: 'seo.block.:blockId.description',
-            fallback: { titleKey: 'seo.media.title', descriptionKey: 'seo.media.description' },
-          },
-        },
-      },
-      {
-        // Anunțuri vigentes. `:id` abre uno solo (enlace para compartir);
-        // mismo componente, mismo chunk.
-        path: APP_PATHS.announcements,
-        loadComponent: () =>
-          import('./features/announcements/announcements.component').then(
-            (m) => m.AnnouncementsComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.announcements.title',
-            descriptionKey: 'seo.announcements.description',
-          },
-        },
-      },
-      {
-        path: `${APP_PATHS.announcements}/:id`,
-        loadComponent: () =>
-          import('./features/announcements/announcements.component').then(
-            (m) => m.AnnouncementsComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.announcements.title',
-            descriptionKey: 'seo.announcements.description',
-          },
-        },
-      },
-      {
-        // Rugăciune pentru familii: la semana en curso; `:week` (el domingo,
-        // `YYYY-MM-DD`) abre una semana del archivo. Mismo componente y chunk.
-        path: APP_PATHS.familyPrayer,
-        loadComponent: () =>
-          import('./features/family-prayer/family-prayer.component').then(
-            (m) => m.FamilyPrayerComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.family_prayer.title',
-            descriptionKey: 'seo.family_prayer.description',
-            // Fotos y nombres de familias con menores: se comparten por
-            // enlace, pero no deben aparecer en buscadores.
-            noindex: true,
-          },
-        },
-      },
-      {
-        path: `${APP_PATHS.familyPrayer}/:week`,
-        loadComponent: () =>
-          import('./features/family-prayer/family-prayer.component').then(
-            (m) => m.FamilyPrayerComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.family_prayer.title',
-            descriptionKey: 'seo.family_prayer.description',
-            // Fotos y nombres de familias con menores: se comparten por
-            // enlace, pero no deben aparecer en buscadores.
-            noindex: true,
-          },
-        },
-      },
-      {
-        // Cauzele Bisericii Elim: lista vigente (nombres de enfermos → noindex).
-        path: APP_PATHS.prayerCauses,
-        loadComponent: () =>
-          import('./features/prayer-causes/prayer-causes.component').then(
-            (m) => m.PrayerCausesComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.prayer_causes.title',
-            descriptionKey: 'seo.prayer_causes.description',
-            noindex: true,
-          },
-        },
-      },
-      // Botezuri: portada + registro (`/botezuri`, `/botezuri/<fecha>` lleva
-      // a un botez del registro) y perfil de cada candidato. Hay menores:
-      // se comparten por enlace pero no se indexan.
-      ...['', '/:date'].map((suffix) => ({
-        path: `${APP_PATHS.baptisms}${suffix}`,
-        loadComponent: () =>
-          import('./features/baptisms/baptisms.component').then((m) => m.BaptismsComponent),
-        canActivate: suffix
-          ? [
-              (route: ActivatedRouteSnapshot) => {
-                const router = inject(Router);
-                return import('./features/baptisms/baptisms.guards').then((m) =>
-                  m.baptismExists(route, router),
-                );
-              },
-            ]
-          : [],
-        data: {
-          seo: {
-            titleKey: 'seo.baptisms.title',
-            descriptionKey: 'seo.baptisms.description',
-            noindex: true,
-          },
-        },
-      })),
-      {
-        path: `${APP_PATHS.baptisms}/:date/:candidate`,
-        loadComponent: () =>
-          import('./features/baptisms/candidate-profile/candidate-profile.component').then(
-            (m) => m.CandidateProfileComponent,
-          ),
-        canActivate: [
-          (route: ActivatedRouteSnapshot) => {
-            const router = inject(Router);
-            return import('./features/baptisms/baptisms.guards').then((m) =>
-              m.candidateExists(route, router),
-            );
-          },
-        ],
-        data: {
-          seo: {
-            titleKey: 'seo.baptisms.title',
-            descriptionKey: 'seo.baptisms.description',
-            noindex: true,
-          },
-        },
-      },
-      {
-        // Talantul în Negoț: información para participantes (pública, indexable).
-        path: APP_PATHS.talentContest,
-        loadComponent: () =>
-          import('./features/talent-contest/talent-contest.component').then(
-            (m) => m.TalentContestComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.talent_contest.title',
-            descriptionKey: 'seo.talent_contest.description',
-          },
-        },
-      },
-      // Proiectul Împreună: hoy, un día, y el plan completo por meses.
-      impreunaDayRoute(APP_PATHS.impreuna),
-      impreunaDayRoute(`${APP_PATHS.impreuna}/${APP_PATHS.impreunaDay}/:day`),
-      {
-        path: `${APP_PATHS.impreuna}/${APP_PATHS.impreunaPlan}`,
-        loadComponent: () =>
-          import('./features/impreuna/impreuna-plan/impreuna-plan.component').then((m) => m.ImpreunaPlanComponent),
-        resolve: { i18n: impreunaTranslationsResolver },
-        data: { seo: { titleKey: 'seo.impreuna_plan.title', descriptionKey: 'seo.impreuna_plan.description' } },
-      },
-      {
-        path: APP_PATHS.contact,
-        loadComponent: () =>
-          import('./features/contact/contact.component').then(
-            (m) => m.ContactComponent,
-          ),
-        data: {
-          seo: {
-            titleKey: 'seo.contact.title',
-            descriptionKey: 'seo.contact.description',
-          },
-        },
-      },
-      {
-        // Invitați: bienvenida para quien viene por primera vez. Oculta: sin
-        // entrada en MAIN_NAV (sólo un acceso discreto en el pie y el QR) y
-        // fuera de los buscadores. `?lang=es` la abre en español.
-        path: APP_PATHS.guests,
-        loadComponent: () =>
-          import('./features/guests/guests.component').then((m) => m.GuestsComponent),
-        resolve: { i18n: guestsTranslationsResolver },
-        data: {
-          seo: {
-            titleKey: 'seo.guests.title',
-            descriptionKey: 'seo.guests.description',
-            noindex: true,
-          },
-        },
-      },
-      {
-        // La misma página **en español**: el idioma va en la ruta para que
-        // tenga su propia página estática (la tarjeta de WhatsApp sale en
-        // español) y para que el enlace abra siempre en español, lo haya
-        // compartido quien lo haya compartido. Es lo que codifica el QR.
-        path: `${APP_PATHS.guests}/es`,
-        loadComponent: () =>
-          import('./features/guests/guests.component').then((m) => m.GuestsComponent),
-        resolve: { i18n: guestsTranslationsResolver },
-        data: {
-          lang: 'es',
-          seo: {
-            titleKey: 'seo.guests.title',
-            descriptionKey: 'seo.guests.description',
-            noindex: true,
-          },
-        },
-      },
-      {
-        path: APP_PATHS.donate,
-        loadComponent: () =>
-          import('./features/donate/donate.component').then((m) => m.DonateComponent),
-        data: {
-          seo: {
-            titleKey: 'seo.donate.title',
-            descriptionKey: 'seo.donate.description',
-          },
-        },
-      },
-      // Cualquier ruta desconocida vuelve a la portada (GitHub Pages sirve
-      // `404.html` = `index.html`, así que el deep-link acaba aquí).
-      { path: '**', redirectTo: '' },
     ],
   },
 ];

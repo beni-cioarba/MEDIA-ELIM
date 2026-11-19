@@ -9,8 +9,8 @@ import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { AnnouncementCardComponent } from './announcement-card/announcement-card.component';
-import { FamilyPrayerTeaserComponent } from '../family-prayer/family-prayer-teaser/family-prayer-teaser.component';
+import { AnnouncementCardComponent } from './public/announcement-card/announcement-card.component';
+import { FamilyPrayerTeaserComponent } from '../family-prayer/public/family-prayer-teaser/family-prayer-teaser.component';
 
 /**
  * «Anunțuri» — los avisos vigentes de la congregación.

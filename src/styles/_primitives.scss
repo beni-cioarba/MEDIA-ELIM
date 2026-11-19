@@ -416,11 +416,14 @@
   }
 }
 
-.ui-status--ok { color: var(--c-success); }
-.ui-status--warn { color: var(--c-warning); }
-.ui-status--danger { color: var(--c-danger); }
-.ui-status--info { color: var(--c-info); }
-.ui-status--live { color: var(--c-live); }
+// Tinta de **texto** (`--c-*-text`), no el color de estado a secas: el chip
+// es texto de 12 px y con `--c-success` & cía. no llegaba a 4,5:1 ni en claro
+// ni en la consola oscura. Ver `$status-text` en `_tokens.scss`.
+.ui-status--ok { color: var(--c-success-text); }
+.ui-status--warn { color: var(--c-warning-text); }
+.ui-status--danger { color: var(--c-danger-text); }
+.ui-status--info { color: var(--c-info-text); }
+.ui-status--live { color: var(--c-live-text); }
 
 /** Segmentado: dos o tres opciones excluyentes (tamaño del QR, vista…). */
 .ui-segmented {

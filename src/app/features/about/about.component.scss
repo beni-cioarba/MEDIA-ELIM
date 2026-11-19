@@ -200,7 +200,9 @@
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
-  color: var(--c-gold);
+  // Oro de texto (`gold-deep`, 5,4:1), no el de marca (2,1:1): el numeral se
+  // lee, aunque el lector de pantalla reciba la era por otro lado.
+  color: var(--c-gold-deep);
 }
 
 .era__years {
@@ -269,6 +271,9 @@
 }
 
 .milestone-row__watch {
+  // La píldora mide 20 px de alto: área de pulsación de 24 px (WCAG 2.5.8).
+  @include tap-target(24px);
+
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;

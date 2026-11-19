@@ -6,6 +6,8 @@ import { SwUpdate } from '@angular/service-worker';
 import { filter, pairwise } from 'rxjs';
 import { APP_PATHS } from '../navigation/app-paths';
 import { PresentationService } from '../presentation.service';
+import { claimAutoReload } from '../util/auto-reload';
+import { LoggerService } from './logger.service';
 
 /** Cada cuánto se comprueba si hay versión nueva con la pestaña a la vista. */
 const CHECK_EVERY_MS = 15 * 60 * 1000;
@@ -15,9 +17,6 @@ const MIN_CHECK_GAP_MS = 60 * 1000;
 const ENTRY_WINDOW_MS = 15 * 1000;
 /** Ausencia a partir de la cual volver a la pestaña cuenta como entrar de nuevo. */
 const LONG_ABSENCE_MS = 10 * 60 * 1000;
-/** Dos recargas automáticas más juntas que esto = algo va mal: no se repite. */
-const RELOAD_GUARD_MS = 60 * 1000;
-const RELOAD_GUARD_KEY = 'elim.pwa-update.reloaded-at';
 
 /** Ventanas de la proyección (panel de control y pantalla). */
 const PROJECTION_PREFIX = `/${APP_PATHS.media}/`;
@@ -50,7 +49,8 @@ const isProjection = (url: string): boolean => url.startsWith(PROJECTION_PREFIX)
  * Nunca en mitad de una proyección (pantalla completa o las ventanas
  * `/media/…`: recargar una cortaría el culto) ni con el cursor en un campo de
  * texto. Si el SW queda en un estado irrecuperable, se recarga en cuanto se
- * pueda. Un tope en `sessionStorage` impide recargar en bucle.
+ * pueda. Un tope en `sessionStorage` (`claimAutoReload`, compartido con la
+ * recuperación ante chunks caducados) impide recargar en bucle.
  *
  * Los temporizadores y escuchas van fuera de la zona de Angular: un
  * `setInterval` dentro deja la app «inestable» para siempre (antes las
@@ -64,6 +64,7 @@ export class PwaUpdateService {
   private readonly zone = inject(NgZone);
   private readonly document = inject(DOCUMENT);
   private readonly presentation = inject(PresentationService);
+  private readonly log = inject(LoggerService).prefix('pwa');
   private readonly fullscreen$ = toObservable(this.presentation.isFullscreen);
 
   /** Hay una versión nueva descargada que esta pestaña aún no usa. */
@@ -82,12 +83,12 @@ export class PwaUpdateService {
         this.updateReady = true;
         if (Date.now() < this.entryUntil) this.reloadIfSafe();
       } else if (event.type === 'VERSION_INSTALLATION_FAILED') {
-        console.warn('[pwa] No se ha podido instalar la versión nueva:', event.error);
+        this.log.warn('No se ha podido instalar la versión nueva', event.error);
       }
     });
 
     this.swUpdate.unrecoverable.subscribe((event) => {
-      console.warn('[pwa] Estado irrecuperable del Service Worker:', event.reason);
+      this.log.warn('Estado irrecuperable del Service Worker', event.reason);
       this.broken = true;
       this.reloadIfSafe();
     });
@@ -150,7 +151,7 @@ export class PwaUpdateService {
     // nunca entre ventanas de proyección: el panel y la pantalla van a la par.
     if (pathOf(e.url) === pathOf(from)) return;
     if (this.presentation.isFullscreen() || (isProjection(from) && isProjection(e.url))) return;
-    if (!this.claimReload()) return;
+    if (!claimAutoReload(this.document)) return;
     // Con «atrás / adelante» el navegador ya muestra la URL de destino.
     if (e.navigationTrigger === 'popstate') this.document.location.reload();
     else this.document.location.assign(this.location.prepareExternalUrl(e.url));
@@ -160,30 +161,12 @@ export class PwaUpdateService {
   private reloadIfSafe({ pending = false } = {}): void {
     if (pending && !this.updateReady && !this.broken) return;
     if (this.presentation.isFullscreen() || isProjection(this.router.url)) return;
-    if (this.isTyping() || !this.claimReload()) return;
+    if (this.isTyping() || !claimAutoReload(this.document)) return;
     this.document.location.reload();
   }
 
   private isTyping(): boolean {
     const el = this.document.activeElement as HTMLElement | null;
     return !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
-  }
-
-  /**
-   * Reserva la recarga automática. Si ya hubo otra hace menos de un minuto
-   * (la versión «nueva» vuelve a aparecer tras recargar), se deja de insistir
-   * para no entrar en bucle; la pestaña sigue usable con lo que tiene.
-   */
-  private claimReload(): boolean {
-    try {
-      const storage = this.document.defaultView?.sessionStorage;
-      if (!storage) return true;
-      const last = Number(storage.getItem(RELOAD_GUARD_KEY) ?? 0);
-      if (Date.now() - last < RELOAD_GUARD_MS) return false;
-      storage.setItem(RELOAD_GUARD_KEY, String(Date.now()));
-    } catch {
-      /* almacenamiento bloqueado: recargar igualmente es lo seguro */
-    }
-    return true;
   }
 }

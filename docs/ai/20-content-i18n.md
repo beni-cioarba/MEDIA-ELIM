@@ -237,7 +237,7 @@ nombre en la tarjeta que ya se titula «Cenzori».
 ### Añadir un evento futuro (Evenimente viitoare)
 
 ```ts
-// core/church.config.ts → upcomingEvents
+// core/content/events.content.ts → UPCOMING_EVENTS
 {
   id: 'botez_2026_09_13',
   date: '2026-09-13',        // ISO, se parsea en hora local
@@ -289,7 +289,7 @@ python scripts/import-bible-plan.py "ruta/PROGRAMARE_CITIREA_BIBLIEI.xlsx"
 
 ### Añadir un anuncio (anunț)
 
-Objeto `Announcement` en `church.config.ts → announcements`, con `expiresOn`
+Objeto `Announcement` en `core/content/announcements.content.ts`, con `expiresOn`
 obligatorio. Es contenido estructurado (secciones en columnas) y se proyecta
 como diapositiva propia mientras esté vigente. **Protocolo de redacción,
 límites y ficheros: `docs/ai/35-announcements.md`** (léelo antes).
@@ -534,3 +534,25 @@ Retiradas con las tarjetas de datos del carrusel (12/11/2026):
 `home.board.{rest_week, rest_readings, whole_week, today_events, day_of}`. Van en `ro.json` / `es.json` y no en
 el paquete del módulo porque se pintan fuera de `/impreuna`. Ver
 `32-impreuna.md` → «Citirea zilei».
+
+
+## Paquetes de traducción por página
+
+El diccionario principal (`ro.json` / `es.json`) **bloquea el primer
+pintado**: el arranque lo espera. Lo que sólo usa una página no va ahí.
+
+- Paquetes de ruta (`core/i18n/route-packs.ts`, `routePacks('id')` en el
+  `resolve` de la ruta): `about` (Quiénes somos + Invitați), `talent-contest`,
+  `presenter` (panel de control), `leadership` (directorio y perfil),
+  `donate`, `baptisms`. Con su propio resolver: `credo-articles`,
+  `departments`, `guests`, `impreuna`, `legal`.
+- Cada paquete conserva **las mismas raíces** que tenía (`about.story.…`) y se
+  fusiona en el diccionario: las plantillas no cambian.
+- Lo que también pinta otra página **se queda en el principal**: `about.stats`
+  (portada), `talent_contest.{eyebrow,title,countdown,phases,categories,teaser,slide}`
+  (portada y proyección), `leadership.{titles,roles,departments,ministries}`
+  (portada, departamentos, Invitați), `presenter.{window_title,clock_show,countdown_leads}`
+  (proyección).
+- Mover una clave a un paquete y olvidarse de una página que la usaba se
+  detecta: la prueba de humo (`npm run e2e`) falla con «clave a la vista».
+- Tamaño (16/11/2026): principal 38 kB por idioma (era 64).

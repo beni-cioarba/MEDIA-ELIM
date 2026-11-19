@@ -1,0 +1,61 @@
+{
+  "donate": {
+    "eyebrow": "Generosidad",
+    "title": "Donativos",
+    "lead": "La Iglesia Elim vive de la generosidad de quienes la forman. Cada diezmo y cada ofrenda mantiene abiertas las puertas de la casa de oración, sostiene a las familias que pasan necesidad y lleva el Evangelio más lejos.",
+    "verse": {
+      "text": "«Cada uno dé como propuso en su corazón: no con tristeza ni por obligación, porque Dios ama al que da con alegría.»",
+      "ref": "2 Corintios 9:7"
+    },
+    "purposes": {
+      "title": "A dónde llegan tus ofrendas",
+      "items": {
+        "mission": {
+          "title": "La obra de la iglesia",
+          "body": "Los cultos de adoración, el estudio de la Palabra y la formación de quienes sirven."
+        },
+        "building": {
+          "title": "La casa de oración",
+          "body": "El alquiler, los suministros y el mantenimiento del lugar donde nos reunimos cada semana."
+        },
+        "outreach": {
+          "title": "Ayuda social",
+          "body": "Apoyo concreto a las familias de la comunidad que atraviesan dificultades."
+        },
+        "media": {
+          "title": "Retransmisiones y medios",
+          "body": "Las emisiones en directo y el equipo que lleva el culto a quienes no pueden venir."
+        }
+      },
+      "trust": "Las ofrendas las administra el tesorero de la iglesia, bajo la supervisión de los censores.",
+      "trust_link": "Ver la dirección"
+    },
+    "bank": {
+      "title": "Transferencia bancaria",
+      "holder": "Titular",
+      "entity": "Banco",
+      "bic": "Código SWIFT / BIC",
+      "account": "Cuenta",
+      "note": "¿Necesitas un justificante de tu donativo? Escríbenos y te lo enviamos.",
+      "concept": "En «Concepto» puedes poner, por ejemplo:",
+      "concepts": [
+        "Diezmo",
+        "Ofrenda",
+        "Ayuda social"
+      ]
+    },
+    "thanks": {
+      "title": "Gracias",
+      "subtitle": "Cada ofrenda, por pequeña que sea, es semilla para la obra de Dios.",
+      "contact": "¿Tienes alguna duda?"
+    },
+    "card": {
+      "title": "Cómo dar",
+      "bizum_hint": "Lo más rápido, desde la app de tu banco."
+    },
+    "why": {
+      "title": "Por qué damos",
+      "body": "Dar no es una cuota, sino un acto de adoración: devolvemos a Dios parte de lo que Él nos ha confiado. Te invitamos a formar parte de la obra, con fidelidad, según tus posibilidades y con alegría."
+    }
+  }
+}

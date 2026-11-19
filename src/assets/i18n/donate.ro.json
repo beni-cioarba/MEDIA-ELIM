@@ -1,0 +1,61 @@
+{
+  "donate": {
+    "eyebrow": "Dărnicie",
+    "title": "Donează",
+    "lead": "Biserica Elim trăiește din dărnicia celor care o formează. Fiecare zeciuială și fiecare dar ține deschise ușile casei de rugăciune, sprijină familiile aflate în nevoie și duce Evanghelia mai departe.",
+    "verse": {
+      "text": "„Fiecare să dea după cum a hotărât în inima lui: nu cu părere de rău sau de silă, căci pe cine dă cu bucurie îl iubește Dumnezeu.”",
+      "ref": "2 Corinteni 9:7"
+    },
+    "purposes": {
+      "title": "Unde ajung darurile tale",
+      "items": {
+        "mission": {
+          "title": "Lucrarea bisericii",
+          "body": "Serviciile de închinare, studiul Cuvântului și pregătirea celor care slujesc."
+        },
+        "building": {
+          "title": "Casa de rugăciune",
+          "body": "Chiria, utilitățile și întreținerea locului în care ne adunăm în fiecare săptămână."
+        },
+        "outreach": {
+          "title": "Ajutor social",
+          "body": "Sprijin concret pentru familiile din comunitate care trec prin încercări."
+        },
+        "media": {
+          "title": "Transmisiuni și media",
+          "body": "Transmisiunile în direct și echipamentul care duce slujba la cei care nu pot fi prezenți."
+        }
+      },
+      "trust": "Darurile sunt administrate de casierul bisericii, sub verificarea cenzorilor.",
+      "trust_link": "Vezi conducerea"
+    },
+    "bank": {
+      "title": "Transfer bancar",
+      "holder": "Titular",
+      "entity": "Bancă",
+      "bic": "Cod SWIFT / BIC",
+      "account": "Cont",
+      "note": "Ai nevoie de o dovadă a donației? Scrie-ne și ți-o trimitem.",
+      "concept": "La „Concept” poți scrie, de exemplu:",
+      "concepts": [
+        "Zeciuială / Cotizație",
+        "Dar",
+        "Ajutor social"
+      ]
+    },
+    "thanks": {
+      "title": "Mulțumim",
+      "subtitle": "Fiecare dar, oricât de mic, este sămânță pentru lucrarea lui Dumnezeu.",
+      "contact": "Ai o întrebare?"
+    },
+    "card": {
+      "title": "Cum poți dărui",
+      "bizum_hint": "Cel mai rapid, din aplicația băncii tale."
+    },
+    "why": {
+      "title": "De ce dăruim",
+      "body": "Dărnicia nu este o taxă, ci un act de închinare: îi dăm înapoi lui Dumnezeu din ceea ce El ne-a încredințat. Te invităm să fii parte din lucrare — cu credincioșie, după putința ta și cu bucurie."
+    }
+  }
+}

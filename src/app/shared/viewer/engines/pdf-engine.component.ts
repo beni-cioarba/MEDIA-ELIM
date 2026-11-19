@@ -250,7 +250,10 @@ export class PdfEngineComponent {
       this.task = task;
       const pdf = await task.promise;
       if (this.task !== task) {
-        void pdf.destroy();
+        // Llegó tarde (ya se pidió otro documento): se libera por su tarea de
+        // carga. pdf.js 6 quitó `PDFDocumentProxy.destroy()`; destruir la
+        // tarea libera también el documento y su worker.
+        void task.destroy();
         return;
       }
       this.pdf = pdf;

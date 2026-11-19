@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
-import { PersonPhoto, PhotoSlot, photoSource } from '../person-photo';
+import { PersonPhoto, PhotoSlot, photoSource } from '../public/person-photo';
 
 /**
  * Imagen de una persona del organigrama: su foto si la hay y, si no, la

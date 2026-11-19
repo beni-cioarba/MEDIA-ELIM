@@ -116,9 +116,7 @@
       "address": "Dirección",
       "open_maps": "Abrir en Google Maps",
       "copy": "La dirección",
-      "map_title": "Mapa con la ubicación de la Iglesia Elim",
-      "show_map": "Ver el mapa",
-      "map_note": "El mapa se carga desde Google Maps."
+      "map_title": "Mapa con la ubicación de la Iglesia Elim"
     },
     "faq": {
       "language": {

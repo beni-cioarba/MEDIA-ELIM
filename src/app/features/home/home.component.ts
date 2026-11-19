@@ -18,8 +18,8 @@ import { HeroCarouselComponent } from '../../shared/hero-carousel/hero-carousel.
 import { IconComponent } from '../../shared/icon/icon.component';
 import { IconName } from '../../core/ui/icon-name';
 import { FamilyPrayerService, PrayerFamilyView } from '../../core/services/family-prayer.service';
-import { FamilyPhotoComponent } from '../family-prayer/family-photo/family-photo.component';
-import { ContestTeaserComponent } from '../talent-contest/contest-teaser/contest-teaser.component';
+import { FamilyPhotoComponent } from '../../shared/family-photo/family-photo.component';
+import { ContestTeaserComponent } from '../talent-contest/public/contest-teaser/contest-teaser.component';
 import { ImpreunaTeaserComponent } from './impreuna-teaser/impreuna-teaser.component';
 import { BibleWeekComponent } from './bible-week/bible-week.component';
 import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.component';

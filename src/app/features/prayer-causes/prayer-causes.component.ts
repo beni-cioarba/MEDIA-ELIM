@@ -3,7 +3,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { PrayerCausesService } from '../../core/services/prayer-causes.service';
 import { PageSectionComponent } from '../../shared/page-section/page-section.component';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { CausesBoardComponent } from './causes-board/causes-board.component';
+import { CausesBoardComponent } from './public/causes-board/causes-board.component';
 
 /**
  * «Cauzele Bisericii Elim» — página `/cauze-de-rugaciune`.

@@ -122,7 +122,9 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: end;
-  color: var(--c-faint);
+  // `--c-muted`, no `--c-faint`: es un dato (el número del artículo), no un
+  // adorno, y con `faint` quedaba en 2,5:1.
+  color: var(--c-muted);
 }
 
 .toc__link.is-active .toc__badge {

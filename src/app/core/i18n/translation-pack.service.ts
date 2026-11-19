@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService, TranslationObject } from '@ngx-translate/core';
+import { firstValueFrom, map } from 'rxjs';
 
 /**
  * Función que descarga el paquete de traducciones de un idioma concreto.
@@ -18,6 +19,13 @@ export type TranslationPackLoader = (lang: string) => Promise<TranslationObject>
  *
  * Uso: un `resolve` de ruta llama a `load()` antes de activar la página, de
  * modo que la plantilla nunca llegue a pintar claves sin traducir.
+ *
+ * **Orden de arranque.** La primera navegación corre a la vez que el
+ * inicializador de idioma (`withEnabledBlockingInitialNavigation`, ver
+ * `app.config.ts`). Si el paquete se fusionara antes de que haya idioma
+ * activo, iría al de reserva y la carga del diccionario principal lo
+ * reemplazaría entero: claves a la vista. Por eso, sin idioma activo, se
+ * espera al primero.
  */
 @Injectable({ providedIn: 'root' })
 export class TranslationPackService {
@@ -26,8 +34,11 @@ export class TranslationPackService {
   /** Paquetes registrados, para poder reaplicarlos al cambiar de idioma. */
   private readonly loaders = new Map<string, TranslationPackLoader>();
 
-  /** Marcas `id:idioma` ya fusionadas, para no descargar dos veces. */
-  private readonly applied = new Set<string>();
+  /**
+   * Fusión de cada `id:idioma` (la promesa, no una marca): quien pide uno que
+   * ya está en curso espera a que termine, en vez de seguir sin él.
+   */
+  private readonly applied = new Map<string, Promise<void>>();
 
   constructor() {
     this.translate.onLangChange
@@ -38,26 +49,28 @@ export class TranslationPackService {
   /** Registra el paquete y lo fusiona con el idioma activo. Idempotente. */
   async load(id: string, loader: TranslationPackLoader): Promise<void> {
     this.loaders.set(id, loader);
-    await this.apply(id, loader, this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? undefined);
+    const lang =
+      this.translate.getCurrentLang() ??
+      (await firstValueFrom(this.translate.onLangChange.pipe(map((event) => event.lang))));
+    await this.apply(id, loader, lang);
   }
 
   private async applyAll(lang: string): Promise<void> {
     await Promise.all([...this.loaders].map(([id, loader]) => this.apply(id, loader, lang)));
   }
 
-  private async apply(
-    id: string,
-    loader: TranslationPackLoader,
-    lang: string | undefined,
-  ): Promise<void> {
-    if (!lang) return;
-
+  private apply(id: string, loader: TranslationPackLoader, lang: string): Promise<void> {
     const token = `${id}:${lang}`;
-    if (this.applied.has(token)) return;
-    this.applied.add(token);
-
-    const pack = await loader(lang);
-    // El tercer argumento fusiona en profundidad en vez de reemplazar.
-    this.translate.setTranslation(lang, pack, true);
+    let done = this.applied.get(token);
+    if (!done) {
+      done = loader(lang).then((pack) => {
+        // El tercer argumento fusiona en profundidad en vez de reemplazar.
+        this.translate.setTranslation(lang, pack, true);
+      });
+      // Si falla la descarga, que el siguiente intento vuelva a probar.
+      done.catch(() => this.applied.delete(token));
+      this.applied.set(token, done);
+    }
+    return done;
   }
 }

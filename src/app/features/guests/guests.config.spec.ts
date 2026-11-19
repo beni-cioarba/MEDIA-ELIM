@@ -10,6 +10,10 @@ import es from '../../../assets/i18n/guests.es.json';
 import ro from '../../../assets/i18n/guests.ro.json';
 import mainEs from '../../../assets/i18n/es.json';
 import mainRo from '../../../assets/i18n/ro.json';
+// Los pasos de la visita viven en el paquete de «Quiénes somos» (`routePacks('about')`,
+// que Invitați carga también).
+import aboutEs from '../../../assets/i18n/about.es.json';
+import aboutRo from '../../../assets/i18n/about.ro.json';
 
 /** Valor de una clave con puntos en un diccionario anidado (`undefined` si falta). */
 function lookup(dictionary: unknown, key: string): unknown {
@@ -88,8 +92,8 @@ describe('Invitați · datos', () => {
       expect(lookup(es, `guests.sections.${section.id}.chip`)).toBeTruthy();
     }
     for (const step of GUEST_STEPS) {
-      expect(lookup(mainRo, `about.visit.items.${step.id}.body`)).toBeTruthy();
-      expect(lookup(mainEs, `about.visit.items.${step.id}.body`)).toBeTruthy();
+      expect(lookup(aboutRo, `about.visit.items.${step.id}.body`)).toBeTruthy();
+      expect(lookup(aboutEs, `about.visit.items.${step.id}.body`)).toBeTruthy();
     }
   });
 });

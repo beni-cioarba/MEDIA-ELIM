@@ -47,5 +47,10 @@ Lo deja en WebP de 1080 px y calidad 80 —entre 80 y 200 kB— y de paso arregl
 el nombre que pone el navegador al descargar (`cartel.webp (1).png` →
 `cartel.webp`). Es idempotente: pasarlo dos veces no hace nada.
 
+También crea su **miniatura** (`<nombre>-thumb.webp`, 160 px): es la que
+enseña la agenda de eventos, donde el cartel va de icono. **Hay que pasarlo
+siempre** al añadir un cartel: sin miniatura, la fila de la agenda queda con
+un icono roto.
+
 Por qué importa: en la tarjeta de la portada el cartel se ve a 296 px de alto.
 Los 9,5 MB del PNG original serían íntegramente tiempo de carga tirado.

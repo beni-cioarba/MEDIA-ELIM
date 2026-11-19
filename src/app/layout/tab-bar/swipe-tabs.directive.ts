@@ -1,5 +1,6 @@
 import { DOCUMENT, DestroyRef, Directive, ElementRef, NgZone, inject } from '@angular/core';
 import { UiStore } from '../../core/state/ui.store';
+import { injectIsBrowser } from '../../core/util/platform';
 import { TabDirection, TabNavService } from './tab-nav.service';
 
 /** Movimiento a partir del cual se decide si el gesto es horizontal o vertical. */
@@ -121,6 +122,8 @@ export class SwipeTabsDirective {
   private movibles: HTMLElement[] = [];
 
   constructor() {
+    // En el prerender no hay dedos ni fotogramas que cancelar.
+    if (!injectIsBrowser()) return;
     const onStart = (e: TouchEvent): void => this.empezar(e);
     const onMove = (e: TouchEvent): void => this.mover(e);
     const onEnd = (e: TouchEvent): void => this.soltar(e);

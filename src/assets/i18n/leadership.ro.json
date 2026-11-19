@@ -1,0 +1,108 @@
+{
+  "leadership": {
+    "priesthood": {
+      "body": "În biserică preoția este universală: toți credincioșii sunt preoți ai lui Dumnezeu. Pentru conducerea ei spirituală, Dumnezeu a rânduit oficiile de pastor, prezbiter și diacon, la care se ajunge prin actul ordinării.",
+      "ref": "Art. {{n}}",
+      "ref_long": "Citește articolul {{n}} din Mărturisirea de credință"
+    },
+    "hint": "Cardurile cu «Vezi profilul» deschid pagina persoanei.",
+    "structure": {
+      "title": "Structura de conducere",
+      "subtitle": "Oficiile de conducere recunoscute de mărturisirea de credință, la care se ajunge prin actul ordinării."
+    },
+    "committee": {
+      "title": "Comitetul Bisericii",
+      "subtitle": "Membrii care alcătuiesc comitetul și iau deciziile bisericii.",
+      "photo_alt": "Comitetul Bisericii Elim Arganda, împreună, la aniversarea de 25 de ani"
+    },
+    "areas": {
+      "pastoral": {
+        "name": "Grija spirituală",
+        "description": "Restaurare, rugăciune, învățătură și însoțirea vieții bisericii."
+      },
+      "generations": {
+        "name": "Generații",
+        "description": "Copii, adolescenți și tineri: fiecare vârstă cu echipa ei."
+      },
+      "worship": {
+        "name": "Închinare și muzică",
+        "description": "Grupurile, corul și fanfara care însoțesc fiecare serviciu."
+      },
+      "media": {
+        "name": "Media și tehnic",
+        "description": "Sunet, proiecție și transmisie live."
+      },
+      "relations": {
+        "name": "Relații externe",
+        "description": "Cu alte biserici, cu filiala din San Martín de la Vega și cu instituțiile."
+      },
+      "hospitality": {
+        "name": "Primire",
+        "description": "Cine te întâmpină la ușă și cine are grijă de oaspeți."
+      },
+      "facilities": {
+        "name": "Administrație și clădire",
+        "description": "Localul, designul și întreținerea de zi cu zi."
+      }
+    },
+    "contact": {
+      "title": "Vrei să vorbești cu cineva?",
+      "subtitle": "Scrie-ne sau vino la oricare dintre serviciile noastre: te așteptăm.",
+      "cta_contact": "Scrie-ne",
+      "cta_visit": "Cum ajungi la noi"
+    },
+    "directory": {
+      "title": "Cine slujește și unde",
+      "subtitle": "{{areas}} arii de slujire · {{people}} de slujitori",
+      "search": "Caută o persoană sau un departament",
+      "empty": "Niciun rezultat pentru „{{q}}”.",
+      "results_one": "Un departament găsit",
+      "results_other": "{{n}} departamente găsite",
+      "view_label": "Mod de afișare",
+      "view_areas": "Departamente",
+      "view_people": "Persoane",
+      "results_people_one": "O persoană găsită",
+      "results_people_other": "{{n}} persoane găsite",
+      "clear": "Șterge căutarea",
+      "departments_one": "un departament",
+      "departments_other": "{{n}} departamente"
+    },
+    "serves_one": "o slujire",
+    "serves_other": "{{n}} slujiri",
+    "stats": {
+      "people": "Persoane",
+      "offices": "Oficii",
+      "areas": "Arii",
+      "departments": "Departamente"
+    },
+    "pastoral": {
+      "title": "Grija pastorală"
+    },
+    "tier": {
+      "pastor": "Pastorul bisericii",
+      "assistant": "Pastor asistent",
+      "leader": "Conducerea bisericii",
+      "member": "Slujitor"
+    },
+    "view_profile": "Vezi profilul",
+    "leaders": {
+      "title": "Conducerea"
+    },
+    "profile": {
+      "bio": "Biografie",
+      "about": "Despre slujire",
+      "serves": "Unde slujește",
+      "serves_none": "Slujește în conducerea bisericii.",
+      "peers": "Slujește împreună cu",
+      "committee": "Comitetul Bisericii",
+      "fact_since": "din",
+      "pager": "Alte profiluri",
+      "prev": "Anterior",
+      "next": "Următorul",
+      "fact_ministries_one": "slujire",
+      "fact_ministries_other": "slujiri",
+      "fact_areas_one": "arie",
+      "fact_areas_other": "arii"
+    }
+  }
+}

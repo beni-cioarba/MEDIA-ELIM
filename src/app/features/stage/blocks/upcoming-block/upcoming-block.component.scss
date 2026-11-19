@@ -245,7 +245,9 @@
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--c-faint);
+    // `--c-muted`: el rótulo («Predică», «Laudă») se lee; con `--c-faint`
+    // quedaba en 2,5:1.
+    color: var(--c-muted);
   }
 
   dd {

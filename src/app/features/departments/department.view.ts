@@ -2,8 +2,8 @@ import { DepartmentConfig } from '../../core/departments.config';
 import { PEOPLE_INDEX, PersonId, SERVICE_AREAS, ServiceRole } from '../../core/leadership.config';
 import { hasProfile } from '../../core/leadership-profiles.config';
 import { APP_PATHS } from '../../core/navigation/app-paths';
-import { personLink } from '../leadership/leadership.view';
-import { PersonPhoto, personPhoto, photoThumb } from '../leadership/person-photo';
+import { personLink } from '../leadership/public/leadership.view';
+import { PersonPhoto, personPhoto, photoThumb } from '../leadership/public/person-photo';
 
 /** Quien sirve en el departamento, listo para pintar. */
 export interface DepartmentPerson {

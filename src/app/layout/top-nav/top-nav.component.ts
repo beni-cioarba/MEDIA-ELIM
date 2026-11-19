@@ -4,30 +4,24 @@ import {
   DestroyRef,
   ElementRef,
   HostListener,
+  afterNextRender,
   computed,
   inject,
+  viewChild,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
-import { MatButtonModule } from '@angular/material/button';
-import { CHURCH_CONFIG } from '../../core/church.config';
 import { activeBrandSeal } from '../../core/anniversary.config';
-import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
-import { DepartmentsAsideComponent } from './departments-aside.component';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
-import { NavItem, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
+import { NavGroup, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
-import { BibleReadingService } from '../../core/services/bible-reading.service';
-import { FamilyPrayerService } from '../../core/services/family-prayer.service';
-import { ScheduleService } from '../../core/services/schedule.service';
 import { UiStore } from '../../core/state/ui.store';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
 import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
-import { CardCarouselComponent } from '../../shared/card-carousel/card-carousel.component';
-import { FamilyPhotoComponent } from '../../features/family-prayer/family-photo/family-photo.component';
+import { NavPanelComponent } from './nav-panel.component';
 
 /**
  * Barra de navegación principal.
@@ -54,6 +48,13 @@ import { FamilyPhotoComponent } from '../../features/family-prayer/family-photo/
  * la pantalla porque ocupa toda la pantalla. Es lo que hacen los mega-menús de
  * las referencias.
  *
+ * ── El panel se descarga aparte ───────────────────────────────────────
+ * Esta barra es **eager**: va en el primer fotograma de todas las páginas.
+ * El panel de grupo (`NavPanelComponent`) es lo único de la cabecera que
+ * necesita datos de contenido —familias, lectura, programa—, así que se
+ * carga con `@defer` al abrir el menú. Regla para lo que venga: **aquí no se
+ * inyecta ningún servicio de contenido**; lo que pinte datos va en el panel.
+ *
  * El estado (grupo abierto, drawer, scroll) vive en `UiStore` porque también
  * lo consume `MainLayoutComponent` para bloquear el scroll del documento.
  * Qué entrada está activa lo decide `NavActiveService` (ver allí el porqué de
@@ -65,13 +66,10 @@ import { FamilyPhotoComponent } from '../../features/family-prayer/family-photo/
     imports: [
         RouterLink,
         TranslatePipe,
-        MatButtonModule,
         IconComponent,
         LangSwitcherComponent,
         BrandLogoComponent,
-        CardCarouselComponent,
-        FamilyPhotoComponent,
-        DepartmentsAsideComponent,
+        NavPanelComponent,
     ],
     templateUrl: './top-nav.component.html',
     styleUrl: './top-nav.component.scss'
@@ -106,117 +104,16 @@ export class TopNavComponent {
   protected readonly isExternal = isExternalNavItem;
 
   private readonly host = inject(ElementRef<HTMLElement>);
-  private readonly config = inject(CHURCH_CONFIG);
 
-  /** Álbumes de la galería, para la tira del panel de Medios. */
-  protected readonly albums = this.config.mediaEvents;
-
-  /** Dónde está la iglesia, para la tarjeta de invitación de «La iglesia». */
-  protected readonly location = this.config.location;
-
-  /** Destino de la tira de álbumes. */
-  protected readonly galleryPath = blockPath('gallery');
-
-  protected readonly departmentsPath = `/${APP_PATHS.departments}`;
-  protected readonly weeklyPath = blockPath('weekly');
-  protected readonly upcomingPath = blockPath('upcoming');
-  protected readonly biblePath = blockPath('bible');
-  protected readonly contactPath = `/${APP_PATHS.contact}`;
-  protected readonly familyPrayerPath = `/${APP_PATHS.familyPrayer}`;
-
-  protected readonly schedule = inject(ScheduleService);
-
-  /**
-   * Lo próximo, para el panel de «Programa»: es el único grupo cuyas cuatro
-   * entradas son **tiempo**, así que lo que aporta es la respuesta a «¿y ahora
-   * qué?» sin entrar en ninguna.
-   */
-  protected readonly nextService = this.schedule.featuredProgram;
-  protected readonly nextEvent = computed(() => this.schedule.upcomingEvents()[0] ?? null);
-
-  /**
-   * La semana entera, en una tira debajo de «lo próximo».
-   *
-   * Es lo que equilibra el panel de Programa: con sólo las tres tarjetas de
-   * «lo próximo», el destacado medía 99 px al lado de una columna de enlaces
-   * de 244 —un rectángulo vacío de 200 px en la esquina—. Y sobre todo es la
-   * respuesta que falta: «¿qué días abrís?» no está en ninguna de las cuatro
-   * entradas sin entrar en ellas.
-   *
-   * `ScheduleService.weeklyProgram` ya viene rotado para empezar por hoy, así
-   * que la tira se lee hacia delante desde el día en que se está mirando.
-   */
-  protected readonly week = this.schedule.weeklyProgram;
-  protected readonly todayId = computed(() => this.schedule.todayProgram()?.id ?? null);
-
-  private readonly bible = inject(BibleReadingService);
-
-  /**
-   * Lectura de hoy. Con ella el panel cubre **las cuatro** entradas del grupo:
-   * los anuncios están en la franja de la portada, y aquí quedan el culto, el
-   * evento y la lectura. Antes eran dos tarjetas anchas con una línea cada
-   * una y medio panel vacío.
-   */
-  protected readonly todayReading = computed(() => {
-    const week = this.bible.announcedWeek();
-    if (!week) return null;
-    const day = week.days.find((d) => d.isToday) ?? week.days[0];
-    return day ? { passage: day.passage, when: this.schedule.formatWeekdayLong(day.date) } : null;
-  });
-
-  protected readonly prayer = inject(FamilyPrayerService);
-
-  /**
-   * Familias por las que se ora esta semana, en carrusel bajo la semana.
-   *
-   * Es contenido que cambia cada domingo y que hasta ahora sólo se veía
-   * entrando en su página. Y resuelve el hueco que dejaba el panel: la
-   * columna de seis enlaces medía ~400 px y el destacado ~270, con 130 px en
-   * blanco bajo la semana. Si no hay semana vigente, la fila no se pinta.
-   */
-  protected readonly prayerWeek = this.prayer.current;
+  /** La lista de escritorio (oculta por CSS por debajo de `lg`). */
+  private readonly desktopNav = viewChild<ElementRef<HTMLElement>>('desktopNav');
 
   /** El grupo abierto, ya resuelto: la plantilla no tiene que buscarlo. */
-  protected readonly openGroup = computed<(NavItem & { readonly children: readonly NavItem[] }) | null>(() => {
+  protected readonly openGroup = computed<NavGroup | null>(() => {
     const id = this.ui.openGroup();
     if (!id) return null;
     const item = this.items.find((entry) => entry.id === id);
     return item && isNavGroup(item) ? item : null;
-  });
-
-  /**
-   * Qué bloque destacado lleva el panel del grupo abierto.
-   *
-   * **Los tres grupos llevan uno, y no por simetría.** Medido a 1512 px, el
-   * panel apilaba los enlaces arriba y el contenido abajo: la fila de enlaces
-   * se repartía en cinco columnas de 275 px de las que sólo se ocupaban tres,
-   * dejando **568 px vacíos a la derecha** mientras la descripción de «Panel
-   * completo» se partía en dos líneas dentro de su columna estrecha. El panel
-   * acababa midiendo 390 px —el 43 % de la pantalla— para tres enlaces.
-   *
-   * Poniéndolo en dos zonas (enlaces a la izquierda, destacado a la derecha)
-   * ese hueco pasa a ser contenido y el panel baja a ~250 px. Pero eso sólo
-   * funciona si **todos** los grupos tienen algo que enseñar; si no, el grupo
-   * sin destacado vuelve a quedarse con mil píxeles en blanco. De ahí que
-   * «La iglesia» —páginas institucionales, nada que previsualizar— lleve la
-   * tarjeta de invitación: no es relleno, es lo que busca quien está mirando
-   * ese grupo (cuándo y dónde). Un grupo futuro sin destacado sigue siendo
-   * válido: el panel cae solo a una rejilla de enlaces a todo el ancho.
-   */
-  protected readonly asideKind = computed<'media' | 'program' | 'about' | 'departments' | null>(() => {
-    const grupo = this.openGroup();
-    switch (grupo?.id) {
-      case 'media':
-        return this.albums.length > 0 ? 'media' : null;
-      case 'program':
-        return 'program';
-      case 'about':
-        return 'about';
-      case 'departments':
-        return 'departments';
-      default:
-        return null;
-    }
   });
 
   /**
@@ -284,6 +181,29 @@ export class TopNavComponent {
   constructor() {
     this.destroyRef.onDestroy(() => this.cancelarCierre());
 
+    // Precarga del panel, en reposo y **sólo si la barra de escritorio está a
+    // la vista**: en un móvil ese menú no existe y traer su chunk sería gastar
+    // datos del visitante en algo que no puede abrir. Si la ventana se ensancha
+    // más tarde, el panel se descarga al primer vistazo (con su hueco
+    // reservado: `.nav__panel-loading`).
+    //
+    // Es un `import()` a mano y no `prefetch when …` en el `@defer`: con un
+    // disparador principal `when`, el compilador da NG8021 («el prefetch
+    // coincide con el disparador principal») aunque las dos condiciones sean
+    // distintas —compara el tipo, no la expresión—. El módulo queda en la
+    // caché de módulos del navegador y el `@defer` lo resuelve al instante.
+    afterNextRender(() => {
+      const nav = this.desktopNav()?.nativeElement;
+      if (!nav || getComputedStyle(nav).display === 'none') return;
+      const precargar = (): void => {
+        // Si falla (sin red, versión caducada) no pasa nada: es sólo adelantar
+        // trabajo, y el `@defer` volverá a pedirlo cuando haga falta.
+        import('./nav-panel.component').catch(() => undefined);
+      };
+      if (typeof requestIdleCallback === 'function') requestIdleCallback(precargar, { timeout: MS_PRECARGA_MAX });
+      else setTimeout(precargar, MS_PRECARGA_SIN_REPOSO);
+    });
+
     // Cerrar cualquier panel al navegar: evita que el menú quede abierto
     // sobre la página nueva.
     this.router.events
@@ -309,6 +229,11 @@ export class TopNavComponent {
  * hueco de 8 px entre el disparador y el panel.
  */
 const MS_GRACIA_CIERRE = 220;
+
+/** Tope de espera al reposo del navegador antes de precargar el panel igualmente. */
+const MS_PRECARGA_MAX = 3_000;
+/** Donde no hay `requestIdleCallback` (Safari): espera fija tras el primer pintado. */
+const MS_PRECARGA_SIN_REPOSO = 1_500;
 
 /** ¿Hay un puntero fino que pueda «apuntar» sin tocar? */
 function apuntaConRaton(): boolean {

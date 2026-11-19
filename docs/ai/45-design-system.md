@@ -92,21 +92,19 @@ ni Tailwind (duplicaría esta capa de tokens).
 
 ## Iconos
 
-Dos vías, y **hay que elegir la correcta**:
+Una sola vía: `<app-icon name="menu" />` — SVG inline. **No hay fuente de
+iconos** (la de Material Symbols se declaraba «por si acaso», no se usó nunca
+y se retiró el 16/11/2026): un icono que falte se añade al catálogo.
 
-| Caso                                          | Qué usar                                  |
-| --------------------------------------------- | ----------------------------------------- |
-| Icono de la interfaz (menú, flechas, acciones) | `<app-icon name="menu" />` — SVG inline   |
-| Icono suelto y poco frecuente                  | `<mat-icon>favorite</mat-icon>` (Material Symbols) |
-
-`app-icon` usa `provideElimIcons()` (`core/ui/icon-registry.ts`), que registra
-SVG **literales** en el `MatIconRegistry`: cero peticiones de red, cero CLS y
-tipado estricto vía `IconName`. Para añadir uno: amplía `IconName` y añade su
-trazado en `ICON_PATHS`. El compilador te avisará de los usos inválidos.
-
-La fuente **Material Symbols Outlined** se carga sin bloquear el render desde
-`index.html`; hasta que está lista, `html:not(.fonts-symbols-ready)` oculta
-los ligature-icons para que no se vea el texto crudo.
+`app-icon` pinta su propio `<svg>` con los trazados del catálogo
+(`core/ui/icon-registry.ts`, `iconShape(name)`): **sin Angular Material** desde
+el 17/11/2026 (antes envolvía `<mat-icon>` y el `MatIconRegistry`, que entraban
+en el arranque de todas las páginas sólo por esto). Cero peticiones de red,
+cero CLS y tipado estricto vía `IconName`. Mide `1em` (el `svg` también, no
+`100 %`: hay anfitriones que agrandan la caja) y el trazo se ajusta con
+`[strokeWidth]` (≈2.2 en proyección). Para añadir uno: amplía `IconName` y
+añade su trazado en `ICON_PATHS`. El compilador te avisará de los usos
+inválidos.
 
 ## Tipografía
 
@@ -119,6 +117,14 @@ los ligature-icons para que no se vea el texto crudo.
 - Tamaños fluidos con `clamp()` en `--fs-*`.
 - `html { font-size: clamp(15px, 0.9vw + 0.5rem, 20px); }`: todo escala en la
   pantalla del templo sin media queries.
+- **Fuentes propias** (17/11/2026): las tres son variables y salen de
+  `@fontsource-variable/*` (devDependencies), declaradas en
+  `src/styles/_fonts.scss` con los subconjuntos `latin` y `latin-ext` (el
+  rumano necesita ă, ș, ț). El build las copia a `/media/*.woff2` y el service
+  worker las precachea. Sin Google Fonts: ni petición a terceros (privacidad,
+  ver la página legal) ni dependencia de su CDN para que el templo arranque
+  sin red. Fuente nueva: paquete `@fontsource-variable/<x>` + su `@font-face`
+  en `_fonts.scss`.
 
 Ojo: la tipografía **de Material** usa tamaños fijos en `rem` a propósito;
 `clamp()` rompería sus cálculos de densidad.

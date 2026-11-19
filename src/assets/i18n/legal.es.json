@@ -1,0 +1,80 @@
+{
+  "legal": {
+    "eyebrow": "Transparencia",
+    "title": "Información legal y privacidad",
+    "lead": "Quién responde de esta web, qué datos nos llegan y qué servicios externos utiliza. En corto y sin letra pequeña.",
+    "new_tab": "se abre en una pestaña nueva",
+    "updated": "Última actualización: {{date}}",
+    "who": {
+      "title": "Quién responde de esta web",
+      "entity": "Titular",
+      "tax_id": "NIF",
+      "registry": "Registro de Entidades Religiosas",
+      "address": "Dirección",
+      "contact": "Contacto"
+    },
+    "data": {
+      "title": "Qué datos nos llegan",
+      "lead": "La web se puede leer entera sin cuenta y sin decirnos quién eres. Sólo recibimos datos en estos casos:",
+      "form": {
+        "title": "El formulario de contacto",
+        "sent": "Tu nombre, tu correo y tu mensaje llegan al correo de la iglesia a través del servicio Web3Forms. Los usamos sólo para responderte; no se guardan en la web ni se ceden a nadie.",
+        "mail_app": "El formulario abre tu aplicación de correo con el mensaje preparado: lo envías tú, desde tu cuenta. La web no recibe ni guarda nada."
+      },
+      "push": {
+        "title": "El recordatorio diario",
+        "body": "Si lo activas, el servicio OneSignal guarda un identificador anónimo de tu navegador, sin nombre y sin correo. Lo desactivas cuando quieras desde la misma página o desde los ajustes del navegador."
+      },
+      "device": {
+        "title": "Preferencias guardadas en tu dispositivo",
+        "body": "El idioma elegido, tu progreso de lectura de la Biblia y la elección de ver el mapa se guardan en tu navegador. No nos llegan, y las borras cuando quieras vaciando los datos del sitio en el navegador."
+      },
+      "no_tracking": "No usamos cookies propias, no seguimos las visitas y no mostramos publicidad.",
+      "no_tracking_counted": "No usamos cookies ni mostramos publicidad. Contamos las visitas de forma anónima, sin cookies y sin guardar la dirección IP: sólo cuántas personas abren cada página, para saber qué usa la iglesia."
+    },
+    "services": {
+      "title": "Servicios externos",
+      "lead": "Para funcionar, la web habla con otros servidores. Cada uno ve la dirección IP de tu dispositivo, como cualquier web que abres.",
+      "always": "Al abrir las páginas",
+      "on_request": "Sólo si lo pides",
+      "policy": "Su política",
+      "map_allowed": "Has elegido ver el mapa de Google: desde ahora se carga solo en este dispositivo.",
+      "map_revoke": "No cargarlo más",
+      "github": {
+        "purpose": "Aloja la web y los datos de las transmisiones."
+      },
+      "goatcounter": {
+        "purpose": "Cuenta las visitas de cada página, sin cookies y sin guardar la dirección IP. Las páginas con datos personales se cuentan sin nombres. Los datos están en la Unión Europea."
+      },
+      "sentry": {
+        "purpose": "Sólo si hay un error en la web: recibimos su descripción técnica (la página, sin nombres, y el navegador) para poder arreglarlo. Los datos están en la Unión Europea."
+      },
+      "youtube_images": {
+        "purpose": "Las imágenes de vista previa de las transmisiones llegan directamente de YouTube, y la web le pregunta si estamos en directo y cuál es la meditación en vídeo del día."
+      },
+      "impreuna": {
+        "purpose": "La meditación en vídeo del día se lee de la web del proyecto, al abrir la página Proiectul Împreună."
+      },
+      "youtube_player": {
+        "purpose": "Un vídeo sólo arranca cuando lo pulsas, en la variante sin cookies de seguimiento."
+      },
+      "maps": {
+        "purpose": "El mapa se carga sólo después de pulsar «Ver el mapa»."
+      },
+      "web3forms": {
+        "purpose": "Lleva el mensaje del formulario de contacto al correo de la iglesia."
+      },
+      "onesignal": {
+        "purpose": "Envía el recordatorio diario a quien lo ha activado."
+      }
+    },
+    "people": {
+      "title": "Nombres y fotografías publicados",
+      "body": "En la web aparecen nombres y fotografías de miembros de la iglesia: los responsables, las familias por las que oramos, los candidatos al bautismo y las causas de oración. Las páginas de familias, bautismos y causas de oración no aparecen en los buscadores. Si apareces en la web y quieres que se retire, escríbenos y quitamos el nombre o la fotografía."
+    },
+    "rights": {
+      "title": "Tus derechos",
+      "body": "Puedes pedir en cualquier momento ver, corregir o borrar tus datos escribiéndonos a"
+    }
+  }
+}

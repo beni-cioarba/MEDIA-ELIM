@@ -4,6 +4,7 @@ import { Observable, catchError, filter, of, shareReplay, timer, map } from 'rxj
 import { switchMap, tap } from 'rxjs/operators';
 import { CHURCH_CONFIG } from './church.config';
 import { LoggerService } from './services/logger.service';
+import { injectIsBrowser } from './util/platform';
 import { ScheduleService } from './services/schedule.service';
 import { PresentationService } from './presentation.service';
 
@@ -112,6 +113,7 @@ export class YouTubeService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(CHURCH_CONFIG);
   private readonly log = inject(LoggerService).prefix('youtube');
+  private readonly isBrowser = injectIsBrowser();
 
   // Leemos desde la rama especial "youtube-data" alojada en publico por github de manera gratuita y cacheada por su CDN superrápida. 
   // Esto desconecta un 100% tu base de código principal del script de youtube!
@@ -263,6 +265,8 @@ export class YouTubeService {
    * portada y luego va a transmisiones, el sondeo directo se añade entonces.
    */
   start(modo: 'ligero' | 'completo' = 'completo'): void {
+    // En el prerender, nada: los vídeos son del momento y los pide el navegador.
+    if (!this.isBrowser) return;
     if (!this.jsonArrancado) {
       this.jsonArrancado = true;
       this.data$.subscribe();

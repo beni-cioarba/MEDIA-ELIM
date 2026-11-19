@@ -79,7 +79,7 @@
                     <div class="ev-row__actions">
                       @if (c.poster) {
                         <div class="ev-row__poster" [appViewable]="c.poster">
-                          <img [src]="c.ev.poster" alt="" width="864" height="1080" loading="lazy" decoding="async" />
+                          <img [src]="c.posterThumb" alt="" width="128" height="160" loading="lazy" decoding="async" />
                         </div>
                       }
                       <app-calendar-sync-button [event]="c.ev" [iconOnly]="true" />
@@ -123,7 +123,7 @@
                 class="past__poster"
                 [appViewable]="c.poster"
                 [attr.aria-label]="('upcoming.poster' | translate) + ': ' + c.ev.title">
-                <img [src]="c.ev.poster" alt="" width="864" height="1080" loading="lazy" decoding="async" />
+                <img [src]="c.posterThumb" alt="" width="128" height="160" loading="lazy" decoding="async" />
               </button>
             }
           </li>

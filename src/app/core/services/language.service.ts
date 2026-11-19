@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { TelemetryService } from '../telemetry/telemetry.service';
 
 /** Idiomas soportados por la aplicación. */
 export type AppLanguage = 'es' | 'ro';
@@ -26,6 +27,7 @@ const SUPPORTED: readonly AppLanguage[] = ['ro', 'es'];
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   private readonly translate = inject(TranslateService);
+  private readonly telemetry = inject(TelemetryService);
 
   /** Señal reactiva con el idioma actualmente activo. */
   readonly current = signal<AppLanguage>(DEFAULT_LANG);
@@ -54,6 +56,7 @@ export class LanguageService {
   async use(lang: AppLanguage): Promise<void> {
     await this.apply(lang);
     this.writeToStorage(this.current());
+    this.telemetry.event(`limba-${this.current()}`);
   }
 
   toggle(): Promise<void> {

@@ -22,7 +22,7 @@ import {
 import { hasNarrative, storyOf } from '../../../core/leadership-profiles.config';
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { PROFILE_CARDS, PersonCard, cardOf, photoDocument, servicePostings } from '../leadership.view';
+import { PROFILE_CARDS, PersonCard, cardOf, photoDocument, servicePostings } from '../public/leadership.view';
 import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../../shared/viewer/viewable.directive';
 import { PersonAvatarComponent } from '../person-avatar/person-avatar.component';

@@ -26,8 +26,8 @@ Estado tras la reestructuración de navegación + design system.
   componente, con mixins de breakpoints, foco y superficies.
 - **Angular Material 17** con tema M2 propio (navy + dorado), emitiendo sólo el
   tema de los componentes en uso.
-- Iconos: SVG inline registrados en `MatIconRegistry` (`provideElimIcons()`),
-  tipados con `IconName`; Material Symbols como fuente secundaria no bloqueante.
+- Iconos: SVG inline propio (`app-icon` + catálogo `iconShape()`), sin Material,
+  tipados con `IconName`; sin fuente de iconos.
 - `UiStore` con `@ngrx/signals` para el estado de la interfaz.
 - `LoggerService` con ámbito, cableado en `YouTubeService` y `CalendarService`.
 - Logotipo web pasado a WebP de 384 px: **423 kB → 9 kB** (después retirado del
@@ -123,8 +123,8 @@ Estado tras la reestructuración de navegación + design system.
   `angularx-qrcode` 22; ngx-translate 18 con `provideTranslateService` y
   `TranslatePipe`; TypeScript 6; `@angular/build` + Vitest en vez de devkit +
   Karma; `provideAppInitializer`). Node 24 LTS portable en `C:/workspace/.tools`
-  porque el CLI exige ≥ 22.22. zone.js sigue, explícito: zoneless pendiente de
-  decisión.
+  porque el CLI exige ≥ 22.22. Zoneless desde el 17/11/2026 (zone.js
+  desinstalado).
 - **Tema Material M3** (`mat.theme` + paletas generadas + overrides a navy/oro):
   hoja global 38 → 21 kB; ya no hay que registrar el tema de cada componente.
 - **i18n sólo del idioma activo**: chunk por idioma (`import()`), inicial 585 kB
@@ -544,8 +544,9 @@ ambos idiomas; `npm run check` y `npm run build` en verde.
 
 ## Pendiente — prioridad alta
 
-1. **Sin tests.** Vitest (`@angular/build:unit-test`) está configurado pero no hay ni un `.spec.ts`.
-   Candidatos de mayor valor (lógica pura, fácil de cubrir):
+1. **Tests de los servicios de proyección.** Hay 23 `.spec.ts` (177 tests,
+   dentro de `npm run check` desde el 16/11/2026), pero ninguno de estos
+   servicios (fase 1 de `76-plan-maestro.md`):
    - `ScheduleService`: filtrado de pasados, orden por día y hora, `hasUpcomingEvents`.
    - `PresentationBlocksService`: resolución `override ?? auto`, fallback a un
      bloque, persistencia.

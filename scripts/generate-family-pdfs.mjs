@@ -37,18 +37,38 @@
  *
  * Opciones: --weeks 2026-09-27,2026-10-04 (sólo esas; el resto del manifiesto
  *           se conserva) · --out <carpeta> · --browser chrome|msedge (por
- *           defecto: $PDF_BROWSER, chrome, msedge)
+ *           defecto: $PDF_BROWSER, chrome, msedge) · --reuse <carpeta>
+ *
+ * ── --reuse: no volver a imprimir lo que no ha cambiado ────────────────
+ * El despliegue imprimía **todas** las semanas en cada publicación: 64 s en
+ * octubre, 108 s a mediados de noviembre (de un despliegue de 170 s), y
+ * subiendo una semana tras otra. Con `--reuse <carpeta>` cada semana lleva una
+ * **huella** (sus datos + sus fotos + `RENDER_VERSION`); si la carpeta ya
+ * tiene el PDF de esa huella, se copia en vez de imprimirse, y al acabar se
+ * dejan en ella los nuevos. En el despliegue esa carpeta la guarda y restaura
+ * `actions/cache`: sólo se imprime la semana nueva (o la que se haya tocado).
+ * Si la caché se pierde, se imprimen todas otra vez: nunca falta un PDF.
  */
 
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { inflateSync } from 'node:zlib';
 import { chromium } from 'playwright-core';
 import { PDFDocument, PDFName, PDFNumber, PDFRawStream } from 'pdf-lib';
 import sharp from 'sharp';
+import { loadTsModule } from './lib/load-ts-module.mjs';
 
 const CONFIG = 'src/app/core/family-prayer.config.ts';
+/** Fotos de cada semana (entran en su huella: cambiar una foto rehace el PDF). */
+const PHOTOS = 'src/assets/family-prayer';
+/**
+ * Versión del **aspecto** de las diapositivas. La huella de una semana sólo ve
+ * sus datos y sus fotos; si cambia el diseño de la diapositiva (o este script)
+ * y los PDF ya guardados deben rehacerse, se sube este número.
+ */
+const RENDER_VERSION = 1;
 /** Lienzo de la proyección: 1080p, el mismo para el que se mide `--pj-u`. */
 const VIEWPORT = { width: 1920, height: 1080 };
 const FILE_PREFIX = 'rugaciune-pentru-familii';
@@ -111,45 +131,70 @@ if (args.url) {
   fail('Falta --dist <carpeta compilada> o --url <servidor en marcha>.');
 }
 
-const browser = await launchBrowser(args.browser);
-const context = await browser.newContext({
-  viewport: VIEWPORT,
-  deviceScaleFactor: DEVICE_SCALE,
-  // El contenido es rumano y la interfaz también tiene que serlo.
-  locale: 'ro-RO',
-  // Sin service worker: cada página se sirve tal cual está en disco.
-  serviceWorkers: 'block',
-});
-await context.addInitScript(() => {
-  try {
-    localStorage.setItem('iglesia-redes.lang.elegido', 'ro');
-  } catch {
-    /* almacenamiento bloqueado: manda la configuración regional */
-  }
-});
-const page = await context.newPage();
-await page.emulateMedia({ media: 'screen' });
+// ── Reutilización (--reuse) ─────────────────────────────────────────────
+// Qué semanas ya están impresas con la misma huella: ésas se copian. Sin
+// `--reuse` no hay huellas y se imprime todo, como siempre.
+const reuseDir = args.reuse ? resolve(args.reuse) : null;
+const fingerprints = reuseDir ? await weekFingerprints(weeks) : new Map();
+const stored = reuseDir ? await readManifest(join(reuseDir, MANIFEST)) : [];
+const reused = [];
+const pending = [];
+for (const week of weeks) {
+  const hit = stored.find((entry) => entry.presentedOn === week && entry.fingerprint === fingerprints.get(week));
+  if (hit && fingerprints.has(week) && (await copyStored(week))) reused.push(hit);
+  else pending.push(week);
+}
+if (reused.length > 0) console.log(`Reutilizadas ${reused.length} semana(s) sin cambios; a imprimir: ${pending.length}.`);
+
+// El navegador sólo se abre si hay algo que imprimir (en un despliegue sin
+// semana nueva, este paso son milisegundos).
+let browser = null;
+let page = null;
 // Errores de la página: si una semana falla, se cuentan en el mensaje (en el
 // despliegue no hay otra forma de saber qué pasó).
 const pageErrors = [];
-page.on('pageerror', (error) => pageErrors.push(error.message));
-page.on('requestfailed', (request) => pageErrors.push(`no cargó ${request.url()}`));
-page.on('response', (response) => {
-  if (response.status() >= 400) pageErrors.push(`HTTP ${response.status()} ${response.url()}`);
-});
+if (pending.length > 0) {
+  browser = await launchBrowser(args.browser);
+  const context = await browser.newContext({
+    viewport: VIEWPORT,
+    deviceScaleFactor: DEVICE_SCALE,
+    // El contenido es rumano y la interfaz también tiene que serlo.
+    locale: 'ro-RO',
+    // Sin service worker: cada página se sirve tal cual está en disco.
+    serviceWorkers: 'block',
+  });
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('iglesia-redes.lang.elegido', 'ro');
+    } catch {
+      /* almacenamiento bloqueado: manda la configuración regional */
+    }
+  });
+  page = await context.newPage();
+  await page.emulateMedia({ media: 'screen' });
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('requestfailed', (request) => pageErrors.push(`no cargó ${request.url()}`));
+  page.on('response', (response) => {
+    if (response.status() >= 400) pageErrors.push(`HTTP ${response.status()} ${response.url()}`);
+  });
+}
 
 // Con `--weeks` se regeneran sólo esas: el resto del manifiesto se conserva
 // (si no, regenerar una semana borraba las demás de la web).
 const previous = args.weeks ? await readManifest(join(outDir, MANIFEST)) : [];
 const manifest = {
   generatedAt: new Date().toISOString(),
-  weeks: previous.filter((entry) => !weeks.includes(entry.presentedOn) && allWeeks.includes(entry.presentedOn)),
+  weeks: [
+    ...previous.filter((entry) => !weeks.includes(entry.presentedOn) && allWeeks.includes(entry.presentedOn)),
+    ...reused,
+  ],
 };
 let failures = 0;
 
-for (const week of weeks) {
+for (const week of pending) {
   try {
     const entry = await withRetry(() => buildWeek(week));
+    if (fingerprints.has(week)) entry.fingerprint = fingerprints.get(week);
     manifest.weeks.push(entry);
     console.log(`✓ ${week}: ${entry.pages} páginas · ${(entry.bytes / 1024 / 1024).toFixed(2)} MB`);
   } catch (error) {
@@ -164,8 +209,9 @@ for (const week of weeks) {
 manifest.weeks.sort((a, b) => b.presentedOn.localeCompare(a.presentedOn));
 await mkdir(outDir, { recursive: true });
 await writeFile(join(outDir, MANIFEST), `${JSON.stringify(manifest, null, 2)}\n`);
+if (reuseDir) await storeForReuse(manifest);
 
-await browser.close();
+await browser?.close();
 server?.close();
 console.log(`Manifiesto: ${join(outDir, MANIFEST)} (${manifest.weeks.length} semanas)`);
 process.exit(failures > 0 ? 1 : 0);
@@ -191,6 +237,49 @@ async function withRetry(task) {
 function firstLine(error) {
   const text = error instanceof Error ? error.message : String(error);
   return text.match(/^.*/)?.[0] ?? text;
+}
+
+/**
+ * Huella de cada semana: sus datos (tal cual están en el config), sus fotos
+ * (nombre + contenido) y `RENDER_VERSION`. Misma huella ⇒ mismo PDF.
+ */
+async function weekFingerprints(list) {
+  const { FAMILY_PRAYER_WEEKS } = loadTsModule(CONFIG);
+  const out = new Map();
+  for (const week of list) {
+    const data = FAMILY_PRAYER_WEEKS.find((w) => w.presentedOn === week);
+    if (!data) continue; // sin datos no hay huella: se imprime
+    const hash = createHash('sha256').update(`v${RENDER_VERSION}\n${JSON.stringify(data)}\n`);
+    const dir = join(PHOTOS, week);
+    const photos = (await readdir(dir).catch(() => [])).filter((f) => /\.(webp|jpe?g|png)$/i.test(f)).sort();
+    for (const photo of photos) hash.update(photo).update(await readFile(join(dir, photo)));
+    out.set(week, hash.digest('hex'));
+  }
+  return out;
+}
+
+/** Copia a la salida el PDF guardado de una semana. `false` si no está. */
+async function copyStored(week) {
+  const name = `${FILE_PREFIX}-${week}.pdf`;
+  try {
+    await mkdir(join(outDir, week), { recursive: true });
+    await copyFile(join(reuseDir, week, name), join(outDir, week, name));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Deja en la carpeta de reutilización los PDF de esta ejecución y su manifiesto. */
+async function storeForReuse(result) {
+  for (const entry of result.weeks) {
+    if (!entry.fingerprint) continue;
+    const name = `${FILE_PREFIX}-${entry.presentedOn}.pdf`;
+    const target = join(reuseDir, entry.presentedOn);
+    await mkdir(target, { recursive: true });
+    await copyFile(join(outDir, entry.presentedOn, name), join(target, name)).catch(() => undefined);
+  }
+  await writeFile(join(reuseDir, MANIFEST), `${JSON.stringify(result, null, 2)}\n`);
 }
 
 async function readManifest(path) {

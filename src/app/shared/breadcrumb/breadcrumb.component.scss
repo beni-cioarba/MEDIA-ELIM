@@ -52,6 +52,10 @@
 }
 
 .crumbs__link {
+  // Área de pulsación de 24 px (WCAG 2.5.8) sin engordar la franja: el
+  // enlace mide 18 px de alto y el icono de inicio 15 × 15 (medido a 390).
+  @include tap-target(24px);
+
   color: var(--c-muted);
   text-decoration: none;
   transition: color var(--mo-base) var(--ea-standard);

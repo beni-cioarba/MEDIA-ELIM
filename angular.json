@@ -23,9 +23,6 @@
             "outputPath": "dist/iglesia-redes",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -53,15 +50,17 @@
               ]
             },
             "scripts": [],
-            "serviceWorker": "ngsw-config.json"
+            "serviceWorker": "ngsw-config.json",
+            "server": "src/main.server.ts",
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "620kb",
-                  "maximumError": "800kb"
+                  "maximumWarning": "600kb",
+                  "maximumError": "620kb"
                 },
                 {
                   "type": "bundle",
@@ -75,7 +74,13 @@
                   "maximumError": "48kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "sourceMap": {
+                "scripts": true,
+                "styles": false,
+                "hidden": true,
+                "vendor": false
+              }
             },
             "development": {
               "optimization": false,

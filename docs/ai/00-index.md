@@ -10,22 +10,27 @@ src/styles/                 ⭐ Design system global (nivel app)
   _tokens.scss              Primitivas: paletas, escalas, breakpoints (Sass)
   _semantic.scss            Emite las variables CSS `--c-*`, `--sp-*`, `--fs-*`…
   _mixins.scss              from()/until(), focus-ring, surface, container…
-  _theme.scss               Tema de Angular Material (M2, navy + dorado)
+  _theme.scss               Tema de Angular Material (M3: `mat.theme` + overrides navy/oro)
   _base.scss                Reset y estilos de elemento
   _utilities.scss           Utilidades `u-*` (conjunto cerrado)
   _material-overrides.scss  Ajustes de marca para overlays de Material
   _ds.scss                  Barril público: `@use 'ds' as *;`
 src/app/
   app.component.ts          Raíz: sólo <router-outlet>
-  app.config.ts             Providers globales (router, i18n, SW, iconos, CHURCH_CONFIG)
-  app.routes.ts             Rutas: layout + hijos lazy
+  app.config.ts             Providers globales (zoneless, router, i18n, SW, errores)
+  app.config.server.ts      Prerender del build: rutas del servidor, sin red
+  app.routes.server.ts      Qué se prerenderiza (derivado de `data.prerender`)
+  app.routes.ts             `MODULES`: una línea por módulo (sin maqueta → maqueta → 404)
   layout/                   ⭐ Envoltorio reutilizable de la web pública
     main-layout/            Shell: nav + <router-outlet> + pie + dock
-    top-nav/                Barra superior (mat-menu en escritorio)
+    top-nav/                Barra superior + `nav-panel` (mega-menú de escritorio, diferido)
     mobile-nav/             Drawer móvil (diferido, cdkTrapFocus, marcas vivas)
     tab-bar/                Barra de pestañas inferior (< lg): una pestaña por bloque de MAIN_NAV
   core/
-    church.config.ts        ⭐ TODO el contenido no traducible (datos de la iglesia)
+    church.config.ts        ⭐ Tipos + identidad (canales, contacto, ubicación, donativos); reúne `content/` en `CHURCH_CONFIG`
+    content/                ⭐ Contenido por dominio: `announcements` · `events` · `weekly` · `gallery` · `photos` (`*.content.ts`)
+    site.ts                 URL pública canónica (`PUBLIC_URL`): la usa el arranque (SEO)
+    legal.config.ts         Datos de `/legal` y servicios de terceros declarados
     leadership.config.ts    ⭐ Organigrama: personas, cargos y departamentos
     leadership-profiles.config.ts ⭐ Quién tiene perfil `/conducere/<id>` (`PERSON_PROFILES`) y su biografía (opcional)
     bible-reading.config.ts GENERADO por scripts/import-bible-plan.py desde el Excel del plan de lectura
@@ -43,6 +48,8 @@ src/app/
     presentation.service.ts Fullscreen real + fallback CSS simulado
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
     i18n/                   Loader de traducciones embebidas (0 HTTP)
+    presentation/blocks.ts  ⭐ Registro de bloques proyectables: orden, título, duración, regla automática
+    modules/                Modelo de módulo (`definePages`) y `pageRoute`
     navigation/             ⭐ Rutas con nombre y árbol de menú
       app-paths.ts          APP_PATHS, slugs de bloque, blockPath()
       nav.model.ts          NavItem + type guards
@@ -52,9 +59,12 @@ src/app/
       ui.store.ts           SignalStore de UI (drawer, menús, scroll)
     ui/
       icon-name.ts          Unión de nombres de icono permitidos
-      icon-registry.ts      provideElimIcons(): SVG inline en MatIconRegistry
+      icon-registry.ts      catálogo de iconos: iconShape() → SVG de app-icon
+    errors/                 `AppErrorHandler` (destino de todo error no recogido), `isChunkLoadError`, `StaleBuildRecovery`
     util/
       iso-date.ts                    parseIsoDate / startOfDay para fechas `YYYY-MM-DD`
+      auto-reload.ts                 Tope común de recargas automáticas (PWA y chunks caducados)
+      poster-thumb.ts                Miniatura de un cartel (`-thumb.webp`, la genera `npm run posters`)
     services/
       clock.service.ts               Reloj reactivo + visibilidad de pestaña
       schedule.service.ts            Programa semanal + eventos futuros derivados
@@ -73,7 +83,8 @@ src/app/
       logger.service.ts              Log con ámbito (`.prefix('youtube')`)
       pwa-update.service.ts          Auto-actualización del Service Worker
       seo.service.ts / AppTitleStrategy  Título y meta por ruta
-  features/
+  features/                 Un módulo por carpeta: `<x>.pages.ts` (páginas, datos puros) + `<x>.routes.ts`; `public/` = su API para otras features (`10-architecture.md`)
+    not-found/              Página «no encontrada» (ruta comodín `**`; secciones derivadas de `MAIN_NAV`)
     home/                   Portada pública (hero, avisos, «Când ne întâlnim» + semana de lectura `bible-week/`, eventos, Împreună `impreuna-teaser/`, bienvenida…)
     nav-hub/                Portada de sección de cada grupo (`/biserica`, `/program`, `/multimedia`)
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
@@ -89,8 +100,7 @@ src/app/
     departments/            ⭐ Departamente: portada `/departamente` + página por departamento + invitación a la masa de tineret
     presenter/              ⭐ Panel de control (`/media/control`, sin shell). Consola: `ui-dense ui-dark`
     styleguide/             ⭐ Guía de estilos viva (`/stil`): tokens, primitivas `ui-*` y patrones
-    projection/             Ventana de proyección / vista previa (`/media/ecran[?rol=preview]`, sin shell)
-    stage/                  ⭐ Escenario proyectable (.stage)
+    stage/                  ⭐ Escenario proyectable (.stage) + `projection/` (ventana `/media/ecran[?rol=preview]`, sin shell)
       stage.component.*     Marca, carrusel, QR, controles
       blocks/               Un componente por bloque proyectable
         announcement-block/ bible-block/    socials-block/  streams-block/
@@ -117,16 +127,19 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 
 | Petición típica                                     | Fichero(s)                                              |
 | --------------------------------------------------- | ------------------------------------------------------- |
-| «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/church.config.ts` → `announcements` |
+| «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/content/announcements.content.ts` |
 | «Proiectul Împreună» · «lectura / vídeo del día del Cult» · «plan 2027» · «proyectar la semana del proyecto» | `docs/ai/32-impreuna.md` → `npm run impreuna:sync` (vídeos; lo hace cada deploy) · `-- --plan --year <año>` (edición nueva) · diapositiva `impreuna` (apagada por defecto desde el 15/11/2026; se enciende en el panel) · tema del ayuno del primer jueves → `IMPREUNA_FASTING_THEMES` · **aviso de las 08:00** (activar OneSignal, probar, `dry-run`) → § 7 |
 | «Página para los que vienen por primera vez» · «QR de bienvenida» · «imprimir el QR» | `docs/ai/33-guests.md` → `/invitati`, `/invitati/qr`, `core/guests.config.ts` |
-| «Añade un evento / bautizo / conferencia»           | `core/church.config.ts` → `upcomingEvents`              |
+| «Añade un evento / bautizo / conferencia»           | `core/content/events.content.ts` (+ `npm run posters` si lleva cartel) |
 | «Nuevo botez» · «candidatos al bautismo» · «fotos / directo de un botez» | `docs/ai/34-baptisms.md` → `core/baptisms.config.ts` + `scripts/import-baptism-photos.mjs` |
 | «Cambia la lista de enfermos / causas» | `docs/ai/37-prayer-causes.md` → `core/prayer-causes.config.ts` (+ `updatedOn`) |
 | «PDF de las familias» · «que se pueda descargar la semana» | Se genera solo al publicar; en local `npm run pdf:familii -- --url http://localhost:4310/`. Botón «Descarcă PDF» en cada semana (sólo descarga; compartir = enlace con «Distribuie») — `docs/ai/36-family-prayer.md` → «PDF de la semana» |
 | «Familias de esta semana» · «nuevas fotos de familias» | `docs/ai/36-family-prayer.md` → `scripts/import-family-photos.mjs` + `core/family-prayer.config.ts` |
 | «Nuevo Excel del plan de lectura bíblica»           | `python scripts/import-bible-plan.py <xlsx>` → regenera `core/bible-reading.config.ts` (`20-content-i18n.md`) |
-| «Cambia el horario del culto»                       | `core/church.config.ts` → `weeklyProgram`               |
+| «Cambia el horario del culto»                       | `core/content/weekly.content.ts`                  |
+| «Cambia las fotos del carrusel de portada»          | `core/content/photos.content.ts` (y la precarga de `src/index.html`) |
+| «Texto largo que sólo usa una página»               | Paquete en `core/i18n/route-packs.ts` + `resolve` en su ruta (`20-content-i18n.md`) |
+| «Una foto pesa demasiado»                           | `npm run images:budget` (presupuestos en `scripts/lib/image-budget.mjs`) |
 | «Añade una red social»                              | `core/church.config.ts` → `socials` + i18n              |
 | «Cambia quién lleva un departamento»                | `core/leadership.config.ts` (+ i18n si es nuevo)        |
 | «Nuevo departamento» · «más contenido en Tineret / Cor…» · «la app de la masa» | `docs/ai/39-departments.md` → `core/departments.config.ts` + `departments.*` |
@@ -140,10 +153,10 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 | «Que tal bloque no salga al presentar»              | Panel de control (o popover de la ventana), nada de código |
 | «Quitar / poner el QR al proyectar»                 | Es la diapositiva «Site-ul bisericii» (bloque `website`): se enciende o apaga como cualquier bloque, sin código — `30-presentation.md` → «Lienzo» |
 | «Avisar de que hoy también hay directo» · «que compartan la transmisión» | Panel de control → «Anunță transmisiunea live de azi» (caduca a medianoche; nada de código): «ÎN DIRECT» en la esquina + QR del directo en la diapositiva del QR. `docs/ai/30-presentation.md` → «Aviso de directo» |
-| «Que tal bloque dure más / menos» · «hoy no leáis este anuncio» | Panel de ajustes (−/+ segundos por bloque; casilla por anuncio). Defectos en `DEFAULT_DURATIONS_S` |
+| «Que tal bloque dure más / menos» · «hoy no leáis este anuncio» | Panel de ajustes (−/+ segundos por bloque; casilla por anuncio). Defectos: `durationS` en `core/presentation/blocks.ts` |
 | «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |
-| «Nueva página / sección»                            | `docs/ai/10-architecture.md` (receta completa)          |
+| «Nueva página / sección»                            | `node scripts/new-module.mjs <id>` — `docs/ai/10-architecture.md` |
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
 | «Barra de abajo del móvil» · «portada de una sección» · «algo fijo abajo se solapa» | `docs/ai/15-navigation.md` → «Barra de pestañas y portadas de sección» (`--app-tab-bar-h`) |
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |
@@ -157,7 +170,9 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 | «¿Qué logo pongo aquí?» · «Cambia el icono de la app» · «Logo de INEB» | `docs/ai/45-design-system.md` → «Marca» (wordmark `app-brand-logo` / emblema → `npm run pwa:icons` / `app-ineb-logo`; hoja de marca INEB en `shared/ineb-logo/README.md`) |
 | «Pantalla completa de la proyección desde el panel» | Botón «Pantalla completa» del panel (`ProjectionWindowService.toggleFullscreen`, gesto delegado) — `docs/ai/30-presentation.md` |
 | «¿Se ve bien en móvil?» · «Hazlo responsive»        | `scripts/responsive-audit.snippet.js` en 320 · 375 · 768 · 1024 · 1280 — regla en `docs/ai/40-styling.md` → Responsive |
-| «Mejorar rendimiento / carga» · «Nuevo módulo grande» | `docs/ai/75-plan-evolucion.md` (diagnóstico medido + plan por fases) |
+| «Mejorar rendimiento / carga» · «Nuevo módulo grande» | `docs/ai/76-plan-maestro.md` (auditoría y fases 0-5, con su estado) y `docs/ai/75-plan-evolucion.md` (el plan anterior) |
+| «Prerender» · «Página sin contenido en el HTML» · «`window is not defined` en el build» | `docs/ai/50-build-deploy.md` → «Prerender»; reglas en `docs/ai/10-architecture.md` → «Código que corre también en Node» |
+| «Analítica» · «Registro de errores» · «Sentry»       | `docs/ai/77-analitica-errores.md` (`core/telemetry`: GoatCounter y Sentry activos; añadir un evento) |
 | «Textos pequeños al proyectar» · «No cabe en la diapositiva» | `docs/ai/30-presentation.md` → «Legibilidad» (escala de cartel: un anuncio = una diapositiva, jerarquía, autoajuste 1–0,7, `webOnly`); `npm run check:projection` |
 | «Subir Angular / dependencias»                      | `docs/ai/50-build-deploy.md` → Node (24 portable en `.tools`) y `ng update` por versiones |
 | «Ajusta el diseño / tamaños en proyección»          | `docs/ai/30-presentation.md` (sistema `--pj-u`) + `styles/_projection.scss` |
@@ -168,7 +183,9 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 1. La app funciona **sin backend**: no añadas llamadas a servidores propios.
 2. `es.json` y `ro.json` tienen exactamente las **mismas claves**.
 3. Todo componente es `standalone` + `OnPush`.
-4. El bundle inicial se mantiene bajo presupuesto (620 kB aviso / 800 kB error).
+4. El bundle inicial se mantiene bajo presupuesto (600 kB aviso / **620 kB error**:
+   el build falla). El layout es eager: **ningún servicio de contenido** en
+   `layout/` (lo que pinte datos se difiere, como `NavPanelComponent`).
 5. La proyección nunca debe quedarse en blanco: siempre hay ≥ 1 bloque activo.
    Y nunca proyecta contenido caducado: anuncios y eventos se filtran por fecha
    con el reloj compartido (`ClockService`), sin recargar.

@@ -9,21 +9,11 @@ import { TalentContestService } from './talent-contest.service';
 import { toIsoDate } from '../util/iso-date';
 import { PresentationDisplayService } from './presentation-display.service';
 import { ScheduleService, UpcomingEventView } from './schedule.service';
+import { LoggerService } from './logger.service';
+import { BlockSources, PRESENTATION_BLOCKS, PresentationBlockId } from '../presentation/blocks';
 
-/** Identificador estable de cada bloque proyectable del carrusel. */
-export type PresentationBlockId =
-  | 'announcements'
-  | 'socials'
-  | 'streams'
-  | 'gallery'
-  | 'weekly'
-  | 'upcoming'
-  | 'bible'
-  | 'families'
-  | 'causes'
-  | 'talent'
-  | 'impreuna'
-  | 'website';
+export type { PresentationBlockId } from '../presentation/blocks';
+
 
 /** Preferencia manual del operador. `null` ⇒ decide la regla automática. */
 export type PresentationBlockOverride = boolean | null;
@@ -164,29 +154,10 @@ const SELECTABLE_BLOCKS: readonly SelectableBlockId[] = ['announcements', 'upcom
 const ORDER_KEY = 'iglesia-redes.presentation.order';
 
 /**
- * Orden de proyección. Cambiarlo aquí cambia el orden del carrusel.
- * Los anuncios y la lectura bíblica de la semana van primero: son lo que la
- * congregación necesita leer antes de que empiece el programa. En la oración,
- * primero las causas de la iglesia y después las familias de la semana
- * (04/10/2026, a petición del usuario).
+ * Orden de proyección por defecto y títulos: del registro de bloques
+ * (`core/presentation/blocks.ts`), el único sitio donde se declaran.
  */
-const BLOCK_DEFS: readonly PresentationBlockDef[] = [
-  { id: 'announcements', titleKey: 'announcements.title' },
-  { id: 'causes', titleKey: 'prayer_causes.title' },
-  { id: 'families', titleKey: 'family_prayer.title' },
-  { id: 'bible', titleKey: 'bible.title' },
-  // Proiectul Împreună: junto a la lectura de la iglesia (es la otra lectura).
-  { id: 'impreuna', titleKey: 'impreuna_slide.title' },
-  { id: 'socials', titleKey: 'socials.section_title' },
-  { id: 'streams', titleKey: 'streams.title' },
-  { id: 'gallery', titleKey: 'gallery.title' },
-  { id: 'weekly', titleKey: 'weekly.title' },
-  { id: 'upcoming', titleKey: 'upcoming.title' },
-  // Talantul în Negoț: tras los eventos (es otro «lo que viene») y antes del QR.
-  { id: 'talent', titleKey: 'talent_contest.title' },
-  // El QR, al final de la vuelta: «todo esto está en la web».
-  { id: 'website', titleKey: 'website_slide.block' },
-];
+const BLOCK_DEFS: readonly PresentationBlockDef[] = PRESENTATION_BLOCKS.map(({ id, titleKey }) => ({ id, titleKey }));
 
 /**
  * Controla **qué se proyecta** cuando se pulsa "Presentar".
@@ -219,6 +190,7 @@ export class PresentationBlocksService {
   private readonly talentContest = inject(TalentContestService);
   private readonly display = inject(PresentationDisplayService);
   private readonly clock = inject(ClockService);
+  private readonly log = inject(LoggerService).prefix('proiectie');
 
   /** Preferencias manuales persistidas (ausente ⇒ modo automático). */
   private readonly overrides = signal<Partial<Record<PresentationBlockId, boolean>>>(
@@ -351,24 +323,35 @@ export class PresentationBlocksService {
     inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', onStorage));
   }
 
-  /** Reglas automáticas: un bloque sólo se auto-proyecta si tiene contenido. */
-  private readonly autoAvailability: Signal<Record<PresentationBlockId, boolean>> = computed(() => ({
-    announcements: this.announcements.projectable().length > 0,
-    socials: this.config.socials.length > 0,
-    streams: true,
-    gallery: this.config.mediaEvents.length > 0,
-    weekly: this.config.weeklyProgram.length > 0,
-    upcoming: this.schedule.hasUpcomingEvents(),
-    bible: this.bible.hasReading(),
-    families: this.familiesWeek() !== null,
-    causes: this.prayerCauses.hasCauses,
-    // Mientras quede alguna fase por delante (o se esté celebrando).
-    talent: this.talentContest.focusPhase() !== null,
-    // Fuera de la presentación por defecto (petición del usuario,
-    // 15/11/2026): no sale sola. El operador puede encenderla en el panel.
-    impreuna: false,
-    website: true,
-  }));
+  /** Lo que consultan las reglas automáticas del registro. */
+  private readonly sources: BlockSources = {
+    config: this.config,
+    announcements: this.announcements,
+    schedule: this.schedule,
+    bible: this.bible,
+    prayerCauses: this.prayerCauses,
+    talentContest: this.talentContest,
+    hasFamiliesWeek: () => this.familiesWeek() !== null,
+  };
+
+  /**
+   * Reglas automáticas (del registro): un bloque sólo se auto-proyecta si
+   * tiene contenido. **Cada una protegida**: si una lanza una excepción, ese
+   * bloque cuenta como «sin contenido» y los demás siguen.
+   */
+  private readonly autoAvailability: Signal<Record<PresentationBlockId, boolean>> = computed(
+    () =>
+      Object.fromEntries(
+        PRESENTATION_BLOCKS.map((block) => {
+          try {
+            return [block.id, block.auto(this.sources)];
+          } catch (error) {
+            this.log.error(`Regla automática del bloque «${block.id}» rota: queda fuera`, error);
+            return [block.id, false];
+          }
+        }),
+      ) as Record<PresentationBlockId, boolean>,
+  );
 
   /** Estado resuelto de todos los bloques (para el panel de ajustes). */
   readonly states = computed<readonly PresentationBlockState[]>(() => {
@@ -479,6 +462,17 @@ export class PresentationBlocksService {
    * mensaje, para que el operador entienda la pantalla en blanco.
    */
   expand(id: PresentationBlockId, view: ExpandView = 'projection'): readonly PresentationSlide[] {
+    // Frontera de error por bloque: un dato roto en uno no deja la proyección
+    // en blanco; ese bloque se queda sin diapositivas y los demás siguen.
+    try {
+      return this.expandBlock(id, view);
+    } catch (error) {
+      this.log.error(`No se pudieron preparar las diapositivas de «${id}»: queda fuera`, error);
+      return [];
+    }
+  }
+
+  private expandBlock(id: PresentationBlockId, view: ExpandView): readonly PresentationSlide[] {
     const titleKey = this.titleKeyOf(id);
     const projection = view === 'projection';
     const paginate = view !== 'web';

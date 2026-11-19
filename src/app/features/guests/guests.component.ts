@@ -7,7 +7,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG, UpcomingEvent } from '../../core/church.config';
@@ -38,8 +37,9 @@ import { SocialIconComponent } from '../../shared/social-icon/social-icon.compon
 import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
 import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.component';
-import { STORY_FACTS, STORY_FACTS_AS_OF } from '../about/about-story.data';
-import { personPhoto, photoSource, PhotoSource } from '../leadership/person-photo';
+import { MapEmbedComponent } from '../../shared/map-embed/map-embed.component';
+import { STORY_FACTS, STORY_FACTS_AS_OF } from '../about/public/about-story.data';
+import { personPhoto, photoSource, PhotoSource } from '../leadership/public/person-photo';
 import {
   buildVCard,
   glossTitle,
@@ -102,6 +102,7 @@ const SAVED_NOTICE_MS = 6000;
     CopyButtonComponent,
     ViewableDirective,
     WeekScheduleComponent,
+    MapEmbedComponent,
   ],
   templateUrl: './guests.component.html',
   styleUrl: './guests.component.scss',
@@ -113,7 +114,6 @@ export class GuestsComponent {
   private readonly calendar = inject(CalendarService);
   private readonly translate = inject(TranslateService);
   private readonly clock = inject(ClockService);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
 
@@ -259,20 +259,6 @@ export class GuestsComponent {
   protected readonly events = computed(() =>
     this.schedule.upcomingEvents().slice(0, GUEST_EVENTS_MAX),
   );
-
-  /** Mapa incrustado (el mismo de Contact), en el idioma activo. */
-  protected readonly mapEmbedUrl = computed<SafeResourceUrl>(() =>
-    this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://maps.google.com/maps?q=${encodeURIComponent(this.config.location.mapsQuery)}&hl=${this.language.current()}&z=16&output=embed`,
-    ),
-  );
-
-  /**
-   * El mapa de Google se carga **a petición**: hasta que se pulsa, ni cookies
-   * de terceros ni ~1 MB de scripts. Debajo ya está la dirección y «Abrir en
-   * Google Maps», que es lo que usa casi todo el mundo desde el teléfono.
-   */
-  protected readonly mapLoaded = signal(false);
 
   /** Aviso accesible tras descargar el contacto. */
   protected readonly contactSaved = signal(false);

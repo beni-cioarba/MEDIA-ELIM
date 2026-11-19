@@ -14,7 +14,7 @@
  * Se distribuye como parcial SCSS (`@use`) en vez de como CSS global para
  * que cada página siga con estilos encapsulados.
  *
- * Uso:  @use '../../shared/styles/buttons' as *;
+ * Uso:  @use './buttons' as *;
  * ===================================================================== */
 
 .btn {

@@ -1,9 +1,21 @@
-<main
+<!-- Raíz: un `div`, no un `main`. Dentro de la web el escenario ya vive en
+     el `main` de la maqueta (dos `main` anidados es un error de landmarks);
+     sólo es el contenido principal cuando va solo, en la ventana de
+     proyección, y entonces lo dice con `role` (entrada `landmark`). -->
+<div
   class="stage"
+  [attr.role]="landmark() ? 'main' : null"
   [class.is-fullscreen]="fullscreen()"
   [class.stage--bleed]="bleed()"
   [attr.data-solo-pages]="soloPages()"
 >
+  <!-- Título de la página en la web. Los bloques traen el suyo como `h2`
+       (son secciones de un panel); sin esto, ninguna de las páginas
+       `/media/…` tenía `h1`. Oculto a la vista: el diseño ya enseña el
+       título del bloque. -->
+  @if (pageTitleKey(); as tituloPagina) {
+    <h1 class="u-sr-only">{{ tituloPagina | translate }}</h1>
+  }
   <!-- Capa de fondo decorativa: nebulosa + grano sutil para evitar bandas en proyector -->
   <div class="backdrop" aria-hidden="true">
     <div class="halo halo--gold"></div>
@@ -28,20 +40,105 @@
                vecinas (la siguiente precarga sus fotos; la anterior hace el
                fundido de salida). El resto es un div vacío. -->
           @if (isMounted(slide)) {
+            <!-- Cada bloque es un chunk propio (`@defer`): `/media/program` sólo
+                 descarga el suyo, no los trece. Proyectando, se monta la
+                 diapositiva en pantalla y sus vecinas, así que el chunk de la
+                 siguiente ya está en camino antes de que le toque (y el
+                 service worker los tiene todos en caché). Un chunk que no
+                 llega sale por `AppErrorHandler` (recarga con la versión
+                 nueva). Qué bloques hay: `core/presentation/blocks.ts`. -->
             @switch (slide.block) {
-              @case ('announcements') { <app-announcement-block [announcement]="slide.announcement ?? null" [part]="slide.page ?? null" /> }
-              @case ('socials') { <app-socials-block /> }
-              @case ('streams') { <app-streams-block /> }
-              @case ('gallery') { <app-gallery-block /> }
-              @case ('weekly') { <app-weekly-block [rehearsals]="selectedBlock() === 'weekly'" /> }
-              @case ('upcoming') { <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" /> }
-              @case ('bible') { <app-bible-block /> }
-              @case ('causes') { <app-causes-block /> }
-              @case ('talent') { <app-talent-block /> }
-              @case ('impreuna') { <app-impreuna-block /> }
-              @case ('website') { <app-website-block /> }
-              @case ('families') { <app-family-block [week]="slide.prayerWeek ?? null" [family]="slide.family ?? null" /> }
-              @case ('location') { <app-location-block /> }
+              @case ('announcements') {
+                @defer (on immediate) {
+                  <app-announcement-block [announcement]="slide.announcement ?? null" [part]="slide.page ?? null" />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('socials') {
+                @defer (on immediate) {
+                  <app-socials-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('streams') {
+                @defer (on immediate) {
+                  <app-streams-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('gallery') {
+                @defer (on immediate) {
+                  <app-gallery-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('weekly') {
+                @defer (on immediate) {
+                  <app-weekly-block [rehearsals]="selectedBlock() === 'weekly'" />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('upcoming') {
+                @defer (on immediate) {
+                  <app-upcoming-block [events]="slide.events ?? null" [page]="slide.page ?? null" />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('bible') {
+                @defer (on immediate) {
+                  <app-bible-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('causes') {
+                @defer (on immediate) {
+                  <app-causes-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('talent') {
+                @defer (on immediate) {
+                  <app-talent-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('impreuna') {
+                @defer (on immediate) {
+                  <app-impreuna-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('website') {
+                @defer (on immediate) {
+                  <app-website-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('families') {
+                @defer (on immediate) {
+                  <app-family-block [week]="slide.prayerWeek ?? null" [family]="slide.family ?? null" />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
+              @case ('location') {
+                @defer (on immediate) {
+                  <app-location-block />
+                } @placeholder {
+                  <div class="slide__loading" aria-hidden="true"></div>
+                }
+              }
             }
           }
         </div>
@@ -129,8 +226,11 @@
         </svg>
       </button>
 
-      <!-- Selector de bloques a presentar + ajustes del QR -->
-      <app-presentation-settings />
+      <!-- Selector de bloques a presentar + ajustes del QR. Diferido: sólo
+           existe proyectando, y la web (`/media/<bloque>`) no lo descarga. -->
+      @defer (on immediate) {
+        <app-presentation-settings />
+      }
 
       <!-- Pantalla completa del navegador (sólo en la ventana de proyección) -->
       @if (presentation.canRequestNativeFullscreen()) {
@@ -154,7 +254,9 @@
        decide cuándo se ve (ver ServiceCountdownService). -->
   @if (fullscreen() && !presentation.isSolo()) {
     <div class="stage-countdown">
-      <app-service-countdown />
+      @defer (on immediate) {
+        <app-service-countdown />
+      }
     </div>
   }
 
@@ -163,7 +265,9 @@
        imprime el PDF. -->
   @if (fullscreen() && !presentation.isSolo() && display.showClock()) {
     <div class="stage-clock">
-      <app-stage-clock />
+      @defer (on immediate) {
+        <app-stage-clock />
+      }
     </div>
   }
 
@@ -196,4 +300,4 @@
       </span>
     </div>
   }
-</main>
+</div>

@@ -4,8 +4,8 @@ import {
   PrayerFamilyView,
   PrayerWeekView,
 } from '../../../../core/services/family-prayer.service';
-import { FamilyCardComponent } from '../../../family-prayer/family-card/family-card.component';
-import { FamilyCollageComponent } from '../../../family-prayer/family-collage/family-collage.component';
+import { FamilyCardComponent } from '../../../family-prayer/public/family-card/family-card.component';
+import { FamilyCollageComponent } from '../../../family-prayer/public/family-collage/family-collage.component';
 
 /**
  * Bloque «Rugăciune pentru familii»: **el resumen y, detrás, una ficha por

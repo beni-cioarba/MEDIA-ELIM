@@ -1,5 +1,6 @@
 import { DOCUMENT, DestroyRef, Injectable, NgZone, computed, inject, signal } from '@angular/core';
 import type { ProjectionRole } from '../presentation.service';
+import { injectIsBrowser } from '../util/platform';
 
 /**
  * Prioridad de cada papel a la hora de llevar el reloj de la presentación.
@@ -141,8 +142,10 @@ export class PresentationSyncService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
 
+  // Sólo en el navegador: Node también tiene `BroadcastChannel` y en el
+  // prerender abriría un canal de verdad (y no hay ventanas con quien hablar).
   private readonly channel: BroadcastChannel | null =
-    typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel(CHANNEL_NAME);
+    !injectIsBrowser() || typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel(CHANNEL_NAME);
 
   /** Identidad estable de esta instancia (ventana/iframe/pestaña). */
   readonly instanceId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;

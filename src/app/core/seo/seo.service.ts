@@ -2,7 +2,7 @@ import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
-import { CHURCH_CONFIG } from '../church.config';
+import { PUBLIC_URL } from '../site';
 
 /** Metadatos SEO declarados en `data` de cada ruta. */
 export interface RouteSeo {
@@ -43,7 +43,6 @@ export class SeoService {
   private readonly translate = inject(TranslateService);
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
-  private readonly config = inject(CHURCH_CONFIG);
   private readonly document = inject(DOCUMENT);
 
   private readonly current = signal<RouteSeo | null>(null);
@@ -91,7 +90,7 @@ export class SeoService {
    */
   private pageUrl(): string {
     const path = this.path().replace(/\/+$/, '');
-    return `${this.config.publicUrl.replace(/\/$/, '')}${path ? `${path}/` : '/'}`;
+    return `${PUBLIC_URL.replace(/\/$/, '')}${path ? `${path}/` : '/'}`;
   }
 
   /** Traduce `key`; si no existe (ngx-translate devuelve la clave), `fallback`. */

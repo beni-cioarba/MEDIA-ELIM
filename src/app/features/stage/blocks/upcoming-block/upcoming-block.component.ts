@@ -12,6 +12,7 @@ import { ShareButtonComponent } from '../../../../shared/share-button/share-butt
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { ViewableDirective } from '../../../../shared/viewer/viewable.directive';
 import { ViewerDocument } from '../../../../shared/viewer/core/viewer-document.model';
+import { posterThumb } from '../../../../core/util/poster-thumb';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 60 * MINUTE_MS;
@@ -39,6 +40,8 @@ interface EventCard {
   /** «10:00 & 18:00» → `['10:00', '18:00']`. */
   readonly times: readonly string[];
   readonly poster: readonly ViewerDocument[] | null;
+  /** El cartel en pequeño, para donde va como icono (fila de agenda, archivo). */
+  readonly posterThumb: string | null;
 }
 
 /** Agenda agrupada por mes: con veinte eventos se lee como un calendario. */
@@ -200,6 +203,7 @@ export class UpcomingBlockComponent {
         year: this.format(ev.date, lang, { year: 'numeric' }),
       },
       times: ev.time.split('&').map((t) => t.trim()).filter(Boolean),
+      posterThumb: ev.poster ? posterThumb(ev.poster) : null,
       poster: ev.poster
         ? [
             {

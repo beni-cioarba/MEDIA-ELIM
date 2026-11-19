@@ -20,10 +20,14 @@ La CI usa `actions/setup-node@v4` con `node-version: '24'`.
 npm start        # ng serve (prestart regenera version.ts y el calendario de suscripción)
 npm run build    # ng build (producción; prebuild = version.ts + calendario + npm run check)
 npm run watch    # build --watch en desarrollo
-npm test         # Vitest (@angular/build:unit-test) — configurado, aún sin specs
-npm run check    # i18n:check + check:projection + Drive sin red (puertas de calidad, también en CI)
+npm test         # Vitest (@angular/build:unit-test), en modo observación
+npm run test:unit  # los mismos tests, una pasada (lo que usa `npm run check`)
+npm run check    # i18n:check + check:projection + Drive sin red + tests de scripts + tests unitarios (puertas de calidad, también en CI)
 npm run i18n:check
 npm run check:projection   # presupuesto de legibilidad de la proyección
+npm run check:content      # fechas, ids, ficheros referenciados y claves de los *.config.ts
+npm run check:boundaries   # capas: una feature no importa de otra; layout y shared, tampoco
+npm run e2e -- --dist <carpeta browser>   # prueba de humo sobre la compilación (ver abajo)
 npm run version:generate
 npm run calendar:events    # assets/calendars/elim-events.ics desde church.config.ts
 npm run pwa:icons
@@ -61,7 +65,9 @@ pedir cuando alguien reporta un fallo.
 - Assets: `favicon.ico`, `manifest.webmanifest`, `src/assets/**`.
 - Proiectul Împreună: el workflow de deploy corre `npm run impreuna:sync` antes del
   build (`continue-on-error`) para llevar los vídeos del día; ver `32-impreuna.md`.
-- Presupuestos en producción: **bundle inicial 620 kB warning / 800 kB error**;
+- Presupuestos en producción: **bundle inicial 600 kB warning / 620 kB error**
+  (el error está pegado al valor real a propósito: que crezca tiene que ser
+  una decisión, no un descuido);
   bundle `styles` 80 kB / 120 kB; estilos por componente 36 kB / 48 kB.
 - `stylePreprocessorOptions.includePaths: ["src", "src/styles"]` — es lo que
   permite `@use 'ds' as *;` desde cualquier hoja de componente.
@@ -72,19 +78,32 @@ pedir cuando alguien reporta un fallo.
 
 Sólo `MainLayoutComponent` es eager; todas las páginas (incluido el escenario)
 son `loadComponent`, y el drawer móvil, el pie y el dock flotante usan `@defer`.
-Las animaciones de Material entran por `provideAnimationsAsync()`, así que su
-chunk tampoco está en el arranque. Las traducciones son un chunk por idioma
-(`ro-json`, `es-json`, ~23 kB): sólo el activo entra al arrancar.
+No hay `provideAnimations*()`: Material 22 anima con CSS y
+`@angular/animations` se desinstaló (16/11/2026). Las traducciones son un chunk
+por idioma (`ro-json`, `es-json`): sólo el activo entra al arrancar.
 
-Medido tras la subida a Angular 22 + tema M3 + idioma activo: **585 kB raw /
-156 kB transfer** iniciales (Angular 17: 597 / 160); hoja global 21 kB (38).
+Las rutas públicas se precargan tras el primer pintado, en reposo
+(`PublicPreloadingStrategy`); las del operador llevan `data.preload: false`
+y quien tiene «Ahorro de datos» no precarga nada. El service worker sigue
+precacheando la app entera.
+
+Medido el 17/11/2026 (Angular 22.2, sin zone.js, iconos y cabecera sin
+Material): **479 kB raw / 128 kB transfer** iniciales. Venía de 661 en la
+auditoría: el mega-menú diferido (`NavPanelComponent`), los iconos sin
+`MatIconRegistry` y zone.js fuera (`76-plan-maestro.md`).
+
+- `server: "src/main.server.ts"` + `outputMode: "static"`: **prerender** de
+  las páginas públicas en el build (sección «Prerender»). No hay servidor en
+  producción: la salida sigue siendo `dist/iglesia-redes/browser`, estática.
 
 ## Despliegue — `.github/workflows/deploy.yml`
 
 Node 24 → `npm ci` → calendario de suscripción (`npm run calendar:events`, ver
 abajo) → `npm run check` → `ng build --configuration production --base-href /`
-→ copia `index.html` a `404.html` (fallback SPA, imprescindible ahora que hay
-router) → crea `.nojekyll` → publica en GitHub Pages.
+→ source maps a Sentry y fuera de la web (`scripts/sentry-sourcemaps.mjs`,
+ver `77-analitica-errores.md`) → copia el **shell** `index.csr.html` a `404.html` (fallback SPA; no
+`index.html`, que con prerender es la portada ya pintada) → crea `.nojekyll`
+→ publica en GitHub Pages.
 
 > Si añades rutas nuevas, el fallback `404.html` ya las cubre. No hace falta
 > `withHashLocation()`.
@@ -94,8 +113,9 @@ ampliado el 14/11/2026): tras el fallback,
 `node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser`:
 
 - Escribe `<ruta>/index.html` para **todas las páginas públicas**
-  (`ROUTE_PAGES` + una por slug de `DEPARTMENT_SLUGS`): copia de `index.html`
-  con su título («<página> · Biserica Elim Arganda»), descripción, Open Graph,
+  (`ROUTE_PAGES` + una por slug de `DEPARTMENT_SLUGS`): sobre el HTML
+  **prerenderizado** de esa ruta si el build lo escribió, o sobre el shell
+  (`index.csr.html`) si no (URL con datos), con su título («<página> · Biserica Elim Arganda»), descripción, Open Graph,
   `og:url` y **canónica con barra final**, o `noindex` (sin canónica) en las de
   datos personales (familias, causas, botezuri, invitați). Textos: las mismas
   claves que `data.seo` de la ruta, en rumano (`seo.site_name` = nombre del
@@ -108,9 +128,11 @@ ampliado el 14/11/2026): tras el fallback,
   canónica y **JSON-LD** (`WebSite` + `Church`/`Organization`: nombre y
   alternativos, logo `icon-any-512.png`, dirección, teléfono, correo, mapa y
   redes `*_main`), todo leído de `church.config.ts` y `ro.json`.
-- Como `index.html` cambia después de `ng build`, **recalcula su SHA-1 en
-  `ngsw.json`**; si no, el service worker vería el hash descuadrado y dejaría de
-  servir la app desde caché.
+- El service worker cachea el shell (`"index": "/index.csr.html"` en
+  `ngsw-config.json`), que el script no toca. Si alguna vez `/index.html`
+  vuelve a la tabla del service worker (build sin prerender), el script
+  **recalcula su SHA-1 en `ngsw.json`**; si no, el service worker vería el hash
+  descuadrado y dejaría de servir la app desde caché.
 - `sitemap.xml` (portada + páginas indexables) y `robots.txt` (bloquea sólo las
   herramientas: `ROBOTS_DISALLOW`; las `noindex` quedan rastreables para que
   Google lea su `noindex`).
@@ -126,6 +148,68 @@ Sus tests (`scripts/*.test.mjs`, `node --test`) corren en
 > Compilar en local desde Git Bash: `--base-href /` se convierte en
 > `C:/Program Files/Git/` (conversión de rutas de MSYS). Usa
 > `MSYS_NO_PATHCONV=1` delante o PowerShell; el CI (Linux) no tiene el problema.
+
+## Prerender (desde el 19/11/2026)
+
+El build pinta en Node **cada página pública** y escribe su HTML con el
+contenido ya dentro (39 rutas: portada, páginas de módulo, departamentos,
+bloques `media/<slug>`; las redirecciones salen como página de redirección).
+Lo leen los buscadores y lo ve quien abre la web con mala conexión antes de
+que llegue el JavaScript. Medido: `despre-noi` pasa de un `<app-root>` vacío
+a 7.200 caracteres de texto en el HTML.
+
+- **Qué se prerenderiza no se escribe a mano**: `app.routes.server.ts` recorre
+  `APP_ROUTES` y toma `data.prerender`, que pone `pageRoute()` desde
+  `prerenderPaths(page)` (`core/modules/module.model.ts`): las páginas sin
+  parámetros que no son herramienta, la portada y los `expand`. Las
+  herramientas van en modo cliente explícito (`media/ecran` encaja también en
+  `media/:blockId`). Las URL con datos (`anunturi/:id`, perfiles, días de
+  Împreună, botezuri: 483) siguen siendo copias del shell con su meta; son el
+  siguiente paso si interesa (un `getPrerenderParams` con los mismos datos que
+  `dataPages()`).
+- **Sin hidratación, a propósito.** El contenido depende de la hora («AZI»,
+  cuentas atrás, anuncios vigentes) y el del build no cuadra con el del
+  visitante: hidratar daría desajustes (NG0500). Angular sustituye el HTML por
+  el suyo, y con `withEnabledBlockingInitialNavigation()` lo hace de una vez:
+  medido fotograma a fotograma, ninguno pinta el `<main>` vacío. El build se
+  rehace cada noche (cron del despliegue), así que el HTML nunca tiene más de
+  un día.
+- **Sin red en el prerender** (`app.config.server.ts`): las peticiones a
+  `http(s)://…` fallan al momento y cada componente pinta su alternativa sin
+  red. Sin esto, cada página llamaba a la API de YouTube en cada build.
+  `LoggerService` calla los avisos en Node (los errores, no).
+- **`@defer` pinta su placeholder** en el servidor: los bloques de
+  `media/<slug>` (cada uno en su `@defer`) salen sólo con la cabecera.
+- **Reglas para el código**: `10-architecture.md` → «Código que corre también
+  en Node». Si algo toca el navegador, el build escribe `[elim:error]` con la
+  traza y esa página sale sin contenido: revisa el log del build.
+- `ng serve` también renderiza en el servidor (útil: los errores salen antes).
+- Salida: `index.html` = portada prerenderizada; `index.csr.html` = shell (sin
+  contenido), que es lo que usan el 404, las páginas sin prerender y el
+  service worker.
+
+## Prueba de humo — `scripts/e2e/`
+
+`npm run e2e -- --dist dist/iglesia-redes/browser` (tras el build, la copia
+a `404.html` y `generate-route-pages.mjs`). Es un paso **obligatorio** del
+despliegue: si falla, no se publica.
+
+- `serve-dist.mjs` sirve la compilación como GitHub Pages (carpeta → 200,
+  sin barra → 301, lo que no existe → `404.html` con estado 404).
+- `smoke.mjs` abre cada página estática a 1366 y a 390 px con el Chrome
+  instalado y le pasa `page-audit.mjs`: un `h1`, un `main`, sin desbordes,
+  `alt`, nombres accesibles, etiquetas, claves sin traducir, contraste AA y
+  objetivos táctiles de 24 px. De las colecciones de URL con datos audita una
+  de cada forma. Después pide por HTTP **todos** los enlaces internos (ninguno
+  puede dar 404) y recorre el carrusel de `/media/ecran` a 1920 × 1080
+  (ninguna diapositiva en blanco).
+- Mira con `prefers-reduced-motion`: un texto a mitad de su animación de
+  entrada mide menos contraste del que tiene.
+- Los errores de recursos de **otros** servidores (la API de YouTube rechaza
+  el origen local) no cuentan; los propios, sí.
+- Tras publicar, el job `verify-live` comprueba que el sitio responde.
+- Hay además un cron nocturno que reconstruye y publica: lo que depende de la
+  fecha se pone al día solo.
 
 ## Calendario de suscripción — `assets/calendars/elim-events.ics`
 

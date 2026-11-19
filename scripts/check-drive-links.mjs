@@ -1,5 +1,5 @@
-// Guardia de los enlaces de Drive de la galería (`mediaEvents` en
-// `src/app/core/church.config.ts`).
+// Guardia de los enlaces de Drive de la galería (`MEDIA_EVENTS` en
+// `src/app/core/content/gallery.content.ts`).
 //
 //   npm run check:drive            → forma de los ID + cada carpeta existe y es
 //                                    pública (pide la página sin sesión: 200 y
@@ -18,7 +18,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const CONFIG = join(ROOT, 'src/app/core/church.config.ts');
+const CONFIG = join(ROOT, 'src/app/core/content/gallery.content.ts');
 const OFFLINE = process.argv.includes('--offline');
 
 // Misma regla que `core/util/drive-folder.ts`.
@@ -26,11 +26,11 @@ const DRIVE_ID = /^[A-Za-z0-9_-]{10,}$/;
 
 const source = readFileSync(CONFIG, 'utf8');
 
-const rootMatch = source.match(/mediaGalleryUrl:\s*'([^']+)'/);
+const rootMatch = source.match(/MEDIA_GALLERY_URL[^=]*=\s*'([^']+)'/);
 const rootId = rootMatch?.[1].match(/\/folders\/([A-Za-z0-9_-]+)/)?.[1] ?? null;
 
-const block = source.slice(source.indexOf('mediaEvents: ['));
-const end = block.indexOf('\n  ],');
+const block = source.slice(source.indexOf('MEDIA_EVENTS'));
+const end = block.indexOf('\n];');
 const eventsSrc = end > 0 ? block.slice(0, end) : block;
 
 /** `{ id, folderId }` de cada evento (en orden). */
