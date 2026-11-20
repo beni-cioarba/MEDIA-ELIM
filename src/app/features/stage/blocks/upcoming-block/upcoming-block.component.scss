@@ -34,7 +34,11 @@
   white-space: nowrap;
 
   &--live {
-    background: var(--c-live);
+    // Rojo fijo #c53030 (el de `$status-text`): con texto blanco da 5,47:1.
+    // El rojo vivo (`--c-live`, #e53e3e) daba 4,13:1 y suspendía la prueba de
+    // humo los días con un evento hoy (20/11/2026). No `--c-live-text`: en
+    // superficies oscuras pasa a un rojo claro y el blanco dejaría de leerse.
+    background: #c53030;
     color: #fff;
   }
 

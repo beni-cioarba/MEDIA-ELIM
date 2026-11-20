@@ -400,15 +400,26 @@ async function fetchYouVersionPlan(planId) {
   }
 }
 
+/**
+ * JSON de la API de WordPress. Si su web responde con una página HTML (un
+ * bloqueo antibots a las IP de los servidores de GitHub, mantenimiento), el
+ * error lo dice así y no como «Unexpected token '<'» (20/11/2026).
+ */
+function parseWpJson(body, url) {
+  if (/^\s*</.test(body)) throw new Error(`${url}: su web devolvió HTML en vez de JSON (bloqueo o mantenimiento)`);
+  return JSON.parse(body);
+}
+
 async function fetchWpPosts(categorySlug) {
-  const { body } = await getText(`${WP}/wp-json/wp/v2/categories?slug=${categorySlug}&_fields=id`);
-  const category = JSON.parse(body)[0]?.id;
+  const categoriesUrl = `${WP}/wp-json/wp/v2/categories?slug=${categorySlug}&_fields=id`;
+  const { body } = await getText(categoriesUrl);
+  const category = parseWpJson(body, categoriesUrl)[0]?.id;
   if (!category) throw new Error(`Categoría ${categorySlug} no encontrada`);
   const posts = [];
   for (let page = 1; ; page++) {
     const url = `${WP}/wp-json/wp/v2/posts?categories=${category}&per_page=100&page=${page}&orderby=date&order=asc&_fields=id,date,title,content`;
     const { body: json, headers } = await getText(url);
-    posts.push(...JSON.parse(json));
+    posts.push(...parseWpJson(json, url));
     if (page >= Number(headers.get('x-wp-totalpages') ?? 1)) return { category, posts };
   }
 }
@@ -486,8 +497,18 @@ async function main() {
 
   // 2 · Vídeos y ponentes: la web del proyecto (entrada + vídeo) y YouTube
   //     (el vídeo de los días que su web aún no ha publicado).
+  // Si su web no responde bien, se queda la instantánea del repositorio y se
+  // sigue con los calendarios (antes el script moría aquí y no los rehacía).
+  let wp = null;
   if (!offline) {
-    const { category, posts } = await fetchWpPosts(edition.wpCategory);
+    try {
+      wp = await fetchWpPosts(edition.wpCategory);
+    } catch (err) {
+      console.log(`⚠ Web del proyecto no disponible (${err.message}): se queda la instantánea ${mediaFile}.`);
+    }
+  }
+  if (wp) {
+    const { category, posts } = wp;
     const media = [];
     const warnings = [];
     for (const post of posts) {
