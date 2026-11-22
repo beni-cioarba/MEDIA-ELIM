@@ -33,7 +33,7 @@ export interface PrayerCausesList {
 }
 
 export const PRAYER_CAUSES: PrayerCausesList = {
-  updatedOn: '2026-11-09',
+  updatedOn: '2026-11-22',
   causes: [
     {
       id: 'familii',
@@ -70,6 +70,12 @@ export const PRAYER_CAUSES: PrayerCausesList = {
       id: 'tineretul-bisericii',
       title: 'Tineretul bisericii',
       intent: 'O generație statornică în credință și în chemare, care Îl caută pe Dumnezeu',
+    },
+    {
+      // Grupa mică, mijlocie y mare + adolescentes, con sus educadores (22/11/2026).
+      id: 'grupele-de-copii',
+      title: 'Copiii și educatorii',
+      intent: 'Creștere sănătoasă și înțelepciune de sus pentru copii, răbdare pentru educatori',
     },
     {
       id: 'romania',
