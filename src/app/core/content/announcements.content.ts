@@ -326,6 +326,46 @@ export const ANNOUNCEMENTS: readonly Announcement[] = [
     expiresOn: '2026-11-21',
   },
   /*
+   * Segunda semana de intercesión por los niños de la iglesia y los
+   * hermanos y hermanas educadoras (22/11 → 28/11).
+   *
+   * El aviso llegó con el mismo texto que el de la semana del 01/11
+   * (`mijlocire_copii_educatori`) y con las mismas erratas, así que se
+   * repite aquella redacción ya corregida. Id propio: la del 01/11 sigue en
+   * el archivo de anuncios pasados con su enlace.
+   */
+  {
+    id: 'mijlocire_copii_educatori_2',
+    title: 'Săptămână de rugăciune pentru copiii bisericii',
+    lead: 'În săptămâna aceasta aducem înaintea Domnului copiii bisericii și pe frații și surorile educatoare de la grupele de copii.',
+    sections: [
+      {
+        heading: 'Pentru copii',
+        kind: 'list',
+        items: [
+          { label: 'Creștere sănătoasă' },
+          { label: 'Înțelepciune de sus și minte sănătoasă' },
+          { label: 'Să-i păzească de planurile celui rău' },
+          { label: 'Să facă să lumineze fața Lui peste ei' },
+        ],
+      },
+      {
+        heading: 'Pentru frații și surorile educatoare',
+        kind: 'list',
+        highlight: true,
+        items: [
+          { label: 'Multă răbdare și înțelepciune' },
+          { label: 'Să-i învețe pe copii din Cuvântul sfânt' },
+          { label: 'Răsplată pentru toată osteneala' },
+          { label: 'Binecuvântare peste ei și familiile lor' },
+        ],
+      },
+    ],
+    footnote: 'Grupa mică · Grupa mijlocie · Grupa mare și adolescenți',
+    publishedOn: '2026-11-22',
+    expiresOn: '2026-11-28',
+  },
+  /*
    * Lanzamiento de Proiectul Împreună en la web (`/impreuna`,
    * docs/ai/32-impreuna.md). Redactado por la IA a petición del usuario
    * (11/11/2026), no llegó como aviso en bruto: revisar el tono antes de
