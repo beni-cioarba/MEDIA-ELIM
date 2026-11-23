@@ -9,8 +9,16 @@
 // lo que él mide. Decisiones y medidas: `docs/ai/30-presentation.md` §
 // «Próximos eventos en la web».
 // =====================================================================
+@use 'sass:map';
 @use 'ds' as *;
 @use '../../../../shared/styles/past-archive' as *;
+
+// Rojo de «hoy» para fondos con texto blanco: el oscuro de `$status-text`
+// (#c53030) da 5,47:1. El rojo vivo (`--c-live`, #e53e3e) se queda en
+// 4,13:1 y suspende la prueba de humo los días con un evento hoy. Fijo y no
+// `--c-live-text`: en superficies oscuras ese pasa a un rojo claro y el
+// blanco dejaría de leerse.
+$today-fill: map.get($status-text, 'live');
 
 :host {
   display: contents;
@@ -34,11 +42,7 @@
   white-space: nowrap;
 
   &--live {
-    // Rojo fijo #c53030 (el de `$status-text`): con texto blanco da 5,47:1.
-    // El rojo vivo (`--c-live`, #e53e3e) daba 4,13:1 y suspendía la prueba de
-    // humo los días con un evento hoy (20/11/2026). No `--c-live-text`: en
-    // superficies oscuras pasa a un rojo claro y el blanco dejaría de leerse.
-    background: #c53030;
+    background: $today-fill;
     color: #fff;
   }
 
@@ -646,8 +650,8 @@
   }
 
   &.is-today &__date {
-    background: var(--c-live);
-    border-color: var(--c-live);
+    background: $today-fill;
+    border-color: $today-fill;
 
     .ev-row__day,
     .ev-row__weekday {
@@ -754,7 +758,7 @@
     }
 
     &.is-today .ev-row__left {
-      background: var(--c-live);
+      background: $today-fill;
       color: #fff;
     }
   }
