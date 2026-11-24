@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { detectInstallEnvironment, InstallEnvironment } from '../util/install-platform';
+import { LanguageService } from './language.service';
 import { TelemetryService } from '../telemetry/telemetry.service';
 import { injectIsBrowser } from '../util/platform';
 
@@ -15,6 +16,11 @@ export interface BeforeInstallPromptEvent extends Event {
 
 /** Resultado de pulsar «Instalar». */
 export type InstallOutcome = 'accepted' | 'dismissed' | 'guide';
+
+/** Chromium (sin tipos en `lib.dom`): apps de `related_applications` ya instaladas. */
+interface RelatedAppsNavigator extends Navigator {
+  getInstalledRelatedApps?(): Promise<readonly unknown[]>;
+}
 
 /**
  * Global que rellena el script en línea de `index.html`: el evento puede
@@ -50,8 +56,11 @@ const APP_DISPLAY_MODES = ['standalone', 'fullscreen', 'minimal-ui', 'window-con
  *    incluido: si Chrome lo ofrece es que la web es instalable y no lo está).
  *  - **Móvil o tableta sin aviso nativo** (iOS, Firefox, Samsung, apps con
  *    navegador integrado…) → sí, con instrucciones de esa plataforma.
- *  - **Safari de macOS ≥ 17** → sí, con instrucciones («Añadir al Dock»).
- *  - Escritorio sin instalación posible (Firefox…) → no.
+ *  - **Safari de macOS ≥ 17** y **Firefox ≥ 143 en Windows** → sí, con
+ *    instrucciones («Añadir al Dock», «Añadir a la barra de tareas»).
+ *  - Escritorio sin instalación posible → no.
+ *  - **Instalada, pero abierta en el navegador**: Chromium lo dice
+ *    (`getInstalledRelatedApps`, con `related_applications` del manifiesto) → no.
  *
  * Límite conocido e inevitable: **iOS no deja saber desde Safari si la app ya
  * está en la pantalla de inicio**. Allí el control se sigue ofreciendo en el
@@ -61,6 +70,7 @@ const APP_DISPLAY_MODES = ['standalone', 'fullscreen', 'minimal-ui', 'window-con
 export class PwaInstallService {
   private readonly document = inject(DOCUMENT);
   private readonly telemetry = inject(TelemetryService);
+  private readonly language = inject(LanguageService);
   // En el prerender, como si no hubiera ventana: el DOM del servidor tiene
   // `matchMedia` pero lanza «NotYetImplemented».
   private readonly window = injectIsBrowser() ? this.document.defaultView : null;
@@ -86,7 +96,7 @@ export class PwaInstallService {
     if (this.deferred()) return true;
     if (this.installed()) return false;
     const { device, platform } = this.env;
-    if (platform === 'mac-safari') return true;
+    if (platform === 'mac-safari' || platform === 'desktop-firefox') return true;
     // En escritorio Chromium sin aviso = ya instalada o no instalable.
     return device !== 'desktop' && platform !== 'desktop-chromium' && platform !== 'unsupported';
   });
@@ -102,6 +112,7 @@ export class PwaInstallService {
       this.deferred.set(event as BeforeInstallPromptEvent);
     });
     win.addEventListener('appinstalled', () => this.markInstalled());
+    if (!this.standalone()) void this.detectInstalled();
 
     for (const mode of APP_DISPLAY_MODES) {
       win.matchMedia?.(`(display-mode: ${mode})`).addEventListener?.('change', () =>
@@ -123,12 +134,38 @@ export class PwaInstallService {
     try {
       await event.prompt();
       const { outcome } = await event.userChoice;
-      if (outcome === 'accepted') this.markInstalled();
+      if (outcome === 'accepted') {
+        // Se instala en el idioma que se está viendo: que se abra en él.
+        this.language.remember();
+        this.markInstalled();
+      } else {
+        this.telemetry.event('instalare-refuzata');
+      }
       return outcome;
     } catch {
       // Chromium rechaza `prompt()` si ya se usó o si la web dejó de ser
       // instalable: se cae a las instrucciones manuales.
       return 'guide';
+    }
+  }
+
+  /**
+   * «Ya la tengo»: en iOS (y en cualquier navegador que no lo anuncie) sólo lo
+   * sabe la persona. Deja de ofrecerse durante el plazo de la marca.
+   */
+  confirmInstalled(): void {
+    this.markInstalled();
+  }
+
+  /** Chromium: ¿está instalada aunque se esté mirando en el navegador? */
+  private async detectInstalled(): Promise<void> {
+    const nav = this.window?.navigator as RelatedAppsNavigator | undefined;
+    try {
+      const apps = await nav?.getInstalledRelatedApps?.();
+      // Sólo en memoria: se vuelve a preguntar en cada carga.
+      if (apps?.length) this.installed.set(true);
+    } catch {
+      /* fuera del ámbito o sin permiso: como si no se supiera */
     }
   }
 

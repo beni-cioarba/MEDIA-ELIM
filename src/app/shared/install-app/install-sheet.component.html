@@ -1,0 +1,88 @@
+<dialog
+  #dialog
+  class="sheet"
+  aria-labelledby="install-title"
+  aria-describedby="install-lead"
+  (click)="onClick($event)"
+  (close)="closed.emit()"
+>
+  <div class="sheet__panel">
+    <span class="sheet__grip" aria-hidden="true"></span>
+
+    <!-- Ficha de la app, como en la hoja del navegador: icono, nombre, dominio. -->
+    <header class="sheet__head">
+      <img class="sheet__app" src="assets/pwa/icon-any-192.png" alt="" width="52" height="52" />
+      <div class="sheet__titles">
+        <h2 class="sheet__title" id="install-title">{{ 'install.title' | translate }}</h2>
+        <p class="sheet__host">{{ host }}</p>
+      </div>
+      <button
+        type="button"
+        class="sheet__close"
+        (click)="close()"
+        [attr.aria-label]="'common.close' | translate"
+        [title]="'common.close' | translate"
+      >
+        <app-icon name="close" />
+      </button>
+    </header>
+
+    <div class="sheet__body">
+      <p class="sheet__lead" id="install-lead">{{ (phone ? 'install.lead' : 'install.lead_desktop') | translate }}</p>
+
+      <ol class="sheet__steps">
+        @for (step of steps; track step.key; let i = $index) {
+          <li class="sheet__step">
+            <span class="sheet__num" aria-hidden="true">{{ i + 1 }}</span>
+            <span class="sheet__text" [innerHTML]="step.key | translate"></span>
+            @if (step.icon) {
+              <span class="sheet__glyph" aria-hidden="true"><app-icon [name]="step.icon" /></span>
+            }
+          </li>
+        }
+      </ol>
+
+      @if (inApp || chrome) {
+        <div class="sheet__actions">
+          @if (chrome) {
+            <a class="sheet__btn" [class.sheet__btn--primary]="chrome === 'only'" [href]="chromeHref">
+              <app-icon name="external" />
+              <span>{{ (chrome === 'only' ? 'install.open_chrome' : 'install.chrome_instead') | translate }}</span>
+            </a>
+          }
+          @if (inApp) {
+            <button type="button" class="sheet__btn" (click)="copyLink()">
+              <app-icon [name]="copied() ? 'check' : 'copy'" />
+              <span>{{ (copied() ? 'install.link_copied' : 'install.copy_link') | translate }}</span>
+            </button>
+          }
+          <span class="u-sr-only" role="status">
+            @if (copied()) {
+              {{ 'install.link_copied' | translate }}
+            }
+          </span>
+        </div>
+      }
+
+      <!-- Las láminas del manifiesto. Se deslizan; con teclado, la tira recibe
+           el foco y se mueve con las flechas. -->
+      <section class="sheet__tour" aria-labelledby="install-tour">
+        <h3 class="sheet__subtitle" id="install-tour">{{ 'install.tour' | translate }}</h3>
+        <ul class="sheet__plates" tabindex="0" role="list" aria-labelledby="install-tour">
+          @for (src of plates(); track src; let i = $index) {
+            <li>
+              <img [src]="src" [alt]="'install.plate.' + i | translate" width="432" height="768" decoding="async" />
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <footer class="sheet__foot">
+      <p class="sheet__note">{{ 'install.note' | translate }}</p>
+      @if (!inApp) {
+        <button type="button" class="sheet__done" (click)="done()">{{ 'install.done' | translate }}</button>
+      }
+    </footer>
+  </div>
+</dialog>

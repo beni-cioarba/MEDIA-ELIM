@@ -31,6 +31,7 @@ npm run e2e -- --dist <carpeta browser>   # prueba de humo sobre la compilación
 npm run version:generate
 npm run calendar:events    # assets/calendars/elim-events.ics desde church.config.ts
 npm run pwa:icons
+npm run pwa:install        # láminas de instalación y manifiestos ro/es (79-install.md)
 ```
 
 ## Versionado
@@ -62,7 +63,7 @@ pedir cuando alguien reporta un fallo.
 - Builder: `@angular/build:application` (esbuild; sin webpack ni Karma en
   `node_modules`). `serve` → `@angular/build:dev-server`, `test` →
   `@angular/build:unit-test` (Vitest + jsdom).
-- Assets: `favicon.ico`, `manifest.webmanifest`, `src/assets/**`.
+- Assets: `favicon.ico`, `manifest.webmanifest`, `manifest.es.webmanifest`, `src/assets/**`.
 - Proiectul Împreună: el workflow de deploy corre `npm run impreuna:sync` antes del
   build (`continue-on-error`) para llevar los vídeos del día; ver `32-impreuna.md`.
 - Presupuestos en producción: **bundle inicial 600 kB warning / 620 kB error**
@@ -421,20 +422,11 @@ de producción: `ngsw.json` lleva `freshness` y `version.json` no está en
   = mismo número, en local y en el CI; el CI clona con `fetch-depth: 0`).
   Además: build = nº de commits, hash, «dirty», fecha. El chip del pie muestra `v2.0.0` (con «+» si se compiló con cambios
   sin commitear) y el detalle en su tooltip.
-- **Instalar como app** (01/10/2026): botón «Instalar» en la franja legal del
-  pie (`shared/install-app`) gobernado por `PwaInstallService`. Se pinta sólo
-  si la web **no** está abierta como app (`display-mode` standalone/fullscreen/
-  minimal-ui/WCO, `navigator.standalone`, `android-app://`) y la plataforma
-  instala: Chromium con `beforeinstallprompt` guardado (también escritorio) →
-  diálogo nativo; móvil/tableta sin aviso nativo y Safari macOS ≥ 17 → hoja
-  `<dialog>` con los pasos de *ese* navegador (`detectInstallEnvironment` en
-  `core/util/install-platform.ts`: iOS Safari < 26 / ≥ 26 —«⋯» antes de
-  Compartir—, Chrome/Firefox/Edge iOS, Android Chromium/Samsung/Firefox y apps
-  con navegador integrado → «Abrir en Chrome» (intent) + copiar enlace). El
-  evento se captura en un `<script>` de `index.html` porque llega antes que el
-  pie diferido. `appinstalled` deja una marca de 30 días en localStorage.
-  Límite inevitable: desde Safari de iOS no se puede saber si ya está en la
-  pantalla de inicio (allí se sigue ofreciendo; dentro de la app, nunca).
+- **Instalar como app**: `79-install.md` (qué ve cada dispositivo, manifiesto por
+  idioma, láminas, hoja de pasos e invitación). Control gobernado por
+  `PwaInstallService` y lanzado siempre por `InstallLauncher`; el
+  `beforeinstallprompt` se captura en un `<script>` de `index.html` porque llega
+  antes que el pie diferido.
 - **Sello «100 % adaptable»** (`shared/device-fit`): ordenador · tableta ·
   teléfono, enciende el de la maqueta activa por ancho de ventana (< 720 /
   < 1024 / resto) y lo cambia en vivo; tooltip con el ancho actual.
@@ -459,6 +451,7 @@ de producción: `ngsw.json` lleva `freshness` y `version.json` no está en
 | `lib/load-ts-module.mjs` | Carga en Node un `.ts` de la app (transpila con `typescript`, imports sin extensión, `@angular/core` sustituido): leer un config sin expresiones regulares |
 | `optimize-images.js`     | `src/assets/drive-media/*.{jpg,png}` → `.webp` 1600px + `-thumb.webp` 480px |
 | `generate-pwa-icons.mjs` | Icono de la app (PWA, Apple, favicon PNG + ICO) desde el emblema |
+| `generate-install-media.mjs` | Láminas de instalación y manifiestos por idioma (`79-install.md`); datos en `lib/install-media.mjs` |
 | `responsive-audit.snippet.js` | **No es de Node**: se pega en la consola del navegador. Informe de scroll horizontal, desbordes, solapes y `nowrap` recortados en el ancho actual (`docs/ai/40-styling.md` → Responsive) |
 | `check-projection-sizes.mjs` | Guardia del presupuesto de legibilidad: falla si un `font-size` en `--pj-u` baja de 3,2u o la escala `--pj-fs-*` de su suelo (`npm run check:projection`, en CI) |
 | `fetch-youtube.js`       | Genera `youtube.json` (usado por el cron)                    |

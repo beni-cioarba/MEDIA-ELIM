@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Biserica Elim Arganda",
   "short_name": "Elim Arganda",
-  "description": "Biserica Elim din Arganda del Rey: program, anunțuri, transmisiuni în direct, rugăciune pentru familii și donații.",
+  "description": "Biserica, la o atingere: programul, anunțurile, transmisiunile în direct și citirea zilei. Gratuită, fără cont și fără magazin de aplicații.",
   "lang": "ro",
   "dir": "ltr",
   "start_url": "./",
@@ -11,13 +11,42 @@
   "orientation": "any",
   "theme_color": "#faf9f6",
   "background_color": "#1a365d",
-  "categories": ["lifestyle", "social", "education"],
+  "categories": [
+    "lifestyle",
+    "social",
+    "education"
+  ],
   "icons": [
-    { "src": "assets/pwa/icon-any-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "assets/pwa/icon-any-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "assets/pwa/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "assets/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "assets/pwa/icon-monochrome-512.png", "sizes": "512x512", "type": "image/png", "purpose": "monochrome" }
+    {
+      "src": "assets/pwa/icon-any-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-any-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/pwa/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/pwa/icon-monochrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
   ],
   "shortcuts": [
     {
@@ -25,51 +54,136 @@
       "short_name": "Anunțuri",
       "description": "Avizele bisericii în vigoare",
       "url": "./anunturi",
-      "icons": [{ "src": "assets/pwa/shortcut-announcements-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-announcements-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Proiectul Împreună: citirea de azi",
       "short_name": "Citirea de azi",
       "description": "Textul și meditația video a zilei",
       "url": "./impreuna",
-      "icons": [{ "src": "assets/pwa/shortcut-impreuna-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-impreuna-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Program săptămânal",
       "short_name": "Program",
       "description": "Serviciile fiecărei zile",
       "url": "./media/program",
-      "icons": [{ "src": "assets/pwa/shortcut-weekly-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-weekly-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "În direct",
       "short_name": "În direct",
       "description": "Transmisiunile în direct și cele mai recente",
       "url": "./media/transmisiuni",
-      "icons": [{ "src": "assets/pwa/shortcut-live-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-live-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Donează",
       "short_name": "Donează",
       "description": "Susține lucrarea bisericii",
       "url": "./doneaza",
-      "icons": [{ "src": "assets/pwa/shortcut-donate-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-donate-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "screenshots": [
     {
-      "src": "assets/pwa/screenshots/home-narrow.webp",
-      "sizes": "390x844",
-      "type": "image/webp",
+      "src": "assets/pwa/install/ro/acasa.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "Pagina principală: anunțuri, program și ce urmează"
+      "label": "Biserica ta, la o atingere"
     },
     {
-      "src": "assets/pwa/screenshots/home-wide.webp",
-      "sizes": "1280x800",
-      "type": "image/webp",
+      "src": "assets/pwa/install/ro/program.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Programul fiecărei săptămâni"
+    },
+    {
+      "src": "assets/pwa/install/ro/anunturi.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Anunțuri, evenimente și rugăciune"
+    },
+    {
+      "src": "assets/pwa/install/ro/citire.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Citirea zilei, la ora 8:00"
+    },
+    {
+      "src": "assets/pwa/install/ro/direct.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Serviciile, în direct"
+    },
+    {
+      "src": "assets/pwa/install/ro/acasa-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
       "form_factor": "wide",
-      "label": "Pagina principală pe ecran mare"
+      "label": "Biserica ta, la o atingere"
+    },
+    {
+      "src": "assets/pwa/install/ro/program-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Programul fiecărei săptămâni"
+    },
+    {
+      "src": "assets/pwa/install/ro/direct-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Serviciile, în direct"
     }
-  ]
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://elimarganda.com/manifest.webmanifest",
+      "id": "https://elimarganda.com/"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://elimarganda.com/manifest.es.webmanifest",
+      "id": "https://elimarganda.com/"
+    }
+  ],
+  "prefer_related_applications": false
 }

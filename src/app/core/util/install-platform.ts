@@ -39,12 +39,16 @@ export type InstallPlatform =
   | 'android-samsung'
   /** Firefox para Android (menú ⋮ → Instalar). */
   | 'android-firefox'
+  /** Navegadores de fabricante (Xiaomi, Huawei…) o sin instalación propia: se instala desde Chrome. */
+  | 'android-other'
   /** Navegador integrado / WebView en Android. */
   | 'android-inapp'
   /** Safari ≥ 17 en macOS (Archivo → Añadir al Dock). */
   | 'mac-safari'
   /** Chrome / Edge de escritorio (icono de instalar en la barra de direcciones). */
   | 'desktop-chromium'
+  /** Firefox ≥ 143 en Windows (icono «Añadir a la barra de tareas»). */
+  | 'desktop-firefox'
   /** Escritorio sin instalación (Firefox, Safari antiguo…). */
   | 'unsupported';
 
@@ -63,6 +67,15 @@ const IN_APP_SIGNATURES =
   /\b(FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Snapchat|musical_ly|TikTok|BytedanceWebview|Line\/|LinkedInApp|Twitter|Pinterest|GSA\/|MicroMessenger|Telegram)\b/i;
 
 /**
+ * Android sin instalación de apps web (o con un acceso directo que se abre en
+ * el navegador, no como app). No disparan `beforeinstallprompt`.
+ */
+const ANDROID_OTHER = /MiuiBrowser|HuaweiBrowser|UCBrowser|HeyTapBrowser|VivoBrowser|DuckDuckGo|Ddg\/|Focus\/|Klar\//i;
+
+/** Navegadores de iOS que no son Safari: llevan «Compartir» en otro sitio. */
+const IOS_BROWSERS = /CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|DuckDuckGo|Ddg\//;
+
+/**
  * Deduce plataforma, clase de dispositivo y versión de Safari.
  *
  * @param ua             `navigator.userAgent`.
@@ -72,7 +85,10 @@ export function detectInstallEnvironment(ua: string, maxTouchPoints = 0): Instal
   const ipadAsMac = /Macintosh/.test(ua) && maxTouchPoints > 1;
   const ios = /iPhone|iPad|iPod/.test(ua) || ipadAsMac;
   const android = /Android/i.test(ua);
-  const inApp = IN_APP_SIGNATURES.test(ua) || (android && /; wv\)/.test(ua));
+  // En iOS, una vista web sin la marca `Safari/` es otra app (o la nuestra,
+  // abierta desde la pantalla de inicio: ahí no se ofrece nada).
+  const inApp =
+    IN_APP_SIGNATURES.test(ua) || (android && /; wv\)/.test(ua)) || (ios && !/Safari\//.test(ua));
   const safariMatch = /Version\/(\d+)/.exec(ua);
   const safariVersion = safariMatch ? Number(safariMatch[1]) : null;
 
@@ -89,17 +105,21 @@ export function detectInstallEnvironment(ua: string, maxTouchPoints = 0): Instal
 
   let platform: InstallPlatform;
   if (ios) {
-    platform = inApp ? 'ios-inapp' : /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua) ? 'ios-browser' : 'ios-safari';
+    platform = inApp ? 'ios-inapp' : IOS_BROWSERS.test(ua) ? 'ios-browser' : 'ios-safari';
   } else if (android) {
-    platform = inApp
-      ? 'android-inapp'
-      : /SamsungBrowser/.test(ua)
-        ? 'android-samsung'
-        : /Firefox\//.test(ua)
-          ? 'android-firefox'
-          : 'android-chromium';
+    platform = ANDROID_OTHER.test(ua)
+      ? 'android-other'
+      : inApp
+        ? 'android-inapp'
+        : /SamsungBrowser/.test(ua)
+          ? 'android-samsung'
+          : /Firefox\//.test(ua)
+            ? 'android-firefox'
+            : 'android-chromium';
   } else if (/Chrome\/|Edg\//.test(ua) && !/Firefox\//.test(ua)) {
     platform = 'desktop-chromium';
+  } else if (/Windows/.test(ua) && Number(/Firefox\/(\d+)/.exec(ua)?.[1] ?? 0) >= 143) {
+    platform = 'desktop-firefox';
   } else if (/Macintosh/.test(ua) && /Safari\//.test(ua) && (safariVersion ?? 0) >= 17) {
     platform = 'mac-safari';
   } else {

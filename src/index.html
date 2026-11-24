@@ -27,6 +27,19 @@
   <link rel="icon" type="image/png" sizes="96x96" href="assets/pwa/favicon-96.png">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    // Manifiesto del idioma elegido, antes de que el navegador lo pida (la
+    // misma app en otro idioma: descripción, atajos y láminas de la hoja
+    // «Instalar»). Mismo criterio que `LanguageService.init()`; al cambiar de
+    // idioma lo mantiene `core/install/manifest-link.ts`.
+    (function () {
+      var lang = (/[?&]lang=(ro|es)\b/i.exec(location.search) || [])[1];
+      try { lang = lang || localStorage.getItem('iglesia-redes.lang.elegido'); } catch (e) { /* sin almacenamiento */ }
+      if (String(lang).toLowerCase() === 'es') {
+        document.querySelector('link[rel="manifest"]').setAttribute('href', 'manifest.es.webmanifest');
+      }
+    })();
+  </script>
   <link rel="apple-touch-icon" href="assets/pwa/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <!-- `default` (texto oscuro): la cabecera es clara; con `black-translucent`

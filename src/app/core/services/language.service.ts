@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { syncManifestLink } from '../install/manifest-link';
 import { TelemetryService } from '../telemetry/telemetry.service';
 
 /** Idiomas soportados por la aplicación. */
@@ -72,6 +73,11 @@ export class LanguageService {
     this.telemetry.event(`limba-${this.current()}`);
   }
 
+  /** Fija el idioma que se está viendo (al instalar la app desde él). */
+  remember(): void {
+    this.writeToStorage(this.current());
+  }
+
   toggle(): Promise<void> {
     return this.use(this.current() === 'es' ? 'ro' : 'es');
   }
@@ -85,6 +91,7 @@ export class LanguageService {
     // accesibilidad y permite a los lectores de pantalla pronunciar bien.
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
+      syncManifestLink(document, lang);
     }
   }
 

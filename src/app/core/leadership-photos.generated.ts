@@ -15,6 +15,7 @@ export interface LeadershipPhotoManifestEntry {
 
 export const LEADERSHIP_PHOTOS: Readonly<Record<string, LeadershipPhotoManifestEntry>> = {
   'daniel-dulca': { width: 1398, height: 1747, variants: [160, 320, 640, 960, 1398] },
+  'david-dulca': { width: 159, height: 199, variants: [159] },
   'gabriel-daniel-cifor': { width: 1003, height: 1254, variants: [160, 320, 640, 1003] },
   'grigore-tomoiaga': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },
   'ilie-petrescu': { width: 1600, height: 2000, variants: [160, 320, 640, 960, 1600] },

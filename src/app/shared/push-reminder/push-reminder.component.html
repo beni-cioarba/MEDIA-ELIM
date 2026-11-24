@@ -55,6 +55,9 @@
             @case ('ios-install') {
               <app-icon class="rem__glyph" name="share-ios" />
               {{ k + '.ios' | translate }}
+              <button type="button" class="rem__install" (click)="installer.start()">
+                {{ 'install.cta_long' | translate }}
+              </button>
             }
             @case ('open-browser') {
               {{ k + '.open_browser' | translate }}

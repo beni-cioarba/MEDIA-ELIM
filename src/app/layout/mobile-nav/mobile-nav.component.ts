@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, HostListener, computed, inject } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,9 +8,11 @@ import { blockPath } from '../../core/navigation/app-paths';
 import { NavItem, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
 import { NavSummary, NavSummaryService } from '../../core/navigation/nav-summary.service';
+import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { ScheduleService } from '../../core/services/schedule.service';
 import { UiStore } from '../../core/state/ui.store';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { InstallLauncher } from '../../shared/install-app/install-launcher.service';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
 import { ShareButtonComponent } from '../../shared/share-button/share-button.component';
 
@@ -71,9 +73,18 @@ const SIN_RESUMEN = (): NavSummary | null => null;
 })
 export class MobileNavComponent {
   protected readonly ui = inject(UiStore);
+  private readonly document = inject(DOCUMENT);
   private readonly navActive = inject(NavActiveService);
   private readonly summaries = inject(NavSummaryService);
   private readonly schedule = inject(ScheduleService);
+  protected readonly pwa = inject(PwaInstallService);
+  protected readonly installer = inject(InstallLauncher);
+
+  /** El cajón se cierra (atrapa el foco) y sigue el diálogo del navegador o la hoja. */
+  protected install(): void {
+    void this.installer.start(this.document.getElementById('main-content'));
+    this.ui.closeDrawer();
+  }
 
   protected readonly activeIds = this.navActive.activeIds;
   protected readonly isExternal = isExternalNavItem;

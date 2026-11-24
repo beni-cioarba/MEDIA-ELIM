@@ -27,7 +27,7 @@
       },
       "device": {
         "title": "Preferințe păstrate pe dispozitivul tău",
-        "body": "Limba aleasă, progresul tău de citire a Bibliei, ultimele căutări în site și alegerea de a vedea harta se păstrează în browserul tău. Nu ajung la noi și le ștergi oricând golind datele site-ului din browser."
+        "body": "Limba aleasă, progresul tău de citire a Bibliei, ultimele căutări în site, alegerea de a vedea harta și dacă ai instalat aplicația sau ai închis invitația de a o instala se păstrează în browserul tău. Nu ajung la noi și le ștergi oricând golind datele site-ului din browser."
       },
       "no_tracking": "Nu folosim cookie-uri proprii, nu urmărim vizitele și nu afișăm publicitate.",
       "no_tracking_counted": "Nu folosim cookie-uri și nu afișăm publicitate. Numărăm vizitele în mod anonim, fără cookie-uri și fără să păstrăm adresa IP: doar câte persoane deschid fiecare pagină, ca să știm ce folosește biserica."

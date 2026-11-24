@@ -247,9 +247,9 @@ recorte al 69,5 % del sello original de 970 px, con máscara circular) y
 
 Manifiesto: `id`, nombre «Biserica Elim Arganda», descripción al día,
 `theme_color` = fondo de la cabecera (`#faf9f6`; en `index.html` también la
-variante oscura por `media`), `background_color` navy (splash), 4 atajos y 2
-capturas (`assets/pwa/screenshots/home-{narrow,wide}.webp`, para el diálogo
-de instalación enriquecido). Chrome lo valida sin errores ni avisos de
+variante oscura por `media`), `background_color` navy (splash), 5 atajos y 8
+láminas de promoción por idioma (`assets/pwa/install/`, para la hoja «Instalar» de
+Chrome; `79-install.md`). Los manifiestos (ro / es) se **generan**: `npm run pwa:install`. Chrome lo valida sin errores ni avisos de
 instalabilidad. iOS: `apple-mobile-web-app-status-bar-style: default` (la
 cabecera es clara; con `black-translucent` la barra salía blanco sobre blanco).
 

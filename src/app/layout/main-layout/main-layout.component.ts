@@ -6,6 +6,7 @@ import { UiStore } from '../../core/state/ui.store';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { FloatingActionsComponent } from '../../shared/floating-actions/floating-actions.component';
 import { BreadcrumbComponent } from '../../shared/breadcrumb/breadcrumb.component';
+import { InstallInviteComponent } from '../install-invite/install-invite.component';
 import { TopNavComponent } from '../top-nav/top-nav.component';
 import { MobileNavComponent } from '../mobile-nav/mobile-nav.component';
 import { TabBarComponent } from '../tab-bar/tab-bar.component';
@@ -46,6 +47,7 @@ import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
         BreadcrumbComponent,
         FooterComponent,
         FloatingActionsComponent,
+        InstallInviteComponent,
     ],
     // Arrastrar entre pestañas: escucha en todo el shell para que el gesto
     // valga sobre el contenido, la migaja y el pie (ver la directiva).
@@ -76,6 +78,13 @@ import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
 
     @defer (on idle) {
       <app-floating-actions />
+    }
+
+    <!-- Invitación a instalar (teléfono y tableta): decide sola si sale. -->
+    @defer (on idle) {
+      @if (!fullscreen()) {
+        <app-install-invite />
+      }
     }
 
     @defer (when ui.drawerOpen()) {

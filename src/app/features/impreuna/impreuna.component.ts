@@ -45,6 +45,7 @@ import { SeoService } from '../../core/seo/seo.service';
 import { CalendarService } from '../../core/services/calendar.service';
 import { ClockService } from '../../core/services/clock.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
+import { InstallLauncher } from '../../shared/install-app/install-launcher.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { DayCalendarComponent } from './day-calendar/day-calendar.component';
 import { DayReadComponent } from './day-read/day-read.component';
@@ -120,6 +121,7 @@ export class ImpreunaComponent {
   private readonly injector = inject(Injector);
   protected readonly impreuna = inject(ImpreunaService);
   protected readonly pwa = inject(PwaInstallService);
+  private readonly installer = inject(InstallLauncher);
 
   protected readonly year = this.impreuna.edition.year;
   protected readonly total = this.impreuna.edition.total;
@@ -349,7 +351,7 @@ export class ImpreunaComponent {
   }
 
   protected install(): void {
-    void this.pwa.install();
+    void this.installer.start();
   }
 
   private formatDate(day: number, options: Intl.DateTimeFormatOptions): string {

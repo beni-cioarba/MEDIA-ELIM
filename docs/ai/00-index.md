@@ -26,6 +26,7 @@ src/app/
     top-nav/                Barra superior + `nav-panel` (mega-menú de escritorio, diferido)
     search/                 Buscador: botón (eager), lanzador y diálogo (diferido) — `78-search.md`
     mobile-nav/             Drawer móvil (diferido, cdkTrapFocus, marcas vivas)
+    install-invite/         Invitación a instalar (teléfono y tableta, diferida) — `79-install.md`
     tab-bar/                Barra de pestañas inferior (< lg): una pestaña por bloque de MAIN_NAV
   core/
     church.config.ts        ⭐ Tipos + identidad (canales, contacto, ubicación, donativos); reúne `content/` en `CHURCH_CONFIG`
@@ -50,6 +51,7 @@ src/app/
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
     i18n/                   Loader de traducciones embebidas (0 HTTP)
     presentation/blocks.ts  ⭐ Registro de bloques proyectables: orden, título, duración, regla automática
+    install/                Instalar la app: manifiesto por idioma, pasos por navegador, reglas de la invitación — `79-install.md`
     search/                 Motor y contrato del buscador; cada módulo aporta su `<x>.search.ts` — `78-search.md`
     modules/                Modelo de módulo (`definePages`) y `pageRoute`
     navigation/             ⭐ Rutas con nombre y árbol de menú
@@ -118,7 +120,7 @@ src/app/
     viewer/                 ⭐ Visor documental (imagen/PDF/vídeo/texto) + galería + `[appViewable]` — `49-viewer.md`
     styles/                 Parciales SCSS compartidos (botones, page-hero, hero-content: contenido del carrusel de portada)
 src/assets/i18n/{es,ro}.json  ⭐ Todos los textos visibles
-src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`)
+src/assets/pwa/               Icono de la app generado (no editar a mano: `npm run pwa:icons`); `install/` = láminas de instalación (`npm run pwa:install`)
 scripts/                      Utilidades Node (imágenes, icono de la app, YouTube, `sync-impreuna.mjs`, `impreuna-push.mjs`, `generate-bible-verses.mjs`)
   assets-src/emblema-elim.png Máster del emblema (674 px, no se publica)
 .github/workflows/            Deploy a Pages + cron de datos de YouTube + aviso diario de Împreună (`impreuna-push.yml`)
@@ -159,6 +161,7 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 | «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |
 | «Nueva página / sección»                            | `node scripts/new-module.mjs <id>` — `docs/ai/10-architecture.md` |
+| «Instalar la app» · «láminas / capturas de instalación» · «manifest» · «la invitación sale / no sale» | `docs/ai/79-install.md` → textos en `scripts/lib/install-media.mjs` + `npm run pwa:install`; reglas en `core/install/invite-policy.ts` |
 | «Que se encuentre en el buscador» · «sinónimos» · «sale / no sale al buscar» | `docs/ai/78-search.md` → su `<x>.search.ts` o `search.keywords` en `assets/i18n/search.{ro,es}.json` |
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
 | «Barra de abajo del móvil» · «portada de una sección» · «algo fijo abajo se solapa» | `docs/ai/15-navigation.md` → «Barra de pestañas y portadas de sección» (`--app-tab-bar-h`) |

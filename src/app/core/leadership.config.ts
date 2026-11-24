@@ -479,9 +479,9 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
         members: [
           { person: 'naomi-muresan' },
           { person: 'natanael-beniamin-cioarba' },
-          { person: 'ionut-strugaru' },
           { person: 'david-dulca' },
           { person: 'ruben-istratoaie' },
+          { person: 'ionut-strugaru' },
         ],
       },
       {

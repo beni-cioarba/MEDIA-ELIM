@@ -225,6 +225,7 @@ figurativo se toma de un set profesional, no se dibuja a mano.
   el esquema del documento. Las listas se nombran con `aria-labelledby`.
 - Móvil: `role="dialog"` + `aria-modal` + `cdkTrapFocus` + `Escape` +
   bloqueo de scroll del documento (`body.has-drawer-open`).
+- Última fila del cajón: «Instalează aplicația», sólo mientras no esté instalada (`79-install.md`).
 - La entrada activa marca `aria-current="page"` (ver `NavActiveService`).
 
 ## Rendimiento

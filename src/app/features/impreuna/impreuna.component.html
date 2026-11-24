@@ -326,13 +326,13 @@
           </span>
         </a>
       </li>
-      @if (pwa.canPromptNatively()) {
+      @if (pwa.available()) {
         <li>
           <button type="button" class="imp-tile" (click)="install()">
             <app-icon class="imp-tile__icon" name="install-app" />
             <span class="imp-tile__text">
               <strong>{{ 'impreuna.phone.home' | translate }}</strong>
-              <span>{{ 'impreuna.phone.home_hint_android' | translate }}</span>
+              <span>{{ 'impreuna.phone.home_hint' | translate }}</span>
             </span>
           </button>
         </li>

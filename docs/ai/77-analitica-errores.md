@@ -90,7 +90,8 @@ de red (`HttpErrorResponse`: YouTube sin cuota, sin conexión) no lo son y no
 gastan cupo.
 
 **Eventos** (GoatCounter, sección «eventos» de su panel):
-`app-instalata` (PwaInstallService), `aviz-activat-<tema>` (PushService),
+`app-instalata`, `instalare-refuzata` (PwaInstallService), `instalare-pasi` (nuestra
+hoja), `instalare-invitatie` / `instalare-invitatie-inchisa` (`79-install.md`), `aviz-activat-<tema>` (PushService),
 `citire-deschisa` (lectura de la Biblia abierta), `limba-ro` / `limba-es`
 (el visitante elige idioma). Uno nuevo: `inject(TelemetryService).event('nombre')`,
 en rumano y con guiones, sin `/` delante.

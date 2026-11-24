@@ -286,6 +286,21 @@
   color: var(--c-gold);
 }
 
+/* Instalar es una acción, no un enlace: misma fila, sin los estilos de botón. */
+.row--button {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.row__tile--gold {
+  background: linear-gradient(135deg, var(--c-gold-soft), var(--c-gold));
+  color: var(--c-primary-deep);
+}
+
 .row__text {
   display: flex;
   flex-direction: column;

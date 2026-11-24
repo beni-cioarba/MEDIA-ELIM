@@ -12,6 +12,7 @@
           "/favicon.ico",
           "/index.csr.html",
           "/manifest.webmanifest",
+          "/manifest.es.webmanifest",
           "/*.css",
           "/*.js",
           "/media/*.woff2"
@@ -26,6 +27,7 @@
         "files": [
           "/assets/**",
           "!/assets/video/**",
+          "!/assets/pwa/install/**",
           "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
       }

@@ -9,6 +9,7 @@ import { ClockService } from '../../core/services/clock.service';
 import { LanguageService } from '../../core/services/language.service';
 import { IconName } from '../../core/ui/icon-name';
 import { IconComponent } from '../icon/icon.component';
+import { InstallLauncher } from '../install-app/install-launcher.service';
 
 /** Lo que puede enseñar la tarjeta: el interruptor o por qué no lo hay. */
 export type ReminderState = 'on' | 'off' | 'blocked' | 'ios-install' | 'open-browser' | 'unsupported';
@@ -46,6 +47,9 @@ function localDayDiff(from: number, to: number): number {
   host: { '[class.is-hidden]': '!visible()' },
 })
 export class PushReminderComponent {
+  /** iPhone: el aviso llega por la app; «Instalează» está en la propia tarjeta. */
+  protected readonly installer = inject(InstallLauncher);
+
   /** Etiqueta de OneSignal (su valor es el idioma). */
   readonly topic = input.required<string>();
   /** Prefijo de los textos de la tarjeta (`impreuna.reminder`, `bible.reminder`). */

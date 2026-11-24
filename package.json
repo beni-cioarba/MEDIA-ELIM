@@ -14,6 +14,7 @@
     "calendar:events": "node scripts/generate-events-calendar.mjs",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs",
+    "pwa:install": "node scripts/generate-install-media.mjs",
     "posters": "node scripts/optimize-posters.mjs",
     "images": "node scripts/generate-image-sizes.mjs",
     "images:budget": "node scripts/fit-image-budget.mjs",

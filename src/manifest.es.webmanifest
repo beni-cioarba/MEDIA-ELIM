@@ -1,0 +1,189 @@
+{
+  "id": "./",
+  "name": "Biserica Elim Arganda",
+  "short_name": "Elim Arganda",
+  "description": "La iglesia, a un toque: el programa, los anuncios, los cultos en directo y la lectura del día. Gratis, sin cuenta y sin tienda de aplicaciones.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#faf9f6",
+  "background_color": "#1a365d",
+  "categories": [
+    "lifestyle",
+    "social",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "assets/pwa/icon-any-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-any-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/pwa/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/pwa/icon-monochrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Anuncios",
+      "short_name": "Anuncios",
+      "description": "Avisos de la iglesia en vigor",
+      "url": "./anunturi",
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-announcements-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Proiectul Împreună: la lectura de hoy",
+      "short_name": "Lectura de hoy",
+      "description": "El texto y la meditación en vídeo del día",
+      "url": "./impreuna",
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-impreuna-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Programa semanal",
+      "short_name": "Programa",
+      "description": "Los cultos de cada día",
+      "url": "./media/program",
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-weekly-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "En directo",
+      "short_name": "En directo",
+      "description": "El directo y los últimos cultos",
+      "url": "./media/transmisiuni",
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-live-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Donativos",
+      "short_name": "Donativos",
+      "description": "Sostén la obra de la iglesia",
+      "url": "./doneaza",
+      "icons": [
+        {
+          "src": "assets/pwa/shortcut-donate-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/pwa/install/es/acasa.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Tu iglesia, a un toque"
+    },
+    {
+      "src": "assets/pwa/install/es/program.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "El programa de cada semana"
+    },
+    {
+      "src": "assets/pwa/install/es/anunturi.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Anuncios, eventos y oración"
+    },
+    {
+      "src": "assets/pwa/install/es/citire.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "La lectura del día, a las 8:00"
+    },
+    {
+      "src": "assets/pwa/install/es/direct.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Los cultos, en directo"
+    },
+    {
+      "src": "assets/pwa/install/es/acasa-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Tu iglesia, a un toque"
+    },
+    {
+      "src": "assets/pwa/install/es/program-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "El programa de cada semana"
+    },
+    {
+      "src": "assets/pwa/install/es/direct-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Los cultos, en directo"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://elimarganda.com/manifest.webmanifest",
+      "id": "https://elimarganda.com/"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://elimarganda.com/manifest.es.webmanifest",
+      "id": "https://elimarganda.com/"
+    }
+  ],
+  "prefer_related_applications": false
+}

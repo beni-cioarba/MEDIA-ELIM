@@ -1,0 +1,53 @@
+{
+  "install": {
+    "title": "Elim Arganda",
+    "lead": "Biserica, la o atingere: programul, anunțurile, transmisiunile în direct și citirea zilei.",
+    "lead_desktop": "Biserica pe calculatorul tău, în fereastra ei: programul, anunțurile, transmisiunile și citirea zilei.",
+    "tour": "Ce găsești în aplicație",
+    "note": "Gratuită, fără cont. O ștergi oricând.",
+    "done": "Am instalat-o",
+    "open_chrome": "Deschide în Chrome",
+    "chrome_instead": "Sau instaleaz-o din Chrome",
+    "copy_link": "Copiază linkul",
+    "link_copied": "Link copiat",
+    "invite": {
+      "title": "Elim, pe ecranul tău",
+      "lead": "Programul, anunțurile și citirea zilei, la o atingere. Gratuită.",
+      "cta": "Instalează aplicația",
+      "cta_steps": "Vezi cum se instalează",
+      "dismiss": "Nu acum"
+    },
+    "plate": {
+      "0": "Biserica ta, la o atingere",
+      "1": "Programul fiecărei săptămâni",
+      "2": "Anunțuri, evenimente și rugăciune",
+      "3": "Citirea zilei, la ora 8:00, cu amintirea pe care o activezi tu",
+      "4": "Serviciile, în direct"
+    },
+    "step": {
+      "ios26_more": "Atinge <b>⋯</b> în bara Safari",
+      "ios_share": "Alege <b>Partajați</b>",
+      "ios_share_bar": "Atinge <b>Partajați</b> în bara de jos din Safari",
+      "ipad_share_bar": "Atinge <b>Partajați</b> în bara de sus din Safari",
+      "add_home": "Alege <b>Adăugați la ecranul principal</b> (derulează lista dacă nu se vede)",
+      "confirm": "Confirmă cu <b>Adăugați</b> sau <b>Instalează</b>",
+      "confirm_ios26": "Lasă activat <b>Deschideți ca aplicație web</b> și atinge <b>Adăugați</b>",
+      "ios_chrome_share": "Atinge <b>Partajați</b> în bara de adrese",
+      "ios_firefox_share": "Deschide meniul <b>☰</b> și alege <b>Partajați</b>",
+      "ios_edge_share": "Deschide meniul <b>⋯</b> și alege <b>Partajați</b>",
+      "ios_other_share": "Deschide meniul browserului și alege <b>Partajați</b>",
+      "inapp_open_ios": "Această aplicație nu permite instalarea: deschide meniul ei (<b>⋯</b>) și alege <b>Deschide în Safari</b>, sau copiază linkul și lipește-l în Safari",
+      "inapp_open_android": "Această aplicație nu permite instalarea: deschide pagina în <b>Chrome</b> cu butonul de mai jos",
+      "other_open_android": "Acest browser nu instalează aplicații: deschide pagina în <b>Chrome</b> cu butonul de mai jos",
+      "inapp_then": "Acolo, atinge din nou <b>Instalează</b>, în subsolul paginii sau în meniu",
+      "samsung_menu": "Deschide meniul <b>☰</b> din bara de jos",
+      "samsung_add": "Alege <b>Adaugă pagina la</b> → <b>Ecran de pornire</b>",
+      "android_menu": "Deschide meniul browserului <b>⋮</b>",
+      "android_install": "Alege <b>Instalează aplicația</b> sau <b>Adaugă pe ecranul de pornire</b>",
+      "firefox_install": "Alege <b>Instalează</b> (sau <b>Adaugă pe ecranul de pornire</b>)",
+      "firefox_taskbar": "În bara de adrese, apasă iconul <b>Adaugă în bara de activități</b>",
+      "mac_dock": "În Safari: <b>Fișier</b> → <b>Adaugă în Dock</b>",
+      "desktop": "Apasă iconul de instalare din bara de adrese sau, în meniul browserului, <b>Instalează aplicația</b>"
+    }
+  }
+}

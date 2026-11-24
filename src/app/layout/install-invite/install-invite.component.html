@@ -1,0 +1,22 @@
+@if (invite.visible() && ready()) {
+  <aside #card class="invite" aria-labelledby="invite-title" (keydown.escape)="invite.dismiss()">
+    <img class="invite__app" src="assets/pwa/icon-any-192.png" alt="" width="56" height="56" />
+    <div class="invite__text">
+      <h2 class="invite__title" id="invite-title">{{ 'install.invite.title' | translate }}</h2>
+      <p class="invite__lead">{{ 'install.invite.lead' | translate }}</p>
+    </div>
+    <button
+      type="button"
+      class="invite__close"
+      (click)="invite.dismiss()"
+      [attr.aria-label]="'install.invite.dismiss' | translate"
+      [title]="'install.invite.dismiss' | translate"
+    >
+      <app-icon name="close" />
+    </button>
+    <button type="button" class="invite__cta" aria-haspopup="dialog" (click)="install()">
+      <app-icon name="install-app" />
+      <span>{{ (native() ? 'install.invite.cta' : 'install.invite.cta_steps') | translate }}</span>
+    </button>
+  </aside>
+}

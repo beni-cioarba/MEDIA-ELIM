@@ -102,6 +102,26 @@
           </ul>
         }
       }
+
+      <!-- Instalar, mientras no lo esté: una fila más, la última. -->
+      @if (pwa.available()) {
+        <ul class="rows rows--root" role="list">
+          <li>
+            <button
+              type="button"
+              class="row row--button"
+              [disabled]="installer.busy()"
+              (click)="install()"
+              aria-haspopup="dialog"
+            >
+              <span class="row__tile row__tile--gold" aria-hidden="true"><app-icon name="install-app" /></span>
+              <span class="row__text">
+                <span class="row__label">{{ 'install.cta_long' | translate }}</span>
+              </span>
+            </button>
+          </li>
+        </ul>
+      }
     </nav>
   </div>
 
