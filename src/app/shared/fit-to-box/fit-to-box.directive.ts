@@ -82,8 +82,11 @@ export class FitToBoxDirective implements AfterViewInit, OnDestroy {
     // salirse de SU columna y pisar la de al lado aunque todo cupiera en alto
     // («Marcos Zăgrean», 03/10/2026). Ese desborde queda dentro del contenido,
     // así que se mira cada uno de esos elementos, no sólo el conjunto.
+    // Fuera los textos sólo para lectores de pantalla (`u-sr-only`): miden
+    // 1 px y no parten línea, así que «desbordaban» siempre y dejaban la
+    // tarjeta en la escala mínima.
     const rigid = Array.from(inner.querySelectorAll<HTMLElement>('*')).filter(
-      (el) => getComputedStyle(el).whiteSpace === 'nowrap',
+      (el) => getComputedStyle(el).whiteSpace === 'nowrap' && el.offsetWidth > 1,
     );
     const fits = (scale: number): boolean => {
       this.host.style.setProperty('--fit', scale.toFixed(3));

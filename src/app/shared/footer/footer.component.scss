@@ -13,18 +13,13 @@
   display: block;
 }
 
-// Revisión del 29/09/2026 («más profesional y más comprimido»): el pie medía
-// ~520 px por una columna de identidad con misión de cinco líneas, rótulo y
-// redes de 40 px, y una franja legal con cuatro piezas repartidas. Ahora:
-// identidad = logo + lema + redes; enlaces más juntos; herramientas como
-// texto pequeño agrupado a la derecha.
 .footer {
   --c-focus: var(--c-focus-on-dark); // superficie oscura: anillo de foco en oro claro
   position: relative;
   /* Abajo, además, el hueco de la barra de pestañas del móvil (0 sin ella):
      el pie se ve entero al llegar al final, con la barra flotando sobre su
      propio fondo navy y no sobre el contenido. */
-  padding-block: clamp(var(--sp-5), 2.5vw, 2rem) calc(var(--sp-3) + var(--app-tab-bar-h, 0px));
+  padding-block: clamp(1rem, 1.6vw, 1.5rem) calc(var(--sp-3) + var(--app-tab-bar-h, 0px));
   background:
     radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 62%),
     linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-deep) 100%);
@@ -49,118 +44,133 @@
 }
 
 // ---------------------------------------------------------------------
-// Rejilla principal
+// Rejilla principal (23/11/2026)
 // ---------------------------------------------------------------------
-// Revisión del 29/09/2026 («más comprimido»): las columnas de enlaces miden
-// lo que su contenido (`auto`) y el espacio sobrante va a identidad y
-// contacto; todas las columnas tienen tres filas (Program se parte en dos
-// subcolumnas y las llamadas a la acción suben bajo las redes). Así ningún
-// grupo largo fija el alto del pie.
+// Tres pisos, sin huecos muertos:
 //
-// Identidad y contacto con suelo `max-content` (no un ancho fijo ni 0): la
-// identidad reservaba 14,5 rem (246 px) para 205 de contenido y el contacto,
-// con suelo 0, se quedaba en 206 px a 1280 px de ventana; el correo real y la
-// fila del teléfono con sus botones miden 246 y se salían de la columna,
-// recortados por el borde del pie. Así cada columna mide al menos lo que su
-// contenido y el sobrante se reparte 1 : 1,25. A 1280 px suman ~1.191 px de
-// 1.194 disponibles: si el contenido crece, adelantar el apilado de `xl`.
+//   1. Franja de marca: logo · redes ………… Instalează · Donează · În direct
+//   2. Una columna por grupo de `MAIN_NAV` + «Vizitează-ne» como una más
+//   3. Linkuri utile y franja legal, una línea cada uno
+//
+// Antes la identidad iba apilada (209 px de alto para 160 de enlaces, con
+// ~250 px vacíos a su derecha) y el contacto ocupaba una fila propia: el pie
+// medía 551 px a 1655.
+//
+//   ≥ xl      una fila: grupos + contacto
+//   lg – xl   grupos en una fila y el contacto debajo, en línea
+//   < lg      los grupos, en columnas que se llenan solas (3, o 2 en el
+//             teléfono): un grupo de 9 enlaces emparejado con uno de 3
+//             dejaba un hueco de 150 px
 .footer__main {
   display: grid;
-  // Rejilla derivada del menú (09/10/2026): identidad + una columna por grupo
-  // de `MAIN_NAV` (`--footer-cols` lo pone la plantilla). Con el cuarto grupo
-  // (Departamente) identidad + cuatro grupos + contacto ya no caben en una
-  // fila ni a 1600 px (~1.530 px de contenido), así que el contacto va
-  // siempre en la fila de abajo, a todo el ancho y con sus datos en dos
-  // columnas. Un grupo más entra solo.
-  grid-template-columns: minmax(max-content, 1fr) repeat(var(--footer-cols, 3), max-content);
-  gap: var(--sp-5) clamp(1.25rem, 2.5vw, 3.5rem);
-  padding-block-end: var(--sp-4);
-
-  .footer__contact {
-    grid-column: 1 / -1;
-    padding-block-start: var(--sp-4);
-    border-block-start: 1px solid rgba(247, 250, 252, 0.1);
-  }
-
-  .footer__data {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--sp-6);
-  }
+  // La última columna (contacto) puede ceder: si el menú crece, la dirección
+  // se parte en dos líneas en vez de salirse del pie.
+  grid-template-columns: repeat(var(--footer-cols, 3), max-content) minmax(14rem, max-content);
+  justify-content: space-between;
+  gap: var(--sp-3) clamp(1rem, 1.6vw, 3rem);
+  padding-block-end: var(--sp-3);
 }
 
-// Entre `md` y `xl` la identidad sube a su propia fila: los cuatro grupos
-// (dos partidos en subcolumnas) llenan el ancho sin partir rótulos.
 @include until('xl') {
   .footer__main {
     grid-template-columns: repeat(var(--footer-cols, 3), max-content);
-    justify-content: space-between;
+    gap: var(--sp-4) var(--sp-5);
+  }
 
-    .footer__identity {
-      grid-column: 1 / -1;
-    }
+  .footer__contact {
+    grid-column: 1 / -1;
+    // A todo el ancho sin que su contenido en línea ensanche las columnas de
+    // enlaces (`max-content`) que abarca.
+    width: 0;
+    min-width: 100%;
+    padding-block-start: var(--sp-3);
+    border-block-start: 1px solid rgba(247, 250, 252, 0.1);
   }
 }
 
-// En su fila, la identidad va en horizontal (marca · redes · acciones):
-// apilada gastaba ~130 px de alto en un hueco de 1.000 de ancho. En el
-// teléfono no: ahí no caben las tres piezas en una línea.
-@include between('md', 'xl') {
-  .footer__main .footer__identity {
-    grid-auto-flow: column;
-    justify-content: start;
-    align-items: center;
-    column-gap: var(--sp-6);
-  }
-}
-
-// Por debajo de `lg` cuatro grupos (~880 px) ya no caben en fila: 2 × 2.
 @include until('lg') {
   .footer__main {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flow-root;
+    columns: 2;
+    column-gap: var(--sp-5);
+  }
+
+  .footer__identity,
+  .footer__contact {
+    column-span: all;
+  }
+
+  .footer__contact {
+    width: auto;
+    min-width: 0;
+  }
+
+  // Relleno y no margen: el margen del último bloque se pierde en el corte de
+  // columna y el filete del contacto tocaba el último enlace.
+  .footer__identity,
+  .footer__col {
+    padding-block-end: var(--sp-4);
+  }
+
+  .footer__col {
+    break-inside: avoid;
   }
 }
 
-@include until('md') {
+@media (min-width: 600px) and (max-width: 1023.98px) {
   .footer__main {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    .footer__identity {
-      grid-column: 1 / -1;
-    }
-
-    .footer__data {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-}
-
-// Móvil: los grupos de enlaces siguen en dos columnas (una sola columna
-// hacía un pie de casi 1.000 px de enlaces apilados) y con un hueco claro
-// entre grupo y grupo: el `clamp` en `vw` se quedaba en nada y el rótulo de
-// un grupo tocaba el último enlace del anterior.
-@include until('md') {
-  .footer__main {
-    gap: var(--sp-6) var(--sp-5);
+    columns: 3;
   }
 }
 
 // ---------------------------------------------------------------------
-// Identidad
+// Franja de marca
 // ---------------------------------------------------------------------
 .footer__identity {
-  display: grid;
-  justify-items: start;
-  gap: var(--sp-3);
-  align-content: start;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-5);
+
+  @include from('lg') {
+    padding-block-end: var(--sp-3);
+    border-block-end: 1px solid rgba(247, 250, 252, 0.1);
+  }
+
+  // Entre 1024 y 1280, en castellano y con «Instalar», la fila va justa.
+  @include between('lg', 'xl') {
+    column-gap: var(--sp-3);
+    width: 0;
+    min-width: 100%;
+  }
+
+  // Logo y acciones a los extremos; si las acciones bajan, a la izquierda.
+  @include until('lg') {
+    justify-content: space-between;
+  }
 }
 
 .footer__socials {
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
+  display: flex;
   gap: var(--sp-2);
-  margin: var(--sp-1) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
+
+  // Sin `flex`, la pastilla se asienta sobre el interlineado del cuerpo y
+  // cada fila medía 41 px para 38 de pastilla.
+  > li {
+    display: flex;
+  }
+
+  // Por debajo de `lg`, a su propia fila y a partes iguales.
+  @include until('lg') {
+    order: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+  }
 }
 
 // Pastilla neutra en reposo (icono = la red, texto = la cuenta) y color de
@@ -170,9 +180,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  min-width: 7.5rem;
-  min-height: 2.25rem;
-  padding: 0 0.85rem 0 0.3rem;
+  flex: 1;
+  min-height: 2.125rem;
+  padding: 0 0.75rem 0 0.3rem;
   border: 1px solid rgba(247, 250, 252, 0.16);
   border-radius: var(--r-pill);
   color: rgba(247, 250, 252, 0.85);
@@ -215,6 +225,26 @@
   white-space: nowrap;
 }
 
+// Tableta: pastilla centrada en su cuarto. Teléfono: icono sobre rótulo, una
+// fila de cuatro de ~52 px (antes, dos filas de dos).
+@include until('lg') {
+  .footer__social {
+    justify-content: center;
+  }
+}
+
+@include until('sm') {
+  .footer__social {
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    min-height: 3.25rem;
+    padding: 0.3rem 0.1rem;
+    border-radius: var(--r-sm);
+    font-size: 0.75rem;
+  }
+}
+
 // ---------------------------------------------------------------------
 // Columnas de enlaces
 // ---------------------------------------------------------------------
@@ -230,6 +260,41 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--c-gold);
+}
+
+// Rótulo que abre la portada de la sección: mismo dibujo que sin enlace más
+// un cheurón tenue, que avanza al apuntar.
+.footer__title-link {
+  @include tap-target(24px);
+
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+
+  app-icon {
+    margin-inline-start: 0.1em;
+    font-size: 1.1em;
+    opacity: 0.6;
+    transition:
+      opacity var(--mo-base) var(--ea-standard),
+      transform var(--mo-base) var(--ea-standard);
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--c-gold-soft);
+
+    app-icon {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
 }
 
 // `li` flex: sin él, el enlace (`inline-block`) se asentaba sobre el «strut»
@@ -250,13 +315,13 @@
   }
 }
 
-// Grupo largo en dos subcolumnas (≥ md), llenando por columnas: se sigue
+// Grupo largo en dos subcolumnas (≥ lg), llenando por columnas: se sigue
 // leyendo de arriba abajo y luego a la derecha.
-@include from('md') {
+@include from('lg') {
   .footer__links--split {
     grid-auto-flow: column;
     grid-template-rows: repeat(var(--rows, 3), auto);
-    column-gap: var(--sp-6);
+    column-gap: var(--sp-4);
   }
 }
 
@@ -295,10 +360,24 @@
 // ---------------------------------------------------------------------
 .footer__data {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.35rem;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  // Con el contacto en su fila, los datos en línea y que se partan solos: en
+  // dos columnas iguales dejaban media fila vacía.
+  @include until('xl') {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem var(--sp-5);
+  }
+
+  // En el teléfono, más juntos: «Program» y «prima vizită» comparten línea.
+  @include until('sm') {
+    column-gap: var(--sp-4);
+  }
 }
 
 .footer__datum {
@@ -424,6 +503,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
+
+  @include from('lg') {
+    margin-inline-start: auto;
+  }
 }
 
 // Los CTA del pie son propios y no `.btn`: aquí el fondo es oscuro y fijo,
@@ -461,31 +544,33 @@
 
 .footer__cta--gold {
   border-color: transparent;
-  background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-gold-deep) 100%);
+  // De oro claro a oro, sin llegar a `--c-gold-deep`: en ese extremo el texto
+  // navy se quedaba en 2,8:1.
+  background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 100%);
   color: var(--c-primary-deep);
   box-shadow: var(--e-1);
 
   &:hover,
   &:focus-visible {
-    background: linear-gradient(135deg, var(--c-gold-soft) 0%, var(--c-gold) 100%);
+    background: var(--c-gold-soft);
     border-color: transparent;
   }
 }
 
-// ---------------------------------------------------------------------
-// Franja legal
-// ---------------------------------------------------------------------
-// Rejilla con áreas, no flex que envuelve: con el botón «Instalar» y el
-// sello «100 %» las piezas ya no caben en una fila, y dejar que el flex
-// decida partía el © por la mitad y colgaba el separador en móvil (medido
-// el 01/10/2026). Así cada pieza tiene su sitio fijo en cada ancho:
-//
-//   ≥ lg   © ……………………………   [acciones] │ INEB
-//          v2.0 · ▭▯▯ 100%
-//
-//   < lg   © ……………………………………………………
-//          v2.0 · ▭▯▯ 100%            INEB
-//          [Instalar] ↑ ⇪ ▶ 🎨
+// Con «Instalar» a la vista: filete, para que sólo haya un botón macizo.
+.footer__cta--outline {
+  border-color: var(--c-gold);
+  background: none;
+  color: var(--c-gold-soft);
+  box-shadow: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--c-gold-soft);
+    background: rgba(212, 175, 55, 0.14);
+  }
+}
+
 // ---------------------------------------------------------------------
 // Linkuri utile (14/11/2026)
 // ---------------------------------------------------------------------
@@ -498,7 +583,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2) var(--sp-5);
-  padding-block: var(--sp-3);
+  padding-block: var(--sp-2);
   border-block-start: 1px solid rgba(247, 250, 252, 0.1);
 }
 
@@ -579,43 +664,54 @@
   }
 }
 
+// ---------------------------------------------------------------------
+// Franja legal
+// ---------------------------------------------------------------------
+// Flex que se parte por piezas enteras, en el orden del documento:
+//
+//   ≥ xl   © … Informații legale   v2.3 ▭▯▯100%        ↑ ⇪ ▶ 🎨 📅  INEB
+//   < xl   © … Informații legale   v2.3 ▭▯▯100%
+//                                                      ↑ ⇪ ▶ 🎨 📅  INEB
+//   < sm   © …
+//          v2.3 ▭▯▯100%                                           INEB
+//          ↑ ⇪ ▶ 🎨 📅
 .footer__legal {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    'copy copy'
-    'meta partner'
-    'actions actions';
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2) var(--sp-4);
-  padding-block-start: var(--sp-3);
+  padding-block-start: var(--sp-2);
   border-block-start: 1px solid rgba(247, 250, 252, 0.12);
   font-size: 0.8rem;
-  color: rgba(247, 250, 252, 0.55);
-
-  @include from('lg') {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
-    grid-template-areas:
-      'copy actions sep partner'
-      'meta actions sep partner';
-    row-gap: var(--sp-1);
-    column-gap: var(--sp-5);
-  }
+  color: rgba(247, 250, 252, 0.66);
 }
 
 .footer__copy {
-  grid-area: copy;
   margin: 0;
-  text-wrap: balance;
+  // Sin el `max-width` de prosa que `_base.scss` pone a todo `p`: partía en
+  // dos líneas un © que cabe en una.
+  max-width: none;
+  text-wrap: pretty;
+}
+
+.footer__legal-link {
+  font-size: inherit;
+  color: rgba(247, 250, 252, 0.88);
 }
 
 // Metadatos técnicos: píldoras tenues en fila, alineadas al borde del ©.
 .footer__meta {
-  grid-area: meta;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2);
+}
+
+// Las dos píldoras, a la misma altura: como `inline-block` se asentaban cada
+// una en su línea base y quedaban 2 px descuadradas.
+.footer__ver,
+.footer__meta app-device-fit {
+  display: inline-flex;
 }
 
 // Acciones compactas: círculos de 34 px, tenues en reposo y dorados al
@@ -623,11 +719,11 @@
 // compartir, proyección, guía) y con nombre en el tooltip; como texto
 // competían con el aviso legal. El dock flotante se retira mientras se ven.
 .footer__actions-bar {
-  grid-area: actions;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2);
+  margin-inline-start: auto;
 }
 
 .footer__icon-btn,
@@ -674,19 +770,6 @@
   display: none;
 }
 
-// Separa las acciones de la marca del colaborador.
-.footer__sep {
-  grid-area: sep;
-  display: none;
-  width: 1px;
-  height: 1.5rem;
-  background: rgba(247, 250, 252, 0.16);
-
-  @include from('lg') {
-    display: block;
-  }
-}
-
 // Dato técnico, no editorial: se marca como tal con una píldora tenue para
 // que esté disponible al reportar incidencias sin robar atención al aviso
 // legal. El detalle completo vive en el tooltip.
@@ -702,7 +785,8 @@
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
-  color: rgba(247, 250, 252, 0.45);
+  // Al 45 % el contraste se quedaba en 3,6:1.
+  color: rgba(247, 250, 252, 0.66);
   white-space: nowrap;
   background: none;
   font-family: inherit;
@@ -726,7 +810,6 @@
 // botones dentro) y se abre con hover, con foco o fijado con un clic.
 .footer__ver {
   position: relative;
-  display: inline-block;
 }
 
 // Tooltip propio en vez de MatTooltip: son tres líneas estáticas dentro de un
@@ -891,8 +974,6 @@
 }
 
 .footer__partner {
-  grid-area: partner;
-  justify-self: end;
   display: inline-flex;
   align-items: center;
   border-radius: var(--r-xs);
@@ -918,7 +999,25 @@
   }
 }
 
+@include until('sm') {
+  .footer__copy {
+    width: 100%;
+  }
+
+  // INEB, junto a los metadatos; las herramientas, en la última fila.
+  .footer__partner {
+    margin-inline-start: auto;
+  }
+
+  .footer__actions-bar {
+    order: 1;
+    width: 100%;
+    margin-inline-start: 0;
+  }
+}
+
 @include motion-reduce {
+  .footer__title-link app-icon,
   .footer__social,
   .footer__link,
   .footer__cta,
@@ -934,12 +1033,14 @@
     animation-duration: 2.4s;
   }
 
+  .footer__title-link:hover app-icon,
+  .footer__title-link:focus-visible app-icon,
   .footer__quick-btn:hover,
   .footer__quick-btn:focus-visible {
     transform: none;
   }
 
   .footer__build {
-    transform: translate(-50%, 0);
+    transform: none;
   }
 }

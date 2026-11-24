@@ -30,10 +30,17 @@
           }
         </ul>
 
-        <!-- Llamadas a la acción bajo las redes: la columna de identidad tenía
-             sitio de sobra y en «Visítanos» alargaban el pie una fila entera. -->
+        <!-- Llamadas a la acción, al otro extremo de la franja de marca.
+             «Instalar» sólo existe si la web no está instalada y la plataforma
+             lo permite; mientras se ve es la única pieza maciza y «Donează»
+             pasa a filete, para que no compitan dos botones dorados. -->
         <div class="footer__actions">
-          <a class="footer__cta footer__cta--gold" [routerLink]="links.donate">
+          <app-install-app />
+          <a
+            class="footer__cta footer__cta--gold"
+            [class.footer__cta--outline]="install.available()"
+            [routerLink]="links.donate"
+          >
             <span>{{ 'nav.donate' | translate }}</span>
           </a>
           <a class="footer__cta" [routerLink]="links.live">
@@ -48,11 +55,17 @@
       @for (column of columns; track column.id) {
         <nav class="footer__col" [attr.aria-labelledby]="'footer-nav-' + column.id">
           <h2 class="footer__title" [id]="'footer-nav-' + column.id">
-            {{ column.titleKey | translate }}
+            <!-- El rótulo abre la portada de la sección (`/biserica`…). -->
+            @if (column.path) {
+              <a class="footer__title-link" [routerLink]="column.path">
+                {{ column.titleKey | translate }}<app-icon name="chevron-right" />
+              </a>
+            } @else {
+              {{ column.titleKey | translate }}
+            }
           </h2>
-          <!-- Un grupo largo (Program: 6) se reparte en dos subcolumnas, así
-               todas las columnas miden lo mismo (3 filas) y el pie no crece
-               con el grupo más largo. -->
+          <!-- Un grupo largo (Program: 9) se reparte en dos subcolumnas (5 + 4):
+               mide lo mismo que los cinco datos de contacto, que van al lado. -->
           <ul
             class="footer__links"
             [class.footer__links--split]="column.links.length > splitAfter"
@@ -71,7 +84,12 @@
 
       <!-- Datos prácticos: lo que de verdad se busca en un pie de iglesia. -->
       <section class="footer__contact" aria-labelledby="footer-contact">
-        <h2 class="footer__title" id="footer-contact">{{ 'footer.visit' | translate }}</h2>
+        <!-- El rótulo abre «Contact» (formulario, mapa y horarios). -->
+        <h2 class="footer__title" id="footer-contact">
+          <a class="footer__title-link" [routerLink]="links.contact">
+            {{ 'footer.visit' | translate }}<app-icon name="chevron-right" />
+          </a>
+        </h2>
 
         <ul class="footer__data">
           <li class="footer__datum">
@@ -97,10 +115,13 @@
             <app-icon class="footer__datum-icon" name="phone" />
             <a class="footer__link footer__phone" [href]="tel">{{ config.contact.phoneDisplay }}</a>
             <span class="footer__quick">
+              <!-- Mismo destino que el número: botón para ratón y dedo, fuera del
+                   tabulador y del lector de pantalla para no repetirlo. -->
               <a
                 class="footer__quick-btn footer__quick-btn--call"
                 [href]="tel"
-                [attr.aria-label]="('footer.call' | translate) + ' · ' + config.contact.phoneDisplay"
+                tabindex="-1"
+                aria-hidden="true"
                 [title]="'footer.call' | translate"
               >
                 <app-icon name="phone" />
@@ -195,8 +216,7 @@
         <a class="footer__link footer__legal-link" [routerLink]="links.legal">{{ 'footer.legal' | translate }}</a>
       </p>
 
-      <!-- Metadatos técnicos (versión y sello «100 % adaptable») en su propia
-           fila: así el © no se parte por ellos y la rejilla los coloca. -->
+      <!-- Metadatos técnicos: versión y sello «100 % adaptable». -->
       <div class="footer__meta">
 
         <!--
@@ -277,9 +297,6 @@
            herramientas (panel de control, guía de estilos, programación de Administrativ). Mismo patrón que
            el pie de Administrativ. -->
       <div class="footer__actions-bar" role="group" [attr.aria-label]="'footer.tools' | translate">
-        <!-- «Instalar»: sólo existe si la web no está instalada y la
-             plataforma lo permite (se pinta vacío en el resto de casos). -->
-        <app-install-app />
         <button
           type="button"
           class="footer__icon-btn"
@@ -317,8 +334,6 @@
           <app-icon name="calendar" />
         </a>
       </div>
-
-      <span class="footer__sep" aria-hidden="true"></span>
 
       <!-- Marca de INEB en SVG (componente autocontenido, hoja de marca en su
            README): forma completa, mínimo 32 px, nombre en blanco sobre el

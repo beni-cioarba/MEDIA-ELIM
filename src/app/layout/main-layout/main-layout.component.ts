@@ -117,12 +117,36 @@ import { SwipePeekComponent } from '../tab-bar/swipe-peek.component';
          Re-medido con el cuarto grupo (Departamente, 09/10/2026): ~404 px
          en escritorio y ~946 a 375. */
       .shell__footer-ph {
-        min-height: 25rem;
+        min-height: 22rem;
       }
 
-      @media (max-width: 767.98px) {
+      @media (max-width: 1279.98px) {
         .shell__footer-ph {
-          min-height: 58rem;
+          min-height: 30rem;
+        }
+      }
+
+      @media (max-width: 1023.98px) {
+        .shell__footer-ph {
+          min-height: 47rem;
+        }
+      }
+
+      @media (max-width: 719.98px) {
+        .shell__footer-ph {
+          min-height: 55rem;
+        }
+      }
+
+      @media (max-width: 599.98px) {
+        .shell__footer-ph {
+          min-height: 64rem;
+        }
+      }
+
+      @media (max-width: 359.98px) {
+        .shell__footer-ph {
+          min-height: 73rem;
         }
       }
     `,

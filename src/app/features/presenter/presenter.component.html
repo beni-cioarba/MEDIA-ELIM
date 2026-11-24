@@ -288,6 +288,20 @@
               </details>
             }
 
+            <!-- Botezuri siguientes (con candidatos ya cargados): plegado y
+                 arriba, como las familias de la semana siguiente. Al marcar
+                 un elemento pasa a la lista (sólo hoy). -->
+            @if (group.state.id === 'baptism' && blocks.otherBaptismOptions().next; as opciones) {
+              @if (opciones.length > 0) {
+                <details class="past past--next">
+                  <summary class="past__summary">
+                    {{ 'presenter.next_baptisms' | translate: { n: blocks.otherBaptisms().next.length } }}
+                  </summary>
+                  <ng-container *ngTemplateOutlet="otherBaptismList; context: { $implicit: opciones, kind: 'next' }" />
+                </details>
+              }
+            }
+
             <ol class="rows" role="list">
               @for (slide of group.slides; track slide.key) {
                 <li
@@ -346,6 +360,16 @@
                       (change)="setFamilyVisible(famId, $event)"
                       [attr.aria-label]="label(slide)"
                     />
+                  } @else if (slide.otherBaptism) {
+                    <!-- Elemento de otro botez añadido para hoy:
+                         desmarcarlo lo devuelve al desplegable. -->
+                    <input
+                      type="checkbox"
+                      class="check"
+                      [checked]="group.state.enabled"
+                      (change)="togglePickedCandidate(slide, $event)"
+                      [attr.aria-label]="label(slide)"
+                    />
                   } @else if (candidateId(slide); as candId) {
                     <input
                       type="checkbox"
@@ -372,6 +396,8 @@
                         <span class="row__tag">{{ 'presenter.past_tag' | translate }}</span>
                       } @else if (slide.nextFamily) {
                         <span class="row__tag">{{ 'presenter.next_tag' | translate }}</span>
+                      } @else if (slide.otherBaptism && slide.baptism) {
+                        <span class="row__tag">{{ baptismShort(slide.baptism.date) }}</span>
                       }
                     </span>
                     @if (isCurrent(slide)) {
@@ -458,6 +484,21 @@
                   }
                 </ul>
               </details>
+            }
+
+            <!-- Botezuri anteriores: plegado al pie, como las familias de
+                 semanas anteriores. Al marcar un elemento pasa a la lista de
+                 arriba (sólo hoy). -->
+            @if (group.state.id === 'baptism' && blocks.otherBaptismOptions().past; as opciones) {
+              @if (opciones.length > 0) {
+                <details class="past">
+                  <summary class="past__summary">
+                    {{ 'presenter.past_baptisms' | translate: { n: blocks.otherBaptisms().past.length } }}
+                  </summary>
+                  <p class="past__hint">{{ 'presenter.past_baptisms_hint' | translate }}</p>
+                  <ng-container *ngTemplateOutlet="otherBaptismList; context: { $implicit: opciones, kind: 'past' }" />
+                </details>
+              }
             }
           </li>
         }
@@ -918,3 +959,27 @@
     }
   </dialog>
 </div>
+
+<!-- Elementos de otros botezuri: un plegable cerrado por botez (fecha y nº
+     de candidatos en una línea) con los candidatos juntos y, detrás, uno a
+     uno. Lo comparten los dos desplegables del bloque. -->
+<ng-template #otherBaptismList let-opciones let-kind="kind">
+  @for (option of opciones; track option.baptism.date) {
+    <details class="past__group">
+      <summary class="past__group-summary">
+        <span class="past__name">{{ baptismShort(option.baptism.date) }}</span>
+        <span class="past__week">{{ 'presenter.baptism_candidates' | translate: { n: option.baptism.candidates.length } }}</span>
+      </summary>
+      <ul class="past__list" role="list">
+        @for (item of option.items; track item.id) {
+          <li>
+            <label class="past__item">
+              <input type="checkbox" class="check" (change)="addOtherCandidate(kind, item.id, $event)" />
+              <span class="past__name">{{ item.candidate ? item.candidate.name : ('presenter.baptism_all' | translate) }}</span>
+            </label>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+</ng-template>

@@ -13,12 +13,14 @@ import {
   viewChild,
   DOCUMENT
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import {
+  OtherBaptismKind,
   PastFamilyOption,
   PresentationBlockId,
   PresentationBlockState,
@@ -29,6 +31,7 @@ import {
   BAPTISM_SUMMARY_SLIDE_KEY,
   candidateSelectionId,
   familySelectionId,
+  otherCandidateId,
 } from '../../core/services/presentation-blocks.service';
 import {
   DURATION_MAX_S,
@@ -79,7 +82,7 @@ interface BlockGroup {
     selector: 'app-presenter',
     // Consola de realización con su propio lenguaje visual (no el de la web):
     // sus tokens viven en el `:host` de su hoja de estilos.
-    imports: [TranslatePipe, DragDropModule, BrandLogoComponent, IconComponent, SlideProgressDirective],
+    imports: [TranslatePipe, NgTemplateOutlet, DragDropModule, BrandLogoComponent, IconComponent, SlideProgressDirective],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './presenter.component.html',
     styleUrl: './presenter.component.scss'
@@ -458,7 +461,7 @@ export class PresenterComponent implements OnInit {
 
   /** Id de selección de una diapositiva del botez (los candidatos juntos o uno), o `null`. */
   protected candidateId(slide: PresentationSlide): string | null {
-    return slide.block === 'baptism' && slide.baptism ? candidateSelectionId(slide) : null;
+    return slide.block === 'baptism' && slide.baptism && !slide.otherBaptism ? candidateSelectionId(slide) : null;
   }
 
   protected setCandidateVisible(id: string, event: Event): void {
@@ -508,6 +511,20 @@ export class PresenterComponent implements OnInit {
     }
     if (slide.nextFamily) this.blocks.setNextFamilyShown(family.id, checked);
     else this.blocks.setPastFamilyShown(family.id, checked);
+  }
+
+  /**
+   * Fila de otro botez ya añadida: con el bloque encendido, desmarcarla la
+   * devuelve al desplegable; apagado (casilla vacía), marcarla enciende el
+   * bloque sólo con ella.
+   */
+  protected togglePickedCandidate(slide: PresentationSlide, event: Event): void {
+    const kind = slide.otherBaptism;
+    if (!kind || !slide.baptism) return;
+    const id = otherCandidateId(slide.baptism.date, slide.candidate?.id ?? null);
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked && !this.isBlockOn('baptism')) this.blocks.showOnly('baptism', null);
+    this.blocks.setOtherCandidateShown(kind, id, checked);
   }
 
   protected isAnnouncementVisible(slide: PresentationSlide): boolean {
@@ -571,6 +588,28 @@ export class PresenterComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.checked && !this.isBlockOn('families')) this.blocks.showOnly('families', null);
     this.blocks.setPastFamilyShown(id, input.checked);
+    input.checked = false;
+  }
+
+  // ---- Otros botezuri (anteriores y siguientes) ----------------------------
+
+  /** Fecha de un botez, corta («22 nov. 2026»): rótulo de grupo y etiqueta de fila. */
+  protected baptismShort(date: string): string {
+    const lang = this.translate.getCurrentLang() ?? 'ro';
+    try {
+      return new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', year: 'numeric' }).format(
+        new Date(`${date}T12:00:00`),
+      );
+    } catch {
+      return date;
+    }
+  }
+
+  /** Marcar en el desplegable: el elemento pasa (para hoy) a la lista del bloque. */
+  protected addOtherCandidate(kind: OtherBaptismKind, id: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.checked && !this.isBlockOn('baptism')) this.blocks.showOnly('baptism', null);
+    this.blocks.setOtherCandidateShown(kind, id, input.checked);
     input.checked = false;
   }
 

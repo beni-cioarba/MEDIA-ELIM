@@ -22,6 +22,7 @@ import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { isNavGroup, NavItem } from '../../core/navigation/nav.model';
 import { LanguageService } from '../../core/services/language.service';
+import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { PwaUpdateService } from '../../core/services/pwa-update.service';
 import { telHref, whatsappHref } from '../../core/util/contact-links';
 import { APP_VERSION } from '../../../environments/version';
@@ -41,6 +42,8 @@ const VISIBLE_RATIO = 0.3;
 interface FooterColumn {
   readonly id: string;
   readonly titleKey: string;
+  /** Portada de la sección (`/biserica`…): la abre el rótulo de la columna. */
+  readonly path?: string;
   readonly links: readonly NavItem[];
 }
 
@@ -97,13 +100,13 @@ export class FooterComponent {
    * añade un grupo al menú, aparece aquí solo.
    */
   protected readonly columns: readonly FooterColumn[] = MAIN_NAV.filter(isNavGroup).map(
-    (group) => ({ id: group.id, titleKey: group.labelKey, links: group.children }),
+    (group) => ({ id: group.id, titleKey: group.labelKey, path: group.path, links: group.children }),
   );
 
   /**
-   * Un grupo con más enlaces que estos se parte en dos subcolumnas (≥ md).
-   * Hoy Program (6) pasa a 3 + 3: todos los grupos miden tres filas y el
-   * más largo ya no fija el alto del pie.
+   * Un grupo con más enlaces que estos se parte en dos subcolumnas (≥ lg).
+   * Hoy Program (9) pasa a 5 + 4 y Departamente (6) a 3 + 3; el alto de la
+   * rejilla lo fijan las cinco filas de contacto, no el grupo más largo.
    */
   protected readonly splitAfter = 4;
 
@@ -205,6 +208,9 @@ export class FooterComponent {
   protected backToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  /** Mientras se ofrece «Instalar», «Donează» cede el relleno dorado. */
+  protected readonly install = inject(PwaInstallService);
 
   /** Comprobación manual de versión nueva (botón de la versión). */
   protected readonly update = inject(PwaUpdateService);

@@ -332,6 +332,9 @@ Ahora (`gallery-block.component.*`, con su hoja global propia —salió de
     debajo de 1025 px la galería no alcanza esa esquina: no hay botón propio
     y el dock sigue.
   - `app-icon` mide `1em`: se dimensiona con `font-size`, no con `width`.
+  - **Velo del escenario** (nov. 2026): dos capas, el degradado inferior y una
+    esquina radial tras el rótulo; con fotos blancas (candidatos) la fecha en
+    oro estaba en 2,3:1 y así pasa 4,5:1. En móvil suben hasta el 39 % del alto.
   - Móvil: rótulo compacto (título en una línea, CTA pequeño) para no tapar
     una foto de ~230 px de alto.
 - **Álbumes con ediciones** (oct. 2026): un evento que se repite (los
@@ -340,7 +343,7 @@ Ahora (`gallery-block.component.*`, con su hoja global propia —salió de
   el carril se llenaría de «Botez» repetidos.
   - **Carril**: una fila por álbum. La miniatura lleva dos láminas detrás
     (`.is-stack`, sombras de la propia caja: no cambian la medida) y bajo la
-    fecha «2 ediții» con el icono `layers`. Proyectando, sólo la pila.
+    fecha «3 ediții» con el icono `layers`. Proyectando, sólo la pila.
   - **Escenario**: línea de tiempo de cristal arriba a la derecha
     (`.gallery__editions`): cápsula por edición con miniatura redonda y
     «mai 2026» (`Intl`, idioma activo), unidas por un trazo; la activa en oro.

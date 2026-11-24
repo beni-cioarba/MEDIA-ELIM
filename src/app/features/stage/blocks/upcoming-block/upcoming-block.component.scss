@@ -169,6 +169,12 @@ $today-fill: map.get($status-text, 'live');
   }
 
   // ---- Texto ----
+  // `__content` existe para el autoajuste de la proyección; en la web no
+  // pinta caja y sus hijos siguen siendo filas de `__body`.
+  &__content {
+    display: contents;
+  }
+
   &__body {
     grid-area: body;
     display: flex;
@@ -794,22 +800,52 @@ $today-fill: map.get($status-text, 'live');
 // Sólo `--pj-*` (heredadas de `.stage.is-fullscreen`, ver
 // `_projection.scss`); nada de rem. Lo vigila `npm run check:projection`.
 //
-//   1 evento  → cartel a toda la diapositiva: cartel (38u) | texto (~83u) | consola (48u)
-//   2 eventos → mitad y mitad: cartel (24u) | texto | consola compacta (60u)
+// Hasta tres eventos por diapositiva, repartidos por igual
+// (`balancedPages`): 1 → la tarjeta llena el lienzo; 2 → mitad y mitad
+// (`.ev--pair`); 3 → filas compactas (`.ev--trio`). La estructura es la
+// misma en los tres casos; sólo cambian las medidas.
 //
-// Presupuesto vertical a 1080p con un evento: ~80u de tarjeta; chip 5 +
-// titular 3 × 8,4 + resumen 3 × 6 + créditos 7 ≈ 56u. Con dos, 39u cada una:
-// titular 2 × 6,2 + resumen 2 × 4,9 + créditos 4,9 ≈ 30u.
+//   cartel (sólo si lo hay) | texto | consola
+//
+// - **Texto**: se ajusta a su caja con `appFitToBox` (`--fit`, de 0,7 hasta
+//   1,6 / 1,4 / 1,25 según cuántas tarjetas haya): con un titular corto
+//   crece en vez de dejar la caja casi vacía. Lo secundario nunca baja de
+//   3,2u (`max()` con `--pj-fs-eyebrow`).
+// - **Cartel**: entero (`contain`) a toda la altura de la tarjeta, sobre su
+//   copia desenfocada; los apaisados (`.has-wide-poster`, miniatura 16:9 de
+//   un directo) llevan una columna más ancha para no quedar en sello.
+// - **Consola**: una sola composición en todas las tarjetas, para que se
+//   lean alineadas: arriba la fecha (día | día de la semana / mes) y la hora a
+//   la derecha en el mismo eje; debajo, tras un filete, la cuenta atrás (sólo
+//   el próximo evento de esta semana) o «Peste N zile».
 // =====================================================================
+
+/// Medida del texto de la tarjeta que sigue al autoajuste.
+@function fit($value) {
+  @return calc(#{$value} * var(--fit, 1));
+}
+
 .ev--pj {
   flex: 1 1 auto;
   min-height: 0;
   grid-auto-rows: minmax(0, 1fr);
   gap: calc(var(--pj-u) * 1.6);
 
+  // Medidas de la tarjeta de un solo evento; `.ev--pair` y `.ev--trio` las
+  // cambian. Columnas: cartel (vertical / apaisado) y consola.
+  --ev-poster: calc(var(--pj-u) * 44);
+  --ev-poster-wide: calc(var(--pj-u) * 64);
+  --ev-panel: calc(var(--pj-u) * 56);
+  --ev-title: var(--pj-fs-title);
+  --ev-desc: var(--pj-fs-body);
+  --ev-day: calc(var(--pj-u) * 15);
+  --ev-time: var(--pj-fs-lead);
+  --ev-digits: var(--pj-fs-title);
+  --ev-gap: var(--pj-sp-3);
+
   .ev-hero,
   .ev-hero.has-poster {
-    grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 48);
+    grid-template-columns: minmax(0, 1fr) var(--ev-panel);
     grid-template-areas: 'body panel';
     min-height: 0;
     border-width: var(--pj-stroke);
@@ -822,15 +858,21 @@ $today-fill: map.get($status-text, 'live');
   }
 
   .ev-hero.has-poster {
-    grid-template-columns: calc(var(--pj-u) * 38) minmax(0, 1fr) calc(var(--pj-u) * 48);
+    grid-template-columns: var(--ev-poster) minmax(0, 1fr) var(--ev-panel);
     grid-template-areas: 'poster body panel';
   }
 
+  .ev-hero.has-wide-poster {
+    grid-template-columns: var(--ev-poster-wide) minmax(0, 1fr) var(--ev-panel);
+  }
+
   // Cartel entero sobre su copia desenfocada, a toda la altura de la tarjeta.
-  .ev-hero__poster {
+  // `.ev-hero` delante: gana a los márgenes de la web para apaisados
+  // (`.ev-hero.has-wide-poster .ev-hero__poster`).
+  .ev-hero .ev-hero__poster {
     height: auto;
     min-height: 0;
-    padding: var(--pj-sp-2);
+    padding: 0;
     overflow: hidden;
     background: var(--c-primary-darkest);
 
@@ -843,17 +885,26 @@ $today-fill: map.get($status-text, 'live');
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: var(--pj-r-sm);
-      box-shadow: 0 calc(var(--pj-u) * 0.8) calc(var(--pj-u) * 2.4) rgba(0, 0, 0, 0.35);
+      border-radius: 0;
+      box-shadow: none;
     }
   }
 
+  // ---- Texto (caja del autoajuste) --------------------------------------
   .ev-hero__body {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: calc(var(--pj-u) * 1.4);
     min-height: 0;
     padding: var(--pj-sp-3) var(--pj-sp-4);
     overflow: hidden;
+  }
+
+  .ev-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: fit(calc(var(--pj-u) * 1.4));
+    min-width: 0;
   }
 
   .ev-hero__eyebrow:not(:has(.ev-chip)) {
@@ -874,15 +925,16 @@ $today-fill: map.get($status-text, 'live');
   }
 
   .ev-hero__title {
-    font-size: var(--pj-fs-title);
+    font-size: max(var(--pj-fs-body), fit(var(--ev-title)));
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.015em;
+    text-wrap: balance;
   }
 
   .ev-hero__desc {
     max-width: none;
-    font-size: var(--pj-fs-body);
+    font-size: max(var(--pj-fs-eyebrow), fit(var(--ev-desc)));
     font-weight: 500;
     line-height: 1.3;
     @include line-clamp(3);
@@ -891,15 +943,24 @@ $today-fill: map.get($status-text, 'live');
   .ev-hero__verse {
     padding-left: var(--pj-sp-2);
     border-left-width: calc(var(--pj-u) * 0.5);
-    font-size: var(--pj-fs-caption);
+    font-size: max(var(--pj-fs-eyebrow), fit(var(--pj-fs-caption)));
   }
 
   // Créditos en una línea: «PREDICA Simion Bumbar».
   .ev-facts {
     margin: 0;
-    padding-top: calc(var(--pj-u) * 1.4);
+    padding-top: fit(calc(var(--pj-u) * 1.4));
     border-top-width: var(--pj-stroke);
     gap: var(--pj-sp-1) var(--pj-sp-6);
+
+    dt {
+      font-size: var(--pj-fs-eyebrow);
+    }
+
+    dd {
+      font-size: max(var(--pj-fs-eyebrow), fit(var(--ev-desc)));
+      font-weight: 700;
+    }
   }
 
   .ev-facts__item {
@@ -909,28 +970,19 @@ $today-fill: map.get($status-text, 'live');
     gap: var(--pj-sp-2);
   }
 
-  .ev-facts {
-
-    dt {
-      font-size: var(--pj-fs-eyebrow);
-    }
-
-    dd {
-      font-size: var(--pj-fs-body);
-      font-weight: 700;
-    }
-  }
-
-  // ---- Consola ----------------------------------------------------------
+  // ---- Consola: fecha y hora arriba; cuenta atrás o «Peste N zile» debajo --
   .ev-panel {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'date times'
+      'count count';
+    align-content: center;
+    align-items: center;
+    gap: var(--ev-gap) var(--pj-sp-3);
     margin: 0;
-    border-radius: 0;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    justify-content: center;
-    gap: var(--pj-sp-3);
     padding: var(--pj-sp-3);
+    border-radius: 0;
     border-left: var(--pj-stroke) solid color-mix(in srgb, var(--c-gold) 30%, transparent);
 
     &::after {
@@ -938,13 +990,20 @@ $today-fill: map.get($status-text, 'live');
     }
   }
 
+  // Día grande y, a su derecha, día de la semana (oro) sobre el mes. Sin
+  // año: a semanas vista sobra y chocaba con la hora.
   .ev-panel__date {
-    grid-template-columns: auto;
+    grid-area: date;
+    grid-template-columns: auto auto;
     grid-template-areas:
-      'weekday'
-      'day'
-      'month';
-    row-gap: calc(var(--pj-u) * 0.6);
+      'day weekday'
+      'day month';
+    column-gap: var(--pj-sp-2);
+    row-gap: 0;
+  }
+
+  .ev-panel__day {
+    font-size: var(--ev-day);
   }
 
   .ev-panel__weekday,
@@ -952,16 +1011,18 @@ $today-fill: map.get($status-text, 'live');
     font-size: var(--pj-fs-caption);
   }
 
-  .ev-panel__day {
-    font-size: calc(var(--pj-u) * 16);
+  .ev-panel__year {
+    display: none;
   }
 
   .ev-panel__times {
+    grid-area: times;
+    justify-self: end;
     gap: var(--pj-sp-1);
-    font-size: var(--pj-fs-lead);
+    font-size: var(--ev-time);
 
     app-icon {
-      font-size: var(--pj-fs-body);
+      font-size: calc(var(--ev-time) * 0.8);
     }
   }
 
@@ -969,32 +1030,47 @@ $today-fill: map.get($status-text, 'live');
     margin-right: var(--pj-sp-1);
   }
 
+  // Lo de abajo, separado por un filete: en la misma línea en todas las
+  // tarjetas, haya cuenta atrás o no.
   .ev-panel__count {
+    grid-area: count;
     gap: var(--pj-sp-1);
+    padding-top: var(--ev-gap);
+    border-top: var(--pj-stroke) solid rgba(255, 255, 255, 0.14);
   }
 
   .ev-panel__label {
-    font-size: var(--pj-fs-eyebrow);
+    display: none; // «Începe în»: las cifras ya lo dicen
+  }
+
+  .ev-panel__in {
+    font-size: var(--ev-time);
+    font-weight: 700;
+    color: var(--c-gold-soft);
   }
 
   .ev-panel__now {
     gap: var(--pj-sp-1);
-    font-size: var(--pj-fs-lead);
+    font-size: var(--ev-time);
   }
 
+  // Tres casillas iguales a todo el ancho de la consola.
   .ev-timer {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     gap: calc(var(--pj-u) * 1.2);
   }
 
   .ev-timer__seg {
-    min-width: calc(var(--pj-u) * 12);
+    min-width: 0;
     padding: calc(var(--pj-u) * 0.8) var(--pj-sp-1) calc(var(--pj-u) * 0.6);
     border-radius: var(--pj-r-sm);
     border-width: var(--pj-stroke);
     backdrop-filter: none;
 
     b {
-      font-size: var(--pj-fs-title);
+      font-size: var(--ev-digits);
     }
 
     small {
@@ -1004,34 +1080,22 @@ $today-fill: map.get($status-text, 'live');
   }
 }
 
-// ---- Dos eventos por diapositiva: mitad y mitad -------------------------
+// ---- Dos eventos: mitad y mitad -----------------------------------------
 .ev--pj.ev--pair {
-  .ev-hero,
-  .ev-hero.has-poster {
-    grid-template-columns: minmax(0, 1fr) calc(var(--pj-u) * 60);
-  }
-
-  .ev-hero.has-poster {
-    grid-template-columns: calc(var(--pj-u) * 24) minmax(0, 1fr) calc(var(--pj-u) * 60);
-  }
-
-  .ev-hero__poster {
-    padding: var(--pj-sp-1);
-  }
+  --ev-poster: calc(var(--pj-u) * 30);
+  --ev-poster-wide: calc(var(--pj-u) * 66);
+  --ev-panel: calc(var(--pj-u) * 56);
+  --ev-title: var(--pj-fs-lead);
+  --ev-desc: var(--pj-fs-caption);
+  --ev-day: var(--pj-fs-display);
+  --ev-digits: var(--pj-fs-lead);
+  --ev-gap: calc(var(--pj-u) * 1.6);
 
   .ev-hero__body {
-    gap: calc(var(--pj-u) * 0.8);
     padding: var(--pj-sp-2) var(--pj-sp-3);
   }
 
-  .ev-hero__title {
-    font-size: var(--pj-fs-lead);
-    line-height: 1.1;
-    @include line-clamp(2);
-  }
-
   .ev-hero__desc {
-    font-size: var(--pj-fs-caption);
     @include line-clamp(2);
   }
 
@@ -1045,71 +1109,55 @@ $today-fill: map.get($status-text, 'live');
     gap: var(--pj-sp-1) var(--pj-sp-4);
   }
 
-  .ev-facts dd {
-    font-size: var(--pj-fs-caption);
-  }
-
-  // Consola compacta: fecha («18 SÁB / NOV 2026») y hora arriba; la cuenta
-  // atrás debajo, a todo el ancho. En columnas fecha | cuenta atrás no cabía
-  // en 60u (se salía 47 px a 720p).
   .ev-panel {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-      'date times'
-      'count count';
-    align-content: center;
-    align-items: center;
-    column-gap: var(--pj-sp-3);
-    row-gap: calc(var(--pj-u) * 1.4);
     padding: var(--pj-sp-2) var(--pj-sp-3);
   }
+}
 
-  .ev-panel__date {
-    grid-area: date;
-    grid-template-columns: auto auto;
-    grid-template-areas:
-      'day weekday'
-      'day month';
-    column-gap: var(--pj-sp-2);
-    row-gap: 0;
+// ---- Tres eventos: filas compactas ---------------------------------------
+// ~25u de alto por tarjeta a 1080p: titular y una línea de resumen; la
+// consola, fecha + hora y una línea debajo.
+.ev--pj.ev--trio {
+  --ev-poster: calc(var(--pj-u) * 20);
+  --ev-poster-wide: calc(var(--pj-u) * 44);
+  --ev-panel: calc(var(--pj-u) * 54);
+  --ev-title: var(--pj-fs-lead);
+  --ev-desc: var(--pj-fs-caption);
+  --ev-day: var(--pj-fs-hero);
+  --ev-time: var(--pj-fs-body);
+  --ev-digits: var(--pj-fs-body);
+  --ev-gap: var(--pj-u);
+
+  gap: calc(var(--pj-u) * 1.2);
+
+  .ev-hero__body {
+    padding: var(--pj-sp-1) var(--pj-sp-3);
   }
 
-  .ev-panel__day {
-    font-size: var(--pj-fs-display);
+  .ev-hero__desc {
+    @include line-clamp(1);
   }
 
-  // «OCT 2026» chocaba con la hora en 60u; el año sobra a semanas vista.
-  .ev-panel__year {
+  .ev-hero__verse,
+  .ev-facts {
     display: none;
   }
 
-  .ev-panel__times {
-    grid-area: times;
-    justify-self: end;
-    font-size: var(--pj-fs-lead);
+  .ev-chip {
+    padding: calc(var(--pj-u) * 0.3) var(--pj-sp-1);
   }
 
-  .ev-panel__count {
-    grid-area: count;
+  .ev-panel {
+    padding: var(--pj-sp-1) var(--pj-sp-3);
   }
 
-  .ev-panel__label {
-    display: none;
-  }
-
-  .ev-timer {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-  }
-
+  // Cifra y unidad en una línea («5 ZILE»): a 25u de alto no caben apiladas.
   .ev-timer__seg {
-    min-width: 0;
-
-    b {
-      font-size: var(--pj-fs-lead);
-    }
+    grid-auto-flow: column;
+    align-items: baseline;
+    justify-content: center;
+    gap: calc(var(--pj-u) * 0.8);
+    padding: calc(var(--pj-u) * 0.4) var(--pj-sp-1);
   }
 }
 

@@ -94,6 +94,24 @@ export class AnnouncementCardComponent {
     return all.filter((s) => !s.webOnly && (!page || (s.part ?? 1) === page.index + 1));
   });
 
+  /**
+   * Periodo de un anuncio de varios días **sin fecha propia** (una semana de
+   * oración): «22–28» + «nov» (o «29 nov – 5 dec» si cambia de mes). `null`
+   * si el anuncio tiene fecha, no tiene inicio o dura un día.
+   */
+  protected readonly period = computed<{ readonly days: string; readonly month: string } | null>(() => {
+    this.langChange();
+    const a = this.current();
+    if (!a || a.date || !a.publishedOn || a.publishedOn === a.expiresOn) return null;
+    const from = parseIsoDate(a.publishedOn);
+    const to = parseIsoDate(a.expiresOn);
+    const month = (d: Date) => this.formatMonth(d);
+    if (from.getMonth() === to.getMonth()) {
+      return { days: `${from.getDate()}–${to.getDate()}`, month: month(to) };
+    }
+    return { days: `${from.getDate()}–${to.getDate()}`, month: `${month(from)} – ${month(to)}` };
+  });
+
   /** Día del mes para la ficha de fecha («18»). */
   protected readonly day = computed<string>(() => {
     const iso = this.current()?.date;
@@ -104,14 +122,16 @@ export class AnnouncementCardComponent {
   protected readonly monthShort = computed<string>(() => {
     this.langChange();
     const iso = this.current()?.date;
-    if (!iso) return '';
+    return iso ? this.formatMonth(parseIsoDate(iso)) : '';
+  });
+
+  /** Mes abreviado en el idioma activo, sin punto («oct»). */
+  private formatMonth(date: Date): string {
     const lang = this.translate.getCurrentLang() ?? this.translate.getFallbackLang() ?? 'ro';
     try {
-      return new Intl.DateTimeFormat(lang, { month: 'short' })
-        .format(parseIsoDate(iso))
-        .replace(/\.$/, '');
+      return new Intl.DateTimeFormat(lang, { month: 'short' }).format(date).replace(/\.$/, '');
     } catch {
-      return iso.slice(5, 7);
+      return String(date.getMonth() + 1).padStart(2, '0');
     }
-  });
+  }
 }

@@ -214,8 +214,9 @@ figurativo se toma de un set profesional, no se dibuja a mano.
 - `mobile-nav` se descarga la primera vez que se abre el menú; en la pantalla
   del templo eso no pasa nunca.
 - El pie usa `@defer (on viewport(footerAnchor))` con un `@placeholder` que
-  **reserva altura** para no provocar CLS (17 rem escritorio / 48 rem móvil:
-  si cambia el alto del pie, se vuelve a medir y se ajusta).
+  **reserva altura** para no provocar CLS: 22 / 30 / 47 / 55 / 64 / 73 rem
+  según el ancho (≥ 1280, 1024, 720, 600, 360 y menos). Si cambia el alto del
+  pie, se vuelve a medir y se ajusta.
 
 ## Sello de aniversario en la marca (18/10/2026)
 
@@ -242,20 +243,35 @@ El pie lo muestra siempre. **Si el menú gana entradas**, repetir el barrido de
 anchos (holgura = `.nav__desktop.right − .nav__list.right` en ES y RO) y
 reajustar los tramos.
 
-## El pie (compacto, 29/09/2026)
+## El pie (compacto, 23/11/2026)
 
-Columnas derivadas de `MAIN_NAV` (un grupo nuevo aparece solo). Identidad =
-logo + redes (sin lema, misión ni rótulo visible «Síguenos»: el `h2` queda
-`u-sr-only`). Franja inferior en **dos grupos**: © + versión a la izquierda;
-a la derecha acciones en iconos de 34 px (volver arriba, compartir, panel de
-control, guía de estilos; nombre en `title`/`aria-label`), separador y marca
-INEB. «Donează» sin icono. ~280 px en escritorio (1600) y ~300 (1280):
-columnas de enlaces a su contenido (`auto`), grupos largos en dos
-subcolumnas (`splitAfter` = 4 → Program 3 + 3), «Donează / În direct» bajo
-las redes y `li` en flex (el enlace `inline-block` sobre el interlineado del
-cuerpo inflaba cada fila de 21 a 31 px). El logo de INEB enlaza al
-LinkedIn del desarrollador («Desarrollado por INEB · LinkedIn») hasta que
-exista la web de la consultora (`FooterComponent.links.partner`).
+Tres pisos: **franja de marca** (logo · redes en línea ··· Instalează · Donează
+· În direct), **rejilla** (una columna por grupo de `MAIN_NAV`, derivada, y
+«Vizitează-ne» como una más) y dos líneas finales (**Linkuri utile** y
+**franja legal**: © + aviso legal · versión y sello «100 %» ··· herramientas ·
+INEB). Sin lema ni rótulo visible «Síguenos» (`h2` `u-sr-only`).
+
+| Ancho | Disposición | Alto (antes) |
+|---|---|---|
+| ≥ 1280 | grupos + contacto en una fila | 370–375 (549–551) |
+| 1024–1279 | grupos en una fila; contacto debajo, en línea | 505 RO / 527 ES (601 / 623) |
+| 600–1023 | grupos en 3 columnas CSS (`columns`, se llenan solas) | 774–892 (867–1220) |
+| < 600 | 2 columnas CSS; redes en fila de 4 (icono sobre rótulo, < 720) | ~951, 995 con «Instalar» (1168) |
+
+- **«Instalează» va en la franja de marca** y, mientras se ofrece
+  (`PwaInstallService.available()`), «Donează» pasa a filete
+  (`.footer__cta--outline`): un solo botón macizo. El degradado de «Donează»
+  no llega a `--c-gold-deep` (el texto navy quedaba en 2,8:1).
+- **Los rótulos enlazan**: cada grupo a su portada (`path`) y «Vizitează-ne» a
+  `/contact`, con un cheurón tenue.
+- El botón de llamar repite el número: `tabindex="-1"` + `aria-hidden`.
+- `.footer__copy` anula el `max-width` de prosa de `p` (partía el ©).
+- **Si el menú gana un grupo**: a 1280 en español la fila va justa (~1.197 de
+  1.203 px). El contacto puede ceder (`minmax(14rem, max-content)`: la
+  dirección se parte); si aun así no cabe, subir su corte por encima de `xl`.
+
+El logo de INEB enlaza al LinkedIn del desarrollador hasta que exista la web
+de la consultora (`FooterComponent.links.partner`).
 
 **El dock flotante se retira mientras el pie está a la vista** (≥ 30 %):
 el pie repite sus acciones. Lo coordina `DockOverlapService`
@@ -285,20 +301,6 @@ en el idioma activo)—. El icono va a color en reposo (oro / verde WhatsApp,
 32 px con ratón (margen negativo: la fila no crece) y ~41 px en táctil
 (`pointer: coarse`). Sin `whatsapp` en la configuración, sólo sale llamar.
 
-**Rejilla derivada del menú** (09/10/2026, cuarto grupo): `--footer-cols`
-= nº de grupos; identidad `minmax(max-content, 1fr)` + una columna
-`max-content` por grupo, y el contacto **siempre** en la fila de abajo a todo
-el ancho (identidad + cuatro grupos + contacto ya no caben ni a 1600). Entre
-`md` y `xl` la identidad sube a su fila, en horizontal; por debajo de `lg`
-los grupos van 2 × 2. Alto medido: ~404 px en escritorio, ~946 a 375
-(reserva del `@defer`: 25 rem / 58 rem). Lo de abajo es histórico.
-
-**Rejilla ≥ xl (29/09)**: identidad y contacto con suelo `max-content`
-(`minmax(max-content, 1fr)` / `minmax(max-content, 1.25fr)`). Con suelo fijo
-de 14,5 rem la identidad reservaba 41 px que no usaba y el contacto, con suelo
-0, se quedaba en 206 px a 1280: el correo real y la fila del teléfono (246 px)
-se salían y el borde del pie los recortaba. A 1280 la rejilla suma ~1.191 de
-1.194 px: si crece el contenido, adelantar el apilado de `xl`.
 - El dock flotante usa `@defer (on idle)`.
 
 ## Barra de pestañas y portadas de sección (03/10/2026)

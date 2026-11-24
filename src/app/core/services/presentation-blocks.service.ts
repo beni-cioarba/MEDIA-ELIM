@@ -48,7 +48,8 @@ export interface SlidePage {
  * Una **diapositiva** del carrusel. Casi siempre coincide con un bloque, pero
  * algunos bloques se expanden en varias:
  *  - `announcements` → una diapositiva por anuncio vigente (y visible).
- *  - `upcoming`      → páginas de `UPCOMING_PER_SLIDE` eventos, para que
+ *  - `upcoming`      → páginas de hasta `UPCOMING_PER_SLIDE` eventos,
+ *                      repartidos por igual (`balancedPages`), para que
  *                      ninguno se corte y cada página tenga su tiempo.
  *  - `families`      → el resumen de la semana y, detrás, una ficha por
  *                      familia (como el PowerPoint del domingo).
@@ -86,6 +87,28 @@ export interface PresentationSlide {
   readonly candidate?: CandidateView;
   /** Sólo en el resumen de `baptism`: todos sus candidatos, con retrato. */
   readonly candidates?: readonly CandidateView[];
+  /**
+   * Diapositiva de **otro botez** (uno anterior o uno siguiente al que toca),
+   * añadida a mano para hoy (ver `PresentationBlocksService.setOtherCandidateShown`).
+   */
+  readonly otherBaptism?: OtherBaptismKind;
+}
+
+/** Botez distinto del que toca presentar: uno ya celebrado o uno por venir. */
+export type OtherBaptismKind = 'past' | 'next';
+
+/** Un elemento elegible de otro botez: sus candidatos juntos o uno. */
+export interface OtherBaptismItem {
+  /** `<fecha>/<candidato>` o `<fecha>/summary` (ver `otherCandidateId`). */
+  readonly id: string;
+  /** `null` ⇒ los candidatos juntos. */
+  readonly candidate: CandidateView | null;
+}
+
+/** Otro botez con lo que aún se puede añadir de él, para los desplegables del panel. */
+export interface OtherBaptismOption {
+  readonly baptism: BaptismView;
+  readonly items: readonly OtherBaptismItem[];
 }
 
 /** Una familia de una semana anterior, para el desplegable del panel. */
@@ -130,11 +153,24 @@ export interface UpcomingSlideState {
 }
 
 /**
- * Eventos por diapositiva: dos caben grandes y legibles con la escala de
- * cartel (descripción recortada a dos líneas; el detalle, en la web). El
- * lienzo es siempre entero: el QR ya no le quita una columna.
+ * Eventos por diapositiva, como mucho: tres caben legibles en filas
+ * compactas (titular y una línea de resumen; el detalle, en la web).
  */
-export const UPCOMING_PER_SLIDE = 2;
+export const UPCOMING_PER_SLIDE = 3;
+
+/**
+ * Reparte `count` elementos en el mínimo de páginas de hasta `max`, todas
+ * con casi los mismos: 4 → 2 + 2 y 5 → 3 + 2, nunca 3 + 1 ni 4 + 1. Una
+ * página con un solo evento detrás de otras llenas dejaba media diapositiva
+ * en blanco. Devuelve el tamaño de cada página, en orden.
+ */
+export function balancedPages(count: number, max: number): number[] {
+  if (count <= 0) return [];
+  const total = Math.ceil(count / max);
+  const base = Math.floor(count / total);
+  const extra = count % total;
+  return Array.from({ length: total }, (_, index) => base + (index < extra ? 1 : 0));
+}
 
 const STORAGE_KEY = 'iglesia-redes.presentation.blocks';
 const HIDDEN_ANNOUNCEMENTS_KEY = 'iglesia-redes.presentation.announcements.hidden';
@@ -144,6 +180,8 @@ const PAST_FAMILIES_KEY = 'iglesia-redes.presentation.families.past';
 const NEXT_FAMILY_WEEK_KEY = 'iglesia-redes.presentation.families.next';
 const NEXT_FAMILIES_KEY = 'iglesia-redes.presentation.families.upcoming';
 const HIDDEN_CANDIDATES_KEY = 'iglesia-redes.presentation.baptism.hidden.today';
+const PAST_CANDIDATES_KEY = 'iglesia-redes.presentation.baptism.past';
+const NEXT_CANDIDATES_KEY = 'iglesia-redes.presentation.baptism.upcoming';
 
 /** Id de la diapositiva de resumen dentro de la selección de `families`. */
 export const FAMILY_SUMMARY_ID = 'summary';
@@ -358,6 +396,82 @@ export class PresentationBlocksService {
     return this.pastFamilies().filter((option) => !picked.has(option.family.id));
   });
 
+  /**
+   * Candidatos de otros botezuri que el operador ha añadido **para hoy**:
+   * de uno ya celebrado (recordar a quienes se bautizaron, repasar el
+   * domingo siguiente) o de uno por venir (presentarlos antes de su semana).
+   * Igual que las familias de otras semanas: a mano, ningún «Toate» los
+   * añade y caducan solos a medianoche.
+   */
+  private readonly otherCandidatePicks: Record<OtherBaptismKind, WritableSignal<PastFamilyPick>> = {
+    past: signal<PastFamilyPick>(readPastFamilyPick(PAST_CANDIDATES_KEY)),
+    next: signal<PastFamilyPick>(readPastFamilyPick(NEXT_CANDIDATES_KEY)),
+  };
+
+  /** Ids añadidos hoy (vacío si la marca es de otro día). */
+  private otherCandidateIds(kind: OtherBaptismKind): ReadonlySet<string> {
+    const pick = this.otherCandidatePicks[kind]();
+    return new Set(pick.date === this.today() ? pick.ids : []);
+  }
+
+  /**
+   * Otros botezuri con candidatos, en el orden en que se leen: los
+   * anteriores del más reciente al más antiguo; los siguientes, del más
+   * cercano al más lejano. Nunca el que ya presenta el bloque.
+   */
+  readonly otherBaptisms = computed<Record<OtherBaptismKind, readonly BaptismView[]>>(() => {
+    const presented = this.baptisms.presented()?.date;
+    const withCandidates = this.baptisms.all().filter((b) => b.candidates.length > 0 && b.date !== presented);
+    return {
+      past: withCandidates.filter((b) => b.status === 'past').reverse(),
+      next: withCandidates.filter((b) => b.status !== 'past'),
+    };
+  });
+
+  /** Lo que aún se puede añadir de los otros botezuri (el contenido de los desplegables). */
+  readonly otherBaptismOptions = computed<Record<OtherBaptismKind, readonly OtherBaptismOption[]>>(() => {
+    const options = (kind: OtherBaptismKind): OtherBaptismOption[] => {
+      const picked = this.otherCandidateIds(kind);
+      return this.otherBaptisms()
+        [kind].map((baptism) => ({
+          baptism,
+          items: this.otherBaptismItems(baptism).filter((item) => !picked.has(item.id)),
+        }))
+        .filter((option) => option.items.length > 0);
+    };
+    return { past: options('past'), next: options('next') };
+  });
+
+  /** Los elementos de un botez: los candidatos juntos y, detrás, uno a uno. */
+  private otherBaptismItems(baptism: BaptismView): OtherBaptismItem[] {
+    return [
+      { id: otherCandidateId(baptism.date, null), candidate: null },
+      ...this.baptisms
+        .candidatesOf(baptism)
+        .map((candidate) => ({ id: otherCandidateId(baptism.date, candidate.id), candidate })),
+    ];
+  }
+
+  /** Diapositivas de los otros botezuri añadidas hoy, en el orden de los desplegables. */
+  private otherBaptismSlides(kind: OtherBaptismKind): PresentationSlide[] {
+    const picked = this.otherCandidateIds(kind);
+    if (picked.size === 0) return [];
+    const id: PresentationBlockId = 'baptism';
+    const titleKey = this.titleKeyOf(id);
+    return this.otherBaptisms()[kind].flatMap((baptism) =>
+      this.otherBaptismItems(baptism)
+        .filter((item) => picked.has(item.id))
+        .map(({ id: itemId, candidate }) => ({
+          key: `${id}:${kind}:${itemId}`,
+          block: id,
+          titleKey,
+          baptism,
+          otherBaptism: kind,
+          ...(candidate ? { candidate } : { candidates: this.baptisms.candidatesOf(baptism) }),
+        })),
+    );
+  }
+
   /** Orden elegido por el operador (ids). Vacío ⇒ el orden de `BLOCK_DEFS`. */
   private readonly customOrder = signal<readonly PresentationBlockId[]>(readStoredOrder());
 
@@ -399,6 +513,12 @@ export class PresentationBlocksService {
       }
       if (event.key === null || event.key === HIDDEN_CANDIDATES_KEY) {
         this.candidatePick.set(readPastFamilyPick(HIDDEN_CANDIDATES_KEY));
+      }
+      if (event.key === null || event.key === PAST_CANDIDATES_KEY) {
+        this.otherCandidatePicks.past.set(readPastFamilyPick(PAST_CANDIDATES_KEY));
+      }
+      if (event.key === null || event.key === NEXT_CANDIDATES_KEY) {
+        this.otherCandidatePicks.next.set(readPastFamilyPick(NEXT_CANDIDATES_KEY));
       }
       if (event.key === null || event.key === PAST_FAMILIES_KEY) {
         this.pastFamilyPick.set(readPastFamilyPick(PAST_FAMILIES_KEY));
@@ -623,14 +743,13 @@ export class PresentationBlocksService {
           events: [event],
         }));
       }
-      const total = Math.ceil(events.length / UPCOMING_PER_SLIDE);
-      return Array.from({ length: total }, (_, index) => ({
-        key: `${id}:${index}`,
-        block: id,
-        titleKey,
-        events: events.slice(index * UPCOMING_PER_SLIDE, (index + 1) * UPCOMING_PER_SLIDE),
-        page: { index, total },
-      }));
+      const sizes = balancedPages(events.length, UPCOMING_PER_SLIDE);
+      let start = 0;
+      return sizes.map((size, index) => {
+        const page = events.slice(start, start + size);
+        start += size;
+        return { key: `${id}:${index}`, block: id, titleKey, events: page, page: { index, total: sizes.length } };
+      });
     }
 
     if (id === 'families') {
@@ -678,12 +797,15 @@ export class PresentationBlocksService {
     if (id === 'baptism') {
       // Los candidatos juntos y, detrás, uno a uno en el orden de la
       // presentación. El panel los lista todos; la proyección, los marcados.
+      // Detrás, lo añadido hoy de otros botezuri: primero los siguientes y
+      // después los anteriores (como las familias de otras semanas).
+      const extra = [...this.otherBaptismSlides('next'), ...this.otherBaptismSlides('past')];
       const baptism = this.baptisms.presented();
-      if (!baptism) return this.emptySlide(id);
+      if (!baptism) return extra.length > 0 ? extra : this.emptySlide(id);
       const all = this.baptismSlides(baptism);
-      if (!projection) return all;
+      if (!projection) return [...all, ...extra];
       const hidden = this.hiddenCandidateIds();
-      return all.filter((slide) => !hidden.has(candidateSelectionId(slide)));
+      return [...all.filter((slide) => !hidden.has(candidateSelectionId(slide))), ...extra];
     }
 
     return [{ key: id, block: id, titleKey }];
@@ -764,6 +886,7 @@ export class PresentationBlocksService {
     persistPastFamilyPick(HIDDEN_CANDIDATES_KEY, { date: null, ids: [] });
     this.clearPastFamilies();
     this.clearNextFamilies();
+    this.clearOtherCandidates();
     this.setNextFamilyWeekShown(false);
   }
 
@@ -784,9 +907,7 @@ export class PresentationBlocksService {
     const valid = new Set<PresentationBlockId>(BLOCK_DEFS.map((d) => d.id));
     const order = ids.filter((id, index) => valid.has(id) && ids.indexOf(id) === index);
     // Igual que el orden por defecto ⇒ no hay nada que recordar.
-    const isDefault =
-      order.length === BLOCK_DEFS.length && order.every((id, index) => id === BLOCK_DEFS[index].id);
-    const next = isDefault ? [] : order;
+    const next = isDefaultOrder(order) ? [] : order;
     this.customOrder.set(next);
     persistOrder(next);
   }
@@ -861,6 +982,24 @@ export class PresentationBlocksService {
     persistStoredString(NEXT_FAMILY_WEEK_KEY, date);
   }
 
+  /** Añade (para hoy) o quita un elemento de otro botez (`otherCandidateId`). */
+  setOtherCandidateShown(kind: OtherBaptismKind, id: string, shown: boolean): void {
+    const ids = new Set(this.otherCandidateIds(kind));
+    if (shown) ids.add(id);
+    else ids.delete(id);
+    this.writeOtherCandidates(kind, { date: this.today(), ids: [...ids] });
+  }
+
+  private clearOtherCandidates(): void {
+    this.writeOtherCandidates('past', { date: null, ids: [] });
+    this.writeOtherCandidates('next', { date: null, ids: [] });
+  }
+
+  private writeOtherCandidates(kind: OtherBaptismKind, pick: PastFamilyPick): void {
+    this.otherCandidatePicks[kind].set(pick);
+    persistPastFamilyPick(kind === 'past' ? PAST_CANDIDATES_KEY : NEXT_CANDIDATES_KEY, pick);
+  }
+
   private clearPastFamilies(): void {
     const empty: PastFamilyPick = { date: null, ids: [] };
     this.pastFamilyPick.set(empty);
@@ -893,15 +1032,23 @@ export class PresentationBlocksService {
   }
 
   /**
-   * Deja marcado sólo el primer elemento del bloque. En familias también
-   * retira las de semanas anteriores: «todo menos el primero» es todo.
+   * Deja marcado sólo el primer elemento del bloque. En familias y en el
+   * botez también retira lo añadido de otras semanas u otros botezuri:
+   * «todo menos el primero» es todo.
    */
   selectOnlyFirst(block: SelectableBlockId): void {
     const { ids, write } = this.selectable(block);
     write(new Set(ids.slice(1)));
+    this.clearExtras(block);
+  }
+
+  /** Retira lo añadido a mano de otras semanas (familias) u otros botezuri. */
+  private clearExtras(block: SelectableBlockId): void {
     if (block === 'families') {
       this.clearPastFamilies();
       this.clearNextFamilies();
+    } else if (block === 'baptism') {
+      this.clearOtherCandidates();
     }
   }
 
@@ -922,10 +1069,7 @@ export class PresentationBlocksService {
   showOnly(block: SelectableBlockId, id: string | null): void {
     const { ids, write } = this.selectable(block);
     write(new Set(ids.filter((x) => x !== id)));
-    if (block === 'families') {
-      this.clearPastFamilies();
-      this.clearNextFamilies();
-    }
+    this.clearExtras(block);
     this.setEnabled(block, true);
   }
 
@@ -1038,6 +1182,7 @@ export class PresentationBlocksService {
     for (const state of this.states()) next[state.id] = state.id === 'baptism';
     this.overrides.set(next);
     persistOverrides(next);
+    this.clearOtherCandidates();
     this.selectAll('baptism');
   }
 
@@ -1048,7 +1193,12 @@ export class PresentationBlocksService {
   readonly baptismOnly = computed<boolean>(() => {
     if (!this.hasBaptism()) return false;
     const sel = this.selection('baptism');
-    return this.states().every((s) => s.enabled === (s.id === 'baptism')) && sel.visible === sel.total;
+    return (
+      this.states().every((s) => s.enabled === (s.id === 'baptism')) &&
+      sel.visible === sel.total &&
+      this.otherCandidateIds('past').size === 0 &&
+      this.otherCandidateIds('next').size === 0
+    );
   });
 
   /**
@@ -1248,6 +1398,10 @@ function readHiddenIds(key: string): ReadonlySet<string> {
   }
 }
 
+function isDefaultOrder(order: readonly PresentationBlockId[]): boolean {
+  return order.length === BLOCK_DEFS.length && order.every((id, index) => id === BLOCK_DEFS[index].id);
+}
+
 /** Orden guardado (ids de bloque válidos, sin repetidos). */
 function readStoredOrder(): readonly PresentationBlockId[] {
   if (typeof localStorage === 'undefined') return [];
@@ -1257,10 +1411,12 @@ function readStoredOrder(): readonly PresentationBlockId[] {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     const valid = new Set<string>(BLOCK_DEFS.map((d) => d.id));
-    return parsed.filter(
+    const order = parsed.filter(
       (v, index): v is PresentationBlockId =>
         typeof v === 'string' && valid.has(v) && parsed.indexOf(v) === index,
     );
+    // Quien ya lo tenía así a mano pasa a seguir el orden por defecto.
+    return isDefaultOrder(order) ? [] : order;
   } catch {
     return [];
   }
@@ -1348,4 +1504,12 @@ export function familySelectionId(slide: PresentationSlide): string {
 /** Id de selección de una diapositiva del botez: el resumen o el candidato. */
 export function candidateSelectionId(slide: PresentationSlide): string {
   return slide.candidate?.id ?? BAPTISM_SUMMARY_ID;
+}
+
+/**
+ * Id de un elemento de otro botez: la fecha delante, porque el mismo
+ * candidato (o el resumen) puede estar en varios desplegables.
+ */
+export function otherCandidateId(date: string, candidateId: string | null): string {
+  return `${date}/${candidateId ?? BAPTISM_SUMMARY_ID}`;
 }

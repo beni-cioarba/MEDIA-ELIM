@@ -127,7 +127,7 @@
     "events": {
       "botez": {
         "name": "Botez",
-        "date": "31 mai 2026"
+        "date": "22 noiembrie 2026"
       },
       "concert_colinde_copii": {
         "name": "Concert de Colinde · Copii",
@@ -229,6 +229,7 @@
     "unit_minutes": "min",
     "later": "Mai departe",
     "in_days": "în {{n}} zile",
+    "in_days_pj": "Peste {{n}} zile",
     "tomorrow": "Mâine"
   },
   "announcements": {

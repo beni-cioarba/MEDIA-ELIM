@@ -55,10 +55,11 @@ export interface BlockDef {
 }
 
 /**
- * En el **orden de proyección por defecto**. Los anuncios y la lectura de la
- * semana primero: es lo que la congregación necesita leer antes de que empiece
- * el programa. En la oración, primero las causas de la iglesia y después las
- * familias de la semana (04/10/2026, a petición del usuario).
+ * En el **orden de proyección por defecto** (23/11/2026, fijado por el usuario):
+ * primero lo que la congregación necesita leer (anuncios, eventos, lectura y
+ * programa de la semana), después la oración (las causas de la iglesia y luego
+ * las familias) y el botez, y al final lo permanente (directos, galería, redes,
+ * concurso, Împreună y el QR de la web).
  */
 export const PRESENTATION_BLOCKS = [
   {
@@ -68,6 +69,15 @@ export const PRESENTATION_BLOCKS = [
     durationS: 30,
     auto: (s) => s.announcements.projectable().length > 0,
   },
+  { id: 'upcoming', titleKey: 'upcoming.title', durationS: 15, auto: (s) => s.schedule.hasUpcomingEvents() },
+  {
+    id: 'bible',
+    titleKey: 'bible.title',
+    // 10 s (01/11/2026, a petición del usuario; antes 20).
+    durationS: 10,
+    auto: (s) => s.bible.hasReading(),
+  },
+  { id: 'weekly', titleKey: 'weekly.title', durationS: 12, auto: (s) => s.config.weeklyProgram.length > 0 },
   {
     id: 'causes',
     titleKey: 'prayer_causes.title',
@@ -95,34 +105,25 @@ export const PRESENTATION_BLOCKS = [
     durationS: 20,
     auto: (s) => s.hasBaptismSoon(),
   },
+  { id: 'streams', titleKey: 'streams.title', durationS: 12, auto: () => true },
+  { id: 'gallery', titleKey: 'gallery.title', durationS: 12, auto: (s) => s.config.mediaEvents.length > 0 },
+  { id: 'socials', titleKey: 'socials.section_title', durationS: 12, auto: (s) => s.config.socials.length > 0 },
   {
-    id: 'bible',
-    titleKey: 'bible.title',
-    // 10 s (01/11/2026, a petición del usuario; antes 20).
-    durationS: 10,
-    auto: (s) => s.bible.hasReading(),
+    // Talantul în Negoț: hacia el final, antes del QR.
+    id: 'talent',
+    titleKey: 'talent_contest.title',
+    durationS: 25,
+    // Mientras quede alguna fase por delante (o se esté celebrando).
+    auto: (s) => s.talentContest.focusPhase() !== null,
   },
   {
-    // Proiectul Împreună: junto a la lectura de la iglesia (es la otra lectura).
+    // Proiectul Împreună: casi al final; no sale sola (ver `auto`).
     id: 'impreuna',
     titleKey: 'impreuna_slide.title',
     durationS: 15,
     // Fuera de la presentación por defecto (petición del usuario,
     // 15/11/2026): no sale sola. El operador puede encenderla en el panel.
     auto: () => false,
-  },
-  { id: 'socials', titleKey: 'socials.section_title', durationS: 12, auto: (s) => s.config.socials.length > 0 },
-  { id: 'streams', titleKey: 'streams.title', durationS: 12, auto: () => true },
-  { id: 'gallery', titleKey: 'gallery.title', durationS: 12, auto: (s) => s.config.mediaEvents.length > 0 },
-  { id: 'weekly', titleKey: 'weekly.title', durationS: 12, auto: (s) => s.config.weeklyProgram.length > 0 },
-  { id: 'upcoming', titleKey: 'upcoming.title', durationS: 15, auto: (s) => s.schedule.hasUpcomingEvents() },
-  {
-    // Talantul în Negoț: tras los eventos (es otro «lo que viene») y antes del QR.
-    id: 'talent',
-    titleKey: 'talent_contest.title',
-    durationS: 25,
-    // Mientras quede alguna fase por delante (o se esté celebrando).
-    auto: (s) => s.talentContest.focusPhase() !== null,
   },
   {
     // El QR, al final de la vuelta: «todo esto está en la web». Basta con que

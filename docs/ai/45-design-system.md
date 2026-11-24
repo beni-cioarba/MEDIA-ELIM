@@ -290,10 +290,11 @@ interior de `app-brand-logo`. Prefija siempre las clases del escenario.
 ## Pie de página
 
 `src/app/shared/footer/` es la superficie oscura que cierra todas las páginas
-públicas: identidad + misión + redes, las columnas del mapa del sitio, los
-datos de visita (dirección, correo, teléfono, horarios) con sus dos CTA
-(donar y directo), y una franja legal mínima con el copyright, la versión, el
-acceso al panel de control y la marca de la entidad asociada (`app-ineb-logo`).
+públicas: franja de marca (logo, redes, instalar, donar y directo), las
+columnas del mapa del sitio con los datos de visita como una más, los enlaces
+útiles y una franja legal de una línea (©, versión, herramientas y la marca
+de la entidad asociada, `app-ineb-logo`). Medidas y decisiones por ancho:
+`15-navigation.md` → «El pie».
 
 «Volver arriba» **no** vive en el pie, sino en el dock flotante
 (`shared/floating-actions`): aparece tras pantalla y media de scroll y está

@@ -1042,6 +1042,27 @@ a.mini {
     font-size: 10.5px;
     color: var(--ink-3);
   }
+
+  // Un botez dentro del desplegable de otros botezuri: fecha · nº de candidatos.
+  &__group-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: var(--ink-2);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--s3);
+    }
+  }
+
+  &__group > .past__list {
+    padding-left: 12px;
+  }
 }
 
 .rundown__foot {

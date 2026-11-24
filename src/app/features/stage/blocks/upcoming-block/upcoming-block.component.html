@@ -22,7 +22,7 @@
   } @else if (fullscreen()) {
     <!-- ================= Proyección: la misma tarjeta, a escala --pj-u =================
          Una por evento de la página (1 ⇒ cartel a toda la diapositiva; 2 ⇒ mitad y mitad). -->
-    <div class="ev ev--pj" [class.ev--pair]="cards().length > 1">
+    <div class="ev ev--pj" [class.ev--pair]="cards().length === 2" [class.ev--trio]="cards().length >= 3">
       @for (c of cards(); track c.ev.id; let first = $first) {
         <ng-container
           *ngTemplateOutlet="hero; context: { $implicit: c, next: first && !c.ev.isToday && (!page || page.index === 0), pj: true }"
@@ -160,7 +160,10 @@
       </div>
     }
 
-    <div class="ev-hero__body">
+    <!-- En proyección el texto se ajusta a su caja (crece si sobra sitio);
+         en la web la caja crece con el texto y el ajuste no actúa. -->
+    <div class="ev-hero__body" appFitToBox [appFitToBoxMax]="pj ? fitMax() : 1">
+      <div class="ev-hero__content">
       <p class="ev-hero__eyebrow">
         @if (f.ev.isToday) {
           <span class="ev-chip ev-chip--live">
@@ -210,6 +213,7 @@
           <app-share-button [url]="shareUrl(f.ev)" [title]="f.ev.title" />
         </div>
       }
+      </div>
     </div>
 
     <!-- Panel de fecha + cuenta atrás: la «consola» del evento. -->
@@ -220,14 +224,26 @@
         <span class="ev-panel__month">{{ f.parts.month }} <span class="ev-panel__year">{{ f.parts.year }}</span></span>
       </div>
 
-      <div class="ev-panel__times">
-        <app-icon name="clock" aria-hidden="true" />
-        @for (t of f.times; track t) {
-          <span class="ev-panel__time">{{ t }}</span>
-        }
-      </div>
+      <!-- Sin hora, nada: el reloj solo no dice nada. -->
+      @if (f.times.length > 0) {
+        <div class="ev-panel__times">
+          <app-icon name="clock" aria-hidden="true" />
+          @for (t of f.times; track t) {
+            <span class="ev-panel__time">{{ t }}</span>
+          }
+        </div>
+      }
 
-      @if (countdowns().get(f.ev.id); as c) {
+      @let daysAway = calendarDaysTo(f.ev.date);
+      @if (pj && !f.ev.isToday && !(next && daysAway <= timerDays)) {
+        <!-- En proyección, la cuenta atrás al minuto sólo para el próximo
+             evento de la semana; los demás, «Peste N zile» en una línea. -->
+        <div class="ev-panel__count">
+          <span class="ev-panel__in">
+            {{ daysAway === 1 ? ('upcoming.tomorrow' | translate) : ('upcoming.in_days_pj' | translate: { n: daysAway }) }}
+          </span>
+        </div>
+      } @else if (countdowns().get(f.ev.id); as c) {
         <div class="ev-panel__count">
           @if (c.state === 'live') {
             <span class="ev-panel__label">{{ 'upcoming.today' | translate }}</span>

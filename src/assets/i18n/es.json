@@ -127,7 +127,7 @@
     "events": {
       "botez": {
         "name": "Bautismo",
-        "date": "31 de mayo de 2026"
+        "date": "22 de noviembre de 2026"
       },
       "concert_colinde_copii": {
         "name": "Concierto de Villancicos · Niños",
@@ -229,6 +229,7 @@
     "unit_minutes": "min",
     "later": "Más adelante",
     "in_days": "en {{n}} días",
+    "in_days_pj": "Dentro de {{n}} días",
     "tomorrow": "Mañana"
   },
   "announcements": {

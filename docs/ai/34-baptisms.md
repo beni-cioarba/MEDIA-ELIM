@@ -182,6 +182,8 @@ para proyectar a cada candidato mientras se presenta. Bloque `baptism`
 - **Qué botez**: `BaptismsService.presented` = el de hoy o el próximo, si ya
   tiene candidatos. Sale solo desde 7 días antes hasta el mismo día
   (`presentedSoon`, `BAPTISM_PRESENTATION_DAYS`).
+  Los de otros botezuri (anteriores y siguientes) se añaden a mano desde el
+  panel, sólo para ese día: `30-presentation.md` → «Otros botezuri».
 - **Diapositivas**: los candidatos juntos (rótulo, fecha · hora · nº y los
   retratos en fila del mayor tamaño que cabe: una fila hasta siete, dos a
   partir de ocho; medido con *container queries*) y, detrás, **uno por

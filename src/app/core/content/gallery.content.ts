@@ -31,15 +31,25 @@ export const MEDIA_EVENTS: readonly MediaEvent[] = [
     // siempre al final: `check:drive` corta cada entrada por `{ id:`).
     id: 'botez',
     i18nKey: 'botez',
-    date: '2026-05-31',
-    image: 'assets/drive-media/candidati_botez_2026.webp',
-    medium: 'assets/drive-media/candidati_botez_2026-960.webp',
-    thumb: 'assets/drive-media/candidati_botez_2026-thumb.webp',
-    tone: '#918880',
+    date: '2026-11-22',
+    image: 'assets/drive-media/candidati_botez_2026_11.webp',
+    medium: 'assets/drive-media/candidati_botez_2026_11-960.webp',
+    thumb: 'assets/drive-media/candidati_botez_2026_11-thumb.webp',
+    tone: '#ab9fa3',
     gradient: ['#1e3a8a', '#3b82f6'],
-    // Drive: «ELIM - MEDIA POZE › BOTEZ 31/05/2026»
-    driveFolderId: '175k8wIpTRg_ZamgF8mBnVoGKbQez-ayY',
+    // Drive: «BOTEZ 22-11-2026»
+    driveFolderId: '1sPHtHQvRIKPihxpIWNyVSQOHQxDXSqRB',
     pastEditions: [
+      {
+        id: 'botez_2026_05_31',
+        date: '2026-05-31',
+        image: 'assets/drive-media/candidati_botez_2026.webp',
+        medium: 'assets/drive-media/candidati_botez_2026-960.webp',
+        thumb: 'assets/drive-media/candidati_botez_2026-thumb.webp',
+        tone: '#918880',
+        // Drive: «ELIM - MEDIA POZE › BOTEZ 31/05/2026»
+        driveFolderId: '175k8wIpTRg_ZamgF8mBnVoGKbQez-ayY',
+      },
       {
         id: 'botez_2025_11_30',
         date: '2025-11-30',

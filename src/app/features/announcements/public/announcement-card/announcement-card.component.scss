@@ -56,6 +56,20 @@ app-announcement-card {
   &--dated {
     grid-template-columns: auto minmax(0, 1fr);
   }
+
+  &--period {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+// Ficha del periodo: la misma pieza que la de fecha, a la derecha. Admite
+// «22–28», más ancho que un solo día.
+.announcement__period {
+  width: auto;
+  min-width: 4.6rem;
+  margin: 0;
+  padding-inline: 0.8rem;
+  white-space: nowrap;
 }
 
 // Ficha de fecha: el dato que se reconoce antes de leer nada.
@@ -446,6 +460,12 @@ app-announcement-card {
     font-size: fit(calc(var(--pj-u) * 8));
   }
 
+  .announcement__period {
+    width: auto;
+    min-width: fit(calc(var(--pj-u) * 14));
+    padding-inline: fit(var(--pj-sp-3));
+  }
+
   .announcement__datebox-month {
     margin-top: fit(calc(var(--pj-u) * 0.5));
     font-size: calc(var(--pj-u) * 3.2);
@@ -606,6 +626,29 @@ app-announcement-card {
   .announcement__sections:not(.announcement__sections--stacked):has(.announcement__section--highlight)
     .announcement__section:not(.announcement__section--highlight) {
     padding-top: fit(var(--pj-sp-3));
+  }
+
+  // Columnas en subrejilla: comparten la fila del epígrafe y la de los
+  // puntos. Un epígrafe de dos líneas («Pentru frații și surorile
+  // educatoare») junto a uno de una ya no descoloca: el corto baja hasta la
+  // misma línea base, y filetes y primeras viñetas quedan a la misma altura.
+  .announcement__sections:not(.announcement__sections--stacked) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+
+    .announcement__section,
+    .announcement__section--highlight {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      row-gap: 0;
+    }
+
+    .announcement__section-title {
+      align-self: end;
+    }
   }
 
   // Tres secciones o más: apiladas a todo el ancho del lienzo. Tres columnas

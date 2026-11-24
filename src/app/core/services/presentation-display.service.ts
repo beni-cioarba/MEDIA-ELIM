@@ -29,7 +29,8 @@ export interface TimedSlide {
   readonly family?: { readonly id: string };
   readonly prayerWeek?: unknown;
   readonly candidate?: { readonly id: string };
-  readonly baptism?: unknown;
+  readonly baptism?: { readonly date: string };
+  readonly otherBaptism?: unknown;
 }
 
 /**
@@ -49,7 +50,11 @@ export function slideTimeKeys(slide: TimedSlide): readonly string[] {
   if (slide.announcement) return [`a:${slide.announcement.id}`];
   if (slide.block === 'upcoming' && slide.events) return slide.events.map((e) => `e:${e.id}`);
   if (slide.block === 'families' && slide.prayerWeek) return [`f:${slide.family?.id ?? 'summary'}`];
-  if (slide.block === 'baptism' && slide.baptism) return [`b:${slide.candidate?.id ?? 'summary'}`];
+  if (slide.block === 'baptism' && slide.baptism) {
+    if (slide.candidate) return [`b:${slide.candidate.id}`];
+    // El resumen de otro botez lleva su fecha: no comparte tiempo con el de hoy.
+    return [slide.otherBaptism ? `b:summary:${slide.baptism.date}` : 'b:summary'];
+  }
   return [];
 }
 

@@ -333,7 +333,8 @@ límites y ficheros: `docs/ai/35-announcements.md`** (léelo antes).
    - Hay una segunda carpeta pública, «ELIM - MEDIA POZE»
      (`1M7tbr2lZuzhJDGLw63KlcqGSHTctaYox`), con las fotos originales por
      evento (ANCORAT, Aniversar, Botez 31/05/2026, Fanfara Tarancón…).
-   - Correspondencia actual (oct. 2026): botez → «BOTEZ 2025-11-30»,
+   - Correspondencia actual (nov. 2026): botez → «BOTEZ 22-11-2026» (ediciones
+     anteriores: «BOTEZ 31/05/2026» y «BOTEZ 2025-11-30»),
      colinde copii → «Concert Colinde Copi», colinde Elim → «Concert De
      Colinde Elim», revelion (31-12-2025) → «Revelion - 2026», zâmbetul →
      «Zambetul din cutie - 2025», ancorat_2026 → «MEDIA POZE › ANCORAT ›

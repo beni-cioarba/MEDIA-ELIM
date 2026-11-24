@@ -15,7 +15,7 @@ un versículo. Antes era un PowerPoint; ahora es un módulo:
 | Web `/rugaciune-pentru-familii` | **Feed de semanas**: la en curso arriba y, al bajar, las anteriores (resumen + fichas de cada una), con índice lateral |
 | Web `/rugaciune-pentru-familii/<domingo>` | El mismo feed, colocado en esa semana (enlace para compartir) |
 | `#<id>-<domingo>` sobre esa URL | Salta a la ficha de una familia (botón «Distribuie»). Se sigue aceptando el formato antiguo `#<id>` |
-| Proyección, bloque `families` | **Resumen (mosaico de fotos) + una diapositiva por familia**, detrás de los anuncios y de «Cauzele Bisericii Elim» (orden por defecto desde el 04/10/2026) |
+| Proyección, bloque `families` | **Resumen (mosaico de fotos) + una diapositiva por familia**, justo detrás de «Cauzele Bisericii Elim» (orden por defecto: `30-presentation.md`) |
 | `/anunturi` | Tarjeta de acceso encima de los anuncios (`FamilyPrayerTeaserComponent`) |
 | Menú | Program → «Rugăciune pentru familii» (icono `hand-heart`) |
 

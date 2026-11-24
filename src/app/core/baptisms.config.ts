@@ -675,6 +675,16 @@ export const BAPTISMS: readonly Baptism[] = [
   {
     date: '2026-11-22',
     time: '10:00',
+    youtubeId: 'fjkcbDouGoQ',
+    ministers: ['Marian Condrat'],
+    cover: {
+      image: 'assets/drive-media/candidati_botez_2026_11.webp',
+      medium: 'assets/drive-media/candidati_botez_2026_11-960.webp',
+      thumb: 'assets/drive-media/candidati_botez_2026_11-thumb.webp',
+      tone: '#ab9fa3',
+    },
+    // Drive: «BOTEZ 22-11-2026»
+    driveFolderId: '1sPHtHQvRIKPihxpIWNyVSQOHQxDXSqRB',
     // Sin presentación: cada candidato mandó su foto y su mărturie en audio
     // (transcrita y adaptada como las escritas, sin la frase con nombre y
     // edad). Orden: el que dio la iglesia (19/11/2026).

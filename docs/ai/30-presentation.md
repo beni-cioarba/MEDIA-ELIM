@@ -306,6 +306,21 @@ siguiente vuelve al resumen solo). Fuera de su semana el bloque se
 puede encender a mano (MANUAL) para ensayarlo: proyecta el próximo botez
 con candidatos. `/media/botez` lleva a `/botezuri` (sólo proyección).
 
+**Otros botezuri** (23/11/2026, pedido del usuario: «como en las familias,
+con los anteriores y los futuros»): dos desplegables cerrados en el bloque,
+«Botezuri următoare (n)» arriba y «Botezuri anterioare (n)» al pie, con un
+plegable por botez (fecha · nº de candidatos) y dentro «Toți candidații» y
+cada candidato. Marcar uno lo pasa a la lista del bloque (etiqueta con la
+fecha de su botez), detrás de lo del botez que toca: primero los siguientes,
+después los anteriores. Misma regla que las familias de otras semanas:
+**sólo hoy** (`…baptism.past` / `…baptism.upcoming`, `{date, ids}`), ningún
+«Toate» los añade, «Doar primul», «Botez» y «Restablecer» los retiran, y con
+el bloque apagado marcar uno lo enciende sólo con él. Sin botez que toque, el
+bloque proyecta sólo lo añadido. Ids `<fecha>/<candidato|summary>`
+(`otherCandidateId`); el resumen de otro botez tiene tiempo propio
+(`b:summary:<fecha>`). `otherBaptisms`, `otherBaptismOptions`,
+`setOtherCandidateShown`.
+
 ## Atajo «Rugăciune» (03/10/2026)
 
 Tercer botón de la selección global (junto a «Doar primul» / «Toate»):
@@ -345,7 +360,11 @@ por debajo de 1100 px. Tokens en el `:host` de `presenter.component.scss`.
 ## Bloques y diapositivas
 
 Definidos en el registro `PRESENTATION_BLOCKS` (`core/presentation/blocks.ts`).
-El orden del array **es** el orden por defecto del carrusel.
+El orden del array **es** el orden por defecto del carrusel. Desde el
+23/11/2026 (petición del usuario): anuncios · eventos · Citirea Bibliei ·
+programa semanal · causas · familias · botez · directos · galería · redes ·
+Talantul în Negoț · Împreună · web (QR). Un orden guardado a mano que coincida
+con él se trata como el de por defecto.
 
 Un **bloque** es una sección con interruptor propio; una **diapositiva**
 (`PresentationSlide`, clave `key`) es lo que se proyecta. Casi siempre
@@ -819,24 +838,28 @@ Reglas que se derivan (y que ya cumplen todos los bloques):
    ni a 0,7 cabe, sobra contenido: sección `webOnly` o texto más corto
    (`35-announcements.md`).
 3. **Eventos: la misma tarjeta que la web** (`.ev--pj`, estilos en
-   `upcoming-block.component.scss`, vigilada por `check:projection`):
-   cartel · texto · consola navy con fecha, hora y cuenta atrás días / horas /
-   min (cambia una vez por minuto, sin animación; el punto «hoy» no late).
-   - **Un evento**: la tarjeta llena la diapositiva. Columnas 38u | ~83u |
-     48u; titular a `title` (3 líneas), resumen a `body` (hasta 3), créditos
-     en una línea; día a 16u, cifras a `title`. Antes la casilla de 160 px y
-     el texto a la izquierda dejaban media diapositiva vacía.
-   - **Dos eventos**: mitad y mitad. Columnas 24u | texto | 60u; titular a
-     `lead` y resumen a `caption` (2 líneas cada uno); la consola pone fecha
-     y hora arriba y la cuenta atrás debajo a todo el ancho (en columnas se
-     salía 47 px a 720p) y omite el año.
-   - Cartel entero (`object-fit: contain`) sobre su copia desenfocada; el
-     visor va desactivado. «URMĂTORUL» sólo en la primera de la página 1;
-     «ESTE AZI» en rojo `--c-live` cuando toca.
-   - Cuenta atrás (igual en la web): sin la casilla «0 zile» el mismo día
-     (sólo ore / min); «În desfășurare» durante 3 h desde la hora de inicio
-     (`LIVE_WINDOW_MS`; los eventos no tienen hora de fin) y después nada:
-     queda «ESTE AZI» con la hora.
+   `upcoming-block.component.scss`, vigilada por `check:projection`).
+   Revisión del 23/11/2026 (auditoría: el texto ocupaba el 23 % del lienzo,
+   una página 2/2 con un solo evento dejaba el 60 % en blanco):
+   - **Hasta 3 por diapositiva, repartidos por igual** (`balancedPages`:
+     4 → 2 + 2, 5 → 3 + 2; nunca una página con uno solo detrás de otra
+     llena). 1 → la tarjeta llena el lienzo; 2 → `.ev--pair`; 3 → `.ev--trio`
+     (filas de ~25u: titular y una línea de resumen). Misma estructura en los
+     tres; sólo cambian las medidas (variables `--ev-*`).
+   - **Texto con autoajuste** (`appFitToBox` en `.ev-hero__body`, contenido en
+     `.ev-hero__content`, que en la web es `display: contents`): crece hasta
+     ×1,6 / ×1,4 / ×1,25 según cuántas tarjetas haya; titulares de una misma
+     diapositiva salen iguales. `FitToBox` ignora ahora los textos `u-sr-only`
+     (medían 1 px y dejaban la tarjeta con «URMĂTORUL» siempre a 0,7).
+   - **Consola única**: fecha (día | día de la semana / mes, sin año) y hora a
+     la derecha en el mismo eje; debajo, tras un filete, la cuenta atrás
+     días / horas / min **sólo para el próximo evento y si es en 7 días o
+     menos** (o el de hoy); los demás, «Peste N zile» / «Mâine»
+     (`upcoming.in_days_pj`). Sin hora, no se pinta el reloj solo.
+   - **Cartel** entero a toda la altura de la tarjeta, sin margen; los
+     apaisados (`.has-wide-poster`) con columna más ancha (64u / 66u / 44u).
+   - Medido a 1080p con 3 eventos: texto del 23 % al 36 %, titulares 76 px
+     (antes 50-60), cero desbordes; mínimo visible ≥ 3,2u también a 4:3.
    - **Galería** (de paso, para que `check:projection` pase): carril de 60u
      (antes 46u) con miniatura de 12u; nombre a 3,6u en hasta dos líneas y
      fecha a `eyebrow` (antes 3u y 2,3u); filas de 14u como mínimo; el

@@ -74,6 +74,10 @@ un anuncio (no se redacta ni caduca aquí): es su propio módulo
 }
 ```
 
+- El `lead` **no repite el título** (23/11/2026): sólo lo que añade. «Săptămână
+  de rugăciune pentru copiii bisericii» + «În săptămâna aceasta aducem
+  înaintea Domnului copiii bisericii…» gastaba dos líneas en decir lo mismo y
+  encogía todo el anuncio.
 - `label` es lo que se lee; `value` el dato complementario; `note` la letra
   pequeña. **Cómo se maqueta lo decide `kind`** (elige siempre el que toque:
   es lo que hace que el anuncio parezca diseñado y no pegado):
@@ -105,7 +109,13 @@ Adult ······26 € │ Halas Petrică       │ Pastor G. Zăgrean · cu�
 Mesajul de bază: pastorul Simion Bumbar…                     ← nota final en banda dorada
 ```
 
-- Sin `date`, no hay ficha: la insignia sigue marcando que es un anuncio.
+- Sin `date`, no hay ficha de fecha. Si dura varios días (`publishedOn` ≠
+  `expiresOn`, p. ej. una semana de oración), una **ficha de periodo**
+  («22–28 / NOV») va a la derecha del titular, donde su segunda línea dejaba
+  hueco (23/11/2026).
+- En proyección, dos secciones van en **subrejilla**: comparten la fila del
+  epígrafe y la de los puntos; un epígrafe de dos líneas junto a uno de una
+  ya no descoloca filetes ni primeras viñetas (antes, 40 px de diferencia).
 - En proyección las secciones son columnas separadas por filetes con la
   cabecera subrayada en oro; en la web, tarjetas con un filete dorado arriba.
 - Colores: navy (ficha, títulos, valores), oro (insignia, filetes, nota) y

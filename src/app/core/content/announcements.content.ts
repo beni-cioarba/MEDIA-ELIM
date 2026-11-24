@@ -337,7 +337,9 @@ export const ANNOUNCEMENTS: readonly Announcement[] = [
   {
     id: 'mijlocire_copii_educatori_2',
     title: 'Săptămână de rugăciune pentru copiii bisericii',
-    lead: 'În săptămâna aceasta aducem înaintea Domnului copiii bisericii și pe frații și surorile educatoare de la grupele de copii.',
+    // El título ya dice «săptămână de rugăciune pentru copiii bisericii»:
+    // el resumen sólo añade a quién más se encomienda (los grupos, al pie).
+    lead: 'Îi aducem înaintea Domnului pe copii și pe educatorii lor.',
     sections: [
       {
         heading: 'Pentru copii',

@@ -13,6 +13,7 @@ import { IconComponent } from '../../../../shared/icon/icon.component';
 import { ViewableDirective } from '../../../../shared/viewer/viewable.directive';
 import { ViewerDocument } from '../../../../shared/viewer/core/viewer-document.model';
 import { posterThumb } from '../../../../core/util/poster-thumb';
+import { FitToBoxDirective } from '../../../../shared/fit-to-box/fit-to-box.directive';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 60 * MINUTE_MS;
@@ -24,6 +25,12 @@ const HOUR_MS = 60 * MINUTE_MS;
  * las 10:00 sería falso.
  */
 const LIVE_WINDOW_MS = 3 * HOUR_MS;
+/**
+ * Proyección: la cuenta atrás días / horas / min sólo para el próximo evento
+ * y si es en esta semana. A dos semanas vista, «12 zile 17 ore 28 min» es
+ * ruido y ocupaba media consola; basta «Peste 12 zile».
+ */
+const PJ_TIMER_DAYS = 7;
 
 /** Fecha descompuesta para la casilla de calendario («DOM · 18 · OCT»). */
 interface DateParts {
@@ -71,7 +78,7 @@ interface Countdown {
  *    ancho del propio bloque (container queries), no al de la ventana.
  *  - **Proyección** (`fullscreen()`): una tarjeta por evento de la página
  *    (`.ev--pj`, escala `--pj-u`). `PresentationBlocksService` lo expande en
- *    diapositivas de `UPCOMING_PER_SLIDE` eventos y le pasa a cada instancia
+ *    diapositivas de hasta `UPCOMING_PER_SLIDE` eventos y le pasa a cada instancia
  *    su página (`events` + `page`).
  *
  * Nota: cuando no queda ningún evento futuro, `PresentationBlocksService`
@@ -87,6 +94,7 @@ interface Countdown {
     ShareButtonComponent,
     IconComponent,
     ViewableDirective,
+    FitToBoxDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './upcoming-block.component.html',
@@ -186,6 +194,26 @@ export class UpcomingBlockComponent {
     if (typeof window === 'undefined') return undefined;
     const { origin, pathname } = window.location;
     return `${origin}${pathname}#ev-${ev.id}`;
+  }
+
+  /** En proyección, días hasta el evento a partir de los cuales no se proyecta la cuenta atrás al minuto. */
+  protected readonly timerDays = PJ_TIMER_DAYS;
+
+  /**
+   * Cuánto puede crecer el texto de cada tarjeta en proyección: más cuanto
+   * menos tarjetas hay en la diapositiva (con una sola, el titular llena su
+   * caja en vez de dejarla casi vacía).
+   */
+  protected readonly fitMax = computed<number>(() => {
+    const n = this.cards().length;
+    return n <= 1 ? 1.6 : n === 2 ? 1.4 : 1.25;
+  });
+
+  /** Días naturales de hoy a `iso` (0 = hoy, 1 = mañana). Cambia a medianoche. */
+  protected calendarDaysTo(iso: string): number {
+    const today = new Date(this.clock.now());
+    today.setHours(0, 0, 0, 0);
+    return Math.round((parseIsoDate(iso).getTime() - today.getTime()) / DAY_MS);
   }
 
   /** Dos dígitos en la cuenta atrás: el ancho no baila al cambiar de 10 a 9. */

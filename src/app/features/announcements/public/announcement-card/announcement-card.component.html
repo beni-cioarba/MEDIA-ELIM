@@ -6,7 +6,11 @@
 -->
 <article class="announcement" [attr.id]="'anunt-' + announcement.id" appFitToBox [appFitToBoxMax]="1.2">
   <div class="announcement__inner">
-    <header class="announcement__head" [class.announcement__head--dated]="!!announcement.date">
+    <header
+      class="announcement__head"
+      [class.announcement__head--dated]="!!announcement.date"
+      [class.announcement__head--period]="!!period()"
+    >
       @if (announcement.date) {
         <!-- Ficha de fecha: día grande + mes. Lo que se reconoce desde el fondo. -->
         <div class="announcement__datebox" aria-hidden="true">
@@ -47,6 +51,16 @@
           </p>
         }
       </div>
+
+      @if (period(); as pr) {
+        <!-- Anuncio de varios días sin fecha propia (una semana de oración):
+             cuándo vale, en una ficha como la de fecha, a la derecha del
+             titular, donde el titular de dos líneas dejaba hueco. -->
+        <p class="announcement__datebox announcement__period">
+          <span class="announcement__datebox-day">{{ pr.days }}</span>
+          <span class="announcement__datebox-month">{{ pr.month }}</span>
+        </p>
+      }
     </header>
 
     @if (isFirstPart()) {
