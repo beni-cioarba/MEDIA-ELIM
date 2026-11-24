@@ -1,0 +1,145 @@
+<!--
+  Întrebări frecvente. Cabecera con el buscador al lado · lo práctico en una
+  franja · temas · preguntas en dos columnas · a quién preguntar si falta la
+  respuesta. Medidas y decisiones: docs/ai/80-faq.md.
+-->
+<header class="page-hero">
+  <div class="page-hero__inner fq__hero">
+    <div>
+      <h1 class="page-hero__title">{{ 'faq.title' | translate }}</h1>
+      <p class="page-hero__lead">{{ 'faq.lead' | translate }}</p>
+    </div>
+
+    <div class="fq__search" role="search">
+      <label class="u-sr-only" for="faq-search">{{ 'faq.search.label' | translate }}</label>
+      <app-icon class="fq__search-icon" name="search" />
+      <input
+        #input
+        id="faq-search"
+        class="fq__input"
+        type="search"
+        enterkeyhint="search"
+        autocomplete="off"
+        [value]="query()"
+        [placeholder]="'faq.search.placeholder' | translate"
+        (input)="onSearch($event)"
+        (keydown.escape)="clear()"
+      />
+      @if (filtering()) {
+        <button type="button" class="fq__clear" [attr.aria-label]="'faq.search.clear' | translate" (click)="clear()">
+          <app-icon name="close" />
+        </button>
+      }
+      <p class="fq__status" role="status">
+        @if (filtering() && count() > 0) {
+          {{ (count() === 1 ? 'faq.search.one' : 'faq.search.other') | translate: { count: count() } }}
+        }
+      </p>
+    </div>
+  </div>
+</header>
+
+<div class="fq">
+  <!-- Lo práctico, sin tener que abrir nada. -->
+  @if (!filtering()) {
+    <section class="facts" [attr.aria-label]="'faq.facts.title' | translate">
+      @if (next(); as n) {
+        <a class="fact" [routerLink]="links.weekly">
+          <app-icon class="fact__icon" name="clock" />
+          <span class="fact__body">
+            <span class="fact__label">{{ (n.live ? 'faq.facts.now' : 'faq.facts.next') | translate }}</span>
+            <span class="fact__value">
+              @if (n.today) {
+                {{ 'faq.facts.today' | translate }}
+              } @else {
+                {{ n.day }}
+              }
+              · {{ n.time }}
+            </span>
+          </span>
+        </a>
+      }
+      <a class="fact" [routerLink]="links.location">
+        <app-icon class="fact__icon" name="map-pin" />
+        <span class="fact__body">
+          <span class="fact__label">{{ 'faq.facts.address' | translate }}</span>
+          <span class="fact__value">{{ config.location.address }}</span>
+        </span>
+      </a>
+      <a class="fact" [href]="links.tel">
+        <app-icon class="fact__icon" name="phone" />
+        <span class="fact__body">
+          <span class="fact__label">{{ 'faq.facts.phone' | translate }}</span>
+          <span class="fact__value">{{ config.contact.phoneDisplay }}</span>
+        </span>
+      </a>
+      <a class="fact" [routerLink]="links.streams">
+        <app-icon class="fact__icon" name="play" />
+        <span class="fact__body">
+          <span class="fact__label">{{ 'faq.facts.online' | translate }}</span>
+          <span class="fact__value">{{ 'faq.facts.online_value' | translate }}</span>
+        </span>
+      </a>
+    </section>
+
+    <nav class="topics" [attr.aria-label]="'faq.nav' | translate" data-no-swipe>
+      <ul class="topics__list" role="list">
+        @for (group of groups; track group.id) {
+          <li>
+            <a class="topics__chip" [href]="path + '#g-' + group.id" (click)="goTo($event, 'g-' + group.id)">
+              {{ 'faq.groups.' + group.id | translate }}
+              <span class="topics__count" aria-hidden="true">{{ group.items.length }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
+
+  @if (count() > 0) {
+    <div class="cols" [class.cols--one]="columns().length === 1">
+      @for (column of columns(); track $index) {
+        <div class="cols__col">
+          @for (group of column; track group.id) {
+            <section class="topic" [id]="'g-' + group.id" tabindex="-1" [attr.aria-labelledby]="'t-' + group.id">
+              <h2 class="topic__title" [id]="'t-' + group.id">
+                <app-icon class="topic__icon" [name]="group.icon" />
+                {{ 'faq.groups.' + group.id | translate }}
+              </h2>
+              <app-faq-list [ids]="group.ids" [openIds]="openIds()" [anchors]="true" />
+            </section>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="none" role="status">
+      <strong>{{ 'faq.search.none_title' | translate: { query: query() } }}</strong>
+      {{ 'faq.search.none_text' | translate }}
+    </p>
+  }
+
+  <aside class="ask">
+    <p class="ask__text">
+      <strong>{{ 'faq.ask.title' | translate }}</strong>
+      {{ 'faq.ask.text' | translate }}
+    </p>
+    <div class="ask__actions">
+      @if (whatsapp('faq.messages.general' | translate); as href) {
+        <a class="ask__btn ask__btn--main" [href]="href" target="_blank" rel="noopener noreferrer">
+          <app-icon name="whatsapp" />
+          {{ 'faq.actions.whatsapp' | translate }}
+          <span class="u-sr-only"> ({{ 'faq.new_tab' | translate }})</span>
+        </a>
+      }
+      <a class="ask__btn" [href]="links.tel">
+        <app-icon name="phone" />
+        {{ 'faq.actions.call' | translate }}
+      </a>
+      <a class="ask__btn" [href]="links.mailto">
+        <app-icon name="mail" />
+        {{ 'faq.actions.email' | translate }}
+      </a>
+    </div>
+  </aside>
+</div>

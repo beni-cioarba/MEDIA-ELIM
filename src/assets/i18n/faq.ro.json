@@ -1,0 +1,197 @@
+{
+  "faq": {
+    "title": "Întrebări frecvente",
+    "lead": "Răspunsuri scurte pentru cine vine prima dată și pentru cine vrea să știe mai mult.",
+    "search": {
+      "label": "Caută în întrebări",
+      "placeholder": "Caută: copii, parcare, botez…",
+      "clear": "Șterge căutarea",
+      "one": "Un răspuns",
+      "other": "{{count}} răspunsuri",
+      "none_title": "Niciun răspuns pentru „{{query}}”",
+      "none_text": "Încearcă alt cuvânt sau întreabă-ne direct."
+    },
+    "nav": "Teme",
+    "facts": {
+      "title": "Pe scurt",
+      "next": "Următorul serviciu",
+      "now": "Acum, în desfășurare",
+      "today": "Azi",
+      "address": "Unde ne găsești",
+      "phone": "Telefon și WhatsApp",
+      "online": "În direct",
+      "online_value": "Duminica, pe YouTube"
+    },
+    "groups": {
+      "visit": "Prima vizită",
+      "program": "Program și transmisiuni",
+      "faith": "Credință și botez",
+      "life": "Viața bisericii",
+      "practical": "Dăruire, site și contact"
+    },
+    "actions": {
+      "guests": "Ghidul primei vizite",
+      "weekly": "Vezi programul săptămânal",
+      "maps": "Deschide în Google Maps",
+      "location": "Cum ajungi",
+      "youtube": "Deschide canalul de YouTube",
+      "announcements": "Anunțuri",
+      "upcoming": "Evenimente",
+      "credo": "Citește Mărturisirea de credință",
+      "baptisms": "Registrul botezurilor",
+      "about": "Istoria noastră",
+      "leadership": "Conducere",
+      "bible": "Planul de citire",
+      "impreuna": "Proiectul Împreună",
+      "youth": "Pagina tineretului",
+      "departments": "Toate departamentele",
+      "donate": "Cum poți dărui",
+      "legal": "Informații legale",
+      "call": "Sună",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail"
+    },
+    "link": "linkul acestui răspuns",
+    "new_tab": "se deschide într-o filă nouă",
+    "messages": {
+      "general": "Bună ziua! Vă scriu de pe site-ul Bisericii Elim. Am o întrebare: ",
+      "prayer": "Bună ziua! Am o cerere de rugăciune: "
+    },
+    "ask": {
+      "title": "N-ai găsit răspunsul?",
+      "text": "Întreabă-ne direct și îți răspundem."
+    },
+    "teaser": {
+      "title": "Vii pentru prima dată?",
+      "lead": "Răspunsuri scurte la ce ne întreabă cel mai des cei care ne vizitează.",
+      "all": "Toate întrebările"
+    },
+    "items": {
+      "language": {
+        "q": "În ce limbă sunt serviciile?",
+        "a": "Serviciile sunt în limba română, dar limba nu e o piedică: avem traducere în direct, prin audio, în limba spaniolă, și o putem adapta pentru orice altă limbă de care ai nevoie. Scrie-ne înainte și pregătim totul pentru tine. Versurile cântărilor se proiectează pe ecran.",
+        "k": "limba română spaniolă traducere interpret"
+      },
+      "announce": {
+        "q": "Trebuie să anunț că vin?",
+        "a": "Nu. Intrarea e liberă la toate serviciile și nu trebuie să anunți pe nimeni: vino așa cum ești.",
+        "k": "intrare liberă gratuit bilet rezervare membru vizitator"
+      },
+      "children": {
+        "q": "Pot veni cu copiii?",
+        "a": "Da. Copiii au program separat, pe vârste, în timpul mesajului: îi lași și îi iei la ieșire.",
+        "k": "copii școala duminicală bebeluși"
+      },
+      "dress": {
+        "q": "Cum să mă îmbrac?",
+        "a": "Hainele nu sunt ce contează: vino cum poți. Ca recomandare, o ținută elegantă sau clasică — mai formală ori casual, cum te simți bine.",
+        "k": "haine ținută îmbrăcăminte cum mă îmbrac"
+      },
+      "duration": {
+        "q": "Cât durează serviciul?",
+        "a": "Duminica, atât dimineața cât și seara, serviciul durează aproximativ 2 ore. În cursul săptămânii, aproximativ o oră și jumătate.",
+        "k": "cât ține ore timp"
+      },
+      "parking": {
+        "q": "Am unde parca?",
+        "a": "Da. Este loc de parcare suficient și gratuit.",
+        "k": "parcare mașină auto loc"
+      },
+      "access": {
+        "q": "Clădirea are acces fără trepte?",
+        "a": "Da. Intrarea și sala sunt accesibile fără trepte, și avem baie adaptată pentru persoanele cu dizabilități.",
+        "k": "dizabilități scaun cu rotile accesibilitate lift trepte"
+      },
+      "schedule": {
+        "q": "Când vă adunați?",
+        "a": "Duminica, la {{sunday}}. De luni până vineri, la {{week}}: rugăciune, studiu biblic și, vineri, seara de tineret.",
+        "k": "orar ore program servicii slujbe culte zile"
+      },
+      "directions": {
+        "q": "Unde vă găsesc?",
+        "a": "La adresa {{address}}, lângă Madrid.",
+        "k": "adresă hartă cum ajung drum locație"
+      },
+      "communion": {
+        "q": "Ce este Cina Domnului? Trebuie să particip?",
+        "a": "Cina Domnului se ține în prima duminică a fiecărei luni, la serviciul de dimineață. Se împărtășesc credincioșii botezați; dacă ești în vizită, poți rămâne liniștit pe locul tău.",
+        "k": "cină împărtășanie Cina Domnului"
+      },
+      "online": {
+        "q": "Pot urmări serviciile de acasă?",
+        "a": "Da. Serviciile de duminică se transmit în direct pe canalul de YouTube al bisericii, iar transmisiunile rămân pe canal.",
+        "k": "live online YouTube acasă"
+      },
+      "updates": {
+        "q": "Cum aflu de evenimente și de schimbările de program?",
+        "a": "Din pagina Anunțuri, unde e doar ce este în vigoare, și din Evenimente, de unde le poți pune în calendarul tău: se actualizează singur.",
+        "k": "avize noutăți calendar conferințe știri"
+      },
+      "beliefs": {
+        "q": "Ce fel de biserică sunteți?",
+        "a": "O biserică evanghelică penticostală. Împărtășim Mărturisirea de credință a Cultului Creștin Penticostal: este ce credem și ce predicăm duminică de duminică.",
+        "k": "penticostal evanghelic ce credeți"
+      },
+      "baptism": {
+        "q": "Vreau să mă botez. Ce fac?",
+        "a": "Vorbește cu pastorul bisericii: el îți explică pașii.",
+        "k": "botez vreau să mă botez"
+      },
+      "history": {
+        "q": "De când există biserica?",
+        "a": "Din 2001. Prima slujbă a avut loc în ultima duminică din decembrie 2000, cu un grup mic de frați; în 2001 au fost ordinați primii slujitori și s-a înființat corul.",
+        "k": "istorie vechime ani început aniversare"
+      },
+      "leaders": {
+        "q": "Cine conduce biserica?",
+        "a": "Pastorul bisericii este {{name}}. Slujitorii și responsabilii fiecărui departament sunt în pagina Conducere.",
+        "k": "pastor prezbiteri diaconi responsabili comitet"
+      },
+      "reading": {
+        "q": "Cum citesc Biblia împreună cu biserica?",
+        "a": "Biserica are un plan de citire, cu lecturile fiecărei zile. Iar cu tot Cultul Penticostal citim Proiectul Împreună: un text pe zi și o meditație video, cu amintire zilnică dacă o activezi.",
+        "k": "Biblia plan citire zilnic lectură Scriptură"
+      },
+      "prayer": {
+        "q": "Vă puteți ruga pentru mine?",
+        "a": "Da. Scrie-ne sau sună-ne și spune-ne pentru ce să ne rugăm.",
+        "k": "cerere de rugăciune mijlocire boală încercare"
+      },
+      "youth": {
+        "q": "Ce aveți pentru tineri?",
+        "a": "În fiecare vineri, la {{friday}}, este seara de tineret. În prima duminică din lună, la serviciul de seară, programul îl duc în mare parte tinerii.",
+        "k": "tineri adolescenți vineri tabără"
+      },
+      "serve": {
+        "q": "Cum mă pot implica?",
+        "a": "Alege un departament — tineret, fanfară, cor, misiune externă, ajutorare sau evanghelizare — și vorbește cu responsabilul lui: îl găsești pe pagina fiecăruia.",
+        "k": "slujire voluntar ajuta departament cor fanfară"
+      },
+      "donate": {
+        "q": "Cum pot susține biserica?",
+        "a": "Prin transfer bancar: datele contului sunt în pagina Donează. Darurile sunt administrate de casierul bisericii, sub verificarea cenzorilor. Dacă ai nevoie de o dovadă a donației, scrie-ne și ți-o trimitem.",
+        "k": "donație dar zeciuială cont IBAN transfer dovadă certificat"
+      },
+      "app": {
+        "q": "Pot avea site-ul ca aplicație?",
+        "a": "Da, gratuit și fără cont. Alege «Instalează» în subsolul paginii sau în meniu: programul, anunțurile, transmisiunile și citirea zilei, la o atingere. O ștergi oricând.",
+        "k": "aplicație instalare telefon Android iPhone app"
+      },
+      "site_language": {
+        "q": "Site-ul este și în spaniolă?",
+        "a": "Da. Schimbă limba din partea de sus a paginii sau din meniu. Anunțurile și titlurile serviciilor rămân în română, așa cum le publică biserica.",
+        "k": "limbă spaniolă traducere site"
+      },
+      "photos": {
+        "q": "Apar într-o fotografie. O puteți scoate?",
+        "a": "Da. Scrie-ne și retragem numele sau fotografia.",
+        "k": "poze ștergere date personale GDPR confidențialitate"
+      },
+      "talk": {
+        "q": "Cu cine pot vorbi dacă am o întrebare?",
+        "a": "Cu pastorul bisericii, {{name}}. Îl poți suna sau îi poți scrie pe WhatsApp — sau vino să-l cunoști duminică.",
+        "k": "vorbesc cu pastorul consiliere ajutor"
+      }
+    }
+  }
+}

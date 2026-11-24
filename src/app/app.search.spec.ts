@@ -86,7 +86,7 @@ describe.each(['ro', 'es'] as const)('Buscador completo (%s)', (lang) => {
       expect(e.title.trim(), e.id).not.toBe('');
       // Una clave sin traducir se ve («nav.gallery», «departments.youth.x»).
       expect(e.title, e.id).not.toMatch(/^[a-z_]+(\.[\w-]+)+$/);
-      expect(`${e.context ?? ''} ${e.body ?? ''}`, e.id).not.toMatch(/\b(nav|seo|departments|credo|guests|search|leadership|talent_contest|legal|about)\.[a-z_]+\.?[\w.]*\b/);
+      expect(`${e.context ?? ''} ${e.body ?? ''}`, e.id).not.toMatch(/\b(nav|seo|departments|credo|guests|faq|search|leadership|talent_contest|legal|about)\.[a-z_]+\.?[\w.]*\b/);
       expect(textOf(e), e.id).not.toContain('{{');
     }
   });
@@ -126,8 +126,8 @@ describe.each(['ro', 'es'] as const)('Buscador completo (%s)', (lang) => {
       ['teléfono', `/${APP_PATHS.contact}`],
       ['quienes somos', `/${APP_PATHS.about}`],
       ['talantul', `/${APP_PATHS.talentContest}`],
-      ['aparcamiento', `/${APP_PATHS.guests}`],
-      ['parcare', `/${APP_PATHS.guests}`],
+      ['aparcamiento', `/${APP_PATHS.faq}`],
+      ['parcare', `/${APP_PATHS.faq}`],
       ['credo', `/${APP_PATHS.credo}`],
       ['cookies', `/${APP_PATHS.legal}`],
     ];

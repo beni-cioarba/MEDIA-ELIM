@@ -567,6 +567,7 @@
     "form": {
       "title": "Envíanos un mensaje",
       "subtitle": "Te respondemos lo antes posible.",
+      "faq": "Puede que la respuesta ya esté aquí:",
       "name": "Nombre y apellidos",
       "name_ph": "¿Cómo te llamas?",
       "email": "Correo electrónico",
@@ -635,6 +636,8 @@
     "credo_desc": "Los 30 artículos de nuestro credo",
     "leadership": "Liderazgo",
     "leadership_desc": "Estructura y departamentos de la iglesia",
+    "faq": "Preguntas frecuentes",
+    "faq_desc": "Respuestas cortas para quien nos visita",
     "program": "Programa",
     "weekly": "Programa semanal",
     "weekly_desc": "Los cultos de cada día",
@@ -691,6 +694,8 @@
     "credo_value": "30 artículos, con explicaciones",
     "leadership_kicker": "Estructura",
     "leadership_value": "{{offices}} órganos de dirección · {{departments}} departamentos",
+    "faq_kicker": "Respuestas cortas",
+    "faq_value": "{{count}} preguntas",
     "announcements_none": "Ningún aviso en vigor",
     "announcements_count": "{{count}} en vigor",
     "upcoming_none": "Ningún evento programado",
@@ -751,6 +756,10 @@
     "contact": {
       "title": "Contacto",
       "description": "Dirección, teléfono, correo y horarios de la Iglesia Elim de Arganda del Rey. Escríbenos o ven a conocernos."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "description": "Idioma de los cultos, aparcamiento, niños, horarios, bautismo y donativos: respuestas cortas de la Iglesia Elim de Arganda del Rey."
     },
     "donate": {
       "title": "Donativos",

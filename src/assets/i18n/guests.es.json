@@ -118,55 +118,6 @@
       "copy": "La dirección",
       "map_title": "Mapa con la ubicación de la Iglesia Elim"
     },
-    "faq": {
-      "language": {
-        "q": "¿En qué idioma son los cultos?",
-        "a": "Los cultos son en rumano, pero el idioma no es un impedimento: hay traducción en directo al español por audio, y se puede adaptar a cualquier otro idioma que necesites. Escríbenos antes y lo preparamos todo para ti. Las letras de las canciones se proyectan en pantalla."
-      },
-      "children": {
-        "q": "¿Puedo venir con mis hijos?",
-        "a": "Sí. Los niños tienen programa aparte, por edades, durante el mensaje: los dejas y los recoges a la salida."
-      },
-      "duration": {
-        "q": "¿Cuánto dura el culto?",
-        "a": "Los domingos, tanto por la mañana como por la tarde, el culto dura unas 2 horas. Entre semana, alrededor de una hora y media."
-      },
-      "parking": {
-        "q": "¿Hay aparcamiento?",
-        "a": "Sí. Hay aparcamiento suficiente y gratuito."
-      },
-      "access": {
-        "q": "¿Hay acceso sin escalones?",
-        "a": "Sí. La entrada y la sala son accesibles sin escalones, y hay un baño adaptado para personas con discapacidad."
-      },
-      "dress": {
-        "q": "¿Cómo debo vestir?",
-        "a": "La ropa no es lo importante: ven como puedas. Como recomendación, algo elegante o clásico, más formal o casual, como te sientas cómodo."
-      },
-      "communion": {
-        "q": "¿Qué es la Cena del Señor? ¿Tengo que participar?",
-        "a": "La Cena del Señor se celebra el primer domingo de cada mes, en el culto de la mañana. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio."
-      },
-      "online": {
-        "q": "¿Puedo seguir los cultos desde casa?",
-        "a": "Sí. Los cultos del domingo se emiten en directo en el canal de YouTube de la iglesia, y las emisiones se quedan en el canal.",
-        "link": "Abrir el canal de YouTube"
-      },
-      "beliefs": {
-        "q": "¿Qué tipo de iglesia sois?",
-        "a": "Una iglesia evangélica pentecostal. Compartimos la Declaración de fe del Culto Cristiano Pentecostal: es lo que creemos y lo que se predica cada domingo.",
-        "link": "Leer la Declaración de fe"
-      },
-      "baptism": {
-        "q": "Quiero bautizarme. ¿Qué hago?",
-        "a": "Habla con el pastor de la iglesia: él te explica los pasos.",
-        "link": "Registro de bautismos"
-      },
-      "talk": {
-        "q": "¿Con quién puedo hablar si tengo una pregunta?",
-        "a": "Con el pastor de la iglesia, {{name}}. Puedes llamarle o escribirle por WhatsApp, o venir a conocerle el domingo."
-      }
-    },
     "closing": {
       "title": "Te esperamos",
       "verse": "Yo me alegré con los que me decían: A la casa de Jehová iremos.",

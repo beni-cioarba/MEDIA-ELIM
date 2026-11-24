@@ -273,7 +273,7 @@ INEB). Sin lema ni rótulo visible «Síguenos» (`h2` `u-sr-only`).
 
 | Ancho | Disposición | Alto (antes) |
 |---|---|---|
-| ≥ 1280 | grupos + contacto en una fila | 370–375 (549–551) |
+| ≥ 1280 | grupos + contacto en una fila | 373–375 (549–551); 391 a 1280 ES (dirección en dos líneas) |
 | 1024–1279 | grupos en una fila; contacto debajo, en línea | 505 RO / 527 ES (601 / 623) |
 | 600–1023 | grupos en 3 columnas CSS (`columns`, se llenan solas) | 774–892 (867–1220) |
 | < 600 | 2 columnas CSS; redes en fila de 4 (icono sobre rótulo, < 720) | ~951, 995 con «Instalar» (1168) |

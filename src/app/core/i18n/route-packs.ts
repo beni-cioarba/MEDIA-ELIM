@@ -43,6 +43,9 @@ const LOADERS = {
     lang === 'es' ? import('../../../assets/i18n/donate.es.json') : import('../../../assets/i18n/donate.ro.json'),
   baptisms: (lang: string) =>
     lang === 'es' ? import('../../../assets/i18n/baptisms.es.json') : import('../../../assets/i18n/baptisms.ro.json'),
+  // La página, la sección de Invitați y la franja de la portada (al llegar a ella).
+  faq: (lang: string) =>
+    lang === 'es' ? import('../../../assets/i18n/faq.es.json') : import('../../../assets/i18n/faq.ro.json'),
   // No es de una página: la hoja y la invitación de instalar, al enseñarlas.
   install: (lang: string) =>
     lang === 'es' ? import('../../../assets/i18n/install.es.json') : import('../../../assets/i18n/install.ro.json'),

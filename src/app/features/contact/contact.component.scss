@@ -169,6 +169,14 @@
   color: var(--c-muted);
 }
 
+.form-card__faq {
+  font-weight: 700;
+  color: var(--c-primary);
+  text-underline-offset: 0.2em;
+
+  @include focus-ring(2px);
+}
+
 .form {
   display: grid;
   gap: 0.35rem;

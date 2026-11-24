@@ -1,0 +1,136 @@
+// =====================================================================
+// Lista de preguntas desplegables (página, Invitați y portada).
+// Fila de 3,25 rem (52 px; en el teléfono la raíz es 15 px: nunca < 48):
+// antes, en Invitați, 60. Medidas y porqués: `docs/ai/80-faq.md`.
+// =====================================================================
+@use 'ds' as *;
+
+:host {
+  --qa-pad: var(--sp-5);
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: 1rem;
+  background: var(--c-surface);
+  box-shadow: 0 1px 2px rgb(13 31 53 / 0.05), 0 8px 24px -16px rgb(13 31 53 / 0.18);
+  // La altura de la respuesta se anima donde el navegador sabe hacerlo.
+  interpolate-size: allow-keywords;
+}
+
+.qa + .qa {
+  border-top: 1px solid var(--c-hairline);
+}
+
+.qa__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: max(48px, 3.25rem);
+  padding: var(--sp-2) var(--qa-pad);
+  font-size: 0.9875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--c-primary);
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--c-veil);
+    }
+  }
+
+  @include focus-ring(-3px);
+}
+
+.qa__chev {
+  flex: none;
+  font-size: 1.1rem;
+  color: var(--c-gold-deep);
+
+  @include motion-safe {
+    transition: transform var(--mo-fast) var(--ea-standard);
+  }
+
+  .qa[open] & {
+    transform: rotate(180deg);
+  }
+}
+
+// La pregunta abierta se marca con un filete dorado, también al llegar por
+// un enlace directo: se ve cuál es sin leer.
+.qa[open] {
+  box-shadow: inset 3px 0 0 var(--c-gold);
+}
+
+.qa::details-content {
+  block-size: 0;
+  overflow: clip;
+
+  @include motion-safe {
+    transition:
+      block-size var(--mo-base) var(--ea-standard),
+      content-visibility var(--mo-base) allow-discrete;
+  }
+}
+
+.qa[open]::details-content {
+  block-size: auto;
+}
+
+.qa__a {
+  // Texto y, a su derecha, copiar el enlace: sin gastar una fila para él.
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 var(--sp-3);
+  padding: 0 var(--qa-pad) var(--sp-4);
+}
+
+.qa__text {
+  max-width: 68ch;
+  margin: 0;
+  font-size: 0.9688rem;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+.qa__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  grid-column: 1 / -1;
+  gap: 0 var(--sp-5);
+  margin-top: var(--sp-1);
+}
+
+.qa__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+
+  app-icon {
+    font-size: 1rem;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include focus-ring(2px);
+}
+
+.qa__copy {
+  align-self: start;
+}

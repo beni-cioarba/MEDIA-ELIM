@@ -67,7 +67,11 @@
         </div>
       } @else {
         <h2 class="form-card__title" id="form-title">{{ 'contact.form.title' | translate }}</h2>
-        <p class="form-card__subtitle">{{ 'contact.form.subtitle' | translate }}</p>
+        <p class="form-card__subtitle">
+          {{ 'contact.form.subtitle' | translate }}
+          {{ 'contact.form.faq' | translate }}
+          <a class="form-card__faq" [routerLink]="links.faq">{{ 'nav.faq' | translate }}</a>
+        </p>
 
         <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="status() === 'sending'">
           <div class="form__row">

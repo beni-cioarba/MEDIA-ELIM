@@ -49,6 +49,7 @@
       "despre-noi": "historia visión valores misión quiénes somos aniversario 25 años primera visita",
       "marturisirea-de-credinta": "credo doctrina qué creemos dogmas estatutos pentecostal artículos fe",
       "conducere": "pastor ancianos diáconos comité responsables organigrama equipo líderes liderazgo dirección",
+      "intrebari-frecvente": "preguntas respuestas ayuda información FAQ primera visita",
       "anunturi": "avisos novedades noticias comunicados inscripciones",
       "media": "retransmisiones panel bloques",
       "media_program": "horario horas servicios cultos misa reuniones domingo ensayos cuándo",
@@ -74,19 +75,6 @@
       "departamente_misiune-externa": "misioneros misiones viajes África Uganda Mongolia",
       "departamente_ajutorare": "ayuda social caridad pobres colectas cajas",
       "departamente_evanghelizare": "evangelización evangelio anunciar ciudad villancicos invitaciones"
-    },
-    "faq": {
-      "language": "idioma rumano español traducción intérprete",
-      "children": "niños escuela dominical bebés",
-      "duration": "cuánto dura horas tiempo",
-      "parking": "aparcamiento aparcar coche parking",
-      "access": "discapacidad silla de ruedas accesibilidad ascensor escalones",
-      "dress": "ropa vestir vestimenta cómo voy",
-      "communion": "santa cena comunión",
-      "online": "directo online YouTube casa",
-      "beliefs": "pentecostal evangélica qué creéis",
-      "baptism": "bautismo bautizarme quiero bautizarme",
-      "talk": "hablar con el pastor consejería ayuda"
     }
   }
 }

@@ -567,6 +567,7 @@
     "form": {
       "title": "Trimite-ne un mesaj",
       "subtitle": "Îți răspundem cât putem de repede.",
+      "faq": "Poate răspunsul e deja aici:",
       "name": "Nume și prenume",
       "name_ph": "Cum te numești?",
       "email": "E-mail",
@@ -635,6 +636,8 @@
     "credo_desc": "Cele 30 de articole ale crezului nostru",
     "leadership": "Conducere",
     "leadership_desc": "Structura și departamentele bisericii",
+    "faq": "Întrebări frecvente",
+    "faq_desc": "Răspunsuri scurte pentru cine ne vizitează",
     "program": "Program",
     "weekly": "Program săptămânal",
     "weekly_desc": "Serviciile fiecărei zile",
@@ -691,6 +694,8 @@
     "credo_value": "30 de articole, cu explicații",
     "leadership_kicker": "Structură",
     "leadership_value": "{{offices}} slujiri de conducere · {{departments}} departamente",
+    "faq_kicker": "Răspunsuri scurte",
+    "faq_value": "{{count}} de întrebări",
     "announcements_none": "Niciun anunț în vigoare",
     "announcements_count": "{{count}} în vigoare",
     "upcoming_none": "Niciun eveniment programat",
@@ -751,6 +756,10 @@
     "contact": {
       "title": "Contact",
       "description": "Adresa, telefonul, e-mailul și programul Bisericii Elim din Arganda del Rey. Scrie-ne sau vino să ne cunoști."
+    },
+    "faq": {
+      "title": "Întrebări frecvente",
+      "description": "În ce limbă sunt serviciile, parcare, copii, program, botez și donații: răspunsuri scurte de la Biserica Elim din Arganda del Rey."
     },
     "donate": {
       "title": "Donează",

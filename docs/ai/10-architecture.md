@@ -113,6 +113,7 @@ Rutas actuales:
 | `'anunturi/:id'`    | `AnnouncementsComponent` | Un anuncio (enlace compartible) |
 | `'departamente'`    | `DepartmentsHomeComponent` | Portada de Departamente (mosaico) — `39-departments.md` |
 | `'departamente/<slug>'` | `DepartmentPageComponent` | Una ruta por departamento (`departmentRoute()`), mismo chunk |
+| `'intrebari-frecvente'` | `FaqComponent`     | Preguntas frecuentes; `#<id>` abre una — `80-faq.md` |
 | `'invitati'`        | `GuestsComponent`      | Bienvenida a invitados, **fuera del menú** (QR + enlace del pie), `noindex` — `33-guests.md` |
 | `'invitati/qr'`     | `GuestsQrComponent`    | Hoja imprimible del QR (fuera del shell, antes del layout) |
 | `'impreuna'`        | `ImpreunaComponent`    | Proiectul Împreună: hoy (`/impreuna/ziua/:day` = un día, mismo chunk) — `32-impreuna.md` |

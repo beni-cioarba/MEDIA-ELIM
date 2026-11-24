@@ -41,7 +41,8 @@ src/app/
     impreuna/               ⭐ Proiectul Împreună: plan generado (`data/`), lógica pura, servicio — `32-impreuna.md`
     bible/                  Motor bíblico de toda la web: libros, pasajes (+ textos en rumano), bible.com/audio, app Biblia, versículos — `32-impreuna.md` «Citirea zilei»
     push/                   Web push por temas (OneSignal bajo demanda; hoy la amintire de Împreună) — `32-impreuna.md` § 7
-    guests.config.ts        ⭐ Invitați: anfitriones, departamentos, preguntas y anclas de `/invitati`
+    faq.config.ts           ⭐ Întrebări frecvente: temas, preguntas y enlaces de toda la web — `80-faq.md`
+    guests.config.ts        ⭐ Invitați: anfitriones, departamentos, qué preguntas y anclas de `/invitati`
     talent-contest.config.ts ⭐ Talantul în Negoț: la edición del concurso (fases, examen, recursos, web oficial)
     talent-contest.categories.ts   Talantul în Negoț: libros y versículos por categoría (sólo lo carga la página)
     departments.config.ts   ⭐ Departamente: estructura de cada uno + URL de ADM-TINERET (sólo en el pie)
@@ -94,6 +95,7 @@ src/app/
     about/                  Quiénes somos (historia, pilares, credo, 1ª visita)
     impreuna/               ⭐ Proiectul Împreună: hoy/día, plan por meses, hoja A4 (`/impreuna/tipar`) — `32-impreuna.md`
     guests/                 ⭐ Invitați: bienvenida fuera del menú (`/invitati`) + hoja del QR (`/invitati/qr`) — `33-guests.md`
+    faq/                    ⭐ Întrebări frecvente: página + `public/` (lista desplegable y franja de la portada) — `80-faq.md`
     credo/                  Mărturisirea de credință (30 artículos + pack i18n)
     leadership/             Índice del organigrama + `person-profile/` (perfil `/conducere/<id>`)
     announcements/          ⭐ Anunțuri: página `/anunturi[/:id]` + tarjeta única (web y proyección)
@@ -134,6 +136,7 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 | «Añade / retira un anuncio (anunț)»                 | `docs/ai/35-announcements.md` → `core/content/announcements.content.ts` |
 | «Proiectul Împreună» · «lectura / vídeo del día del Cult» · «plan 2027» · «proyectar la semana del proyecto» | `docs/ai/32-impreuna.md` → `npm run impreuna:sync` (vídeos; lo hace cada deploy) · `-- --plan --year <año>` (edición nueva) · diapositiva `impreuna` (apagada por defecto desde el 15/11/2026; se enciende en el panel) · tema del ayuno del primer jueves → `IMPREUNA_FASTING_THEMES` · **aviso de las 08:00** (activar OneSignal, probar, `dry-run`) → § 7 |
 | «Página para los que vienen por primera vez» · «QR de bienvenida» · «imprimir el QR» | `docs/ai/33-guests.md` → `/invitati`, `/invitati/qr`, `core/guests.config.ts` |
+| «Añade / cambia una pregunta frecuente»             | `docs/ai/80-faq.md` → `core/faq.config.ts` + `assets/i18n/faq.{ro,es}.json` |
 | «Añade un evento / bautizo / conferencia»           | `core/content/events.content.ts` (+ `npm run posters` si lleva cartel) |
 | «Nuevo botez» · «candidatos al bautismo» · «fotos / directo de un botez» | `docs/ai/34-baptisms.md` → `core/baptisms.config.ts` + `scripts/import-baptism-photos.mjs` |
 | «Cambia la lista de enfermos / causas» | `docs/ai/37-prayer-causes.md` → `core/prayer-causes.config.ts` (+ `updatedOn`) |

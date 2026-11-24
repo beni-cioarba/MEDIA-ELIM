@@ -1,0 +1,148 @@
+// =====================================================================
+// Preguntas frecuentes al pie de la portada. Compacta a propósito: la
+// portada ya mide 3.772 px a 1440 y 5.472 a 375 (24/11/2026). Escritorio:
+// título a la izquierda y 2 × 3 preguntas; teléfono: las cuatro primeras.
+// =====================================================================
+@use 'ds' as *;
+
+.fqt {
+  padding-block: clamp(1.5rem, 3.2vh, 2rem);
+  padding-inline: var(--page-gutter);
+  background: var(--c-bg);
+}
+
+// Hueco hasta que llegan los textos: el alto de la franja, como el de la
+// portada (`.fqt-placeholder`), para que el pie no salte.
+.fqt-wait {
+  min-height: 27rem;
+
+  @include from('sm') {
+    min-height: 25rem;
+  }
+
+  @include from('lg') {
+    min-height: 14.5rem;
+  }
+}
+
+.fqt__inner {
+  display: grid;
+  gap: var(--sp-4);
+  max-width: var(--page-max);
+  margin-inline: auto;
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+}
+
+.fqt__head {
+  @include from('lg') {
+    padding-top: var(--sp-2);
+  }
+}
+
+.fqt__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--c-primary);
+}
+
+.fqt__lead {
+  max-width: 44ch;
+  margin: 0.4rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+.fqt__all {
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--c-primary);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+
+  app-icon {
+    font-size: 1rem;
+    color: var(--c-gold-deep);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include focus-ring(2px);
+}
+
+.fqt__count {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--c-gold-tint);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.fqt__all--head {
+  display: none;
+  margin-top: 0.35rem;
+
+  @include from('lg') {
+    display: inline-flex;
+  }
+}
+
+.fqt__all--end {
+  display: inline-flex;
+  justify-self: start;
+
+  @include from('lg') {
+    display: none;
+  }
+}
+
+.fqt__lists {
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+
+  @include from('sm') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-4);
+    align-items: start;
+  }
+
+  // Una columna: las dos listas se leen como una, y de la segunda queda sólo
+  // la primera pregunta (cuatro en total). El resto está en la página.
+  @include until('sm') {
+    gap: 0;
+  }
+}
+
+@include until('sm') {
+  .fqt__list:first-child {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .fqt__list:last-child {
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  // El contenido es de `app-faq-list` (encapsulado): se alcanza por ::ng-deep,
+  // acotado a esta lista.
+  .fqt__list:last-child ::ng-deep .qa:nth-of-type(n + 2) {
+    display: none;
+  }
+}

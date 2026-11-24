@@ -1,0 +1,370 @@
+// =====================================================================
+// Întrebări frecvente — todas las preguntas, por temas, en dos columnas.
+// Comprimida: a 1440 × 900 se ve la cabecera, lo práctico y la mayoría de
+// las preguntas sin bajar. Decisiones: `docs/ai/80-faq.md`.
+// =====================================================================
+@use 'ds' as *;
+@use '../../shared/styles/page-hero' as *;
+
+:host {
+  display: block;
+  background: var(--c-bg);
+  // Atenuado que pasa AA sobre crema (el global da 4,2:1).
+  --fq-muted: rgb(45 55 72 / 0.78);
+}
+
+// ── Cabecera: título a la izquierda, buscador a la derecha ────────────
+.fq__hero {
+  display: grid;
+  gap: var(--sp-4);
+
+  @include from('lg') {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    gap: var(--sp-8);
+    align-items: end;
+  }
+}
+
+.fq__search {
+  position: relative;
+  --c-focus: var(--c-focus-on-dark);
+}
+
+.fq__search-icon {
+  position: absolute;
+  top: 1.5rem;
+  left: 1rem;
+  font-size: 1.15rem;
+  color: var(--fq-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.fq__input {
+  width: 100%;
+  height: 3rem;
+  padding: 0 3rem 0 2.75rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  // 16 px reales: por debajo, iOS amplía la página al enfocar.
+  font: 500 max(16px, 1rem) / 1.2 var(--font-sans);
+  color: var(--c-text);
+
+  &::placeholder {
+    color: var(--fq-muted);
+    opacity: 1;
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  @include focus-ring(2px);
+}
+
+.fq__clear {
+  position: absolute;
+  top: 1.5rem;
+  right: 0.15rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 1.05rem;
+  color: var(--c-primary);
+  transform: translateY(-50%);
+  cursor: pointer;
+
+  @include focus-ring(-6px);
+}
+
+// Hueco fijo: el contador no mueve la página al aparecer.
+.fq__status {
+  min-height: 1.25rem;
+  margin: 0.35rem 0 0 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: rgb(247 250 252 / 0.85);
+
+  @include until('lg') {
+    margin-bottom: -1.5rem; // ocupa el aire de abajo de la cabecera
+  }
+}
+
+// ── Cuerpo ────────────────────────────────────────────────────────────
+.fq {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); // la fila de temas no ensancha la página
+  gap: var(--sp-5);
+  max-width: calc(var(--page-max) + 2 * var(--page-gutter));
+  margin-inline: auto;
+  padding: var(--sp-5) var(--page-gutter) var(--sp-10);
+}
+
+// ── Lo práctico ───────────────────────────────────────────────────────
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--c-hairline);
+  border-radius: 1rem;
+  // Los filetes entre celdas son el fondo que asoma por el hueco de 1 px.
+  gap: 1px;
+  background: var(--c-hairline);
+
+  @include from('lg') {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @media (max-width: 359.98px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.fact {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  min-height: 3.5rem;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--c-surface);
+  color: var(--c-primary);
+  text-decoration: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(in srgb, var(--c-primary) 4%, var(--c-surface));
+    }
+  }
+
+  @include focus-ring(-3px);
+}
+
+.fact__icon {
+  flex: none;
+  font-size: 1.2rem;
+  color: var(--c-gold-deep);
+
+  // En 2 × 2 de teléfono el ancho es para el dato.
+  @media (min-width: 360px) and (max-width: 479.98px) {
+    display: none;
+  }
+}
+
+.fact__body {
+  display: grid;
+  min-width: 0;
+}
+
+.fact__label {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--fq-muted);
+}
+
+.fact__value {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+// ── Temas ─────────────────────────────────────────────────────────────
+.topics__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // Teléfono: una fila que se desliza hasta el borde de la pantalla.
+  @include until('sm') {
+    flex-wrap: nowrap;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding: 3px var(--page-gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.topics__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding-inline: 0.9rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 999px;
+  background: var(--c-surface);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+
+  @media (pointer: coarse) {
+    min-height: 44px;
+  }
+
+  @include focus-ring(2px);
+}
+
+.topics__count {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--fq-muted);
+}
+
+// ── Preguntas ─────────────────────────────────────────────────────────
+.cols {
+  display: grid;
+  gap: var(--sp-6);
+  align-items: start;
+
+  @include from('md') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-6) clamp(1.25rem, 2.5vw, 2rem);
+  }
+}
+
+// Un solo tema (buscando): medida de lectura, no toda la pantalla.
+.cols--one {
+  grid-template-columns: minmax(0, 52rem);
+}
+
+.cols__col {
+  display: grid;
+  gap: var(--sp-6);
+  min-width: 0;
+}
+
+.topic {
+  min-width: 0;
+  scroll-margin-top: var(--sp-2);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.topic__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 var(--sp-2);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--c-primary);
+}
+
+.topic__icon {
+  flex: none;
+  font-size: 1.15rem;
+  color: var(--c-gold-deep);
+}
+
+.none {
+  max-width: none;
+  margin: 0;
+  padding: var(--sp-6);
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: 1rem;
+  text-align: center;
+  color: var(--c-text);
+
+  strong {
+    display: block;
+    color: var(--c-primary);
+  }
+}
+
+// ── Si falta la respuesta ─────────────────────────────────────────────
+.ask {
+  --c-focus: var(--c-focus-on-dark);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-6);
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--c-primary-deep), var(--c-primary));
+  color: var(--c-on-primary);
+}
+
+.ask__text {
+  margin: 0;
+  max-width: none;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+
+  strong {
+    margin-inline-end: 0.35rem;
+    font-size: 1.0625rem;
+  }
+}
+
+.ask__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ask__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding-inline: 1.1rem;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  @include focus-ring(2px);
+}
+
+.ask__btn--main {
+  border-color: transparent;
+  background: var(--c-gold);
+  color: var(--c-primary-darkest);
+
+  &:hover {
+    background: var(--c-gold-soft);
+  }
+}
+
+@include until('xs') {
+  .ask__actions {
+    width: 100%;
+  }
+
+  .ask__btn {
+    flex: 1 1 auto;
+    padding-inline: 0.8rem;
+  }
+}

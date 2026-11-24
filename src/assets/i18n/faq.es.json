@@ -1,0 +1,197 @@
+{
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "lead": "Respuestas cortas para quien viene por primera vez y para quien quiere saber más.",
+    "search": {
+      "label": "Buscar en las preguntas",
+      "placeholder": "Busca: niños, aparcamiento, bautismo…",
+      "clear": "Borrar la búsqueda",
+      "one": "Una respuesta",
+      "other": "{{count}} respuestas",
+      "none_title": "Ninguna respuesta para «{{query}}»",
+      "none_text": "Prueba con otra palabra o pregúntanos directamente."
+    },
+    "nav": "Temas",
+    "facts": {
+      "title": "En breve",
+      "next": "Próximo culto",
+      "now": "Ahora, en curso",
+      "today": "Hoy",
+      "address": "Dónde estamos",
+      "phone": "Teléfono y WhatsApp",
+      "online": "En directo",
+      "online_value": "Los domingos, en YouTube"
+    },
+    "groups": {
+      "visit": "Primera visita",
+      "program": "Programa y emisiones",
+      "faith": "Fe y bautismo",
+      "life": "Vida de la iglesia",
+      "practical": "Donativos, web y contacto"
+    },
+    "actions": {
+      "guests": "Guía de la primera visita",
+      "weekly": "Ver el programa semanal",
+      "maps": "Abrir en Google Maps",
+      "location": "Cómo llegar",
+      "youtube": "Abrir el canal de YouTube",
+      "announcements": "Anuncios",
+      "upcoming": "Eventos",
+      "credo": "Leer la Declaración de fe",
+      "baptisms": "Registro de bautismos",
+      "about": "Nuestra historia",
+      "leadership": "Liderazgo",
+      "bible": "Plan de lectura",
+      "impreuna": "Proiectul Împreună",
+      "youth": "Página de jóvenes",
+      "departments": "Todos los departamentos",
+      "donate": "Cómo donar",
+      "legal": "Información legal",
+      "call": "Llamar",
+      "whatsapp": "WhatsApp",
+      "email": "Correo"
+    },
+    "link": "enlace a esta respuesta",
+    "new_tab": "se abre en una pestaña nueva",
+    "messages": {
+      "general": "¡Hola! Os escribo desde la web de la Iglesia Elim. Tengo una pregunta: ",
+      "prayer": "¡Hola! Tengo una petición de oración: "
+    },
+    "ask": {
+      "title": "¿No has encontrado la respuesta?",
+      "text": "Pregúntanos directamente y te contestamos."
+    },
+    "teaser": {
+      "title": "¿Vienes por primera vez?",
+      "lead": "Respuestas cortas a lo que más preguntan quienes nos visitan.",
+      "all": "Todas las preguntas"
+    },
+    "items": {
+      "language": {
+        "q": "¿En qué idioma son los cultos?",
+        "a": "Los cultos son en rumano, pero el idioma no es un impedimento: hay traducción en directo al español por audio, y se puede adaptar a cualquier otro idioma que necesites. Escríbenos antes y lo preparamos todo para ti. Las letras de las canciones se proyectan en pantalla.",
+        "k": "idioma rumano español traducción intérprete"
+      },
+      "announce": {
+        "q": "¿Hace falta avisar antes de ir?",
+        "a": "No. La entrada es libre en todos los cultos y no hace falta avisar a nadie: ven tal y como eres.",
+        "k": "entrada libre gratis reserva miembro visitante"
+      },
+      "children": {
+        "q": "¿Puedo venir con mis hijos?",
+        "a": "Sí. Los niños tienen programa aparte, por edades, durante el mensaje: los dejas y los recoges a la salida.",
+        "k": "niños escuela dominical bebés"
+      },
+      "dress": {
+        "q": "¿Cómo debo vestir?",
+        "a": "La ropa no es lo importante: ven como puedas. Como recomendación, algo elegante o clásico, más formal o casual, como te sientas cómodo.",
+        "k": "ropa vestir vestimenta cómo voy"
+      },
+      "duration": {
+        "q": "¿Cuánto dura el culto?",
+        "a": "Los domingos, tanto por la mañana como por la tarde, el culto dura unas 2 horas. Entre semana, alrededor de una hora y media.",
+        "k": "cuánto dura horas tiempo"
+      },
+      "parking": {
+        "q": "¿Hay aparcamiento?",
+        "a": "Sí. Hay aparcamiento suficiente y gratuito.",
+        "k": "aparcamiento aparcar coche parking"
+      },
+      "access": {
+        "q": "¿Hay acceso sin escalones?",
+        "a": "Sí. La entrada y la sala son accesibles sin escalones, y hay un baño adaptado para personas con discapacidad.",
+        "k": "discapacidad silla de ruedas accesibilidad ascensor escalones"
+      },
+      "schedule": {
+        "q": "¿Cuándo os reunís?",
+        "a": "Los domingos, a las {{sunday}}. De lunes a viernes, a las {{week}}: oración, estudio bíblico y, los viernes, la noche de jóvenes.",
+        "k": "horario horas programa cultos reuniones días"
+      },
+      "directions": {
+        "q": "¿Dónde estáis?",
+        "a": "En {{address}}, cerca de Madrid.",
+        "k": "dirección mapa cómo llegar ubicación"
+      },
+      "communion": {
+        "q": "¿Qué es la Cena del Señor? ¿Tengo que participar?",
+        "a": "La Cena del Señor se celebra el primer domingo de cada mes, en el culto de la mañana. Participan los creyentes bautizados; si estás de visita, puedes quedarte tranquilo en tu sitio.",
+        "k": "santa cena comunión"
+      },
+      "online": {
+        "q": "¿Puedo seguir los cultos desde casa?",
+        "a": "Sí. Los cultos del domingo se emiten en directo en el canal de YouTube de la iglesia, y las emisiones se quedan en el canal.",
+        "k": "directo online YouTube casa"
+      },
+      "updates": {
+        "q": "¿Cómo me entero de los eventos y los cambios de programa?",
+        "a": "En la página de Anuncios, donde sólo está lo que sigue en vigor, y en la de Eventos, desde donde puedes llevarlos a tu calendario: se actualiza solo.",
+        "k": "avisos novedades calendario conferencias noticias"
+      },
+      "beliefs": {
+        "q": "¿Qué tipo de iglesia sois?",
+        "a": "Una iglesia evangélica pentecostal. Compartimos la Declaración de fe del Culto Cristiano Pentecostal: es lo que creemos y lo que se predica cada domingo.",
+        "k": "pentecostal evangélica qué creéis"
+      },
+      "baptism": {
+        "q": "Quiero bautizarme. ¿Qué hago?",
+        "a": "Habla con el pastor de la iglesia: él te explica los pasos.",
+        "k": "bautismo bautizarme quiero bautizarme"
+      },
+      "history": {
+        "q": "¿Desde cuándo existe la iglesia?",
+        "a": "Desde 2001. El primer culto fue el último domingo de diciembre de 2000, con un grupo pequeño de hermanos; en 2001 se ordenó a los primeros responsables y nació el coro.",
+        "k": "historia antigüedad años comienzo aniversario"
+      },
+      "leaders": {
+        "q": "¿Quién dirige la iglesia?",
+        "a": "El pastor de la iglesia es {{name}}. Los demás responsables y los de cada departamento están en la página de Liderazgo.",
+        "k": "pastor ancianos diáconos responsables comité"
+      },
+      "reading": {
+        "q": "¿Cómo leo la Biblia con la iglesia?",
+        "a": "La iglesia tiene un plan de lectura, con las lecturas de cada día. Y con todo el Culto Pentecostal leemos Proiectul Împreună: un texto al día y una meditación en vídeo (en rumano), con recordatorio diario si lo activas.",
+        "k": "Biblia plan lectura diaria Escritura"
+      },
+      "prayer": {
+        "q": "¿Podéis orar por mí?",
+        "a": "Sí. Escríbenos o llámanos y dinos por qué podemos orar.",
+        "k": "petición de oración intercesión enfermedad"
+      },
+      "youth": {
+        "q": "¿Qué hay para jóvenes?",
+        "a": "Todos los viernes, a las {{friday}}, es la noche de jóvenes. El primer domingo de mes, en el culto de la tarde, el programa lo llevan en gran parte los jóvenes.",
+        "k": "jóvenes adolescentes viernes campamento"
+      },
+      "serve": {
+        "q": "¿Cómo puedo colaborar?",
+        "a": "Elige un departamento —jóvenes, banda, coro, misión exterior, ayuda social o evangelización— y habla con su responsable: está en la página de cada uno.",
+        "k": "servir voluntario ayudar departamento coro banda"
+      },
+      "donate": {
+        "q": "¿Cómo puedo apoyar a la iglesia?",
+        "a": "Por transferencia bancaria: los datos de la cuenta están en la página de Donativos. Los donativos los administra el tesorero de la iglesia, bajo la revisión de los censores. Si necesitas un justificante, escríbenos y te lo enviamos.",
+        "k": "donación donativo diezmo cuenta IBAN transferencia justificante certificado"
+      },
+      "app": {
+        "q": "¿Puedo tener la web como aplicación?",
+        "a": "Sí, gratis y sin cuenta. Elige «Instalar» al pie de la página o en el menú: el programa, los anuncios, las emisiones y la lectura del día, a un toque. La borras cuando quieras.",
+        "k": "aplicación instalar móvil Android iPhone app"
+      },
+      "site_language": {
+        "q": "¿La web está también en español?",
+        "a": "Sí. Cambia el idioma arriba en la página o en el menú. Los anuncios y los títulos de los cultos siguen en rumano, tal como los publica la iglesia.",
+        "k": "idioma rumano traducción web"
+      },
+      "photos": {
+        "q": "Salgo en una foto. ¿Podéis quitarla?",
+        "a": "Sí. Escríbenos y retiramos el nombre o la fotografía.",
+        "k": "fotos borrar datos personales privacidad RGPD"
+      },
+      "talk": {
+        "q": "¿Con quién puedo hablar si tengo una pregunta?",
+        "a": "Con el pastor de la iglesia, {{name}}. Puedes llamarle o escribirle por WhatsApp, o venir a conocerle el domingo.",
+        "k": "hablar con el pastor consejería ayuda"
+      }
+    }
+  }
+}

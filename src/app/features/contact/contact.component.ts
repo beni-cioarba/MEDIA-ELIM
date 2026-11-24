@@ -74,6 +74,7 @@ export class ContactComponent {
   protected readonly links = {
     donate: `/${APP_PATHS.donate}`,
     about: `/${APP_PATHS.about}`,
+    faq: `/${APP_PATHS.faq}`,
     /** Acciones directas de la cabecera. */
     tel: telHref(this.config.contact.phone),
     mailto: `mailto:${this.config.contact.email}`,

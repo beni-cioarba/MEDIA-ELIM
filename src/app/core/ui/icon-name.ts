@@ -63,6 +63,7 @@ export type IconName =
   | 'rotate-ccw'
   | 'rotate-cw'
   | 'info'
+  | 'help'
   | 'printer'
   | 'file'
   | 'file-text'

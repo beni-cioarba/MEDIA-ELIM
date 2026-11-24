@@ -1,6 +1,7 @@
 import { Injectable, Signal, computed, inject } from '@angular/core';
 import { CHURCH_CONFIG } from '../church.config';
 import { departmentById } from '../departments.config';
+import { FAQ_INDEX } from '../faq.config';
 import { editionToday, planDay } from '../impreuna/impreuna-edition';
 import { formatReading } from '../bible/bible-refs';
 import { LEADERSHIP_OFFICES, SERVICE_AREAS } from '../leadership.config';
@@ -123,6 +124,11 @@ export class NavSummaryService {
             key: 'nav_hub.leadership_value',
             params: { offices: LEADERSHIP_OFFICES.length, departments: DEPARTMENTS },
           },
+        };
+      case 'faq':
+        return {
+          kicker: { key: 'nav_hub.faq_kicker' },
+          valueText: { key: 'nav_hub.faq_value', params: { count: FAQ_INDEX.size } },
         };
 
       // ── Program ───────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { IconName } from '../../core/ui/icon-name';
 import { FamilyPrayerService, PrayerFamilyView } from '../../core/services/family-prayer.service';
 import { FamilyPhotoComponent } from '../../shared/family-photo/family-photo.component';
+import { FaqTeaserComponent } from '../faq/public/faq-teaser/faq-teaser.component';
 import { ContestTeaserComponent } from '../talent-contest/public/contest-teaser/contest-teaser.component';
 import { ImpreunaTeaserComponent } from './impreuna-teaser/impreuna-teaser.component';
 import { BibleWeekComponent } from './bible-week/bible-week.component';
@@ -174,6 +175,7 @@ interface HeroNext {
         FamilyPhotoComponent,
         ContestTeaserComponent,
         ImpreunaTeaserComponent,
+        FaqTeaserComponent,
         BibleWeekComponent,
         WeekScheduleComponent,
     ],

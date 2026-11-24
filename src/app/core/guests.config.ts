@@ -1,3 +1,4 @@
+import type { FaqId } from './faq.config';
 import type { DepartmentId } from './navigation/app-paths';
 import type { PersonId } from './leadership.config';
 import type { IconName } from './ui/icon-name';
@@ -49,13 +50,12 @@ export const GUEST_DEPARTMENTS: readonly DepartmentId[] = [
 ];
 
 /**
- * Preguntas frecuentes: `guests.faq.<id>.{q,a}`. Sólo las que tienen una
- * respuesta ya publicada en la web. Una nueva = un id aquí + su texto.
+ * Preguntas de quien viene por primera vez, en su orden: un recorte de las de
+ * `core/faq.config.ts` (textos y acciones salen de allí).
  */
-export const GUEST_FAQ = [
+export const GUEST_FAQ: readonly FaqId[] = [
   'language',
   'children',
-  // Respuestas de la iglesia del 11/11/2026.
   'duration',
   'parking',
   'access',
@@ -65,9 +65,7 @@ export const GUEST_FAQ = [
   'beliefs',
   'baptism',
   'talk',
-] as const;
-
-export type GuestFaqId = (typeof GUEST_FAQ)[number];
+];
 
 /** Secciones con ancla, en el orden de la página (índice de chips). */
 export interface GuestSection {

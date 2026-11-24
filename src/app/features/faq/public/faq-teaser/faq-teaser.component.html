@@ -1,0 +1,28 @@
+@if (ready()) {
+  <section class="fqt" aria-labelledby="fqt-title">
+    <div class="fqt__inner">
+      <div class="fqt__head">
+        <h2 class="fqt__title" id="fqt-title">{{ 'faq.teaser.title' | translate }}</h2>
+        <p class="fqt__lead">{{ 'faq.teaser.lead' | translate }}</p>
+        <a class="fqt__all fqt__all--head" [routerLink]="path">
+          {{ 'faq.teaser.all' | translate }} <span class="fqt__count">{{ total }}</span>
+          <app-icon name="arrow-right" />
+        </a>
+      </div>
+
+      <div class="fqt__lists">
+        @for (ids of columns; track $index) {
+          <app-faq-list class="fqt__list" [ids]="ids" exclusive="faq-home" />
+        }
+      </div>
+
+      <!-- En una columna, la puerta a todas va al final de la lista. -->
+      <a class="fqt__all fqt__all--end" [routerLink]="path">
+        {{ 'faq.teaser.all' | translate }} <span class="fqt__count">{{ total }}</span>
+        <app-icon name="arrow-right" />
+      </a>
+    </div>
+  </section>
+} @else {
+  <div class="fqt-wait" aria-hidden="true"></div>
+}

@@ -49,6 +49,7 @@
       "despre-noi": "istorie viziune valori misiune cine suntem aniversare 25 ani prima vizită",
       "marturisirea-de-credinta": "crez doctrină ce credem dogme statut penticostal articole",
       "conducere": "pastor prezbiteri diaconi comitet responsabili organigramă echipă lideri",
+      "intrebari-frecvente": "întrebări răspunsuri ajutor informații FAQ prima vizită",
       "anunturi": "avize noutăți știri comunicate înscrieri",
       "media": "transmisiuni panou blocuri",
       "media_program": "orar ore servicii slujbe culte duminică repetiții când ne adunăm",
@@ -74,19 +75,6 @@
       "departamente_misiune-externa": "misionari misiuni plecări Africa Uganda Mongolia",
       "departamente_ajutorare": "ajutor social caritate săraci colecte cutii Zâmbetul din Cutie",
       "departamente_evanghelizare": "vestire evanghelie oraș colinde invitații"
-    },
-    "faq": {
-      "language": "limba română spaniolă traducere interpret",
-      "children": "copii școala duminicală bebeluși",
-      "duration": "cât ține ore timp",
-      "parking": "parcare mașină auto loc",
-      "access": "dizabilități scaun cu rotile accesibilitate lift trepte",
-      "dress": "haine ținută îmbrăcăminte cum mă îmbrac",
-      "communion": "cină împărtășanie Cina Domnului",
-      "online": "live online YouTube acasă",
-      "beliefs": "penticostal evanghelic ce credeți",
-      "baptism": "botez vreau să mă botez",
-      "talk": "vorbesc cu pastorul consiliere ajutor"
     }
   }
 }

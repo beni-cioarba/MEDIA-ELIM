@@ -118,55 +118,6 @@
       "copy": "Adresa",
       "map_title": "Harta cu locația Bisericii Elim"
     },
-    "faq": {
-      "language": {
-        "q": "În ce limbă sunt serviciile?",
-        "a": "Serviciile sunt în limba română, dar limba nu e o piedică: avem traducere în direct, prin audio, în limba spaniolă, și o putem adapta pentru orice altă limbă de care ai nevoie. Scrie-ne înainte și pregătim totul pentru tine. Versurile cântărilor se proiectează pe ecran."
-      },
-      "children": {
-        "q": "Pot veni cu copiii?",
-        "a": "Da. Copiii au program separat, pe vârste, în timpul mesajului: îi lași și îi iei la ieșire."
-      },
-      "duration": {
-        "q": "Cât durează serviciul?",
-        "a": "Duminica, atât dimineața cât și seara, serviciul durează aproximativ 2 ore. În cursul săptămânii, aproximativ o oră și jumătate."
-      },
-      "parking": {
-        "q": "Am unde parca?",
-        "a": "Da. Este loc de parcare suficient și gratuit."
-      },
-      "access": {
-        "q": "Clădirea are acces fără trepte?",
-        "a": "Da. Intrarea și sala sunt accesibile fără trepte, și avem baie adaptată pentru persoanele cu dizabilități."
-      },
-      "dress": {
-        "q": "Cum să mă îmbrac?",
-        "a": "Hainele nu sunt ce contează: vino cum poți. Ca recomandare, o ținută elegantă sau clasică — mai formală ori casual, cum te simți bine."
-      },
-      "communion": {
-        "q": "Ce este Cina Domnului? Trebuie să particip?",
-        "a": "Cina Domnului se ține în prima duminică a fiecărei luni, la serviciul de dimineață. Se împărtășesc credincioșii botezați; dacă ești în vizită, poți rămâne liniștit pe locul tău."
-      },
-      "online": {
-        "q": "Pot urmări serviciile de acasă?",
-        "a": "Da. Serviciile de duminică se transmit în direct pe canalul de YouTube al bisericii, iar transmisiunile rămân pe canal.",
-        "link": "Deschide canalul de YouTube"
-      },
-      "beliefs": {
-        "q": "Ce fel de biserică sunteți?",
-        "a": "O biserică evanghelică penticostală. Împărtășim Mărturisirea de credință a Cultului Creștin Penticostal: este ce credem și ce predicăm duminică de duminică.",
-        "link": "Citește Mărturisirea de credință"
-      },
-      "baptism": {
-        "q": "Vreau să mă botez. Ce fac?",
-        "a": "Vorbește cu pastorul bisericii: el îți explică pașii.",
-        "link": "Registrul botezurilor"
-      },
-      "talk": {
-        "q": "Cu cine pot vorbi dacă am o întrebare?",
-        "a": "Cu pastorul bisericii, {{name}}. Îl poți suna sau îi poți scrie pe WhatsApp — sau vino să-l cunoști duminică."
-      }
-    },
     "closing": {
       "title": "Te așteptăm",
       "verse": "Mă bucur când mi se zice: „Haidem la Casa Domnului!”",

@@ -579,6 +579,18 @@
   </div>
 </section>
 
+<!-- ===================================================================
+     Preguntas frecuentes: el cierre, para quien aún no ha venido. Compacta
+     (seis preguntas en escritorio, cuatro en el teléfono) y con la puerta a
+     todas; la lista entera es una página (`docs/ai/80-faq.md`). `@defer`: ni
+     el componente ni sus textos pesan en la carga inicial.
+     =================================================================== -->
+@defer (on viewport) {
+  <app-faq-teaser />
+} @placeholder {
+  <div class="fqt-placeholder" aria-hidden="true"></div>
+}
+
 <!-- «Ven a visitarnos» ya no está aquí (06/10/2026): repetía el culto de hoy
      —que la portada da tres veces: hero, tarjeta del programa y avisos— y la
      dirección, que el pie ya enlaza a Google Maps junto a «Horarios y cómo

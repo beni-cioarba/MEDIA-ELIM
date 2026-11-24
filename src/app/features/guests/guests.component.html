@@ -479,56 +479,12 @@
       <p class="gst-sec__eyebrow">{{ 'guests.sections.faq.chip' | translate }}</p>
       <h2 class="gst-sec__title" id="gst-faq-title">{{ 'guests.sections.faq.title' | translate }}</h2>
       <p class="gst-sec__lead">{{ 'guests.sections.faq.lead' | translate }}</p>
+      <a class="gst-link" [routerLink]="links.faq">
+        {{ 'faq.teaser.all' | translate }}
+        <app-icon name="arrow-right" />
+      </a>
     </div>
-    <div class="gst-faq">
-      @for (id of faq; track id) {
-        <details class="gst-faq__item">
-          <summary class="gst-faq__q">
-            <span>{{ 'guests.faq.' + id + '.q' | translate }}</span>
-            <app-icon class="gst-faq__chev" name="chevron-down" />
-          </summary>
-          <div class="gst-faq__a">
-            <p>{{ 'guests.faq.' + id + '.a' | translate: { name: pastorName } }}</p>
-            @switch (id) {
-              @case ('online') {
-                <a class="gst-link" [href]="config.youtubeChannelUrl" target="_blank" rel="noopener noreferrer">
-                  {{ 'guests.faq.online.link' | translate }}
-                  <app-icon name="external" />
-                  <span class="u-sr-only"> ({{ 'guests.new_tab' | translate }})</span>
-                </a>
-              }
-              @case ('beliefs') {
-                <a class="gst-link" [routerLink]="links.credo">
-                  {{ 'guests.faq.beliefs.link' | translate }}
-                  <app-icon name="arrow-right" />
-                </a>
-              }
-              @case ('baptism') {
-                <a class="gst-link" [routerLink]="links.baptisms">
-                  {{ 'guests.faq.baptism.link' | translate }}
-                  <app-icon name="arrow-right" />
-                </a>
-              }
-              @case ('talk') {
-                <span class="gst-faq__actions">
-                  <a class="gst-btn gst-btn--line gst-btn--sm" [href]="tel">
-                    <app-icon name="phone" />
-                    {{ 'guests.closing.call' | translate }}
-                  </a>
-                  @if (whatsappLink('guests.first.whatsapp.message' | translate); as wa) {
-                    <a class="gst-btn gst-btn--line gst-btn--sm" [href]="wa" target="_blank" rel="noopener noreferrer">
-                      <app-icon name="whatsapp" />
-                      {{ 'guests.closing.whatsapp' | translate }}
-                      <span class="u-sr-only"> ({{ 'guests.new_tab' | translate }})</span>
-                    </a>
-                  }
-                </span>
-              }
-            }
-          </div>
-        </details>
-      }
-    </div>
+    <app-faq-list [ids]="faq" />
   </section>
 </div>
 

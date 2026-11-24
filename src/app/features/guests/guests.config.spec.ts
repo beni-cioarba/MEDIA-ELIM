@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { APP_ROUTES } from '../../app.routes';
 import { DEPARTMENTS } from '../../core/departments.config';
-import { GUEST_DEPARTMENTS, GUEST_FAQ, GUEST_HOSTS, GUEST_SECTIONS, GUEST_STEPS } from '../../core/guests.config';
+import { GUEST_DEPARTMENTS, GUEST_HOSTS, GUEST_SECTIONS, GUEST_STEPS } from '../../core/guests.config';
 import { PEOPLE_INDEX } from '../../core/leadership.config';
 import { APP_PATHS } from '../../core/navigation/app-paths';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
@@ -73,15 +73,6 @@ describe('Invitați · datos', () => {
       for (const dictionary of [mainRo, mainEs]) {
         expect(lookup(dictionary, `departments.${id}.name`)).toBeTruthy();
         expect(lookup(dictionary, `departments.${id}.tagline`)).toBeTruthy();
-      }
-    }
-  });
-
-  it('cada pregunta frecuente tiene pregunta y respuesta en los dos idiomas', () => {
-    for (const id of GUEST_FAQ) {
-      for (const pack of [ro, es]) {
-        expect(lookup(pack, `guests.faq.${id}.q`)).toBeTruthy();
-        expect(lookup(pack, `guests.faq.${id}.a`)).toBeTruthy();
       }
     }
   });

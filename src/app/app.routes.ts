@@ -9,6 +9,7 @@ import { CREDO_ROUTES } from './features/credo/credo.routes';
 import { DEPARTMENTS_ROUTES } from './features/departments/departments.routes';
 import { DONATE_ROUTES } from './features/donate/donate.routes';
 import { FAMILY_PRAYER_ROUTES } from './features/family-prayer/family-prayer.routes';
+import { FAQ_ROUTES } from './features/faq/faq.routes';
 import { GUESTS_ROUTES } from './features/guests/guests.routes';
 import { HOME_ROUTES } from './features/home/home.routes';
 import { IMPREUNA_ROUTES } from './features/impreuna/impreuna.routes';
@@ -51,6 +52,7 @@ const MODULES: readonly ModuleRoutes[] = [
   TALENT_CONTEST_ROUTES,
   IMPREUNA_ROUTES,
   GUESTS_ROUTES,
+  FAQ_ROUTES,
   CONTACT_ROUTES,
   DONATE_ROUTES,
   LEGAL_ROUTES,

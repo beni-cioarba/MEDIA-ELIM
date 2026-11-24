@@ -214,6 +214,9 @@ manda que se lea en un teléfono recién sacado del bolsillo.
 
 ## Respuestas de la iglesia (11/11/2026, ya publicadas)
 
+> Desde el 24/11/2026 los textos y la lista desplegable son del módulo de
+> preguntas frecuentes (`80-faq.md`); aquí sólo se elige cuáles (`GUEST_FAQ`).
+
 Preguntas frecuentes nuevas (`GUEST_FAQ`): **duración** (domingo, mañana y
 tarde, ~2 h; entre semana ~1 h 30), **aparcamiento** (suficiente y gratis),
 **acceso sin escalones** (con baño adaptado), **cómo vestir** (no es lo
@@ -228,7 +231,7 @@ idioma). La duración del domingo es también la del evento de calendario
    su nombre)
 2. ¿Wi-Fi para invitados? ¿Mesa o punto de bienvenida a la entrada?
 
-Cada respuesta que llegue es una pregunta frecuente más (`GUEST_FAQ` + texto).
+Cada respuesta que llegue es una pregunta frecuente más (receta en `80-faq.md`).
 
 ## Fase 2 (propuestas, no hechas)
 

@@ -4,11 +4,10 @@ import { guestsTranslationsResolver } from './guests-translations.resolver';
 import { GUESTS_PAGES } from './guests.pages';
 
 const guests = () => import('./guests.component').then((m) => m.GuestsComponent);
-// También usa la historia de «Quiénes somos».
-const resolve = { i18n: guestsTranslationsResolver, about: routePacks('about') };
+// También usa la historia de «Quiénes somos» y las preguntas frecuentes.
+const resolve = { i18n: guestsTranslationsResolver, packs: routePacks('about', 'faq') };
 
 export const GUESTS_ROUTES: ModuleRoutes = {
-  search: () => import('./guests.search').then((m) => m.GUESTS_SEARCH),
   bare: [
     pageRoute(GUESTS_PAGES.qr, {
       loadComponent: () => import('./guests-qr/guests-qr.component').then((m) => m.GuestsQrComponent),

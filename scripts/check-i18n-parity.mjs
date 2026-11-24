@@ -17,6 +17,7 @@ const BUNDLES = [
   'donate.{lang}.json',
   'baptisms.{lang}.json',
   'search.{lang}.json',
+  'faq.{lang}.json',
 ];
 
 const flatten = (obj, prefix = '') =>

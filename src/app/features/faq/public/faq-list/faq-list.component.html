@@ -1,0 +1,58 @@
+@for (item of items(); track item.id) {
+  <details
+    class="qa"
+    [attr.id]="anchors() ? item.id : null"
+    [attr.name]="exclusive()"
+    [open]="openIds().has(item.id)"
+  >
+    <summary class="qa__q">
+      <span>{{ 'faq.items.' + item.id + '.q' | translate }}</span>
+      <app-icon class="qa__chev" name="chevron-down" />
+    </summary>
+
+    <div class="qa__a">
+      <p class="qa__text">{{ 'faq.items.' + item.id + '.a' | translate: params() }}</p>
+
+      @if (anchors()) {
+        <app-copy-button class="qa__copy" [value]="linkOf(item.id)" [label]="'faq.link' | translate" />
+      }
+
+      @if (item.actions; as actions) {
+        <div class="qa__actions">
+          @for (action of actions; track $index) {
+            @switch (action.kind) {
+              @case ('route') {
+                <a class="qa__link" [routerLink]="action.path">
+                  {{ 'faq.actions.' + action.label | translate }}
+                  <app-icon name="arrow-right" />
+                </a>
+              }
+              @case ('external') {
+                <a class="qa__link" [href]="external[action.to]" target="_blank" rel="noopener noreferrer">
+                  {{ 'faq.actions.' + action.label | translate }}
+                  <app-icon name="external" />
+                  <span class="u-sr-only"> ({{ 'faq.new_tab' | translate }})</span>
+                </a>
+              }
+              @case ('call') {
+                <a class="qa__link" [href]="tel">
+                  <app-icon name="phone" />
+                  {{ 'faq.actions.call' | translate }}
+                </a>
+              }
+              @case ('whatsapp') {
+                @if (whatsapp('faq.messages.' + action.message | translate); as href) {
+                  <a class="qa__link" [href]="href" target="_blank" rel="noopener noreferrer">
+                    <app-icon name="whatsapp" />
+                    {{ 'faq.actions.whatsapp' | translate }}
+                    <span class="u-sr-only"> ({{ 'faq.new_tab' | translate }})</span>
+                  </a>
+                }
+              }
+            }
+          }
+        </div>
+      }
+    </div>
+  </details>
+}

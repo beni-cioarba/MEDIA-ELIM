@@ -55,6 +55,13 @@ export const MAIN_NAV: readonly NavItem[] = [
         path: `/${APP_PATHS.leadership}`,
         icon: 'network',
       },
+      {
+        id: 'faq',
+        labelKey: 'nav.faq',
+        descriptionKey: 'nav.faq_desc',
+        path: `/${APP_PATHS.faq}`,
+        icon: 'help',
+      },
     ],
   },
   {

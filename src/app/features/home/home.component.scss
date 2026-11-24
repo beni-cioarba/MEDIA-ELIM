@@ -1292,6 +1292,20 @@
   }
 }
 
+/* Hueco de las preguntas frecuentes mientras llegan (`@defer`): su alto, para
+   que el pie no salte (medido: `faq-teaser.component.scss`). */
+.fqt-placeholder {
+  min-height: 27rem;
+
+  @media (min-width: 720px) {
+    min-height: 25rem;
+  }
+
+  @media (min-width: 1024px) {
+    min-height: 14.5rem;
+  }
+}
+
 /* Hueco de la franja de Proiectul Împreună mientras llega (`@defer`): el alto
    aproximado de la franja, para que la página no salte al pintarla. */
 .impt-placeholder {

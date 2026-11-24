@@ -67,6 +67,8 @@ export const APP_PATHS = {
   impreunaDay: 'ziua',
   impreunaPlan: 'plan',
   impreunaPrint: 'tipar',
+  /** Întrebări frecvente: todas las preguntas; `#<id>` abre una. */
+  faq: 'intrebari-frecvente',
   /** Página de contacto: formulario, datos directos y cómo llegar. */
   contact: 'contact',
   /** Donativos: transferencia bancaria y por qué se dona. */

@@ -38,6 +38,7 @@ import { ViewerDocument } from '../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../shared/viewer/viewable.directive';
 import { WeekScheduleComponent } from '../../shared/week-schedule/week-schedule.component';
 import { MapEmbedComponent } from '../../shared/map-embed/map-embed.component';
+import { FaqListComponent } from '../faq/public/faq-list/faq-list.component';
 import { STORY_FACTS, STORY_FACTS_AS_OF } from '../about/public/about-story.data';
 import { personPhoto, photoSource, PhotoSource } from '../leadership/public/person-photo';
 import {
@@ -103,6 +104,7 @@ const SAVED_NOTICE_MS = 6000;
     ViewableDirective,
     WeekScheduleComponent,
     MapEmbedComponent,
+    FaqListComponent,
   ],
   templateUrl: './guests.component.html',
   styleUrl: './guests.component.scss',
@@ -144,7 +146,7 @@ export class GuestsComponent {
     leadership: `/${APP_PATHS.leadership}`,
     about: `/${APP_PATHS.about}`,
     credo: `/${APP_PATHS.credo}`,
-    baptisms: `/${APP_PATHS.baptisms}`,
+    faq: `/${APP_PATHS.faq}`,
     upcoming: blockPath('upcoming'),
     program: blockPath('weekly'),
   } as const;
@@ -247,9 +249,6 @@ export class GuestsComponent {
       },
     ];
   });
-
-  /** El pastor (primer anfitrión): la persona con la que hablar. */
-  protected readonly pastorName = this.hosts[0]?.name ?? '';
 
   protected readonly departments: readonly DepartmentView[] = GUEST_DEPARTMENTS.flatMap((id) => {
     const department = DEPARTMENTS.find((d) => d.id === id);
