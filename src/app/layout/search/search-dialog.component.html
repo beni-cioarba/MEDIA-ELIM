@@ -1,0 +1,161 @@
+<dialog
+  #dialog
+  class="search"
+  [attr.aria-label]="'search.title' | translate"
+  (close)="onNativeClose()"
+  (mousedown)="onBackdrop($event)"
+  (keydown)="onKeydown($event)"
+>
+  <div class="search__panel">
+    <div class="search__bar">
+      <app-icon class="search__icon" name="search" />
+      <input
+        #input
+        class="search__input"
+        type="text"
+        role="combobox"
+        inputmode="search"
+        enterkeyhint="go"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        aria-autocomplete="list"
+        aria-controls="search-results"
+        [attr.aria-expanded]="groups().length > 0"
+        [attr.aria-activedescendant]="activeId()"
+        [attr.aria-label]="'search.label' | translate"
+        [placeholder]="'search.placeholder' | translate"
+        [value]="query()"
+        (input)="onInput($event)"
+      />
+      @if (query()) {
+        <button type="button" class="search__button" [attr.aria-label]="'search.clear' | translate" (click)="clear()">
+          <span class="search__clear"><app-icon name="close" /></span>
+        </button>
+      }
+      <button type="button" class="search__close" [attr.aria-label]="'search.close' | translate" (click)="close(false)">
+        <!-- En el teléfono no hay tecla Esc: la palabra. -->
+        <span class="search__close-key" aria-hidden="true">Esc</span>
+        <span class="search__close-word" aria-hidden="true">{{ 'common.close' | translate }}</span>
+      </button>
+    </div>
+
+    <p class="u-sr-only" role="status">
+      @if (announced(); as count) {
+        {{ (count === 1 ? 'search.results_one' : 'search.results_other') | translate: { count } }}
+      } @else if (announced() === 0) {
+        {{ 'search.empty_title' | translate: { query: query().trim() } }}
+      }
+    </p>
+
+    <div class="search__body">
+      @switch (status()) {
+        @case ('error') {
+          <div class="search__message" role="alert">
+            <p>{{ 'search.error' | translate }}</p>
+            <button type="button" class="search__retry" (click)="retry()">{{ 'search.retry' | translate }}</button>
+          </div>
+        }
+        @case ('ready') {
+          @if (empty()) {
+            <div class="search__message">
+              <p class="search__message-title">{{ 'search.empty_title' | translate: { query: query().trim() } }}</p>
+              <p>{{ 'search.empty_hint' | translate }}</p>
+            </div>
+          } @else if (partial()) {
+            <p class="search__note">{{ 'search.partial' | translate }}</p>
+          }
+        }
+        @default {
+          <p class="search__message search__message--loading">{{ 'search.loading' | translate }}</p>
+        }
+      }
+
+      <div id="search-results" class="search__results" role="listbox" [attr.aria-label]="'search.title' | translate">
+        @for (group of groups(); track group.id) {
+          <div class="group" role="group" [attr.aria-labelledby]="'search-group-' + group.id">
+            <div class="group__label" role="presentation" [id]="'search-group-' + group.id">
+              {{ group.labelKey | translate }}
+            </div>
+            @for (option of group.options; track option.id) {
+              @switch (option.type) {
+                @case ('entry') {
+                  <a
+                    class="option"
+                    role="option"
+                    tabindex="-1"
+                    [id]="option.id"
+                    [class.is-active]="activeId() === option.id"
+                    [attr.aria-selected]="activeId() === option.id"
+                    [routerLink]="option.url"
+                    (click)="onOpen($event)"
+                    (pointermove)="point(option.id)"
+                  >
+                    <span class="option__tile" aria-hidden="true"><app-icon [name]="option.entry.icon" /></span>
+                    <span class="option__text">
+                      <span class="option__title"
+                        >@for (part of option.title; track $index) {@if (part.hit) {<mark>{{ part.text }}</mark>} @else {{{ part.text }}}}</span
+                      >
+                      <span class="option__detail" [class.option__detail--line]="option.excerpt"
+                        >@for (part of option.context; track $index) {@if (part.hit) {<mark>{{ part.text }}</mark>} @else {{{ part.text }}}}</span
+                      >
+                      @if (option.excerpt) {
+                        <span class="option__detail"
+                          >@for (part of option.excerpt; track $index) {@if (part.hit) {<mark>{{ part.text }}</mark>} @else {{{ part.text }}}}</span
+                        >
+                      }
+                    </span>
+                    <app-icon class="option__go" name="arrow-right" />
+                  </a>
+                }
+                @case ('recent') {
+                  <div
+                    class="option option--short"
+                    role="option"
+                    [id]="option.id"
+                    [class.is-active]="activeId() === option.id"
+                    [attr.aria-selected]="activeId() === option.id"
+                    (click)="useRecent(option.query)"
+                    (pointermove)="point(option.id)"
+                  >
+                    <span class="option__tile" aria-hidden="true"><app-icon name="clock" /></span>
+                    <span class="option__title">{{ option.query }}</span>
+                  </div>
+                }
+                @case ('more') {
+                  <div
+                    class="option option--more"
+                    role="option"
+                    [id]="option.id"
+                    [class.is-active]="activeId() === option.id"
+                    [attr.aria-selected]="activeId() === option.id"
+                    (click)="showAll(option.kind)"
+                    (pointermove)="point(option.id)"
+                  >
+                    {{ 'search.more' | translate: { count: option.count } }}
+                    <app-icon name="chevron-down" />
+                  </div>
+                }
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="search__foot">
+      @if (!asked() && recents.list().length > 0) {
+        <button type="button" class="search__link" (click)="clearRecents()">
+          {{ 'search.clear_recent' | translate }}
+        </button>
+      }
+      <span class="search__privacy">{{ 'search.privacy' | translate }}</span>
+      <span class="search__hints" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> {{ 'search.hint_move' | translate }}</span>
+        <span><kbd>↵</kbd> {{ 'search.hint_open' | translate }}</span>
+        <span><kbd>Esc</kbd> {{ 'search.hint_close' | translate }}</span>
+      </span>
+    </div>
+  </div>
+</dialog>

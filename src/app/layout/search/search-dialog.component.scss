@@ -1,0 +1,413 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Diálogo del buscador. Teléfono: hoja a pantalla completa (lo que deja el
+// teclado). Desde `sm`: panel centrado arriba, como una paleta de comandos.
+// =====================================================================
+
+:host {
+  display: contents;
+}
+
+.search {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  color: var(--c-text);
+
+  &::backdrop {
+    background: rgb(9 20 36 / 0.55);
+  }
+}
+
+.search__panel {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--search-top, 0px);
+  display: flex;
+  flex-direction: column;
+  height: var(--search-vh, 100dvh);
+  background: var(--c-surface);
+}
+
+// ---- Campo -------------------------------------------------------------
+.search__bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 3.75rem;
+  padding-inline: 1rem 0.5rem;
+  padding-top: env(safe-area-inset-top);
+  border-block-end: 1px solid var(--c-hairline);
+
+  // El campo tiene el foco siempre: el aviso es el filete, no un marco.
+  &:focus-within {
+    border-block-end-color: var(--c-gold);
+    box-shadow: 0 1px 0 var(--c-gold);
+  }
+}
+
+.search__icon {
+  flex: none;
+  font-size: 1.25rem;
+  color: var(--c-primary);
+}
+
+.search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 3rem;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  // ≥ 16 px: con menos, iOS amplía la página al enfocar.
+  font-size: max(1.0625rem, 16px);
+  text-overflow: ellipsis;
+
+  &::placeholder {
+    color: var(--c-muted);
+    opacity: 1;
+  }
+}
+
+.search__button,
+.search__close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: 1.15rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-veil);
+    color: var(--c-primary);
+  }
+
+  @include focus-ring(-2px);
+}
+
+// Borrar es una cosa del campo; cerrar, del diálogo: no pueden ser dos «X».
+.search__clear {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--c-veil-strong);
+  color: var(--c-primary);
+  font-size: 0.85rem;
+}
+
+.search__close {
+  padding-inline: 0.5rem;
+  color: var(--c-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.search__close-key {
+  display: none;
+}
+
+// ---- Resultados --------------------------------------------------------
+.search__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.search__results {
+  padding: 0.25rem 0.5rem 1rem;
+}
+
+.group__label {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.75rem 0.65rem 0.35rem;
+  background: var(--c-surface);
+  color: var(--c-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  // La opción señalada nunca queda bajo el rótulo fijo de su grupo.
+  scroll-margin-block: 2.5rem 0.5rem;
+
+  &.is-active {
+    background: var(--c-veil-strong);
+
+    .option__tile {
+      background: var(--c-primary);
+      color: var(--c-on-primary);
+    }
+
+    .option__go {
+      opacity: 1;
+    }
+  }
+}
+
+.option--short {
+  min-height: 2.75rem;
+}
+
+.option__tile {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  background: var(--c-veil);
+  color: var(--c-primary);
+  font-size: 1.1rem;
+}
+
+.option__text {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.option__title {
+  overflow-wrap: anywhere;
+  color: var(--c-primary-deep);
+  font-size: 0.9688rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.option__detail {
+  @include line-clamp(2);
+
+  overflow-wrap: anywhere;
+  color: var(--c-muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.option__detail--line {
+  @include line-clamp(1);
+}
+
+// Lo que coincide: subrayado dorado y, en el detalle, tinta plena. Sin fondo:
+// con varias filas, los rectángulos compiten con la opción señalada.
+mark {
+  background: none;
+  color: var(--c-primary-deep);
+  font-weight: inherit;
+  text-decoration: underline 2px var(--c-gold);
+  text-underline-offset: 3px;
+}
+
+.option__go {
+  color: var(--c-gold-deep);
+  font-size: 1.1rem;
+  opacity: 0;
+}
+
+.option--more {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding-inline-start: 3.5rem;
+  color: var(--c-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+// ---- Mensajes ----------------------------------------------------------
+.search__message {
+  padding: 1.5rem 1.15rem 0.5rem;
+  color: var(--c-muted);
+  font-size: 0.9375rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+.search__message-title {
+  margin-block-end: 0.25rem !important;
+  overflow-wrap: anywhere;
+  color: var(--c-primary-deep);
+  font-weight: 600;
+}
+
+.search__note {
+  margin: 0;
+  padding: 0.9rem 1.15rem 0;
+  color: var(--c-muted);
+  font-size: 0.875rem;
+}
+
+.search__retry {
+  height: 2.75rem;
+  margin-block-start: 1rem;
+  padding-inline: 1.1rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  @include focus-ring(2px);
+}
+
+// ---- Pie ---------------------------------------------------------------
+.search__foot {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.55rem 1.15rem;
+  padding-bottom: max(0.55rem, env(safe-area-inset-bottom));
+  border-block-start: 1px solid var(--c-hairline);
+  color: var(--c-muted);
+  font-size: 0.75rem;
+}
+
+.search__link {
+  min-height: 1.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--c-primary);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  @include focus-ring(2px);
+}
+
+.search__hints {
+  display: none;
+  gap: 1rem;
+  margin-inline-start: auto;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.25rem;
+  margin-inline-end: 0.2rem;
+  padding: 0 0.3rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 5px;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: inherit;
+  font-size: 0.6875rem;
+  text-align: center;
+}
+
+// ---- Panel centrado ----------------------------------------------------
+@include from('sm') {
+  .search__panel {
+    inset-inline: auto;
+    top: calc(var(--search-top, 0px) + min(9vh, 5.5rem));
+    left: 50%;
+    width: min(42rem, 100vw - 3rem);
+    height: auto;
+    max-height: min(40rem, calc(var(--search-vh, 100dvh) - min(9vh, 5.5rem) - 1.5rem));
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    box-shadow: var(--e-4);
+    transform: translateX(-50%);
+  }
+
+  // El mismo alto con o sin resultados: el panel no salta al escribir.
+  .search__body {
+    flex-basis: 26rem;
+  }
+
+  .search__close-word {
+    display: none;
+  }
+
+  .search__close {
+    min-width: 2.9rem;
+    height: 2rem;
+    border: 1px solid var(--c-hairline-strong);
+    border-radius: 8px;
+    color: var(--c-muted);
+    font-size: 0.75rem;
+    @include tap-target;
+  }
+
+  .search__close-key {
+    display: inline;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .search__hints {
+    display: flex;
+  }
+}
+
+@include motion-safe {
+  .search[open] .search__panel {
+    animation: search-in 160ms var(--ea-decelerate);
+  }
+
+  .search[open]::backdrop {
+    animation: search-fade 160ms var(--ea-decelerate);
+  }
+}
+
+@keyframes search-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes search-fade {
+  from {
+    opacity: 0;
+  }
+}

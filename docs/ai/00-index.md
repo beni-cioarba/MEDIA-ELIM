@@ -24,6 +24,7 @@ src/app/
   layout/                   ⭐ Envoltorio reutilizable de la web pública
     main-layout/            Shell: nav + <router-outlet> + pie + dock
     top-nav/                Barra superior + `nav-panel` (mega-menú de escritorio, diferido)
+    search/                 Buscador: botón (eager), lanzador y diálogo (diferido) — `78-search.md`
     mobile-nav/             Drawer móvil (diferido, cdkTrapFocus, marcas vivas)
     tab-bar/                Barra de pestañas inferior (< lg): una pestaña por bloque de MAIN_NAV
   core/
@@ -49,6 +50,7 @@ src/app/
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
     i18n/                   Loader de traducciones embebidas (0 HTTP)
     presentation/blocks.ts  ⭐ Registro de bloques proyectables: orden, título, duración, regla automática
+    search/                 Motor y contrato del buscador; cada módulo aporta su `<x>.search.ts` — `78-search.md`
     modules/                Modelo de módulo (`definePages`) y `pageRoute`
     navigation/             ⭐ Rutas con nombre y árbol de menú
       app-paths.ts          APP_PATHS, slugs de bloque, blockPath()
@@ -157,6 +159,7 @@ src/push/onesignal/           Service worker de OneSignal (ámbito propio `/push
 | «Se cortan los eventos / anuncios al proyectar»     | Se paginan solos (`PresentationBlocksService.expand`, `UPCOMING_PER_SLIDE`) y los anuncios se autoajustan — `docs/ai/30-presentation.md` |
 | «Nuevo bloque proyectable»                          | `docs/ai/30-presentation.md` (receta completa)          |
 | «Nueva página / sección»                            | `node scripts/new-module.mjs <id>` — `docs/ai/10-architecture.md` |
+| «Que se encuentre en el buscador» · «sinónimos» · «sale / no sale al buscar» | `docs/ai/78-search.md` → su `<x>.search.ts` o `search.keywords` en `assets/i18n/search.{ro,es}.json` |
 | «Añade una entrada al menú»                         | `docs/ai/15-navigation.md`                              |
 | «Barra de abajo del móvil» · «portada de una sección» · «algo fijo abajo se solapa» | `docs/ai/15-navigation.md` → «Barra de pestañas y portadas de sección» (`--app-tab-bar-h`) |
 | «Estado compartido entre componentes»               | `docs/ai/16-state.md`                                   |

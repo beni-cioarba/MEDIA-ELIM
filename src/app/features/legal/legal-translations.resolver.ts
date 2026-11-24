@@ -8,7 +8,7 @@ import { TranslationPackLoader, TranslationPackService } from '../../core/i18n/t
  * página. Viajan en su propio chunk; en el diccionario principal quedan sólo
  * `seo.legal.*` y el rótulo del pie.
  */
-const loadLegal: TranslationPackLoader = async (lang) => {
+export const loadLegal: TranslationPackLoader = async (lang) => {
   const pack =
     lang === 'es'
       ? await import('../../../assets/i18n/legal.es.json')

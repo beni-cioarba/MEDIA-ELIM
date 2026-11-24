@@ -5,6 +5,7 @@ import { ModuleRoutes, pageRoute } from '../../core/modules/page-route';
 import { LEADERSHIP_PAGES } from './leadership.pages';
 
 export const LEADERSHIP_ROUTES: ModuleRoutes = {
+  search: () => import('./leadership.search').then((m) => m.LEADERSHIP_SEARCH),
   shell: [
     pageRoute(LEADERSHIP_PAGES.main, {
       loadComponent: () => import('./leadership.component').then((m) => m.LeadershipComponent),

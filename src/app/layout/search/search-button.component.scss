@@ -1,0 +1,128 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Botón del buscador. Tres formas según el sitio que deja la cabecera
+// (medido el 24/11/2026 en RO y ES; `docs/ai/78-search.md`):
+//   · icono de 44 px con la hamburguesa y entre `lg` y 1440 px;
+//   · icono + rótulo en tableta (720–1023) y desde 1440;
+//   · + atajo desde 1520 (sólo con teclado y ratón).
+// =====================================================================
+
+:host {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  // En px, como la hamburguesa: en rem baja de 44 en pantallas estrechas.
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-primary);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    border-color var(--mo-fast) var(--ea-standard);
+
+  &:hover,
+  &:active {
+    background: var(--c-veil);
+  }
+
+  @include focus-ring(2px);
+}
+
+.search app-icon {
+  font-size: 1.3rem;
+}
+
+.search__label,
+.search__kbd {
+  display: none;
+}
+
+// En escritorio todos los controles de la barra miden lo mismo.
+@include from('lg') {
+  .search {
+    width: calc(var(--nav-control-h) + 2px);
+    height: var(--nav-control-h);
+    border-radius: var(--r-md);
+    // Último de la barra: se alinea por su dibujo con el borde de la página.
+    margin-inline-end: -9px;
+  }
+
+  .search app-icon {
+    font-size: 1.2rem;
+  }
+}
+
+// Con rótulo se lee como un campo: filete y fondo, para que se vea que se escribe.
+@mixin field {
+  .search {
+    width: auto;
+    margin-inline-end: 0;
+    padding-inline: var(--sp-3);
+    border-color: var(--c-hairline-strong);
+    border-radius: var(--r-pill);
+    background: rgb(255 255 255 / 0.6);
+    color: var(--c-text);
+
+    &:hover {
+      border-color: var(--c-primary-soft);
+      background: var(--c-bg-2);
+    }
+  }
+
+  .search app-icon {
+    font-size: 1.05rem;
+    color: var(--c-primary);
+  }
+
+  .search__label {
+    display: inline;
+  }
+}
+
+@include between('sm', 'lg') {
+  @include field;
+
+  .search {
+    height: 2.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  @include field;
+}
+
+@media (min-width: 1520px) and (hover: hover) and (pointer: fine) {
+  .search__kbd {
+    display: inline;
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--c-hairline-strong);
+    border-radius: 5px;
+    background: var(--c-bg);
+    color: var(--c-muted);
+    font-family: inherit;
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+}
+
+@include motion-reduce {
+  .search {
+    transition: none;
+  }
+}

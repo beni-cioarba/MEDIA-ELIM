@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { skip } from 'rxjs/operators';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../core/church.config';
 import { APP_PATHS } from '../../core/navigation/app-paths';
@@ -46,6 +48,7 @@ export class TalentContestComponent {
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
   private readonly location = inject(Location);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly config = this.contest.config;
   protected readonly phases = this.contest.phases;
@@ -53,7 +56,7 @@ export class TalentContestComponent {
 
   /** Categoría elegida: la de la URL o la primera. */
   protected readonly category = signal(
-    contestCategory(inject(ActivatedRoute).snapshot.queryParamMap.get(CATEGORY_PARAM)).id,
+    contestCategory(this.route.snapshot.queryParamMap.get(CATEGORY_PARAM)).id,
   );
 
   /** «talantulinnegot.com»: el dominio a la vista, para saber adónde se va. */
@@ -83,6 +86,13 @@ export class TalentContestComponent {
   );
 
   constructor() {
+    // Otra categoría por enlace estando ya aquí (el buscador de la web): el
+    // router reutiliza el componente.
+    this.route.queryParamMap.pipe(skip(1), takeUntilDestroyed()).subscribe((params) => {
+      const id = params.get(CATEGORY_PARAM);
+      if (id) this.category.set(contestCategory(id).id);
+    });
+
     // La URL sigue a la categoría sin navegar (el router volvería arriba).
     // La primera ejecución es la carga: la URL ya es la que es.
     let initial = true;

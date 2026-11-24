@@ -128,7 +128,8 @@
   @media (max-width: 47.99rem) {
     --brand-seal-gap: 0.18;
   }
-  @media (max-width: 23.43rem) {
+  // Desde el buscador (24/11/2026) el sello no cabe por debajo de 480 px.
+  @media (max-width: 29.99rem) {
     --brand-seal-display: none;
   }
 
@@ -427,10 +428,23 @@
   }
 }
 
-// Con el menú de escritorio oculto, la columna central vacía seguía cobrando
-// sus dos huecos: a 320 px eso era lo que echaba la marca encima de las
-// acciones. Dos columnas y un hueco menor; la pastilla del directo se queda en
-// el punto que late (sigue siendo un enlace con nombre accesible).
+.nav__live-short {
+  display: none;
+}
+
+// ---- Acciones --------------------------------------------------------
+.nav__actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: var(--sp-2);
+}
+
+// Teléfono. Con el menú de escritorio oculto, la columna central vacía seguía
+// cobrando sus dos huecos. El directo lleva siempre rótulo (una palabra en los
+// más estrechos: «Live» / «Directo»): antes se quedaba en un punto dorado que
+// nadie sabía qué era. Los iconos van juntos (su caja de 44 px ya trae el aire)
+// y el del menú se alinea por su dibujo con el borde de la página.
 @include until('xs') {
   .nav__inner {
     grid-template-columns: auto auto;
@@ -441,23 +455,55 @@
     display: none;
   }
 
-  .nav__live {
-    width: 2.125rem;
-    padding-inline: 0;
-    justify-content: center;
+  .nav__actions {
+    gap: 0;
   }
 
-  .nav__live-label {
-    @include visually-hidden;
+  .nav__live {
+    margin-inline-end: var(--sp-1);
   }
 }
 
-// ---- Acciones --------------------------------------------------------
-.nav__actions {
-  display: flex;
-  align-items: center;
-  justify-self: end;
-  gap: var(--sp-2);
+@include until('lg') {
+  .nav__burger {
+    margin-inline-end: -10px;
+  }
+}
+
+// Por debajo de 430 px el rótulo entero cabe, pero justo: la palabra corta deja
+// aire entre la marca y las acciones.
+@media (max-width: 429.98px) {
+  .nav__live-label {
+    display: none;
+  }
+
+  .nav__live-short {
+    display: inline;
+  }
+}
+
+// Teléfonos de menos de 360 px: el idioma sale de la barra. Sigue en el cajón,
+// a un toque y siempre a la vista (pie fijo).
+@media (max-width: 359.98px) {
+  .nav__lang {
+    display: none;
+  }
+}
+
+// El nombre entero del idioma donde sobra sitio: tableta y pantallas anchas.
+@mixin lang-name {
+  .nav__lang {
+    --lang-name: inline;
+    --lang-code: none;
+  }
+}
+
+@include between('sm', 'lg') {
+  @include lang-name;
+}
+
+@media (min-width: 1440px) {
+  @include lang-name;
 }
 
 // Botón de menú (móvil). Botón nativo con las medidas del botón de icono de

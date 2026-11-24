@@ -49,9 +49,11 @@
       </ul>
     </nav>
 
-    <!-- Acciones. Orden deliberado: primero las llamadas a la acción (de menor
-         a mayor peso visual), después las utilidades. Así el ojo termina el
-         recorrido en «En directo», que es la conversión principal. -->
+    <!-- Acciones. El mismo orden en todos los anchos (y por tanto al tabular):
+         primero lo que se hace —donar, ver el directo—, después las utilidades
+         de menos a más uso: idioma, buscador y, en el móvil, el menú. Lupa y
+         menú juntos y en la esquina: es donde se buscan y donde llega el
+         pulgar (medido en otras webs: `docs/ai/15-navigation.md`). -->
     <div class="nav__actions">
       @if (supportCta) {
         <a
@@ -75,10 +77,14 @@
         >
           <span class="nav__live-dot" aria-hidden="true"></span>
           <span class="nav__live-label">{{ liveCta.labelKey | translate }}</span>
+          <!-- En el teléfono, una palabra: un punto solo no dice qué es. -->
+          <span class="nav__live-short">{{ 'nav.live_short' | translate }}</span>
         </a>
       }
 
-      <app-lang-switcher />
+      <app-lang-switcher class="nav__lang" />
+
+      <app-search-button />
 
       <button
         type="button"

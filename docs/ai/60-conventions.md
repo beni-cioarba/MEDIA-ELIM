@@ -75,6 +75,7 @@ prefijo `iglesia-redes.`:
 | -------------------------------------- | ---------------------------------- |
 | `iglesia-redes.lang`                   | Idioma elegido                     |
 | `iglesia-redes.presentation.blocks`    | Overrides manuales de bloques      |
+| `iglesia-redes.search.recent`          | Últimas 5 búsquedas (se borran desde el buscador) |
 
 ## Idioma del código
 

@@ -14,7 +14,7 @@ import {
  * En el diccionario principal quedan sólo nombre y entradilla de cada
  * departamento (los usan el menú, el cajón y el panel de la cabecera).
  */
-const loadDepartments: TranslationPackLoader = async (lang) => {
+export const loadDepartments: TranslationPackLoader = async (lang) => {
   const pack =
     lang === 'es'
       ? await import('../../../assets/i18n/departments.es.json')

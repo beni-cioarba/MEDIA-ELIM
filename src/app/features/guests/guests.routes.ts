@@ -8,6 +8,7 @@ const guests = () => import('./guests.component').then((m) => m.GuestsComponent)
 const resolve = { i18n: guestsTranslationsResolver, about: routePacks('about') };
 
 export const GUESTS_ROUTES: ModuleRoutes = {
+  search: () => import('./guests.search').then((m) => m.GUESTS_SEARCH),
   bare: [
     pageRoute(GUESTS_PAGES.qr, {
       loadComponent: () => import('./guests-qr/guests-qr.component').then((m) => m.GuestsQrComponent),

@@ -1,206 +1,70 @@
-import { ChangeDetectionStrategy, Component, inject, signal, HostListener, ElementRef, OnInit } from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AppLanguage, LanguageService } from '../../core/services/language.service';
 
-interface LangOption {
-  readonly code: AppLanguage;
-  readonly label: string;
-  readonly svgFlagRaw: string;
-  svgFlag?: SafeHtml;
-}
+/** Cada idioma, en su propio nombre: lo reconoce quien lo necesita. */
+const LANGUAGE_NAMES: Readonly<Record<AppLanguage, string>> = { ro: 'Română', es: 'Español' };
 
+/**
+ * Cambio de idioma. Texto, sin bandera ni desplegable (24/11/2026).
+ *
+ * Con **dos** idiomas no hay nada que elegir de una lista: basta con ofrecer el
+ * otro. Es lo que hacen las webs bilingües de referencia (Canada.ca: «Français»
+ * en escritorio, «FR» en el teléfono). Antes era bandera + código + galón: 80 px
+ * y dos toques para un control secundario; ahora son 40 px y un toque. Y una
+ * bandera es un país, no una lengua.
+ *
+ *  · `toggle` (cabecera): sólo el otro idioma. Enseña el código o el nombre
+ *    entero según `--lang-name` / `--lang-code` del contenedor.
+ *  · `segmented` (cajón): los dos, con el activo señalado.
+ */
 @Component({
-    selector: 'app-lang-switcher',
-    imports: [TranslatePipe],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
-    <div class="lang-dropdown" [class.is-open]="isOpen()">
-      <button
-        type="button"
-        class="lang-dropdown__toggle"
-        (click)="toggleDropdown()"
-        [attr.aria-expanded]="isOpen()"
-        [attr.aria-label]="'lang.label' | translate"
+  selector: 'app-lang-switcher',
+  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    @if (variant() === 'segmented') {
+      <div class="seg" role="group" [attr.aria-label]="'lang.label' | translate">
+        @for (code of lang.supported; track code) {
+          <button
+            type="button"
+            class="seg__option"
+            [attr.lang]="code"
+            [attr.aria-pressed]="lang.current() === code"
+            (click)="use(code)"
+          >
+            {{ names[code] }}
+          </button>
+        }
+      </div>
+    } @else {
+      <!-- Por posición: al cambiar, el botón es el mismo y no pierde el foco. -->
+      @for (code of others(); track $index) {
+        <button
+          type="button"
+          class="lang"
+          [attr.lang]="code"
+          [attr.aria-label]="names[code]"
+          [title]="names[code]"
+          (click)="use(code)"
         >
-        <span class="lang-flag" [innerHTML]="activeOption().svgFlag" aria-hidden="true"></span>
-        <span class="lang-code">{{ activeOption().code.toUpperCase() }}</span>
-        <svg class="lang-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
-    
-      @if (isOpen()) {
-        <div class="lang-dropdown__menu">
-          @for (opt of options; track opt) {
-            <button
-              type="button"
-              class="lang-dropdown__item"
-              [class.lang-dropdown__item--active]="lang.current() === opt.code"
-              (click)="selectLang(opt.code)"
-              [title]="opt.label"
-              >
-              <span class="lang-flag" [innerHTML]="opt.svgFlag" aria-hidden="true"></span>
-              <span class="lang-label">{{ opt.label }}</span>
-            </button>
-          }
-        </div>
+          <span class="lang__name">{{ names[code] }}</span>
+          <span class="lang__code">{{ code }}</span>
+        </button>
       }
-    </div>
-    `,
-    styles: [
-        `
-      :host {
-        display: block;
-        position: relative;
-      }
-      .lang-dropdown {
-        position: relative;
-      }
-      /*
-       * Control de utilidad, no llamada a la acción: **sin fondo y sin borde**.
-       * Era una píldora de 101 px con tinte dorado y filete propio, así que en
-       * la cabecera competía en peso con el botón de directo siendo lo menos
-       * importante de la fila. Ahora pesa lo que debe: bandera, código y
-       * chevron, y el realce sólo al apuntarlo.
-       */
-      .lang-dropdown__toggle {
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        height: var(--nav-control-h, 2.125rem);
-        padding-inline: 0.5rem;
-        border-radius: var(--r-md, 8px);
-        background: transparent;
-        border: 0;
-        color: var(--c-text);
-        cursor: pointer;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        transition:
-          background 160ms cubic-bezier(0.2, 0, 0, 1),
-          color 160ms cubic-bezier(0.2, 0, 0, 1);
-      }
-      .lang-dropdown__toggle:hover, .lang-dropdown.is-open .lang-dropdown__toggle {
-        background: var(--c-veil, rgba(26, 54, 93, 0.05));
-        color: var(--c-primary, #1a365d);
-      }
-      .lang-chevron {
-        transition: transform 0.2s ease;
-        opacity: 0.7;
-      }
-      .lang-dropdown.is-open .lang-chevron {
-        transform: rotate(180deg);
-      }
-      .lang-dropdown__menu {
-        position: absolute;
-        top: calc(100% + 0.5rem);
-        right: 0;
-        min-width: 140px;
-        background: rgba(255, 255, 255, 0.97);
-        border: 1px solid rgba(26, 54, 93, 0.14);
-        border-radius: 12px;
-        padding: 0.4rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.2rem;
-        box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        z-index: 50;
-        animation: drop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        transform-origin: top right;
-      }
-      @keyframes drop-in {
-        from { opacity: 0; transform: scale(0.95) translateY(-5px); }
-        to { opacity: 1; transform: scale(1) translateY(0); }
-      }
-      .lang-dropdown__item {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.6rem 0.8rem;
-        border-radius: 8px;
-        background: transparent;
-        border: none;
-        color: rgba(45, 55, 72, 0.8);
-        cursor: pointer;
-        text-align: left;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        width: 100%;
-      }
-      .lang-dropdown__item:hover {
-        background: rgba(212, 175, 55, 0.12);
-        color: var(--c-text);
-      }
-      .lang-dropdown__item--active {
-        background: rgba(212, 175, 55, 0.18);
-        color: var(--c-gold-deep);
-        font-weight: 600;
-      }
-      .lang-flag {
-        display: inline-flex;
-        width: 20px;
-        height: 14px;
-        border-radius: 2px;
-        overflow: hidden;
-        box-shadow: 0 0 0 1px rgba(26, 54, 93, 0.18);
-        flex-shrink: 0;
-      }
-      .lang-flag :global(svg),
-      .lang-flag svg { width: 100%; height: 100%; display: block; object-fit: cover; }
-    `,
-    ]
-})
-export class LangSwitcherComponent implements OnInit {
-  protected readonly lang = inject(LanguageService);
-  private readonly elementRef = inject(ElementRef);
-  private readonly sanitizer = inject(DomSanitizer);
-  
-  protected readonly isOpen = signal(false);
-
-  protected readonly options: LangOption[] = [
-    {
-      code: 'ro',
-      label: 'Română',
-      svgFlagRaw:
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="3" height="2" fill="#002B7F"/><rect width="2" height="2" x="1" fill="#FCD116"/><rect width="1" height="2" x="2" fill="#CE1126"/></svg>',
-    },
-    {
-      code: 'es',
-      label: 'Español',
-      svgFlagRaw:
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="3" height="2" fill="#c60b1e"/><rect width="3" height="1" y="0.5" fill="#ffc400"/></svg>',
-    },
-  ];
-
-  ngOnInit() {
-    this.options.forEach(opt => {
-      opt.svgFlag = this.sanitizer.bypassSecurityTrustHtml(opt.svgFlagRaw);
-    });
-  }
-
-  protected activeOption() {
-    return this.options.find((o) => o.code === this.lang.current()) || this.options[0];
-  }
-
-  protected toggleDropdown() {
-    this.isOpen.update((v) => !v);
-  }
-
-  protected selectLang(code: AppLanguage) {
-    this.lang.use(code);
-    this.isOpen.set(false);
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
-      this.isOpen.set(false);
     }
+  `,
+  styleUrl: './lang-switcher.component.scss',
+})
+export class LangSwitcherComponent {
+  protected readonly lang = inject(LanguageService);
+
+  readonly variant = input<'toggle' | 'segmented'>('toggle');
+
+  protected readonly names = LANGUAGE_NAMES;
+  protected readonly others = computed(() => this.lang.supported.filter((code) => code !== this.lang.current()));
+
+  protected use(code: AppLanguage): void {
+    if (code !== this.lang.current()) void this.lang.use(code);
   }
 }

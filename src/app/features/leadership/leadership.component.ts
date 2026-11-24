@@ -9,9 +9,12 @@ import {
   viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { skip } from 'rxjs/operators';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS, blockPath } from '../../core/navigation/app-paths';
 import { LanguageService } from '../../core/services/language.service';
+import { fold } from '../../core/search/search-text';
 import { storyOf } from '../../core/leadership-profiles.config';
 import { citarArticulo } from '../credo/public/credo.data';
 import { HighlightPipe } from './highlight.pipe';
@@ -25,7 +28,6 @@ import {
   PEOPLE_VIEW_PARAM,
   PERSON_CARDS,
   PersonCard,
-  normalize,
   photoGallery,
   splitInTwo,
 } from './public/leadership.view';
@@ -111,7 +113,8 @@ export class LeadershipComponent {
   // Directorio: estado (sale de la URL al entrar)
   // ------------------------------------------------------------------
 
-  private readonly initial = inject(ActivatedRoute).snapshot.queryParamMap;
+  private readonly route = inject(ActivatedRoute);
+  private readonly initial = this.route.snapshot.queryParamMap;
 
   protected readonly view = signal<DirectoryView>(
     this.initial.get('vista') === PEOPLE_VIEW_PARAM ? 'people' : 'areas',
@@ -121,7 +124,7 @@ export class LeadershipComponent {
   protected readonly query = signal(this.initial.get('q') ?? '');
 
   /** Búsqueda normalizada (sin diacríticos), o `''`. */
-  protected readonly needle = computed(() => normalize(this.query().trim()));
+  protected readonly needle = computed(() => fold(this.query().trim()));
 
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
@@ -131,7 +134,7 @@ export class LeadershipComponent {
    */
   private readonly labels = computed(() => {
     this.language.current();
-    const text = (key: string): string => normalize(this.translate.instant(key) as string);
+    const text = (key: string): string => fold(this.translate.instant(key) as string);
     const map = new Map<string, string>();
     for (const area of DIRECTORY) {
       map.set(`area:${area.i18nKey}`, text(`leadership.areas.${area.i18nKey}.name`));
@@ -200,6 +203,17 @@ export class LeadershipComponent {
       ? this.people().length
       : this.directory().reduce((sum, area) => sum + area.departments.length, 0),
   );
+
+  constructor() {
+    // Un enlace a otra búsqueda estando ya aquí (el buscador de la web abre
+    // `?vista=persoane&q=…`): el router reutiliza el componente, así que el
+    // estado se vuelve a leer. Lo que se escribe en la página no pasa por aquí
+    // (`Location.replaceState` no navega).
+    this.route.queryParamMap.pipe(skip(1), takeUntilDestroyed()).subscribe((params) => {
+      this.view.set(params.get('vista') === PEOPLE_VIEW_PARAM ? 'people' : 'areas');
+      this.query.set(params.get('q') ?? '');
+    });
+  }
 
   protected setView(view: DirectoryView): void {
     this.view.set(view);

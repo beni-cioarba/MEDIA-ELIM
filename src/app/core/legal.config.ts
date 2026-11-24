@@ -60,7 +60,7 @@ export const LEGAL_INFO: LegalInfo = {
   taxId: null,
   registry: null,
   privacyEmail: 'beni.cioarba@gmail.com',
-  updatedOn: '2026-11-19',
+  updatedOn: '2026-11-24',
 };
 
 /**

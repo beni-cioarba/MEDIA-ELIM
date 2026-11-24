@@ -21,12 +21,13 @@ import {
 } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { TranslateLoader, provideTranslateService } from '@ngx-translate/core';
-import { APP_ROUTES } from './app.routes';
+import { APP_ROUTES, APP_SEARCH_SOURCES } from './app.routes';
 import { AppErrorHandler } from './core/errors/app-error-handler';
 import { isChunkLoadError } from './core/errors/chunk-load-error';
 import { StaleBuildRecovery } from './core/errors/stale-build-recovery';
 import { InlineTranslateLoader } from './core/i18n/inline-translate-loader';
 import { PublicPreloadingStrategy } from './core/navigation/public-preloading.strategy';
+import { SEARCH_SOURCES } from './core/search/search.model';
 import { AppTitleStrategy } from './core/seo/app-title.strategy';
 import { LanguageService } from './core/services/language.service';
 import { PwaUpdateService } from './core/services/pwa-update.service';
@@ -104,6 +105,8 @@ export const appConfig: ApplicationConfig = {
       // Comprueba actualizaciones en cuanto la app se estabiliza (≈30s).
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    // Buscador: los proveedores perezosos de cada módulo (docs/ai/78-search.md).
+    { provide: SEARCH_SOURCES, useValue: APP_SEARCH_SOURCES },
     // Visitas sin cookies (GoatCounter) y errores (Sentry): docs/ai/77-analitica-errores.md.
     provideTelemetry(),
     // Título y metaetiquetas por ruta, traducidos y reactivos al idioma.

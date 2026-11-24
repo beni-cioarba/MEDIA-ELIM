@@ -492,9 +492,7 @@
     "note": "Harta vine de la Google Maps: se încarcă doar dacă o ceri."
   },
   "lang": {
-    "label": "Limbă",
-    "es": "Spaniolă",
-    "ro": "Română"
+    "label": "Limbă"
   },
   "share": {
     "button_label": "Distribuie",
@@ -651,6 +649,8 @@
     "primary": "Navigare principală",
     "breadcrumb": "Unde te afli",
     "skip_to_content": "Sari la conținut",
+    "search": "Caută",
+    "search_open": "Caută în site",
     "open_menu": "Deschide meniul",
     "close_menu": "Închide meniul",
     "home": "Acasă",
@@ -678,6 +678,7 @@
     "contact": "Contact",
     "donate": "Donează",
     "live": "În direct",
+    "live_short": "Live",
     "announcements": "Anunțuri",
     "announcements_desc": "Avizele bisericii în vigoare",
     "bible": "Citirea Bibliei",

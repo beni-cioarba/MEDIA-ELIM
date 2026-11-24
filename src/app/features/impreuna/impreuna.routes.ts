@@ -7,6 +7,7 @@ const day = () => import('./impreuna.component').then((m) => m.ImpreunaComponent
 const resolve = { i18n: impreunaTranslationsResolver };
 
 export const IMPREUNA_ROUTES: ModuleRoutes = {
+  search: () => import('./impreuna.search').then((m) => m.IMPREUNA_SEARCH),
   bare: [
     pageRoute(IMPREUNA_PAGES.print, {
       loadComponent: () => import('./impreuna-print/impreuna-print.component').then((m) => m.ImpreunaPrintComponent),

@@ -13,6 +13,7 @@ import {
   personTier,
 } from '../../../core/leadership.config';
 import { hasProfile } from '../../../core/leadership-profiles.config';
+import { fold } from '../../../core/search/search-text';
 import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
 import { PersonPhoto, personPhoto, photoSource, photoThumb } from './person-photo';
 
@@ -84,7 +85,7 @@ function toCard(person: PersonProfile): PersonCard {
     serviceCount: postings.length,
     firstDepartmentKey: postings[0]?.departmentKey ?? null,
     departmentKeys: postings.map((posting) => posting.departmentKey),
-    searchName: normalize(person.name),
+    searchName: fold(person.name),
     link: hasProfile(person.id as PersonId) ? personLink(person.id) : null,
   };
 }
@@ -191,51 +192,6 @@ export const LEADERSHIP_STATS = {
   departments: SERVICE_AREAS.reduce((sum, area) => sum + area.departments.length, 0),
   serving: PERSON_CARDS.filter((card) => card.serviceCount > 0).length,
 } as const;
-
-// ---------------------------------------------------------------------
-// Búsqueda
-// ---------------------------------------------------------------------
-
-/** Minúsculas y sin diacríticos: «tomoiaga» encuentra a «Tomoiagă». */
-export function normalize(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
-}
-
-/** Trozo de texto con o sin coincidencia, para resaltar con `<mark>`. */
-export interface TextSegment {
-  readonly text: string;
-  readonly hit: boolean;
-}
-
-/**
- * Parte `text` alrededor de la primera coincidencia de `needle` (ya
- * normalizada), **sin perder los diacríticos del original**: se normaliza
- * carácter a carácter guardando de qué carácter viene cada letra, así
- * «tomo» resalta «Tomo» en «Tomoiagă» y «ana» resalta «ană».
- */
-export function highlight(text: string, needle: string): readonly TextSegment[] {
-  if (!needle) return [{ text, hit: false }];
-  const chars = [...text];
-  const origin: number[] = [];
-  let folded = '';
-  chars.forEach((char, index) => {
-    const part = normalize(char);
-    for (let i = 0; i < part.length; i++) origin.push(index);
-    folded += part;
-  });
-  const at = folded.indexOf(needle);
-  if (at < 0) return [{ text, hit: false }];
-  const start = origin[at];
-  const end = origin[at + needle.length - 1] + 1;
-  return [
-    { text: chars.slice(0, start).join(''), hit: false },
-    { text: chars.slice(start, end).join(''), hit: true },
-    { text: chars.slice(end).join(''), hit: false },
-  ].filter((segment) => segment.text !== '');
-}
 
 // ---------------------------------------------------------------------
 // Directorio en dos columnas

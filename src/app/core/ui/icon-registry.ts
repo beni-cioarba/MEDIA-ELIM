@@ -198,6 +198,8 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   'chevron-right': ['M9 6l6 6-6 6'],
   'arrow-right': ['M5 12h14', 'M13 6l6 6-6 6'],
   menu: ['M4 7h16M4 12h16M4 17h16'],
+  // Lucide «search».
+  search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16', 'M21 21l-4.3-4.3'],
   megaphone: [
     'M3 10v4a1 1 0 0 0 1 1h2.5l6.5 4V5L6.5 9H4a1 1 0 0 0-1 1z',
     'M16.5 9.5a3.5 3.5 0 0 1 0 5',

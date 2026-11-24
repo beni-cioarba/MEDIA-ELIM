@@ -9,7 +9,7 @@ import { AppLanguage, LanguageService } from '../../core/services/language.servi
  * diccionario principal sólo quedan `nav.impreuna*`, `seo.impreuna.*` y el
  * resumen del menú.
  */
-const loadImpreuna: TranslationPackLoader = async (lang) => {
+export const loadImpreuna: TranslationPackLoader = async (lang) => {
   const pack =
     lang === 'es'
       ? await import('../../../assets/i18n/impreuna.es.json')

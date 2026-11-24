@@ -1,4 +1,5 @@
 import { Route, Routes } from '@angular/router';
+import type { SearchProvider } from '../search/search.model';
 import { ModulePage, prerenderPaths } from './module.model';
 
 /** Lo que aporta un módulo al mapa de rutas. */
@@ -7,6 +8,12 @@ export interface ModuleRoutes {
   readonly shell: Routes;
   /** Fuera de la maqueta: herramientas del operador y hojas de imprimir. */
   readonly bare?: Routes;
+  /**
+   * Lo que el módulo aporta al buscador (`<x>.search.ts`), perezoso. Opcional:
+   * sus páginas ya salen solas; esto es para lo que hay **dentro** de ellas.
+   * Receta: `docs/ai/78-search.md`.
+   */
+  readonly search?: () => Promise<SearchProvider>;
 }
 
 /**

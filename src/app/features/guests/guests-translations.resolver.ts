@@ -13,7 +13,7 @@ import { parseGuestLang } from './guests.view';
  * sólo usa esta página oculta. Viajan en su propio chunk; en el diccionario
  * principal quedan sólo `seo.guests.*` y los rótulos de la consola.
  */
-const loadGuests: TranslationPackLoader = async (lang) => {
+export const loadGuests: TranslationPackLoader = async (lang) => {
   const pack =
     lang === 'es'
       ? await import('../../../assets/i18n/guests.es.json')

@@ -9,6 +9,7 @@ const stage: Route['loadComponent'] = () => import('./stage.component').then((m)
 const redirect = (slug: string, to: string): Route => ({ path: `${APP_PATHS.media}/${slug}`, redirectTo: to });
 
 export const STAGE_ROUTES: ModuleRoutes = {
+  search: () => import('./stage.search').then((m) => m.STAGE_SEARCH),
   // Va antes de la maqueta: `media/:blockId` la capturaría como un bloque.
   bare: [
     pageRoute(STAGE_PAGES.projection, {

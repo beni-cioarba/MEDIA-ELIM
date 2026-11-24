@@ -4,6 +4,7 @@ import { DEPARTMENTS_PAGES } from './departments.pages';
 import { departmentsTranslationsResolver } from './departments-translations.resolver';
 
 export const DEPARTMENTS_ROUTES: ModuleRoutes = {
+  search: () => import('./departments.search').then((m) => m.DEPARTMENTS_SEARCH),
   shell: [
     pageRoute(DEPARTMENTS_PAGES.home, {
       loadComponent: () =>

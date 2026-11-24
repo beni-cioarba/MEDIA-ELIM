@@ -1,0 +1,93 @@
+@use 'ds' as *;
+
+:host {
+  display: block;
+  flex: 0 0 auto;
+}
+
+// ---- El otro idioma (cabecera) -----------------------------------------
+// Texto plano: es una utilidad, no una llamada a la acción.
+.lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 44px;
+  padding: 0 var(--sp-1);
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover,
+  &:active {
+    background: var(--c-veil);
+    color: var(--c-primary);
+  }
+
+  @include focus-ring(-2px);
+}
+
+.lang__name {
+  display: var(--lang-name, none);
+  font-weight: 500;
+}
+
+.lang__code {
+  display: var(--lang-code, inline);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@include from('lg') {
+  .lang {
+    height: var(--nav-control-h);
+    padding-inline: var(--sp-2);
+  }
+}
+
+// ---- Los dos (cajón) ---------------------------------------------------
+.seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: var(--c-veil-strong);
+}
+
+.seg__option {
+  min-height: 38px;
+  padding-inline: 0.8rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &[aria-pressed='true'] {
+    background: var(--c-surface);
+    color: var(--c-primary-deep);
+    font-weight: 600;
+    box-shadow: var(--e-1);
+  }
+
+  @include focus-ring(0);
+}
+
+@include motion-reduce {
+  .lang {
+    transition: none;
+  }
+}

@@ -110,6 +110,19 @@ la ruta hija por coincidencia de prefijo.
   En móvil ambas siguen dentro del cajón, que recorre `MAIN_NAV` entero.
 - Separar navegación de acciones es lo que mantiene la lista en cinco enlaces:
   las entradas con `cta` **no** cuentan para el límite de ~7.
+- **Orden de las acciones** (24/11/2026), el mismo en todos los anchos y al
+  tabular: Donează · En directo · idioma · buscador · menú (móvil). Primero lo
+  que se hace, después las utilidades; lupa y menú juntos en la esquina.
+  Mirado en Canada.ca, admin.ch, Vatican News, Life.Church, Elevation y
+  Hillsong: en el teléfono la lupa va junto al menú y nadie usa banderas.
+- **«En directo» lleva siempre rótulo**: entero desde 430 px; debajo, una
+  palabra (`nav.live_short`). Nunca un punto solo.
+- **Idioma** (`app-lang-switcher`): texto, un toque, sin bandera ni desplegable.
+  Con dos idiomas se ofrece **el otro**: código («ES», 40 px) o nombre entero
+  (720–1023 y ≥ 1440). Por debajo de 360 px sale de la barra y queda en el pie
+  fijo del cajón, que en todos los anchos lleva los dos (`variant="segmented"`).
+  Antes: bandera + código + galón, 80 px y dos toques.
+- **Buscador**: formas y holguras en `78-search.md`.
 - **Entre `lg` y `xl`** (09/10/2026, seis enlaces con Departamente): «Acasă»
   sale de la barra (la marca ya lleva a la portada) y los grupos pierden el
   chevron. Medido en castellano: a 1024 sobran 41 px antes de las acciones;
@@ -233,8 +246,8 @@ ancho, así que la cabecera lo regula en `top-nav.component.scss`:
 
 | Ancho | Cabecera |
 |---|---|
-| < 375 px | Sin sello (a 360 px aplastaba el botón «en directo») |
-| 375–767 px | Sello con el aire del filete estrecho (`--brand-seal-gap: 0.18`) |
+| < 480 px | Sin sello (desde el buscador, 24/11/2026, no cabe) |
+| 480–767 px | Sello con el aire del filete estrecho (`--brand-seal-gap: 0.18`) |
 | 768–1023 px | Sello completo |
 | 1024–1111 px y 1280–1359 px | Sin sello: arranques de tramo sin holgura (en ES «Contacto» pisaba «Donativos») |
 | Resto de escritorio | Sello completo (≥ 36 px libres en ES) |

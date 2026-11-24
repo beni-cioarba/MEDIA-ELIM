@@ -7,6 +7,7 @@
  */
 export type IconName =
   | 'home'
+  | 'search'
   | 'users'
   | 'network'
   | 'calendar'

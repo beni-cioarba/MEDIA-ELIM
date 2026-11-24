@@ -16,6 +16,7 @@ import { RouterLink } from '@angular/router';
 import { injectIsBrowser } from '../../core/util/platform';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { APP_PATHS } from '../../core/navigation/app-paths';
+import { fold } from '../../core/search/search-text';
 import { DocTocComponent, TocEntry } from '../../shared/doc-toc/doc-toc.component';
 import { DockActionsService } from '../../shared/floating-actions/dock-actions.service';
 import { DockOverlapService } from '../../shared/floating-actions/dock-overlap.service';
@@ -112,12 +113,7 @@ export class CredoComponent {
    * «salvacion» tiene que encontrar «salvación». Sin esto el buscador parece
    * roto justo en las palabras que más se buscan.
    */
-  private normalizar(texto: string): string {
-    return texto
-      .toLocaleLowerCase()
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '');
-  }
+  private readonly normalizar = fold;
 
   /** Todos los artículos con sus textos ya traducidos. */
   private readonly todos = computed<readonly (ArticleView & { readonly partId: string })[]>(() => {

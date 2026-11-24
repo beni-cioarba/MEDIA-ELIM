@@ -35,6 +35,13 @@ test('las rutas de cada módulo se construyen desde sus páginas (pageRoute)', (
   }
 });
 
+test('el proveedor del buscador de un módulo está en sus rutas', () => {
+  for (const id of readdirSync(FEATURES).filter((dir) => existsSync(join(FEATURES, dir, `${dir}.search.ts`)))) {
+    const routes = readFileSync(join(FEATURES, id, `${id}.routes.ts`), 'utf8');
+    assert.match(routes, new RegExp(`search: \\(\\) => import\\('\\./${id}\\.search'\\)`), `${id}: falta «search» en sus rutas`);
+  }
+});
+
 test('rutas únicas entre todos los módulos', () => {
   const paths = modulePages().map((page) => page.path);
   const repeated = paths.filter((path, index) => paths.indexOf(path) !== index);

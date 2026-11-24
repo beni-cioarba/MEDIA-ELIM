@@ -11,7 +11,7 @@ import {
  * demasiado para el bundle inicial, que se descarga también en la pantalla de
  * proyección del templo. Se cargan como chunk aparte sólo en esta página.
  */
-const loadCredoArticles: TranslationPackLoader = async (lang) => {
+export const loadCredoArticles: TranslationPackLoader = async (lang) => {
   const pack =
     lang === 'es'
       ? await import('../../../assets/i18n/credo-articles.es.json')

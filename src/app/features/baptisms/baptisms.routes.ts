@@ -7,6 +7,7 @@ import { BAPTISMS_PAGES } from './baptisms.pages';
 const baptisms = () => import('./baptisms.component').then((m) => m.BaptismsComponent);
 
 export const BAPTISMS_ROUTES: ModuleRoutes = {
+  search: () => import('./baptisms.search').then((m) => m.BAPTISMS_SEARCH),
   shell: [
     pageRoute(BAPTISMS_PAGES.home, { loadComponent: baptisms, resolve: { i18n: routePacks('baptisms') } }),
     pageRoute(BAPTISMS_PAGES.date, {

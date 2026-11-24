@@ -15,7 +15,8 @@
  *   · textos `seo.<clave>.*` y `<clave>.*` en `ro.json` y `es.json`
  *
  * Con eso la página existe, se precarga, tiene título y descripción, sale en
- * el sitemap y tiene página estática en el despliegue. Lo que queda es
+ * el sitemap, tiene página estática en el despliegue y se encuentra en el
+ * buscador de la cabecera (`docs/ai/78-search.md`). Lo que queda es
  * **decisión editorial**, no fontanería: si va en el menú (una entrada en
  * `core/navigation/navigation.config.ts`) y su contenido.
  *

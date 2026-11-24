@@ -21,6 +21,7 @@ import { UiStore } from '../../core/state/ui.store';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
 import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
+import { SearchButtonComponent } from '../search/search-button.component';
 import { NavPanelComponent } from './nav-panel.component';
 
 /**
@@ -69,6 +70,7 @@ import { NavPanelComponent } from './nav-panel.component';
         IconComponent,
         LangSwitcherComponent,
         BrandLogoComponent,
+        SearchButtonComponent,
         NavPanelComponent,
     ],
     templateUrl: './top-nav.component.html',

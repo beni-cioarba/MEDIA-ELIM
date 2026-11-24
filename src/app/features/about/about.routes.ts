@@ -3,6 +3,7 @@ import { ModuleRoutes, pageRoute } from '../../core/modules/page-route';
 import { ABOUT_PAGES } from './about.pages';
 
 export const ABOUT_ROUTES: ModuleRoutes = {
+  search: () => import('./about.search').then((m) => m.ABOUT_SEARCH),
   shell: [
     pageRoute(ABOUT_PAGES.main, {
       loadComponent: () => import('./about.component').then((m) => m.AboutComponent),

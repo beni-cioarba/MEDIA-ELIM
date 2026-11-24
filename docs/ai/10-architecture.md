@@ -62,6 +62,7 @@ páginas y sus rutas, y de ahí sale todo lo demás.
 | `features/<x>/<x>.pages.ts` | `<X>_PAGES`: ruta, SEO y página estática de cada página. **Datos puros** (sin Angular) | La app y los scripts de Node |
 | `features/<x>/<x>.routes.ts` | `<X>_ROUTES: ModuleRoutes` (`shell` dentro de la maqueta, `bare` sin ella): componente perezoso, resolvers, guardas. Cada ruta con `pageRoute(página, {…})` | `app.routes.ts` |
 | `app.routes.ts` | `MODULES`: **una línea por módulo**; compone lo `bare`, la maqueta con lo `shell` y la 404 | Angular |
+| `features/<x>/<x>.search.ts` | Opcional: lo que el módulo aporta al **buscador**, perezoso (`ModuleRoutes.search`). Sus páginas salen solas | `SearchService` (`78-search.md`) |
 | `features/<x>/public/` | Lo que la feature ofrece a otras (tarjeta de anuncio que pinta la proyección, datos del credo…). Lo demás es privado | Otras features |
 
 Derivado (nadie lo escribe a mano):

@@ -492,9 +492,7 @@
     "note": "El mapa es de Google Maps: sólo se carga si lo pides."
   },
   "lang": {
-    "label": "Idioma",
-    "es": "Español",
-    "ro": "Rumano"
+    "label": "Idioma"
   },
   "share": {
     "button_label": "Compartir",
@@ -651,6 +649,8 @@
     "primary": "Navegación principal",
     "breadcrumb": "Dónde estás",
     "skip_to_content": "Saltar al contenido",
+    "search": "Buscar",
+    "search_open": "Buscar en la web",
     "open_menu": "Abrir el menú",
     "close_menu": "Cerrar el menú",
     "home": "Inicio",
@@ -678,6 +678,7 @@
     "contact": "Contacto",
     "donate": "Donativos",
     "live": "En directo",
+    "live_short": "Directo",
     "announcements": "Anuncios",
     "announcements_desc": "Avisos de la iglesia en vigor",
     "bible": "Lectura bíblica",

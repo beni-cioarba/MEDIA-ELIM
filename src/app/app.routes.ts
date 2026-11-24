@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ModuleRoutes } from './core/modules/page-route';
+import type { SearchSource } from './core/search/search.model';
 import { ABOUT_ROUTES } from './features/about/about.routes';
 import { ANNOUNCEMENTS_ROUTES } from './features/announcements/announcements.routes';
 import { BAPTISMS_ROUTES } from './features/baptisms/baptisms.routes';
@@ -55,6 +56,14 @@ const MODULES: readonly ModuleRoutes[] = [
   LEGAL_ROUTES,
   STYLEGUIDE_ROUTES,
 ];
+
+/**
+ * Lo que cada módulo aporta al buscador, perezoso (`SEARCH_SOURCES`). El id es
+ * el de su primera página: sólo sirve de prefijo y para el registro de errores.
+ */
+export const APP_SEARCH_SOURCES: readonly SearchSource[] = MODULES.flatMap((module) =>
+  module.search ? [{ id: module.shell[0]?.path ?? '', load: module.search }] : [],
+);
 
 /**
  * Mapa de rutas: primero lo que va **sin maqueta** (panel de control, ventana

@@ -43,9 +43,17 @@ const LOADERS = {
     lang === 'es' ? import('../../../assets/i18n/donate.es.json') : import('../../../assets/i18n/donate.ro.json'),
   baptisms: (lang: string) =>
     lang === 'es' ? import('../../../assets/i18n/baptisms.es.json') : import('../../../assets/i18n/baptisms.ro.json'),
+  // No es de una página: los textos del buscador, que se piden al abrirlo.
+  search: (lang: string) =>
+    lang === 'es' ? import('../../../assets/i18n/search.es.json') : import('../../../assets/i18n/search.ro.json'),
 } as const;
 
 export type RoutePackId = keyof typeof LOADERS;
+
+/** Descarga de un paquete por su id, para pedirlo fuera de una ruta (el buscador). */
+export function routePackLoader(id: RoutePackId): TranslationPackLoader {
+  return async (lang) => (await LOADERS[id](lang)).default as unknown as TranslationObject;
+}
 
 /**
  * `resolve` de ruta que carga los paquetes antes de activar la página, así
@@ -58,13 +66,7 @@ export type RoutePackId = keyof typeof LOADERS;
 export function routePacks(...ids: readonly RoutePackId[]): ResolveFn<boolean> {
   return async () => {
     const packs = inject(TranslationPackService);
-    await Promise.all(
-      ids.map((id) => {
-        const loader: TranslationPackLoader = async (lang) =>
-          (await LOADERS[id](lang)).default as unknown as TranslationObject;
-        return packs.load(id, loader);
-      }),
-    );
+    await Promise.all(ids.map((id) => packs.load(id, routePackLoader(id))));
     return true;
   };
 }
