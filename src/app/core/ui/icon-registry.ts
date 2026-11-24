@@ -197,7 +197,9 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   'chevron-left': ['M15 6l-6 6 6 6'],
   'chevron-right': ['M9 6l6 6-6 6'],
   'arrow-right': ['M5 12h14', 'M13 6l6 6-6 6'],
-  menu: ['M4 7h16M4 12h16M4 17h16'],
+  // Tres líneas iguales (Lucide «menu»): 18 × 14 a 24 px. Medido en
+  // `docs/ai/15-navigation.md` → «Icono del menú».
+  menu: ['M4 6h16M4 12h16M4 18h16'],
   // Lucide «search».
   search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16', 'M21 21l-4.3-4.3'],
   megaphone: [

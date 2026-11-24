@@ -122,6 +122,12 @@ la ruta hija por coincidencia de prefijo.
   (720–1023 y ≥ 1440). Por debajo de 360 px sale de la barra y queda en el pie
   fijo del cajón, que en todos los anchos lleva los dos (`variant="segmented"`).
   Antes: bandera + código + galón, 80 px y dos toques.
+- **Icono del menú** (24/11/2026): tres líneas iguales, 18 × 14 px, trazo 2, caja
+  de 44. Medido en otras webs: GitHub 14 × 12, Life.Church 15 × 10, Notion
+  19 × 16, Shopify 18 × 14; dos líneas sólo en marcas tecnológicas (Vercel,
+  Linear) y Hillsong; la escalonada, sólo en Vatican News y con rótulo (sin él
+  se lee «ordenar» o «alinear»). Antes: 15,4 × 9,6 con trazo 1,7, más pequeño y
+  fino que la lupa. Lupa y menú pesan lo mismo y el menú acaba en el margen.
 - **Buscador**: formas y holguras en `78-search.md`.
 - **Entre `lg` y `xl`** (09/10/2026, seis enlaces con Departamente): «Acasă»
   sale de la barra (la marca ya lleva a la portada) y los grupos pierden el

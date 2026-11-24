@@ -27,7 +27,7 @@ import { SearchLauncher } from './search-launcher.service';
       (pointerenter)="launcher.preload()"
       (focus)="launcher.preload()"
     >
-      <app-icon name="search" />
+      <app-icon name="search" [strokeWidth]="2" />
       <span class="search__label" aria-hidden="true">{{ 'nav.search' | translate }}</span>
       <kbd class="search__kbd" aria-hidden="true">{{ mac() ? '⌘ K' : 'Ctrl K' }}</kbd>
     </button>

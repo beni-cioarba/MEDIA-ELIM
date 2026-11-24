@@ -131,6 +131,18 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     focus: 'top',
   },
   {
+    // Los candidatos del botez del 22/11/2026, a continuación de los de mayo
+    // (petición del usuario, 24/11/2026). Los mismos ficheros que la galería.
+    id: 'hero_baptism_candidates_2026_11',
+    i18nKey: 'baptism_candidates_2026_11',
+    image: 'assets/drive-media/candidati_botez_2026_11.webp',
+    medium: 'assets/drive-media/candidati_botez_2026_11-960.webp',
+    thumb: 'assets/drive-media/candidati_botez_2026_11-thumb.webp',
+    tone: '#ab9fa3',
+    // Las caras, en el tercio de arriba; abajo sólo hay sillas y suelo.
+    focus: 'top',
+  },
+  {
     id: 'hero_community',
     i18nKey: 'community',
     image: 'assets/drive-media/revelion_2025.webp',

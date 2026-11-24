@@ -392,8 +392,9 @@
 .nav__live-dot {
   position: relative;
   flex: 0 0 auto;
-  width: 0.5rem;
-  height: 0.5rem;
+  // En px: a 0,5 rem salían 7,7 px y el redondeo lo dejaba ovalado.
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--c-primary-deep);
 }
@@ -440,19 +441,13 @@
   gap: var(--sp-2);
 }
 
-// Teléfono. Con el menú de escritorio oculto, la columna central vacía seguía
-// cobrando sus dos huecos. El directo lleva siempre rótulo (una palabra en los
+// Teléfono. El directo lleva siempre rótulo (una palabra en los
 // más estrechos: «Live» / «Directo»): antes se quedaba en un punto dorado que
 // nadie sabía qué era. Los iconos van juntos (su caja de 44 px ya trae el aire)
 // y el del menú se alinea por su dibujo con el borde de la página.
 @include until('xs') {
   .nav__inner {
-    grid-template-columns: auto auto;
     gap: var(--sp-2);
-  }
-
-  .nav__desktop {
-    display: none;
   }
 
   .nav__actions {
@@ -465,8 +460,19 @@
 }
 
 @include until('lg') {
+  // Sin la lista no hay tercera columna: vacía, cobraba su hueco y las acciones
+  // quedaban 17 px más adentro que la marca (480–1023).
+  .nav__inner {
+    grid-template-columns: auto auto;
+  }
+
+  .nav__desktop {
+    display: none;
+  }
+
   .nav__burger {
-    margin-inline-end: -10px;
+    // (44 − 24) / 2 de la caja + 3 del dibujo: las líneas acaban en el margen.
+    margin-inline-end: -13px;
   }
 }
 
@@ -531,8 +537,9 @@
   @include focus-ring(2px);
 }
 
+// 24 px, no rem: a 1,5 rem quedaba en 23,05 y las líneas caían entre píxeles.
 .nav__burger app-icon {
-  font-size: 1.5rem;
+  font-size: 24px;
   color: var(--c-primary);
 }
 

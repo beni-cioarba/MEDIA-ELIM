@@ -94,7 +94,7 @@
         [attr.aria-label]="(ui.drawerOpen() ? 'nav.close_menu' : 'nav.open_menu') | translate"
         (click)="ui.toggleDrawer()"
       >
-        <app-icon [name]="ui.drawerOpen() ? 'close' : 'menu'" />
+        <app-icon [name]="ui.drawerOpen() ? 'close' : 'menu'" [strokeWidth]="2" />
       </button>
     </div>
   </div>

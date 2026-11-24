@@ -45,7 +45,8 @@
 }
 
 .search app-icon {
-  font-size: 1.3rem;
+  // El mismo peso que el menú, que va al lado: ~18 px de dibujo y trazo 2.
+  font-size: 22px;
 }
 
 .search__label,
