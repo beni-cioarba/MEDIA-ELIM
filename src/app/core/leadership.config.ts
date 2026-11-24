@@ -476,7 +476,13 @@ export const SERVICE_AREAS: readonly ServiceArea[] = [
       {
         id: 'communication_church',
         i18nKey: 'communication_church',
-        members: [{ person: 'naomi-muresan' }, { person: 'natanael-beniamin-cioarba' }, { person: 'ionut-strugaru' }],
+        members: [
+          { person: 'naomi-muresan' },
+          { person: 'natanael-beniamin-cioarba' },
+          { person: 'ionut-strugaru' },
+          { person: 'david-dulca' },
+          { person: 'ruben-istratoaie' },
+        ],
       },
       {
         id: 'communication_youth',
