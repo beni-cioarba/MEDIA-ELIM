@@ -103,7 +103,7 @@ export class TalentContestComponent {
         return;
       }
       const params = new URLSearchParams({ [CATEGORY_PARAM]: id }).toString();
-      this.location.replaceState(`/${APP_PATHS.talentContest}`, params);
+      this.location.replaceState(`/${APP_PATHS.talentContest}`, params, this.location.getState());
     });
   }
 

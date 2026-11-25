@@ -246,7 +246,8 @@ export class LeadershipComponent {
     if (this.view() === 'people') params.set('vista', PEOPLE_VIEW_PARAM);
     const q = this.query().trim();
     if (q) params.set('q', q);
-    this.location.replaceState(`/${APP_PATHS.leadership}`, params.toString());
+    // Con el estado del router: sin él, «atrás» perdía la altura de la página.
+    this.location.replaceState(`/${APP_PATHS.leadership}`, params.toString(), this.location.getState());
   }
 
   protected readonly links = {

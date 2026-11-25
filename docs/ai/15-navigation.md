@@ -143,6 +143,56 @@ de sus páginas (tampoco en la vista previa del arrastre). Hoy sólo
 Departamente: su portada (carrusel con el nombre + fila de acceso rápido) ya
 dice dónde se está. El resto de la web la conserva.
 
+## Atrás / adelante en la app de escritorio (25/11/2026)
+
+La ventana de la app instalada (`display: standalone`) no tiene barra de
+navegador. La cabecera pone las dos flechas: `WindowHistoryService`
+(`core/navigation`) decide **cuándo**, `app-history-nav` las pinta.
+
+| Situación | Flechas | Por qué |
+| --- | --- | --- |
+| App de escritorio (Chrome, Edge, Safari ≥ 26.2 en Mac), tras la primera navegación | **Sí** | Nadie más las pone |
+| App recién abierta, sin historial | No | No hay adónde ir |
+| De vuelta en la primera página | Sí, «atrás» atenuada | «Adelante» sí lleva a algún sitio |
+| Tras recargar (`F5`, versión nueva) | Sí | El historial sigue |
+| Una página abierta en ventana nueva | No | Empieza sin historial; se cierra |
+| Pestaña de cualquier navegador | No | Ya las tiene |
+| Ventana `minimal-ui`; Firefox de Windows (no declara `standalone`) | No | La barra la pone el navegador: dos juegos es peor que ninguno |
+| Teléfono y tableta, también instalada | No | Gesto o botón del sistema |
+| Presentación | No | No hay cabecera |
+| Panel de control, hoja de Împreună | No | Van sin maqueta y tienen su salida (marca → `/media`; «Înapoi») |
+| Visor, buscador, hojas modales | Tapadas | Se cierra primero lo de encima |
+
+- **El historial lo dice la Navigation API** (`canGoBack` / `canGoForward`), no
+  una cuenta propia: sobrevive a recargar, cuenta bien los `replaceUrl` y sólo
+  ve páginas de este sitio («atrás» nunca saca de la app). Sin ella no se
+  ofrecen.
+- **Dónde**: cabecera, no migas (faltan en la portada, en Departamente y fuera
+  del menú), y **siempre pegadas al borde izquierdo de la ventana** (8 px), como
+  en un navegador (petición del usuario, 25/11/2026). La marca se aparta sólo lo
+  que le falte de margen: nada desde 1600 px, 64 px como mucho (una vez, con
+  transición). < 430 px, sólo «atrás»; < 390, el idioma queda en el cajón. El
+  alto de la barra no cambia.
+- Holgura mínima medida (marca o último enlace → primera acción): 33 px (1024
+  ES), 45 (1280 ES), 74 (1440 ES), 29 (430 ES), 15 (320 ES). **Si el menú gana
+  una entrada**, repetir el barrido también con `.nav--history`.
+- `aria-disabled`, no `disabled`: el botón pulsado no pierde el foco.
+- **Descartado**: `minimal-ui` en el manifiesto (da «atrás» y «recargar» sin
+  «adelante», y en Android añade una barra con la dirección) y
+  `window-controls-overlay` (hay que activarlo a mano en cada ventana).
+
+**Que «atrás» funcione bien** (reglas para todo módulo, con o sin flechas):
+
+1. Un cambio que no es una página —filtro, pestaña, ancla— va con `replaceUrl`
+   o `replaceState`, y `replaceState` **conserva el estado**
+   (`history.state`, `location.getState()`): ahí guarda el router qué navegación
+   es. Con `null` se perdía la altura de la página al volver.
+2. Una capa colgada de `<body>` o que sobrevive a la página se cierra con
+   `popstate` (`LazyOverlay`, compartir, hoja de instalar, calendario de
+   Împreună). Antes el visor se quedaba encima de la página anterior.
+3. El Credo no vuelve al píxel sino al artículo del enlace: lo reabre, porque
+   los demás salen plegados.
+
 ## Estado activo: `NavActiveService`
 
 Quién está activo **no** se decide con `routerLinkActive`, sino con

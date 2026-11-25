@@ -379,7 +379,7 @@ export class CredoComponent {
     // El ancla se actualiza igualmente, para que la barra de direcciones
     // coincida con lo que se acaba de copiar. Con la ruta entera: una URL
     // relativa se resolvería contra el `<base href="/">` y borraría la ruta.
-    history.replaceState(null, '', `${location.pathname}${location.search}#${anchor}`);
+    history.replaceState(history.state, '', `${location.pathname}${location.search}#${anchor}`);
 
     this.copiado.set(anchor);
     if (this.tiempoCopiado !== null) clearTimeout(this.tiempoCopiado);

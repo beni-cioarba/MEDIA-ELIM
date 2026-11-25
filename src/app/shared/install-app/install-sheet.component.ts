@@ -41,6 +41,8 @@ export const SHEET_PLATES = ['acasa', 'program', 'anunturi', 'citire', 'direct']
   imports: [TranslatePipe, IconComponent],
   templateUrl: './install-sheet.component.html',
   styleUrl: './install-sheet.component.scss',
+  // «Atrás» cambia la página de debajo: la hoja no se queda encima.
+  host: { '(window:popstate)': 'close()' },
 })
 export class InstallSheetComponent {
   private readonly pwa = inject(PwaInstallService);

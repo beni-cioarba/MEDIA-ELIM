@@ -678,10 +678,10 @@ export const BAPTISMS: readonly Baptism[] = [
     youtubeId: 'fjkcbDouGoQ',
     ministers: ['Marian Condrat'],
     cover: {
-      image: 'assets/drive-media/candidati_botez_2026_11.webp',
-      medium: 'assets/drive-media/candidati_botez_2026_11-960.webp',
-      thumb: 'assets/drive-media/candidati_botez_2026_11-thumb.webp',
-      tone: '#ab9fa3',
+      image: 'assets/drive-media/candidati_botez_2026_11_grup.webp',
+      medium: 'assets/drive-media/candidati_botez_2026_11_grup-960.webp',
+      thumb: 'assets/drive-media/candidati_botez_2026_11_grup-thumb.webp',
+      tone: '#7d7672',
     },
     // Drive: «BOTEZ 22-11-2026»
     driveFolderId: '1sPHtHQvRIKPihxpIWNyVSQOHQxDXSqRB',

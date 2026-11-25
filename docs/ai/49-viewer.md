@@ -97,6 +97,11 @@ Drive, miniaturas de YouTube, avatares que llevan al perfil), el carrusel de
 portada, logotipos, iconos y fondos decorativos (`aria-hidden`). Y nunca en la
 proyección (`[appViewableDisabled]`).
 
+## «Atrás» cierra el visor (25/11/2026)
+
+`LazyOverlay` se cierra con `popstate`: la capa cuelga de `<body>` y se quedaba
+encima de la página anterior (atajo, botón del ratón o gesto).
+
 ## Dónde está puesto hoy
 
 - **Cine suntem** (`/despre-noi`): la foto de «Povestea noastră».

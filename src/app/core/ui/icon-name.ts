@@ -42,6 +42,7 @@ export type IconName =
   | 'chevron-down'
   | 'chevron-left'
   | 'chevron-right'
+  | 'arrow-left'
   | 'arrow-right'
   | 'menu'
   | 'close'

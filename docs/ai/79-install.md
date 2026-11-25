@@ -205,6 +205,11 @@ Medido RO/ES: 360–389 → 36 × 44, holgura mínima 23 px (360 ES; la píldora
 directo cede relleno); 390–719 → 40 × 44, 33 px; 720–1023 → con rótulo, 139 px.
 Por debajo de 360 no cabe: queda en el cajón. El alto de la barra no cambia.
 
+## Dentro de la app de escritorio
+
+Su ventana no tiene barra de navegador: las flechas atrás / adelante las pone la
+cabecera. Cuándo y por qué: `15-navigation.md` → «Atrás / adelante».
+
 ## Service worker
 
 Los dos manifiestos se precachean (3 kB); **las láminas no**

@@ -1,0 +1,67 @@
+@use 'ds' as *;
+
+// Dos botones de 32 px, planos, como las utilidades de la barra. En px: son
+// dibujo y caja fijos, y la cabecera reserva exactamente su ancho.
+:host {
+  display: flex;
+}
+
+.history-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: var(--nav-control-h);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--c-primary);
+  cursor: pointer;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
+
+  &:hover {
+    background: var(--c-veil);
+  }
+
+  &:active {
+    background: var(--c-veil-strong);
+  }
+
+  @include focus-ring(-2px);
+
+  &[aria-disabled] {
+    background: transparent;
+    color: var(--c-faint);
+    opacity: 0.55;
+    cursor: default;
+  }
+}
+
+// La cabecera la retira en ventanas muy estrechas.
+.history-btn--forward {
+  display: var(--history-forward, inline-grid);
+}
+
+.history-btn app-icon {
+  font-size: 18px;
+}
+
+@include motion-safe {
+  :host {
+    animation: history-in 200ms var(--ea-decelerate);
+  }
+}
+
+@include motion-reduce {
+  .history-btn {
+    transition: none;
+  }
+}
+
+@keyframes history-in {
+  from {
+    opacity: 0;
+  }
+}

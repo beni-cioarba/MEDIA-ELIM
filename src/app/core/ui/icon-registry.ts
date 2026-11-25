@@ -196,6 +196,7 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
   // pesan lo mismo ópticamente en la misma retícula de 24.
   'chevron-left': ['M15 6l-6 6 6 6'],
   'chevron-right': ['M9 6l6 6-6 6'],
+  'arrow-left': ['M19 12H5', 'M11 6l-6 6 6 6'],
   'arrow-right': ['M5 12h14', 'M13 6l6 6-6 6'],
   // Tres líneas iguales (Lucide «menu»): 18 × 14 a 24 px. Medido en
   // `docs/ai/15-navigation.md` → «Icono del menú».

@@ -621,6 +621,9 @@
     }
   },
   "nav": {
+    "history": "Historial",
+    "back": "Atrás",
+    "forward": "Adelante",
     "primary": "Navegación principal",
     "breadcrumb": "Dónde estás",
     "skip_to_content": "Saltar al contenido",

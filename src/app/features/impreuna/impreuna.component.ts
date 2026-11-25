@@ -100,6 +100,8 @@ interface FastView {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './impreuna.component.html',
   styleUrl: './impreuna.component.scss',
+  // «Atrás» entre días reutiliza la página: el calendario no se queda abierto.
+  host: { '(window:popstate)': 'closePicker()' },
 })
 export class ImpreunaComponent {
   private readonly seo = inject(SeoService);

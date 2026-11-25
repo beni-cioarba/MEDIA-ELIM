@@ -621,6 +621,9 @@
     }
   },
   "nav": {
+    "history": "Istoric",
+    "back": "Înapoi",
+    "forward": "Înainte",
     "primary": "Navigare principală",
     "breadcrumb": "Unde te afli",
     "skip_to_content": "Sari la conținut",

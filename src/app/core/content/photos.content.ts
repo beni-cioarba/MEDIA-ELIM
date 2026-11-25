@@ -131,15 +131,16 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     focus: 'top',
   },
   {
-    // Los candidatos del botez del 22/11/2026, a continuación de los de mayo
-    // (petición del usuario, 24/11/2026). Los mismos ficheros que la galería.
+    // Botez del 22/11/2026: candidatos y slujitori (foto de grupo, petición del
+    // usuario, 25/11/2026), a continuación de los de mayo. Los mismos ficheros
+    // que la galería y /botezuri.
     id: 'hero_baptism_candidates_2026_11',
     i18nKey: 'baptism_candidates_2026_11',
-    image: 'assets/drive-media/candidati_botez_2026_11.webp',
-    medium: 'assets/drive-media/candidati_botez_2026_11-960.webp',
-    thumb: 'assets/drive-media/candidati_botez_2026_11-thumb.webp',
-    tone: '#ab9fa3',
-    // Las caras, en el tercio de arriba; abajo sólo hay sillas y suelo.
+    image: 'assets/drive-media/candidati_botez_2026_11_grup.webp',
+    medium: 'assets/drive-media/candidati_botez_2026_11_grup-960.webp',
+    thumb: 'assets/drive-media/candidati_botez_2026_11_grup-thumb.webp',
+    tone: '#7d7672',
+    // Las caras, en el 40 % de arriba; abajo sólo hay suelo.
     focus: 'top',
   },
   {

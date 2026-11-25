@@ -69,7 +69,7 @@ salvo que el usuario lo pida expresamente en esa tarea.
 | ---------------------------- | --------------------------------------------------------- |
 | `docs/ai/00-index.md`        | Mapa del repo y dónde vive cada cosa                       |
 | `docs/ai/10-architecture.md` | Rutas, servicios core, flujo de datos, añadir features     |
-| `docs/ai/15-navigation.md`   | Menú, rutas con nombre, layout, enlaces profundos          |
+| `docs/ai/15-navigation.md`   | Menú, rutas con nombre, layout, enlaces profundos, atrás / adelante de la app          |
 | `docs/ai/16-state.md`        | Signals, servicios con estado y SignalStore                |
 | `docs/ai/20-content-i18n.md` | Eventos, redes, programa semanal, traducciones             |
 | `docs/ai/30-presentation.md` | Fullscreen, carrusel, bloques a proyectar, atajos, QR, escala `--pj-u` |

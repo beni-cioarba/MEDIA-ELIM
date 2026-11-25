@@ -20,6 +20,9 @@ export interface OverlayHost {
  * propio chunk y sólo se descarga la primera vez que alguien lo abre. Al
  * cerrar devuelve el foco a quien lo abrió.
  *
+ * «Atrás» (atajo, botón del ratón, gesto) la cierra: va fuera de la página,
+ * así que sin esto se quedaba encima de la página anterior.
+ *
  * Una sola capa abierta a la vez por instancia. Se usa desde los servicios
  * de cada visor (`DocumentViewerService`, `GalleryViewerService`).
  */
@@ -28,6 +31,8 @@ export class LazyOverlay<C extends OverlayHost> {
   private readonly injector = inject(EnvironmentInjector);
   private readonly document = inject(DOCUMENT);
   private current: ComponentRef<C> | null = null;
+
+  private readonly onPopState = (): void => this.close();
 
   constructor(private readonly load: () => Promise<Type<C>>) {}
 
@@ -45,12 +50,14 @@ export class LazyOverlay<C extends OverlayHost> {
     this.appRef.attachView(ref.hostView);
     this.document.body.appendChild(ref.location.nativeElement);
     this.current = ref;
+    this.document.defaultView?.addEventListener('popstate', this.onPopState);
   }
 
   close(): void {
     const ref = this.current;
     if (!ref) return;
     this.current = null;
+    this.document.defaultView?.removeEventListener('popstate', this.onPopState);
     this.appRef.detachView(ref.hostView);
     ref.destroy();
   }

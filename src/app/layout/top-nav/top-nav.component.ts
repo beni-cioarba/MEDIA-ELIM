@@ -17,12 +17,14 @@ import { activeBrandSeal } from '../../core/anniversary.config';
 import { MAIN_NAV } from '../../core/navigation/navigation.config';
 import { NavGroup, isExternalNavItem, isNavGroup } from '../../core/navigation/nav.model';
 import { NavActiveService } from '../../core/navigation/nav-active.service';
+import { WindowHistoryService } from '../../core/navigation/window-history.service';
 import { UiStore } from '../../core/state/ui.store';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { LangSwitcherComponent } from '../../shared/lang-switcher/lang-switcher.component';
 import { BrandLogoComponent } from '../../shared/brand-logo/brand-logo.component';
 import { InstallButtonComponent } from '../install-invite/install-button.component';
 import { SearchButtonComponent } from '../search/search-button.component';
+import { HistoryNavComponent } from './history-nav.component';
 import { NavPanelComponent } from './nav-panel.component';
 
 /**
@@ -73,6 +75,7 @@ import { NavPanelComponent } from './nav-panel.component';
         BrandLogoComponent,
         SearchButtonComponent,
         InstallButtonComponent,
+        HistoryNavComponent,
         NavPanelComponent,
     ],
     templateUrl: './top-nav.component.html',
@@ -84,6 +87,7 @@ export class TopNavComponent {
   private readonly navActive = inject(NavActiveService);
 
   protected readonly ui = inject(UiStore);
+  protected readonly history = inject(WindowHistoryService);
 
   /**
    * Enlaces de contenido. Las llamadas a la acción se filtran fuera: mezclarlas

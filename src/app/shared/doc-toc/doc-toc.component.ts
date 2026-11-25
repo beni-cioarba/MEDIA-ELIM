@@ -248,8 +248,11 @@ export class DocTocComponent {
      * documento —no contra `location.href`—, así que `/marturisirea-de-credinta`
      * se convertía en `/`. Con la ruta comodín de la app (`** → ''`), el
      * siguiente movimiento del router mandaba al usuario a la portada.
+     *
+     * Y se conserva `history.state`: es donde el router guarda qué navegación
+     * es ésta. Con `null`, «atrás» no devolvía al punto de lectura.
      */
-    history.replaceState(null, '', `${location.pathname}${location.search}#${id}`);
+    history.replaceState(history.state, '', `${location.pathname}${location.search}#${id}`);
   }
 
   /**
@@ -462,7 +465,7 @@ export class DocTocComponent {
   protected alPrincipio(evento: Event): void {
     evento.preventDefault();
     scrollTo({ top: 0, behavior: this.movimientoPermitido() ? 'smooth' : 'auto' });
-    history.replaceState(null, '', location.pathname + location.search);
+    history.replaceState(history.state, '', location.pathname + location.search);
   }
 
   /** El índice está activo en esta entrada. */

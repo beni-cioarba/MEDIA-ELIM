@@ -560,6 +560,8 @@ export class ShareButtonComponent {
    * antiguos o entornos donde el CloseWatcher no se dispara.
    */
   @HostListener('document:keydown.escape')
+  // «Atrás» cambia la página de debajo: la dirección ofrecida ya no es ésta.
+  @HostListener('window:popstate')
   protected onEsc(): void {
     if (this.isModalOpen()) this.close();
   }

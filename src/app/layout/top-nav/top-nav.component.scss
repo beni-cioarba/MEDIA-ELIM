@@ -144,6 +144,53 @@
   }
 }
 
+// ---- Atrás / adelante (app instalada en escritorio) --------------------
+// Pegadas al borde izquierdo de la ventana en todos los anchos, donde las pone
+// cualquier navegador (petición del usuario, 25/11/2026). La marca sólo se
+// aparta lo que le falte de margen: nada desde ~1600 px, 64 px como mucho
+// (medidas en `15-navigation.md`).
+.nav {
+  position: relative;
+}
+
+.nav__history {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 8px;
+  align-items: center;
+}
+
+.nav__brand {
+  // 8 + 2 × 32 + 8: donde puede empezar la marca con las dos flechas.
+  --history-end: 80px;
+
+  transition: margin var(--mo-base) var(--ea-standard);
+}
+
+.nav--history .nav__brand {
+  margin-inline-start: max(
+    0px,
+    var(--history-end) - max(var(--page-gutter), (100vw - var(--w-wide)) / 2)
+  );
+}
+
+// Ventana muy estrecha: queda la que se usa.
+@media (max-width: 429.98px) {
+  .nav__brand {
+    --history-end: 46px;
+  }
+
+  .nav__history {
+    --history-forward: none;
+  }
+}
+
+@media (max-width: 389.98px) {
+  .nav--history .nav__lang {
+    display: none;
+  }
+}
+
 // ---- Lista de escritorio --------------------------------------------
 .nav__desktop {
   display: flex;
@@ -565,6 +612,7 @@
   }
 
   .nav,
+  .nav__brand,
   .nav__link,
   .nav__caret,
   .nav__label::after,

@@ -1,7 +1,18 @@
 <a class="u-skip-link" href="#main-content">{{ 'nav.skip_to_content' | translate }}</a>
 
-<header class="nav" [class.nav--scrolled]="ui.scrolled()" [class.nav--open]="openGroup() !== null">
+<header
+  class="nav"
+  [class.nav--scrolled]="ui.scrolled()"
+  [class.nav--open]="openGroup() !== null"
+  [class.nav--history]="history.visible()"
+>
   <div class="nav__inner">
+    <!-- Atrás / adelante: sólo en la app instalada de escritorio, cuya ventana
+         no tiene barra de navegador (`WindowHistoryService`). -->
+    @if (history.visible()) {
+      <app-history-nav class="nav__history" [attr.aria-label]="'nav.history' | translate" />
+    }
+
     <!-- Marca: componente único compartido con el pie y con la proyección
          (`shared/brand-logo`). Ver 45-design-system.md. -->
     <app-brand-logo class="nav__brand" size="context" tone="light" link="/" [seal]="brandSeal" />
