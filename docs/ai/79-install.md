@@ -1,4 +1,4 @@
-# 79 · Instalar la app: hoja del navegador, láminas e invitación
+# 79 · Instalar la app: detector, avisos, hoja del navegador y láminas
 
 Auditoría e implementación del 24/11/2026. Cómo se ofrece instalar la web como
 app en cada dispositivo y de dónde salen las láminas de promoción.
@@ -45,21 +45,24 @@ src/assets/pwa/install/{ro,es}/      Láminas (GENERADAS): .jpg 1080×1920, -wid
 core/install/
   manifest-link.ts                   Enlaza el manifiesto del idioma activo (lo llama LanguageService)
   install-steps.ts                   Pasos por navegador (puro) · cuándo ofrecer Chrome · intent
-  invite-policy.ts                   Cuándo invitar (puro)
-  install-invite.service.ts          La invitación: rutas, scroll y memoria
-core/services/pwa-install.service.ts ¿Tiene sentido ofrecerlo? Aviso nativo y «ya la tengo»
+  install-state.ts                   ⭐ Detector (puro): ¿la tiene? · nombre del evento del censo
+  install-census.service.ts          Censo anónimo: un evento por carga
+  invite-policy.ts                   ⭐ Calendario de avisos (puro)
+  invite-topic.ts                    Qué dice el recordatorio en cada página (puro)
+  install-invite.service.ts          Los avisos: rutas, momento y memoria
+core/services/pwa-install.service.ts Señales del navegador, `state`, `available`, instalar y «ya la tengo»
 core/util/install-platform.ts        Qué navegador es (puro)
 shared/install-app/
   install-launcher.service.ts        ⭐ El único camino para instalar: nativo o nuestra hoja
   install-sheet.component.*          Nuestra hoja (<dialog>), diferida con sus textos
   install-app.component.*            Botón del pie
-layout/install-invite/               La invitación (teléfono y tableta), diferida
+layout/install-invite/               El aviso y el icono de la cabecera (teléfono y tableta), diferidos
 assets/i18n/install.{ro,es}.json     Paquete `install` (en el principal sólo quedan `cta` y `cta_long`)
 ```
 
 Quien quiera ofrecer instalar **llama a `InstallLauncher.start()`**, nunca a
 `PwaInstallService.install()` a pelo: se perdería la guía. Lo usan el pie, la
-última fila del menú del teléfono, la invitación, la tarjeta de Împreună y la
+última fila del menú del teléfono, el aviso, el icono de la cabecera, la tarjeta de Împreună y la
 del aviso de las 08:00 (en iPhone instalar es requisito).
 
 ## Láminas
@@ -103,25 +106,104 @@ de la app instalada). Cambian descripción, atajos y láminas.
 - **iOS**: la app instalada no comparte almacenamiento con Safari, así que se
   abre en rumano la primera vez aunque se instale desde el español.
 
-## Invitación (teléfono y tableta)
+## Detector: quién la tiene y quién no
 
-Tarjeta baja, no modal: no roba el foco ni bloquea. Se cierra con la cruz o
-`Esc`. Reglas (`invite-policy.ts`):
+Ningún navegador lo contesta siempre. `resolveInstallState` junta lo que cada
+uno da y responde `app` · `installed` · `absent` · `unknown`:
 
-- Quien **vuelve otro día**, a los 12 s; en la primera visita, sólo tras 45 s
-  **y** 3 páginas. Una vez al día.
-- Sólo tras bajar 0,6 pantallas (**nunca tapa la portada**) y si el pie, con su
-  botón, no está a la vista.
-- «Ahora no» (o cancelar el diálogo del navegador): 30 días → 90 → un año.
-  Cuatro veces sin tocarla cuenta como «ahora no».
-- Nunca en: escritorio, navegadores integrados, app instalada, presentación,
-  herramientas del operador, `/invitati`, `/doneaza`, `/contact`, `/legal`, ni con un
-  diálogo, el menú o un campo en uso.
+| Señal | Dónde | Vale |
+| --- | --- | --- |
+| `display-mode: standalone` / `navigator.standalone` | Todos | Seguro: está dentro de la app |
+| `appinstalled`, diálogo aceptado | Chromium | Seguro, en esa carga |
+| `beforeinstallprompt` | Chromium | No instalada; borra una marca vieja (la desinstaló). Chrome exige antes un toque y ~30 s en la web: en la primera visita llega tarde |
+| `getInstalledRelatedApps` | Chrome Android ≥ 84, escritorio ≥ 140 | Instalada / no, desde el navegador. Se repite al volver a la pestaña |
+| Marca `elim.pwa.installedAt` (180 días, se renueva al abrir como app) | Chromium: la app y la pestaña **comparten** almacenamiento | Instalada |
+| «Ya la tengo» (la misma marca) | Donde no hay otra cosa | Lo que diga la persona |
+
+| Situación | Se sabe |
+| --- | --- |
+| Android con Chrome / Edge | Sí, dentro y fuera |
+| iPhone / iPad, dentro de la app | Sí |
+| iPhone / iPad, en Safari u otro navegador | **No hay manera**: almacenamiento aislado y sin API. Sólo lo que diga la persona |
+| Samsung Internet, Firefox | Dentro sí; fuera, sólo si se instaló desde ese navegador |
+| Instalada con Chrome y vista con otro navegador, o en otro teléfono | No |
+
+**Quiénes, no; cuántos, sí.** Sin cuentas no se puede saber qué persona la
+tiene, y con un identificador haría falta consentimiento. El censo es anónimo.
+
+Fallos que tenía la detección, corregidos el 24/11/2026:
+- Contaba como app el referente `android-app://` (la pista de las TWA, que aquí
+  no hay): quien llegara desde otra app de Android podía no ver «Instalar».
+- Contaba como app `display-mode: fullscreen`: lo cumple una pestaña con F11.
+- «Ya la tengo» sumaba en `app-instalata`, y aceptar el diálogo sumaba dos veces.
+- La marca caducaba al mes: en iPhone se volvía a pedir a quien ya la tenía.
+
+## Censo (GoatCounter)
+
+`mod-<modo>-<sistema>`, uno por carga, a los 4 s. Sistemas: `android` · `iphone` ·
+`ipad` · `calculator`.
+
+| Modo | Es |
+| --- | --- |
+| `din-aplicatie` | Ha entrado desde la app |
+| `browser-o-are` | En el navegador, y la tiene |
+| `browser-nu-o-are` | En el navegador, y no la tiene |
+| `browser-nu-se-stie` | El navegador no lo dice (iPhone, Firefox, Samsung) |
+| `browser-integrat` | Dentro de Instagram, Facebook… |
+
+**Cómo se lee**: en el panel, filtrar por `mod-`. Uso de la app en Android =
+`din-aplicatie` / suma de los `mod-…-android`. En iPhone, sólo `din-aplicatie`
+frente al resto. Son visitas, no personas. No lee nada guardado en el
+dispositivo (`censusEvent` ignora la marca): la estadística no necesita
+consentimiento.
+
+## Avisos (teléfono y tableta)
+
+Tarjeta baja, **no modal**: no roba el foco ni bloquea. Se cierra con la cruz,
+«Ahora no» o `Esc`. Tres formas:
+
+| Aviso | A quién | Cuándo | Qué dice |
+| --- | --- | --- | --- |
+| **Bienvenida** | Quien no la tiene (o no se sabe), la primera vez | A los 8 s | Que existe la app, y tres cosas que se ganan |
+| **Recordatorio** | Quien ha vuelto **otros días** y sigue sin ella | A los 12 s | Una frase sobre la página: lectura, directo, anuncios, programa; en las demás alternan dos. En iPhone, en la lectura, que el aviso de las 8:00 sólo existe en la app |
+| **Ya la tienes** | Quien la tiene y entra por el navegador | A los 12 s, cada 60 días | Que la abra desde el icono |
+
+| Última respuesta | Siguiente recordatorio |
+| --- | --- |
+| La dejó pasar | 3 · 7 · 14 · 30 · 60 días, habiendo vuelto |
+| «Ahora no», cruz o diálogo cancelado | 14 · 30 · 60 · 90 días, habiendo vuelto dos días |
+| Abrió los pasos | 7 días |
+| «No me lo recuerdes más» (desde el tercer «no») | Un año |
+| «Ya la tengo» (sólo si el navegador no lo sabe) | 180 días |
+
+- Uno al día como mucho. Con el diálogo nativo, el botón instala en un toque;
+  si Chromium lo ofrece con la hoja de pasos abierta, aparece en ella.
+- **Espera** (mira cada 4 s) si hay un diálogo, el menú, el índice de documento,
+  un campo con foco, un vídeo con sonido, el reproductor de YouTube tocado o la
+  pestaña detrás. La portada sí se tapa en parte (decisión del 24/11/2026).
+- Nunca en: escritorio, dentro de la app, presentación, herramientas del
+  operador, `/invitati`, `/doneaza`, `/contact`, `/legal`, ni si el navegador
+  no deja guardar (no se podría respetar un «ahora no»).
+- Navegador integrado: un solo mensaje, «ábrela en tu navegador».
 - El dock flotante se aparta (`--dock-offset`), y la tarjeta cede el sitio al
   índice de documento (`has-doc-panel`).
+- Safari borra lo guardado tras 7 días sin volver (ITP): allí la bienvenida
+  puede repetirse a quien entra muy de tarde en tarde.
 
-Memoria: `iglesia-redes.install.invite` (primer día, último mostrado, rechazos)
-y `elim.pwa.installedAt` (30 días). Declaradas en `/legal`.
+Memoria: `iglesia-redes.install.invite` (días de visita, avisos y respuestas) y
+`elim.pwa.installedAt`. Declaradas en `/legal`.
+
+## Icono de la cabecera
+
+`app-install-button` (< 1024): el acceso permanente mientras no la tenga. El
+aviso informa una vez; el icono se queda y late dos veces al decir «ahora no».
+Solo no bastaba: un glifo sin texto no dice qué es (web.dev propone los dos
+patrones a la vez). Es la **primera** de las acciones y va diferido: aparece en
+el hueco libre y no mueve a las demás.
+
+Medido RO/ES: 360–389 → 36 × 44, holgura mínima 23 px (360 ES; la píldora del
+directo cede relleno); 390–719 → 40 × 44, 33 px; 720–1023 → con rótulo, 139 px.
+Por debajo de 360 no cabe: queda en el cajón. El alto de la barra no cambia.
 
 ## Service worker
 
@@ -130,8 +212,12 @@ Los dos manifiestos se precachean (3 kB); **las láminas no**
 
 ## Eventos (GoatCounter, sin datos)
 
-`instalare-invitatie` · `instalare-invitatie-inchisa` · `instalare-pasi` (nuestra
-hoja) · `instalare-refuzata` (diálogo nativo cancelado) · `app-instalata`.
+Avisos: `instalare-invitatie-prima` · `-amintire` (enseñados) ·
+`instalare-ai-deja-aplicatia` · `instalare-invitatie-acceptata` (pulsó el botón) ·
+`-inchisa` · `-oprita` («no me lo recuerdes más»). Instalación: `instalare-pasi`
+(nuestra hoja) · `instalare-refuzata` (diálogo nativo cancelado) ·
+`app-instalata` (sólo Chromium lo anuncia) · `app-declarata` («ya la tengo»).
+Y el censo, `mod-…`.
 
 ## Comparación (por qué así)
 
@@ -141,12 +227,15 @@ hoja) · `instalare-refuzata` (diálogo nativo cancelado) · `app-instalata`.
 | Sólo hoja propia en todas partes | Un toque de más en Android y peor que la nativa |
 | **Nativa donde existe + hoja propia donde no** | **Elegida**: un toque en Chromium, guía exacta en el resto |
 | `<install>` / `navigator.install()` | Prueba de origen (Chrome / Edge 148–153, «Intent to Ship» en 09/2026). No añade nada a `beforeinstallprompt` para instalarse a sí misma: revisar cuando sea estable |
-| Invitación modal al entrar | Google penaliza los intersticiales y molesta: descartada |
+| Aviso modal al entrar | Google penaliza los intersticiales y molesta: descartado. La bienvenida es una tarjeta baja que no bloquea |
+| Sólo un icono en la cabecera | Nadie sabe qué es hasta que se lo cuentan: va **con** el aviso, no en su lugar |
+| Identificador por dispositivo para saber quién | Exige consentimiento y un servidor; y no diría el nombre: descartado |
 | Recompensa por instalar (como la referencia) | No hay nada que regalar: no se promete |
 
 ## Sin probar en un aparato real
 
-La hoja nativa de Android y los rótulos de los menús (iOS, Samsung, Firefox) se
+El detector (`getInstalledRelatedApps`, almacenamiento compartido, app de iPhone),
+la hoja nativa de Android y los rótulos de los menús (iOS, Samsung, Firefox) se
 han comprobado con emulación, documentación y manuales, **no en un teléfono**.
 Al publicar: un Android con Chrome, un Samsung y un iPhone.
 Progressier avisó (03/2026) de que Play Protect marcaba como inseguras apps

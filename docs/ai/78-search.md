@@ -127,6 +127,9 @@ Holgura = de la marca (o del último enlace) a la primera acción.
 | 1440–1519 | Icono + rótulo | Nombre | Entero | 110 px |
 | ≥ 1520 | + `Ctrl K` (ratón) | Nombre | Entero | 125 px |
 
+Con el icono «Instalar» (teléfono y tableta sin la app) las holguras son otras:
+`79-install.md` → «Icono de la cabecera».
+
 El alto de la barra no cambia en ningún ancho. Orden y criterio:
 `15-navigation.md` → «Reglas del menú».
 

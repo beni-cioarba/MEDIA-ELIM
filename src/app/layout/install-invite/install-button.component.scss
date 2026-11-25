@@ -1,0 +1,110 @@
+@use 'ds' as *;
+
+// =====================================================================
+// Icono «Instalar» de la cabecera. Dos formas, como el buscador:
+//   · icono de 40 × 44 px en el teléfono;
+//   · icono + rótulo en tableta (720–1023).
+// En oro oscuro: es una acción, no una utilidad, pero no compite con la
+// píldora del directo.
+// =====================================================================
+
+:host {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.install-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  width: 40px; // en px: en rem bajaría en pantallas estrechas
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-gold-deep);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--mo-fast) var(--ea-standard);
+
+  &:hover,
+  &:active {
+    background: var(--c-gold-tint);
+  }
+
+  @include focus-ring(-2px);
+}
+
+.install-btn app-icon {
+  font-size: 22px;
+}
+
+.install-btn__label {
+  display: none;
+}
+
+// Galaxy S (360): cada píxel cuenta.
+@media (max-width: 389.98px) {
+  .install-btn {
+    width: 36px;
+  }
+}
+
+@include between('sm', 'lg') {
+  .install-btn {
+    width: auto;
+    height: 2.5rem;
+    padding-inline: var(--sp-3);
+    border: 1px solid var(--c-hairline-strong);
+  }
+
+  .install-btn app-icon {
+    font-size: 1.05rem;
+  }
+
+  .install-btn__label {
+    display: inline;
+  }
+}
+
+@include motion-safe {
+  .install-btn {
+    animation: install-in 280ms var(--ea-decelerate);
+  }
+
+  .install-btn.is-hinting::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border: 2px solid var(--c-gold);
+    border-radius: inherit;
+    opacity: 0;
+    animation: install-hint 900ms var(--ea-decelerate) 250ms 2;
+    pointer-events: none;
+  }
+}
+
+@keyframes install-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes install-hint {
+  0% {
+    opacity: 1;
+    transform: scale(0.7);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}

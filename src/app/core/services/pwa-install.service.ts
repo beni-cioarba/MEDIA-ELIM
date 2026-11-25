@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { censusEvent, resolveInstallState } from '../install/install-state';
 import { detectInstallEnvironment, InstallEnvironment } from '../util/install-platform';
 import { LanguageService } from './language.service';
 import { TelemetryService } from '../telemetry/telemetry.service';
@@ -33,17 +34,22 @@ declare global {
   }
 }
 
-/** Marca de «ya instalada» desde este navegador (Chromium la anuncia con `appinstalled`). */
+/** Marca de «ya instalada»: anunciada por el navegador, abierta como app o dicha por la persona. */
 const INSTALLED_KEY = 'elim.pwa.installedAt';
 /**
- * La marca caduca: si alguien desinstala, el navegador no avisa. Pasado este
- * plazo se vuelve a ofrecer (y si sigue instalada, Chromium no dispara
- * `beforeinstallprompt` y el control se queda oculto igualmente).
+ * La marca caduca: si alguien desinstala, el navegador no avisa. Cada vez que
+ * se abre como app se renueva, y en Chromium un `beforeinstallprompt` la borra
+ * antes. Medio año: en iPhone es lo único que se sabe, y volver a ofrecer cada
+ * mes lo que ya se ha dicho que se tiene, cansa.
  */
-const INSTALLED_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const INSTALLED_TTL_MS = 180 * 24 * 60 * 60 * 1000;
 
-/** Modos de visualización que significan «abierta como aplicación». */
-const APP_DISPLAY_MODES = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'];
+/**
+ * Modos de visualización que significan «abierta como aplicación». Sin
+ * `fullscreen`: también lo cumple una pestaña normal a pantalla completa (F11,
+ * la proyección), y el manifiesto pide `standalone`.
+ */
+const APP_DISPLAY_MODES = ['standalone', 'minimal-ui', 'window-controls-overlay'];
 
 /**
  * Estado de instalación de la web como aplicación (PWA).
@@ -60,7 +66,10 @@ const APP_DISPLAY_MODES = ['standalone', 'fullscreen', 'minimal-ui', 'window-con
  *    instrucciones («Añadir al Dock», «Añadir a la barra de tareas»).
  *  - Escritorio sin instalación posible → no.
  *  - **Instalada, pero abierta en el navegador**: Chromium lo dice
- *    (`getInstalledRelatedApps`, con `related_applications` del manifiesto) → no.
+ *    (`getInstalledRelatedApps`, con `related_applications` del manifiesto, o
+ *    la marca que deja haberla abierto como app) → no.
+ *
+ * Qué se sabe de cada uno lo decide `resolveInstallState` (`state`).
  *
  * Límite conocido e inevitable: **iOS no deja saber desde Safari si la app ya
  * está en la pantalla de inicio**. Allí el control se sigue ofreciendo en el
@@ -85,16 +94,35 @@ export class PwaInstallService {
     this.window?.__elimInstallPrompt ?? null,
   );
   private readonly standalone = signal(this.isStandalone());
-  private readonly installed = signal(this.readInstalledMark());
+  private readonly marked = signal(this.readInstalledMark());
+  private readonly related = signal<boolean | null>(null);
+  private readonly installedNow = signal(false);
+
+  /** Se ha instalado en esta misma carga. */
+  readonly justInstalled = this.installedNow.asReadonly();
+
+  /** Lo que da el navegador en esta carga, sin nada guardado. */
+  private readonly signals = computed(() => ({
+    standalone: this.standalone(),
+    justInstalled: this.installedNow(),
+    prompt: this.deferred() !== null,
+    related: this.related(),
+  }));
+
+  /** El detector: ¿la tiene quien está mirando? */
+  readonly state = computed(() => resolveInstallState({ ...this.signals(), marked: this.marked() }));
+
+  /** Primera respuesta de `getInstalledRelatedApps` (o que no existe). */
+  readonly checked: Promise<void>;
 
   /** El navegador ofrece su diálogo de instalación (Chromium). */
   readonly canPromptNatively = computed(() => this.deferred() !== null);
 
   /** Mostrar el control «Instalar». */
   readonly available = computed(() => {
-    if (this.standalone()) return false;
-    if (this.deferred()) return true;
-    if (this.installed()) return false;
+    if (this.deferred() && !this.standalone()) return true;
+    const state = this.state();
+    if (state === 'app' || state === 'installed') return false;
     const { device, platform } = this.env;
     if (platform === 'mac-safari' || platform === 'desktop-firefox') return true;
     // En escritorio Chromium sin aviso = ya instalada o no instalable.
@@ -103,7 +131,14 @@ export class PwaInstallService {
 
   constructor() {
     const win = this.window;
-    if (!win) return;
+    if (!win) {
+      this.checked = Promise.resolve();
+      return;
+    }
+
+    // En Chromium la pestaña comparte almacenamiento con la app: así el
+    // navegador sabe que se ha abierto como tal.
+    if (this.standalone()) this.saveInstalledMark();
 
     win.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault();
@@ -111,13 +146,18 @@ export class PwaInstallService {
       this.clearInstalledMark();
       this.deferred.set(event as BeforeInstallPromptEvent);
     });
-    win.addEventListener('appinstalled', () => this.markInstalled());
-    if (!this.standalone()) void this.detectInstalled();
+    win.addEventListener('appinstalled', () => this.recordInstall());
+    this.checked = this.standalone() ? Promise.resolve() : this.detectInstalled();
+    // Instalada desde el menú del navegador, o desinstalada, mientras no se miraba.
+    this.document.addEventListener('visibilitychange', () => {
+      if (!this.document.hidden && !this.standalone()) void this.detectInstalled();
+    });
 
     for (const mode of APP_DISPLAY_MODES) {
-      win.matchMedia?.(`(display-mode: ${mode})`).addEventListener?.('change', () =>
-        this.standalone.set(this.isStandalone()),
-      );
+      win.matchMedia?.(`(display-mode: ${mode})`).addEventListener?.('change', () => {
+        // Entrar en pantalla completa cambia el modo, no la ventana.
+        if (!win.matchMedia('(display-mode: fullscreen)').matches) this.standalone.set(this.isStandalone());
+      });
     }
   }
 
@@ -137,7 +177,7 @@ export class PwaInstallService {
       if (outcome === 'accepted') {
         // Se instala en el idioma que se está viendo: que se abra en él.
         this.language.remember();
-        this.markInstalled();
+        this.recordInstall();
       } else {
         this.telemetry.event('instalare-refuzata');
       }
@@ -151,19 +191,26 @@ export class PwaInstallService {
 
   /**
    * «Ya la tengo»: en iOS (y en cualquier navegador que no lo anuncie) sólo lo
-   * sabe la persona. Deja de ofrecerse durante el plazo de la marca.
+   * sabe la persona. Deja de ofrecerse durante el plazo de la marca. No es una
+   * instalación contada: es otro evento.
    */
   confirmInstalled(): void {
-    this.markInstalled();
+    this.telemetry.event('app-declarata');
+    this.saveInstalledMark();
+  }
+
+  /** Nombre del evento anónimo de esta carga (`InstallCensusService`). */
+  census(): string {
+    return censusEvent(this.signals(), this.env);
   }
 
   /** Chromium: ¿está instalada aunque se esté mirando en el navegador? */
   private async detectInstalled(): Promise<void> {
     const nav = this.window?.navigator as RelatedAppsNavigator | undefined;
+    if (!nav?.getInstalledRelatedApps) return;
     try {
-      const apps = await nav?.getInstalledRelatedApps?.();
       // Sólo en memoria: se vuelve a preguntar en cada carga.
-      if (apps?.length) this.installed.set(true);
+      this.related.set((await nav.getInstalledRelatedApps()).length > 0);
     } catch {
       /* fuera del ámbito o sin permiso: como si no se supiera */
     }
@@ -173,17 +220,24 @@ export class PwaInstallService {
     const win = this.window;
     if (!win) return false;
     const nav = win.navigator as Navigator & { standalone?: boolean };
+    // El referente `android-app://` no vale: lo puede poner cualquier app de
+    // Android que abre un enlace (es la pista de las TWA, que aquí no hay).
     return (
       nav.standalone === true ||
-      APP_DISPLAY_MODES.some((mode) => win.matchMedia?.(`(display-mode: ${mode})`).matches) ||
-      this.document.referrer.startsWith('android-app://')
+      APP_DISPLAY_MODES.some((mode) => win.matchMedia?.(`(display-mode: ${mode})`).matches)
     );
   }
 
-  private markInstalled(): void {
-    this.telemetry.event('app-instalata');
+  /** Instalada de verdad. Al aceptar el diálogo llega además `appinstalled`: se cuenta una vez. */
+  private recordInstall(): void {
+    if (!this.installedNow()) this.telemetry.event('app-instalata');
+    this.installedNow.set(true);
     this.deferred.set(null);
-    this.installed.set(true);
+    this.saveInstalledMark();
+  }
+
+  private saveInstalledMark(): void {
+    this.marked.set(true);
     try {
       this.window?.localStorage.setItem(INSTALLED_KEY, String(Date.now()));
     } catch {
@@ -192,7 +246,8 @@ export class PwaInstallService {
   }
 
   private clearInstalledMark(): void {
-    this.installed.set(false);
+    this.marked.set(false);
+    this.installedNow.set(false);
     try {
       this.window?.localStorage.removeItem(INSTALLED_KEY);
     } catch {

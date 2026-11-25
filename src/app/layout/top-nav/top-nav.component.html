@@ -68,6 +68,12 @@
         </a>
       }
 
+      <!-- Instalar, sólo mientras no la tenga (teléfono y tableta). La primera y
+           diferida: aparece en el hueco libre y no mueve a las demás. -->
+      @defer (on idle) {
+        <app-install-button class="nav__install u-mobile-only" />
+      }
+
       @if (liveCta) {
         <a
           class="nav__live"

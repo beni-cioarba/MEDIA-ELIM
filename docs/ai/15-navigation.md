@@ -111,7 +111,7 @@ la ruta hija por coincidencia de prefijo.
 - Separar navegación de acciones es lo que mantiene la lista en cinco enlaces:
   las entradas con `cta` **no** cuentan para el límite de ~7.
 - **Orden de las acciones** (24/11/2026), el mismo en todos los anchos y al
-  tabular: Donează · En directo · idioma · buscador · menú (móvil). Primero lo
+  tabular: Instalar (móvil y tableta, mientras no la tenga: `79-install.md`) · Donează · En directo · idioma · buscador · menú (móvil). Primero lo
   que se hace, después las utilidades; lupa y menú juntos en la esquina.
   Mirado en Canada.ca, admin.ch, Vatican News, Life.Church, Elevation y
   Hillsong: en el teléfono la lupa va junto al menú y nadie usa banderas.

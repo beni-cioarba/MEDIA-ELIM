@@ -30,6 +30,15 @@
     <div class="sheet__body">
       <p class="sheet__lead" id="install-lead">{{ (phone ? 'install.lead' : 'install.lead_desktop') | translate }}</p>
 
+      @if (native()) {
+        <div class="sheet__actions">
+          <button type="button" class="sheet__btn sheet__btn--primary" (click)="installNow()">
+            <app-icon name="install-app" />
+            <span>{{ 'install.invite.cta' | translate }}</span>
+          </button>
+        </div>
+      }
+
       <ol class="sheet__steps">
         @for (step of steps; track step.key; let i = $index) {
           <li class="sheet__step">

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { LanguageService } from './language.service';
+import { TelemetryService } from '../telemetry/telemetry.service';
 import { PwaInstallService } from './pwa-install.service';
 
 /** Un `beforeinstallprompt` de mentira. */
@@ -69,5 +70,61 @@ describe('PwaInstallService', () => {
     expect(ask).toHaveBeenCalledOnce();
     expect(pwa.available()).toBe(false);
     expect(localStorage.getItem('elim.pwa.installedAt')).toBeNull();
+  });
+
+  it('sin ninguna instalada, Chromium dice que no la tiene', async () => {
+    Object.assign(navigator, { getInstalledRelatedApps: vi.fn().mockResolvedValue([]) });
+    const pwa = setup();
+    await pwa.checked;
+    expect(pwa.state()).toBe('absent');
+  });
+
+  it('aceptar el diálogo y `appinstalled` cuentan una sola instalación', async () => {
+    const pwa = setup();
+    const event = vi.spyOn(TestBed.inject(TelemetryService), 'event');
+    window.dispatchEvent(promptEvent('accepted'));
+    await pwa.install();
+    window.dispatchEvent(new Event('appinstalled'));
+    expect(event.mock.calls.filter(([name]) => name === 'app-instalata')).toHaveLength(1);
+    expect(pwa.justInstalled()).toBe(true);
+  });
+
+  it('«ya la tengo» no cuenta como instalación', () => {
+    const pwa = setup();
+    const event = vi.spyOn(TestBed.inject(TelemetryService), 'event');
+    pwa.confirmInstalled();
+    expect(event.mock.calls).toEqual([['app-declarata']]);
+    expect(pwa.state()).toBe('installed');
+  });
+
+  describe('modo de visualización', () => {
+    const original = window.matchMedia;
+    const display = (...modes: string[]) => {
+      window.matchMedia = ((query: string) => ({
+        matches: modes.some((mode) => query === `(display-mode: ${mode})`),
+        media: query,
+        addEventListener: () => undefined,
+      })) as never;
+    };
+    afterEach(() => (window.matchMedia = original));
+
+    it('abierta como app: lo recuerda para cuando se entre por el navegador', () => {
+      display('standalone');
+      expect(setup().state()).toBe('app');
+      expect(localStorage.getItem('elim.pwa.installedAt')).not.toBeNull();
+    });
+
+    it('una pestaña a pantalla completa no es la app', () => {
+      display('fullscreen');
+      expect(setup().state()).toBe('unknown');
+      expect(localStorage.getItem('elim.pwa.installedAt')).toBeNull();
+    });
+
+    it('venir de otra app de Android (`android-app://`) tampoco', () => {
+      display();
+      const referrer = vi.spyOn(document, 'referrer', 'get').mockReturnValue('android-app://com.google.android.gm/');
+      expect(setup().state()).toBe('unknown');
+      referrer.mockRestore();
+    });
   });
 });

@@ -11,11 +11,11 @@
     "copy_link": "Copiar enlace",
     "link_copied": "Enlace copiado",
     "invite": {
-      "title": "Elim, en tu pantalla",
-      "lead": "El programa, los anuncios y la lectura del día, a un toque. Gratis.",
       "cta": "Instalar la app",
       "cta_steps": "Ver cómo se instala",
-      "dismiss": "Ahora no"
+      "dismiss": "Ahora no",
+      "have": "Ya la tengo",
+      "never": "No me lo recuerdes más"
     },
     "plate": {
       "0": "Tu iglesia, a un toque",
@@ -48,6 +48,59 @@
       "firefox_taskbar": "En la barra de direcciones, pulsa el icono <b>Añadir a la barra de tareas</b>",
       "mac_dock": "En Safari: <b>Archivo</b> → <b>Añadir al Dock</b>",
       "desktop": "Pulsa el icono de instalar de la barra de direcciones o, en el menú del navegador, <b>Instalar aplicación</b>"
+    },
+    "device": {
+      "phone": "teléfono",
+      "tablet": "tableta",
+      "desktop": "ordenador"
+    },
+    "welcome": {
+      "title": "Elim Arganda también es una app",
+      "lead": "Puedes instalarla en tu {{device}}: todo es más fácil y rápido que desde el navegador.",
+      "gain": {
+        "tap": "Se abre con un toque",
+        "full": "A pantalla completa, sin navegador",
+        "reading": "La lectura del día, con aviso a las 8:00"
+      }
+    },
+    "inapp": {
+      "title": "Elim Arganda también es una app",
+      "lead": "Desde aquí no se puede instalar: abre la página en tu navegador y la tendrás en tu {{device}}."
+    },
+    "open": {
+      "title": "Ya tienes la app de Elim",
+      "lead": "Ábrela desde tu pantalla de inicio: llegas antes y lo ves todo a pantalla completa.",
+      "ok": "Entendido"
+    },
+    "reminder": {
+      "citire": {
+        "title": "La lectura del día, cada mañana",
+        "lead": "Desde la app la abres con un toque y puedes activar el aviso de las 8:00."
+      },
+      "citire_ios": {
+        "title": "La lectura del día, a las 8:00",
+        "lead": "En iPhone y iPad, el aviso diario sólo funciona desde la app instalada."
+      },
+      "direct": {
+        "title": "Los cultos en directo, a un toque",
+        "lead": "Con la app en tu {{device}} no buscas el enlace: entras directo a la emisión."
+      },
+      "anunturi": {
+        "title": "Los anuncios, siempre a mano",
+        "lead": "Instala la app y los ves con un toque, sin buscar la web."
+      },
+      "program": {
+        "title": "El programa de la semana, en tu pantalla",
+        "lead": "Con la app en tu {{device}} sabes la hora del culto con un toque."
+      },
+      "rapid": {
+        "title": "Más rápido desde la app",
+        "lead": "¿Entras a menudo? Pon Elim en tu {{device}} y llegas con un toque, sin navegador."
+      },
+      "acces": {
+        "title": "Elim, junto a tus otras apps",
+        "lead": "El programa, los anuncios y los directos, más fáciles de encontrar. Gratis, sin cuenta."
+      }
     }
   }
 }

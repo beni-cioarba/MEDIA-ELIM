@@ -92,7 +92,7 @@ salvo que el usuario lo pida expresamente en esa tarea.
 | `docs/ai/76-plan-maestro.md` | **Plan maestro** (auditoría 16/11/2026): fases 0-5, estado de cada una, decisiones |
 | `docs/ai/77-analitica-errores.md` | **Analítica sin cookies y registro de errores**: `core/telemetry`, eventos, qué se envía y qué no |
 | `docs/ai/78-search.md`      | **Buscador de la cabecera**: contrato por módulo (`<x>.search.ts`), receta, privacidad (qué personas NO se indexan), motor, medidas de la cabecera |
-| `docs/ai/79-install.md`     | **Instalar la app**: qué ve cada dispositivo, láminas y manifiesto por idioma (`npm run pwa:install`), hoja de pasos, invitación y sus reglas |
+| `docs/ai/79-install.md`     | **Instalar la app**: detector de quién la tiene, censo anónimo, calendario de avisos, icono de cabecera, qué ve cada dispositivo, láminas y manifiesto por idioma (`npm run pwa:install`), hoja de pasos |
 | `docs/ai/80-faq.md`         | **Întrebări frecvente**: `/intrebari-frecvente`, franja de la portada, preguntas de Invitați; receta de una pregunta nueva, datos vivos, pendientes de la iglesia |
 | `docs/ai/75-plan-evolucion.md` | **Plan por fases**: carga rápida, proyección legible, web compacta, arquitectura modular, Angular 20/zoneless, CI. Leer antes de empezar cualquier fase |
 

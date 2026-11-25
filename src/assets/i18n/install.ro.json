@@ -11,11 +11,11 @@
     "copy_link": "Copiază linkul",
     "link_copied": "Link copiat",
     "invite": {
-      "title": "Elim, pe ecranul tău",
-      "lead": "Programul, anunțurile și citirea zilei, la o atingere. Gratuită.",
       "cta": "Instalează aplicația",
       "cta_steps": "Vezi cum se instalează",
-      "dismiss": "Nu acum"
+      "dismiss": "Nu acum",
+      "have": "O am deja",
+      "never": "Nu-mi mai aminti"
     },
     "plate": {
       "0": "Biserica ta, la o atingere",
@@ -48,6 +48,59 @@
       "firefox_taskbar": "În bara de adrese, apasă iconul <b>Adaugă în bara de activități</b>",
       "mac_dock": "În Safari: <b>Fișier</b> → <b>Adaugă în Dock</b>",
       "desktop": "Apasă iconul de instalare din bara de adrese sau, în meniul browserului, <b>Instalează aplicația</b>"
+    },
+    "device": {
+      "phone": "telefon",
+      "tablet": "tabletă",
+      "desktop": "calculator"
+    },
+    "welcome": {
+      "title": "Elim Arganda e și aplicație",
+      "lead": "O poți instala pe {{device}}: totul e mai ușor și mai rapid decât din browser.",
+      "gain": {
+        "tap": "Se deschide dintr-o atingere",
+        "full": "Pe tot ecranul, fără browser",
+        "reading": "Citirea zilei, cu amintire la 8:00"
+      }
+    },
+    "inapp": {
+      "title": "Elim Arganda e și aplicație",
+      "lead": "De aici nu se poate instala: deschide pagina în browserul tău și o ai pe {{device}}."
+    },
+    "open": {
+      "title": "Ai deja aplicația Elim",
+      "lead": "Deschide-o de pe ecranul principal: ajungi mai repede și vezi totul pe tot ecranul.",
+      "ok": "Am înțeles"
+    },
+    "reminder": {
+      "citire": {
+        "title": "Citirea zilei, în fiecare dimineață",
+        "lead": "Din aplicație o deschizi dintr-o atingere și poți activa amintirea de la 8:00."
+      },
+      "citire_ios": {
+        "title": "Citirea zilei, la 8:00",
+        "lead": "Pe iPhone și iPad, amintirea zilnică funcționează doar din aplicația instalată."
+      },
+      "direct": {
+        "title": "Serviciile în direct, la o atingere",
+        "lead": "Cu aplicația pe {{device}} nu mai cauți linkul: intri direct în transmisiune."
+      },
+      "anunturi": {
+        "title": "Anunțurile, mereu la îndemână",
+        "lead": "Instalează aplicația și le vezi dintr-o atingere, fără să cauți site-ul."
+      },
+      "program": {
+        "title": "Programul săptămânii, pe ecranul tău",
+        "lead": "Cu aplicația pe {{device}} afli ora serviciului dintr-o atingere."
+      },
+      "rapid": {
+        "title": "Mai rapid din aplicație",
+        "lead": "Intri des? Pune Elim pe {{device}} și ajungi dintr-o atingere, fără browser."
+      },
+      "acces": {
+        "title": "Elim, lângă celelalte aplicații",
+        "lead": "Programul, anunțurile și transmisiunile, mai ușor de găsit. Gratuită, fără cont."
+      }
     }
   }
 }

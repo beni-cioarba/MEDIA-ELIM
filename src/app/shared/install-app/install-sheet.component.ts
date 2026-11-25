@@ -52,6 +52,8 @@ export class InstallSheetComponent {
 
   protected readonly host = new URL(PUBLIC_URL).host;
   protected readonly copied = signal(false);
+  /** Chromium puede ofrecer su diálogo con la hoja ya abierta: entonces, un toque. */
+  protected readonly native = this.pwa.canPromptNatively;
 
   private readonly ua = this.document.defaultView?.navigator.userAgent ?? '';
   protected readonly steps = installSteps(this.pwa.env, this.ua);
@@ -69,6 +71,11 @@ export class InstallSheetComponent {
 
   protected close(): void {
     this.dialog().nativeElement.close();
+  }
+
+  /** El aviso del navegador llegó tarde: se lanza desde aquí. */
+  protected async installNow(): Promise<void> {
+    if ((await this.pwa.install()) !== 'guide') this.close();
   }
 
   /** «Ya la tengo»: deja de ofrecerse aquí (iOS no lo dice). */

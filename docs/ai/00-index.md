@@ -26,7 +26,7 @@ src/app/
     top-nav/                Barra superior + `nav-panel` (mega-menú de escritorio, diferido)
     search/                 Buscador: botón (eager), lanzador y diálogo (diferido) — `78-search.md`
     mobile-nav/             Drawer móvil (diferido, cdkTrapFocus, marcas vivas)
-    install-invite/         Invitación a instalar (teléfono y tableta, diferida) — `79-install.md`
+    install-invite/         Aviso e icono de cabecera para instalar (teléfono y tableta, diferidos) — `79-install.md`
     tab-bar/                Barra de pestañas inferior (< lg): una pestaña por bloque de MAIN_NAV
   core/
     church.config.ts        ⭐ Tipos + identidad (canales, contacto, ubicación, donativos); reúne `content/` en `CHURCH_CONFIG`
@@ -52,7 +52,7 @@ src/app/
     youtube.service.ts      Directo y últimas emisiones (JSON estático + API)
     i18n/                   Loader de traducciones embebidas (0 HTTP)
     presentation/blocks.ts  ⭐ Registro de bloques proyectables: orden, título, duración, regla automática
-    install/                Instalar la app: manifiesto por idioma, pasos por navegador, reglas de la invitación — `79-install.md`
+    install/                Instalar la app: detector, censo anónimo, calendario de avisos, pasos por navegador, manifiesto por idioma — `79-install.md`
     search/                 Motor y contrato del buscador; cada módulo aporta su `<x>.search.ts` — `78-search.md`
     modules/                Modelo de módulo (`definePages`) y `pageRoute`
     navigation/             ⭐ Rutas con nombre y árbol de menú

@@ -515,6 +515,22 @@
 // Botón de menú (móvil). Botón nativo con las medidas del botón de icono de
 // Material que había (44 × 44, redondo, sin fondo): sin él, Material no entra
 // en el arranque. El velo al pulsar sustituye al *ripple*.
+.nav__install {
+  // Sin sitio (medido: 320–359) queda en el cajón y en el aviso.
+  @media (max-width: 359.98px) {
+    display: none;
+  }
+}
+
+// 360–389 (Galaxy S): con el icono, la píldora cede aire. Lo mide `78-search.md`.
+@media (max-width: 389.98px) {
+  .nav__actions:has(.nav__install.is-on) .nav__live {
+    gap: var(--sp-1);
+    padding-inline: var(--sp-2);
+    margin-inline-end: 0;
+  }
+}
+
 .nav__burger {
   display: inline-grid;
   place-items: center;

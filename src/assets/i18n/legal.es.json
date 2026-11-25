@@ -27,10 +27,10 @@
       },
       "device": {
         "title": "Preferencias guardadas en tu dispositivo",
-        "body": "El idioma elegido, tu progreso de lectura de la Biblia, las últimas búsquedas en la web, la elección de ver el mapa y si has instalado la app o has cerrado la invitación a instalarla se guardan en tu navegador. No nos llegan, y las borras cuando quieras vaciando los datos del sitio en el navegador."
+        "body": "El idioma elegido, tu progreso de lectura de la Biblia, las últimas búsquedas en la web, la elección de ver el mapa y si has instalado la app, cuántos días has entrado y qué has contestado a la invitación a instalarla se guardan en tu navegador. No nos llegan, y las borras cuando quieras vaciando los datos del sitio en el navegador."
       },
       "no_tracking": "No usamos cookies propias, no seguimos las visitas y no mostramos publicidad.",
-      "no_tracking_counted": "No usamos cookies ni mostramos publicidad. Contamos las visitas de forma anónima, sin cookies y sin guardar la dirección IP: sólo cuántas personas abren cada página, para saber qué usa la iglesia."
+      "no_tracking_counted": "No usamos cookies ni mostramos publicidad. Contamos las visitas de forma anónima, sin cookies y sin guardar la dirección IP: sólo cuántas personas abren cada página y cuántas entran desde la app o desde el navegador, para saber qué usa la iglesia."
     },
     "services": {
       "title": "Servicios externos",

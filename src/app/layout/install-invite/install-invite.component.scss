@@ -1,12 +1,13 @@
 @use 'ds' as *;
 
 // =====================================================================
-// Invitación a instalar — tarjeta baja, no modal
+// Aviso de instalación — tarjeta baja, no modal
 // ---------------------------------------------------------------------
-// Línea propia. Se apoya sobre la barra de pestañas y nunca sobre la portada:
-// sólo sale tras bajar más de media pantalla. Cede el sitio al índice de un
-// documento (`has-doc-panel`), que se abre ahí mismo. En el teléfono ocupa el ancho; en tableta es
-// una tarjeta de 30rem, a la izquierda del dock.
+// Línea propia. Se apoya sobre la barra de pestañas. La bienvenida añade lo que
+// se gana; el recordatorio es la misma tarjeta sin lista. Cede el sitio al
+// índice de un documento (`has-doc-panel`), que se abre ahí mismo. En el
+// teléfono ocupa el ancho; en tableta es una tarjeta de 30rem, a la izquierda
+// del dock. Nunca más de media pantalla (`max-height`, con su propio scroll).
 // =====================================================================
 
 :host {
@@ -14,6 +15,7 @@
 }
 
 $gold: #d4af37;
+$ink-soft: rgba(247, 250, 252, 0.86);
 
 .invite {
   position: fixed;
@@ -21,12 +23,12 @@ $gold: #d4af37;
   inset-inline: max(0.6rem, env(safe-area-inset-left)) max(0.6rem, env(safe-area-inset-right));
   bottom: calc(var(--app-tab-bar-h, 0px) + 0.35rem);
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 0.8rem;
-  row-gap: 0.7rem;
+  gap: 0.75rem;
   max-width: 30rem;
-  padding: 0.8rem;
+  max-height: 55svh;
+  padding: 0.9rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid rgba($gold, 0.34);
   border-radius: 1.25rem;
   background:
@@ -60,6 +62,13 @@ $gold: #d4af37;
   }
 }
 
+.invite__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.8rem;
+}
+
 .invite__app {
   width: 3.5rem;
   height: 3.5rem;
@@ -81,7 +90,7 @@ $gold: #d4af37;
   margin: 0.2rem 0 0;
   font-size: 0.85rem;
   line-height: 1.35;
-  color: rgba(247, 250, 252, 0.86);
+  color: $ink-soft;
 }
 
 .invite__close {
@@ -90,12 +99,12 @@ $gold: #d4af37;
   align-self: start;
   width: 44px; // objetivo táctil, en px: la raíz baja a 15 px en el teléfono
   height: 44px;
-  margin: -0.45rem -0.45rem 0 -0.35rem;
+  margin: -0.5rem -0.5rem 0 -0.35rem;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: rgba(247, 250, 252, 0.86);
+  color: $ink-soft;
   font-size: 1.1rem;
   cursor: pointer;
 
@@ -108,8 +117,50 @@ $gold: #d4af37;
   }
 }
 
+// Lo que se gana: tres columnas iguales, icono encima.
+.invite__gains {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.7rem 0 0;
+  border-block-start: 1px solid rgba(247, 250, 252, 0.14);
+  list-style: none;
+}
+
+.invite__gain {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+  color: rgba(247, 250, 252, 0.94);
+}
+
+.invite__glyph {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: rgba($gold, 0.16);
+  color: #ecd27a;
+  font-size: 1.1rem;
+}
+
+.invite__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem 0.5rem;
+}
+
 .invite__cta {
-  grid-column: 1 / -1;
+  flex: 1 1 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -136,12 +187,46 @@ $gold: #d4af37;
   }
 }
 
-// Teléfono apaisado: una sola fila, para no comerse media pantalla.
+.invite__link {
+  flex: 1 1 0;
+  min-height: 44px;
+  margin-block-end: -0.4rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: $ink-soft;
+  font: 600 0.9rem/1.1 var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+}
+
+// Pantalla baja (320 x 568): sin la lista, para que los botones quepan enteros.
+@media (max-height: 620px) {
+  .invite__gains {
+    display: none;
+  }
+}
+
+// Teléfono apaisado: cabecera y acciones en fila, sin la lista.
 @media (max-height: 480px) {
   .invite {
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
-    max-width: 36rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    max-width: 44rem;
     padding: 0.5rem 0.7rem;
+
+    @include from('md') {
+      width: auto;
+    }
   }
 
   .invite__app {
@@ -149,16 +234,12 @@ $gold: #d4af37;
     height: 2.75rem;
   }
 
-  .invite__cta {
-    grid-column: 3;
-    grid-row: 1;
-    min-height: 44px;
+  .invite__gains,
+  .invite__link {
+    display: none;
   }
 
-  .invite__close {
-    grid-column: 4;
-    grid-row: 1;
-    align-self: center;
-    margin: 0 -0.35rem 0 0;
+  .invite__cta {
+    min-height: 44px;
   }
 }
