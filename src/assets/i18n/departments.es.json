@@ -64,9 +64,20 @@
       "join": "¿Eres joven y quieres crecer en la fe? Ven el viernes por la noche: no hace falta conocer a nadie para sentirte en casa.",
       "cta_friday": "Ven el viernes",
       "meal": {
-        "kicker": "Después del encuentro",
+        "kicker": "Después de cada programa",
         "title": "Quédate a cenar",
-        "lead": "Al terminar el programa ponemos la mesa y cenamos todos juntos: cada viernes la prepara un equipo de jóvenes. No te vayas con prisa; siéntate con alguien nuevo y alarga la noche.",
+        "lead": "Un equipo de jóvenes prepara la mesa y cenamos todos juntos. No te vayas con prisa; siéntate con alguien nuevo y alarga la noche.",
+        "photos_label": "Fotos de la mesa",
+        "photos": {
+          "prepare": {
+            "caption": "El equipo la prepara…",
+            "alt": "Jóvenes colocando la comida y la bebida en las mesas del vestíbulo de la iglesia"
+          },
+          "ready": {
+            "caption": "…y la mesa está lista",
+            "alt": "Las mesas preparadas: aperitivos, bizcochos, fruta, dulces y bebidas"
+          }
+        },
         "chips": {
           "everyone": "Hay sitio para todos",
           "friend": "Trae a un amigo",

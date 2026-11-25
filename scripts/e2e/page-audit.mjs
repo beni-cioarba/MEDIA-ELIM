@@ -167,6 +167,8 @@ export function auditPage(options) {
     if (text.length < 2 || !el || seen.has(el)) continue;
     seen.add(el);
     if (/^(SCRIPT|STYLE|NOSCRIPT|OPTION)$/.test(el.tagName) || !visible(el)) continue;
+    // Control desactivado (un día fuera del plan de lectura): WCAG 1.4.3 lo exime.
+    if (el.closest(':disabled, [aria-disabled="true"]')) continue;
     // Recortado para lectores de pantalla (`u-sr-only`): no se ve, no se mide.
     const box = el.getBoundingClientRect();
     if (box.width <= 1 && box.height <= 1) continue;

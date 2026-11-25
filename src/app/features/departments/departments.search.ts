@@ -69,6 +69,7 @@ function entriesOf(dept: DepartmentConfig, ctx: SearchContext): readonly SearchE
             keywords: altName,
             body: ctx.maybe(`${key}.lead`) ?? '',
           },
+          ...(module.kind === 'weekly' && module.companion === 'youth-meal' ? [mealEntry(dept, ctx)] : []),
         ];
       }
       case 'stories':
@@ -94,4 +95,22 @@ function entriesOf(dept: DepartmentConfig, ctx: SearchContext): readonly SearchE
   });
 
   return [about, ...activities, ...modules];
+}
+
+/** La masa de después del programa: su ancla dentro del encuentro de vineri. */
+function mealEntry(dept: DepartmentConfig, ctx: SearchContext): SearchEntry {
+  const key = `departments.${dept.id}.meal`;
+  return {
+    id: `${dept.id}:meal`,
+    kind: 'department',
+    title: ctx.t(`${key}.title`),
+    altTitle: ctx.alt(`${key}.title`),
+    context: [ctx.t(`departments.${dept.id}.name`), ctx.t(`${key}.kicker`)].join(' · '),
+    path: departmentPath(dept.id),
+    fragment: 'masa',
+    icon: dept.icon,
+    keywords: ctx.alt(`departments.${dept.id}.name`),
+    body: ctx.t(`${key}.lead`),
+    boost: 0.8,
+  };
 }

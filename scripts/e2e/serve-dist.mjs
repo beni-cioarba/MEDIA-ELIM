@@ -83,7 +83,13 @@ export async function serveDist(dist) {
   const { port } = /** @type {import('node:net').AddressInfo} */ (server.address());
   return {
     origin: `http://127.0.0.1:${port}`,
-    close: () => new Promise((done) => server.close(() => done())),
+    // `server.close()` espera a las conexiones abiertas: un navegador muerto a
+    // medias lo dejaría esperando para siempre. Se cortan antes.
+    close: () =>
+      new Promise((done) => {
+        server.close(() => done());
+        server.closeAllConnections();
+      }),
   };
 }
 

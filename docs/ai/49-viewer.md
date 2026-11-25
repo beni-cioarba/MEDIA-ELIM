@@ -103,6 +103,8 @@ proyección (`[appViewableDisabled]`).
 - **Botezuri**: la portada del botez destacado (próximo o último), si tiene foto.
 - **Crónicas de departamentos** (`stories`, `39-departments.md`): cada foto
   del mosaico abre la galería con todas las de la crónica.
+- **Masa de tineret** (`youth-meal`, `39-departments.md`): cada foto abre la
+  galería con todas.
 
 - Fichas de **Rugăciune pentru familii**: abre la foto en el visor documental con
   todas las familias de la semana (‹ › entre ellas).

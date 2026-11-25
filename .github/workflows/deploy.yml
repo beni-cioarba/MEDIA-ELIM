@@ -20,17 +20,25 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+# Todo lleva límite: sin `timeout-minutes` GitHub deja un job hasta 6 horas
+# (25/11/2026: Chrome se colgó en la prueba de humo y la web estuvo más de 3 h
+# sin actualizar y sin aviso). Un paso que se pasa de su límite **falla**, y un
+# fallo sí avisa por correo. Lo vigila scripts/workflows.test.mjs; lo normal y
+# el límite de cada paso, en docs/ai/50-build-deploy.md.
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        timeout-minutes: 3
         with:
           # El número de compilación es `git rev-list --count HEAD`: con el
           # clon superficial por defecto (depth 1) siempre saldría 1.
           fetch-depth: 0
 
       - name: Setup Node
+        timeout-minutes: 3
         uses: actions/setup-node@v7
         with:
           # Angular 22 exige Node ^22.22 || ^24.15 (ver "engines" en package.json).
@@ -38,6 +46,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
+        timeout-minutes: 4
         run: npm ci
 
       # Calendario de suscripción («Abonează-te» de Evenimente): escribe
@@ -45,12 +54,14 @@ jobs:
       # programa semanal). Antes del build, que lo copia con el resto de assets.
       # No se sube al repo. scripts/generate-events-calendar.mjs.
       - name: Events calendar (assets/calendars/elim-events.ics)
+        timeout-minutes: 1
         run: npm run calendar:events
 
       # Puertas de calidad: paridad de traducciones, presupuesto de legibilidad
       # de la proyección, enlaces de Drive, tests de los scripts y **tests
       # unitarios** (`ng test`, 177 a 16/11/2026). Si algo falla, no se publica.
       - name: Checks (i18n, projection sizes, script tests, unit tests)
+        timeout-minutes: 4
         run: npm run check
 
       # Proiectul Împreună: refresca la instantánea de vídeos del día desde la
@@ -58,16 +69,19 @@ jobs:
       # web no responde se publica con la instantánea del repo, y la página
       # completa lo que falte en el navegador. docs/ai/32-impreuna.md.
       - name: Proiectul Împreună (vídeos del día)
+        timeout-minutes: 2
         continue-on-error: true
         run: npm run impreuna:sync
 
       - name: Build (production, base href = / (dominio propio elimarganda.com))
+        timeout-minutes: 4
         run: npx ng build --configuration production --base-href /
 
       # Source maps a Sentry (pila legible en los errores) y fuera de la web.
       # Sin el secreto SENTRY_AUTH_TOKEN sólo los borra; un fallo de la
       # subida no para el despliegue. Ver docs/ai/77-analitica-errores.md.
       - name: Sentry source maps
+        timeout-minutes: 2
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: node scripts/sentry-sourcemaps.mjs --dist dist/iglesia-redes/browser
@@ -76,12 +90,14 @@ jobs:
       # `index.html` ya es la portada prerenderizada y, como 404, enseñaría la
       # portada un instante antes de la página pedida.
       - name: Add SPA fallback (404 -> shell)
+        timeout-minutes: 1
         run: cp dist/iglesia-redes/browser/index.csr.html dist/iglesia-redes/browser/404.html
 
       # Páginas estáticas por ruta (todas las públicas: `ROUTE_PAGES` + una por
       # departamento): responden 200 en vez del 404 del fallback y llevan su
       # propio título / Open Graph / noindex. Ver scripts/generate-route-pages.mjs.
       - name: Route pages (200 + own meta)
+        timeout-minutes: 1
         run: node scripts/generate-route-pages.mjs --dist dist/iglesia-redes/browser
 
       # Manifiesto vacío de los PDF: la web siempre pide
@@ -89,6 +105,7 @@ jobs:
       # daría 404 (en la web y en la prueba de humo). El generador lo
       # sustituye por el real.
       - name: Family prayer PDFs (empty manifest)
+        timeout-minutes: 1
         run: |
           mkdir -p dist/iglesia-redes/browser/assets/family-prayer
           echo '{"weeks":[]}' > dist/iglesia-redes/browser/assets/family-prayer/pdf.json
@@ -108,6 +125,7 @@ jobs:
       # Va antes de la prueba de humo: así la prueba revisa la web tal como se
       # publica, con el manifiesto de los PDF ya escrito.
       - name: Family prayer PDFs (cache)
+        timeout-minutes: 2
         uses: actions/cache@v6
         with:
           path: .cache/family-pdfs
@@ -115,6 +133,7 @@ jobs:
           restore-keys: family-pdfs-
 
       - name: Family prayer PDFs
+        timeout-minutes: 4
         continue-on-error: true
         env:
           PDF_BROWSER: chrome
@@ -125,14 +144,17 @@ jobs:
       # objetivos táctiles, claves sin traducir), todos los enlaces internos y
       # la proyección a 1080p. Si falla, no se publica. scripts/e2e/smoke.mjs.
       - name: Smoke test (pages, links, projection)
+        timeout-minutes: 5
         env:
           PDF_BROWSER: chrome
         run: npm run e2e -- --dist dist/iglesia-redes/browser
 
       - name: Add .nojekyll
+        timeout-minutes: 1
         run: touch dist/iglesia-redes/browser/.nojekyll
 
       - name: Upload artifact
+        timeout-minutes: 4
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist/iglesia-redes/browser
@@ -140,6 +162,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -155,6 +178,7 @@ jobs:
   verify-live:
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - name: Published site responds
         run: |
@@ -170,3 +194,17 @@ jobs:
             if [ -z "$ok" ]; then echo "::error::$base$path → $code"; exit 1; fi
             echo "✓ $path"
           done
+
+      # Que responda no basta: tiene que ser **esta** versión. `version.json` es
+      # lo que consulta la app para saber si hay una nueva (PwaUpdateService);
+      # si aquí no cambia, nadie se entera de lo publicado.
+      - name: Published version is this commit
+        run: |
+          want="${GITHUB_SHA::7}"
+          for attempt in $(seq 1 18); do
+            got=$(curl -s --max-time 15 "https://elimarganda.com/version.json?t=$(date +%s)" | sed -n 's/.*"commit":"\([^"]*\)".*/\1/p' || true)
+            if [ "$got" = "$want" ]; then echo "✓ versión publicada: $got"; exit 0; fi
+            sleep 10
+          done
+          echo "::error::elimarganda.com sirve la versión «$got» y debería ser «$want»"
+          exit 1

@@ -12,4 +12,33 @@
       }
     </ul>
   </div>
+
+  <!-- `data-no-swipe`: en el teléfono es una tira deslizable y el gesto no
+       debe cambiar de página. -->
+  <ul
+    class="meal__photos"
+    role="list"
+    data-no-swipe
+    [attr.aria-label]="'departments.youth.meal.photos_label' | translate"
+  >
+    @for (photo of photos(); track photo.key; let i = $index) {
+      <li class="meal__photo">
+        <figure class="shot">
+          <div class="shot__frame" [appViewable]="gallery()" [appViewableIndex]="i" appViewableMode="gallery">
+            <img
+              [src]="photo.medium"
+              [attr.srcset]="photo.thumb + ' 480w, ' + photo.medium + ' 960w'"
+              sizes="(min-width: 1024px) 300px, (min-width: 560px) 45vw, 270px"
+              [attr.width]="photo.width"
+              [attr.height]="photo.height"
+              [alt]="photo.alt"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <figcaption class="shot__caption">{{ photo.caption }}</figcaption>
+        </figure>
+      </li>
+    }
+  </ul>
 </section>

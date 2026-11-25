@@ -3,9 +3,10 @@
 // =====================================================================
 // «Quédate a cenar» (13/10/2026): invitación al pie del encuentro de
 // vineri. Cálida, no técnica: misma superficie clara del bloque con un
-// velo dorado y un filete que la separa del cuerpo. Insignia · texto (con
-// tres razones en píldoras); en el teléfono, sólo el texto.
-// Container queries: se adapta a su hueco, no a la ventana.
+// velo dorado y un filete que la separa del cuerpo.
+// Con fotos (25/11/2026): texto | díptico 4:3, sin recortar, en el hueco que
+// el texto dejaba vacío (326 de 951 px). Cortes por contenedor: < 480 px
+// tira deslizable · 480–719 díptico debajo · ≥ 720 en dos columnas.
 // =====================================================================
 
 :host {
@@ -15,7 +16,8 @@
 
 .meal {
   display: grid;
-  padding: var(--sp-4) var(--sp-5);
+  gap: var(--sp-4) var(--sp-5);
+  padding: var(--sp-5);
   border-top: 1px solid var(--c-hairline);
   background:
     linear-gradient(100deg, var(--c-gold-tint), transparent 70%),
@@ -23,6 +25,12 @@
 
   @container (max-width: 479.98px) {
     padding: var(--sp-4);
+  }
+
+  // El texto mide de alto casi lo mismo que las fotos con su pie: centrados.
+  @container (min-width: 720px) {
+    grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr);
+    align-items: center;
   }
 }
 
@@ -40,7 +48,7 @@
 .meal__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 1.375rem;
   font-weight: 800;
   line-height: 1.2;
   color: var(--c-primary-deep);
@@ -70,5 +78,82 @@
   background: var(--c-surface);
   font-size: 0.8125rem;
   font-weight: 700;
+  color: var(--c-primary-deep);
+}
+
+// ---------------------------------------------------------------------
+// Fotos: columnas iguales; con una tercera, la rejilla reparte sola.
+// ---------------------------------------------------------------------
+.meal__photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--sp-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // Teléfono: tira a sangre; la segunda foto asoma e invita a deslizar (a dos
+  // columnas medirían ~150 px y no se distinguiría nada).
+  @container (max-width: 479.98px) {
+    display: flex;
+    margin-inline: calc(-1 * var(--sp-4));
+    padding-inline: var(--sp-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--sp-4);
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.meal__photo {
+  min-width: 0;
+
+  @container (max-width: 479.98px) {
+    flex: 0 0 min(17rem, 82cqi);
+    scroll-snap-align: start;
+  }
+}
+
+.shot {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.shot__frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-lg);
+  background: var(--c-surface-2);
+  box-shadow: var(--e-1);
+
+  // La tira del teléfono recorta por fuera: el anillo va por dentro.
+  @include focus-ring(-2px);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--mo-slow) var(--ea-standard);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    &:hover img {
+      transform: scale(1.03);
+    }
+  }
+}
+
+.shot__caption {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.35;
   color: var(--c-primary-deep);
 }

@@ -80,7 +80,8 @@ export interface DepartmentWeekly {
   readonly parts: readonly { readonly key: string; readonly icon: IconName }[];
   /**
    * Pieza propia dentro del bloque. `youth-meal`: la invitación a quedarse a
-   * la masa de después del programa (texto, sin datos de la app interna).
+   * la masa de después del programa (texto y `YOUTH_MEAL_PHOTOS`, sin datos
+   * de la app interna).
    */
   readonly companion?: 'youth-meal';
   /** Tema de cada fecha, si se conoce (`meeting-programs.config.ts`). */
@@ -642,6 +643,27 @@ export function departmentById(id: string | null | undefined): DepartmentConfig 
 export function departmentBySlug(slug: string | null | undefined): DepartmentConfig | null {
   return (slug && BY_SLUG.get(slug)) || null;
 }
+
+// ---------------------------------------------------------------------
+// La masa de después del programa (tineret)
+// ---------------------------------------------------------------------
+
+/** Foto de la masa: base de los `.webp` de `assets/drive-media/` y tamaño real del `.webp`. */
+export interface MealPhoto {
+  /** Textos en `departments.youth.meal.photos.<key>.{caption,alt}`. */
+  readonly key: string;
+  readonly base: string;
+  readonly width: number;
+  readonly height: number;
+  /** Hay variante `-2560.webp` (el original medía 2400 px o más). */
+  readonly large?: boolean;
+}
+
+/** En orden de relato: primero se prepara, luego está lista. */
+export const YOUTH_MEAL_PHOTOS: readonly MealPhoto[] = [
+  { key: 'prepare', base: 'tineret_masa_pregatire_2026', width: 1600, height: 1202, large: true },
+  { key: 'ready', base: 'tineret_masa_2026', width: 1600, height: 1202, large: true },
+];
 
 // ---------------------------------------------------------------------
 // App administrativa de tineret (ADM-TINERET)

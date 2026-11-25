@@ -64,9 +64,20 @@
       "join": "Ești tânăr și vrei să crești în credință? Vino vineri seara: nu trebuie să cunoști pe nimeni ca să te simți acasă.",
       "cta_friday": "Vino vineri",
       "meal": {
-        "kicker": "După întâlnire",
+        "kicker": "După fiecare program",
         "title": "Rămâi la masă",
-        "lead": "La final punem masa și mâncăm cu toții împreună: în fiecare vineri o pregătește o echipă de tineri. Nu pleca în grabă; stai lângă cineva nou și prelungește seara.",
+        "lead": "O echipă de tineri pregătește masa și mâncăm cu toții împreună. Nu pleca în grabă; stai lângă cineva nou și prelungește seara.",
+        "photos_label": "Fotografii de la masă",
+        "photos": {
+          "prepare": {
+            "caption": "Echipa o pregătește…",
+            "alt": "Tineri care așază mâncarea și băutura pe mesele din holul bisericii"
+          },
+          "ready": {
+            "caption": "…și masa e gata",
+            "alt": "Mesele pregătite: gustări, prăjituri, fructe, dulciuri și băuturi"
+          }
+        },
         "chips": {
           "everyone": "Este loc pentru toți",
           "friend": "Adu un prieten",

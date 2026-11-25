@@ -34,7 +34,7 @@ features/departments/
   meeting/                         Reunión fija semanal o mensual (`app-meeting-block`) + hueco para su pieza propia
   ticket/                          Billete de la próxima fecha (`app-date-ticket`), común a las reuniones
   stories/                         Crónicas: texto + reel vertical + mosaico (galería del visor) + resumen de predicación (sermon-notes)
-  youth-meal/                      Invitación «Rămâi la masă» (texto, sin datos)
+  youth-meal/                      Invitación «Rămâi la masă» (texto + fotos, sin datos)
   departments-translations.resolver.ts  Carga el paquete de textos
 layout/top-nav/departments-aside.component.ts   Destacado del panel de escritorio (@defer)
 ```
@@ -282,10 +282,23 @@ tema. Pendiente de confirmar con tineret: el 18/12 dice sólo «TEMA CRACIUN»
 
 **Invitación, no herramienta** (13/10/2026, a petición del usuario). Al pie
 del encuentro de vineri (`companion`, ancla `#masa`), una franja clara con
-velo dorado: «După întâlnire» · **Rămâi la masă** · dos frases (al acabar se
-pone la mesa, la prepara un equipo de tineri, quédate y alarga la noche) ·
+velo dorado: «După fiecare program» · **Rămâi la masă** · dos frases (la
+prepara un equipo de tineri y cenamos juntos; quédate y alarga la noche) ·
 tres píldoras (loc pentru toți · adu un prieten · mai rămâi puțin). Sin insignia ni iconos en las
-píldoras (14/10/2026). Texto puro: sin red ni estado.
+píldoras (14/10/2026).
+
+**Con fotos** (25/11/2026, del usuario): `YOUTH_MEAL_PHOTOS`
+(`departments.config.ts`), en orden de relato: «Echipa o pregătește…» →
+«…și masa e gata». Díptico **dentro** de la invitación, no una galería aparte.
+El texto dejaba vacíos 326 de 951 px: ahora texto | fotos 4:3 sin recortar,
+centrados (233 y 244 px de alto a 1440); la franja pasa de 178 a 287 px.
+Cortes por contenedor: ≥ 720 dos columnas · 480–719 díptico bajo el texto ·
+< 480 tira deslizable (`data-no-swipe`, 260 px por foto, la segunda asoma).
+Cada foto abre la galería (hasta 2560 px); su `alt` es también el nombre del
+botón. Buscador: entrada propia con ancla `#masa` (`departments.search.ts`).
+**Foto nueva**: `optimize-images.js` → fila en `YOUTH_MEAL_PHOTOS` →
+`departments.youth.meal.photos.<key>.{caption,alt}` (ro y es). Apaisada 4:3 y
+de ambiente: **sin primeros planos de menores**.
 
 **Nada de la app interna en la web pública**: ni turnos, ni equipos, ni
 părinți, ni QR, ni franja en la portada de Departamente (se quitaron el

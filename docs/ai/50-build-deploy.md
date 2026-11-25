@@ -208,9 +208,46 @@ despliegue: si falla, no se publica.
   entrada mide menos contraste del que tiene.
 - Los errores de recursos de **otros** servidores (la API de YouTube rechaza
   el origen local) no cuentan; los propios, sí.
-- Tras publicar, el job `verify-live` comprueba que el sitio responde.
+- Tras publicar, el job `verify-live` comprueba que el sitio responde **y que
+  `version.json` es la del commit** (lo que lee el detector de versiones de la app).
 - Hay además un cron nocturno que reconstruye y publica: lo que depende de la
   fecha se pone al día solo.
+
+### Siempre termina (25/11/2026)
+
+El despliegue de `b42a872` se quedó colgado en la prueba de humo más de 4 h:
+Chrome dejó de responder en el runner, `page.evaluate` no tiene plazo propio y,
+sin `timeout-minutes`, GitHub espera 6 h. La web siguió en la versión anterior
+y el detector de la app decía la verdad: «Ai ultima versiune» (compara con lo
+**publicado**, no con lo subido a git). El mismo commit pasa la prueba en local.
+
+Cuatro barreras, de dentro afuera:
+
+| Nivel | Límite | Qué pasa al cumplirse |
+| --- | --- | --- |
+| Página / proyección | 45 s / 60 s | Se mata ese Chrome y se repite en uno limpio; al 2.º bloqueo, fallo `bloqueo` con el nombre de la página |
+| Prueba entera | 180 s | No se empiezan más páginas; las pendientes salen como `presupuesto` |
+| Guardián del proceso | 240 s | `exit 1` diciendo qué estaba en curso (no depende de ninguna promesa) |
+| GitHub | paso 5 min · `build` 15 · `deploy` 12 · `verify-live` 8 | El paso **falla** y GitHub avisa por correo |
+
+- **4 páginas a la vez**, un Chrome por puesto en proceso aparte
+  (`launchServer`: se puede matar aunque no conteste) y un contexto limpio por
+  página. En local, 285 → 80 s (en CI en serie tardaba ~220 s).
+- **Sin internet** (`--host-resolver-rules`): antes, un fallo de la API de
+  YouTube salía en consola y bloqueaba la publicación.
+- `--date 2026-11-29T09:00` la pasa **como si fuera ese día**. Hazlo antes de un
+  evento o si tocas algo que depende de la fecha: el 22/11 el contraste de «HOY»
+  bloqueó el despliegue de esa madrugada, y el 25/11 salió así el botón blanco
+  sobre blanco de Anunțuri sin anuncios. Los controles desactivados no cuentan
+  para el contraste (WCAG 1.4.3).
+- `scripts/e2e/deadline.mjs` (plazos y cola, con pruebas) y
+  `scripts/workflows.test.mjs`: falla si algún job de cualquier workflow —o un
+  paso de `build`— no lleva `timeout-minutes`, o si hay caracteres de control.
+- Probado provocándolo: página con bucle infinito (falla con su nombre, 123 s),
+  Chrome matado a mitad (se repite y acaba en verde) y guardián (corta y no deja
+  procesos vivos).
+- En Git Bash, `--base-href /` se convierte en `C:/Program Files/Git/` y el
+  prerender se agota a los 30 s: usa `MSYS_NO_PATHCONV=1`.
 
 ## Calendario de suscripción — `assets/calendars/elim-events.ics`
 
