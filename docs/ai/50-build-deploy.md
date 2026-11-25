@@ -138,7 +138,7 @@ ampliado el 14/11/2026): tras el fallback,
   herramientas: `ROBOTS_DISALLOW`; las `noindex` quedan rastreables para que
   Google lea su `noindex`).
 
-Pendiente fuera del código (ver `70-roadmap.md`): dar de alta el dominio en
+Pendiente fuera del código (pasos y textos en `81-google.md`): dar de alta el dominio en
 Google Search Console, enviar el sitemap y crear / verificar el perfil de
 empresa de Google (Maps).
 

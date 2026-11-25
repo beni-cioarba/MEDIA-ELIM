@@ -57,7 +57,10 @@ export class TelemetryService {
       this.send(
         goatCounterUrl(code, {
           path: key.path,
-          title: key.private ? undefined : this.document.title,
+          // El de la web (`og:title`): el de la ventana de la app lleva otro orden.
+          title: key.private
+            ? undefined
+            : (this.document.querySelector<HTMLMetaElement>('meta[property="og:title"]')?.content ?? this.document.title),
           referrer,
           screen: `${view.screen.width},${view.screen.height},${view.devicePixelRatio}`,
         }),

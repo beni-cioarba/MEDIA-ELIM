@@ -2,7 +2,9 @@ import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
-import { PUBLIC_URL } from '../site';
+import { PwaInstallService } from '../services/pwa-install.service';
+import { APP_NAME, PUBLIC_URL } from '../site';
+import { appWindowTitle, siteTitle } from './page-title';
 
 /** Metadatos SEO declarados en `data` de cada ruta. */
 export interface RouteSeo {
@@ -44,6 +46,7 @@ export class SeoService {
   private readonly titleService = inject(Title);
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
+  private readonly pwa = inject(PwaInstallService);
 
   private readonly current = signal<RouteSeo | null>(null);
 
@@ -66,6 +69,7 @@ export class SeoService {
   constructor() {
     effect(() => {
       this.langChange();
+      this.pwa.openAsApp(); // la pestaña puede pasar a ventana de app sin recargar
       this.apply(this.current(), this.override());
     });
   }
@@ -131,17 +135,16 @@ export class SeoService {
     if (this.translate.instant('brand.name') === 'brand.name') return;
     const brand = this.text('seo.site_name', 'brand.name');
     const pageTitle = override?.title ?? (seo ? this.text(seo.titleKey, seo.fallback?.titleKey) : '');
-    // Portada: la marca delante («Biserica Elim Arganda · Biserică
-    // penticostală…»); el resto, la página delante y la marca detrás.
-    const title = !pageTitle || pageTitle === brand
-      ? brand
-      : this.path() === '/' ? `${brand} · ${pageTitle}` : `${pageTitle} · ${brand}`;
+    const parts = { brand, pageTitle, isHome: this.path() === '/' };
+    const title = siteTitle(parts);
 
     const description =
       override?.description ??
       this.text(seo?.descriptionKey, seo?.fallback?.descriptionKey ?? 'app.description');
 
-    this.titleService.setTitle(title);
+    // En la ventana de la app, con su nombre delante; lo que se comparte
+    // (`og:title`) es siempre el de la web.
+    this.titleService.setTitle(this.pwa.openAsApp() ? appWindowTitle(APP_NAME, parts) : title);
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
@@ -153,12 +156,13 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:url', content: this.pageUrl() });
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
 
-    // Se pone y se quita en cada navegación: en una SPA la etiqueta se
-    // quedaría puesta al salir de la página que la pidió.
+    // Se escribe en cada navegación: en una SPA el `noindex` se quedaría
+    // puesto al salir de la página que lo pidió.
     if (seo?.noindex) {
       this.meta.updateTag({ name: 'robots', content: 'noindex, noimageindex' });
     } else {
-      this.meta.removeTag('name="robots"');
+      // Google puede enseñar la imagen en grande (sin esto, la decide él).
+      this.meta.updateTag({ name: 'robots', content: 'max-image-preview:large' });
     }
     this.setCanonical(seo?.noindex ? null : this.pageUrl());
   }

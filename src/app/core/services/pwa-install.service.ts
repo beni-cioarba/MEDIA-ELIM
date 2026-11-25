@@ -94,6 +94,8 @@ export class PwaInstallService {
     this.window?.__elimInstallPrompt ?? null,
   );
   private readonly standalone = signal(this.isStandalone());
+  /** Se está viendo **como app** (ventana propia), no en una pestaña. */
+  readonly openAsApp = this.standalone.asReadonly();
   private readonly marked = signal(this.readInstalledMark());
   private readonly related = signal<boolean | null>(null);
   private readonly installedNow = signal(false);

@@ -105,3 +105,10 @@ test('el service worker guarda los dos manifiestos y ninguna lámina', () => {
   const angular = read('angular.json');
   for (const lang of LANGS) assert.ok(angular.includes(`"src/${manifestFile(lang)}"`));
 });
+
+test('APP_NAME es el nombre de los dos manifiestos (título de la ventana instalada)', () => {
+  const appName = /APP_NAME = '([^']+)'/.exec(readFileSync('src/app/core/site.ts', 'utf8'))?.[1];
+  for (const file of ['manifest.webmanifest', 'manifest.es.webmanifest']) {
+    assert.equal(JSON.parse(readFileSync(`src/${file}`, 'utf8')).name, appName, file);
+  }
+});

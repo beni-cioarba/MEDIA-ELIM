@@ -152,11 +152,23 @@ export function readChurchData(configSource) {
 }
 
 /**
+ * La congregación reunida, en las tres proporciones que pide Google para una
+ * entidad (1:1, 4:3 y 16:9). Las escribe
+ * `npm run pwa:icons`.
+ */
+export const CHURCH_PHOTOS = [
+  { path: 'assets/about/biserica-elim-arganda-1x1.jpg', width: 900, height: 900 },
+  { path: 'assets/about/biserica-elim-arganda-4x3.jpg', width: 1200, height: 900 },
+  { path: 'assets/about/biserica-elim-arganda-16x9.jpg', width: 1600, height: 900 },
+];
+
+/**
  * JSON-LD de la portada: `WebSite` (el nombre del sitio que Google pinta sobre
  * el resultado) y la iglesia como `Church` + `Organization` (logo, dirección,
  * contacto y redes: panel de conocimiento y resultados locales).
  */
-export function churchJsonLd({ publicUrl, church, siteName, altNames, description }) {
+export function churchJsonLd({ publicUrl, church, siteName, altNames, genericNames = [], description }) {
+  const photos = CHURCH_PHOTOS.map(({ path, width, height }) => ({ '@type': 'ImageObject', url: `${publicUrl}${path}`, width, height }));
   const parts = /^(.*?),\s*(\d{5})\s+(.+)$/.exec(church.address);
   const address = parts
     ? {
@@ -184,7 +196,7 @@ export function churchJsonLd({ publicUrl, church, siteName, altNames, descriptio
         '@type': ['Church', 'Organization'],
         '@id': `${publicUrl}#church`,
         name: siteName,
-        alternateName: altNames,
+        alternateName: [...altNames, ...genericNames],
         url: publicUrl,
         description,
         logo: {
@@ -193,12 +205,25 @@ export function churchJsonLd({ publicUrl, church, siteName, altNames, descriptio
           width: 512,
           height: 512,
         },
-        image: `${publicUrl}assets/pwa/og-image.jpg`,
+        image: photos,
         address,
         hasMap: church.mapsUrl,
         email: church.email,
         telephone: church.phone,
         sameAs: church.sameAs,
+      },
+      {
+        // La imagen que se prefiere junto al resultado (Google decide): el
+        // cuadrado de la tarjeta de compartir. A 92 px una foto de la sala llena
+        // es ruido; el emblema y el nombre sobre ella se reconocen.
+        '@type': 'WebPage',
+        '@id': `${publicUrl}#webpage`,
+        url: publicUrl,
+        name: siteName,
+        inLanguage: 'ro',
+        isPartOf: { '@id': `${publicUrl}#website` },
+        about: { '@id': `${publicUrl}#church` },
+        primaryImageOfPage: { '@type': 'ImageObject', url: `${publicUrl}assets/pwa/og-square.jpg`, width: 1200, height: 1200 },
       },
     ],
   };
@@ -434,7 +459,11 @@ async function main() {
     publicUrl,
     church: readChurchData(configSource),
     siteName: siteNameOf(ro),
-    altNames: [siteNameOf(es), 'Biserica Elim', 'Elim Arganda'],
+    // Por orden de preferencia (Google los prueba si duda del nombre): «Elim
+    // Arganda» es como figura en Maps, YouTube, Facebook e Instagram.
+    altNames: ['Elim Arganda', siteNameOf(es)],
+    // Sólo para la iglesia, no como nombre del sitio: hay muchas «Biserica Elim».
+    genericNames: ['Biserica Elim'],
     description: homeDescription,
   });
   const rootHtml = injectJsonLd(indexHtml, jsonLd);

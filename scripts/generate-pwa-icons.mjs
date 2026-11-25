@@ -40,6 +40,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const SRC = resolve(here, 'assets-src', 'emblema-elim.png');
 const OUT_DIR = resolve(here, '..', 'src', 'assets', 'pwa');
 const FAVICON_ICO = resolve(here, '..', 'src', 'favicon.ico');
+const ABOUT_DIR = resolve(here, '..', 'src', 'assets', 'about');
+const PHOTO = resolve(ABOUT_DIR, 'biserica_adunata_2026-1600.webp');
 
 /** Paleta (`_tokens.scss`): navy 600 → 900 del degradado y oro (filete). */
 const NAVY_TOP = '#24466f';
@@ -272,47 +274,69 @@ async function main() {
   // Insignia de la amintire zilnică de Proiectul Împreună (web push).
   await write('badge-impreuna-96.png', await badge(96, SHORTCUT_ICONS.impreuna));
 
-  // Vista previa al compartir (og:image, 1200×630). JPEG: una foto de
-  // degradados pesa un 80 % menos que en PNG y WhatsApp la carga antes.
+  // Vista previa al compartir (og:image, 1200×630). JPEG: pesa un 80 % menos
+  // que en PNG y WhatsApp la carga antes.
+  await churchPhotos();
+  // La misma, en su cuadrado central: la que se propone a Google (JSON-LD).
+  const large = sharp(await ogImage(2)).extract({ left: 570, top: 0, width: 1260, height: 1260 });
+  await write('og-square.jpg', await large.resize(1200, 1200).jpeg({ quality: 84, mozjpeg: true }).toBuffer());
   await write('og-image.jpg', await sharp(await ogImage()).jpeg({ quality: 86, mozjpeg: true }).toBuffer());
 }
 
 /**
- * Imagen de vista previa para redes (1200×630): el fondo del icono, el
- * emblema a la izquierda y el nombre a la derecha. Tipografía del sistema
- * (sharp rasteriza el SVG sin las webfonts): sans-serif limpia en blanco.
+ * La congregación reunida en las proporciones que usa Google (JSON-LD de la
+ * portada, `CHURCH_PHOTOS` de generate-route-pages.mjs): sin texto y sin el
+ * primer plano de cabezas desenfocadas.
  */
-async function ogImage() {
-  const W = 1200;
-  const H = 630;
-  const bg = Buffer.from(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+async function churchPhotos() {
+  for (const [ratio, left, width] of [['1x1', 380, 900], ['4x3', 260, 1200], ['16x9', 0, 1600]]) {
+    const file = resolve(ABOUT_DIR, `biserica-elim-arganda-${ratio}.jpg`);
+    const jpg = await sharp(PHOTO).extract({ left, top: 60, width, height: 900 }).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+    await writeFile(file, jpg);
+    console.log(`${`biserica-elim-arganda-${ratio}.jpg`.padEnd(26)} ${kb(jpg)}`);
+  }
+}
+
+/**
+ * Imagen de vista previa para redes (1200×630): la congregación bajo un velo
+ * navy, con el emblema y el nombre **centrados**. Todo lo que importa cabe en
+ * el cuadrado central de 630 px: WhatsApp y Google la recortan a cuadrado, y
+ * con el nombre a la derecha se leía «Biserica E» (25/11/2026). Tipografía del
+ * sistema (sharp rasteriza el SVG sin las webfonts).
+ */
+async function ogImage(scale = 1) {
+  const W = 1200 * scale;
+  const H = 630 * scale;
+  const photo = await sharp(PHOTO).extract({ left: 0, top: 90, width: 1600, height: 840 }).resize(W, H).toBuffer();
+  const D = 270 * scale;
+  const top = 72 * scale;
+  const veil = Buffer.from(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 1200 630">
       <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="${NAVY_TOP}"/><stop offset="1" stop-color="${NAVY_BOTTOM}"/>
-        </linearGradient>
-        <radialGradient id="glow" cx="0.15" cy="0.05" r="0.85">
-          <stop offset="0" stop-color="#9db8dc" stop-opacity="0.32"/><stop offset="1" stop-color="#9db8dc" stop-opacity="0"/>
+        <radialGradient id="v" cx="0.5" cy="0.5" r="0.62">
+          <stop offset="0" stop-color="${NAVY_BOTTOM}" stop-opacity="0.94"/>
+          <stop offset="0.5" stop-color="${NAVY_BOTTOM}" stop-opacity="0.86"/>
+          <stop offset="1" stop-color="${NAVY_TOP}" stop-opacity="0.5"/>
         </radialGradient>
+        <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0.55" stop-color="${NAVY_BOTTOM}" stop-opacity="0"/>
+          <stop offset="1" stop-color="${NAVY_BOTTOM}" stop-opacity="0.75"/>
+        </linearGradient>
       </defs>
-      <rect width="${W}" height="${H}" fill="url(#g)"/>
-      <rect width="${W}" height="${H}" fill="url(#glow)"/>
-      <rect x="560" y="258" width="64" height="4" rx="2" fill="${GOLD}"/>
-      <text x="560" y="230" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="78"
-            font-weight="700" fill="#ffffff">Biserica Elim</text>
-      <text x="560" y="330" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="34"
-            font-weight="600" letter-spacing="6" fill="#f3e3a6">ARGANDA DEL REY</text>
-      <text x="560" y="400" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="28"
-            fill="#ffffff" fill-opacity="0.78">Program · Anunțuri · Transmisiuni · Rugăciune</text>
+      <rect width="1200" height="630" fill="url(#v)"/>
+      <rect width="1200" height="630" fill="url(#b)"/>
+      <g text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+        <text x="600" y="446" font-size="84" font-weight="700" fill="#ffffff">Biserica Elim</text>
+        <rect x="556" y="474" width="88" height="5" rx="2.5" fill="${GOLD}"/>
+        <text x="603" y="536" font-size="38" font-weight="600" letter-spacing="7" fill="#f3e3a6">ARGANDA DEL REY</text>
+      </g>
     </svg>`);
-  // El lienzo de la sombra mide H×H con el círculo centrado: el emblema se
-  // centra en ese mismo punto (x = y = H/2) para que la sombra caiga debajo.
-  const D = 400;
-  const { emblem, shadow } = await emblemWithShadow(H, D);
-  return sharp(bg)
+  const { emblem, shadow } = await emblemWithShadow(D * 2, D);
+  return sharp(photo)
     .composite([
-      { input: shadow, left: 0, top: 0 },
-      { input: emblem, left: Math.round((H - D) / 2), top: Math.round((H - D) / 2) },
+      { input: veil, left: 0, top: 0 },
+      { input: shadow, left: W / 2 - D, top: Math.round(top - D / 2) },
+      { input: emblem, left: (W - D) / 2, top },
     ])
     .png({ compressionLevel: 9 })
     .toBuffer();

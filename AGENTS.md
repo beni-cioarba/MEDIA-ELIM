@@ -94,6 +94,7 @@ salvo que el usuario lo pida expresamente en esa tarea.
 | `docs/ai/78-search.md`      | **Buscador de la cabecera**: contrato por módulo (`<x>.search.ts`), receta, privacidad (qué personas NO se indexan), motor, medidas de la cabecera |
 | `docs/ai/79-install.md`     | **Instalar la app**: detector de quién la tiene, censo anónimo, calendario de avisos, icono de cabecera, qué ve cada dispositivo, láminas y manifiesto por idioma (`npm run pwa:install`), hoja de pasos |
 | `docs/ai/80-faq.md`         | **Întrebări frecvente**: `/intrebari-frecvente`, franja de la portada, preguntas de Invitați; receta de una pregunta nueva, datos vivos, pendientes de la iglesia |
+| `docs/ai/81-google.md`      | **Google**: cómo aparece la iglesia (resultado, ficha de Maps), imagen de compartir, datos estructurados, qué falta por hacer fuera del código; título de la ventana de la app instalada |
 | `docs/ai/75-plan-evolucion.md` | **Plan por fases**: carga rápida, proyección legible, web compacta, arquitectura modular, Angular 20/zoneless, CI. Leer antes de empezar cualquier fase |
 
 Instrucciones automáticas por tipo de fichero (se aplican solas al editar):

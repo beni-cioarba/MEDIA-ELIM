@@ -198,6 +198,12 @@ test('JSON-LD con los datos de church.config.ts', () => {
   assert.equal(org.address.postalCode, '28500');
   assert.equal(org.address.addressLocality, 'Arganda del Rey');
   assert.ok(existsSync('src/assets/pwa/icon-any-512.png'));
+  // La imagen preferida: cuadrada y existente; las tres fotos, en la iglesia.
+  const webPage = data['@graph'][2];
+  assert.equal(webPage['@type'], 'WebPage');
+  assert.equal(webPage.primaryImageOfPage.width, webPage.primaryImageOfPage.height);
+  assert.equal(org.image.length, 3);
+  for (const photo of [webPage.primaryImageOfPage, ...org.image]) assert.ok(existsSync(photo.url.replace('https://elimarganda.com/', 'src/')), photo.url);
   const html = injectJsonLd(INDEX, { a: '</script>' });
   assert.ok(html.includes('<script type="application/ld+json">{"a":"\\u003c/script>"}</script>\n</head>'));
 });

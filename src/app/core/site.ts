@@ -8,3 +8,10 @@
  * (`scripts/generate-route-pages.mjs` la lee de este fichero).
  */
 export const PUBLIC_URL = 'https://elimarganda.com/';
+
+/**
+ * Nombre de la **app instalada**: el `name` de los dos manifiestos (es el
+ * mismo en los dos idiomas: cambiarlo haría que el navegador pidiera confirmar
+ * otra identidad). Lo comprueba `scripts/install-media.test.mjs`.
+ */
+export const APP_NAME = 'Biserica Elim Arganda';
