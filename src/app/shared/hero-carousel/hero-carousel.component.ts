@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HeroSlide, ImageFocus } from '../../core/church.config';
+import { PAGE_PREVIEW } from '../../core/navigation/page-preview';
 import { ClockService } from '../../core/services/clock.service';
 import { IconComponent } from '../icon/icon.component';
 
@@ -197,7 +198,13 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
               </span>
             }
 
-            @for (slide of currentList(); track slide.id) {
+            <!-- Un solo párrafo que cambia de texto: ni se re-monta ni se
+                 anima (26/11/2026). La entrada deslizada de 0,6 s, sumada al
+                 fundido de la foto, hacía que en el teléfono la portada
+                 pareciera descolocarse en cada cambio. Y una región
+                 \`aria-live\` tiene que existir antes del cambio para que se
+                 anuncie: re-montada, los lectores de pantalla la perdían. -->
+            @if (current(); as slide) {
               <p class="hero__caption" aria-live="polite">{{ captionKey(slide) | translate }}</p>
             }
           </div>
@@ -324,16 +331,27 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
           filter: blur(22px) saturate(1.15) brightness(0.62);
           /* Escalada para que el borde del desenfoque no deje un halo claro. */
           transform: scale(1.2);
-          transition: opacity 1.2s var(--ea-standard);
+          transition: opacity 0.3s var(--ea-standard);
         }
 
         .hero__fill.is-active {
           opacity: 1;
         }
 
+        /* Fundido corto en el teléfono (26/11/2026). Aquí cada foto va entera
+           y con su propio alto: durante el fundido de 1,2 s se veían dos fotos
+           de distinto tamaño superpuestas, más sus dos fondos difuminados,
+           detrás del texto, y la portada parecía descolocarse al deslizar.
+           En 0,3 s el cambio es limpio y sigue sin leerse como un corte. El
+           fondo (\`.hero__stage\`) acompaña a la foto. */
         .hero__image {
           object-fit: contain;
           object-position: 50% 0 !important;
+          transition-duration: 0.3s;
+        }
+
+        .hero__stage {
+          transition-duration: 0.3s;
         }
 
         .hero__image.is-active,
@@ -526,14 +544,6 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
         font-size: var(--fs-xs);
         letter-spacing: var(--ls-meta);
         color: rgb(247 250 252 / 0.86);
-        animation: hero-caption 0.6s var(--ea-standard) both;
-      }
-
-      @keyframes hero-caption {
-        from {
-          opacity: 0;
-          transform: translateY(0.35rem);
-        }
       }
 
       /*
@@ -694,7 +704,6 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
 
         .hero__image.is-active,
         .hero__dot.is-active .hero__dot-fill,
-        .hero__caption,
         .hero__cue {
           animation: none;
         }
@@ -708,6 +717,13 @@ const FOCUS_Y: Readonly<Record<ImageFocus, string>> = {
 })
 export class HeroCarouselComponent {
   private readonly clock = inject(ClockService);
+  /**
+   * Montada como vista previa del arrastre entre pestañas: quieta en la
+   * primera foto, que es la que enseñará la portada real al abrirse. Ahí el
+   * `IntersectionObserver` no sirve: la vista previa vive oculta con
+   * `content-visibility` y no deja de contar como «a la vista».
+   */
+  private readonly preview = inject(PAGE_PREVIEW);
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly _slides = signal<readonly HeroSlide[]>([]);
@@ -779,7 +795,7 @@ export class HeroCarouselComponent {
    * cambia justo cuando la barra se llena, siempre.
    */
   protected readonly paused = computed(
-    () => this.userPaused() || this.hold() || !this.inView() || !this.clock.pageVisible(),
+    () => this.preview || this.userPaused() || this.hold() || !this.inView() || !this.clock.pageVisible(),
   );
 
   /** Pausa pedida con el botón: manda sobre todo lo demás hasta que se reanude. */
@@ -787,12 +803,6 @@ export class HeroCarouselComponent {
 
   /** Sin auto-avance no tiene sentido ofrecer un botón de pausa. */
   protected readonly reducedMotion = prefersReducedMotion();
-
-  /** La diapositiva activa como lista de uno: el rótulo se re-monta (y anima) al cambiar. */
-  protected readonly currentList = computed(() => {
-    const slide = this.current();
-    return slide ? [slide] : [];
-  });
 
   /** Origen horizontal del gesto de deslizar en curso. */
   protected swipeX: number | null = null;

@@ -550,6 +550,9 @@
     "photos_count": "{{count}} fotos",
     "photos_soon": "Las fotos aparecerán aquí muy pronto.",
     "video_label": "Vídeo",
+    "video_play": "Reproducir aquí",
+    "video_pause": "Pausa",
+    "video_expand": "Abrir en la galería, a pantalla completa",
     "open_gallery": "Ver las fotos",
     "add_calendar": "Añadir al calendario",
     "story_kind": {

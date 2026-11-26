@@ -403,15 +403,74 @@ la sección vecina; el indicador de la barra avanza en proporción
 (`--tab-drag`); al soltar cambia si se pasó el 40 % del ancho o hubo «flick»
 (> 0,45 px/ms), si no vuelve; sin vecina (primera/última) cede un 28 % y
 vuelve. Lo que asoma es **la página vecina real** (`SwipePeekComponent` +
-`PagePreviewService`): su componente, montado al empezar el gesto con un
+`PagePreviewService`): su componente, montado con un
 `ActivatedRoute` que hereda del raíz real (los `routerLink` necesitan el
 árbol) y lleva los datos/parámetros de su ruta, precedido de su migaja
 (`app-breadcrumb [trail]`), colocado bajo la cabecera, donde quedará. Un
 esqueleto genérico no coincidía con ninguna página (rechazado por el
-usuario). Las vecinas se cargan en reposo tras cada navegación (`warm`), **y con
+usuario). Las seis páginas de pestaña se descargan en el primer reposo (`warm`), **y con
 ellas se ejecutan los `resolve` de su ruta** (09/10/2026): la vista previa
 monta la página fuera del router y, sin eso, una pestaña con paquete de
 textos (`/departamente`) asomaba con las claves en crudo.
+
+**Fluidez al encadenar gestos** (26/11/2026, auditoría a petición del usuario:
+«se bloquea un segundo y no deja pasar a la siguiente»). Medido: navegar tarda
+7 ms, pero después el hilo quedaba 150 ms (portátil; 0,6–1 s en un teléfono)
+construyendo desde cero la página nueva y, en reposo, las vecinas. En ese hueco
+el dedo no respondía y un deslizamiento rápido se perdía. Cinco piezas:
+
+1. **Caché de páginas de pestaña** (`core/navigation/tab-reuse.strategy.ts`,
+   `RouteReuseStrategy`). Con barra de pestañas (`< lg`), las seis páginas
+   raíz de pestaña no se destruyen al salir: se guardan y el router las vuelve
+   a colgar (misma instancia, mismo DOM; conservan su estado, no el scroll).
+   Sólo **hojas**: el shell también es «/» y llegó a guardarse entero. Al
+   destruirse el shell (rutas del operador, fuera de él) `MainLayoutComponent`
+   llama a `vaciar()`, que destruye lo guardado: sin fugas ni páginas colgadas
+   de un shell muerto. En escritorio no guarda nada. Peor bloqueo medido tras
+   la caché: 63 ms (volver a la portada, la página más pesada) frente a 150.
+2. **Una vista previa por pestaña, para siempre** (`SwipePeekComponent`): un
+   hueco por pestaña (`.peek__slot`, en el orden de la barra); cada vista
+   previa se construye **una vez**, en reposo, cuando su pestaña queda a dos o
+   menos de la activa (las contiguas primero, una por reposo), y no se
+   destruye ni se mueve. Los huecos están maquetados y sin pintar
+   (`visibility: hidden`, fuera de pantalla); el gesto descubre el de la vecina
+   con `data-shown="next|prev"`, por índice y en el mismo evento táctil (sin
+   esperar a Angular, que sin zone.js repinta en otra tarea). Dar la vuelta a
+   mitad sólo cambia el atributo. Si un gesto llega antes que el reposo, se
+   construye al momento; `pageFor()` es reactivo a las descargas.
+3. **Cola de gestos** (`SwipeTabsDirective`): un gesto que llega con un cambio
+   en curso se guarda (toque, movimientos y final, con sus tiempos) y se
+   **reproduce** en cuanto la pestaña nueva está puesta. Cada uno cuenta:
+   cinco deslizamientos rápidos son cinco pestañas. Si el dedo sigue abajo, la
+   página se pone bajo él. Una página que **vuelve** a su sitio se atrapa a
+   mitad; durante el fundido, un toque lo termina y empieza su gesto.
+4. **Escudo** (`.swipe-shield`, hijo del shell creado por la directiva): todo
+   un toque va al elemento donde empezó; si era la página que salía y el
+   router la retiraba, el resto del toque no llegaba y el gesto quedaba
+   «arrastrando» para siempre. Mientras la página se mueve, los toques caen en
+   el escudo, que nunca sale del documento (cabecera y barra quedan por
+   encima; deja scroll vertical y zoom). Red de seguridad: un dedo nuevo con un
+   arrastre vivo cierra aquel en vez de bloquearse.
+5. **Selección de texto**: antes cualquier texto seleccionado en la página
+   (un toque largo sin querer) anulaba todos los deslizamientos; ahora sólo si
+   el dedo empieza sobre la selección (ajustando sus asas).
+
+Además: el fin del asentamiento lo marca `transitionend` (respaldo 260 + 80 ms);
+el fundido **conserva** la transición del `transform`; el indicador recibe
+`--i` y `--tab-drag: 0` a la vez; el desplazamiento nunca pasa de una pantalla.
+La portada **no tiene entrada animada** (retirada la entrada escalonada
+`hero-rise` de `_hero-content.scss`: el bloque de texto aparecía desvaído y
+desplazado cada vez que se volvía a ella), y los carruseles no avanzan dentro
+de una vista previa (`PAGE_PREVIEW`).
+
+Verificado (toques simulados, reloj sin estrangular): ráfagas de 3 y 5
+deslizamientos en ambos sentidos, 18 de 18 ejecutados; vista previa y página
+real idénticas al píxel en las 10 transiciones; atrapar, dedo apoyado durante
+el cambio, final perdido, movimiento reducido, ida y vuelta al operador,
+«atrás» del navegador (scroll restaurado) y escritorio sin caché. Pruebas:
+`swipe-tabs.directive.spec.ts`, `swipe-peek.component.spec.ts`,
+`tab-reuse.strategy.spec.ts`.
+
 Se desplazan juntos `<main>`, migaja y pie; la cabecera y la barra se
 quedan. Al completar: subida **instantánea** a 0 (el `html` tiene scroll
 suave), navegar, dos fotogramas y fundido de 160 ms sobre la página real.
@@ -420,8 +479,8 @@ página real se monta bajo la vista previa durante el fundido, y una entrada
 animada (opacidad 0 + desplazamiento) se veía doble y desvaída bajo ella.
 Como en una app nativa, el destino de una pestaña está ahí sin más; lo
 animado es el gesto. Una página que arranque algo caro debe consultar `PAGE_PREVIEW`
-(`core/navigation/page-preview.ts`); hoy sólo el escenario (sondeo del
-directo). Manejadores pasivos
+(`core/navigation/page-preview.ts`): el escenario (sondeo del directo) y
+los dos carruseles (sin avance automático). Manejadores pasivos
 fuera de Angular, un `transform` + variables CSS por fotograma. Las
 variables se escriben **en la vista previa (`--swipe-dx`, `--swipe-top`) y
 en la barra (`--tab-drag`), nunca en el `<html>`**: heredadas desde la raíz
@@ -434,7 +493,10 @@ cabecera, la barra, el dock y el cajón quedan fuera. Se decide tras 10 px: si
 empieza vertical, no hay arrastre en ese gesto; la búsqueda de cajas con
 scroll horizontal (lee el layout) sólo se hace entonces, no en cada
 `touchstart`. No actúa en los 24 px del
-borde («atrás» del sistema), en `app-card-carousel`, campos, vídeo, diálogos,
+borde («atrás» del sistema), en `app-card-carousel` ni en la portada
+(`app-hero-carousel`: tiene su propio deslizar y, sin excluirla, un mismo gesto
+cambiaba de foto **y** de pestaña; en el teléfono ocupa 536 de 812 px, así que
+en la portada el gesto empieza debajo de ella), campos, vídeo, diálogos,
 cajas con scroll horizontal o `[data-no-swipe]` (márcalo en cualquier pieza
 nueva que se arrastre en horizontal), con texto seleccionado ni con dos
 dedos.

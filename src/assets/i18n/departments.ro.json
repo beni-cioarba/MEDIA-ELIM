@@ -550,6 +550,9 @@
     "photos_count": "{{count}} fotografii",
     "photos_soon": "Fotografiile vor apărea aici în curând.",
     "video_label": "Video",
+    "video_play": "Redă aici",
+    "video_pause": "Pauză",
+    "video_expand": "Deschide în galerie, pe tot ecranul",
     "open_gallery": "Vezi fotografiile",
     "add_calendar": "Adaugă în calendar",
     "story_kind": {

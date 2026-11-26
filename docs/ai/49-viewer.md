@@ -69,8 +69,27 @@ La galería admite **vídeo** además de imagen y PDF (`kind()` = `video` si
 `resolveCategory` lo dice: `mimeType: 'video/mp4'` o extensión). Se pinta el
 reproductor nativo entero (`object-fit: contain` sobre negro), arranca solo,
 `playsinline`, póster = `thumb`; sin zoom ni gestos (los manejadores de
-puntero sólo actúan con imagen) y la autorreproducción de la galería se para
-en él. Primer uso: la crónica de la tabără (`StoryPhoto.video`).
+puntero sólo actúan con imagen). Primer uso: la crónica de la tabără (`StoryPhoto.video`).
+
+**Autorreproducción con vídeo (26/11/2026).** El ▶ de la barra sale también en
+los vídeos y cada elemento pasa al siguiente cuando *termina*:
+
+| Elemento | Cuándo avanza | Segmento de la barra |
+| --- | --- | --- |
+| Imagen | 4 s (`AUTOPLAY_MS`) **desde que se ha pintado**, no desde que se pidió | animación CSS de 4 s (`--playing`) |
+| Vídeo | al acabar (`ended`), dure lo que dure | sigue al vídeo: `--mv-fill` = `currentTime / duration` (`--media`) |
+| Fallo de carga (imagen o vídeo) | 4 s, para no atascarse | animación de 4 s |
+| PDF | no avanza: no tiene final; se pasa a mano | — |
+
+Si el vídeo se pausa a mano, la galería espera (no hay `ended`). Encender el ▶
+sobre un vídeo ya terminado pasa al siguiente en el acto. Con zoom tampoco
+avanza. Señales: `playing()` (puede avanzar), `timed()` (va por plazo),
+`mediaProgress()`.
+
+**Arranque de un vídeo**: `ViewerDocument.start` recorta (lo anterior no se ve
+nunca: `clampStart`); `from` sólo dice por dónde empezar esta vez (p. ej. el
+reel de una crónica que ya se venía viendo en la página). La galería usa
+`#t=max(from, start)` (`videoSrc()`).
 
 ## Galería: la foto siempre entera (09/10/2026)
 

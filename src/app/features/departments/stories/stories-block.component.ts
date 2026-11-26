@@ -10,6 +10,8 @@ import { formatIsoRange, parseIsoDate } from '../../../core/util/iso-date';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ViewerDocument } from '../../../shared/viewer/core/viewer-document.model';
 import { ViewableDirective } from '../../../shared/viewer/viewable.directive';
+import { GalleryViewerService } from '../../../shared/viewer/gallery/gallery-viewer.service';
+import { ReelPlayerComponent } from './reel-player.component';
 import { SermonNotesComponent } from './sermon-notes.component';
 
 const ROOT = 'assets/drive-media/';
@@ -39,8 +41,15 @@ interface StoryView {
   readonly cover: PhotoView | null;
   /** Fotos del mosaico (sin la portada). */
   readonly photos: readonly PhotoView[];
-  /** Portada + mosaico, para la galería del visor (‹ › entre ellas). */
+  /**
+   * Portada + vídeo destacado + mosaico, en ese orden: **un solo grupo** para
+   * la galería del visor (‹ ›, miniaturas y autorreproducción entre todos).
+   */
   readonly gallery: readonly ViewerDocument[];
+  /** Índice del vídeo destacado (`story.video`) en `gallery`; `-1` si no hay. */
+  readonly reelIndex: number;
+  /** Índice en `gallery` de la primera foto del mosaico. */
+  readonly photoOffset: number;
   readonly driveUrl: string | null;
   readonly youtubeUrl: string | null;
   readonly youtubeThumb: string | null;
@@ -88,7 +97,7 @@ const toView = (photo: StoryPhoto): PhotoView => ({
 @Component({
   selector: 'app-stories-block',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslatePipe, IconComponent, ViewableDirective, SermonNotesComponent],
+  imports: [TranslatePipe, IconComponent, ViewableDirective, ReelPlayerComponent, SermonNotesComponent],
   templateUrl: './stories-block.component.html',
   styleUrl: './stories-block.component.scss',
 })
@@ -99,6 +108,7 @@ export class StoriesBlockComponent {
   private readonly config = inject(CHURCH_CONFIG);
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
+  private readonly gallery = inject(GalleryViewerService);
 
   protected readonly views = computed<readonly StoryView[]>(() => {
     const lang = this.language.current();
@@ -108,26 +118,39 @@ export class StoriesBlockComponent {
       const coverPhoto = story.photos.find((p) => p.cover);
       const cover = coverPhoto ? toView(coverPhoto) : null;
       const photos = story.photos.filter((p) => !p.cover).map(toView);
-      const all = cover ? [cover, ...photos] : photos;
       const title = this.translate.instant(`${base}.title`);
+      // El visor ya pone «n / total»: el nombre es sólo el título.
+      const toDoc = (p: PhotoView): ViewerDocument =>
+        p.video
+          ? { src: p.video, mimeType: 'video/mp4', thumb: p.thumb, name: title, alt: title }
+          : {
+              src: p.src,
+              srcset: `${p.thumb} 480w, ${p.medium} 960w, ${p.src} ${p.width}w`,
+              thumb: p.thumb,
+              name: title,
+              alt: title,
+            };
+      const video = story.video;
+      const reel: ViewerDocument | null = video
+        ? {
+            src: video.src,
+            mimeType: 'video/mp4',
+            thumb: video.poster,
+            start: video.start,
+            name: title,
+            alt: this.translate.instant(`${base}.caption`),
+          }
+        : null;
+      const gallery = [...(cover ? [toDoc(cover)] : []), ...(reel ? [reel] : []), ...photos.map(toDoc)];
       return {
         story,
         base,
         range: story.start ? formatRange(lang, story.start, story.end) : null,
         cover,
         photos,
-        // El visor ya pone «n / total»: el nombre es sólo el título.
-        gallery: all.map((p) =>
-          p.video
-            ? { src: p.video, mimeType: 'video/mp4', thumb: p.thumb, name: title, alt: title }
-            : {
-                src: p.src,
-                srcset: `${p.thumb} 480w, ${p.medium} 960w, ${p.src} ${p.width}w`,
-                thumb: p.thumb,
-                name: title,
-                alt: title,
-              },
-        ),
+        gallery,
+        reelIndex: reel ? (cover ? 1 : 0) : -1,
+        photoOffset: gallery.length - photos.length,
         driveUrl: story.driveFolderId
           ? driveFolderUrl(story.driveFolderId, this.config.mediaGalleryUrl)
           : null,
@@ -140,12 +163,9 @@ export class StoriesBlockComponent {
   /** `hq720` no existe en todos los directos: respaldo a `mqdefault` (16:9). */
   protected readonly thumbFallback = youtubeThumbFallback;
 
-  /**
-   * Recorte del arranque (`StoryVideo.start`): si se arrastra la barra antes
-   * de ese segundo, vuelve a él. El tramo recortado no se ve nunca.
-   */
-  protected clampStart(event: Event, start: number | undefined): void {
-    const video = event.target as HTMLVideoElement;
-    if (start && video.currentTime < start - 0.05) video.currentTime = start;
+  /** Vídeo destacado → galería de la crónica, en él y desde el segundo `at`. */
+  protected openReel(view: StoryView, at: number): void {
+    const items = view.gallery.map((doc, i) => (i === view.reelIndex ? { ...doc, from: at } : doc));
+    void this.gallery.open(items, view.reelIndex);
   }
 }

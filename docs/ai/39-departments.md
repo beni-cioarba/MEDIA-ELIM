@@ -127,13 +127,14 @@ Unión discriminada: cada `kind` es una pieza que la página sabe pintar.
   invitado, puntos, fotos con su tamaño real, vídeo, carpeta de Drive,
   versículo). Con fotos: cabecera · medios · texto (container queries: se
   adapta a su columna, no a la ventana; cortes 560 y 1100 px). Medios = reel
-  vertical nativo (`preload="none"`, portada propia) + mosaico de 4 columnas
+  vertical (`app-reel-player`, `preload="none"`, portada propia) + mosaico de 4 columnas
   (verticales 1 × 2, apaisadas 2 × 1, `dense`, filas estiradas al alto del
   reel; `featured: true` = 2 × 2, para cuadrar la rejilla sin huecos: hoy
   destacada + 4 verticales + 2 apaisadas = 4 × 4). Sin cabecera de sección
   visible (10/10/2026: ocupaba sitio sin aportar; queda como `aria-label`).
   Cada foto abre la **galería del visor** (`[appViewable]`,
-  `49-viewer.md`). En el teléfono, reel y fotos en **una sola tira**
+  `49-viewer.md`); el reel es parte del **mismo grupo** (orden: portada,
+  reel, mosaico). En el teléfono, reel y fotos en **una sola tira**
   deslizable de 17 rem. Sin fotos: tarjeta compacta que lo dice («fotos en
   breve»), sin rellenar con fotos de otra cosa.
 - `events` → eventos futuros de `upcomingEvents` cuyo `departments`
@@ -156,7 +157,8 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
   (`assets/video/ancorat-2026-intrare.mp4`, 14 MB). Portada: fotograma de
   16,2 s elegido por el usuario (las chicas alrededor del mural). **Recorte
   del arranque** (el primer segundo es la entrada vacía): `StoryVideo.start
-  = 1` → `src#t=1` y el reproductor no deja volver antes (`clampStart`); no
+  = 1` → `src#t=1` y el reproductor no deja volver antes (`clampStart`, en
+  `app-reel-player` y en la galería vía `ViewerDocument.start`); no
   se reprocesa el fichero (no hay ffmpeg en el equipo). Para un recorte
   físico: `ffmpeg -ss 1 -i in.mp4 -c copy out.mp4` y quitar `start`.
   Ojo al extraer fotogramas: el servidor local tiene que admitir `Range`
@@ -231,10 +233,16 @@ ANCORAT 2026: resumen de la transcripción automática del directo
 din jur, Dumnezeu), seis lecciones y «Ancorarea începe la cruce» (Ps 51:7).
 Alto medido: 1.617 px a 908 px de ancho; 2.432 px a 375 px.
 
-**Vídeo en pantalla completa**: en el mosaico el reel es 9:16 con
-`object-fit: cover`; en `:fullscreen` / `:-webkit-full-screen` pasa a
-`contain` sobre negro, con `aspect-ratio: auto`. Así no se recorta en un
-teléfono girado ni en una pantalla apaisada (`stories-block.component.scss`).
+**Reel: se ve aquí, se amplía en la galería (26/11/2026)**. El reel lleva
+controles propios (`reel-player.component.ts`), no los nativos: la pantalla
+completa del reproductor no hacía nada dentro de la tarjeta y, además,
+sacaba el vídeo de su grupo. Ahora:
+
+- ▶ / ❚❚ reproduce **en la página** (barra fina en oro con el avance).
+- ⛶ o clic en la imagen → pausa y abre la **galería de la crónica** en el
+  reel (`openReel`), **desde el segundo por el que iba** (`ViewerDocument.from`
+  → `#t=`; a diferencia de `start`, no impide volver atrás). En la galería
+  tiene pantalla completa, ‹ ›, miniaturas y autorreproducción como el resto.
 
 ## Programa de temas (14/10/2026)
 

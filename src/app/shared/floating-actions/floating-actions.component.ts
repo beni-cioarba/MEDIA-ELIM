@@ -166,12 +166,23 @@ import { DockOverlapService } from './dock-overlap.service';
         align-items: center;
         gap: 0.35rem;
         padding: 0.25rem;
-        background: rgba(255, 255, 255, 0.72);
-        border: 1px solid rgba(26, 54, 93, 0.12);
+        /*
+         * Cristal fino (material translucido, como las barras de iOS): poco
+         * relleno blanco (46 %) y mucho desenfoque con saturacion, para que
+         * se vea a traves sin perder lectura; el icono contrasta con lo
+         * desenfocado, no con el relleno. Borde blanco por dentro (brillo del
+         * canto) + anillo navy de medio pixel y sombra corta: lo separan del
+         * fondo blanco de la web sin bulto. Antes: 72 % y blur 14 px, se leia
+         * como una pastilla blanca opaca.
+         */
+        background: rgba(255, 255, 255, 0.46);
+        border: 1px solid rgba(255, 255, 255, 0.55);
         border-radius: 999px;
-        backdrop-filter: blur(14px) saturate(140%);
-        -webkit-backdrop-filter: blur(14px) saturate(140%);
-        box-shadow: 0 6px 20px rgba(26, 54, 93, 0.12);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        box-shadow:
+          0 0 0 0.5px rgba(26, 54, 93, 0.1),
+          0 4px 14px rgba(26, 54, 93, 0.1);
         opacity: 0;
         transform: translateY(16px) scale(0.95);
         pointer-events: none;
@@ -186,6 +197,12 @@ import { DockOverlapService } from './dock-overlap.service';
           opacity: 1;
           transform: translateY(0) scale(1);
           pointer-events: auto;
+        }
+
+        /* Sin desenfoque (navegadores viejos) el 46 % dejaria el icono sobre
+           el texto de debajo: vuelve el relleno casi opaco. */
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+          background: rgba(255, 255, 255, 0.9);
         }
 
         // En presentación el dock desaparece del todo: dos botones flotando

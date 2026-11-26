@@ -447,35 +447,6 @@
   }
 }
 
-.reel__video {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 9 / 16;
-  object-fit: cover;
-  background: var(--c-primary-darkest);
-}
-
-// Pantalla completa: el vídeo **entero** sobre negro. Las reglas del reel
-// (9:16 + `cover`, para encajar en el mosaico) se mantenían y, en una
-// pantalla apaisada o un teléfono girado, recortaban el vídeo. Reglas
-// separadas: un selector desconocido invalidaría la lista entera.
-@mixin reel-fullscreen {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: auto;
-  object-fit: contain;
-  background: #000;
-}
-
-.reel__video:fullscreen {
-  @include reel-fullscreen;
-}
-
-.reel__video:-webkit-full-screen {
-  @include reel-fullscreen;
-}
-
 .reel__caption {
   padding: 0.55rem 0.7rem 0.65rem;
   font-size: 0.75rem;
@@ -575,7 +546,7 @@
     scroll-snap-align: start;
   }
 
-  .reel__video {
+  .reel__player {
     height: 100%;
   }
 

@@ -11,6 +11,7 @@ import { Location, ViewportScroller } from '@angular/common';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import {
   NavigationError,
+  RouteReuseStrategy,
   TitleStrategy,
   provideRouter,
   withEnabledBlockingInitialNavigation,
@@ -27,6 +28,7 @@ import { isChunkLoadError } from './core/errors/chunk-load-error';
 import { StaleBuildRecovery } from './core/errors/stale-build-recovery';
 import { InlineTranslateLoader } from './core/i18n/inline-translate-loader';
 import { PublicPreloadingStrategy } from './core/navigation/public-preloading.strategy';
+import { TabReuseStrategy } from './core/navigation/tab-reuse.strategy';
 import { SEARCH_SOURCES } from './core/search/search.model';
 import { AppTitleStrategy } from './core/seo/app-title.strategy';
 import { LanguageService } from './core/services/language.service';
@@ -82,6 +84,10 @@ export const appConfig: ApplicationConfig = {
       // sin un fotograma con el `<main>` vacío. Ver `docs/ai/50-build-deploy.md`.
       withEnabledBlockingInitialNavigation(),
     ),
+    // Las páginas de pestaña se guardan al salir (teléfono y tableta) y se
+    // vuelven a colgar al volver: deslizar entre pestañas no reconstruye una
+    // página ya vista. Ver `TabReuseStrategy`.
+    { provide: RouteReuseStrategy, useClass: TabReuseStrategy },
     provideTranslateService({
       fallbackLang: 'ro',
       loader: { provide: TranslateLoader, useClass: InlineTranslateLoader },

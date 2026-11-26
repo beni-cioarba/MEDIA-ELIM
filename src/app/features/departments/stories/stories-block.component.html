@@ -100,21 +100,17 @@
 
         <div class="story__media" [class.has-video]="!!s.video" data-no-swipe>
           @if (s.video; as video) {
+            <!-- Vídeo destacado: ▶ lo reproduce aquí mismo; pantalla completa o
+                 clic en la imagen lo abren en la galería de la crónica (mismo
+                 grupo que las fotos: ‹ ›, miniaturas, autorreproducción),
+                 desde el segundo por el que iba. -->
             <figure class="reel">
-              <video
-                class="reel__video"
-                [src]="video.start ? video.src + '#t=' + video.start : video.src"
-                [poster]="video.poster"
-                (seeking)="clampStart($event, video.start)"
-                (timeupdate)="clampStart($event, video.start)"
-                [attr.width]="video.width"
-                [attr.height]="video.height"
-                preload="none"
-                controls
-                playsinline
-                controlslist="nodownload"
-                [attr.aria-label]="v.base + '.caption' | translate"
-              ></video>
+              <app-reel-player
+                class="reel__player"
+                [video]="video"
+                [label]="v.base + '.caption' | translate"
+                (expand)="openReel(v, $event)"
+              />
               <figcaption class="reel__caption">
                 <span class="reel__tag">{{ 'departments.video_label' | translate }}</span>
                 {{ v.base + '.caption' | translate }}
@@ -125,7 +121,7 @@
           <ul class="mosaic" [class.mosaic--single]="v.photos.length === 1 && !s.video" role="list" [attr.aria-label]="'departments.open_gallery' | translate">
             @for (photo of v.photos; track photo.src; let i = $index) {
               <li class="tile" [class.tile--portrait]="photo.portrait" [class.tile--featured]="photo.featured">
-                <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="v.cover ? i + 1 : i" appViewableMode="gallery">
+                <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="v.photoOffset + i" appViewableMode="gallery">
                   <img
                     [src]="photo.medium"
                     [attr.srcset]="photo.thumb + ' 480w, ' + photo.medium + ' 960w'"

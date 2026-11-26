@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, effect, inject, DOCUMENT } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, DOCUMENT } from '@angular/core';
 
-import { RouterOutlet } from '@angular/router';
+import { RouteReuseStrategy, RouterOutlet } from '@angular/router';
+import { TabReuseStrategy } from '../../core/navigation/tab-reuse.strategy';
 import { PresentationService } from '../../core/presentation.service';
 import { UiStore } from '../../core/state/ui.store';
 import { FooterComponent } from '../../shared/footer/footer.component';
@@ -169,6 +170,13 @@ export class MainLayoutComponent {
   protected readonly fullscreen = this.presentation.isFullscreen;
 
   constructor() {
+    // Las páginas de pestaña guardadas cuelgan de este shell: si se destruye
+    // (rutas del operador, fuera de él), se destruyen con él.
+    const reuse = inject(RouteReuseStrategy);
+    inject(DestroyRef).onDestroy(() => {
+      if (reuse instanceof TabReuseStrategy) reuse.vaciar();
+    });
+
     // Con el drawer abierto, el documento de fondo no debe hacer scroll:
     // en iOS es la única forma fiable de evitar el "scroll chaining".
     effect(() => {

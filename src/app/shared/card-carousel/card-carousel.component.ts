@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { PAGE_PREVIEW } from '../../core/navigation/page-preview';
 import { ClockService } from '../../core/services/clock.service';
 import { IconComponent } from '../icon/icon.component';
 
@@ -214,6 +215,12 @@ export class CardCarouselComponent {
   private readonly zone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
   private readonly clock = inject(ClockService);
+  /**
+   * Dentro de la vista previa del arrastre entre pestañas no avanza solo: está
+   * montada en segundo plano y debe enseñar lo mismo que la página real al
+   * abrirse (el principio de la tira).
+   */
+  private readonly preview = inject(PAGE_PREVIEW);
 
   private readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
 
@@ -477,6 +484,7 @@ export class CardCarouselComponent {
         !conducidoPorElUsuario &&
         !enPausa &&
         visible &&
+        !this.preview &&
         !prefersReducedMotion();
 
       stop();

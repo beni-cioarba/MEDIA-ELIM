@@ -82,6 +82,7 @@ export class GalleryViewerComponent {
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly stage = viewChild.required<ElementRef<HTMLElement>>('stage');
   private readonly image = viewChild<ElementRef<HTMLImageElement>>('image');
+  private readonly video = viewChild<ElementRef<HTMLVideoElement>>('video');
   private readonly thumbs = viewChild<ElementRef<HTMLElement>>('thumbs');
 
   // ------------------------------------------------------------------
@@ -147,12 +148,49 @@ export class GalleryViewerComponent {
   protected toggleAutoplay(): void {
     this.autoplay.update((v) => !v);
     saveFlag(AUTOPLAY_KEY, this.autoplay());
+    // Encenderla sobre un vídeo ya terminado: no hay `ended` que esperar.
+    if (this.playing() && this.video()?.nativeElement.ended) this.next();
   }
 
-  /** La autorreproducción sólo corre con varias imágenes y sin zoom. */
+  /**
+   * Autorreproducción: corre con varios elementos y sin zoom. Cada elemento
+   * pasa al siguiente cuando «termina»: la imagen, a los 4 s de haberse
+   * pintado; el vídeo, al acabar (`ended`), dure lo que dure. El PDF no tiene
+   * final: la galería espera en él hasta que se pase a mano.
+   */
   protected readonly playing = computed(
-    () => this.autoplay() && this.multiple() && this.scale() === 1 && this.kind() === 'image',
+    () => this.autoplay() && this.multiple() && this.scale() === 1 && this.kind() !== 'pdf',
   );
+
+  /** Plazo fijo: imagen ya pintada, o cualquier elemento que no se pudo cargar. */
+  protected readonly timed = computed(
+    () => this.playing() && !this.loading() && (this.kind() === 'image' || this.failed()),
+  );
+
+  /** Avance del vídeo actual (0-1): llena su segmento de la barra. */
+  protected readonly mediaProgress = signal(0);
+
+  /** URL del vídeo con el arranque (`from` o, si no, `start`) como fragmento `#t=`. */
+  protected readonly videoSrc = computed(() => {
+    const { src, start, from } = this.item();
+    const at = Math.max(from ?? 0, start ?? 0);
+    return at > 0 ? `${src}#t=${at.toFixed(2)}` : src;
+  });
+
+  /** `ViewerDocument.start`: lo anterior a ese segundo no se ve nunca. */
+  protected clampStart(video: HTMLVideoElement): void {
+    const start = this.item().start;
+    if (start && video.currentTime < start - 0.05) video.currentTime = start;
+  }
+
+  protected onVideoTime(video: HTMLVideoElement): void {
+    this.mediaProgress.set(video.duration > 0 ? video.currentTime / video.duration : 0);
+  }
+
+  protected onVideoEnded(): void {
+    this.mediaProgress.set(1);
+    if (this.playing()) this.next();
+  }
 
   // ------------------------------------------------------------------
   // Zoom y desplazamiento
@@ -276,6 +314,7 @@ export class GalleryViewerComponent {
         this.resetZoom();
         this.loading.set(this.kind() === 'image');
         this.failed.set(false);
+        this.mediaProgress.set(0);
         const items = this.items();
         if (items.length > 1) {
           for (const near of [items[(index + 1) % items.length], items[(index - 1 + items.length) % items.length]]) {
@@ -285,9 +324,10 @@ export class GalleryViewerComponent {
       });
     });
 
-    // Autorreproducción: un plazo por imagen; se rehace al cambiar de imagen.
+    // Autorreproducción con plazo (imágenes y fallos); se rehace al cambiar de
+    // elemento. Los vídeos avanzan solos en `onVideoEnded()`.
     effect((onCleanup) => {
-      if (!this.playing()) return;
+      if (!this.timed()) return;
       this.index();
       const timer = setTimeout(() => this.next(), AUTOPLAY_MS);
       onCleanup(() => clearTimeout(timer));

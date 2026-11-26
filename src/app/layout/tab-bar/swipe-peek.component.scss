@@ -1,7 +1,13 @@
 @use 'ds' as *;
 
-// La página vecina que asoma al arrastrar. Ocupa justo la zona en la que
-// quedará la página real (bajo la cabecera fija), por el lado del gesto.
+// Las páginas vecinas que asoman al arrastrar. El anfitrión es la zona en la
+// que quedará la página real (bajo la cabecera fija); dentro, un hueco por
+// pestaña con su vista previa, construida una sola vez.
+//
+// Los huecos están **maquetados pero sin pintar** (`visibility: hidden`): al
+// descubrir uno no hay que construir ni maquetar nada, sólo pintarlo. El
+// gesto marca el que se ve (`data-shown="next|prev"`) y su lado en el
+// anfitrión (`data-side`), en el mismo evento táctil.
 
 :host {
   position: fixed;
@@ -10,44 +16,59 @@
   left: 0;
   /* Debajo de la cabecera y de la barra de pestañas, encima del contenido. */
   z-index: calc(var(--z-nav) - 10);
-  display: none;
   width: 100vw;
   overflow: hidden;
-  background: var(--c-bg);
-  box-shadow: 0 0 28px rgb(9 20 36 / 0.22);
   pointer-events: none;
+  visibility: hidden;
 }
 
-:host(.is-next),
-:host(.is-prev) {
-  display: block;
+.peek__slot {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--c-bg);
+  visibility: hidden;
+  /* Fuera de pantalla mientras no se enseña. */
+  transform: translateX(100%);
 }
 
-/* Fuera de pantalla por su lado, más lo arrastrado. */
-:host(.is-next) {
+.peek__slot[data-shown] {
+  visibility: visible;
+  box-shadow: 0 0 28px rgb(9 20 36 / 0.22);
+}
+
+.peek__slot[data-shown='next'] {
   transform: translate3d(calc(100% + var(--swipe-dx, 0px)), 0, 0);
 }
 
-:host(.is-prev) {
+.peek__slot[data-shown='prev'] {
   transform: translate3d(calc(-100% + var(--swipe-dx, 0px)), 0, 0);
 }
 
-:host-context(.is-swipe-settling) {
+:host([data-side]) {
+  visibility: visible;
+}
+
+/* Al soltar: la misma curva y duración que el contenido (`MS_ASENTAR`). */
+:host-context(.is-swipe-settling) .peek__slot[data-shown] {
   transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Ya está la página real debajo, idéntica: el fundido es imperceptible y
-   sólo cubre lo que haya cambiado entre tanto (una imagen que terminó de
-   cargar, la hora). */
-:host-context(.is-swipe-reveal) {
+/* Ya está la página real debajo, idéntica: el fundido es imperceptible y sólo
+   cubre lo que haya cambiado entre tanto (una imagen que terminó de cargar, la
+   hora). La transición del `transform` **se conserva**: si el asentamiento no
+   había acabado (un teléfono ocupado), la vista previa no salta. */
+:host-context(.is-swipe-reveal) .peek__slot[data-shown] {
   opacity: 0;
   box-shadow: none;
-  transition: opacity 160ms linear;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 160ms linear;
 }
 
 @include motion-reduce {
-  :host-context(.is-swipe-settling),
-  :host-context(.is-swipe-reveal) {
+  :host-context(.is-swipe-settling) .peek__slot[data-shown],
+  :host-context(.is-swipe-reveal) .peek__slot[data-shown] {
     transition: none;
   }
 }

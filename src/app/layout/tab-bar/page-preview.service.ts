@@ -1,4 +1,4 @@
-import { EnvironmentInjector, Injectable, Type, inject, runInInjectionContext } from '@angular/core';
+import { EnvironmentInjector, Injectable, Type, inject, runInInjectionContext, signal } from '@angular/core';
 import {
   ActivatedRoute,
   Data,
@@ -44,9 +44,20 @@ export class PagePreviewService {
   private readonly router = inject(Router);
   private readonly injector = inject(EnvironmentInjector);
   private readonly components = new Map<Route, Type<unknown>>();
+  /** Rutas cuya carga ya está en marcha: `warm()` repetido no la duplica. */
+  private readonly loading = new Set<Route>();
+
+  /**
+   * Sube cada vez que termina de cargarse una página. `pageFor()` lo lee, así
+   * que quien lo llame dentro de un efecto vuelve a intentarlo solo cuando la
+   * página está lista (antes, una vecina aún sin cargar asomaba en blanco y
+   * se quedaba así todo el gesto).
+   */
+  private readonly loaded = signal(0);
 
   /** La página de esa URL si su componente ya está cargado; si no, `null`. */
   pageFor(url: string): PreviewPage | null {
+    this.loaded();
     const resolved = this.resolve(url);
     if (!resolved) return null;
     const component = this.components.get(resolved.config) ?? resolved.config.component ?? null;
@@ -64,12 +75,18 @@ export class PagePreviewService {
     for (const url of urls) {
       const resolved = this.resolve(url);
       const load = resolved?.config.loadComponent;
-      if (!resolved || !load || this.components.has(resolved.config)) continue;
-      void Promise.all([Promise.resolve(load()), ...this.runResolvers(resolved.config)]).then(
+      const config = resolved?.config;
+      if (!resolved || !config || !load || this.components.has(config) || this.loading.has(config)) continue;
+      this.loading.add(config);
+      void Promise.all([Promise.resolve(load()), ...this.runResolvers(config)]).then(
         ([loaded]) => {
           const type = (loaded as { default?: Type<unknown> }).default ?? (loaded as Type<unknown>);
-          this.components.set(resolved.config, type);
+          this.components.set(config, type);
+          this.loading.delete(config);
+          this.loaded.update((n) => n + 1);
         },
+        // Sin red o con una versión caducada: se reintentará en el próximo `warm`.
+        () => this.loading.delete(config),
       );
     }
   }

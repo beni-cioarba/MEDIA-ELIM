@@ -112,6 +112,26 @@ a {
       animation: mv-fill 4s linear forwards;
     }
   }
+
+  // Vídeo: el segmento sigue al tiempo de reproducción (`--mv-fill`, 0-1,
+  // llega con cada `timeupdate`, ~4 por segundo; la transición lo suaviza).
+  &--media {
+    background: rgb(255 255 255 / 0.25);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgb(255 255 255 / 0.95);
+      transform-origin: left;
+      transform: scaleX(var(--mv-fill, 0));
+      transition: transform 250ms linear;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+  }
 }
 
 @keyframes mv-fill {

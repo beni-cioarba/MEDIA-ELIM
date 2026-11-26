@@ -184,6 +184,12 @@ con el recorte gobernado.
   ritmo real del carrusel. Todo se pausa con el puntero encima, con el foco
   dentro, con la pestaña oculta (WCAG 2.2.2) y con `prefers-reduced-motion`.
   Elegir un punto reinicia el intervalo, para que la barra no mienta.
+  **En el teléfono (< 860) el fundido es de 0,3 s** y el rótulo de la foto
+  cambia de texto sin animarse (26/11/2026): con la foto entera (`contain`),
+  cada una con su alto, el fundido de 1,2 s superponía dos fotos de distinto
+  tamaño detrás del texto, y con el rótulo entrando deslizado la portada
+  parecía descolocarse al deslizar. Dentro de la vista previa del arrastre
+  entre pestañas (`PAGE_PREVIEW`) no avanza: queda en la primera foto.
 - **Mandos** (oct. 2026): pie único alineado con el titular —pista de
   segmentos (vistos a medio tono, activo en oro) y debajo pausa, anterior,
   siguiente, contador `03 / 09` y rótulo como texto, no pastilla—. La pausa

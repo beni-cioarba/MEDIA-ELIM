@@ -11,7 +11,8 @@
   (keydown)="onKeydown($event)"
 >
   <!-- Barra de progreso segmentada (estilo WhatsApp). El segmento activo se
-       llena durante la autorreproducción. -->
+       llena durante la autorreproducción: en 4 s si es imagen, al ritmo del
+       vídeo si es vídeo. -->
   @if (multiple()) {
     <div class="mv__progress" aria-hidden="true">
       @for (it of items(); track $index; let i = $index) {
@@ -19,7 +20,9 @@
           class="mv__seg"
           [class.mv__seg--done]="i < index()"
           [class.mv__seg--active]="i === index()"
-          [class.mv__seg--playing]="i === index() && playing()"
+          [class.mv__seg--playing]="i === index() && timed()"
+          [class.mv__seg--media]="i === index() && playing() && kind() === 'video' && !failed()"
+          [style.--mv-fill]="i === index() && kind() === 'video' ? mediaProgress() : null"
         ></span>
       }
     </div>
@@ -56,19 +59,29 @@
       }
     } @else if (kind() === 'video') {
       <!-- Vídeo: el reproductor del navegador, entero (contain). Arranca solo
-           al abrirlo o al llegar a él; la autorreproducción de la galería se
-           para en los vídeos (no pasa al siguiente a mitad). -->
-      <video
-        class="mv__video"
-        [src]="item().src"
-        [attr.poster]="item().thumb ?? null"
-        controls
-        autoplay
-        playsinline
-        preload="metadata"
-        controlslist="nodownload"
-        [attr.aria-label]="title() ?? ('viewer.document' | translate)"
-      ></video>
+           al abrirlo o al llegar a él; con la autorreproducción de la galería
+           puesta, pasa al siguiente al terminar (no a mitad). Si se pausa a
+           mano, la galería espera. -->
+      @if (failed()) {
+        <p class="mv__error">{{ 'viewer.error' | translate }}</p>
+      } @else {
+        <video
+          #video
+          class="mv__video"
+          [src]="videoSrc()"
+          [attr.poster]="item().thumb ?? null"
+          controls
+          autoplay
+          playsinline
+          preload="metadata"
+          controlslist="nodownload"
+          [attr.aria-label]="title() ?? ('viewer.document' | translate)"
+          (seeking)="clampStart(video)"
+          (timeupdate)="clampStart(video); onVideoTime(video)"
+          (ended)="onVideoEnded()"
+          (error)="failed.set(true)"
+        ></video>
+      }
     } @else {
       @if (loading()) {
         <span class="mv__spinner" role="status" [attr.aria-label]="'viewer.loading' | translate"></span>
@@ -148,7 +161,7 @@
         >
           <app-icon name="grid" />
         </button>
-        @if (kind() === 'image') {
+        @if (kind() !== 'pdf') {
           <button
             type="button"
             class="mv__btn"

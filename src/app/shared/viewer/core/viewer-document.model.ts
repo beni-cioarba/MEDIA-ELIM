@@ -22,6 +22,16 @@ export interface ViewerDocument {
   readonly thumb?: string;
   /** Texto alternativo; si falta, el nombre. */
   readonly alt?: string;
+  /**
+   * Vídeo: segundo desde el que se reproduce (recorte de un arranque
+   * defectuoso sin reprocesar el fichero). El reproductor no deja volver antes.
+   */
+  readonly start?: number;
+  /**
+   * Vídeo: segundo por el que arranca **esta vez** (se venía viendo en la
+   * página y se abre en grande). No recorta: se puede volver atrás.
+   */
+  readonly from?: number;
 
   /** Descripción breve (galería: pie de foto). */
   readonly description?: string;

@@ -247,41 +247,16 @@
 }
 
 /*
- * Entrada escalonada: estado, titular, subtítulo y acciones suben y aparecen
- * uno tras otro en ~0,8 s. Es la única coreografía de la portada y sólo
- * ocurre al cargar; la imagen (que es el LCP) no espera a nada.
+ * Sin entrada animada (retirada el 26/11/2026, petición del usuario). Antes
+ * estado, titular, subtítulo y acciones subían y aparecían uno tras otro en
+ * ~0,9 s cada vez que se construía la portada. En el teléfono eso ocurre al
+ * volver a ella deslizando entre pestañas: el bloque de texto se veía
+ * desvaído y desplazado bajo la vista previa y la portada parecía
+ * descolocarse. Como en el resto de páginas de pestaña (`15-navigation.md`),
+ * el contenido está ahí sin más; lo único que se mueve es la foto.
  */
-.hero-next,
-.hero-title,
-.hero-subtitle,
-.hero-actions {
-  animation: hero-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.hero-title {
-  animation-delay: 0.08s;
-}
-
-.hero-subtitle {
-  animation-delay: 0.16s;
-}
-
-.hero-actions {
-  animation-delay: 0.24s;
-}
-
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(0.9rem);
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-next,
-  .hero-title,
-  .hero-subtitle,
-  .hero-actions,
   .hero-actions__pulse,
   .hero-next.is-now .hero-next__dot::after {
     animation: none;
