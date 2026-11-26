@@ -3,9 +3,12 @@ import {
   Component,
   DOCUMENT,
   ElementRef,
+  afterNextRender,
+  afterRenderEffect,
   computed,
   inject,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -57,6 +60,7 @@ export class FaqComponent {
   private readonly params = inject(FaqParamsService).params;
   private readonly document = inject(DOCUMENT);
   private readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
+  private readonly host: HTMLElement = inject(ElementRef).nativeElement;
 
   protected readonly path = `/${APP_PATHS.faq}`;
   protected readonly groups = FAQ_GROUPS;
@@ -142,7 +146,48 @@ export class FaqComponent {
     return ids;
   });
 
+  // ---- Abrir / cerrar todas --------------------------------------------
+
+  /**
+   * Preguntas abiertas **ahora** en la página. Cada `<details>` lleva su
+   * estado (se abren a mano, por enlace o al buscar): se lee del DOM con cada
+   * `toggle` y cada vez que cambia lo que se ve.
+   */
+  private readonly opened = signal<ReadonlySet<string>>(new Set());
+
+  /** Todas las preguntas a la vista, en orden. */
+  protected readonly allIds = computed(() => this.visible().flatMap((group) => group.ids));
+
+  protected allOpen(ids: readonly string[]): boolean {
+    const opened = this.opened();
+    return ids.length > 0 && ids.every((id) => opened.has(id));
+  }
+
+  /** Si están todas abiertas, las cierra; si no, las abre todas. */
+  protected toggle(ids: readonly string[]): void {
+    const open = !this.allOpen(ids);
+    for (const id of ids) {
+      const details = this.document.getElementById(id);
+      if (details instanceof HTMLDetailsElement) details.open = open;
+    }
+    this.syncOpened();
+  }
+
+  private syncOpened(): void {
+    const ids = [...this.host.querySelectorAll<HTMLDetailsElement>('details[open][id]')].map((d) => d.id);
+    const current = this.opened();
+    if (ids.length !== current.size || ids.some((id) => !current.has(id))) this.opened.set(new Set(ids));
+  }
+
   constructor() {
+    // `toggle` no sube por el árbol: se escucha en captura, una vez para toda la página.
+    afterNextRender(() => this.host.addEventListener('toggle', () => this.syncOpened(), true));
+    afterRenderEffect(() => {
+      this.visible();
+      this.openIds();
+      untracked(() => this.syncOpened());
+    });
+
     // El router desplaza hasta el ancla; aquí sólo se abre (y, si había una
     // búsqueda puesta, se quita: podría estar escondiéndola).
     inject(ActivatedRoute)

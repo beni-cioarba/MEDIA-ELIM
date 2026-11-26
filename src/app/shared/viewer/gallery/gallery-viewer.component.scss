@@ -183,6 +183,12 @@ a {
     cursor: default;
   }
 
+  // Vídeo: sin lupa. No se amplía (ver 49-viewer.md): el cursor prometía
+  // algo que no pasaba.
+  &--video {
+    cursor: default;
+  }
+
   &--zoomed {
     cursor: grab;
 

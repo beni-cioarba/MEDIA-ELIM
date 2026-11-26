@@ -353,13 +353,16 @@ export class GalleryViewerComponent {
 
   protected onKeydown(event: KeyboardEvent): void {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
+    // El zoom es sólo de la imagen: en un vídeo, `+` lo escalaba sin que se
+    // viera (el escalado sólo se pinta en la foto) y paraba la autorreproducción.
+    const zoom: Record<string, () => void> =
+      this.kind() === 'image'
+        ? { '+': () => this.zoomIn(), '=': () => this.zoomIn(), '-': () => this.zoomOut(), '0': () => this.resetZoom() }
+        : {};
     const actions: Record<string, () => void> = {
       ArrowRight: () => this.multiple() && this.next(),
       ArrowLeft: () => this.multiple() && this.prev(),
-      '+': () => this.zoomIn(),
-      '=': () => this.zoomIn(),
-      '-': () => this.zoomOut(),
-      '0': () => this.resetZoom(),
+      ...zoom,
       f: () => this.canFullscreen && this.toggleFullscreen(),
     };
     const action = actions[event.key];

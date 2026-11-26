@@ -20,10 +20,7 @@ import { MediaEngineComponent } from '../engines/media-engine.component';
 import { PdfEngineComponent } from '../engines/pdf-engine.component';
 import { TextEngineComponent } from '../engines/text-engine.component';
 import { UnsupportedEngineComponent } from '../engines/unsupported-engine.component';
-
-const ZOOM_MIN = 25;
-const ZOOM_MAX = 400;
-const ZOOM_STEP = 25;
+import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP, clampZoom } from '../core/zoom';
 
 /**
  * Visor universal de documentos — el *shell* (adaptado de
@@ -140,6 +137,22 @@ export class DocumentViewerComponent {
     if (!this.caps().zoom) return;
     this.fit.set(false);
     this.zoom.update((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP));
+  }
+
+  /**
+   * Zoom pedido por el motor (rueda, doble clic, pellizco): porcentaje sobre
+   * el tamaño ajustado. Volver a 100 es volver a «Ajustat».
+   */
+  protected setZoom(percent: number): void {
+    if (!this.caps().zoom) return;
+    const zoom = Math.round(clampZoom(percent));
+    if (Math.abs(zoom - 100) < 3) {
+      this.zoom.set(100);
+      this.fit.set(true);
+      return;
+    }
+    this.fit.set(false);
+    this.zoom.set(zoom);
   }
 
   protected toggleFit(): void {

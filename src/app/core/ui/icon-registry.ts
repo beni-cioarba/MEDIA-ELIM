@@ -192,6 +192,10 @@ const ICON_PATHS: Record<IconName, readonly string[] | FilledIcon> = {
     'M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z',
   ],
   'chevron-down': ['M6 9l6 6 6-6'],
+  // Abrir / cerrar todas (listas desplegables): dos flechas que se separan o
+  // se juntan, el símbolo habitual de «expandir todo».
+  unfold: ['M7 15l5 5 5-5', 'M7 9l5-5 5 5'],
+  fold: ['M7 20l5-5 5 5', 'M7 4l5 5 5-5'],
   // Trazo idéntico al de `chevron-down` girado: así las tres flechas
   // pesan lo mismo ópticamente en la misma retícula de 24.
   'chevron-left': ['M15 6l-6 6 6 6'],

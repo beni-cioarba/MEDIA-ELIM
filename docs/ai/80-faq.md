@@ -66,6 +66,17 @@ lunes a viernes, un test avisa (`schedule` lo da por hecho).
   página justo mientras el router baja a la nueva.
 - **Copiar el enlace** de una respuesta (con su idioma): para contestar por
   WhatsApp. Sólo en la página.
+- **Abrir / cerrar todas** (26/11/2026): uno general, **con texto**, al final
+  de la fila de temas (sólo `≥ sm`: en el teléfono esa fila se desliza y cada
+  tema ya lleva el suyo), y uno por tema (si tiene más de una pregunta) **sólo
+  icono** (`unfold` / `fold`, dos flechas que se separan o se juntan), centrado
+  sobre la columna de las flechas de las preguntas; su texto va en `title` y
+  `aria-label` («Deschide toate: Prima vizită»). Al principio los dos eran el
+  mismo rótulo y, en la columna derecha, quedaban uno encima de otro: se leía
+  como un error. Alterna: si están todas abiertas, «Închide toate».
+  El estado se lee de los `<details>` (`toggle` en captura y tras cada cambio
+  de lo visible), así cuenta lo abierto a mano, por enlace o al buscar.
+  `aria-expanded` en el botón; el del tema lleva su nombre para el lector.
 - Sin `FAQPage` (JSON-LD): Google sólo da ese resultado enriquecido a webs
   sanitarias y de la administración.
 

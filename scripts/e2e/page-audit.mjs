@@ -43,6 +43,10 @@ export function auditPage(options) {
   // ── Estructura ────────────────────────────────────────────────────────
   const headings = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].filter((h) => {
     // Un `h1` sólo para lectores de pantalla cuenta: es el título de la página.
+    // Lo que está fuera del árbol de accesibilidad no cuenta: las vistas
+    // previas de las pestañas del teléfono (`app-swipe-peek`, inert +
+    // aria-hidden) llevan el `h1` de su página.
+    if (h.closest('[inert], [aria-hidden="true"]')) return false;
     const r = h.getBoundingClientRect();
     return r.width > 0 && r.height > 0;
   });

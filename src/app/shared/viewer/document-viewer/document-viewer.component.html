@@ -110,10 +110,10 @@
     <div class="dv__content">
       @switch (category()) {
         @case ('image') {
-          <app-image-engine [document]="document()" [zoom]="zoom()" [rotation]="rotation()" [fit]="fit()" />
+          <app-image-engine [document]="document()" [zoom]="zoom()" [rotation]="rotation()" [fit]="fit()" (zoomTo)="setZoom($event)" />
         }
         @case ('pdf') {
-          <app-pdf-engine [document]="document()" [zoom]="zoom()" [rotation]="rotation()" [fit]="fit()" />
+          <app-pdf-engine [document]="document()" [zoom]="zoom()" [rotation]="rotation()" [fit]="fit()" (zoomTo)="setZoom($event)" />
         }
         @case ('video') {
           <app-media-engine [document]="document()" [video]="true" (download)="download()" />

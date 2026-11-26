@@ -19,12 +19,13 @@
   min-height: 0;
   overflow: hidden;
   padding: 0;
-  touch-action: pinch-zoom;
+  // El pellizco lo lleva el motor: amplía la imagen, no la página.
+  touch-action: none;
   user-select: none;
+  cursor: zoom-in;
 
   &--pannable {
     cursor: grab;
-    touch-action: none;
   }
 
   &--panning {

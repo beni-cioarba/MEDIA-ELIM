@@ -175,7 +175,19 @@
 }
 
 // ── Temas ─────────────────────────────────────────────────────────────
+// Fichas a la izquierda y «Abrir todas» al final de la fila (escritorio). En
+// el teléfono la fila de fichas se desliza hasta el borde y el botón general
+// sobra: cada tema lleva el suyo junto al título.
+.topics {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
 .topics__list {
+  flex: 1;
+  min-width: 0;
+
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -261,11 +273,19 @@
   }
 }
 
+.topic__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-2);
+}
+
 .topic__title {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  margin: 0 0 var(--sp-2);
+  margin: 0;
   font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 700;
@@ -278,6 +298,73 @@
   flex: none;
   font-size: 1.15rem;
   color: var(--c-gold-deep);
+}
+
+// Abrir / cerrar todas: botón de texto discreto (no compite con las
+// preguntas). 32 px de alto visible y 44 de zona táctil (WCAG 2.5.8).
+.fold {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2rem;
+  padding: 0 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fq-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--mo-base) var(--ea-standard),
+    color var(--mo-base) var(--ea-standard);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+
+  &:hover {
+    background: var(--c-surface-2);
+    color: var(--c-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-gold-deep);
+    outline-offset: 2px;
+  }
+
+  // Del tema: botón redondo de icono, centrado sobre la columna de las
+  // flechas de las preguntas: relleno de la fila (`--sp-5`, como `--qa-pad` de
+  // faq-list) + borde + media flecha (1,1rem) − medio botón.
+  &--icon {
+    justify-content: center;
+    width: 2rem;
+    padding: 0;
+    margin-right: calc(var(--sp-5) + 1px + 0.55rem - 1rem);
+  }
+
+  // El general, sólo donde hay sitio en la fila de fichas.
+  &--all {
+    @include until('sm') {
+      display: none;
+    }
+  }
+}
+
+.fold__icon {
+  font-size: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fold {
+    transition: none;
+  }
 }
 
 .none {

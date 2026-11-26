@@ -6,8 +6,10 @@ import {
   afterNextRender,
   computed,
   effect,
+  Injector,
   inject,
   input,
+  output,
   signal,
   untracked,
   viewChildren,
@@ -18,6 +20,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
 import { IconComponent } from '../../icon/icon.component';
 import { ViewerDocument } from '../core/viewer-document.model';
+import { clampZoom } from '../core/zoom';
 
 /** Medidas de una página a escala 1 y sin girar (puntos PDF). */
 interface PageSize {
@@ -80,6 +83,9 @@ function ensurePromiseTry(): void {
  * · «Ajustar» = ancho de página; el zoom es relativo a él (como CemenWEB).
  * · Píldora de páginas abajo (actual / total, anterior y siguiente) y
  *   arrastre con el ratón para moverse por la página ampliada.
+ * · **Zoom con Ctrl + rueda** (y el pellizco del panel táctil, que llega así),
+ *   con el punto del cursor quieto. La rueda sola sigue desplazando las
+ *   páginas, como en cualquier lector de PDF.
  */
 @Component({
   selector: 'app-pdf-engine',
@@ -104,6 +110,7 @@ function ensurePromiseTry(): void {
         class="scroller"
         [class.scroller--panning]="panning()"
         (scroll)="onScroll()"
+        (wheel)="onWheel($event)"
         (pointerdown)="onPointerDown($event)"
         (pointermove)="onPointerMove($event)"
         (pointerup)="onPointerUp($event)"
@@ -147,7 +154,10 @@ export class PdfEngineComponent {
   readonly zoom = input(100);
   readonly rotation = input(0);
   readonly fit = input(true);
+  /** Zoom pedido con Ctrl + rueda (lo aplica el shell). */
+  readonly zoomTo = output<number>();
 
+  private readonly injector = inject(Injector);
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
   private readonly pages = viewChildren<ElementRef<HTMLElement>>('page');
 
@@ -197,7 +207,10 @@ export class PdfEngineComponent {
     effect(() => {
       this.scale();
       this.rotation();
-      untracked(() => this.visible.forEach((n) => this.paint(n)));
+      untracked(() => {
+        this.requested = null;
+        this.visible.forEach((n) => this.paint(n));
+      });
     });
 
     // Cada vez que cambian los huecos de página, se vuelven a observar.
@@ -326,6 +339,73 @@ export class PdfEngineComponent {
     const root = this.scroller()?.nativeElement;
     if (!page || !root) return;
     root.scrollTo({ top: page.offsetTop - GUTTER, behavior: 'smooth' });
+  }
+
+  // ------------------------------------------------------------------
+  // Zoom con Ctrl + rueda, con el punto del cursor quieto
+  // ------------------------------------------------------------------
+
+  /** Punto que debe quedar bajo el cursor cuando las páginas cambien de tamaño. */
+  private anchor: { page: HTMLElement; fx: number; fy: number; x: number; y: number } | null = null;
+  /** Último zoom pedido y aún no aplicado (se limpia al cambiar la escala). */
+  private requested: number | null = null;
+
+  protected onWheel(event: WheelEvent): void {
+    if (!event.ctrlKey || event.deltaY === 0) return;
+    // Sin esto, Ctrl + rueda ampliaría la página entera del navegador.
+    event.preventDefault();
+    const root = this.scroller()?.nativeElement;
+    if (!root || !this.sizes().length) return;
+    // El pedido y aún no aplicado, si lo hay: en una ráfaga la entrada llega tarde.
+    const current = this.requested ?? (this.fit() ? 100 : this.zoom());
+    // Rueda: ±10 % por muesca (deltaY ≈ 100); panel táctil: proporcional.
+    const factor = Math.abs(event.deltaY) >= 50 ? (event.deltaY < 0 ? 1.1 : 1 / 1.1) : Math.exp(-event.deltaY / 100);
+    const target = clampZoom(current * factor);
+    if (Math.abs(target - current) < 0.5) return;
+    // El punto se fija sobre la **página** bajo el cursor (fracción de su ancho
+    // y alto), no sobre el área: las páginas van centradas y con márgenes
+    // fijos, así que el área no crece en proporción. Sólo el primer evento de
+    // una ráfaga lo fija: los siguientes llegan antes del repintado.
+    if (!this.anchor) {
+      const page = this.pageAt(event.clientY);
+      if (page) {
+        const box = page.getBoundingClientRect();
+        this.anchor = {
+          page,
+          fx: (event.clientX - box.left) / box.width,
+          fy: (event.clientY - box.top) / box.height,
+          x: event.clientX,
+          y: event.clientY,
+        };
+      }
+    }
+    this.requested = target;
+    this.zoomTo.emit(target);
+    // Con el nuevo tamaño ya maquetado, devuelve ese punto bajo el cursor.
+    afterNextRender(
+      () => {
+        const anchor = this.anchor;
+        this.anchor = null;
+        if (!anchor?.page.isConnected) return;
+        const box = anchor.page.getBoundingClientRect();
+        root.scrollLeft += box.left + anchor.fx * box.width - anchor.x;
+        root.scrollTop += box.top + anchor.fy * box.height - anchor.y;
+      },
+      { injector: this.injector },
+    );
+  }
+
+  /** Página a la altura `clientY` (o la más cercana). */
+  private pageAt(clientY: number): HTMLElement | null {
+    let best: HTMLElement | null = null;
+    let distance = Infinity;
+    for (const { nativeElement: page } of this.pages()) {
+      const box = page.getBoundingClientRect();
+      const d = clientY < box.top ? box.top - clientY : clientY > box.bottom ? clientY - box.bottom : 0;
+      if (d < distance) [best, distance] = [page, d];
+      if (d === 0) break;
+    }
+    return best;
   }
 
   // ------------------------------------------------------------------

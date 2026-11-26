@@ -38,6 +38,7 @@
     class="mv__stage"
     [class.mv__stage--zoomed]="zoomed()"
     [class.mv__stage--doc]="kind() === 'pdf'"
+    [class.mv__stage--video]="kind() === 'video'"
     (wheel)="onWheel($event)"
     (dblclick)="onDoubleClick($event)"
     (pointerdown)="onPointerDown($event)"

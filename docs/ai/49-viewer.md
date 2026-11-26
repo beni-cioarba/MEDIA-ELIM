@@ -60,6 +60,25 @@ entre documentos (sin bucle). PDF: páginas que se pintan al acercarse a la vist
 con ratón. Atajos: `+` `-` `0` (ajustar) `R` / `Shift+R` `I` `←` `→` `Esc`.
 En móvil se ocultan imprimir y abrir fuera y los datos de la barra.
 
+**Zoom directo (26/11/2026)**, como en la galería; antes sólo había botones y
+atajos. Los motores lo piden con `zoomTo` y el shell lo aplica (`setZoom`, mismo
+tope 25–400 % de `core/zoom.ts`; cerca de 100 vuelve a «Ajustat»):
+
+| | Imagen | PDF |
+| --- | --- | --- |
+| Rueda | ±20 % por muesca, en el punto del cursor | desplaza las páginas (como cualquier lector) |
+| Ctrl + rueda / pellizco del panel táctil | proporcional al gesto | ±10 % por muesca o proporcional, en el punto del cursor |
+| Doble clic | 250 % en ese punto; ampliada, vuelve a ajustar | — (seleccionaría texto) |
+| Pellizco con dos dedos | sí (`touch-action: none` en el lienzo) | el del navegador |
+
+El punto queda quieto: en la imagen, con el desplazamiento (`tx`, `ty`) que se
+recalcula a los límites al llegar la nueva escala; en el PDF, sobre la página
+bajo el cursor (fracción de su ancho y alto), no sobre el área, porque las
+páginas van centradas con márgenes fijos. Una ráfaga de eventos (panel táctil)
+lee el último zoom **pedido** (`requested`), no la entrada, que llega un ciclo
+tarde: sin eso se perdían pasos. Ctrl + rueda siempre se intercepta: si no,
+ampliaba la página entera del navegador.
+
 No se proyecta: en la proyección del templo la directiva va desactivada
 (`[appViewableDisabled]="fullscreen()"` en la ficha de familia).
 
@@ -90,6 +109,13 @@ avanza. Señales: `playing()` (puede avanzar), `timed()` (va por plazo),
 nunca: `clampStart`); `from` sólo dice por dónde empezar esta vez (p. ej. el
 reel de una crónica que ya se venía viendo en la página). La galería usa
 `#t=max(from, start)` (`videoSrc()`).
+
+**Vídeo sin zoom (26/11/2026)**: el escenario llevaba la lupa (`zoom-in`) también
+sobre los vídeos, y `+` los «ampliaba» (sólo se pinta en la foto) parando la
+autorreproducción. Se descartó ampliar vídeo: escalar el `<video>` escala
+también sus controles nativos, el arrastre para desplazarse choca con la barra
+de tiempo, y son 720 p (ampliados se ven borrosos). Ahora `mv__stage--video`
+pone cursor normal y los atajos de zoom sólo actúan con imagen.
 
 ## Galería: la foto siempre entera (09/10/2026)
 

@@ -93,6 +93,16 @@
           </li>
         }
       </ul>
+      <!-- Abrir / cerrar todas (escritorio; en el teléfono, el de cada tema). -->
+      <button
+        type="button"
+        class="fold fold--all"
+        [attr.aria-expanded]="allOpen(allIds())"
+        (click)="toggle(allIds())"
+      >
+        <app-icon class="fold__icon" [name]="allOpen(allIds()) ? 'fold' : 'unfold'" />
+        {{ (allOpen(allIds()) ? 'faq.collapse_all' : 'faq.expand_all') | translate }}
+      </button>
     </nav>
   }
 
@@ -102,10 +112,30 @@
         <div class="cols__col">
           @for (group of column; track group.id) {
             <section class="topic" [id]="'g-' + group.id" tabindex="-1" [attr.aria-labelledby]="'t-' + group.id">
-              <h2 class="topic__title" [id]="'t-' + group.id">
-                <app-icon class="topic__icon" [name]="group.icon" />
-                {{ 'faq.groups.' + group.id | translate }}
-              </h2>
+              <div class="topic__head">
+                <h2 class="topic__title" [id]="'t-' + group.id">
+                  <app-icon class="topic__icon" [name]="group.icon" />
+                  {{ 'faq.groups.' + group.id | translate }}
+                </h2>
+                @if (group.ids.length > 1) {
+                  <!-- Del tema: sólo icono, en la columna de las flechas de las
+                       preguntas (el general lleva el texto: dos rótulos
+                       iguales uno encima de otro se leían como un error). -->
+                  @let label =
+                    (allOpen(group.ids) ? 'faq.collapse_group' : 'faq.expand_group')
+                      | translate: { topic: ('faq.groups.' + group.id | translate) };
+                  <button
+                    type="button"
+                    class="fold fold--icon"
+                    [attr.aria-expanded]="allOpen(group.ids)"
+                    [attr.aria-label]="label"
+                    [title]="label"
+                    (click)="toggle(group.ids)"
+                  >
+                    <app-icon class="fold__icon" [name]="allOpen(group.ids) ? 'fold' : 'unfold'" />
+                  </button>
+                }
+              </div>
               <app-faq-list [ids]="group.ids" [openIds]="openIds()" [anchors]="true" />
             </section>
           }

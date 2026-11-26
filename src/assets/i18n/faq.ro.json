@@ -12,6 +12,10 @@
       "none_text": "Încearcă alt cuvânt sau întreabă-ne direct."
     },
     "nav": "Teme",
+    "expand_all": "Deschide toate",
+    "collapse_all": "Închide toate",
+    "expand_group": "Deschide toate: {{topic}}",
+    "collapse_group": "Închide toate: {{topic}}",
     "facts": {
       "title": "Pe scurt",
       "next": "Următorul serviciu",

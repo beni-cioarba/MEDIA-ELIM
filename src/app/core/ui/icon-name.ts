@@ -40,6 +40,8 @@ export type IconName =
   | 'external'
   | 'grip'
   | 'chevron-down'
+  | 'unfold'
+  | 'fold'
   | 'chevron-left'
   | 'chevron-right'
   | 'arrow-left'

@@ -12,6 +12,10 @@
       "none_text": "Prueba con otra palabra o pregúntanos directamente."
     },
     "nav": "Temas",
+    "expand_all": "Abrir todas",
+    "collapse_all": "Cerrar todas",
+    "expand_group": "Abrir todas: {{topic}}",
+    "collapse_group": "Cerrar todas: {{topic}}",
     "facts": {
       "title": "En breve",
       "next": "Próximo culto",
