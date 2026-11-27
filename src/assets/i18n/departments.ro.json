@@ -412,6 +412,8 @@
         "slides": {
           "worship": "Tineretul în închinare",
           "inainte_da_hall": "Înainte să spui „DA” · sala plină",
+          "inainte_da_opening": "Înainte să spui „DA” · începutul serii",
+          "inainte_da_dialog": "Înainte să spui „DA” · întrebările tinerilor",
           "ancorat_hall": "Conferința ANCORAT · sala plină",
           "ancorat_worship": "Conferința ANCORAT · laudă și închinare",
           "ancorat_singing": "Conferința ANCORAT · tinerii cântă",
@@ -609,10 +611,71 @@
         }
       },
       "stories": {
+        "zambetul_2026": {
+          "title": "Zâmbetul din Cutie 2026",
+          "period": "Campanie de caritate · 2026",
+          "lead": "„În fiecare cutie este un zâmbet; în spatele acestui zâmbet este un sacrificiu, și în spatele sacrificiului este dragostea.” Proiectul, început în 2015, continuă: după cele 1.220 de cutii împărțite în 2025, ne-am propus 1.500, pentru copii de 3–14 ani din România și Republica Moldova, pregătite la biserică și duse împreună cu Asociația MGM.",
+          "points": {
+            "price": {
+              "title": "25 € o cutie",
+              "text": "20 € conținutul și 5 € transportul. Se plătește la înscriere, în duminicile de 1, 8 și 15 noiembrie, ca toate materialele să fie cumpărate din timp."
+            },
+            "same": {
+              "title": "Cutii identice",
+              "text": "Cumpărăm totul împreună, ca fiecare copil să primească aceeași bucurie: dulciuri și ciocolată, biscuiți, acadele, pixuri colorate, carioci, un caiet de activități, pastă și periuță de dinți și o jucărie."
+            },
+            "packing": {
+              "title": "Împachetarea, sâmbătă 21 noiembrie",
+              "text": "La Biserica Elim, cu copiii și tinerii bisericii; la final, o masă pentru toți cei care au ajutat. Copiii de la 5 ani vin însoțiți și supravegheați de părinți."
+            },
+            "distribution": {
+              "title": "Împărțirea, 4–6 decembrie",
+              "text": "Cu Asociația MGM, în două zone: județele Iași și Vaslui, în România, și satul Borogani (raionul Leova), în Republica Moldova."
+            },
+            "team": {
+              "title": "Cine le duce",
+              "text": "Din biserică merg Aurel Burdet, Ionuț Mitoseriu, Oleg Ciobanu, Kevin Mitoseriu, David Copran și Daniel Dulca. Mulțumim Tabita Tour pentru transport."
+            },
+            "friend": {
+              "title": "Invită un prieten",
+              "text": "Avem invitații pentru cei care vor să-și aducă prietenii sau colegii de școală. Ne dorim ca proiectul să deschidă inimile oamenilor către cer."
+            }
+          }
+        },
         "zambetul_2025": {
           "title": "Zâmbetul din Cutie",
           "period": "Campanie de caritate · 2025",
-          "lead": "Campania în care familiile bisericii au pregătit cutii cu daruri pentru cei care au nevoie de o bucurie."
+          "lead": "O zi întreagă sub cort, la biserică: copii, tineri și părinți au pregătit împreună 1.220 de cutii cu daruri pentru copii săraci și orfani din zone defavorizate ale României, duse în Oltenia împreună cu Asociația EBEN-EZER din Botoșani.",
+          "points": {
+            "history": {
+              "title": "Zece ani de zâmbete",
+              "text": "Proiectul a început în 2015. În zece ani: peste 6.000 de cadouri, peste 1.600 kg de portocale și peste 300.000 € investiți în zone defavorizate. În 2024 am pregătit 1.068 de cutii."
+            },
+            "boxes": {
+              "title": "O cutie pentru fiecare copil",
+              "text": "Pentru copii de 3–14 ani. Fiecare cutie poartă eticheta campaniei și spune pentru cine este: băiat sau fată și grupa de vârstă (de exemplu, „Băiat 3–7 ani”). La fiecare masă, o listă ține evidența cutiilor."
+            },
+            "content": {
+              "title": "Același conținut în toate",
+              "text": "Cumpărat împreună, ca bucuria să fie egală: dulciuri și ciocolată, biscuiți, rechizite, pastă și periuță de dinți și o jucărie. 25 € o cutie, cu transportul și ambalajul, plătiți la înscriere (2, 9 și 16 noiembrie)."
+            },
+            "together": {
+              "title": "Toată biserica",
+              "text": "Tinerii au montat cartoanele de transport, copiii (de la 5 ani, cu părinții) au umplut cutiile de la o masă la alta, iar cei mari le-au ambalat."
+            },
+            "table": {
+              "title": "Masa de la final",
+              "text": "Ziua s-a încheiat cu o masă caldă pentru toți, gătită pe loc, sub cort."
+            },
+            "distribution": {
+              "title": "Împărțirea, 4–7 decembrie",
+              "text": "În Oltenia, cu Asociația EBEN-EZER din Botoșani. Au mers Aurel Burdet, Gabriel Cifor și Kevin Mitoseriu, împreună cu Daniel Dulca și David Copran, câștigătorii concursului biblic al tineretului. Transportul: Tabita Tour, cu mulțumiri."
+            }
+          },
+          "verse": {
+            "text": "„Fiecare să dea după cum a hotărât în inima lui: nu cu părere de rău sau de silă, căci pe cine dă cu bucurie îl iubește Dumnezeu.”",
+            "ref": "2 Corinteni 9:7"
+          }
         }
       }
     },
@@ -671,6 +734,8 @@
     },
     "stories_title": "Din viața tineretului",
     "photos_all": "Toate fotografiile",
+    "photos_more": "Fotografii în plus: {{count}}",
+    "partner": "În colaborare cu {{name}}",
     "watch_full": "Urmărește programul integral",
     "watch_src": "live",
     "watch_cta": "Deschide pe YouTube",

@@ -45,7 +45,7 @@
             </figure>
           }
 
-          @if (v.youtubeUrl || v.driveUrl) {
+          @if (v.youtubeUrl || v.driveUrl || s.partner) {
             <div class="story__links">
               @if (v.youtubeUrl) {
                 <a class="watch" [href]="v.youtubeUrl" target="_blank" rel="noopener noreferrer">
@@ -76,6 +76,21 @@
                   {{ 'departments.photos_all' | translate }}
                   <app-icon name="external" />
                 </a>
+              }
+              @if (s.partner; as partner) {
+                @if (partner.url) {
+                  <a class="story__drive" [href]="partner.url" target="_blank" rel="noopener noreferrer">
+                    <app-icon name="heart" />
+                    {{ 'departments.partner' | translate: { name: partner.name } }}
+                    <app-icon name="external" />
+                  </a>
+                } @else {
+                  <!-- Sin web: el nombre, como etiqueta (no parece un botón). -->
+                  <span class="story__partner">
+                    <app-icon name="heart" />
+                    {{ 'departments.partner' | translate: { name: partner.name } }}
+                  </span>
+                }
               }
             </div>
           }
@@ -119,7 +134,7 @@
           }
 
           <ul class="mosaic" [class.mosaic--single]="v.photos.length === 1 && !s.video" role="list" [attr.aria-label]="'departments.open_gallery' | translate">
-            @for (photo of v.photos; track photo.src; let i = $index) {
+            @for (photo of v.photos; track photo.src; let i = $index, last = $last) {
               <li class="tile" [class.tile--portrait]="photo.portrait" [class.tile--featured]="photo.featured">
                 <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="v.photoOffset + i" appViewableMode="gallery">
                   <img
@@ -135,6 +150,13 @@
                   />
                   @if (photo.video) {
                     <span class="tile__play" aria-hidden="true"><app-icon name="play" /></span>
+                  }
+                  @if (last && v.more > 0) {
+                    <!-- Fotos sólo del visor (`galleryOnly`): siguen a ésta en la galería. -->
+                    <span class="tile__more">
+                      <span aria-hidden="true">+{{ v.more }}</span>
+                      <span class="u-sr-only">{{ 'departments.photos_more' | translate: { count: v.more } }}</span>
+                    </span>
                   }
                 </div>
               </li>
@@ -190,6 +212,21 @@
               <app-icon name="image" />
               {{ 'departments.photos_soon' | translate }}
             </p>
+          }
+          @if (s.partner; as partner) {
+            @if (partner.url) {
+              <a class="story__drive" [href]="partner.url" target="_blank" rel="noopener noreferrer">
+                <app-icon name="heart" />
+                {{ 'departments.partner' | translate: { name: partner.name } }}
+                <app-icon name="external" />
+              </a>
+            } @else {
+              <!-- Sin web: el nombre, como etiqueta (no parece un botón). -->
+              <span class="story__partner">
+                <app-icon name="heart" />
+                {{ 'departments.partner' | translate: { name: partner.name } }}
+              </span>
+            }
           }
         </div>
       </article>

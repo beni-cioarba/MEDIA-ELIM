@@ -323,6 +323,20 @@
   }
 }
 
+// Socio sin web: mismo alto y la misma línea que los botones, pero sin borde
+// ni hover (no se pulsa).
+.story__partner {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 0.25rem;
+  color: var(--c-muted);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
 // ---------------------------------------------------------------------
 // Crónica completa
 // ---------------------------------------------------------------------
@@ -614,6 +628,30 @@
 
   .tile__frame:hover img {
     transform: scale(1.04);
+  }
+}
+
+// «+N»: fotos que sólo están en el visor (`galleryOnly`). Velo navy sobre la
+// última casilla; la cifra, a la escala de la casilla (no del texto).
+.tile__more {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(6 18 40 / 0.58);
+  color: #fff;
+  font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+  transition: background-color 0.2s ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tile__frame:hover .tile__more {
+    background: rgb(6 18 40 / 0.42);
   }
 }
 

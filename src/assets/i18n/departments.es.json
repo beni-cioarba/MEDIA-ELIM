@@ -412,6 +412,8 @@
         "slides": {
           "worship": "Los jóvenes en adoración",
           "inainte_da_hall": "Antes de decir «SÍ» · la sala llena",
+          "inainte_da_opening": "Antes de decir «SÍ» · el comienzo de la noche",
+          "inainte_da_dialog": "Antes de decir «SÍ» · las preguntas de los jóvenes",
           "ancorat_hall": "Conferencia ANCORAT · la sala llena",
           "ancorat_worship": "Conferencia ANCORAT · alabanza y adoración",
           "ancorat_singing": "Conferencia ANCORAT · los jóvenes cantan",
@@ -609,10 +611,71 @@
         }
       },
       "stories": {
+        "zambetul_2026": {
+          "title": "La sonrisa en una caja 2026",
+          "period": "Campaña solidaria · 2026",
+          "lead": "«En cada caja hay una sonrisa; detrás de esa sonrisa hay un sacrificio, y detrás del sacrificio está el amor.» El proyecto, que empezó en 2015, sigue: tras las 1.220 cajas repartidas en 2025, nos propusimos 1.500, para niños de 3 a 14 años de Rumanía y la República de Moldavia, preparadas en la iglesia y llevadas junto con la Asociación MGM.",
+          "points": {
+            "price": {
+              "title": "25 € por caja",
+              "text": "20 € el contenido y 5 € el transporte. Se paga al inscribirse, los domingos 1, 8 y 15 de noviembre, para comprar todo el material a tiempo."
+            },
+            "same": {
+              "title": "Cajas iguales",
+              "text": "Lo compramos todo juntos, para que cada niño reciba la misma alegría: dulces y chocolate, galletas, piruletas, bolígrafos de colores, rotuladores, un cuaderno de actividades, pasta y cepillo de dientes y un juguete."
+            },
+            "packing": {
+              "title": "El empaquetado, sábado 21 de noviembre",
+              "text": "En la Iglesia Elim, con los niños y los jóvenes de la iglesia; al final, una comida para todos los que ayudaron. Los niños, desde los 5 años, acompañados y vigilados por sus padres."
+            },
+            "distribution": {
+              "title": "El reparto, del 4 al 6 de diciembre",
+              "text": "Con la Asociación MGM, en dos zonas: los distritos de Iași y Vaslui, en Rumanía, y el pueblo de Borogani (distrito de Leova), en la República de Moldavia."
+            },
+            "team": {
+              "title": "Quién las lleva",
+              "text": "De la iglesia van Aurel Burdet, Ionuț Mitoseriu, Oleg Ciobanu, Kevin Mitoseriu, David Copran y Daniel Dulca. Gracias a Tabita Tour por el transporte."
+            },
+            "friend": {
+              "title": "Invita a un amigo",
+              "text": "Hay invitaciones para quien quiera traer a sus amigos o compañeros de clase. Queremos que este proyecto abra el corazón de la gente al cielo."
+            }
+          }
+        },
         "zambetul_2025": {
           "title": "La sonrisa en una caja",
           "period": "Campaña solidaria · 2025",
-          "lead": "La campaña en la que las familias de la iglesia prepararon cajas con regalos para quienes necesitan una alegría."
+          "lead": "Un día entero bajo la carpa, en la iglesia: niños, jóvenes y padres prepararon juntos 1.220 cajas de regalo para niños pobres y huérfanos de zonas desfavorecidas de Rumanía, llevadas a Oltenia junto con la Asociación EBEN-EZER de Botoșani.",
+          "points": {
+            "history": {
+              "title": "Diez años de sonrisas",
+              "text": "El proyecto empezó en 2015. En diez años: más de 6.000 regalos, más de 1.600 kg de naranjas y más de 300.000 € invertidos en zonas desfavorecidas. En 2024 preparamos 1.068 cajas."
+            },
+            "boxes": {
+              "title": "Una caja para cada niño",
+              "text": "Para niños de 3 a 14 años. Cada caja lleva la etiqueta de la campaña y dice para quién es: niño o niña y su franja de edad (por ejemplo, «Niño 3–7 años»). En cada mesa, una lista lleva la cuenta de las cajas."
+            },
+            "content": {
+              "title": "Lo mismo en todas",
+              "text": "Comprado entre todos, para que la alegría sea igual: dulces y chocolate, galletas, material escolar, pasta y cepillo de dientes y un juguete. 25 € por caja, con el transporte y el envoltorio, pagados al inscribirse (2, 9 y 16 de noviembre)."
+            },
+            "together": {
+              "title": "Toda la iglesia",
+              "text": "Los jóvenes montaron los cartones de envío, los niños (desde los 5 años, con sus padres) llenaron las cajas de mesa en mesa y los mayores las envolvieron."
+            },
+            "table": {
+              "title": "La comida del final",
+              "text": "El día terminó con una comida caliente para todos, preparada allí mismo, bajo la carpa."
+            },
+            "distribution": {
+              "title": "El reparto, del 4 al 7 de diciembre",
+              "text": "En Oltenia, con la Asociación EBEN-EZER de Botoșani. Fueron Aurel Burdet, Gabriel Cifor y Kevin Mitoseriu, junto con Daniel Dulca y David Copran, ganadores del concurso bíblico de los jóvenes. El transporte: Tabita Tour, con nuestro agradecimiento."
+            }
+          },
+          "verse": {
+            "text": "«Cada uno dé como propuso en su corazón: no con tristeza, ni por necesidad, porque Dios ama al dador alegre.»",
+            "ref": "2 Corintios 9:7"
+          }
         }
       }
     },
@@ -671,6 +734,8 @@
     },
     "stories_title": "La vida de los jóvenes",
     "photos_all": "Todas las fotos",
+    "photos_more": "Más fotos: {{count}}",
+    "partner": "En colaboración con {{name}}",
     "watch_full": "Ver el programa completo",
     "watch_src": "directo",
     "watch_cta": "Abrir en YouTube",

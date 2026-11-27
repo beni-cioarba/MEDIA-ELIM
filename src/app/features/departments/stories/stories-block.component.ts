@@ -50,6 +50,8 @@ interface StoryView {
   readonly reelIndex: number;
   /** Índice en `gallery` de la primera foto del mosaico. */
   readonly photoOffset: number;
+  /** Fotos sólo del visor (`galleryOnly`), tras el mosaico: «+N» en la última casilla. */
+  readonly more: number;
   readonly driveUrl: string | null;
   readonly youtubeUrl: string | null;
   readonly youtubeThumb: string | null;
@@ -117,7 +119,8 @@ export class StoriesBlockComponent {
       const base = `departments.${dept}.stories.${story.id}`;
       const coverPhoto = story.photos.find((p) => p.cover);
       const cover = coverPhoto ? toView(coverPhoto) : null;
-      const photos = story.photos.filter((p) => !p.cover).map(toView);
+      const photos = story.photos.filter((p) => !p.cover && !p.galleryOnly).map(toView);
+      const extra = story.photos.filter((p) => !p.cover && p.galleryOnly).map(toView);
       const title = this.translate.instant(`${base}.title`);
       // El visor ya pone «n / total»: el nombre es sólo el título.
       const toDoc = (p: PhotoView): ViewerDocument =>
@@ -141,7 +144,7 @@ export class StoriesBlockComponent {
             alt: this.translate.instant(`${base}.caption`),
           }
         : null;
-      const gallery = [...(cover ? [toDoc(cover)] : []), ...(reel ? [reel] : []), ...photos.map(toDoc)];
+      const gallery = [...(cover ? [toDoc(cover)] : []), ...(reel ? [reel] : []), ...photos.map(toDoc), ...extra.map(toDoc)];
       return {
         story,
         base,
@@ -150,7 +153,8 @@ export class StoriesBlockComponent {
         photos,
         gallery,
         reelIndex: reel ? (cover ? 1 : 0) : -1,
-        photoOffset: gallery.length - photos.length,
+        photoOffset: gallery.length - photos.length - extra.length,
+        more: extra.length,
         driveUrl: story.driveFolderId
           ? driveFolderUrl(story.driveFolderId, this.config.mediaGalleryUrl)
           : null,

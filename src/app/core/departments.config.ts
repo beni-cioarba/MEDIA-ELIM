@@ -117,6 +117,12 @@ export interface StoryPhoto {
    * portada (`base`, como una foto) con un ▶ y la galería lo reproduce.
    */
   readonly video?: string;
+  /**
+   * Sólo en la galería del visor, no en el mosaico: para crónicas con muchas
+   * fotos buenas sin que el mosaico crezca. Van detrás de las del mosaico y la
+   * última casilla lo anuncia («+N»).
+   */
+  readonly galleryOnly?: boolean;
 }
 
 /** Vídeo propio (en `assets/video/`, fuera de la caché de la PWA). */
@@ -204,6 +210,12 @@ export interface DepartmentStory {
   readonly verse?: boolean;
   /** Resumen de la predicación (requiere `youtubeId` para enlazar los momentos). */
   readonly sermon?: StorySermon;
+  /**
+   * Organización con la que se hizo (la que reparte, la que acoge…). Se
+   * enlaza junto a las fotos. Nombre propio: no se traduce. Sin `url`
+   * (organización sin web), el nombre va como etiqueta, sin enlace.
+   */
+  readonly partner?: { readonly name: string; readonly url?: string };
 }
 
 /**
@@ -457,14 +469,73 @@ const CHOIR_STORIES: readonly DepartmentStory[] = [
 
 const RELIEF_STORIES: readonly DepartmentStory[] = [
   {
+    // Edición 2026, de la presentación oficial de la iglesia («Zâmbetul din
+    // cutie · România 2026», PDF que dio el usuario el 27/11/2026): meta de
+    // 1.500 cajas, 25 € (20 + 5 de transporte), inscripción los domingos 1, 8
+    // y 15/11, empaquetado el sábado 21/11 y reparto con MGM del 4 al 6/12.
+    // Sin fotos aún: crónica compacta. Al llegar las fotos, `photos` +
+    // `driveFolderId` y pasa a crónica completa, como la de 2025.
+    id: 'zambetul_2026',
+    kind: 'campaign',
+    icon: 'gift',
+    start: '2026-11-21',
+    end: '2026-12-06',
+    place: 'Biserica Elim, Arganda del Rey',
+    points: ['price', 'same', 'packing', 'distribution', 'team', 'friend'],
+    photos: [],
+    partner: { name: 'Asociația MGM', url: 'https://misiuneamgm.ro/' },
+  },
+  {
     id: 'zambetul_2025',
     kind: 'campaign',
     icon: 'gift',
+    // Fecha de la cámara (EXIF) de las 829 fotos de la carpeta: todas del
+    // 22/11/2025 (la hora de la cámara está desfasada: hay sol de mañana).
+    // La presentación oficial de 2025 lo confirma: 22/11, 09:00. Reparto del
+    // 4 al 7/12/2025 (`end`).
+    start: '2025-11-22',
+    end: '2025-12-07',
     place: 'Biserica Elim, Arganda del Rey',
-    points: [],
-    photos: [{ base: 'zambetul_cutie_2025', width: 1600, height: 1067, featured: true }],
-    // Drive: «Zambetul din cutie - 2025»
+    points: ['history', 'boxes', 'content', 'together', 'table', 'distribution'],
+    // Selección del fotógrafo (24 fotos; la 2646 es la destacada). Mosaico
+    // 4 × 4 sin huecos: destacada (2 × 2), dos verticales (1 × 2) y cuatro
+    // apaisadas (2 × 1), en el orden del día: cartones, rechizite, cajas,
+    // envolver, masa. El resto, sólo en el visor (`galleryOnly`, «+17» en la
+    // última casilla), por orden de cámara.
+    photos: [
+      { base: 'zambetul_cutie_2025', width: 1600, height: 1067, featured: true },
+      { base: 'zambetul_2025_2421', width: 1600, height: 2400 },
+      { base: 'zambetul_2025_2816', width: 1600, height: 2400 },
+      // Casillas de ≈ 3 : 1: las caras, arriba.
+      { base: 'zambetul_2025_2377', width: 1600, height: 1067, focus: '50% 30%' },
+      { base: 'zambetul_2025_2403', width: 1600, height: 1067, focus: '50% 28%' },
+      { base: 'zambetul_2025_2562', width: 1600, height: 1067, focus: '50% 40%' },
+      { base: 'zambetul_2025_2955', width: 1600, height: 1067, focus: '50% 45%' },
+      { base: 'zambetul_2025_2368', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2411', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2414', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2431', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_2438', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_2441', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2461', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2474', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2476', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2482', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2507', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_2522', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_2619', width: 1600, height: 1067, galleryOnly: true },
+      { base: 'zambetul_2025_2641', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_2711', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_2946', width: 1600, height: 2400, galleryOnly: true },
+      { base: 'zambetul_2025_3486', width: 1600, height: 1067, galleryOnly: true },
+    ],
+    // Drive: «Zambetul din cutie - 2025» (829 fotos)
     driveFolderId: '1ADjG_UdCDXSEthe6Hr1GcYNXIWRKxXw-',
+    verse: true,
+    // Presentación oficial «Zâmbetul din cutie · România 2025»: el reparto
+    // de 2025 fue con Asociația EBEN-EZER Botoșani, en Oltenia (MGM es el
+    // socio de 2026). Sin web propia localizada: sin `url`, sólo el nombre.
+    partner: { name: 'Asociația EBEN-EZER Botoșani' },
   },
 ];
 
@@ -560,6 +631,25 @@ export const DEPARTMENTS: readonly DepartmentConfig[] = [
         medium: 'assets/drive-media/inainte_da_2026_sala-960.webp',
         thumb: 'assets/drive-media/inainte_da_2026_sala-thumb.webp',
         tone: '#6a5e55',
+      },
+      {
+        // El comienzo de la noche: todos en pie, el título en la pantalla.
+        id: 'youth_inainte_da_opening',
+        i18nKey: 'inainte_da_opening',
+        image: 'assets/drive-media/inainte_da_2026_inceput.webp',
+        medium: 'assets/drive-media/inainte_da_2026_inceput-960.webp',
+        thumb: 'assets/drive-media/inainte_da_2026_inceput-thumb.webp',
+        tone: '#615548',
+      },
+      {
+        // Las preguntas de los jóvenes a Marian Condrat, en el escenario.
+        id: 'youth_inainte_da_dialog',
+        i18nKey: 'inainte_da_dialog',
+        image: 'assets/drive-media/inainte_da_2026_dialog.webp',
+        medium: 'assets/drive-media/inainte_da_2026_dialog-960.webp',
+        thumb: 'assets/drive-media/inainte_da_2026_dialog-thumb.webp',
+        tone: '#736962',
+        focus: 'center',
       },
       {
         id: 'youth_ancorat_hall',

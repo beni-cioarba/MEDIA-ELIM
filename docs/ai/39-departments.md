@@ -169,9 +169,76 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
   Fanfara «Tarancón, 20/09/2026» y Evanghelizare «13–15 martie 2026 · Gabi
   Zagrean / Frații Strugariu» → tarjeta compacta con «Vezi fotografiile»
   (Drive; fotos aún no optimizadas para la web). Cor «Concertul de colinde»
-  y Ajutorare «Zâmbetul din Cutie» → una foto (mosaico `--single`, 16:9) +
-  Drive. Sin fecha exacta conocida, la crónica muestra su **periodo** en
-  texto (`<base>.period`), nunca una fecha inventada.
+  → una foto (mosaico `--single`, 16:9) + Drive. Sin fecha exacta conocida,
+  la crónica muestra su **periodo** en texto (`<base>.period`), nunca una
+  fecha inventada.
+- **Ajutorare «Zâmbetul din Cutie» 2025** (ampliada el 27/11/2026, como las
+  de Tineret):
+  - **Fecha**: 22/11/2025, del EXIF de las 829 fotos de la carpeta (Canon EOS
+    R). La hora de la cámara está desfasada (sol de mañana a las «18:08»): no
+    sirve para el horario.
+  - **Fotos**: la selección del fotógrafo (24 originales 6720 × 4480 que dio
+    el usuario, `AG5A*.jpg`; la 2646 es la destacada de siempre,
+    `zambetul_cutie_2025`). Se llaman `zambetul_2025_<nº de cámara>`, sin
+    variante 2560 (no son portada). Mosaico 4 × 4 sin huecos: destacada,
+    2421 y 2816 (verticales), 2377, 2403, 2562, 2955 (apaisadas, con `focus`
+    a las caras). Las otras 17 van con **`galleryOnly`**: sólo en el visor,
+    tras las del mosaico, y la última casilla lo dice con un velo «+17»
+    (`departments.photos_more` para lectores de pantalla). Receta para
+    cualquier crónica con muchas fotos buenas: el mosaico no crece.
+    La etiqueta «SEBEȘ» de la 2377 no se lee a 1600 px.
+  - **Lo que se ve en las fotos**: etiqueta propia «Zâmbetul din Cutie · Elim
+    Arganda» con sexo y edad («BĂIAT 3–7 ani»), lista por mesa (MESA 1, 2,
+    3…), montaje de los cartones de envío (los jóvenes), relleno por mesas
+    (rechizite, colores, dulces), papel de regalo y comida caliente bajo la
+    carpa.
+  - **Fuente oficial**: la presentación de la iglesia «Zâmbetul din cutie ·
+    România 2025» (PDF de 12 láminas que dio el usuario). Confirma la fecha
+    (22/11, 09:00) y da: reparto del 4 al 7/12/2025 (`end`), en **Oltenia**,
+    a niños pobres y huérfanos, **con Asociația EBEN-EZER Botoșani**; niños de
+    3 a 14 años; contenido igual en todas; 25 € (20 la caja + 5 transporte y
+    envoltorio), inscripción el 2, 9 y 16/11; niños desde 5 años con sus
+    padres; meta 1.500. Van Aurel Burdet, Gabriel Cifor, Kevin Mitoseriu y los
+    ganadores del concurso bíblico de tineret, Daniel Dulca y David Copran.
+    Transporte, Tabita Tour. Historial 2015-2025 (punto `history`): 10 años,
+    más de 6.000 regalos, más de 1.600 kg de naranjas, más de 300.000 €;
+    1.068 cajas en 2024. La cifra de 2025 (1.220 cajas) viene de la
+    presentación de 2026.
+  - **Socio: EBEN-EZER, no MGM.** Antes la crónica decía MGM (respuesta del
+    usuario del 27/11/2026, que era de 2026). Manda el documento oficial: MGM
+    es el socio de **2026**. De EBEN-EZER Botoșani no hay web localizada:
+    `partner` sin `url` (el nombre como etiqueta, sin enlace).
+  - **MGM** (para 2026): «Misionând Generația de Mâine», Dumbrăveni, Suceava.
+    Fuentes: [misiuneamgm.ro](https://misiuneamgm.ro/) (misión; zonas: Suceava,
+    Botoșani, Iași, Neamț, Vaslui y Cernăuți), la noticia de
+    [Monitorul de Suceava](https://www.monitorulsv.ro/asociatia-mgm-a-lansat-actiunea-zambetul-din-cadou-pentru-copii-din-familii-fara-posibilitati-financiare_3c2447/)
+    (2021: proyectos así «din anul 2013») y su publicación de Facebook del
+    24/11/2025. Su campaña propia se llama «Zâmbetul din **cadou**». No
+    confundir con «Zâmbetul din Cutie» de Asociația Șansa Ta (Bucarest), otra
+    campaña.
+  - **`partner`** (`DepartmentStory.partner: {name, url?}`): un enlace más
+    junto a «Toate fotografiile» («În colaborare cu {{name}}» / «En
+    colaboración con {{name}}», clave `departments.partner`). Sin `url`, una
+    etiqueta gris (`.story__partner`). También en la crónica compacta.
+- **Ajutorare «Zâmbetul din Cutie» 2026** (`zambetul_2026`, añadida el
+  27/11/2026): fuente **oficial**, la presentación de la iglesia «Zâmbetul din
+  cutie · România 2026» (PDF de 11 láminas que dio el usuario). Datos:
+  - meta 1.500 cajas (2025: 1.220), para niños de 3 a 14 años, todas
+    iguales («o bucurie în mod egal»);
+  - 25 € por caja (20 + 5 de transporte), pagados al inscribirse los domingos
+    1, 8 y 15/11;
+  - empaquetado el sábado 21/11 en la iglesia, con comida al final; niños
+    desde 5 años con sus padres;
+  - reparto con MGM del 4 al 6/12: Iași y Vaslui (Rumanía) y el pueblo de
+    Borogani (raionul Leova, Moldavia); seis hermanos de la iglesia (nombres
+    en el punto `team`; el PDF escribe «Compran», pero es Copran, como en
+    2025 y en Botezuri); transporte, Tabita Tour;
+  - lema de la lámina final, citado en la entradilla, que también dice que
+    el proyecto empezó en 2015 (no es «la segunda edición»).
+  - **Hora**: la lámina en rumano dice 09:00 y la invitación en español
+    («Sonrisa en una caja») 10:00 h. Como ya pasó, la web no da hora.
+  - Crónica **compacta** (sin fotos): `start` 21/11 y `end` 06/12. Cuando
+    lleguen las fotos: `photos` + `driveFolderId`, como la de 2025.
 - **Tabăra 2026** (Granja Casavieja, Ávila; material del 19/11/2026, carpeta
   «TABARA › FINAL»: 3 fotos y 11 vídeos, 944 MB). **Ojo a la fecha**: la
   configuración dice 25–26/07/2026, pero el dron y el iPhone marcan el
@@ -222,9 +289,14 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
     negocia, cómo se porta en casa), seis lecciones y cierre «Lasă-L pe
     Dumnezeu să aibă ultimul cuvânt» (1:06:11, 2 Corinteni 6:14). Versículo
     de la crónica: 2 Timotei 1:7 (el de la exhortación inicial, en pantalla).
-  - **Anuncio**: diapositiva `youth_inainte_da_hall` en la portada de Tineret
-    (2.ª, tras la alabanza) y álbum `inainte_da_2026` en la galería de Media
-    (mismas fotos).
+  - **Anuncio**: tres diapositivas seguidas en la portada de Tineret (2.ª-4.ª,
+    tras la alabanza): `youth_inainte_da_hall` (sala llena),
+    `youth_inainte_da_opening` (`inainte_da_2026_inceput`, todos en pie con el
+    título en pantalla) y `youth_inainte_da_dialog`
+    (`inainte_da_2026_dialog`, las preguntas a Marian Condrat; `focus:
+    center` para no perder a ninguno de los dos en móvil). Las dos últimas
+    vienen de Tezza-3966 y Tezza-7654 y no están en el mosaico. Álbum
+    `inainte_da_2026` en la galería de Media (mismas fotos).
   - Medido en `ng serve`: a 1440 px, crónica 953 × 2.809 px (resumen 1.600);
     a 375 px, 3.801 px (resumen 2.568), tira de fotos de 260 px, sin scroll
     horizontal; la galería abre las 7.
