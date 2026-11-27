@@ -1,11 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../core/church.config';
 import { DepartmentStory, StoryPhoto } from '../../../core/departments.config';
 import { DepartmentId } from '../../../core/navigation/app-paths';
 import { youtubeThumbFallback } from '../../../core/youtube-thumb';
 import { LanguageService } from '../../../core/services/language.service';
+import { STORIES_VIEWS, StoriesView, StoriesViewService } from '../../../core/services/stories-view.service';
 import { driveFolderUrl } from '../../../core/util/drive-folder';
 import { formatIsoRange, parseIsoDate } from '../../../core/util/iso-date';
 import { IconComponent } from '../../../shared/icon/icon.component';
@@ -56,6 +57,18 @@ interface StoryView {
   readonly driveUrl: string | null;
   readonly youtubeUrl: string | null;
   readonly youtubeThumb: string | null;
+}
+
+/**
+ * Lo que pinta la sección, en orden: una crónica suelta o una **serie** (la
+ * misma campaña, varias ediciones seguidas) con selector de edición.
+ */
+interface StoryGroup {
+  /** `series-<serie>` o el id de la crónica suelta. */
+  readonly key: string;
+  readonly series: string | null;
+  /** Ediciones, en el orden de los datos (la más reciente primero). */
+  readonly views: readonly StoryView[];
 }
 
 /** «20 septembrie 2026» o «13 – 15 martie 2026». */
@@ -112,6 +125,10 @@ export class StoriesBlockComponent {
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
   private readonly gallery = inject(GalleryViewerService);
+  private readonly viewPrefs = inject(StoriesViewService);
+
+  /** Cómo quiere leerlas el visitante (recordado en este navegador). */
+  protected readonly view = this.viewPrefs.view;
 
   protected readonly views = computed<readonly StoryView[]>(() => {
     const lang = this.language.current();
@@ -164,6 +181,88 @@ export class StoriesBlockComponent {
       };
     });
   });
+
+  /**
+   * De la más reciente a la más antigua por `start` (las que no tienen fecha
+   * conservan su sitio relativo: orden estable sobre el de los datos).
+   */
+  protected readonly ordered = computed<readonly StoryView[]>(() =>
+    this.views()
+      .map((view, index) => ({ view, index }))
+      .sort((a, b) => {
+        const da = a.view.story.start ?? '';
+        const db = b.view.story.start ?? '';
+        return da && db && da !== db ? (da < db ? 1 : -1) : a.index - b.index;
+      })
+      .map(({ view }) => view),
+  );
+
+  /** Hay alguna serie: si no, «por campañas» sería igual que la cronológica. */
+  protected readonly hasSeries = computed(() => this.views().some((v) => !!v.story.series));
+
+  /** Vistas que se ofrecen en este departamento. */
+  protected readonly viewOptions = computed<readonly StoriesView[]>(() =>
+    STORIES_VIEWS.filter((v) => v !== 'series' || this.hasSeries()),
+  );
+
+  /**
+   * Lo que se pinta. En `series`, cada serie es **un** grupo (todas sus
+   * ediciones, aunque no vayan seguidas) en el sitio de su edición más
+   * reciente; en las otras vistas, una crónica por grupo.
+   */
+  protected readonly groups = computed<readonly StoryGroup[]>(() => {
+    const bySeries = this.view() === 'series' && this.hasSeries();
+    const out: { key: string; series: string | null; views: StoryView[] }[] = [];
+    for (const view of this.ordered()) {
+      const series = bySeries ? (view.story.series ?? null) : null;
+      const group = series ? out.find((g) => g.series === series) : undefined;
+      if (group) group.views.push(view);
+      else out.push({ key: series ? `series-${series}` : view.story.id, series, views: [view] });
+    }
+    return out;
+  });
+
+  protected setView(view: StoriesView): void {
+    this.viewPrefs.set(view);
+  }
+
+  /** Edición elegida por serie (id de la crónica); por defecto, la primera. */
+  private readonly picked = signal<Readonly<Record<string, string>>>({});
+
+  protected selected(group: StoryGroup): StoryView {
+    const id = group.series ? this.picked()[group.series] : undefined;
+    return group.views.find((v) => v.story.id === id) ?? group.views[0];
+  }
+
+  /** Rótulo de la pestaña: el año de la edición. */
+  protected edition(view: StoryView): string {
+    return view.story.start?.slice(0, 4) ?? view.story.id;
+  }
+
+  protected pick(group: StoryGroup, view: StoryView): void {
+    if (!group.series) return;
+    const series = group.series;
+    this.picked.update((map) => ({ ...map, [series]: view.story.id }));
+  }
+
+  /**
+   * Teclado del patrón «tabs» (WAI-ARIA, activación automática): ← → entre
+   * ediciones (en bucle), Inicio / Fin a la primera / última.
+   */
+  protected onTabKey(event: KeyboardEvent, group: StoryGroup, index: number): void {
+    const count = group.views.length;
+    const next =
+      event.key === 'ArrowRight' ? (index + 1) % count
+      : event.key === 'ArrowLeft' ? (index - 1 + count) % count
+      : event.key === 'Home' ? 0
+      : event.key === 'End' ? count - 1
+      : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    const view = group.views[next];
+    this.pick(group, view);
+    document.getElementById(`edition-${view.story.id}`)?.focus();
+  }
 
   /** `hq720` no existe en todos los directos: respaldo a `mqdefault` (16:9). */
   protected readonly thumbFallback = youtubeThumbFallback;

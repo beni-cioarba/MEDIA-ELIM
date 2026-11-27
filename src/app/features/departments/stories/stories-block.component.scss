@@ -21,6 +21,342 @@
 }
 
 // ---------------------------------------------------------------------
+// Barra «Afișare»: cómo leer las crónicas (`StoriesViewService`, recordado
+// en el navegador). Discreta, alineada a la derecha; en el teléfono, a todo
+// el ancho y los botones repartidos.
+// ---------------------------------------------------------------------
+.stories__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.stories__bar-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-muted);
+
+  // En el teléfono quedaba solo en su línea: sólo para lectores de pantalla
+  // (sigue nombrando al grupo, `aria-labelledby`).
+  @container (max-width: 559.98px) {
+    @include visually-hidden;
+  }
+}
+
+.stories__views {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+
+  @container (max-width: 559.98px) {
+    flex: 1 1 100%;
+  }
+}
+
+.stories__view {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(2px);
+
+  @media (hover: hover) {
+    &:hover:not([aria-pressed='true']) {
+      background: var(--c-veil);
+      color: var(--c-primary-deep);
+    }
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--c-primary);
+    color: #fff;
+  }
+
+  // En el teléfono, sin sitio para tres rótulos y tres iconos: sólo rótulo.
+  @container (max-width: 379.98px) {
+    padding: 0 0.6rem;
+
+    app-icon {
+      display: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Vista «Listă»: una fila por crónica (fecha | título y tipo | ⌄). La
+// fecha en columna fija: los títulos quedan alineados. Abierta, la crónica
+// entera debajo, tal cual.
+// ---------------------------------------------------------------------
+.entries {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--e-1);
+
+  &[open] {
+    box-shadow: var(--e-2);
+  }
+}
+
+.entry__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-4);
+  min-height: 3.5rem;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: inherit;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  @include focus-ring(2px);
+
+  @media (hover: hover) {
+    &:hover .entry__title {
+      color: var(--c-primary);
+    }
+  }
+
+  // Con sitio: la fecha en su propia columna.
+  @container (min-width: 560px) {
+    grid-template-columns: 12.5rem minmax(0, 1fr) auto;
+  }
+}
+
+.entry__date {
+  grid-column: 1 / -1;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gold-deep);
+
+  @container (min-width: 560px) {
+    grid-column: auto;
+  }
+}
+
+.entry__main {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.entry__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-primary-deep);
+  transition: color var(--mo-fast) var(--ea-standard);
+}
+
+.entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  font-size: var(--fs-sm);
+  color: var(--c-muted);
+}
+
+.entry__chevron {
+  font-size: 1.25rem;
+  color: var(--c-muted);
+  transition: transform var(--mo-fast) var(--ea-standard);
+
+  .entry[open] & {
+    transform: rotate(180deg);
+  }
+}
+
+// Abierta: la crónica dentro de la fila, **sin** su marco ni su cabecera
+// (fecha, título, tipo y lugar ya están en la fila: repetirlos y meter una
+// tarjeta dentro de otra era ruido). La cabecera sigue ahí para lectores de
+// pantalla: el `h3` de la crónica mantiene el orden de encabezados.
+.entry__body {
+  border-top: 1px solid var(--c-hairline);
+
+  .story,
+  .brief {
+    border: 0;
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .story__head,
+  .brief__body > .story__kicker,
+  .brief__body > .story__title {
+    @include visually-hidden;
+  }
+
+  // La cabecera oculta deja su hueco de rejilla: se compensa arriba.
+  .story {
+    padding-top: var(--sp-1);
+  }
+
+  .brief__body {
+    padding-top: var(--sp-3);
+  }
+
+  // La columna navy de la compacta sólo repetía la fecha.
+  .brief {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .brief__visual {
+    display: none;
+  }
+}
+
+@include motion-reduce {
+  .stories__view,
+  .entry__title,
+  .entry__chevron {
+    transition: none;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Serie (`DepartmentStory.series`): la misma campaña año tras año, una
+// edición a la vista. Cabecera (nombre + contexto) y selector de edición
+// (patrón «tabs»); debajo, la crónica elegida tal cual. Con cuatro
+// ediciones apiladas Ajutorare medía ≈ 7.000 px; así, una.
+// ---------------------------------------------------------------------
+.series {
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.series__head {
+  display: grid;
+  gap: var(--sp-3);
+  align-items: end;
+
+  // Con sitio, el selector a la derecha del nombre.
+  @container (min-width: 560px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sp-4);
+  }
+}
+
+.series__intro {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.series__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 800;
+  letter-spacing: var(--ls-h3);
+  color: var(--c-primary-deep);
+}
+
+.series__text {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+// Control segmentado: pastilla con las ediciones; la elegida, navy. En el
+// teléfono, si no caben, se desliza (sin barra) en vez de partirse.
+.series__tabs {
+  display: flex;
+  gap: 0.25rem;
+  justify-self: start;
+  max-width: 100%;
+  padding: 0.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.series__tab {
+  flex: none;
+  min-width: 3.75rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background var(--mo-fast) var(--ea-standard),
+    color var(--mo-fast) var(--ea-standard);
+
+  @include focus-ring(2px);
+
+  @media (hover: hover) {
+    &:hover:not([aria-selected='true']) {
+      background: var(--c-veil);
+      color: var(--c-primary-deep);
+    }
+  }
+
+  &[aria-selected='true'] {
+    background: var(--c-primary);
+    color: #fff;
+    cursor: default;
+  }
+}
+
+@include motion-reduce {
+  .series__tab {
+    transition: none;
+  }
+}
+
+// ---------------------------------------------------------------------
 // Piezas comunes
 // ---------------------------------------------------------------------
 .story__kicker {
@@ -104,8 +440,14 @@
   }
 }
 
+// Como en la crónica completa: dos columnas con sitio, una en el teléfono.
+// (Con `auto-fit` salían 3 y 4 puntos dejaban uno huérfano en otra fila.)
 .points--inline {
-  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+  grid-template-columns: minmax(0, 1fr);
+
+  @container (min-width: 560px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .point {
@@ -535,6 +877,31 @@
   }
 }
 
+// Mosaico **sin vídeo lateral** (no hay reel que marque el alto): las filas
+// no se estiran a nada y caían a su suelo (6,5 rem), así que una apaisada de
+// 2 × 1 quedaba en tira de 3 : 1 (≈ 400 × 104 px) y recortaba medio vídeo.
+// Aquí cada casilla da su propio alto: apaisada y destacada, 2 × 2 a 16 : 9
+// (lo que es un vídeo); vertical, 1 × 2 al alto de esas filas. Se cuadra
+// sin huecos con cualquier mezcla de 4 apaisadas por cada 2 verticales
+// (2 + 2 + 1 → 4 × 4; 1 + 2 + 4 → 4 × 6).
+// Sólo en rejilla: en el teléfono manda la tira (abajo).
+@container (min-width: 560px) {
+  .story__media:not(.has-video) .mosaic:not(.mosaic--single) {
+    grid-auto-rows: auto;
+
+    .tile {
+      grid-row: span 2;
+      aspect-ratio: 16 / 9;
+    }
+
+    .tile--portrait {
+      aspect-ratio: auto;
+      // Sólo seguro: si una pareja de filas fuera toda de verticales.
+      min-height: 8rem;
+    }
+  }
+}
+
 // ---------------------------------------------------------------------
 // Estrecho (teléfono): reel y fotos en **una sola tira** deslizable, todas
 // a 17 rem de alto (el vídeo primero, 9:16). El reel suelto medía 260 × 460
@@ -543,7 +910,10 @@
 // ---------------------------------------------------------------------
 @container (max-width: 559.98px) {
   .story__media {
-    --strip-h: 17rem;
+    // Alto derivado del ancho: una apaisada (3 : 2) ocupa el 88 % de la
+    // tira y asoma la siguiente (con 17 rem fijos medía 390 px en una
+    // tira de 342: cortada y sin pista de que se desliza). Tope 17 rem.
+    --strip-h: min(17rem, 100cqi * 0.88 * 2 / 3);
 
     display: flex;
     gap: var(--sp-2);

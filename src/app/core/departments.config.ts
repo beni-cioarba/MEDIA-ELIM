@@ -242,6 +242,13 @@ export interface DepartmentStory {
    * enlaces no se anuncia «fotos en breve» (una edición antigua no las tendrá).
    */
   readonly links?: readonly StoryLink[];
+  /**
+   * Serie a la que pertenece (la misma campaña, un año tras otro). Las
+   * crónicas **seguidas** de la misma serie se pintan como un solo bloque con
+   * selector de edición (por año de `start`): la página no crece con cada
+   * edición. Textos de la serie en `departments.<dept>.series.<serie>`.
+   */
+  readonly series?: string;
 }
 
 /**
@@ -504,26 +511,29 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
     // recortada a 22 s por petición del usuario). Vídeos a 720p en
     // `assets/video/zambetul-2026/`; portada = un fotograma.
     id: 'zambetul_2026',
+    series: 'zambetul',
     kind: 'campaign',
     icon: 'gift',
     start: '2026-11-21',
     end: '2026-12-06',
     place: 'Biserica Elim, Arganda del Rey',
     points: ['price', 'same', 'packing', 'distribution', 'team', 'friend'],
-    // 4 × 6 sin huecos, por orden de cámara: el cort (vídeo destacado 2 × 2),
-    // 8 vídeos apaisados (2 × 1) y las 2 fotos verticales (1 × 2).
+    // Cinco piezas principales, 4 × 4 sin huecos: el cort (destacado), la
+    // niña con los cartones, los cartones de envío, la furgoneta cargada y
+    // las niñas con las cajas (apaisadas 2 × 2 a 16:9, verticales 1 × 2). Los
+    // otros 6 vídeos, sólo en el visor («+6»), por orden de cámara.
     photos: [
       { base: 'zambetul_2026_v-cort', width: 1280, height: 720, video: 'assets/video/zambetul-2026/cort.mp4', featured: true },
       { base: 'zambetul_2026_fetita', width: 1600, height: 2133 },
       { base: 'zambetul_2026_v-cartoane', width: 1280, height: 720, video: 'assets/video/zambetul-2026/cartoane.mp4' },
-      { base: 'zambetul_2026_v-benzi', width: 1280, height: 720, video: 'assets/video/zambetul-2026/benzi.mp4' },
-      { base: 'zambetul_2026_v-impachetare', width: 1280, height: 720, video: 'assets/video/zambetul-2026/impachetare.mp4' },
       { base: 'zambetul_2026_duba', width: 1600, height: 2133 },
-      { base: 'zambetul_2026_v-jucarii', width: 1280, height: 720, video: 'assets/video/zambetul-2026/jucarii.mp4' },
-      { base: 'zambetul_2026_v-mese', width: 1280, height: 720, video: 'assets/video/zambetul-2026/mese.mp4' },
-      { base: 'zambetul_2026_v-umplere', width: 1280, height: 720, video: 'assets/video/zambetul-2026/umplere.mp4' },
-      { base: 'zambetul_2026_v-inchidere', width: 1280, height: 720, video: 'assets/video/zambetul-2026/inchidere.mp4' },
       { base: 'zambetul_2026_v-cutii', width: 1280, height: 720, video: 'assets/video/zambetul-2026/cutii.mp4' },
+      { base: 'zambetul_2026_v-benzi', width: 1280, height: 720, video: 'assets/video/zambetul-2026/benzi.mp4', galleryOnly: true },
+      { base: 'zambetul_2026_v-impachetare', width: 1280, height: 720, video: 'assets/video/zambetul-2026/impachetare.mp4', galleryOnly: true },
+      { base: 'zambetul_2026_v-jucarii', width: 1280, height: 720, video: 'assets/video/zambetul-2026/jucarii.mp4', galleryOnly: true },
+      { base: 'zambetul_2026_v-mese', width: 1280, height: 720, video: 'assets/video/zambetul-2026/mese.mp4', galleryOnly: true },
+      { base: 'zambetul_2026_v-umplere', width: 1280, height: 720, video: 'assets/video/zambetul-2026/umplere.mp4', galleryOnly: true },
+      { base: 'zambetul_2026_v-inchidere', width: 1280, height: 720, video: 'assets/video/zambetul-2026/inchidere.mp4', galleryOnly: true },
     ],
     // Drive: «2026-11-21 - Zambetul din cutie»
     driveFolderId: '1lPg-4lPAUs4RcRRNBv2pWJ4zFJczyPcJ',
@@ -531,6 +541,7 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
   },
   {
     id: 'zambetul_2025',
+    series: 'zambetul',
     kind: 'campaign',
     icon: 'gift',
     // Fecha de la cámara (EXIF) de las 829 fotos de la carpeta: todas del
@@ -587,6 +598,7 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
     // canal de la iglesia (16/11/2024, 12 min). Cifra: 1.068 cajas (de la
     // presentación oficial de 2025). Sin el teléfono ni el Bizum del cartel.
     id: 'zambetul_2024',
+    series: 'zambetul',
     kind: 'campaign',
     icon: 'gift',
     start: '2024-11-16',
@@ -615,6 +627,7 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
     // iglesia por WhatsApp (culto de las 19:00 con Simi Bumbar) y dos vídeos
     // públicos (`links`).
     id: 'zambetul_2022',
+    series: 'zambetul',
     kind: 'campaign',
     icon: 'gift',
     start: '2022-11-20',
@@ -850,8 +863,21 @@ export const DEPARTMENTS: readonly DepartmentConfig[] = [
     slug: DEPARTMENT_SLUGS.relief,
     icon: 'hand-heart',
     // «Zâmbetul din Cutie»: la campaña de cajas de regalo.
-    cover: cover('zambetul_cutie_2025'),
-    heroSlides: [slide('relief_boxes', 'boxes', 'zambetul_cutie_2025', '#736d74', 'top')],
+    // Portada: el cort de «Zâmbetul din Cutie» 2026, fotograma 0:06,5 del
+    // vídeo IMG_5088 en 4K (elegido por el usuario; con la variante 2560).
+    // Segunda, la de siempre (2025). Tercera y cuarta, fotogramas a 1080p de
+    // los vídeos de 2024 (la sala, 5:23) y 2022 (el reparto, 3:25): sin
+    // variante 2560 (el vídeo no da más).
+    cover: cover('zambetul_2026_cort_portada'),
+    heroSlides: [
+      {
+        ...slide('relief_tent', 'tent', 'zambetul_2026_cort_portada', '#a29d95', 'lower'),
+        large: 'assets/drive-media/zambetul_2026_cort_portada-2560.webp',
+      },
+      slide('relief_boxes', 'boxes', 'zambetul_cutie_2025', '#736d74', 'top'),
+      slide('relief_prepare_2024', 'prepare_2024', 'zambetul_2024_pregatire_portada', '#716d73', 'center'),
+      slide('relief_give_2022', 'give_2022', 'zambetul_2022_impartire_portada', '#867771', 'center'),
+    ],
     pillars: ['compassion', 'discretion', 'stewardship'],
     activities: [
       { key: 'families', icon: 'family' },

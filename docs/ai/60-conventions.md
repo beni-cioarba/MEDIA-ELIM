@@ -87,6 +87,7 @@ prefijo `iglesia-redes.`:
 | `iglesia-redes.install.invite`         | Invitación a instalar: primer día, último mostrado, rechazos (`79-install.md`) |
 | `elim.pwa.installedAt`                 | App instalada desde aquí (30 días) |
 | `iglesia-redes.search.recent`          | Últimas 5 búsquedas (se borran desde el buscador) |
+| `iglesia-redes.stories.view`           | Vista de las crónicas de departamento: `series` o `compact` (la por defecto, `timeline`, no se guarda; `39-departments.md`) |
 
 ## Idioma del código
 

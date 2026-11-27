@@ -1,244 +1,339 @@
 <!-- Sin cabecera visible (la crónica ya se presenta sola): el nombre de la
      sección queda para los lectores de pantalla. -->
 <section class="stories" [attr.aria-label]="'departments.stories_title' | translate">
+  @if (views().length > 1) {
+    <!-- Cómo leerlas: la elección se recuerda en este navegador. -->
+    <div class="stories__bar">
+      <span class="stories__bar-label" id="stories-view-label">{{ 'departments.view.label' | translate }}</span>
+      <div class="stories__views" role="group" aria-labelledby="stories-view-label">
+        @for (opt of viewOptions(); track opt) {
+          <button
+            type="button"
+            class="stories__view"
+            [attr.aria-pressed]="view() === opt"
+            [attr.title]="'departments.view.' + opt + '_hint' | translate"
+            (click)="setView(opt)"
+          >
+            <app-icon [name]="opt === 'timeline' ? 'calendar' : opt === 'series' ? 'layers' : 'fold'" />
+            {{ 'departments.view.' + opt | translate }}
+          </button>
+        }
+      </div>
+    </div>
+  }
 
-  @for (v of views(); track v.story.id) {
-    @let s = v.story;
-    @if (v.photos.length > 0) {
-      <!-- ── Crónica completa ─────────────────────────────────────────── -->
-      <article class="story" [attr.aria-labelledby]="'story-' + s.id">
-        <header class="story__head">
-          <p class="story__kicker">
-            <span class="story__badge"><app-icon [name]="s.icon" /> {{ 'departments.story_kind.' + s.kind | translate }}</span>
-            <span>{{ v.range ?? (v.base + '.period' | translate) }}</span>
-          </p>
-          <h3 class="story__title" [id]="'story-' + s.id">{{ v.base + '.title' | translate }}</h3>
-          <p class="story__meta">
-            <span class="story__meta-item"><app-icon name="map-pin" /> {{ s.place }}</span>
-            @if (s.guest) {
-              <span class="story__sep" aria-hidden="true">·</span>
-              <span class="story__meta-item"><app-icon name="users" /> {{ s.guest }}</span>
-            }
-          </p>
-        </header>
-
-        <div class="story__text">
-          <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
-
-          @if (s.points.length > 0) {
-          <ul class="points" role="list">
-            @for (point of s.points; track point) {
-              <li class="point">
-                <span class="point__text">
-                  <span class="point__title">{{ v.base + '.points.' + point + '.title' | translate }}</span>
-                  <span class="point__desc">{{ v.base + '.points.' + point + '.text' | translate }}</span>
+  @if (view() === 'compact') {
+    <!-- ── Lista plegada: fecha, título y tipo; se abre la que se quiera ── -->
+    <ul class="entries" role="list">
+      @for (v of ordered(); track v.story.id) {
+        <li>
+          <details class="entry">
+            <summary class="entry__summary">
+              <span class="entry__date">{{ v.range ?? (v.base + '.period' | translate) }}</span>
+              <span class="entry__main">
+                <span class="entry__title">{{ v.base + '.title' | translate }}</span>
+                <span class="entry__meta">
+                  <span class="story__badge"><app-icon [name]="v.story.icon" /> {{ 'departments.story_kind.' + v.story.kind | translate }}</span>
+                  <span class="entry__place">{{ v.story.place }}</span>
                 </span>
-              </li>
-            }
-          </ul>
-          }
-
-          @if (s.verse) {
-            <figure class="verse">
-              <blockquote>{{ v.base + '.verse.text' | translate }}</blockquote>
-              <figcaption>{{ v.base + '.verse.ref' | translate }}</figcaption>
-            </figure>
-          }
-
-          @if (v.youtubeUrl || v.driveUrl || s.partner || s.links?.length) {
-            <div class="story__links">
-              @if (v.youtubeUrl) {
-                <a class="watch" [href]="v.youtubeUrl" target="_blank" rel="noopener noreferrer">
-                  <!-- Miniatura 16:9 entera (lleva título, fecha e invitado):
-                       hq720 y, si no existe, mqdefault. -->
-                  <span class="watch__thumb">
-                    <img
-                      [src]="v.youtubeThumb"
-                      (error)="thumbFallback($event)"
-                      alt=""
-                      width="320"
-                      height="180"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span class="watch__play" aria-hidden="true"><app-icon name="play" /></span>
-                  </span>
-                  <span class="watch__text">
-                    <span class="watch__src"><span class="watch__dot" aria-hidden="true"></span>YouTube · {{ 'departments.watch_src' | translate }}</span>
-                    <span class="watch__title">{{ 'departments.watch_full' | translate }}</span>
-                    <span class="watch__cta">{{ 'departments.watch_cta' | translate }} <app-icon name="external" /></span>
-                  </span>
-                </a>
-              }
-              @if (v.driveUrl) {
-                <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
-                  <app-icon name="image" />
-                  {{ 'departments.photos_all' | translate }}
-                  <app-icon name="external" />
-                </a>
-              }
-              @if (s.partner; as partner) {
-                @if (partner.url) {
-                  <a class="story__drive" [href]="partner.url" target="_blank" rel="noopener noreferrer">
-                    <app-icon name="heart" />
-                    {{ 'departments.partner' | translate: { name: partner.name } }}
-                    <app-icon name="external" />
-                  </a>
-                } @else {
-                  <!-- Sin web: el nombre, como etiqueta (no parece un botón). -->
-                  <span class="story__partner">
-                    <app-icon name="heart" />
-                    {{ 'departments.partner' | translate: { name: partner.name } }}
-                  </span>
-                }
-              }
-              @for (link of s.links ?? []; track link.key) {
-                <ng-container *ngTemplateOutlet="linkTpl; context: { $implicit: link, base: v.base }" />
-              }
+              </span>
+              <app-icon class="entry__chevron" name="chevron-down" />
+            </summary>
+            <div class="entry__body">
+              <ng-container *ngTemplateOutlet="storyTpl; context: { $implicit: v }" />
             </div>
-          }
-        </div>
-
-        @if (v.cover; as cover) {
-          <!-- Portada: entera y a todo el ancho; abre la galería (la primera). -->
-          <div class="story__cover" [appViewable]="v.gallery" [appViewableIndex]="0" appViewableMode="gallery">
-            <img
-              [src]="cover.src"
-              [attr.srcset]="cover.medium + ' 960w, ' + cover.src + ' ' + cover.width + 'w'"
-              sizes="(min-width: 1200px) 75rem, 100vw"
-              [attr.width]="cover.width"
-              [attr.height]="cover.height"
-              [style.object-position]="cover.focus"
-              alt=""
-              loading="lazy"
-              decoding="async"
-            />
+          </details>
+        </li>
+      }
+    </ul>
+  } @else {
+  @for (g of groups(); track g.key) {
+    @if (g.series; as series) {
+      <!-- ── Serie: la misma campaña, una edición a la vista ─────────────── -->
+      @let sel = selected(g);
+      @let sbase = 'departments.' + department() + '.series.' + series;
+      <section class="series" [attr.aria-labelledby]="'series-' + series">
+        <header class="series__head">
+          <div class="series__intro">
+            <p class="series__title" [id]="'series-' + series">{{ sbase + '.title' | translate }}</p>
+            <p class="series__text">{{ sbase + '.text' | translate }}</p>
           </div>
+          <div
+            class="series__tabs"
+            role="tablist"
+            [attr.aria-label]="('departments.series_editions' | translate) + ' · ' + (sbase + '.title' | translate)"
+            data-no-swipe
+          >
+            @for (ed of g.views; track ed.story.id; let i = $index) {
+              <button
+                type="button"
+                role="tab"
+                class="series__tab"
+                [id]="'edition-' + ed.story.id"
+                [attr.aria-selected]="ed === sel"
+                [attr.aria-controls]="'series-panel-' + series"
+                [tabIndex]="ed === sel ? 0 : -1"
+                (click)="pick(g, ed)"
+                (keydown)="onTabKey($event, g, i)"
+              >
+                {{ edition(ed) }}
+              </button>
+            }
+          </div>
+        </header>
+        <div
+          class="series__panel"
+          role="tabpanel"
+          [id]="'series-panel-' + series"
+          [attr.aria-labelledby]="'edition-' + sel.story.id"
+        >
+          <ng-container *ngTemplateOutlet="storyTpl; context: { $implicit: sel }" />
+        </div>
+      </section>
+    } @else {
+      <ng-container *ngTemplateOutlet="storyTpl; context: { $implicit: g.views[0] }" />
+    }
+  }
+  }
+</section>
+
+<!-- Una crónica: completa (con fotos) o compacta. -->
+<ng-template #storyTpl let-v>
+  @let s = v.story;
+  @if (v.photos.length > 0) {
+    <!-- ── Crónica completa ─────────────────────────────────────────── -->
+    <article class="story" [attr.aria-labelledby]="'story-' + s.id">
+      <header class="story__head">
+        <p class="story__kicker">
+          <span class="story__badge"><app-icon [name]="s.icon" /> {{ 'departments.story_kind.' + s.kind | translate }}</span>
+          <span>{{ v.range ?? (v.base + '.period' | translate) }}</span>
+        </p>
+        <h3 class="story__title" [id]="'story-' + s.id">{{ v.base + '.title' | translate }}</h3>
+        <p class="story__meta">
+          <span class="story__meta-item"><app-icon name="map-pin" /> {{ s.place }}</span>
+          @if (s.guest) {
+            <span class="story__sep" aria-hidden="true">·</span>
+            <span class="story__meta-item"><app-icon name="users" /> {{ s.guest }}</span>
+          }
+        </p>
+      </header>
+
+      <div class="story__text">
+        <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
+
+        @if (s.points.length > 0) {
+        <ul class="points" role="list">
+          @for (point of s.points; track point) {
+            <li class="point">
+              <span class="point__text">
+                <span class="point__title">{{ v.base + '.points.' + point + '.title' | translate }}</span>
+                <span class="point__desc">{{ v.base + '.points.' + point + '.text' | translate }}</span>
+              </span>
+            </li>
+          }
+        </ul>
         }
 
-        <div class="story__media" [class.has-video]="!!s.video" data-no-swipe>
-          @if (s.video; as video) {
-            <!-- Vídeo destacado: ▶ lo reproduce aquí mismo; pantalla completa o
-                 clic en la imagen lo abren en la galería de la crónica (mismo
-                 grupo que las fotos: ‹ ›, miniaturas, autorreproducción),
-                 desde el segundo por el que iba. -->
-            <figure class="reel">
-              <app-reel-player
-                class="reel__player"
-                [video]="video"
-                [label]="v.base + '.caption' | translate"
-                (expand)="openReel(v, $event)"
-              />
-              <figcaption class="reel__caption">
-                <span class="reel__tag">{{ 'departments.video_label' | translate }}</span>
-                {{ v.base + '.caption' | translate }}
-              </figcaption>
-            </figure>
-          }
+        @if (s.verse) {
+          <figure class="verse">
+            <blockquote>{{ v.base + '.verse.text' | translate }}</blockquote>
+            <figcaption>{{ v.base + '.verse.ref' | translate }}</figcaption>
+          </figure>
+        }
 
-          <ul class="mosaic" [class.mosaic--single]="v.photos.length === 1 && !s.video" role="list" [attr.aria-label]="'departments.open_gallery' | translate">
-            @for (photo of v.photos; track photo.src; let i = $index, last = $last) {
-              <li class="tile" [class.tile--portrait]="photo.portrait" [class.tile--featured]="photo.featured">
-                <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="v.photoOffset + i" appViewableMode="gallery">
+        @if (v.youtubeUrl || v.driveUrl || s.partner || s.links?.length) {
+          <div class="story__links">
+            @if (v.youtubeUrl) {
+              <a class="watch" [href]="v.youtubeUrl" target="_blank" rel="noopener noreferrer">
+                <!-- Miniatura 16:9 entera (lleva título, fecha e invitado):
+                     hq720 y, si no existe, mqdefault. -->
+                <span class="watch__thumb">
                   <img
-                    [src]="photo.medium"
-                    [attr.srcset]="photo.thumb + ' 480w, ' + photo.medium + ' 960w'"
-                    sizes="(min-width: 1024px) 16vw, (min-width: 720px) 30vw, 60vw"
-                    [attr.width]="photo.width"
-                    [attr.height]="photo.height"
-                    [style.object-position]="photo.focus"
+                    [src]="v.youtubeThumb"
+                    (error)="thumbFallback($event)"
                     alt=""
+                    width="320"
+                    height="180"
                     loading="lazy"
                     decoding="async"
                   />
-                  @if (photo.video) {
-                    <span class="tile__play" aria-hidden="true"><app-icon name="play" /></span>
-                  }
-                  @if (last && v.more > 0) {
-                    <!-- Fotos sólo del visor (`galleryOnly`): siguen a ésta en la galería. -->
-                    <span class="tile__more">
-                      <span aria-hidden="true">+{{ v.more }}</span>
-                      <span class="u-sr-only">{{ 'departments.photos_more' | translate: { count: v.more } }}</span>
-                    </span>
-                  }
-                </div>
-              </li>
-            }
-          </ul>
-        </div>
-
-        @if (s.sermon; as sermon) {
-          <app-sermon-notes
-            class="story__sermon"
-            [sermon]="sermon"
-            [base]="v.base"
-            [storyId]="s.id"
-            [youtubeId]="s.youtubeId"
-          />
-        }
-      </article>
-    } @else {
-      <!-- ── Crónica compacta (aún sin fotos) ─────────────────────────── -->
-      <article class="brief" [attr.aria-labelledby]="'story-' + s.id">
-        <div class="brief__visual" aria-hidden="true">
-          <app-icon [name]="s.icon" />
-          <span class="brief__dates">{{ v.range ?? (v.base + '.period' | translate) }}</span>
-        </div>
-        <div class="brief__body">
-          <p class="story__kicker">
-            <span class="story__badge"><app-icon [name]="s.icon" /> {{ 'departments.story_kind.' + s.kind | translate }}</span>
-            <span class="brief__place">{{ s.place }}</span>
-          </p>
-          <h3 class="story__title" [id]="'story-' + s.id">{{ v.base + '.title' | translate }}</h3>
-          <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
-          @if (s.points.length > 0) {
-          <ul class="points points--inline" role="list">
-            @for (point of s.points; track point) {
-              <li class="point">
-                <span class="point__text">
-                  <span class="point__title">{{ v.base + '.points.' + point + '.title' | translate }}</span>
-                  <span class="point__desc">{{ v.base + '.points.' + point + '.text' | translate }}</span>
+                  <span class="watch__play" aria-hidden="true"><app-icon name="play" /></span>
                 </span>
-              </li>
+                <span class="watch__text">
+                  <span class="watch__src"><span class="watch__dot" aria-hidden="true"></span>YouTube · {{ 'departments.watch_src' | translate }}</span>
+                  <span class="watch__title">{{ 'departments.watch_full' | translate }}</span>
+                  <span class="watch__cta">{{ 'departments.watch_cta' | translate }} <app-icon name="external" /></span>
+                </span>
+              </a>
             }
-          </ul>
-          }
-          @if (v.driveUrl) {
-            <!-- Fotos en Drive, aún no optimizadas para la web: enlace directo. -->
-            <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
-              <app-icon name="image" />
-              {{ 'departments.photos_all' | translate }}
-              <app-icon name="external" />
-            </a>
-          } @else if (!s.links?.length) {
-            <p class="brief__soon">
-              <app-icon name="image" />
-              {{ 'departments.photos_soon' | translate }}
-            </p>
-          }
-          @if (s.partner; as partner) {
-            @if (partner.url) {
-              <a class="story__drive" [href]="partner.url" target="_blank" rel="noopener noreferrer">
-                <app-icon name="heart" />
-                {{ 'departments.partner' | translate: { name: partner.name } }}
+            @if (v.driveUrl) {
+              <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
+                <app-icon name="image" />
+                {{ 'departments.photos_all' | translate }}
                 <app-icon name="external" />
               </a>
-            } @else {
-              <!-- Sin web: el nombre, como etiqueta (no parece un botón). -->
-              <span class="story__partner">
-                <app-icon name="heart" />
-                {{ 'departments.partner' | translate: { name: partner.name } }}
-              </span>
             }
-          }
-          @for (link of s.links ?? []; track link.key) {
-            <ng-container *ngTemplateOutlet="linkTpl; context: { $implicit: link, base: v.base }" />
-          }
+            @if (s.partner; as partner) {
+              @if (partner.url) {
+                <a class="story__drive" [href]="partner.url" target="_blank" rel="noopener noreferrer">
+                  <app-icon name="heart" />
+                  {{ 'departments.partner' | translate: { name: partner.name } }}
+                  <app-icon name="external" />
+                </a>
+              } @else {
+                <!-- Sin web: el nombre, como etiqueta (no parece un botón). -->
+                <span class="story__partner">
+                  <app-icon name="heart" />
+                  {{ 'departments.partner' | translate: { name: partner.name } }}
+                </span>
+              }
+            }
+            @for (link of s.links ?? []; track link.key) {
+              <ng-container *ngTemplateOutlet="linkTpl; context: { $implicit: link, base: v.base }" />
+            }
+          </div>
+        }
+      </div>
+
+      @if (v.cover; as cover) {
+        <!-- Portada: entera y a todo el ancho; abre la galería (la primera). -->
+        <div class="story__cover" [appViewable]="v.gallery" [appViewableIndex]="0" appViewableMode="gallery">
+          <img
+            [src]="cover.src"
+            [attr.srcset]="cover.medium + ' 960w, ' + cover.src + ' ' + cover.width + 'w'"
+            sizes="(min-width: 1200px) 75rem, 100vw"
+            [attr.width]="cover.width"
+            [attr.height]="cover.height"
+            [style.object-position]="cover.focus"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         </div>
-      </article>
-    }
+      }
+
+      <div class="story__media" [class.has-video]="!!s.video" data-no-swipe>
+        @if (s.video; as video) {
+          <!-- Vídeo destacado: ▶ lo reproduce aquí mismo; pantalla completa o
+               clic en la imagen lo abren en la galería de la crónica (mismo
+               grupo que las fotos: ‹ ›, miniaturas, autorreproducción),
+               desde el segundo por el que iba. -->
+          <figure class="reel">
+            <app-reel-player
+              class="reel__player"
+              [video]="video"
+              [label]="v.base + '.caption' | translate"
+              (expand)="openReel(v, $event)"
+            />
+            <figcaption class="reel__caption">
+              <span class="reel__tag">{{ 'departments.video_label' | translate }}</span>
+              {{ v.base + '.caption' | translate }}
+            </figcaption>
+          </figure>
+        }
+
+        <ul class="mosaic" [class.mosaic--single]="v.photos.length === 1 && !s.video" role="list" [attr.aria-label]="'departments.open_gallery' | translate">
+          @for (photo of v.photos; track photo.src; let i = $index, last = $last) {
+            <li class="tile" [class.tile--portrait]="photo.portrait" [class.tile--featured]="photo.featured">
+              <div class="tile__frame" [appViewable]="v.gallery" [appViewableIndex]="v.photoOffset + i" appViewableMode="gallery">
+                <img
+                  [src]="photo.medium"
+                  [attr.srcset]="photo.thumb + ' 480w, ' + photo.medium + ' 960w'"
+                  [attr.sizes]="photo.portrait ? '(min-width: 560px) 15rem, 12rem' : '(min-width: 560px) 32rem, 30rem'"
+                  [attr.width]="photo.width"
+                  [attr.height]="photo.height"
+                  [style.object-position]="photo.focus"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                @if (photo.video && !(last && v.more > 0)) {
+                  <span class="tile__play" aria-hidden="true"><app-icon name="play" /></span>
+                }
+                @if (last && v.more > 0) {
+                  <!-- Fotos sólo del visor (`galleryOnly`): siguen a ésta en la galería. -->
+                  <span class="tile__more">
+                    <span aria-hidden="true">+{{ v.more }}</span>
+                    <span class="u-sr-only">{{ 'departments.photos_more' | translate: { count: v.more } }}</span>
+                  </span>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+
+      @if (s.sermon; as sermon) {
+        <app-sermon-notes
+          class="story__sermon"
+          [sermon]="sermon"
+          [base]="v.base"
+          [storyId]="s.id"
+          [youtubeId]="s.youtubeId"
+        />
+      }
+    </article>
+  } @else {
+    <!-- ── Crónica compacta (aún sin fotos) ─────────────────────────── -->
+    <article class="brief" [attr.aria-labelledby]="'story-' + s.id">
+      <div class="brief__visual" aria-hidden="true">
+        <app-icon [name]="s.icon" />
+        <span class="brief__dates">{{ v.range ?? (v.base + '.period' | translate) }}</span>
+      </div>
+      <div class="brief__body">
+        <p class="story__kicker">
+          <span class="story__badge"><app-icon [name]="s.icon" /> {{ 'departments.story_kind.' + s.kind | translate }}</span>
+          <span class="brief__place">{{ s.place }}</span>
+        </p>
+        <h3 class="story__title" [id]="'story-' + s.id">{{ v.base + '.title' | translate }}</h3>
+        <p class="story__lead">{{ v.base + '.lead' | translate }}</p>
+        @if (s.points.length > 0) {
+        <ul class="points points--inline" role="list">
+          @for (point of s.points; track point) {
+            <li class="point">
+              <span class="point__text">
+                <span class="point__title">{{ v.base + '.points.' + point + '.title' | translate }}</span>
+                <span class="point__desc">{{ v.base + '.points.' + point + '.text' | translate }}</span>
+              </span>
+            </li>
+          }
+        </ul>
+        }
+        @if (v.driveUrl) {
+          <!-- Fotos en Drive, aún no optimizadas para la web: enlace directo. -->
+          <a class="story__drive" [href]="v.driveUrl" target="_blank" rel="noopener noreferrer">
+            <app-icon name="image" />
+            {{ 'departments.photos_all' | translate }}
+            <app-icon name="external" />
+          </a>
+        } @else if (!s.links?.length) {
+          <p class="brief__soon">
+            <app-icon name="image" />
+            {{ 'departments.photos_soon' | translate }}
+          </p>
+        }
+        @if (s.partner; as partner) {
+          @if (partner.url) {
+            <a class="story__drive" [href]="partner.url" target="_blank" rel="noopener noreferrer">
+              <app-icon name="heart" />
+              {{ 'departments.partner' | translate: { name: partner.name } }}
+              <app-icon name="external" />
+            </a>
+          } @else {
+            <!-- Sin web: el nombre, como etiqueta (no parece un botón). -->
+            <span class="story__partner">
+              <app-icon name="heart" />
+              {{ 'departments.partner' | translate: { name: partner.name } }}
+            </span>
+          }
+        }
+        @for (link of s.links ?? []; track link.key) {
+          <ng-container *ngTemplateOutlet="linkTpl; context: { $implicit: link, base: v.base }" />
+        }
+      </div>
+    </article>
   }
-</section>
+</ng-template>
 
 <!-- Enlace externo de una crónica (`links`): con `youtubeId`, tarjeta con la
      miniatura del vídeo (como el directo); si no, botón. -->

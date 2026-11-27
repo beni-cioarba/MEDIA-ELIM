@@ -567,7 +567,7 @@
       "join": "¿Sientes el llamado a la misión o quieres apoyar en oración? Empieza escribiéndonos."
     },
     "relief": {
-      "intro": "La ayuda social es estar cerca de quien lo necesita, dentro y fuera de la iglesia. Organizamos apoyo para familias en dificultad, colectas y campañas como «La sonrisa en una caja».",
+      "intro": "La ayuda social es estar cerca de quien lo necesita, dentro y fuera de la iglesia. A través de la Asociación «Misiune și Ajutorare Elim» organizamos apoyo para familias en dificultad, colectas y, desde 2015, la campaña «Sonrisa en una caja».",
       "pillars": {
         "compassion": {
           "title": "Compasión",
@@ -589,7 +589,7 @@
         },
         "campaigns": {
           "title": "Campañas",
-          "text": "«La sonrisa en una caja» y otras acciones en las que puede participar toda la iglesia."
+          "text": "«Sonrisa en una caja» y otras acciones en las que puede participar toda la iglesia."
         },
         "collections": {
           "title": "Colectas",
@@ -607,14 +607,23 @@
       "join": "¿Conoces a alguien que necesita ayuda o quieres ayudar? Escríbenos: todo queda entre nosotros.",
       "hero": {
         "slides": {
-          "boxes": "La sonrisa en una caja"
+          "tent": "Sonrisa en una caja 2026",
+          "boxes": "Sonrisa en una caja 2025",
+          "prepare_2024": "Sonrisa en una caja 2024",
+          "give_2022": "Sonrisa en una caja 2022"
+        }
+      },
+      "series": {
+        "zambetul": {
+          "title": "Sonrisa en una caja",
+          "text": "Desde 2015, cada año: cajas con regalos de Navidad para niños pobres y huérfanos de Rumanía y de la República de Moldavia, preparadas por toda la iglesia."
         }
       },
       "stories": {
         "zambetul_2026": {
-          "title": "La sonrisa en una caja 2026",
+          "title": "Sonrisa en una caja 2026",
           "period": "Campaña solidaria · 2026",
-          "lead": "«En cada caja hay una sonrisa; detrás de esa sonrisa hay un sacrificio, y detrás del sacrificio está el amor.» El proyecto, que empezó en 2015, sigue: tras las 1.220 cajas repartidas en 2025, nos propusimos 1.500, para niños de 3 a 14 años de Rumanía y la República de Moldavia, preparadas en la iglesia y llevadas junto con la Asociación MGM.",
+          "lead": "«En cada caja hay una sonrisa; detrás de esa sonrisa hay un sacrificio, y detrás del sacrificio está el amor.» Tras las 1.220 cajas de 2025, nos propusimos 1.500: regalos de Navidad para niños de 3 a 14 años de Rumanía y de la República de Moldavia, preparados en la iglesia y llevados junto con la Asociación MGM.",
           "points": {
             "price": {
               "title": "25 € por caja",
@@ -643,7 +652,7 @@
           }
         },
         "zambetul_2025": {
-          "title": "La sonrisa en una caja 2025",
+          "title": "Sonrisa en una caja 2025",
           "period": "Campaña solidaria · 2025",
           "lead": "Un día entero bajo la carpa, en la iglesia: niños, jóvenes y padres prepararon juntos 1.220 cajas de regalo para niños pobres y huérfanos de zonas desfavorecidas de Rumanía, llevadas a Oltenia junto con la Asociación EBEN-EZER de Botoșani.",
           "points": {
@@ -678,17 +687,17 @@
           }
         },
         "zambetul_2024": {
-          "title": "La sonrisa en una caja 2024",
+          "title": "Sonrisa en una caja 2024",
           "period": "Campaña solidaria · 2024",
           "lead": "«¡Puedes sacarle una sonrisa a un niño con una caja!» En 2024, el departamento de misión y ayuda de la iglesia preparó, con toda la iglesia, 1.068 cajas de regalo para niños de Rumanía.",
           "points": {
             "register": {
-              "title": "Inscripción: 20 y 27 de octubre, 3 de noviembre",
-              "text": "25 € por caja, en las listas de inscripción del domingo o por Bizum, con el nombre en el concepto."
+              "title": "Inscripción en tres domingos",
+              "text": "20 y 27 de octubre y 3 de noviembre: 25 € por caja, en las listas de inscripción o por Bizum, con el nombre en el concepto."
             },
             "day": {
-              "title": "Sábado 16 de noviembre, 9:00–14:00",
-              "text": "Las cajas se prepararon entre toda la iglesia. No había que traer nada: el departamento puso todo lo necesario y los hermanos coordinadores dieron las indicaciones."
+              "title": "Sábado 16 de noviembre",
+              "text": "De 9:00 a 14:00, las cajas se prepararon entre toda la iglesia. No había que traer nada: el departamento puso todo lo necesario y los hermanos coordinadores dieron las indicaciones."
             },
             "children": {
               "title": "Niños desde 7 años",
@@ -708,7 +717,7 @@
           }
         },
         "zambetul_2022": {
-          "title": "La sonrisa en una caja 2022",
+          "title": "Sonrisa en una caja 2022",
           "period": "Campaña solidaria · 2022",
           "lead": "En 2022, cada familia llenó en casa una caja para un niño pobre o huérfano de Rumanía. La asociación de la iglesia, «Misiune și Ajutorare Elim», las llevó a Constanza y a Moldavia, junto con la Asociación «Miros de Cer».",
           "points": {
@@ -800,6 +809,16 @@
     "stories_title": "La vida de los jóvenes",
     "photos_all": "Todas las fotos",
     "photos_more": "Más fotos: {{count}}",
+    "series_editions": "Ediciones",
+    "view": {
+      "label": "Ver",
+      "timeline": "Cronológico",
+      "series": "Por campañas",
+      "compact": "Lista",
+      "timeline_hint": "Todas, desplegadas, de la más reciente",
+      "series_hint": "Cada campaña una vez, con sus ediciones por año",
+      "compact_hint": "Solo los títulos; abres la que quieras leer"
+    },
     "partner": "En colaboración con {{name}}",
     "watch_full": "Ver el programa completo",
     "watch_src": "directo",

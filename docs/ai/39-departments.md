@@ -220,6 +220,60 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
     junto a «Toate fotografiile» («În colaborare cu {{name}}» / «En
     colaboración con {{name}}», clave `departments.partner`). Sin `url`, una
     etiqueta gris (`.story__partner`). También en la crónica compacta.
+- **Auditoría de Ajutorare** (27/11/2026). Medido a 320, 390, 768, 1024 y
+  1440 px, en ro y es, con cada edición: sin scroll horizontal, sin textos
+  cortados, sin imágenes rotas, sin `alt` ausentes, `noopener` en todos
+  los enlaces externos, encabezados en orden (h1 → h2 → h3), objetivos ≥ 24
+  px (las barras del carrusel, 98 × 17, cumplen por la excepción de
+  espaciado de WCAG 2.5.8). Cambios:
+  - **Vista a elegir** (barra «Afișare» / «Ver» sobre las crónicas, en todo
+    departamento con más de una; `StoriesViewService`, clave
+    `iglesia-redes.stories.view`, vale para todos los departamentos):
+    - **Cronologic** (por defecto; no se guarda): todas desplegadas, de la
+      más reciente a la más antigua por `start` (estable para las que no
+      tienen fecha).
+    - **Pe campanii** (sólo si hay alguna `series`): cada serie una vez, en
+      el sitio de su edición más reciente, con selector de año (abajo).
+    - **Listă**: `<details>` por crónica (fecha en columna fija de 12,5 rem,
+      título, tipo y lugar, ⌄). Abierta, la crónica sin marco ni cabecera
+      (ya están en la fila; la cabecera queda para lectores de pantalla).
+    - Botones con `aria-pressed` en un `role="group"` nombrado por el
+      rótulo; en el teléfono el rótulo es sólo para lectores de pantalla, los
+      botones reparten el ancho y, por debajo de 380 px, pierden el icono.
+  - **Series** (`DepartmentStory.series`): en la vista «Pe campanii», las
+    crónicas de la misma serie se pintan como **un bloque con selector de
+    edición** (patrón
+    «tabs» de WAI-ARIA: `tablist` / `tab` / `tabpanel`, ← → en bucle,
+    Inicio / Fin, foco itinerante, activación automática). Rótulo = año de
+    `start`. Cabecera con nombre y contexto en
+    `departments.<dept>.series.<serie>.{title,text}`; `aria-label` del
+    selector «Ediții · …» (`departments.series_editions`). Las cuatro de
+    «Zâmbetul din Cutie» son `series: 'zambetul'`: la página pasa de
+    6.595 a 3.374 px a 1440 (de 8.506 a ≈ 4.400 a 320) y no crece con
+    cada edición. El selector cabe entero a 320 (4 × 64 px); si no cupiera,
+    se desliza.
+  - Puntos de la crónica compacta: 2 columnas desde 560 px de contenedor,
+    1 en el teléfono (con `auto-fit` salían 3 y 4 puntos dejaban uno solo).
+  - Textos: intro con la Asociația „Misiune și Ajutorare Elim” (AMAE) y la
+    campaña desde 2015 (dato de la presentación 2025); comillas rumanas
+    „…” en ro; en es un solo nombre, **«Sonrisa en una caja»** (el de los
+    carteles de la iglesia en español), en títulos, intro, actividades,
+    portada y álbum de la galería (antes «La sonrisa en una caja» y «La
+    Sonrisa de la Caja»); entradilla 2026 reescrita; en 2024 los títulos de
+    los puntos sin horas (se partían en «9:00– / 14:00»).
+  - Pendiente fuera del módulo: `about.es.json` dice «Una sonrisa en una
+    caja» (página Cine suntem).
+- **Portada de Ajutorare** (27/11/2026): carrusel de cuatro, una por edición. La primera, el
+  cort de 2026 (`zambetul_2026_cort_portada`: fotograma 0:06,5 de IMG_5088
+  en 4K que eligió el usuario, el más nítido de ese segundo, enfoque suave;
+  con `large` 2560; `focus: 'lower'`, arriba sólo hay techo de lona). La
+  segunda, la de siempre (`zambetul_cutie_2025`). Tercera, 2024 (la sala,
+  fotograma 5:23) y cuarta, 2022 (el reparto, 3:25): `*_portada` a 1600 desde
+  los fotogramas 1080p de YouTube, sin 2560 (el vídeo no da más; en monitores
+  muy grandes, algo más blandas). Rótulo: nombre + año («Zâmbetul din Cutie
+  2026», es «Sonrisa en una caja 2026», como el cartel en español): el hueco
+  del rótulo mide ≈ 160 px y «· sub cort» se cortaba. `cover` (tarjeta en
+  /departamente) pasa a la del cort.
 - **Ajutorare «Zâmbetul din Cutie» 2026** (`zambetul_2026`, añadida el
   27/11/2026): fuente **oficial**, la presentación de la iglesia «Zâmbetul din
   cutie · România 2026» (PDF de 11 láminas que dio el usuario). Datos:
@@ -240,10 +294,11 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
   - Crónica **completa** desde el 27/11/2026 (`start` 21/11, `end` 06/12):
     material de la carpeta de Drive «2026-11-21 - Zambetul din cutie»
     (`1lPg-4lPAUs4RcRRNBv2pWJ4zFJczyPcJ`): 9 vídeos 4K HEVC del iPhone
-    (09:33–10:28) y 2 fotos HEIC. Mosaico 4 × 6 sin huecos, por orden de
-    cámara: `cort` (vista del cort, destacado 2 × 2), 8 vídeos apaisados
-    (cartoane, benzi, impachetare, jucarii, mese, umplere, inchidere,
-    cutii) y 2 fotos verticales (`fetita`, `duba`).
+    (09:33–10:28) y 2 fotos HEIC. **Cinco principales** (decisión del
+    usuario: el mosaico de 11 quedaba mal), 4 × 4 sin huecos: `cort`
+    (destacado), `fetita`, `cartoane`, `duba`, `cutii`; los otros 6 vídeos
+    (benzi, impachetare, jucarii, mese, umplere, inchidere) con
+    `galleryOnly` tras un «+6». Bajo el «+N» no se pinta el ▶.
   - **Vídeos** en `assets/video/zambetul-2026/`, receta de Tabăra: 720p,
     30 fps, H.264 CRF 28 con tope 1,5 Mbps, AAC 96k, sin metadatos,
     `faststart`; portada = fotograma a 1080p → `zambetul_2026_v-<slug>`
@@ -300,6 +355,21 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
     (`watch--video`, miniatura hasta 20 rem; apilada por debajo de 30 rem);
     sin él, botón. En la compacta, con enlaces no sale «fotos en breve».
   - Títulos con el año en todas las ediciones.
+- **Proporciones del mosaico** (27/11/2026). Sin vídeo lateral (`has-video`)
+  nada fija el alto y las filas caían a su suelo (6,5 rem): una apaisada
+  2 × 1 quedaba en tira de 3 : 1 (≈ 400 × 104 px). Ahora, sólo en rejilla
+  (contenedor ≥ 560 px) y sin vídeo lateral: apaisada y destacada **2 × 2 a
+  16 : 9**, vertical 1 × 2 al alto de esas filas (`grid-auto-rows: auto`).
+  Cuadra con 4 apaisadas por cada 2 verticales. Medido: 2026 → 908 × 515
+  (1440), 668 × 380 (768); 2025 e Înainte DA → 4 × 6, 908 × 776. ANCORAT y
+  Tabăra (con vídeo lateral) no cambian: sus apaisadas siguen en 339 × 111,
+  pendiente si se quiere.
+  - `sizes` real por casilla (vertical `15rem`, resto `32rem`; antes
+    «16vw» = 192 px para casillas de 400: el navegador bajaba la miniatura
+    de 480 y se veía blanda).
+  - Tira del teléfono: `--strip-h: min(17rem, 100cqi * 0.88 * 2 / 3)`: una
+    apaisada ocupa el 88 % y asoma la siguiente (a 375: 303 × 202; antes
+    390 × 260 en una tira de 342, cortada).
 - **Tabăra 2026** (Granja Casavieja, Ávila; material del 19/11/2026, carpeta
   «TABARA › FINAL»: 3 fotos y 11 vídeos, 944 MB). **Ojo a la fecha**: la
   configuración dice 25–26/07/2026, pero el dron y el iPhone marcan el

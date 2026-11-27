@@ -567,7 +567,7 @@
       "join": "Simți chemarea pentru misiune sau vrei să susții prin rugăciune? Începe prin a ne scrie."
     },
     "relief": {
-      "intro": "Ajutorarea înseamnă să fim aproape de cei în nevoie, din biserică și din afara ei. Organizăm sprijin pentru familii aflate în dificultate, colecte și campanii precum «Zâmbetul din Cutie».",
+      "intro": "Ajutorarea înseamnă să fim aproape de cei în nevoie, din biserică și din afara ei. Prin Asociația „Misiune și Ajutorare Elim” organizăm sprijin pentru familii aflate în dificultate, colecte și, din 2015, campania „Zâmbetul din Cutie”.",
       "pillars": {
         "compassion": {
           "title": "Compasiune",
@@ -589,7 +589,7 @@
         },
         "campaigns": {
           "title": "Campanii",
-          "text": "«Zâmbetul din Cutie» și alte acțiuni în care toată biserica poate participa."
+          "text": "„Zâmbetul din Cutie” și alte acțiuni în care toată biserica poate participa."
         },
         "collections": {
           "title": "Colecte",
@@ -607,14 +607,23 @@
       "join": "Știi pe cineva care are nevoie de ajutor sau vrei să ajuți? Scrie-ne: totul rămâne între noi.",
       "hero": {
         "slides": {
-          "boxes": "Zâmbetul din Cutie"
+          "tent": "Zâmbetul din Cutie 2026",
+          "boxes": "Zâmbetul din Cutie 2025",
+          "prepare_2024": "Zâmbetul din Cutie 2024",
+          "give_2022": "Zâmbetul din Cutie 2022"
+        }
+      },
+      "series": {
+        "zambetul": {
+          "title": "Zâmbetul din Cutie",
+          "text": "Din 2015, în fiecare an: cutii cu daruri de Crăciun pentru copii săraci și orfani din România și Republica Moldova, pregătite de toată biserica."
         }
       },
       "stories": {
         "zambetul_2026": {
           "title": "Zâmbetul din Cutie 2026",
           "period": "Campanie de caritate · 2026",
-          "lead": "„În fiecare cutie este un zâmbet; în spatele acestui zâmbet este un sacrificiu, și în spatele sacrificiului este dragostea.” Proiectul, început în 2015, continuă: după cele 1.220 de cutii împărțite în 2025, ne-am propus 1.500, pentru copii de 3–14 ani din România și Republica Moldova, pregătite la biserică și duse împreună cu Asociația MGM.",
+          "lead": "„În fiecare cutie este un zâmbet; în spatele acestui zâmbet este un sacrificiu, și în spatele sacrificiului este dragostea.” După cele 1.220 de cutii din 2025, ne-am propus 1.500: daruri de Crăciun pentru copii de 3–14 ani din România și Republica Moldova, pregătite la biserică și duse împreună cu Asociația MGM.",
           "points": {
             "price": {
               "title": "25 € o cutie",
@@ -683,12 +692,12 @@
           "lead": "„Poți să provoci un zâmbet unui copil cu o cutie!” În 2024, departamentul de misiune și ajutorare al bisericii a pregătit, împreună cu toată biserica, 1.068 de cutii cu daruri pentru copii din România.",
           "points": {
             "register": {
-              "title": "Înscrieri: 20 și 27 octombrie, 3 noiembrie",
-              "text": "25 € de cutie, pe listele de înscriere de duminică sau prin Bizum, cu numele în concept."
+              "title": "Înscrieri în trei duminici",
+              "text": "20 și 27 octombrie și 3 noiembrie: 25 € de cutie, pe listele de înscriere sau prin Bizum, cu numele în concept."
             },
             "day": {
-              "title": "Sâmbătă, 16 noiembrie, 9:00–14:00",
-              "text": "Toată biserica a pregătit cutiile împreună. Nu trebuia adus nimic: departamentul a pus la dispoziție tot ce era nevoie, iar frații coordonatori au dat indicațiile."
+              "title": "Sâmbătă, 16 noiembrie",
+              "text": "De la 9:00 la 14:00, toată biserica a pregătit cutiile împreună. Nu trebuia adus nimic: departamentul a pus la dispoziție tot ce era nevoie, iar frații coordonatori au dat indicațiile."
             },
             "children": {
               "title": "Copii de la 7 ani",
@@ -800,6 +809,16 @@
     "stories_title": "Din viața tineretului",
     "photos_all": "Toate fotografiile",
     "photos_more": "Fotografii în plus: {{count}}",
+    "series_editions": "Ediții",
+    "view": {
+      "label": "Afișare",
+      "timeline": "Cronologic",
+      "series": "Pe campanii",
+      "compact": "Listă",
+      "timeline_hint": "Toate, desfășurate, de la cea mai recentă",
+      "series_hint": "Fiecare campanie o dată, cu edițiile ei pe ani",
+      "compact_hint": "Doar titlurile; deschizi ce vrei să citești"
+    },
     "partner": "În colaborare cu {{name}}",
     "watch_full": "Urmărește programul integral",
     "watch_src": "live",
