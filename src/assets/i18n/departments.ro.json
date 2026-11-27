@@ -109,6 +109,135 @@
         }
       },
       "stories": {
+        "inainte_da_2026": {
+          "title": "Înainte să spui „DA”",
+          "lead": "Pe 20 noiembrie, seara de tineret a deschis Conferința de familie. Fratele Marian Condrat, din Bellevue (Washington, SUA), a venit împreună cu soția lui și le-a vorbit tinerilor, foarte practic, despre ce trebuie lămurit înainte de căsătorie. Au urmat întrebări și răspunsuri.",
+          "points": {
+            "message": {
+              "title": "Mesajul",
+              "text": "Pornind de la 2 Corinteni 6:14: sfaturi practice pentru cine se gândește la căsătorie. Rezumatul, mai jos."
+            },
+            "qa": {
+              "title": "Întrebări și răspunsuri",
+              "text": "Întrebările s-au trimis printr-un cod QR de pe ecran, și anonim; fratele Marian a răspuns pe scenă."
+            },
+            "heart": {
+              "title": "O inimă din piese",
+              "text": "«Ești o piesă importantă pentru Dumnezeu»: la intrare, fiecare și-a colorat piesa lui."
+            },
+            "table": {
+              "title": "Masa de după",
+              "text": "După program, tinerii au rămas la masă: au servit împreună și s-au bucurat de timp în părtășie."
+            }
+          },
+          "verse": {
+            "text": "„Căci Dumnezeu nu ne-a dat un duh de frică, ci de putere, de dragoste și de chibzuință.”",
+            "ref": "2 Timotei 1:7"
+          },
+          "sermon": {
+            "eyebrow": "Din predică",
+            "passage": "2 Corinteni 6:14 · 1 Corinteni 7:32–34",
+            "title": "Înainte să spui „DA”",
+            "lead": "Fratele Marian Condrat a venit cu soția lui, ca să arate că ce spune funcționează. Nimeni nu se căsătorește ca să divorțeze: de aceea, ce se hotărăște înainte de „DA” contează mai mult decât rochia și costumul. Un jug potrivit înseamnă aceeași credință și aceleași valori, nu doar aceeași biserică.",
+            "parts": {
+              "myths": {
+                "title": "Ce ne spunem și ce e de fapt",
+                "cols": {
+                  "a": "Ce ne spunem",
+                  "b": "Ce e de fapt"
+                },
+                "rows": {
+                  "pray": {
+                    "label": "Rugăciunea",
+                    "a": "Mă rog când apare cineva sau când îmi cumpăr rochia.",
+                    "b": "Atunci e prea târziu: roagă-te și postește de acum, până te căsătorești."
+                  },
+                  "change": {
+                    "label": "Defectele lui",
+                    "a": "«Lasă, că îl schimb eu.»",
+                    "b": "Nu ești centru de reabilitare. Ce n-au schimbat Dumnezeu, familia și biserica nu schimbi nici tu."
+                  },
+                  "escape": {
+                    "label": "Viciile",
+                    "a": "După nuntă scap de ele.",
+                    "b": "Căsătoria nu te scapă: la prima supărare te întorci la ce ai ținut ascuns."
+                  },
+                  "faith": {
+                    "label": "Credința",
+                    "a": "Se vede duminică, la biserică.",
+                    "b": "Se vede de luni până sâmbătă: la școală, cu prietenii, pe rețele."
+                  },
+                  "happy": {
+                    "label": "Fericirea",
+                    "a": "Aștept să mă facă fericit.",
+                    "b": "Iubești cum a iubit Hristos Biserica: cauți fericirea celuilalt."
+                  },
+                  "choice": {
+                    "label": "Ultimul cuvânt",
+                    "a": "Al meu",
+                    "b": "Al lui Dumnezeu"
+                  }
+                }
+              },
+              "questions": {
+                "title": "Trei întrebări înainte să-ți dai inima",
+                "lead": "Lămurește-le înainte de prima întâlnire: pe hârtie și în rugăciune.",
+                "items": {
+                  "values": {
+                    "title": "Avem aceleași valori?",
+                    "text": "Credință, biserică, slujire, bani, copii. Necredincioși pot fi și printre noi: în același lan cresc grâul și neghina.",
+                    "note": "Fă-ți lista și trăiește tu întâi după ea"
+                  },
+                  "limits": {
+                    "title": "Ce nu negociez?",
+                    "text": "Ce n-ai vrea să vezi în caracterul, purtarea sau anturajul lui sau al ei. Atracția nu e totuna cu dragostea.",
+                    "note": "Nu da nicio șansă la ce nu negociezi"
+                  },
+                  "home": {
+                    "title": "Cum se poartă acasă?",
+                    "text": "Cu părinții, cu prietenii, în biserică; ce postează și la ce glume râde. Întreabă și de trecut.",
+                    "note": "Așa se va purta și cu tine"
+                  }
+                }
+              },
+              "lessons": {
+                "title": "Ce luăm acasă",
+                "items": {
+                  "give": {
+                    "title": "Învață să dăruiești",
+                    "text": "Dă zeciuiala chiar și din banii de ziua ta. Multe familii se ceartă din cauza banilor."
+                  },
+                  "free": {
+                    "title": "Scapă de vicii acum",
+                    "text": "Pune-ți limită la rețele și fugi de ce privești în ascuns. Căsătoria nu le vindecă."
+                  },
+                  "work": {
+                    "title": "Învață să muncești",
+                    "text": "Facturi, chirie, mâncare: vei munci mai mult. Camera ta spune cât ești de disciplinat."
+                  },
+                  "talk": {
+                    "title": "Ascultă și vorbește",
+                    "text": "Ascultă și ce nu se spune. Discutați lucrurile serioase: copii, bani, casă, slujire."
+                  },
+                  "learn": {
+                    "title": "Învață despre căsătorie",
+                    "text": "Pune întrebări, caută un mentor și cursuri. Mai bine pregătit decât nepregătit."
+                  },
+                  "guard": {
+                    "title": "Pune bariere",
+                    "text": "Păzește-l pe celălalt de tine. Caută un soț, o soție, nu un părinte, și nu începe o relație ca să vindeci o rană."
+                  }
+                }
+              }
+            },
+            "close": {
+              "title": "Lasă-L pe Dumnezeu să aibă ultimul cuvânt",
+              "text": "Tu nu știi cum va fi peste zece ani; Dumnezeu știe. Roagă-te cum s-a rugat el: «Doamne, alegerea asta e prea mare pentru mine. Implică-Te și, dacă trebuie, alege Tu în locul meu.»",
+              "verse": "„Nu vă înjugați la un jug nepotrivit cu cei necredincioși. Căci ce legătură este între neprihănire și fărădelege? Sau cum poate sta împreună lumina cu întunericul?”",
+              "ref": "2 Corinteni 6:14"
+            }
+          }
+        },
         "ancorat_2026": {
           "title": "ANCORAT · Conferința de tineret",
           "lead": "Pe 26 septembrie sala s-a umplut de tineri pentru conferința «ANCORAT». Fratele Daniel Popa (Timișoara) a adus mesajul, iar seara a continuat cu întrebări și răspunsuri deschise.",
@@ -282,6 +411,7 @@
       "hero": {
         "slides": {
           "worship": "Tineretul în închinare",
+          "inainte_da_hall": "Înainte să spui „DA” · sala plină",
           "ancorat_hall": "Conferința ANCORAT · sala plină",
           "ancorat_worship": "Conferința ANCORAT · laudă și închinare",
           "ancorat_singing": "Conferința ANCORAT · tinerii cântă",
@@ -557,6 +687,7 @@
     "add_calendar": "Adaugă în calendar",
     "story_kind": {
       "conference": "Conferință",
+      "evening": "Seară de tineret",
       "camp": "Tabără",
       "concert": "Concert",
       "campaign": "Campanie",

@@ -176,7 +176,7 @@ export interface StorySermon {
  */
 export interface DepartmentStory {
   readonly id: string;
-  readonly kind: 'conference' | 'camp' | 'concert' | 'campaign' | 'visit' | 'evangelism';
+  readonly kind: 'conference' | 'evening' | 'camp' | 'concert' | 'campaign' | 'visit' | 'evangelism';
   readonly icon: IconName;
   /**
    * Fechas exactas, si se saben. Sin `start`, la crónica muestra su periodo
@@ -256,8 +256,61 @@ export interface DepartmentConfig {
  * usuario (cântare, predică, interviu). Vídeo: «VIDEO FINAL - INTRARE».
  * Tabăra: material entregado por el usuario (carpeta «TABARA › FINAL»,
  * 19/11/2026) y su carpeta de Drive con todo el contenido.
+ * «Înainte să spui „DA”»: carpeta «2026-11-20 Conferinta tineret – Înainte Să
+ * Spui Da» (41 fotos de Tezza, 1620 px) y el directo del canal.
+ * Orden: la más reciente primero.
  */
 const YOUTH_STORIES: readonly DepartmentStory[] = [
+  {
+    id: 'inainte_da_2026',
+    kind: 'evening',
+    icon: 'heart',
+    // Seară de tineret a las 20:00 que abrió la Conferință de familie (20–22/11).
+    start: '2026-11-20',
+    place: 'Biserica Elim, Arganda del Rey',
+    guest: 'Marian Condrat (Bellevue, SUA)',
+    points: ['message', 'qa', 'heart', 'table'],
+    // 4 × 4 sin huecos: destacada (2 × 2), dos verticales (1 × 2) y cuatro
+    // apaisadas (2 × 1). Sin primeros planos de menores: sala, escenario,
+    // pantalla y el mural sin gente.
+    photos: [
+      { base: 'inainte_da_2026_sala', width: 1600, height: 1067, featured: true },
+      { base: 'inainte_da_2026_predica', width: 1080, height: 1620 },
+      { base: 'inainte_da_2026_intrebari', width: 1080, height: 1620 },
+      // Las apaisadas van en casillas de ≈ 2,3 : 1: encuadre en lo importante.
+      { base: 'inainte_da_2026_lauda', width: 1600, height: 1067, focus: '50% 62%' },
+      { base: 'inainte_da_2026_versetul', width: 1600, height: 1067 },
+      { base: 'inainte_da_2026_inima', width: 1600, height: 1067 },
+      // La pantalla con «Dejen que Dios tenga la última palabra», arriba.
+      { base: 'inainte_da_2026_ultimul-cuvant', width: 1600, height: 1067, focus: '50% 22%' },
+    ],
+    // Drive: «2026-11-20 Conferinta tineret - Înainte Să Spui Da» (41 fotos)
+    driveFolderId: '1tdPONU5XW8uTRB0wiPT-TG9A54gmy1kc',
+    // Directo (1:10:53). Las preguntas y respuestas no se emitieron.
+    youtubeId: 'Tufp6E4kzOw',
+    verse: true,
+    // Predicación de Marian Condrat, resumida de la transcripción automática
+    // del directo (27/11/2026). Segundos medidos sobre él.
+    sermon: {
+      at: 1897,
+      parts: [
+        {
+          kind: 'contrast',
+          key: 'myths',
+          at: 2283,
+          rows: ['pray', 'change', 'escape', 'faith', 'happy', 'choice'],
+        },
+        { kind: 'steps', key: 'questions', at: 2382, lead: true, items: ['values', 'limits', 'home'] },
+        {
+          kind: 'lessons',
+          key: 'lessons',
+          at: 2604,
+          items: ['give', 'free', 'work', 'talk', 'learn', 'guard'],
+        },
+      ],
+      closeAt: 3971,
+    },
+  },
   {
     id: 'ancorat_2026',
     kind: 'conference',
@@ -498,6 +551,15 @@ export const DEPARTMENTS: readonly DepartmentConfig[] = [
         thumb: 'assets/drive-media/inchinare_tineret_2026-thumb.webp',
         tone: '#6b645f',
         focus: 'center',
+      },
+      {
+        // Lo más reciente: «Înainte să spui „DA”» (20/11/2026), la sala llena.
+        id: 'youth_inainte_da_hall',
+        i18nKey: 'inainte_da_hall',
+        image: 'assets/drive-media/inainte_da_2026_sala.webp',
+        medium: 'assets/drive-media/inainte_da_2026_sala-960.webp',
+        thumb: 'assets/drive-media/inainte_da_2026_sala-thumb.webp',
+        tone: '#6a5e55',
       },
       {
         id: 'youth_ancorat_hall',

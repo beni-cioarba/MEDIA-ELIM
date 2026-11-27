@@ -109,6 +109,135 @@
         }
       },
       "stories": {
+        "inainte_da_2026": {
+          "title": "Antes de decir «SÍ»",
+          "lead": "El 20 de noviembre, la noche de jóvenes abrió la Conferencia de familia. El hermano Marian Condrat, de Bellevue (Washington, EE. UU.), vino con su esposa y habló a los jóvenes, de forma muy práctica, de lo que hay que tener claro antes de casarse. Después hubo preguntas y respuestas.",
+          "points": {
+            "message": {
+              "title": "El mensaje",
+              "text": "A partir de 2 Corintios 6:14: consejos prácticos para quien piensa en casarse. El resumen, más abajo."
+            },
+            "qa": {
+              "title": "Preguntas y respuestas",
+              "text": "Las preguntas se enviaron con un código QR de la pantalla, también de forma anónima; el hermano Marian respondió en el escenario."
+            },
+            "heart": {
+              "title": "Un corazón de piezas",
+              "text": "«Eres una pieza importante para Dios»: a la entrada, cada uno coloreó su pieza."
+            },
+            "table": {
+              "title": "La cena de después",
+              "text": "Después del programa, los jóvenes se quedaron a cenar: sirvieron la mesa juntos y disfrutaron de un tiempo de comunión."
+            }
+          },
+          "verse": {
+            "text": "«Porque no nos ha dado Dios espíritu de cobardía, sino de poder, de amor y de dominio propio.»",
+            "ref": "2 Timoteo 1:7"
+          },
+          "sermon": {
+            "eyebrow": "De la predicación",
+            "passage": "2 Corintios 6:14 · 1 Corintios 7:32–34",
+            "title": "Antes de decir «SÍ»",
+            "lead": "El hermano Marian Condrat vino con su esposa para mostrar que lo que enseña funciona. Nadie se casa para divorciarse: por eso, lo que se decide antes del «SÍ» importa más que el vestido y el traje. Un yugo igual es la misma fe y los mismos valores, no sólo la misma iglesia.",
+            "parts": {
+              "myths": {
+                "title": "Lo que nos decimos y lo que es",
+                "cols": {
+                  "a": "Lo que nos decimos",
+                  "b": "Lo que es"
+                },
+                "rows": {
+                  "pray": {
+                    "label": "La oración",
+                    "a": "Oro cuando aparezca alguien o cuando compre el vestido.",
+                    "b": "Entonces es tarde: ora y ayuna desde ahora hasta que te cases."
+                  },
+                  "change": {
+                    "label": "Sus defectos",
+                    "a": "«Tranquilo, ya lo cambio yo.»",
+                    "b": "No eres un centro de rehabilitación. Lo que no cambiaron Dios, la familia y la iglesia, tampoco lo cambias tú."
+                  },
+                  "escape": {
+                    "label": "Los vicios",
+                    "a": "Después de la boda se me quitan.",
+                    "b": "El matrimonio no te libra: al primer disgusto vuelves a lo que tenías escondido."
+                  },
+                  "faith": {
+                    "label": "La fe",
+                    "a": "Se ve el domingo, en la iglesia.",
+                    "b": "Se ve de lunes a sábado: en clase, con los amigos, en las redes."
+                  },
+                  "happy": {
+                    "label": "La felicidad",
+                    "a": "Espero que me haga feliz.",
+                    "b": "Amas como Cristo amó a la Iglesia: buscas la felicidad del otro."
+                  },
+                  "choice": {
+                    "label": "La última palabra",
+                    "a": "La mía",
+                    "b": "La de Dios"
+                  }
+                }
+              },
+              "questions": {
+                "title": "Tres preguntas antes de entregar el corazón",
+                "lead": "Tenlas claras antes de la primera cita: por escrito y en oración.",
+                "items": {
+                  "values": {
+                    "title": "¿Tenemos los mismos valores?",
+                    "text": "Fe, iglesia, servicio, dinero, hijos. También entre nosotros hay incrédulos: en el mismo campo crecen el trigo y la cizaña.",
+                    "note": "Haz tu lista y vive tú primero según ella"
+                  },
+                  "limits": {
+                    "title": "¿Qué no negocio?",
+                    "text": "Lo que no quieres ver en su carácter, su conducta o sus amistades. La atracción no es lo mismo que el amor.",
+                    "note": "No des ninguna oportunidad a lo que no negocias"
+                  },
+                  "home": {
+                    "title": "¿Cómo se porta en casa?",
+                    "text": "Con sus padres, con sus amigos, en la iglesia; qué publica y de qué bromas se ríe. Pregunta también por su pasado.",
+                    "note": "Así se portará contigo"
+                  }
+                }
+              },
+              "lessons": {
+                "title": "Lo que nos llevamos",
+                "items": {
+                  "give": {
+                    "title": "Aprende a dar",
+                    "text": "Da el diezmo incluso del dinero de tu cumpleaños. Muchas familias discuten por dinero."
+                  },
+                  "free": {
+                    "title": "Deja los vicios ya",
+                    "text": "Ponte límite en las redes y huye de lo que miras a escondidas. El matrimonio no los cura."
+                  },
+                  "work": {
+                    "title": "Aprende a trabajar",
+                    "text": "Facturas, alquiler, comida: trabajarás más. Tu habitación dice lo disciplinado que eres."
+                  },
+                  "talk": {
+                    "title": "Escucha y habla",
+                    "text": "Escucha también lo que no se dice. Hablad de lo serio: hijos, dinero, casa, servicio."
+                  },
+                  "learn": {
+                    "title": "Aprende sobre el matrimonio",
+                    "text": "Pregunta, busca un mentor y cursos. Mejor preparado que sin preparar."
+                  },
+                  "guard": {
+                    "title": "Pon límites",
+                    "text": "Protege al otro de ti mismo. Busca un esposo, una esposa, no un padre, y no empieces una relación para curar una herida."
+                  }
+                }
+              }
+            },
+            "close": {
+              "title": "Deja que Dios tenga la última palabra",
+              "text": "Tú no sabes cómo será dentro de diez años; Dios lo sabe. Ora como oró él: «Señor, esta elección es demasiado grande para mí. Implícate y, si hace falta, elige Tú por mí.»",
+              "verse": "«No os unáis en yugo desigual con los incrédulos; porque ¿qué compañerismo tiene la justicia con la injusticia? ¿Y qué comunión la luz con las tinieblas?»",
+              "ref": "2 Corintios 6:14"
+            }
+          }
+        },
         "ancorat_2026": {
           "title": "ANCORAT · Conferencia de jóvenes",
           "lead": "El 26 de septiembre la sala se llenó de jóvenes para la conferencia «ANCORAT» (anclado). El hermano Daniel Popa (Timișoara) trajo el mensaje y la noche siguió con preguntas y respuestas abiertas.",
@@ -282,6 +411,7 @@
       "hero": {
         "slides": {
           "worship": "Los jóvenes en adoración",
+          "inainte_da_hall": "Antes de decir «SÍ» · la sala llena",
           "ancorat_hall": "Conferencia ANCORAT · la sala llena",
           "ancorat_worship": "Conferencia ANCORAT · alabanza y adoración",
           "ancorat_singing": "Conferencia ANCORAT · los jóvenes cantan",
@@ -557,6 +687,7 @@
     "add_calendar": "Añadir al calendario",
     "story_kind": {
       "conference": "Conferencia",
+      "evening": "Noche de jóvenes",
       "camp": "Campamento",
       "concert": "Concierto",
       "campaign": "Campaña",

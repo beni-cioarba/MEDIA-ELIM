@@ -70,7 +70,7 @@ export const UPCOMING_EVENTS: readonly UpcomingEvent[] = [
     poster: 'assets/posters/inainte-sa-spui-da-2026.webp',
     date: '2026-11-20',
     time: '20:00',
-    title: 'Seară de tineret: „Înainte să spui da”',
+    title: 'Seară de tineret: „Înainte să spui DA”',
     description: 'Deschiderea Conferinței de familie, la seara de tineret.',
     verse: '',
     preacher: 'Marian Condrat',

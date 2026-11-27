@@ -74,7 +74,7 @@ portada a pantalla completa en navy con el icono del departamento en grande.
 «Qué hacemos» va justo tras «Quiénes somos» (presentación) y antes de
 reuniones y crónicas; en Tineret sólo lo que no cuentan sus bloques
 (alabanza, conferencias, tabere), en 3 columnas (`acts--three`).
-Hoy: Tineret 6 fotos · Cor 2 (cor, colinde) · Evanghelizare 3 (colinde,
+Hoy: Tineret 7 fotos · Cor 2 (cor, colinde) · Evanghelizare 3 (colinde,
 candidații, botez) · Fanfara 1 · Ajutorare 1 · Misiune 0. Chip de «lo
 próximo»: reunión fija más cercana **o** evento del departamento
 (`#meet-<key>` / `#events`). Acciones: la propia («Vino vineri») o «Vreau să mă
@@ -98,7 +98,7 @@ elige la reunión fija más cercana (semanal o mensual) y enlaza a su bloque
 CSS del carrusel, 0 por defecto: **el alto del inicio no cambia**). Los datos
 clave pasan a una franja navy bajo el carrusel. Mejor apaisadas; una
 vertical entra con un `focus` que deje a las personas en el marco (≈ 2,2 : 1
-en escritorio; comprobado a 1440). Tineret (6): alabanza del tineret + ANCORAT
+en escritorio; comprobado a 1440). Tineret (7): alabanza del tineret, «Înainte să spui „DA”» (sala) + ANCORAT
 (sala, alabanza, cântare, predică, interviu).
 Sin `heroSlides`: portada fija con `cover` (el resto, de momento).
 
@@ -200,7 +200,35 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
     las 13 piezas de la galería se abren (los 10 vídeos avanzan), sin errores.
     Ojo: `ng serve` no siempre sirve ficheros de `assets` creados después de
     arrancar (devuelve el HTML): reiniciarlo antes de revisar.
-- Textos de las dos: provisionales (TODO(iglesia)).
+- **Înainte să spui „DA”** (vineri 20/11/2026, 20:00; abrió la Conferință
+  de familie; Marian Condrat, Bellevue, Washington). La **primera** de la
+  lista (`YOUTH_STORIES` va de la más reciente a la más antigua). Kind nuevo
+  `evening` («Seară de tineret» / «Noche de jóvenes»).
+  - **Fotos**: carpeta «2026-11-20 Conferinta tineret – Înainte Să Spui Da»
+    (`1tdPONU5XW8uTRB0wiPT-TG9A54gmy1kc`, 41 JPEG de Tezza a 1620 px, sin
+    variante 2560). Siete optimizadas (`inainte_da_2026_*`): sala llena
+    (destacada), predică y întrebări (verticales), laudă, versetul en
+    pantalla (2 Tim 1:7), la inimă-puzzle sin gente y la pantalla «Dejen que
+    Dios tenga la última palabra». 4 × 4 sin huecos y **sin vídeo propio**
+    (sin reel: el mosaico ocupa todo el ancho de su columna). Las apaisadas
+    quedan a ≈ 2,3 : 1 en escritorio: `focus` en laudă (`50% 62%`) y en la
+    pantalla (`50% 22%`). Fuera: primeros planos de chicas en el mural y
+    filas de público de frente.
+  - **Directo**: `Tufp6E4kzOw` (1:10:53). Las preguntas por QR se hicieron
+    después y **no** se emitieron.
+  - **Resumen** de la transcripción automática (27/11/2026): predicación
+    desde 31:37; «Ce ne spunem / Ce e de fapt» (seis mitos, veredicto «Ultimul
+    cuvânt: al meu / al lui Dumnezeu»), tres preguntas (valores, qué no se
+    negocia, cómo se porta en casa), seis lecciones y cierre «Lasă-L pe
+    Dumnezeu să aibă ultimul cuvânt» (1:06:11, 2 Corinteni 6:14). Versículo
+    de la crónica: 2 Timotei 1:7 (el de la exhortación inicial, en pantalla).
+  - **Anuncio**: diapositiva `youth_inainte_da_hall` en la portada de Tineret
+    (2.ª, tras la alabanza) y álbum `inainte_da_2026` en la galería de Media
+    (mismas fotos).
+  - Medido en `ng serve`: a 1440 px, crónica 953 × 2.809 px (resumen 1.600);
+    a 375 px, 3.801 px (resumen 2.568), tira de fotos de 260 px, sin scroll
+    horizontal; la galería abre las 7.
+- Textos de todas: provisionales (TODO(iglesia)).
 
 **Vídeo y PWA**: `ngsw-config.json` excluye `/assets/video/**`. El Service
 Worker de Angular no sirve bien peticiones por rangos (`Range`), que es como
