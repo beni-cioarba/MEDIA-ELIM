@@ -237,8 +237,69 @@ Pieza nueva (galería propia, documentos, inscripción…) = un `kind` más y su
     el proyecto empezó en 2015 (no es «la segunda edición»).
   - **Hora**: la lámina en rumano dice 09:00 y la invitación en español
     («Sonrisa en una caja») 10:00 h. Como ya pasó, la web no da hora.
-  - Crónica **compacta** (sin fotos): `start` 21/11 y `end` 06/12. Cuando
-    lleguen las fotos: `photos` + `driveFolderId`, como la de 2025.
+  - Crónica **completa** desde el 27/11/2026 (`start` 21/11, `end` 06/12):
+    material de la carpeta de Drive «2026-11-21 - Zambetul din cutie»
+    (`1lPg-4lPAUs4RcRRNBv2pWJ4zFJczyPcJ`): 9 vídeos 4K HEVC del iPhone
+    (09:33–10:28) y 2 fotos HEIC. Mosaico 4 × 6 sin huecos, por orden de
+    cámara: `cort` (vista del cort, destacado 2 × 2), 8 vídeos apaisados
+    (cartoane, benzi, impachetare, jucarii, mese, umplere, inchidere,
+    cutii) y 2 fotos verticales (`fetita`, `duba`).
+  - **Vídeos** en `assets/video/zambetul-2026/`, receta de Tabăra: 720p,
+    30 fps, H.264 CRF 28 con tope 1,5 Mbps, AAC 96k, sin metadatos,
+    `faststart`; portada = fotograma a 1080p → `zambetul_2026_v-<slug>`
+    (`.webp`, `-960`, `-thumb`). IMG_5099 recortado a sus primeros 22 s
+    (petición del usuario; el recorte en 4K quedó en Descargas como
+    `IMG_5099_recortado.MOV`).
+  - **HEIC**: 54 teselas de 896 × 1024 (rejilla 9 × 6 → 8064 × 6048) con
+    rotación −90°; ffmpeg sólo saca una tesela con `-map 0:g:0`: se sacan
+    las 54 (`-map 0:i`), se cosen, se recortan a 6048 y se giran. Luego
+    `optimize-images.js` (1600 × 2133, sin 2560).
+- **Ajutorare «Zâmbetul din Cutie» 2024** (`zambetul_2024`, compacta). Fuentes:
+  cartel oficial («Anul 2024 · Bucuria TA», con el logo de AMAE), mensajes de
+  la iglesia por WhatsApp y el vídeo del canal Elim Arganda «Pregătirea
+  proiectului „Zâmbetul în cutie”» (16/11/2024, 12 min; `links` con
+  miniatura propia: el fotograma del minuto 5:23 que eligió el usuario, a
+  1080p, sin la franja negra ni el logo → `zambetul_2024_pregatire{,-thumb}.webp`).
+  Datos: 25 € por caja; inscripción los domingos 20 y 27/10 y
+  3/11 (listas o Bizum); preparación el sábado 16/11 de 9:00 a 14:00, sin
+  traer nada; niños desde 7 años con sus padres; 1.068 cajas (de la
+  presentación de 2025). Versículo del mensaje: Rut 2:12 (el mensaje dice
+  «1;12», errata). **Fuera**: el teléfono y el Bizum del cartel (número
+  personal) y la foto de grupo y el reel de Facebook (no hay fichero; el
+  reel pide sesión). Socio de reparto en 2024: no consta.
+- **Ajutorare «Zâmbetul din Cutie» 2022** (`zambetul_2022`, compacta, 20 – 27/11/2022).
+  **Fuente oficial**: «Presentacion ZDC 2022.pptx» (13 láminas). La organiza
+  la asociación de la iglesia, **«Misiune și Ajutorare ELIM» (AMAE,
+  Asociación Misión y Ayuda «Elim», Arganda del Rey)**, que reparte con
+  **Asociația «Miros de Cer»** en **Constanța** (orfanatos, niños pobres) y
+  **Moldova** (zonas pobres). Datos:
+  - caja estándar del departamento: no se cierra ni se envuelve; etiqueta
+    dentro con número («FATA 2-5 Ani · 306») para mandar la foto del niño a
+    quien la preparó;
+  - obligatorio: guantes, bufanda y gorro, toalla, jabón, juguete, dulces,
+    pasta y cepillo, material escolar, cuaderno de colorear o agenda,
+    accesorios de pelo; todo nuevo;
+  - prohibido (lámina «Nu poți adăuga», en imágenes): ropa, champú, enjuague,
+    sprays, cuchillos, medicinas, bombones, embutido;
+  - 5 € por caja (caja, transporte, cruasán y zumo para los niños);
+    recogida los domingos 20 y 27/11 antes y después de cada culto (y el de
+    las 19:00 con Simi Bumbar, según WhatsApp);
+  - van Cornel Mitoseriu y Aurel Burdet; 560 cajas en 2021 y más de 3.500 en
+    «los 5 años». **Ojo**: la presentación de 2025 dice «2015-2025, 10 ani» y
+    más de 6.000 regalos; cada crónica da la cifra de su documento.
+  - Socio con canal de YouTube y sin web: `partner.url` al canal. Vídeos
+    (`links`): «Pregătim cadourile» (Frații Strugariu Official, 09/12/2022;
+    la etiqueta nombra el canal) y el reparto, «Se mai poate așa ceva în
+    2022⁉️» (Miros De Cer, 17/12/2022). Su miniatura es propia
+    (`StoryLink.thumb`): el fotograma del minuto 3:25 que eligió el
+    usuario, sacado del vídeo a 1080p (yt-dlp, 4 s, con permiso), sin la
+    interfaz y con un enfoque suave → `zambetul_2022_impartire{,-thumb}.webp`.
+    La cuenta bancaria de su descripción no se copia.
+  - **`links`** (`DepartmentStory.links: StoryLink[]`): enlaces externos
+    (texto en `<base>.links.<key>`). Con `youtubeId`, tarjeta con miniatura
+    (`watch--video`, miniatura hasta 20 rem; apilada por debajo de 30 rem);
+    sin él, botón. En la compacta, con enlaces no sale «fotos en breve».
+  - Títulos con el año en todas las ediciones.
 - **Tabăra 2026** (Granja Casavieja, Ávila; material del 19/11/2026, carpeta
   «TABARA › FINAL»: 3 fotos y 11 vídeos, 944 MB). **Ojo a la fecha**: la
   configuración dice 25–26/07/2026, pero el dron y el iPhone marcan el

@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CHURCH_CONFIG } from '../../../core/church.config';
@@ -99,7 +100,7 @@ const toView = (photo: StoryPhoto): PhotoView => ({
 @Component({
   selector: 'app-stories-block',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslatePipe, IconComponent, ViewableDirective, ReelPlayerComponent, SermonNotesComponent],
+  imports: [NgTemplateOutlet, TranslatePipe, IconComponent, ViewableDirective, ReelPlayerComponent, SermonNotesComponent],
   templateUrl: './stories-block.component.html',
   styleUrl: './stories-block.component.scss',
 })

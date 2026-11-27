@@ -643,7 +643,7 @@
           }
         },
         "zambetul_2025": {
-          "title": "Zâmbetul din Cutie",
+          "title": "Zâmbetul din Cutie 2025",
           "period": "Campanie de caritate · 2025",
           "lead": "O zi întreagă sub cort, la biserică: copii, tineri și părinți au pregătit împreună 1.220 de cutii cu daruri pentru copii săraci și orfani din zone defavorizate ale României, duse în Oltenia împreună cu Asociația EBEN-EZER din Botoșani.",
           "points": {
@@ -675,6 +675,71 @@
           "verse": {
             "text": "„Fiecare să dea după cum a hotărât în inima lui: nu cu părere de rău sau de silă, căci pe cine dă cu bucurie îl iubește Dumnezeu.”",
             "ref": "2 Corinteni 9:7"
+          }
+        },
+        "zambetul_2024": {
+          "title": "Zâmbetul din Cutie 2024",
+          "period": "Campanie de caritate · 2024",
+          "lead": "„Poți să provoci un zâmbet unui copil cu o cutie!” În 2024, departamentul de misiune și ajutorare al bisericii a pregătit, împreună cu toată biserica, 1.068 de cutii cu daruri pentru copii din România.",
+          "points": {
+            "register": {
+              "title": "Înscrieri: 20 și 27 octombrie, 3 noiembrie",
+              "text": "25 € de cutie, pe listele de înscriere de duminică sau prin Bizum, cu numele în concept."
+            },
+            "day": {
+              "title": "Sâmbătă, 16 noiembrie, 9:00–14:00",
+              "text": "Toată biserica a pregătit cutiile împreună. Nu trebuia adus nimic: departamentul a pus la dispoziție tot ce era nevoie, iar frații coordonatori au dat indicațiile."
+            },
+            "children": {
+              "title": "Copii de la 7 ani",
+              "text": "Copiii și tinerii au venit cu părinții, care au răspuns de ei cât timp au lucrat."
+            },
+            "count": {
+              "title": "1.068 de cutii",
+              "text": "Atâtea cutii au plecat spre copii din România în 2024."
+            }
+          },
+          "verse": {
+            "text": "„Domnul să-ți răsplătească ce ai făcut, și plata ta să fie deplină din partea Domnului Dumnezeului lui Israel, sub ale cărui aripi ai venit să te adăpostești!”",
+            "ref": "Rut 2:12"
+          },
+          "links": {
+            "video": "Pregătirea cutiilor, 16 noiembrie 2024"
+          }
+        },
+        "zambetul_2022": {
+          "title": "Zâmbetul din Cutie 2022",
+          "period": "Campanie de caritate · 2022",
+          "lead": "În 2022, fiecare familie a umplut acasă o cutie pentru un copil sărac sau orfan din România. Asociația „Misiune și Ajutorare Elim” a bisericii le-a dus în Constanța și în Moldova, împreună cu Asociația „Miros de Cer”.",
+          "points": {
+            "home": {
+              "title": "Cutii pregătite acasă",
+              "text": "Cutia, aceeași pentru toți, se primea de la departament. Nu se închidea și nu se ambala. Înăuntru, o etichetă cu număr (de exemplu, „Fată 2–5 ani · 306”): după împărțire, cine a pregătit-o primea fotografia copilului."
+            },
+            "inside": {
+              "title": "Ce punea fiecare",
+              "text": "Mănuși, fular și căciulă, prosop, săpun, o jucărie, dulciuri, pastă și periuță de dinți, rechizite, un caiet de colorat sau o agendă și accesorii de păr. Totul nou, nefolosit."
+            },
+            "not": {
+              "title": "Ce nu se punea",
+              "text": "Alte haine, șampon, apă de gură, spray-uri, cuțite, medicamente, bomboane de ciocolată sau mezeluri."
+            },
+            "collection": {
+              "title": "Strânse la biserică",
+              "text": "Duminică, 20 și 27 noiembrie, înainte și după fiecare program, și la serviciul de seară de la ora 19:00, cu pastorul Simi Bumbar ca invitat. 5 € de cutie: cutia, transportul, un corn și un suc pentru copii."
+            },
+            "distribution": {
+              "title": "Constanța și Moldova",
+              "text": "La orfelinate și la copii foarte săraci, împreună cu Asociația „Miros de Cer”. Au mers Cornel Mitoseriu și Aurel Burdet, care au trimis bisericii imagini de la împărțire."
+            },
+            "history": {
+              "title": "560 de cutii în 2021",
+              "text": "Atât s-au strâns cu un an înainte; în cei cinci ani de până atunci, peste 3.500. Mulțumiri colaboratorului pentru transport."
+            }
+          },
+          "links": {
+            "prepare": "Video: „Pregătim cadourile” (Frații Strugariu)",
+            "distribution": "Împărțirea darurilor, în imagini"
           }
         }
       }

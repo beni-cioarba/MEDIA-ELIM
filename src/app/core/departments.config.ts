@@ -125,6 +125,26 @@ export interface StoryPhoto {
   readonly galleryOnly?: boolean;
 }
 
+/** Enlace externo de una crónica (`DepartmentStory.links`). */
+export interface StoryLink {
+  /** Texto en `<base>.links.<key>`. */
+  readonly key: string;
+  readonly url: string;
+  /**
+   * Vídeo de YouTube: el enlace se pinta como tarjeta con su miniatura (la
+   * misma pieza que el directo de `youtubeId`), no como botón.
+   */
+  readonly youtubeId?: string;
+  /** Canal o medio que lo publica («YouTube · Miros de Cer»). Nombre propio. */
+  readonly source?: string;
+  /**
+   * Miniatura propia (base en `assets/drive-media/`: `<base>.webp` 1280 × 720
+   * y `<base>-thumb.webp` 640 × 360) en vez de la de YouTube: un fotograma
+   * mejor elegido, sacado del vídeo a 1080p.
+   */
+  readonly thumb?: string;
+}
+
 /** Vídeo propio (en `assets/video/`, fuera de la caché de la PWA). */
 export interface StoryVideo {
   readonly src: string;
@@ -216,6 +236,12 @@ export interface DepartmentStory {
    * (organización sin web), el nombre va como etiqueta, sin enlace.
    */
   readonly partner?: { readonly name: string; readonly url?: string };
+  /**
+   * Otros enlaces externos (un vídeo de otro canal, una noticia…), junto a las
+   * fotos. Texto en `<base>.links.<key>`. En la crónica compacta, con
+   * enlaces no se anuncia «fotos en breve» (una edición antigua no las tendrá).
+   */
+  readonly links?: readonly StoryLink[];
 }
 
 /**
@@ -473,8 +499,10 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
     // cutie · România 2026», PDF que dio el usuario el 27/11/2026): meta de
     // 1.500 cajas, 25 € (20 + 5 de transporte), inscripción los domingos 1, 8
     // y 15/11, empaquetado el sábado 21/11 y reparto con MGM del 4 al 6/12.
-    // Sin fotos aún: crónica compacta. Al llegar las fotos, `photos` +
-    // `driveFolderId` y pasa a crónica completa, como la de 2025.
+    // Material del día (carpeta de Drive «2026-11-21 - Zambetul din cutie»:
+    // 9 vídeos 4K y 2 fotos HEIC del iPhone, 21/11/2026 09:33–10:28; la 5099
+    // recortada a 22 s por petición del usuario). Vídeos a 720p en
+    // `assets/video/zambetul-2026/`; portada = un fotograma.
     id: 'zambetul_2026',
     kind: 'campaign',
     icon: 'gift',
@@ -482,7 +510,23 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
     end: '2026-12-06',
     place: 'Biserica Elim, Arganda del Rey',
     points: ['price', 'same', 'packing', 'distribution', 'team', 'friend'],
-    photos: [],
+    // 4 × 6 sin huecos, por orden de cámara: el cort (vídeo destacado 2 × 2),
+    // 8 vídeos apaisados (2 × 1) y las 2 fotos verticales (1 × 2).
+    photos: [
+      { base: 'zambetul_2026_v-cort', width: 1280, height: 720, video: 'assets/video/zambetul-2026/cort.mp4', featured: true },
+      { base: 'zambetul_2026_fetita', width: 1600, height: 2133 },
+      { base: 'zambetul_2026_v-cartoane', width: 1280, height: 720, video: 'assets/video/zambetul-2026/cartoane.mp4' },
+      { base: 'zambetul_2026_v-benzi', width: 1280, height: 720, video: 'assets/video/zambetul-2026/benzi.mp4' },
+      { base: 'zambetul_2026_v-impachetare', width: 1280, height: 720, video: 'assets/video/zambetul-2026/impachetare.mp4' },
+      { base: 'zambetul_2026_duba', width: 1600, height: 2133 },
+      { base: 'zambetul_2026_v-jucarii', width: 1280, height: 720, video: 'assets/video/zambetul-2026/jucarii.mp4' },
+      { base: 'zambetul_2026_v-mese', width: 1280, height: 720, video: 'assets/video/zambetul-2026/mese.mp4' },
+      { base: 'zambetul_2026_v-umplere', width: 1280, height: 720, video: 'assets/video/zambetul-2026/umplere.mp4' },
+      { base: 'zambetul_2026_v-inchidere', width: 1280, height: 720, video: 'assets/video/zambetul-2026/inchidere.mp4' },
+      { base: 'zambetul_2026_v-cutii', width: 1280, height: 720, video: 'assets/video/zambetul-2026/cutii.mp4' },
+    ],
+    // Drive: «2026-11-21 - Zambetul din cutie»
+    driveFolderId: '1lPg-4lPAUs4RcRRNBv2pWJ4zFJczyPcJ',
     partner: { name: 'Asociația MGM', url: 'https://misiuneamgm.ro/' },
   },
   {
@@ -536,6 +580,61 @@ const RELIEF_STORIES: readonly DepartmentStory[] = [
     // de 2025 fue con Asociația EBEN-EZER Botoșani, en Oltenia (MGM es el
     // socio de 2026). Sin web propia localizada: sin `url`, sólo el nombre.
     partner: { name: 'Asociația EBEN-EZER Botoșani' },
+  },
+  {
+    // Edición 2024: cartel oficial («Zâmbetul din Cutie · Anul 2024 ·
+    // Bucuria TA», AMAE), mensajes de la iglesia por WhatsApp y el vídeo del
+    // canal de la iglesia (16/11/2024, 12 min). Cifra: 1.068 cajas (de la
+    // presentación oficial de 2025). Sin el teléfono ni el Bizum del cartel.
+    id: 'zambetul_2024',
+    kind: 'campaign',
+    icon: 'gift',
+    start: '2024-11-16',
+    place: 'Biserica Elim, Arganda del Rey',
+    points: ['register', 'day', 'children', 'count'],
+    photos: [],
+    verse: true,
+    links: [
+      {
+        key: 'video',
+        url: 'https://www.youtube.com/watch?v=zpAcLpkYlIg',
+        youtubeId: 'zpAcLpkYlIg',
+        source: 'Elim Arganda',
+        // Fotograma del minuto 5:23 (elegido por el usuario), 1080p, sin la
+        // franja negra ni el logo del canal; la de YouTube es el cartel.
+        thumb: 'zambetul_2024_pregatire',
+      },
+    ],
+  },
+  {
+    // Edición 2022. Fuente oficial: la presentación «Presentacion ZDC
+    // 2022.pptx» (13 láminas, dada por el usuario el 27/11/2026): la organiza
+    // la asociación de la iglesia, «Misiune și Ajutorare ELIM» (AMAE), y
+    // reparte con Asociația «Miros de Cer» en Constanța y Moldova; recogida
+    // los domingos 20 y 27/11/2022 (`start`/`end`). Más: mensajes de la
+    // iglesia por WhatsApp (culto de las 19:00 con Simi Bumbar) y dos vídeos
+    // públicos (`links`).
+    id: 'zambetul_2022',
+    kind: 'campaign',
+    icon: 'gift',
+    start: '2022-11-20',
+    end: '2022-11-27',
+    place: 'Biserica Elim, Arganda del Rey',
+    points: ['home', 'inside', 'not', 'collection', 'distribution', 'history'],
+    photos: [],
+    partner: { name: 'Asociația Miros de Cer', url: 'https://www.youtube.com/channel/UCPIrEW-69Z6t86gRidao5qQ' },
+    links: [
+      { key: 'prepare', url: 'https://www.youtube.com/watch?v=GQEKxV6SOPo' },
+      {
+        key: 'distribution',
+        url: 'https://www.youtube.com/watch?v=B38nhLIjPXU',
+        youtubeId: 'B38nhLIjPXU',
+        source: 'Miros de Cer',
+        // Fotograma del minuto 3:25 (elegido por el usuario), 1080p, sin la
+        // interfaz del reproductor y con un enfoque suave.
+        thumb: 'zambetul_2022_impartire',
+      },
+    ],
   },
 ];
 

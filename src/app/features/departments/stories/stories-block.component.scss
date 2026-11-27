@@ -204,6 +204,16 @@
   }
 }
 
+// Vídeo de `links` (no un directo): la miniatura es el contenido, más grande.
+// En el teléfono, apilada a todo el ancho.
+.watch--video {
+  grid-template-columns: min(56%, 20rem) minmax(0, 1fr);
+
+  @media (max-width: 30rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .watch__thumb {
   position: relative;
   display: block;

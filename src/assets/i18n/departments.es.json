@@ -643,7 +643,7 @@
           }
         },
         "zambetul_2025": {
-          "title": "La sonrisa en una caja",
+          "title": "La sonrisa en una caja 2025",
           "period": "Campaña solidaria · 2025",
           "lead": "Un día entero bajo la carpa, en la iglesia: niños, jóvenes y padres prepararon juntos 1.220 cajas de regalo para niños pobres y huérfanos de zonas desfavorecidas de Rumanía, llevadas a Oltenia junto con la Asociación EBEN-EZER de Botoșani.",
           "points": {
@@ -675,6 +675,71 @@
           "verse": {
             "text": "«Cada uno dé como propuso en su corazón: no con tristeza, ni por necesidad, porque Dios ama al dador alegre.»",
             "ref": "2 Corintios 9:7"
+          }
+        },
+        "zambetul_2024": {
+          "title": "La sonrisa en una caja 2024",
+          "period": "Campaña solidaria · 2024",
+          "lead": "«¡Puedes sacarle una sonrisa a un niño con una caja!» En 2024, el departamento de misión y ayuda de la iglesia preparó, con toda la iglesia, 1.068 cajas de regalo para niños de Rumanía.",
+          "points": {
+            "register": {
+              "title": "Inscripción: 20 y 27 de octubre, 3 de noviembre",
+              "text": "25 € por caja, en las listas de inscripción del domingo o por Bizum, con el nombre en el concepto."
+            },
+            "day": {
+              "title": "Sábado 16 de noviembre, 9:00–14:00",
+              "text": "Las cajas se prepararon entre toda la iglesia. No había que traer nada: el departamento puso todo lo necesario y los hermanos coordinadores dieron las indicaciones."
+            },
+            "children": {
+              "title": "Niños desde 7 años",
+              "text": "Los niños y los jóvenes vinieron con sus padres, que se hicieron cargo de ellos mientras trabajaban."
+            },
+            "count": {
+              "title": "1.068 cajas",
+              "text": "Son las cajas que salieron hacia niños de Rumanía en 2024."
+            }
+          },
+          "verse": {
+            "text": "«Jehová recompense tu obra, y tu remuneración sea cumplida de parte de Jehová Dios de Israel, bajo cuyas alas has venido a refugiarte.»",
+            "ref": "Rut 2:12"
+          },
+          "links": {
+            "video": "La preparación de las cajas, 16 de noviembre de 2024"
+          }
+        },
+        "zambetul_2022": {
+          "title": "La sonrisa en una caja 2022",
+          "period": "Campaña solidaria · 2022",
+          "lead": "En 2022, cada familia llenó en casa una caja para un niño pobre o huérfano de Rumanía. La asociación de la iglesia, «Misiune și Ajutorare Elim», las llevó a Constanza y a Moldavia, junto con la Asociación «Miros de Cer».",
+          "points": {
+            "home": {
+              "title": "Cajas preparadas en casa",
+              "text": "La caja, igual para todos, la daba el departamento. No se cerraba ni se envolvía. Dentro, una etiqueta con número (por ejemplo, «Niña 2–5 años · 306»): tras el reparto, quien la había preparado recibía la foto del niño."
+            },
+            "inside": {
+              "title": "Lo que ponía cada uno",
+              "text": "Guantes, bufanda y gorro, toalla, jabón, un juguete, dulces, pasta y cepillo de dientes, material escolar, un cuaderno para colorear o una agenda y accesorios para el pelo. Todo nuevo, sin usar."
+            },
+            "not": {
+              "title": "Lo que no se ponía",
+              "text": "Otra ropa, champú, enjuague bucal, sprays, cuchillos, medicinas, bombones ni embutidos."
+            },
+            "collection": {
+              "title": "Recogidas en la iglesia",
+              "text": "Los domingos 20 y 27 de noviembre, antes y después de cada culto, y en el culto de la tarde de las 19:00, con el pastor Simi Bumbar como invitado. 5 € por caja: la caja, el transporte, un cruasán y un zumo para los niños."
+            },
+            "distribution": {
+              "title": "Constanza y Moldavia",
+              "text": "A orfanatos y a niños muy pobres, junto con la Asociación «Miros de Cer». Fueron Cornel Mitoseriu y Aurel Burdet, que mandaron a la iglesia imágenes del reparto."
+            },
+            "history": {
+              "title": "560 cajas en 2021",
+              "text": "Fueron las del año anterior; en los cinco años hasta entonces, más de 3.500. Gracias al colaborador del transporte."
+            }
+          },
+          "links": {
+            "prepare": "Vídeo: «Pregătim cadourile» (Frații Strugariu)",
+            "distribution": "El reparto de los regalos, en imágenes"
           }
         }
       }
