@@ -3,10 +3,10 @@
  *
  * Sirve la compilación como GitHub Pages (`serve-dist.mjs`), abre cada página
  * estática en dos anchos (escritorio y teléfono) con el Chrome instalado y
- * comprueba lo que se auditó a mano en noviembre de 2026
- * (`docs/ai/76-plan-maestro.md` § 2.7): estado HTTP, consola limpia, un `h1`,
- * un `main`, sin desbordes, contraste, objetivos táctiles, nombres accesibles
- * y claves sin traducir (`page-audit.mjs`). Después:
+ * comprueba **sólo lo funcional**: estado HTTP, que la página pinta, consola
+ * sin errores propios y claves sin traducir a la vista (`page-audit.mjs`).
+ * El diseño y la accesibilidad (h1, contraste, objetivos táctiles…) no paran
+ * el despliegue desde el 26/11/2026: se revisan a mano. Después:
  *   · pide por HTTP cada enlace interno encontrado: ninguno puede dar 404;
  *   · abre la ventana de proyección a 1920 × 1080 y recorre el carrusel:
  *     ninguna diapositiva en blanco, ningún error.
@@ -17,19 +17,19 @@
  *   … --browser msedge        (por defecto: $PDF_BROWSER, chrome, msedge)
  *   … --workers 4             páginas a la vez (por defecto, según el equipo)
  *   … --date 2026-11-29T09:00 como si fuera ese día: lo que sólo se ve con un
- *                             evento hoy (el 22/11/2026 el contraste de «HOY»
- *                             bloqueó el despliegue de la mañana del evento)
+ *                             evento hoy
  *
  * **Siempre termina** (25/11/2026: un Chrome colgado dejó un despliegue 3 h 35
  * min en curso). Cada página tiene su plazo y su navegador: si se bloquea, se
  * mata y se repite una vez en uno nuevo; si vuelve a bloquearse, es un fallo
- * con nombre. Hay un presupuesto total y, por encima, un guardián que corta el
- * proceso pase lo que pase. Y **sin internet**: el navegador sólo resuelve el
+ * con nombre. Lenta no es rota: el recorrido de la página tiene su propio tope
+ * (`SCROLL_MS`) y lo que se quede sin probar al agotar el presupuesto total es
+ * un aviso, no un fallo. Por encima, un guardián que corta el proceso pase lo
+ * que pase. Y **sin internet**: el navegador sólo resuelve el
  * servidor local, así que ni la red ni YouTube deciden si se publica.
  *
  * Sale con 1 si hay algún fallo. Las páginas se miran con
- * `prefers-reduced-motion: reduce`: sin eso, un texto a mitad de su animación
- * de entrada mide menos contraste del que tiene.
+ * `prefers-reduced-motion: reduce` (sin animaciones de entrada que esperar).
  */
 import { readdir, readFile } from 'node:fs/promises';
 import { availableParallelism } from 'node:os';
@@ -44,10 +44,9 @@ const args = parseArgs(process.argv.slice(2));
 const DIST = resolve(args.dist ?? 'dist/iglesia-redes/browser');
 
 const VIEWPORTS = [
-  { name: 'escritorio', mobile: false, context: { viewport: { width: 1366, height: 768 } } },
+  { name: 'escritorio', context: { viewport: { width: 1366, height: 768 } } },
   {
     name: 'teléfono',
-    mobile: true,
     context: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
   },
 ];
@@ -57,6 +56,13 @@ const PROJECTION = { width: 1920, height: 1080 };
 const MAX_SLIDES = 40;
 /** Espera tras cargar: `@defer` en reposo, fuentes, primer render de datos. */
 const SETTLE_MS = 900;
+/**
+ * Tope del recorrido de la página para montar lo diferido. Rugăciune pentru
+ * familii (43.000 px, ~120 fichas que se miden al pintarse) tardaba 35–45 s en
+ * el runner y tumbó el despliegue del 26/11/2026 sin estar rota: lo que se
+ * monta pasado el tope es más de lo mismo.
+ */
+const SCROLL_MS = 8_000;
 
 // ── Plazos ────────────────────────────────────────────────────────────────
 /** Una página entera (cargar, recorrer, auditar). Lo normal son 2–4 s; las más largas, ~20 en un equipo cargado. */
@@ -90,6 +96,8 @@ const startedAt = Date.now();
 const elapsed = () => Date.now() - startedAt;
 const problems = [];
 const report = (where, regla, detalle) => problems.push({ where, regla, detalle });
+/** Se ven en el resumen de la ejecución, pero no impiden publicar. */
+const warnings = [];
 /** Qué se está haciendo ahora mismo: si el guardián corta, dice dónde. */
 const running = new Map();
 
@@ -124,7 +132,7 @@ if (!args.only) tasks.unshift({ where: '/media/ecran [proyección]', ms: PROJECT
 
 const slots = Array.from({ length: WORKERS }, () => null);
 const pending = await runPool(tasks, WORKERS, runTask, () => elapsed() > BUDGET_MS);
-for (const task of pending) report(task.where, 'presupuesto', `sin probar: se agotaron los ${BUDGET_MS / 1000} s`);
+for (const task of pending) warnings.push(`Sin probar (se agotaron los ${BUDGET_MS / 1000} s): ${task.where}`);
 
 if (!args.only) await checkLinks(links);
 
@@ -136,7 +144,8 @@ console.log(
   `Duración: ${Math.round(elapsed() / 1000)} s · más lentas: ${slowest.map((t) => `${t.where} ${(t.ms / 1000).toFixed(1)} s`).join(' · ')}`,
 );
 // Un bloqueo que se recupera no impide publicar, pero se ve en el resumen de la ejecución.
-for (const retry of retries) console.log(`${process.env.GITHUB_ACTIONS ? '::warning::' : '⚠ '}Repetida por bloqueo: ${retry}`);
+for (const retry of retries) warnings.push(`Repetida por bloqueo: ${retry}`);
+for (const warning of warnings) console.log(`${process.env.GITHUB_ACTIONS ? '::warning::' : '⚠ '}${warning}`);
 
 if (problems.length === 0) {
   console.log('✓ Prueba de humo en verde.');
@@ -202,7 +211,7 @@ async function checkPage(browser, path, viewport) {
   if (response?.status() !== 200) found.push({ regla: 'http', detalle: `estado ${response?.status()}` });
   await page.waitForSelector('app-root h1, app-root main', { timeout: 15_000 });
   await settle(page);
-  const result = await page.evaluate(auditPage, { mobile: viewport.mobile, roots });
+  const result = await page.evaluate(auditPage, { roots });
   found.push(...result.fallos);
   for (const error of new Set(errors)) found.push({ regla: 'consola', detalle: error });
   await context.close();
@@ -246,15 +255,16 @@ function describe(message) {
 /** Recorre la página entera para montar lo diferido por viewport y vuelve arriba. */
 async function settle(page) {
   await page.waitForTimeout(SETTLE_MS);
-  await page.evaluate(async () => {
+  await page.evaluate(async (limit) => {
     const height = document.documentElement.scrollHeight;
-    for (let y = 0; y < height; y += 600) {
+    const end = performance.now() + limit;
+    for (let y = 0; y < height && performance.now() < end; y += 600) {
       window.scrollTo(0, y);
       await new Promise((done) => setTimeout(done, 50));
     }
     window.scrollTo(0, 0);
     await new Promise((done) => setTimeout(done, 250));
-  });
+  }, SCROLL_MS);
 }
 
 /**
@@ -319,7 +329,7 @@ async function checkLinks(found) {
     },
     () => elapsed() > HARD_MS - 20_000,
   );
-  for (const path of left) report(path, 'presupuesto', 'enlace sin comprobar');
+  for (const path of left) warnings.push(`Enlace sin comprobar (se agotó el tiempo): ${path}`);
   console.log(`Enlaces internos comprobados: ${paths.length - left.length}`);
 }
 

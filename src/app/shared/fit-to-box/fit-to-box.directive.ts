@@ -69,8 +69,12 @@ export class FitToBoxDirective implements AfterViewInit, OnDestroy {
     if (!inner) return;
 
     // Sin recorte no hay nada que ajustar (web pública): dejar la escala en 1.
+    // Sólo se escribe si hay algo que quitar: escribir aunque no cambie nada
+    // ensucia los estilos, y el `getComputedStyle` de la ficha siguiente los
+    // recalculaba enteros (medio segundo al recorrer Rugăciune pentru
+    // familii, 27/11/2026).
     if (getComputedStyle(this.host).overflowY !== 'hidden') {
-      this.host.style.removeProperty('--fit');
+      if (this.host.style.getPropertyValue('--fit')) this.host.style.removeProperty('--fit');
       return;
     }
 

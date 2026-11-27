@@ -197,15 +197,19 @@ despliegue: si falla, no se publica.
 
 - `serve-dist.mjs` sirve la compilación como GitHub Pages (carpeta → 200,
   sin barra → 301, lo que no existe → `404.html` con estado 404).
-- `smoke.mjs` abre cada página estática a 1366 y a 390 px con el Chrome
-  instalado y le pasa `page-audit.mjs`: un `h1`, un `main`, sin desbordes,
-  `alt`, nombres accesibles, etiquetas, claves sin traducir, contraste AA y
-  objetivos táctiles de 24 px. De las colecciones de URL con datos audita una
-  de cada forma. Después pide por HTTP **todos** los enlaces internos (ninguno
-  puede dar 404) y recorre el carrusel de `/media/ecran` a 1920 × 1080
-  (ninguna diapositiva en blanco).
-- Mira con `prefers-reduced-motion`: un texto a mitad de su animación de
-  entrada mide menos contraste del que tiene.
+- **Sólo lo funcional** (decisión del 26/11/2026: no se para un despliegue
+  por detalles). `smoke.mjs` abre cada página estática a 1366 y a 390 px con
+  el Chrome instalado y comprueba: estado 200, que pinta (`h1` o `main`),
+  consola sin errores propios y, con `page-audit.mjs`, claves de traducción
+  a la vista. De las colecciones de URL con datos prueba una de cada forma.
+  Después pide por HTTP **todos** los enlaces internos (ninguno puede dar
+  404) y recorre el carrusel de `/media/ecran` a 1920 × 1080 (ninguna
+  diapositiva en blanco).
+- **No** bloquean: diseño ni accesibilidad (número de `h1`, saltos de
+  encabezado, contraste, objetivos táctiles, `alt`, desbordes): se revisan a
+  mano. Tampoco la lentitud: el recorrido de cada página tiene un tope
+  (`SCROLL_MS`, 8 s) y lo que quede sin probar al agotar el presupuesto sale
+  como aviso. Una página que no pinta en su plazo, dos veces, sí es fallo.
 - Los errores de recursos de **otros** servidores (la API de YouTube rechaza
   el origen local) no cuentan; los propios, sí.
 - Tras publicar, el job `verify-live` comprueba que el sitio responde **y que

@@ -40,8 +40,11 @@ const MIN_PHOTO_SHARE = { compact: 0.3, normal: 0.34, large: 0.44 } as const;
 const MIN_PHOTO_REM = 15;
 const MIN_TEXT_REM = 20;
 
-/** Pasos del barrido de anchos (ver `fitPhotoColumn`). */
-const SWEEP_STEPS = 16;
+/**
+ * Tope de medidas de `fitPhotoColumn`. Lo normal son 2–4; si no converge en
+ * estas, la ficha va en «revista».
+ */
+const MAX_FIT_PASSES = 12;
 
 /**
  * Panorámica (de 1,45 en adelante): en la web va en «banda», arriba y a todo
@@ -256,33 +259,28 @@ export class FamilyCardComponent {
     const maxWidth = total - MIN_TEXT_REM * rem;
 
     card.classList.add('fcard--measuring');
-    const photoReachesText = (width: number): boolean => {
+    /** Ancho con el que la foto mide lo que el texto con la columna a `width`. */
+    const widthForText = (width: number): number => {
       card.style.setProperty('--fcard-photo-w', `${width}px`);
-      return width / frame >= panel.offsetHeight;
+      return panel.offsetHeight * frame;
     };
 
-    // Barrido en pasos y afinado por bisección dentro del primer paso que
-    // cabe. No basta con bisecar entre los extremos: con la columna de texto
-    // muy estrecha el texto se alarga más deprisa que la foto, así que el
-    // extremo ancho puede no caber aunque un ancho intermedio sí.
+    // Menor ancho con el que la foto alcanza al texto, por punto fijo: el
+    // texto sólo se alarga al ensanchar la foto (su columna se estrecha), así
+    // que desde el mínimo se mide el texto y se salta al ancho con el que la
+    // foto mediría eso. La serie sólo sube, nunca se pasa del menor ancho que
+    // cabe y se para en él: 2–4 medidas. Cada medida recalcula estilo y
+    // maquetación de la ficha; el barrido con bisección que había antes hacía
+    // ~17 y congelaba la página hasta 5 s en un equipo lento (27/11/2026).
     let width: number | null = null;
-    if (maxWidth > minWidth) {
-      const step = (maxWidth - minWidth) / SWEEP_STEPS;
-      let previous = minWidth;
-      for (let i = 0; i <= SWEEP_STEPS && width === null; i++) {
-        const candidate = minWidth + step * i;
-        if (photoReachesText(candidate)) {
-          let low = previous;
-          let high = candidate;
-          while (high - low > 2) {
-            const middle = (low + high) / 2;
-            if (photoReachesText(middle)) high = middle;
-            else low = middle;
-          }
-          width = high;
-        }
-        previous = candidate;
+    let candidate = Math.ceil(minWidth);
+    for (let pass = 0; pass < MAX_FIT_PASSES && candidate <= maxWidth; pass++) {
+      const needed = widthForText(candidate);
+      if (needed <= candidate) {
+        width = candidate;
+        break;
       }
+      candidate = Math.ceil(needed);
     }
     card.classList.remove('fcard--measuring');
 

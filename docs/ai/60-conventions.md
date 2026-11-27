@@ -58,6 +58,15 @@ Nada de números mágicos sueltos.
 - Textos: siempre `| translate`.
 - Accesibilidad: `aria-label` traducido, `role` correcto, `aria-hidden` en
   decoración, `aria-current` en el elemento del día actual.
+- Fechas: `dateTimeFormat(lang, opciones)` (`core/util/date-format.ts`), no
+  `new Intl.DateTimeFormat(…)`. Crear uno cuesta ~0,1 ms y las plantillas
+  formatean en cada detección de cambios: en Rugăciune pentru familii eran
+  medio segundo al desplazarse (27/11/2026). Quedan ~55 `new` sin migrar en
+  sitios poco repetidos; se cambian cuando se toque cada fichero.
+- Medir el DOM en bucle (`offsetHeight` tras escribir un estilo) fuerza un
+  recálculo de estilo + maquetación en cada vuelta: el menor número de
+  medidas posible, y no escribir lo que no cambia (ver `fitPhotoColumn` en
+  `36-family-prayer.md` y `FitToBoxDirective.fit`).
 
 ## TypeScript
 

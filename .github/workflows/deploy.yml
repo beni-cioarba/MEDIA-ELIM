@@ -140,8 +140,8 @@ jobs:
         run: npm run pdf:familii -- --dist dist/iglesia-redes/browser --reuse .cache/family-pdfs
 
       # Prueba de humo sobre lo que se va a publicar, servido como lo sirve
-      # GitHub Pages: cada página en dos anchos (estado, consola, h1, contraste,
-      # objetivos táctiles, claves sin traducir), todos los enlaces internos y
+      # GitHub Pages: sólo lo funcional. Cada página en dos anchos (estado, que
+      # pinta, consola, claves sin traducir), todos los enlaces internos y
       # la proyección a 1080p. Si falla, no se publica. scripts/e2e/smoke.mjs.
       - name: Smoke test (pages, links, projection)
         timeout-minutes: 5

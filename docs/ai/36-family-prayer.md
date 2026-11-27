@@ -149,9 +149,16 @@ a ~480 px, ampliada. `sizes` sale de la maquetación (`FamilyCardComponent.sizes
   `FamilyCardComponent.fitPhotoColumn` mide (clase `fcard--measuring`, panel a
   su alto natural) y fija `--fcard-photo-w` = el MENOR ancho con el que la foto
   es al menos tan alta como el texto; un espaciador `::before` con la
-  proporción fija el alto de la fila. Barrido en 16 pasos + bisección (no basta
-  bisecar entre extremos: con la columna de texto estrecha el texto crece más
-  deprisa que la foto). Límites: foto ≥ 15 rem y ≥ 34 % (`size` compact 30 %,
+  proporción fija el alto de la fila. **Punto fijo** (27/11/2026): desde el
+  ancho mínimo se mide el texto y se salta al ancho con el que la foto mediría
+  eso; como el texto sólo se alarga al ensanchar la foto, la serie sube y se
+  para justo en el menor ancho válido (2–4 medidas, tope 12). Sustituye al
+  barrido de 16 pasos + bisección: ~17 medidas por ficha, cada una recalcula
+  estilo y maquetación, y congelaba la página hasta 5 s al desplazarse en un
+  equipo lento. Además el barrido no era exacto: el alto del texto sube a
+  saltos (línea a línea) y los anchos válidos son islas de 10–30 px que se
+  saltaba, así que algunas fichas salían más anchas o en «revista» sin
+  necesidad. Límites: foto ≥ 15 rem y ≥ 34 % (`size` compact 30 %,
   large 44 %), texto ≥ 20 rem. **Alto mínimo común** de la foto: min(24 rem,
   55 vh) × proporción, sin pasar del ancho real de la foto (tope de calidad);
   así una familia con poco texto no sale con una foto la mitad de grande que

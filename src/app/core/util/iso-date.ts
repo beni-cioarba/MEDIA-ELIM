@@ -7,6 +7,7 @@
  * anterior a la 1:00 de la madrugada, que es justo cuando el operador prepara
  * la proyección del domingo.
  */
+import { dateTimeFormat } from './date-format';
 
 /** Parsea `YYYY-MM-DD` en hora local. Campos ausentes valen 1 (enero / día 1). */
 export function parseIsoDate(iso: string): Date {
@@ -47,9 +48,9 @@ export function formatIsoRange(lang: string, startIso: string, endIso: string): 
   const start = parseIsoDate(startIso);
   const end = parseIsoDate(endIso);
   try {
-    const day = new Intl.DateTimeFormat(lang, { day: 'numeric' });
-    const dayMonth = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long' });
-    const full = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+    const day = dateTimeFormat(lang, { day: 'numeric' });
+    const dayMonth = dateTimeFormat(lang, { day: 'numeric', month: 'long' });
+    const full = dateTimeFormat(lang, { day: 'numeric', month: 'long', year: 'numeric' });
     const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
     return `${sameMonth ? day.format(start) : dayMonth.format(start)} – ${full.format(end)}`;
   } catch {

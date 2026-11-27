@@ -8,6 +8,7 @@ import {
   PrayerWeek,
 } from '../family-prayer.config';
 import { FAMILY_PHOTOS } from '../family-photos.generated';
+import { dateTimeFormat } from '../util/date-format';
 import { addDays, formatIsoRange, parseIsoDate, startOfDay, toIsoDate } from '../util/iso-date';
 import { ClockService } from './clock.service';
 
@@ -189,7 +190,7 @@ export class FamilyPrayerService {
   /** «21 – 27 sept.» / «28 sept. – 4 oct.»: para el índice, sin año. */
   formatShortRange(week: PrayerWeekView): string {
     try {
-      return new Intl.DateTimeFormat(this.lang(), { day: 'numeric', month: 'short' }).formatRange(
+      return dateTimeFormat(this.lang(), { day: 'numeric', month: 'short' }).formatRange(
         parseIsoDate(week.start),
         parseIsoDate(week.end),
       );
